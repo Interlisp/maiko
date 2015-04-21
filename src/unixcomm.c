@@ -42,12 +42,15 @@ Unix Interface Communications
 #include <setjmp.h>
 #include "timeout.h"
 #include <stdio.h>
+#include <string.h> /* for strcpy etc. */
 #ifdef OS4
 #include <sys/termios.h>
 #elif APOLLO
 #include </sys5/usr/include/termios.h>
 #elif LINUX
 #include <termio.h>
+#elif MACOSX
+#include <termios.h>
 #else
 #include <sys/termio.h>
 #endif /* OS4 */

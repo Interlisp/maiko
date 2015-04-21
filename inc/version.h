@@ -396,6 +396,30 @@ typedef signed char s_char;
 
 
 
+/********************************************************/
+/*							*/
+/********************************************************/
+#ifdef MACOSX
+/* MACOSX, mostly POSIX-compliant Unix */
+#define NOETHER 1
+#define XWINDOWS 1
+/* JDS trial 12/22/01 #define USETIMEFN 1 */
+
+#undef REGISTER
+#define REGISTER
+
+typedef signed char s_char;
+
+#undef UNALIGNED_FETCH_OK
+
+#define MAXNAMLEN NAME_MAX
+
+#endif /* MACOSX */
+
+
+
+
+
 
 	/********************************************************/
 	/*							*/

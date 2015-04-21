@@ -44,6 +44,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
+#include <stdio.h>  /* for sprintf */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"

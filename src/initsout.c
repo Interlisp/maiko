@@ -27,7 +27,11 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 
 #include <stdio.h>
 #include <string.h>
+#ifdef MACOSX
+#include <stdlib.h>
+#else
 #include <malloc.h>
+#endif
 #ifndef DOS
 #include <pwd.h>
 #else
@@ -167,7 +171,12 @@ init_ifpage(int sysout_size)
     {struct passwd *pwd;
      char *s = (char*)Addr68k_from_LADDR(0155001);
 	/* try getpwuid first; use cuserid if it fails */
-	if((pwd = getpwuid(getuid())) == NULL) cuserid(s+1);
+	if((pwd = getpwuid(getuid())) == NULL)
+#ifdef MACOSX
+        ;
+#else
+        cuserid(s+1);
+#endif
 	else strcpy(s+1, pwd->pw_name);
 	*s = (char)strlen(s+1);
     }

@@ -26,7 +26,7 @@ static char *id = "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyr
 
 */
 /*****************************************************************/
-
+#include <stdio.h>  /* for printf */
 #include "hdw_conf.h"
 #include "lispemul.h"
 #include "address.h"

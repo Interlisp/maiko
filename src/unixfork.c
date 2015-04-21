@@ -48,7 +48,7 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 #ifndef USETERMIOS
 #include <sys/ioctl.h>
 #else
-#ifdef INDIGO
+#if defined(INDIGO) || defined(MACOSX)
 #include <termios.h>
 #else
 #include <sys/termios.h>
@@ -676,13 +676,21 @@ ForkUnixShell(slot, ltr, numb, termtype, shellarg)
 	   kill processing, echo, backspace to erase, echo ctrl
 	   chars as ^x, kill line by backspacing */
 
+#ifdef MACOSX
+	tcgetattr(SlaveFD, &tio);
+#else
 	ioctl(SlaveFD, TCGETS, (char *)&tio);
+#endif
 #ifdef INDIGO
 	tio.c_lflag |= ICANON | ECHO | ECHOE;
 #else
 	tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
 #endif /* INDIGO */
+#ifdef MACOSX
+	tcsetattr(SlaveFD, TCSANOW, &tio);
+#else
 	ioctl(SlaveFD, TCSETS, (char *)&tio);
+#endif
 #endif /* USETERMIOS */
 
 	(void) dup2(SlaveFD, 0);

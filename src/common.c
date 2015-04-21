@@ -21,6 +21,7 @@ static char *id = "$Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ Copyri
 #include	<stdio.h>
 #include  <setjmp.h>
 #include  <fcntl.h>
+#include <string.h> /* for memset */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"

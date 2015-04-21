@@ -168,7 +168,7 @@ int Win_security_p;
 /*  Now takes 68k address, function renamed for safety  */
 
 init_display2(display_addr, display_max)
-  int   display_addr, display_max;
+  INT   display_addr, display_max;
   {
     int mmapstat;
     int fbgattr_result;

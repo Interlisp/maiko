@@ -84,7 +84,7 @@ extern IOPAGE *IOPage68K;
 
 #ifdef AIX
 #include <sys/types.h>
-#ifndef LINUX					/* LINUX has no macros.h */
+#if !defined(LINUX) && !defined(MACOSX)					/* LINUX and MACOSX have no macros.h */
 #include <macros.h>
 #endif /* LINUX */
 #endif /* AIX */

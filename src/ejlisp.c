@@ -772,7 +772,7 @@ int	dic_no_array[TABLE_MAX];
 			printf("dic_no_array = %d,dic_name_len_array = %d,dic_name_array = %s\n",dic_no_array[i],dic_name_len_array[i],&dic_name_array[i][0]);
 		}
 	}
-	printf("wnn_errorno = %d,wnn_errorno);
+	printf("wnn_errorno = %d", wnn_errorno);
 #endif
 
 	return (wnn_errorno) ;

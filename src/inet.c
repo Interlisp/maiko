@@ -22,6 +22,7 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h> /* for mem... fns */
 #ifndef DOS
 #include <sys/types.h>
 #include <sys/file.h>

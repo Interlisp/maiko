@@ -24,6 +24,7 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 
 	
 #include	<stdio.h>
+#include	<errno.h>
 #include	"osmsg.h"
 
 
@@ -37,10 +38,15 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 /************************************************************************/
 
 extern int errno;
+#ifdef MACOSX
+extern const char * const sys_errlist[];
+extern const int sys_nerr;
+#else
 int sys_nerr;
 #ifndef LINUX
 extern char *sys_errlist[];
 #endif /* LINUX */
+#endif
 
 perrorn(char *s, int n)
 {

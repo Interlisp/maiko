@@ -31,6 +31,7 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 
 */
 /******************************************************************/
+#include <stdio.h>  /* for printf */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
