@@ -1,0 +1,35 @@
+# Default values for Maiko makefile variables
+# These get overridden by OS and hardware-specific stuff
+# in sub-makefiles
+
+SRCDIR = ../src/
+INCDIR = ../inc/
+INCLUDEDIR = ../include/
+LIBDIR = ../lib
+BINDIR = ./
+RELDIR = ../RELEASE/
+MAIN = _main
+RANLIB = ranlib
+AR = ar rcv
+ANSICC = $(CC)
+
+# for the files that need to be included in byte-swapped implementations:
+BYTESWAPFILES =
+SXHASHFILE = 
+BITBLTFILE = 
+DLPIFILES =
+
+# for files needed by X windows version
+XFILES =
+
+# for files needed by color (actually files NOT needed by X)
+COLORFILES =
+
+# Flags to include inthe linking of various S/W
+#	LDFLAGS - in emulator itself (e.g., ldesingle)
+#	LDELDFLAGS - in "lde" unix-comm forker.
+#	LDEETHERLDFLAGS - in "ldeether" ethernet kick-start
+LDFLAGS =
+LDELDFLAGS =
+LDEETHERLDFLAGS =
+

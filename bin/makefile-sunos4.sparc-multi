@@ -1,0 +1,134 @@
+# makefile-sunos4.sparc-multi
+#  @(#) makefile-sunos4.sparc-multi Version 1.6 (5/9/90). 
+#
+
+
+#************************************************************************/
+#*									*/
+#*	(C) Copyright 1989-98 Venue. All Rights Reserved.		*/
+#*	Manufactured in the United States of America.			*/
+#*									*/
+#*	The contents of this file are proprietary information 		*/
+#*	belonging to Venue, and are provided to you under license.	*/
+#*	They may not be further distributed or disclosed to third	*/
+#*	parties without the specific permission of Venue.		*/
+#*									*/
+#************************************************************************/
+
+CC = gcc
+ANSICC = gcc
+
+#LPFILES = $(OBJECTDIR)lpmain.o \
+#		  $(OBJECTDIR)lpdual.o \
+#		  $(OBJECTDIR)lpread.o \
+#		  $(OBJECTDIR)lpsolve.o \
+##		  $(OBJECTDIR)lptran.o \
+#		  $(OBJECTDIR)lpwrite.o \
+#		  $(OBJECTDIR)lpy.tab.o
+
+LPFILES =
+
+# Options for SunOS4 and SPARC for CG3 or CG6 
+# Add -DDISPLAYBUFFER in DFLAGS
+# ${RELEASENAME} is "sunos4.sparc-multi"
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -g # -O2
+DISPOPTFLAGS = -g #  -O2
+FPFLAGS =
+# Now share the same ldemulti for Mono-Medley & Color-Medley
+# If you load MAIKOCOLOR.LCOM etc., you can use color functions
+#
+# Removed for debug:  -DSPARCDISP -DSUN4_OS4_IL 
+# Added for debug: -DFNSTKCHECK -DMYOPTRACE -DOPTRACE -DNOASM
+#
+#DEBUGFLAGS = -DNOASM -DSTACKCHECK -DFNSTKCHECK
+MACHINEFLAGS = -DOS4 -DOS4_TYPE4BUG -DCOLOR -DDISPLAYBUFFER -DSUNDISPLAY  \
+			   -DNEWBITBLT -DLOGINT -DFORKCOMM
+
+INLINEFLAGS = # -DSPARCDISP -DSUN4_OS4_IL
+
+DFLAGS = $(DEBUGFLAGS) \
+		 $(MACHINEFLAGS) \
+		 $(INLINEFLAGS) \
+		 -DKBINT -DFSERROR -DNEW_STORAGE  \
+	     -DNOVERSION -DRELEASE=350
+
+LDFLAGS = -L$(LIBDIR) -lsuntool -lsunwindow -lpixrect -ldld -lc -lm
+#-Dsparc?
+INLINE = # $(SRCDIR)dspSPARC.il
+BITBLTFILE = $(OBJECTDIR)bbtSPARC.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+COLORFILES = $(OBJECTDIR)rawcolor.o
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+
+# Special rules to create xc.c on Sun4
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inln68k.h
+	cc -Qproduce .i $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.i
+
+#run c compiler to produce first pass assembly
+$(OBJECTDIR)xc.s1:	$(OBJECTDIR)xc.i
+	rm -f $(OBJECTDIR)xc.s1
+	/lib/ccom - $(FPFLAGS) <$(OBJECTDIR)xc.i >$(OBJECTDIR)xc.s1
+
+#generate C program to remove dispatch loop, optimize
+$(OBJECTDIR)dsphack.c: $(SRCDIR)dsphack.lex
+	rm -f $(OBJECTDIR)dsphack.c
+	lex -t $(SRCDIR)dsphack.lex > $(OBJECTDIR)dsphack.c
+
+#uses this program to find dispatch
+$(OBJECTDIR)find-dsp.c: $(SRCDIR)find-dsp.lex
+	rm -f $(OBJECTDIR)find-dsp.c
+	lex -t $(SRCDIR)find-dsp.lex > $(OBJECTDIR)find-dsp.c
+
+$(OBJECTDIR)find-dsp: $(OBJECTDIR)find-dsp.c
+	cc -o $(OBJECTDIR)find-dsp $(OBJECTDIR)find-dsp.c -ll
+
+$(OBJECTDIR)dispatch-label.c: $(OBJECTDIR)find-dsp $(OBJECTDIR)xc.s1
+	rm -f $(OBJECTDIR)dispatch-label.c
+	$(OBJECTDIR)find-dsp < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)dispatch-label.c
+
+$(OBJECTDIR)dsphack: $(OBJECTDIR)dsphack.c $(OBJECTDIR)dispatch-label.c
+	cc -o $(OBJECTDIR)dsphack $(OBJECTDIR)dispatch-label.c $(OBJECTDIR)dsphack.c -ll
+	rm -f $(OBJECTDIR)dispatch-label.o $(OBJECTDIR)dsphack.o
+
+$(OBJECTDIR)xc.s2:	$(OBJECTDIR)xc.s1 $(OBJECTDIR)dsphack
+	rm -f $(OBJECTDIR)xc.s2
+	$(OBJECTDIR)dsphack < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)xc.s2
+
+$(OBJECTDIR)xc.s3:	$(OBJECTDIR)xc.s2 $(INLINE)
+	rm -f $(OBJECTDIR)xc.s3
+	/usr/lib/inline -i $(INLINE) < $(OBJECTDIR)xc.s2 > $(OBJECTDIR)xc.s3
+
+#$(OBJECTDIR)xc.o: $(OBJECTDIR)xc.s3
+#	/bin/as -o $(OBJECTDIR)xc.o -O1 $(OBJECTDIR)xc.s3
+
+
+############
+#
+#	SPECIAL xc.o  for debugging
+#
+############
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   
+	$(CC) $(DISPRFLAGS) -UOPDISP -USPARCDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o

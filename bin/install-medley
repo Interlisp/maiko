@@ -1,0 +1,758 @@
+#! /bin/sh 
+# ============================================================================
+# Changes:
+# ============================================================================
+# SYNOPSYS:
+#		install-medley
+#
+#	Utility used for installation and upgrading of the medley system.
+#	The utility will infer as much as possible about the host and network, 
+#	but will prompt for answers when needed.
+#
+# ============================================================================
+
+# What is the application to be installed
+APPLICATION="Medley 2.0"
+
+SHAREDIR=/usr/share/lde
+LOCALDIR=/usr/local/lde
+INSTALLDIR=$LOCALDIR
+
+TAPEDEV=/dev/rst0
+
+#************************************************************
+#********* Changes below this point should normally *********
+#*********            not be required               *********
+#************************************************************
+
+# What we normally recommend to install (marked with 'x')
+# COLORP and X11P versions are deduced if possible 
+SYSOUTP=x
+MONOP=x
+DISPLAYFONTP=x
+LIBRARYP=x
+
+# All sizes in MB
+SYSOUTSIZE=5.1
+MONOSIZE=0.5
+COLORSIZE=0.5
+X11SIZE=0.6
+XNSSIZE=0.1
+LIBRARYSIZE=3
+DISPLAYFONTSIZE=5.5
+INTERPRESSFONTSIZE=1.5
+CHECKSUMSIZE=0.1
+OBJECTSIZE=0.6
+
+# All the files for each group
+SYSOUTFILES="./lispsysouts"
+CHECKSUMFILES="./checksumdir"
+LIBRARYFILES="./lisplibrary ./clos"
+DISPLAYFONTFILES="./fonts/display"
+INTERPRESSFONTFILES="./fonts/interpress ./fonts/press"
+
+LOCALHOST=`/bin/hostname`
+scriptName=`/bin/basename $0`
+
+# Send out a message when interrupted
+trap 'echo "
+Aborted..."; exit' 2
+
+#-----------------------------------------------------------
+#----------------------- PROCEDURES ------------------------
+
+exitScript () {
+	echo "$scriptName: $1"
+	exit
+} # exitScript
+
+
+ask(){
+# Ask a question=$1 and use default=$2 if no answer is given. If arg $3
+# is specified, it will be considered the opposite of $2. Return 0 if
+# default is used, 1 otherwise. 'answer' can be used as a global variable
+
+        echo -n "$1 ${2:+[$2]}: "
+	answer=`/bin/line`
+	if [ $# -gt 2 ]
+	then	until [ "$answer" = "" -o "$answer" = "$2" -o "$answer" = "$3" ];
+	        do	echo "Please type '$2' or '$3'."
+		        echo -n "$1 $2: "
+		        answer=`/bin/line`
+	        done
+	fi
+
+# Note the "-" in the argument below. test will not behave well with some 
+# of the shell escape characters otherwise.
+        [ "-${answer:=$2}" = "-$2" ]
+} # ask
+
+
+menuInstructions () {
+	echo "<--------------------> Menu Instructions <-------------------->
+ - Only options marked with an 'x' will be installed. They are 
+   initally based on inferred information, recommendations and answers
+   to questions. 
+ - To select additional options, at the prompt enter at least as
+   many characters as needed to make the selection unique, e.g.,
+   'XN' for XNS. To select all options, enter 'All'.
+ - To deselect an option already marked with an 'x', at the prompt
+   enter at least as many characters as needed to make the 
+   selection unique. To deselect all options, enter 'None'.  
+"
+	ask "Continue?" "y"
+
+} # menuInstructions
+
+
+welcome() {
+
+	/usr/ucb/clear
+	echo "
+<----------> Welcome to the $APPLICATION Installation Utility <---------->
+
+Utility is used to install or upgrade a $APPLICATION system. It will try to infer
+as much information as possible about your system, but you will be prompted
+for specific information when it is not able to infer it automatically.
+
+Recommended options are initially filled in, but you can change them at 
+any time using the Installation Options Menu.
+"
+	menuInstructions
+
+} # welcome
+
+
+scriptMessage () {
+	MESSAGE="************************** $1 ***************************
+$2 
+************************************************************"
+} # scriptMessage
+
+
+setOSType () {
+# Pass it OS versions and it will set the OSVERSION variable
+
+	while [ $# != 0 ]
+	do	case "$1" in
+		3|3.[245]) OS3P=x ;;
+		4|4.0|4.0.*) OS4P=x ;;
+		4.1|4.1.*) OS41P=x ;;
+		*) echo " Should not happen: OStype $1 invalid" ;;
+		esac
+		shift
+	done
+	OSVERSION="${OS3P:+3} ${OS4P:+4} ${OS41P:+4.1}"
+} # setOSType
+
+
+askOSVersion(){
+# Prompt user for the correct OS-version
+	
+	MESSAGE="$1"
+
+	unset menuloop1
+	while [ ${menuloop1:-notdone} = notdone ]
+	do	/usr/ucb/clear
+		echo "
+<---------------> OS Options Menu <--------------->
+
+ ${OS3P:--} 3.X - SunOS 3.2 3.4 3.5
+ ${OS4P:--} 4.0 - SunOS 4.0 4.0.X
+ ${OS41P:--} 4.1 - SunOS 4.1 4.1.X
+
+    All - Mark all options
+    None - Unmark all options
+    Continue installation
+${MESSAGE:+
+$MESSAGE}"
+		unset MESSAGE
+		ask "Select" "Continue"
+		case "$answer" in
+		3|3.[X245]) 
+			if [ "$OS3P" != "x" ]	
+			then OS3P=x
+			else unset OS3P
+			fi ;;
+		4.0|4.0.*)
+			if [ "$OS4P" != "x" ]	
+			then OS4P=x
+			else unset OS4P
+			fi ;;
+		4.1|4.1.*) 
+			if [ "$OS41P" != "x" ]	
+			then OS41P=x
+			else unset OS41P
+			fi ;;
+		[aA]*) OS3P=x ;	OS4P=x ; OS41P=x ;;
+		[nN]*) unset OS3P OS4P OS41P ;;
+		[cC]*|"") menuloop1=done ;;
+		*) MESSAGE="Invalid reply: $answer" ;;
+		esac
+	done
+	OSVERSION="${OS3P:+3} ${OS4P:+4} ${OS41P:+4.1}"
+} # askOSVersion
+
+
+checkInstallPoint () {
+# Uses INSTALLDIR to determine if it is possible to make an 
+# installation. INSTDIRERRP is just used to return result of operation and 
+# to signal an error message. EXISTSP is used to avoid repetitive messages.
+
+	unset INSTDIRERRP
+	if [ -f "$INSTALLDIR" ]
+	then	scriptMessage "ERROR" "A file with the same name already exists: $INSTALLDIR
+Select the 'Directory' command and make a change."
+		INSTDIRERRP=x		
+	elif [ -d "$INSTALLDIR" -a ! -w "$INSTALLDIR" ]
+	then	scriptMessage "ERROR" "Write permission denied for directory: $INSTALLDIR
+Select the 'Directory' command and make a change."
+		INSTDIRERRP=x		
+	elif [ ! -d "$INSTALLDIR" ]
+	then	/bin/mkdir -p $INSTALLDIR 1>/dev/null 2>/dev/null
+		if [ $? = 0 ]
+		then EXISTSP=x
+		else	scriptMessage "ERROR" "Could not create: $INSTALLDIR - Permission denied
+Select the 'Directory' command and make a change."
+			INSTDIRERRP=x
+		fi
+	elif [ -d "$INSTALLDIR" -a ${EXISTSP:--} = - ]
+	then	scriptMessage "WARNING" "Directory already exists: $INSTALLDIR 
+If this is the location of a previous $APPLICATION installation, 
+\"$scriptName\" may overwrite some of the old files."
+		EXISTSP=x
+	fi
+
+	[ ${INSTDIRERRP:--} = - ]
+} # checkInstallPoint
+
+
+mountTape () {
+	unset TAPEMOUNTEDP
+	while [ ${TAPEMOUNTEDP:--} = - ]
+	do	if [ "$1" = "$LOCALHOST" ]
+		then mt -f $TAPEDEV status 2>&1 | /bin/egrep -s "no sense" 
+		else	/usr/ucb/rsh "$1" mt -f $TAPEDEV status 2>&1 | /bin/egrep -s "no sense" 
+		fi
+
+		if [ $? != 0 ]
+		then	echo "ERROR. Tape not mounted or mounted improperly."
+			ask "Please insert installation tape in the tape drive. Done?" "y"
+		else	TAPEMOUNTEDP=x
+		fi
+	done
+} # mountTape
+
+
+checkTape () {
+
+	if [ "$1" = "$LOCALHOST" ]
+	then	echo -n "Looking for a local tape drive on $1 ..."
+		mt -f $TAPEDEV status 2>&1 | /bin/egrep -s "no sense|not ready|no tape loaded" 
+		if [ $? = 0 ] 
+		then 	echo " Found"
+			TAPEHOST="$LOCALHOST"
+		else	echo " Not found"
+			echo "'$LOCALHOST' does not seem to have a tape drive."
+		fi
+	else	/usr/etc/ping "$1" 10 1>/dev/null 2>/dev/null
+		if [ $? = 0 ]
+		then  	echo -n "Looking for a remote tape drive on $1 ..."
+			/usr/ucb/rsh "$1" mt -f $TAPEDEV status 2>&1 | /bin/egrep -s "no sense|not ready|no tape loaded" 
+			if [ $? = 0 ]
+			then	echo " Found"
+				TAPEHOST="$1"
+			else	echo " Not Found"
+				echo "'$1' does not seem to have a tape drive."
+			fi
+		else	echo "Could not connect to '$1' or host unknown."
+		fi
+	fi
+
+} # checkTape
+
+
+inferConfiguration () {
+# Infers as much as possible the type of configuration on the host
+# or network. Will ask when not able to determine something.
+
+	# Try to infer Os type
+	if [ -f /etc/motd ]
+	then	OSVERSION=`sed -e '1s/.*Release \(...\).*/\1/' -e '1q' < /etc/motd`
+		setOSType $OSVERSION
+	else	askOSVersion "Please specify the SunOS version you are running."
+	fi
+
+	# Is it necessary to install 'ldemulti'
+	/bin/egrep -s "cgthree0|cgsix0" /var/adm/messages
+	if [ $? = 0 ]		
+	then COLORP=x
+	fi
+
+	# Is X-windows installed on this host
+ 	if [ -d /usr/bin/X11 -o -d /usr/local/X11 ]
+	then X11P=x
+	fi
+
+
+	checkTape $LOCALHOST
+
+	while [ ${TAPEHOSTP:--} = - ]
+	do
+		if [ ${TAPEHOST:--} = - ]
+		then
+			# Host is networked		
+			ask "Name of a host with a tape drive"
+			checkTape "$answer"
+		fi
+
+		if [ "${TAPEHOST:+-}" = - ]
+		then	if ask "Insert installation tape in tape drive of $TAPEHOST. Ready?" "y"
+			then 	TAPEHOSTP=x
+				mountTape "$TAPEHOST"
+			else unset TAPEHOST
+			fi
+		fi
+	done
+
+} # inferConfiguration
+
+
+emulatorSpace () {
+# Figure out according to selections what the real space requirements 
+# are for the emulator. Sets the variables RMONOSIZE, RCOLORSIZE, RX11SIZE
+# for later usage
+
+	RMONOSIZE=0
+	RCOLORSIZE=0
+	RX11SIZE=0
+
+	if [ ${MONOP:--} != - ]
+	then	for x in $OSVERSION
+		do	RMONOSIZE=`echo $MONOSIZE ${OBJECTP:+"+ $OBJECTSIZE"} + $RMONOSIZE | /bin/bc`
+		done
+	fi
+
+	if [ ${COLORP:--} != - ]
+	then	for x in $OSVERSION
+		do	RCOLORSIZE=`echo $COLORSIZE ${OBJECTP:+"+ $OBJECTSIZE"} + $RCOLORSIZE | /bin/bc`
+		done
+	fi
+
+	if [ ${X11P:--} != - ]
+	then	for x in $OSVERSION
+		do	RX11SIZE=`echo $X11SIZE ${OBJECTP:+"+ $OBJECTSIZE"} + $RX11SIZE | /bin/bc`
+		done
+	fi
+} # emulatorSpace
+
+
+showInstallMenu () {
+# Will do different calculations depending on $1. If no argument is 
+# given, it will only redisplay the Installation Options Menu.
+
+	if [ $# -ge 1 ]
+	then	if [ "$1" = available  -o $# -gt 1 ]
+		then 	if checkInstallPoint
+			then calculateSpace available
+			fi
+		fi
+
+		if [ "$1" = required  -o $# -gt 1 ]
+		then	calculateSpace required
+		fi
+
+		if [ "${EXISTSP:+-}" = - ]
+		then  sufficientSpaceP
+		fi
+	fi
+
+	/usr/ucb/clear
+
+	echo "
+<---------------> Installation Options Menu <-------------->
+------------------------ Emulators -------------------------
+For one or several OS versions (At least one of monochrome,
+color, or X11-version is required for new installations).
+
+  ${MONOP:--}  Monochrome ${MONOP:+- $RMONOSIZE MByte}
+  ${COLORP:--}  Color ${COLORP:+- $RCOLORSIZE MByte}
+  ${X11P:--}  X11-version ${X11P:+- $RX11SIZE MByte}
+  ${XNSP:--}  XNS ${XNSP:+- $XNSSIZE MByte }- allows handling of the XNS protocol.
+  ${OBJECTP:--}  Object files - allows linking of Medley to other software.
+     OS version - Change versions. Selected: $OSVERSION
+-------------------------- Fonts ---------------------------
+  ${DISPLAYFONTP:--}  Display ${DISPLAYFONTP:+- $DISPLAYFONTSIZE MByte }(recommended)
+  ${INTERPRESSFONTP:--}  Interpress ${INTERPRESSFONTP:+- $INTERPRESSFONTSIZE MByte}
+------------ Sysout, Library & Checksum files  -------------
+  ${SYSOUTP:--}  Sysout ${SYSOUTP:+- $SYSOUTSIZE MByte} (required for new installations).
+  ${LIBRARYP:--}  Library modules ${LIBRARYP:+- $LIBRARYSIZE MByte }(recommended)
+  ${CHECKSUMP:--}  Checksum files ${CHECKSUMP:+- $CHECKSUMSIZE MByte}
+------------------------- Commands -------------------------
+     Directory - Change the installation directory. 
+      -- Current: $INSTALLDIR
+      -- Disk-space(KByte) Available:${AVAILABLESPACE:----} Needed:$DISKSPACE
+     !<Unix command> - Execute a Unix command.
+     ? or Help - Show menu instructions.
+     Redraw - Redisplay this menu.
+     All - Mark all options.
+     None - Unmark all options.
+     Continue installation.
+     Quit installation.
+${MESSAGE}"
+} # showInstallMenu
+
+
+getInstallOptions() {
+# General menu for selecting what to install
+
+	showInstallMenu required available
+
+	menuloop3=notdone
+	while [ "$menuloop3" = notdone ]
+	do	if [ "${INSTDIRERRP:+-}" = - ]
+		then 	ask "Select" "Directory"
+			unset INSTDIRERRP
+		else ask "Select" "Continue"
+		fi
+		unset MESSAGE
+
+		case "$answer" in
+		[sS]*)	if [ "$SYSOUTP" != "x" ]
+			then SYSOUTP=x
+			else unset SYSOUTP
+			fi 
+			showInstallMenu required ;;
+		[mM]*)	if [ "$MONOP" != "x" ]
+			then MONOP=x
+			else unset MONOP
+			fi 
+			showInstallMenu required ;;
+		[cC][oO][lL]*)
+			if [ "$COLORP" != "x" ]
+			then COLORP=x
+			else unset COLORP
+			fi 
+			showInstallMenu required ;;
+		[xX][1]*)
+			if [ "$X11P" != "x" ]
+			then X11P=x
+			else unset X11P
+			fi 
+			showInstallMenu required ;;
+		[xX][nN]*)
+			if [ "$XNSP" != "x" ]
+			then XNSP=x
+			else unset XNSP
+			fi 
+			showInstallMenu required ;;
+		[oO][bB]*)
+			if [ "$OBJECTP" != "x" ]
+			then OBJECTP=x
+			else unset OBJECTP
+			fi 
+			showInstallMenu required ;;
+		[oO][sS]*)
+			askOSVersion "Please specify changes you wish to make."
+			showInstallMenu required  ;;
+		[dD][iI][sS]*)
+			if [ "$DISPLAYFONTP" != "x" ]
+			then DISPLAYFONTP=x
+			else unset DISPLAYFONTP
+			fi 
+			showInstallMenu required ;;
+		[iI]*)	if [ "$INTERPRESSFONTP" != "x" ]
+			then INTERPRESSFONTP=x
+			else unset INTERPRESSFONTP
+			fi
+			showInstallMenu required ;;
+		[lL]*)	if [ "$LIBRARYP" != "x" ]
+			then LIBRARYP=x
+			else unset LIBRARYP
+			fi
+			showInstallMenu required ;;
+		[cC][hH]*)
+			if [ "$CHECKSUMP" != "x" ]
+			then CHECKSUMP=x
+			else unset CHECKSUMP
+			fi
+			showInstallMenu required ;;
+		[dD][iI][rR]*)
+			ask "Where do you want to install $APPLICATION?" "$INSTALLDIR"
+			INSTALLDIR="$answer"
+			unset EXISTSP 
+			showInstallMenu available ;;
+		!?*) eval `echo "$answer" | /bin/sed -e s/\\!//` ;;
+		\?|[hH]*) menuInstructions ; showInstallMenu ;;
+		[rR]*) showInstallMenu ;;
+		[aa]*)	SYSOUTP=x ; MONOP=x ; COLORP=x ; X11P=x ; XNSP=x
+			OBJECTP=x ; DISPLAYFONTP=x ; INTERPRESSFONTP=x 
+			LIBRARYP=x ; CHECKSUMP=x ; showInstallMenu required ;;
+		[nN]*) unset SYSOUTP MONOP COLORP X11P XNSP OBJECTP DISPLAYFONTP INTERPRESSFONTP LIBRARYP CHECKSUMP 
+			showInstallMenu required ;;
+		[cC][oO][nN]*|"") 
+			if [	${SYSOUTP:--} = - -a ${MONOP:--} = - -a \
+				${COLORP:--} = - -a ${X11P:--} = - -a \
+				${DISPLAYFONTP:--} = - -a ${INTERPRESSFONTP:--} -a \
+				${LIBRARYP:--} = - -a ${CHECKSUMP:--} = - -a \
+				${OBJECTP:--} = - -a ${XNSP:--} = - ]
+			then	scriptMessage "ERROR" "It doesn't make sense not installing anything.
+Please select an option to install"
+			elif [  \( ${MONOP:--} != - -o ${COLORP:--} != - -o \
+				${X11P:--} != - \) -a ${OS3P:--} = - -a \
+				${OS4P:--} = - -a ${OS41P:--} = - ]
+			then	scriptMessage "ERROR" "You have to select a SunOS version in order to install an emulator."
+			elif checkInstallPoint
+			then 	if sufficientSpaceP
+				then	menuloop3=done
+				fi
+			fi
+			echo "$MESSAGE" ;;
+		[qQ]*) exitScript "Aborted ..." ;;
+		 *) 	echo "Invalid reply: $answer" ;;
+		esac
+	done
+		
+} # getInstallOptions
+
+
+calculateSpace(){
+# Calculate either available space for chosen installation point or required
+# space for selected options. $1 is used to determine what to calculate.
+
+	if [ "$1" = required ]
+	then	emulatorSpace
+
+		REQUIREDSPACE=`echo	${SYSOUTP:+"$SYSOUTSIZE +"} \
+				${LIBRARYP:+"$LIBRARYSIZE +"} \
+				${DISPLAYFONTP:+"$DISPLAYFONTSIZE +"} \
+				${INTERPRESSFONTP:+"$INTERPRESSFONTSIZE +"} \
+				${CHECKSUMP:+"$CHECKSUMSIZE +"} \
+				${XNSP:+"$XNSSIZE +"} \
+				"$RMONOSIZE + $RCOLORSIZE + $RX11SIZE" | /bin/bc`
+	
+		DISKSPACE=`echo $REQUIREDSPACE "*" 1024 | /bin/bc`
+	else	DF=`/bin/df $INSTALLDIR 2>/dev/null| egrep -v Filesystem`
+
+		if [ "$DF" != "" ]
+		then	FILESYSTEM=`echo $DF | /bin/awk '{print $6}'`
+			AVAILABLESPACE=`echo $DF | /bin/awk '{print $4}'`
+		else	unset AVAILABLESPACE
+		fi
+	fi
+}
+
+
+sufficientSpaceP () {
+# Check if there is enough space in FILESYSTEM to make install
+
+	unset MISSINGSPACE
+	if [ "$DISKSPACE" -ge "$AVAILABLESPACE" ]
+	then	MISSINGSPACE=`echo $DISKSPACE - $AVAILABLESPACE | /bin/bc`
+		scriptMessage "ERROR" "There is not enough disk-space in file system: $FILESYSTEM
+Additional space needed: ($MISSINGSPACE Kbytes)
+To complete installation, select the 'Directory' command and
+make a change, or deselect some of the selected options."
+
+		INSTDIRERRP=x
+	fi
+
+	[ "$DISKSPACE" -lt "$AVAILABLESPACE" ]
+}				
+
+
+tapeCommand() {
+# Tape commands are $1 = 'rewind' and 'fsf 1'  and
+# $2 is the message to print out if given.
+
+	if [ $# -gt 1 ] 
+	then echo -n "$2"
+	fi
+
+	if [ "$TAPEHOST" = `/bin/hostname` ]
+	then	/bin/mt -f /dev/nrst0 $1 	# local tape drive
+	else	/usr/ucb/rsh -n "$TAPEHOST" /bin/mt -f /dev/nrst0 $1 # remote host
+	fi
+
+	if [ $? = 0 -a $# -gt 1 ]
+	then echo " Done"
+	fi
+
+}
+
+collectEmulatorFiles () {
+	EMULATORFILES="$EMULATORFILES $*"
+}
+
+
+extract() {
+# Extract from tape
+
+	# Print message
+	echo -n "Extracting: $1 ..."
+	shift
+
+	if [ "$TAPEHOST" = `/bin/hostname` ]
+	then	/bin/dd if=/dev/nrst0 bs=256b 2>/dev/null | /bin/tar xBipfb - 256 $*
+	else	/usr/ucb/rsh -n "$TAPEHOST" /bin/dd if=/dev/nrst0 bs=256b 2>/dev/null | /bin/tar xBipfb - 256 $*
+	fi
+
+	if [ $? != 0 ]
+	then echo " Not extracted !"
+	else echo " Done"
+	fi
+}
+
+
+extractFilesP () {
+# Returns true if either of the file arguments passed are to be
+# extracted. It is used to avoid unnecessary skips and searches on the tape.
+
+	unset EXTRACTP
+	while [ ${EXTRACTP:--} = - -a  $# != 0 ]
+	do	case "$1" in 
+		File3) EXTRACTP=${MONOP:-${COLORP:-${X11P:-${XNSP:-${OBJECTP:--}}}}} ;;
+		File4) EXTRACTP=${LIBRARYP:--} ;;
+		File5) EXTRACTP=${SYSOUTP:-${CHECKSUMP:--}} ;;
+		File6) EXTRACTP=${DISPLAYFONTP:-${INTERPRESSFONTP:--}} ;;
+		*) 
+			exitScript "Help! Should not happen: extractFilesP $1 " ;;
+		esac
+		shift
+	done
+	[ ${EXTRACTP:--} != - ]
+}
+
+
+performInstall () {
+# The actual tar of the tape. There are 5 files on the tape. 
+# File 1 Contains this script 'install-medley' (Skip past it)
+# File 2 Contains the 'medley' script (always extracted)
+# File 3 Contains the emulator files for the supported OS-versions 
+#       (executables, objectfiles and makefile)
+# File 4 Contains Lisp Library files
+# File 5 Contains Lisp Sysouts and checksumfiles 
+# File 6 Contains Font files (Display and Interpress)
+
+	cd $INSTALLDIR
+
+	tapeCommand rewind "Positioning media ..."
+	tapeCommand 'fsf 1'
+
+	extract "medley startup script" ./medley 
+
+	if extractFilesP File3
+	then	EMULATORFILES=""
+
+		for OS in $OSVERSION
+		do	collectEmulatorFiles ${MONOP:+"./install.sunos$OS/ldesingle ${OBJECTP:+./install.sunos$OS/ldesingle.o}"} ${COLORP:+"./install.sunos$OS/ldemulti ${OBJECTP:+./install.sunos$OS/ldemulti.o}"} ${X11P:+"./install.sunos$OS/ldex ${OBJECTP:+./install.sunos$OS/ldex.o}"} ${XNSP:+"./install.sunos$OS/ldeether ${OBJECTP:+./install.sunos$OS/ldeether.c}"} ${OBJECTP:+"./install.sunos$OS/makefile ./install.sunos$OS/usersubrs.c"}
+
+			if [ "${MONOP:+-}" = - -o "${COLORP:+-}" = - -o "${MULTI:+-}" = - ]
+			then 	EMULATORFILES="./install.sunos$OS/lde $EMULATORFILES"
+			fi
+		done
+	
+		extract "emulator files for OS versions: $OSVERSION" $EMULATORFILES
+
+	elif extractFilesP File4 File5 File6
+	then	tapeCommand 'fsf 1' "Skipping: emulator files ..."
+	fi
+
+	if extractFilesP File4
+	then	extract "library files" ${LIBRARYP:+$LIBRARYFILES}
+	elif extractFilesP File5 File6
+	then	tapeCommand 'fsf 1' "Skipping: library files ..."
+	fi
+
+	if extractFilesP File5
+	then	extract "${SYSOUTP:+sysout }${CHECKSUMP:+checksum }files" ${SYSOUTP:+$SYSOUTFILES} ${CHECKSUMP:+$CHECKSUMFILES}
+	elif extractFilesP File6
+	then	tapeCommand 'fsf 1' "Skipping: ${SYSOUTP:+sysout }${CHECKSUMP:+checksum }files ..."
+	fi
+
+	if extractFilesP File6
+	then	extract "${DISPLAYFONTP:+display }${INTERPRESSFONTP:+interpress }font-files" ${DISPLAYFONTP:+$DISPLAYFONTFILES} ${INTERPRESSFONTP:+$INTERPRESSFONTFILES}
+	fi
+
+	tapeCommand rewind "Done extracting files. Rewinding media ..."
+
+}
+
+
+updateFile() {
+# Will create a copy of file $1 into $1.orig
+# Will then replace $* with $2 from file $1.orig into file $1
+	FILE=$1
+	CHANGES="$*"
+	TO=$2
+
+	if [ ! -f "$FILEDIR/$FILE.orig" ]
+	then /bin/cp $FILE $FILE.orig
+	fi
+	echo -n "Updating: $FILE ... "
+	for CHANGE in CHANGES
+	do
+		/bin/sed -e 1,'$'s/$CHANGE/$TO/ <$FILE.orig >$FILE
+	done
+	if [ $? = 0 ]
+	then echo -n "Done - "
+	else echo "An error occured while trying to update: $FILE"
+	fi
+	echo "Original in: $FILE.orig ..."
+}
+
+
+updateFiles(){
+# Will update 'site-init' and 'medley' by replacing all ocassions of 
+# $SHAREDIR or $LOCALDIR to $INSTALLDIR
+
+	if ask "Do you wish to update the files 'site-init' and 'medley'
+with respect to the installation directory: $INSTALLDIR" "y" "n"
+	then	CHANGEDIR1=`echo $SHAREDIR | /bin/sed -e 's/\//\\\\\//g'`
+		CHANGEDIR2=`echo $LOCALDIR | /bin/sed -e 's/\//\\\\\//g'`
+		NEWDIR=`echo $INSTALLDIR | /bin/sed -e 's/\//\\\\\//g'`
+
+
+		FILEDIR="$INSTALLDIR/`/bin/basename $LIBRARYFILES`"
+		if [ ${LIBRARYP:--} != - -a -d "$FILEDIR" ]
+		then	cd "$FILEDIR"
+			if [ -f "$FILEDIR/site-init" ]
+			then	
+				updateFile site-init "$NEWDIR" "$CHANGEDIR1" "$CHANGEDIR2"
+			elif [ -f "$FILEDIR/site-init.lisp" ]
+			then	
+				cp site-init.lisp site-init
+				updateFile site-init "$NEWDIR" "$CHANGEDIR1" "$CHANGEDIR2"
+			else echo "Could not find: $FILEDIR/site-init"
+			fi
+		else echo "$FILEDIR/site-init not installed."
+		fi
+		if [ -f "$INSTALLDIR/medley" ]
+		then	cd "$INSTALLDIR"
+
+			updateFile medley "$NEWDIR" "$CHANGEDIR1" "$CHANGEDIR2"
+		else echo "Could not find: $INSTALLDIR/medley"
+		fi
+	fi
+}
+
+
+#------------------------------------------------------------
+# ********** Main procedure starts here. **********
+#------------------------------------------------------------
+
+welcome
+
+inferConfiguration
+
+unset answer
+while [ ${answer:--} != y ]
+do	getInstallOptions
+	ask "Ready to make installation in: $INSTALLDIR" "y" "n"
+done
+
+performInstall
+
+updateFiles
+
+exitScript "Installation of $APPLICATION completed."

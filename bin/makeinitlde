@@ -1,0 +1,17 @@
+# Start a csh
+# Building an init needs several flags turned on and it is
+# best to build an entire new LDE.
+
+# to run this script, enter 'makeinitlde -e' from the shell
+
+set architecture = `mach`
+set osversion = `osversion`
+set releasename = ${osversion}.${architecture}
+
+set initname = init.${architecture}
+setenv OPTFLAGS '-DINIT -g'
+
+# now do the make, including the right stuff, but putting
+# it all into init.mach
+
+(echo RELEASENAME = ${initname}; cat makefile-header makefile-${releasename} makefile-tail) | make -f - $*

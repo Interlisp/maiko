@@ -1,0 +1,38 @@
+#!/usr/local/bin/perl
+
+$file = shift;
+chomp $file;
+
+printf "File is %s.\n", $file;
+
+open IN, "<" . $file;
+open OUT, ">".$file.".new";
+
+$line = <IN>;
+printf OUT "%s", $line;
+$line = <IN>;
+printf OUT "%s", $line;
+
+$line = <IN>;
+
+while ( $line )
+  {
+	 if ( $line =~ /\(#\)/ )
+	   {
+		 printf "Omitting line: %s", $line;
+		 }
+		 else
+		 {
+		   printf OUT "%s", $line;
+		   }
+		   $line = <IN>;
+
+		   }
+
+close IN;
+close OUT;
+
+`mv $file $file.orig`;
+`mv $file.new $file`;
+
+

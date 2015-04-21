@@ -1,0 +1,71 @@
+# Options for SunOS4 and SPARC
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -O2.
+OPTFLAGS = -g
+FPFLAGS =
+# For COLOR, Add COLOR, remove OLD_CURSOR
+DFLAGS = -DKBINT -DFSERROR -DNEW_STORAGE -DOS4 -DSPARCDISP -DSUN4_OS4_IL -DOS4_TYPE4BUG -DFLTINT  -DCOLOR -DNEWBITBLT -DSUNDISPLAY -DLOGINT -DFORKCOMM
+LDFLAGS = -lsuntool -lsunwindow -lpixrect -lc -lm
+# SPARC Assemble optimize check
+DFLAGS:sh += optck.sh ; true
+
+#-Dsparc?
+INLINE = $(SRCDIR)dispSPARC.il
+BITBLTFILE = $(OBJECTDIR)bitbltSPARC.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+COLORFILES = $(OBJECTDIR)colorbltfns.o
+
+default	: $(OBJECTDIR)lde $(OBJECTDIR)Cldeether
+
+# Special rules to create xc.c on Sun4
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
+	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
+	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inline68K.h
+	cc -Qproduce .i $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.i
+
+#run c compiler to produce first pass assembly
+$(OBJECTDIR)xc.s1:	$(OBJECTDIR)xc.i
+	rm -f $(OBJECTDIR)xc.s1
+	/lib/ccom - $(FPFLAGS) <$(OBJECTDIR)xc.i >$(OBJECTDIR)xc.s1
+
+#generate C program to remove dispatch loop, optimize
+$(OBJECTDIR)disphack.c: $(SRCDIR)disphack.lex
+	rm -f $(OBJECTDIR)disphack.c
+	lex -t $(SRCDIR)disphack.lex > $(OBJECTDIR)disphack.c
+
+#uses this program to find dispatch
+$(OBJECTDIR)find-disp.c: $(SRCDIR)find-disp.lex
+	rm -f $(OBJECTDIR)find-disp.c
+	lex -t $(SRCDIR)find-disp.lex > $(OBJECTDIR)find-disp.c
+
+$(OBJECTDIR)find-disp: $(OBJECTDIR)find-disp.c
+	cc -o $(OBJECTDIR)find-disp $(OBJECTDIR)find-disp.c -ll
+
+$(OBJECTDIR)dispatch-label.c: $(OBJECTDIR)find-disp $(OBJECTDIR)xc.s1
+	rm -f $(OBJECTDIR)dispatch-label.c
+	$(OBJECTDIR)find-disp < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)dispatch-label.c
+
+$(OBJECTDIR)disphack: $(OBJECTDIR)disphack.c $(OBJECTDIR)dispatch-label.c
+	cc -o $(OBJECTDIR)disphack $(OBJECTDIR)dispatch-label.c $(OBJECTDIR)disphack.c -ll
+	rm -f $(OBJECTDIR)dispatch-label.o $(OBJECTDIR)disphack.o
+
+$(OBJECTDIR)xc.s2:	$(OBJECTDIR)xc.s1 $(OBJECTDIR)disphack
+	rm -f $(OBJECTDIR)xc.s2
+	$(OBJECTDIR)disphack < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)xc.s2
+
+$(OBJECTDIR)xc.s3:	$(OBJECTDIR)xc.s2 $(INLINE)
+	rm -f $(OBJECTDIR)xc.s3
+	/usr/lib/inline -i $(INLINE) < $(OBJECTDIR)xc.s2 > $(OBJECTDIR)xc.s3
+
+$(OBJECTDIR)xc.o: $(OBJECTDIR)xc.s3
+	/bin/as -o $(OBJECTDIR)xc.o -O1 $(OBJECTDIR)xc.s3

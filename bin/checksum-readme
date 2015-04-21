@@ -1,0 +1,88 @@
+January 19, 1989
+
+===========================================================================
+CHECKSUM CONTROL FOR FILES UNDER MEDLEY
+===========================================================================
+
+If you encounter inexplicable problems shortly after you install Medley,
+they may be due to files being corrupted.  We recommend that you verify the
+checksums of your installed files.
+
+===========================================================================
+DESCRIPTION
+===========================================================================
+
+The script generates checksum files named FOO.check and compares them to
+the released FOO.sum residing in the /checksumdir subdirectory.  The
+checksum script reports inconsistent files, the correct checksum values for
+the files, and an error message. The checksum of individual files can be
+verified with the UNIX command "sum filename".
+
+===========================================================================
+COMMANDS
+===========================================================================
+
+ldechecksum [-cg] medleydir [ dir | dirgroup ]
+
+	-c	Generates checksums for your installed files and compares
+		them with correct values.  This is the default action.
+
+	-g	Generates checksums for the  files specified.
+
+	medleydir Name of the Medley installation directory. Usually its
+		/usr/local/lde.
+
+	dir	Any specific directory residing	under medleydir. Only
+		relative pathnames with respect to medleydir are accepted.
+
+	dirgroup The directory group, either all (the default) or lisp, 
+		which includes the X/install.sunos3, X/install.sunos4,
+		X/lisplibrary and X/lispsysouts directories.
+
+===========================================================================
+OUTPUT
+===========================================================================
+
+	As it begins checking each directory, the script prints a message
+	in the form:
+
+	Checking directory: /usr/local/lde/subdir
+
+
+	Error and warning messages may be one of two forms: 
+
+	< E > 32711 49 4045XLPSTREAM.DFASL 
+
+	indicates that file 4045XLPSTREAM.DFASL is erroneous or does not
+	reside in the directory. The correct checksum of 32711, together
+	with the size (49kbytes) of the file, are shown.
+
+	< W > /usr/local/lde/fonts/display/chinese : Directory not installed 
+
+	indicates that Chinese fonts were not installed or were removed
+	after Medley was installed.
+
+===========================================================================
+EXAMPLES:
+===========================================================================
+
+	prompt% ldechecksum /usr/local/lde
+
+	All files in the installed Medley directories in /usr/local/lde are
+	checked.
+
+	prompt% ldechecksum /usr/local/somedir/lde lisp 
+
+	This example checks all files in:
+	/usr/local/somedir/lde/install.sunos3
+	/usr/local/somedir/lde/install.sunos4
+	/usr/local/somedir/lde/lisplibrary 
+	/usr/local/somedir/lde/lispsysouts 
+
+
+	prompt% cd /usr/local/lde
+	prompt% ldechecksum  -c . fonts/display	
+
+	This example checks only the display font directories.  The period
+	(.) is used because you are positioned under the current Medley
+	installation directory.

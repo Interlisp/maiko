@@ -1,0 +1,62 @@
+alias a alias
+a   t       trace
+a   d       delete
+a   r       run
+a   c       cont
+a   q       quit
+a   h       help
+a   p       print
+a   l       list
+a   s       step
+a   go	    "run /python/local/sysouts/LISP.SYSOUT -NF"
+a   dbx     "stop in OP_dbx"
+a   gc      "set *(LispPTR  *)(Valspace + 2*1772) = 0114"
+a   engc      "set *(LispPTR  *)(Valspace + 2*1772) = 0"
+a   st      status
+a   csf      "call sf(MachineState.pvar-10)"
+a   bt      "call bt()"
+a   btvv      "call btvv()"
+a   n       next
+a   tos         "call print(MachineState.tosvalue)"
+a   Ctos        "call print(tscache)"
+a   csp         "call print(*((LispPTR *)(MachineState.csp)))"
+a   Csp         "call print(*((LispPTR *)(cspcache)))"
+a   do          "call doko()"
+a   ppc         "print ((int)(MachineState.currentpc) - (int)(MachineState.currentfunc))"
+a   sf          "call sf(fx)"
+a   fn          "stop in OP_fn"
+a   ret         "stop in OP_return"
+a   err         "stop in error"
+a   warn	"stop in warn"
+a   ifp         "print *InterfacePage"
+a   iop         "print *IOPage"
+a   pro         "print *(PROCESS *)(\!:1)"
+a   oct         "call printf(\"%o\n\" ,  (\!:1)"
+a   eve         "print *(EVENT *)(\!:1)"
+a   dev         "print *(FDEV *)(\!:1)"
+a   pac         "print *(PACKAGE *)(\!:1)"
+a   str         "print *(Stream *)(\!:1)"
+a   pque        "print *(PROCESSQUEUE *)(\!:1)"
+a   name        "call print_atomname((\!:1))"
+a   stk "call all_stack_dump((\!:1) , (\!:2) ,(\!:3))"
+a   astk        "call all_stack_dump(0 , 0 , 0)"
+a   sastk       "call all_stack_dump(0 , 0 , 1)"
+a   type        "call type_num(\!:1)"
+a   dtd         "call dtd_chain(\!:1)"
+a   btvv        "call btvv()"
+a   satom       "call S_MAKEATOM(\!:1)"
+a   a68k        "call a68k(\!:1)"
+a   la		 "call laddr(\!:1)"
+a   sval        "call S_TOPVAL(\!:1)"
+a   atom        "print MAKEATOM(\!:1)"
+a   val         "call GETTOPVAL(\!:1)"
+a   sff         "call sff((\!:1))"
+a   stopop      "stop in \!:1 if ((struct fnhead *)(MachineState.currentfunc))->framename == \!:2"
+a   stopfunc	"stop if  ((struct fnhead *)(MachineState.currentfunc))->framename == \!:1"
+a   stoppc      "stop in \!:1 if (((struct fnhead *)(MachineState.currentfunc))->framename == \!:2 && ((int)(MachineState.currentpc) - (int )(MachineState.currentfunc) > \!:3)) "
+a   sop         "stop in \!:1"
+a sc		"call stack_check(0)"
+
+use . /python0/users/maiko/working/src /python0/users/maiko/working/inc
+ignore VTALRM
+ignore IO

@@ -1,0 +1,48 @@
+# Options for sun4 and mc68020
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+
+OPTFLAGS = -O -traditional
+DISPOPTFLAGS = -O -traditional
+FPFLAGS = 
+DFLAGS = -DKBINT -DFSERROR -DNEW_STORAGE -DOS4 -DI386 -DBYTESWAP -DCHECK -DLOGINT -DDISPLAYBUFFER -DSUNDISPLAY -DNEWBITBLT -DOPDISP -DFORKCOMM -DBIGATOMS
+LDFLAGS = -lsuntool -lsunwindow -lpixrect -lc -lm
+INLINE = $(SRCDIR)disp386i.il
+BITBLTFILE=$(OBJECTDIR)bitblt386i.o
+CC=gcc
+AS=/users/sybalsky/gcc/gas/gas-1.35/a386
+
+OBJECTDIR = ../sunos4.i386-multi/
+BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o 
+COLORFILES = $(OBJECTDIR)colorbltfns.o
+
+default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether
+
+# Special rules to create xc.c on 386i
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.s:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
+	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h  $(INCDIR)dbprint.h\
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
+	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
+	 $(SRCDIR)disp386i.il  \
+	 $(INCDIR)inline386i.h  $(INCDIR)fast_disp.h  \
+	 $(INCDIR)fastinline68K.h $(INCDIR)profile.h
+	cc -c -O -Qproduce .s $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.s
+
+#run c compiler to produce first pass assembly
+#$(OBJECTDIR)xc.s1:	$(OBJECTDIR)xc.i
+#	rm -f $(OBJECTDIR)xc.s1
+#	/lib/ccom - $(FPFLAGS) <$(OBJECTDIR)xc.i >$(OBJECTDIR)xc.s1
+
+$(OBJECTDIR)xc.s2:	$(OBJECTDIR)xc.s $(INLINE)
+	rm -f $(OBJECTDIR)xc.s2
+	/usr/lib/inline -i $(INLINE) < $(OBJECTDIR)xc.s > $(OBJECTDIR)xc.s2
+
+$(OBJECTDIR)xc.o: $(OBJECTDIR)xc.s2
+	$(AS) -o $(OBJECTDIR)xc.o -O1 $(OBJECTDIR)xc.s2
+

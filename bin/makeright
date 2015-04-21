@@ -1,0 +1,133 @@
+#!/bin/sh
+# $Id: makeright,v 1.5 2002/01/01 23:00:13 sybalsky Exp $
+
+#************************************************************************/
+#*									*/
+#*	(C) Copyright 1989-2001 Venue. All Rights Reserved.		*/
+#*	Manufactured in the United States of America.			*/
+#*									*/
+#*	The contents of this file are proprietary information 		*/
+#*	belonging to Venue, and are provided to you under license.	*/
+#*	They may not be further distributed or disclosed to third	*/
+#*	parties without the specific permission of Venue.		*/
+#*									*/
+#************************************************************************/
+
+#
+# Feb. 6 1990 osamu: Add display option
+#		     release option does not support yet.
+# Apr.23 1990 osamu: add release option.
+#
+# Jul 18 1990 JDS:  Add 'init' option for making init-loading emulators
+#
+# Mar 7 1991 JDS:  Add '3' option for making 3-byte emulators.
+#
+# Nov 20 2001 JDS:  Convert to use BASH, not CSH, for open-source...
+#
+# usage:  makeright [display-option] [other-option]
+# 
+# example: makeright single	;  make lde for mmaped displayFB
+#	   makeright multi	;  make lde for cg3,cg6
+#	   makeright x		;  make lde for X-windows
+#	   makeright color	;  make lde with color support in it.
+#	   makeright multi release ; make release version of lde for cg3,cg6
+#	   makeright init	;  make lde for loading INIT.DLINIT b/w only
+#
+# makeright multi requires directory "maiko/${osversion}.${architecture}-multi"
+# (ex. maiko/sunos4.sparc-multi)
+# object files are stored there.
+#
+# makeright init  requires directory "maiko/init.${architecture}
+#
+# Note: X11R4 environment link shared libraries. 
+#	lde need X library. If lde links shared libraries, 
+#	X shared libraries are needed at run time.
+#
+# Hide X shared libraries from link libraries search path.
+LD_LIBRARY_PATH=/usr/local/lib 
+RELDIR="../RELEASE/"
+
+if test "$1" = ""
+   then
+	display="single"
+else
+	if test "$1" = "release"
+          then
+ 		case "$2" in
+		single)	display = single
+			;;
+		multi)	display = multi
+			;;
+		x)	display=x
+			;;
+		*)	makeright single release
+			makeright multi release
+			makeright x	release
+			exit
+			;;
+		esac
+	    else
+		display="$1"
+	fi
+fi
+
+if test $# > 0
+    then
+	shift
+fi
+
+architecture=`machinetype`
+osversion=`osversion`
+echo "making so far for ${osversion} on ${architecture}."
+case "$display" in
+	init)	set display = single
+		set releasename = init.${architecture}
+		set ldename = ldeinit
+		;;
+	single)	set releasename = ${osversion}.${architecture}
+		set ldename = ldesingle
+		;;
+	multi)	set releasename = ${osversion}.${architecture}-${display}
+		set ldename = ldemulti
+		;;
+	x)	releasename=${osversion}.${architecture}-${display}
+		ldename=ldex
+		;;
+	*)	echo "display-option: $display is not supported."
+		exit
+		;;
+esac
+
+releaseflg=0
+
+if test "$1" = "release" 
+    then
+	releaseflg=1
+	if test "$display" != single
+	   then
+		if test  ! -e usermakefile-${releasename} 
+                     then
+			ln usermakefile-${osversion}.${architecture} usermakefile-${releasename}
+		fi
+	fi
+else
+	releaseflg=0
+fi
+
+installdir=${RELDIR}install.${osversion}.${architecture}/
+
+#if($display == single ) then
+#	set releasename = ${osversion}.${architecture}
+#else
+#	set releasename = ${osversion}.${architecture}-${display}
+#endif
+
+echo start making lde for ${releasename}.
+
+# then finally do the make, including the right stuff
+# With makefile-tail merged, this should only take ONE make command....
+
+make RELEASENAME=${releasename} INSDIR=${installdir} LDENAME=${ldename} \
+			OSARCHNAME=${osversion}.${architecture} \
+			-f makefile-header -f makefile-${releasename} \
+			-f makefile-tail $*

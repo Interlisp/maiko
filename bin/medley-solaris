@@ -1,0 +1,203 @@
+#! /bin/sh 
+# ============================================================================
+# Changes:
+# ============================================================================
+# SYNOPSYS:
+#		medley [[emulator] sysout]
+#
+#	If no arguments are passed to the utility, it will try to find
+#	an emulator and sysout based on DEFAULTDIR. When arguments are 
+#	given, it will try to be "smart" when finding files.
+#
+#	It also will try to find a file containing the Medley software key.
+#	If it doesn't find one, it will prompt for a valid key.
+#	
+# ============================================================================
+
+#----------          Change if necessary           ----------
+DEFAULTEMULATOR=lde 
+DEFAULTSYSOUT=LISP.SYSOUT
+DEFAULTDIR=REPLACEME	# Normally updated by installation script
+
+#************************************************************
+#********* Changes below this point should normally *********
+#*********            not be required               *********
+#************************************************************
+
+APPLICATION="Medley 2.0"
+SCRIPTNAME=`/bin/basename $0`
+HOSTNAME=`/usr/ucb/hostname`
+
+KEYFILENAME=".medleyKey.$HOSTNAME"
+
+exitScript(){
+	echo "$1"
+	exit
+}
+
+smartPath() {
+	FILE=`/bin/basename $1`
+	if [ -f "$1" ]
+	then FILEPATH=$1
+	elif [ "$FILE" = "$1" ]
+	then 	if [ -f "$2/$1" ]
+		then FILEPATH="$2/$1"
+		elif [ -f "$HOME/$1" ]
+		then FILEPATH="$HOME/$1"
+		elif [ -f "$HOME/medley/$1" ]
+		then FILEPATH="$HOME/medley/$1"
+		else exitScript "$3 file not found: $1"
+		fi
+	else exitScript "$3 file not found: $1"
+	fi
+}
+
+parseCommand() {
+	case $# in 
+	[012])	getOSVersion
+		# Now set the machine type 
+		EMULATORDIR=install.sunos${OSVERSION} 
+		PATH=$PATH:$DEFAULTDIR/$EMULATORDIR:.
+		cd $DEFAULTDIR/$EMULATORDIR
+		export PATH
+		case $# in 
+		0)	EMULATOR=$DEFAULTEMULATOR ;;
+		1)	EMULATOR=$DEFAULTEMULATOR
+			smartPath $1 $DEFAULTDIR/lispsysouts Sysout
+			SYSOUT=$FILEPATH ;;
+		2)	EMULATOR=$1
+			smartPath $2 $DEFAULTDIR/lispsysouts Sysout
+			SYSOUT=$FILEPATH ;;
+		esac ;;
+	*)	echo "Usage: $SCRIPTNAME [[emulator] sysout]"
+		exit ;;
+	esac
+}
+
+setOSVersion(){
+	unset validOSVersionP
+	case "$1" in
+	3|3.[X245]) OSVERSION=3 ;;
+	4.0|4.0.*) OSVERSION=4 ;;
+	4.1|4.1.*) OSVERSION=4.1 ;;
+	5.*) OSVERSION=5 ;;
+	*) 	MESSAGE="Invalid reply: $answer"
+		validOSVersionP=notTrue ;;
+	esac
+	[ ${validOSVersionP:-true} = true ]
+}
+
+askOSVersion(){
+	MESSAGE="$1"
+	while [ ${menuloop:-notdone} = notdone ]
+	do	/usr/ucb/clear
+
+		echo "
+<---------------> OS Options Menu <--------------->
+    3.X - SunOS 3.2 3.4 3.5
+    4.0 - SunOS 4.0 4.0.X
+    4.1 - SunOS 4.1 4.1.X
+    5.0 - SunOS 5.0 and up.
+${MESSAGE:+
+$MESSAGE}"
+		unset MESSAGE
+		echo -n "Select : "
+		answer=`/usr/bin/line`
+		if setOSVersion $answer
+		then menuloop=done
+		fi
+	done
+}
+
+getOSVersion() {
+	if [ -f /etc/motd ]
+	then	if setOSVersion `/usr/ucb/sed -e '1s/.*SunOS \(...\).*/\1/' -e '1q' < /etc/motd`
+		then echo -n ""
+		else echo "$MESSAGE"
+		fi
+	else	askOSVersion "Please specify the SunOS version you are running."
+	fi
+}
+
+validKeyP() {
+	unset keyTooLongP
+	VALID=`echo $* | /bin/awk '/[^0-9a-fA-F ]/'`
+	for group in $*
+	do	LENGTH=`echo $group | /bin/awk '{print length}'`
+		if [ "$LENGTH" -gt 8 ]
+		then keyTooLongP=true
+		fi
+	done
+	[ $# = 3 -a "$VALID" = "" -a ${keyTooLongP:-notTrue} = notTrue ]
+}
+
+saveKey() {
+	echo "Saving key '$KEY' into file '$KEYFILENAME' ..."
+	echo -n "Trying $DEFAULTDIR/$KEYFILENAME ..."
+	if [ -w "$DEFAULTDIR" ]
+	then	echo "$KEY" > "$DEFAULTDIR/$KEYFILENAME"
+	else	echo " Write protected ! "
+		echo -n "Trying $HOME/$KEYFILENAME instead ..."
+		echo "$KEY" > "$HOME/$KEYFILENAME"
+	fi
+	if [ $? = 0 ]
+	then echo " Done"
+	else echo " Some error occured \! "
+	fi
+}
+
+keyDefinedP() {
+	if [ -f "$DEFAULTDIR/$KEYFILENAME" ]
+	then	if [ -r "$DEFAULTDIR/$KEYFILENAME" ]
+		then KEYFILE="$DEFAULTDIR/$KEYFILENAME"
+		else echo "ERROR! Cannot read file: $DEFAULTDIR/$KEYFILE"
+		fi
+	elif [ -f "$HOME/$KEYFILENAME" ]
+	then	KEYFILE="$HOME/$KEYFILENAME"
+	else	echo "
+	To start $APPLICATION, a host access key is required.
+	Call Venue at (1-800-228-5325) for one,
+
+	and be prepared to give them your workstations host ID#
+"
+	fi
+	[ ${KEYFILE:-notSpecified} != notSpecified ]
+}
+
+promptForKey () {
+	while [ ${VALIDKEYP:-notValid} = notValid ]
+	do	echo "Your workstations host ID# is: `hostid`"
+		echo -n "Type in the key or [^C] to abort: "
+		KEY=`/usr/bin/line`
+
+		if validKeyP $KEY
+		then VALIDKEYP=x
+		else echo "Sorry, invalid key: $KEY"
+		fi
+	done
+}
+
+
+#************************************************************
+#**********           Main piece of code           **********
+#************************************************************
+
+trap 'echo "
+$SCRIPTNAME: Aborted ..."; exit' 2
+
+parseCommand $*
+
+if keyDefinedP
+then	KEY=`/usr/bin/cat $KEYFILE`
+else	promptForKey 
+	saveKey
+fi
+
+
+# Well, I think we might be ready to give it a try
+echo "Starting up $APPLICATION ..."
+/bin/sleep 2
+$EMULATOR $SYSOUT -k "$KEY"
+	
+
+

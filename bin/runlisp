@@ -1,0 +1,50 @@
+# First comment line required (invokes CSH)
+# =============================================================================
+# Relies on shell variable MYSYSOUT (which can be set in your .login or .cshrc)
+# to start up lisp.  The cases below are for the following machines:
+#
+#	trouser		1300283a
+#	cobra		13001e50
+#	viper		13001e98
+#	mamba		13001da3
+#	garter		17003b46
+#	squonk		11002517
+#	timber		1700319b
+#	gopher		17003016
+#
+# Switch statement would be nicer to condition on hostname instead of hostid,
+# but I built this file automatically from output of keymaker, which doesn't
+# know about hostnames....
+# =============================================================================
+
+if ($?MYSYSOUT == '1') then
+    switch ("`hostid`")
+	case '1300283a':
+		lde $MYSYSOUT -k 'ac9a0794 b313abae 73421322'
+		breaksw
+	case '13001e50':
+		lde $MYSYSOUT -k '10bfab0c 477ef55e a5ad1b12'
+		breaksw
+	case '13001e98':
+		lde $MYSYSOUT -k '4f470760 51860f70 80453d60'
+		breaksw
+	case '13001da3':
+		lde $MYSYSOUT -k '12abb456  d6ab9f7 6740c0cb'
+		breaksw
+	case '11002517':
+		lde $MYSYSOUT -k 'b3217f6f 8cd14878 a7d84260'
+		breaksw
+	case '17003b46':
+		lde $MYSYSOUT -k '46e27958 4d23421c c4632dc0'
+		breaksw
+	case '1700319b':
+		lde $MYSYSOUT -k '99e8bfc6 92299f45 9199a409'
+		breaksw
+	case '17003016':
+		lde $MYSYSOUT -k '70c5a8d8 7b0498cc 45e35500'
+		breaksw
+	default:
+		echo "Sorry, host '`hostname`' not in this shell script"
+	endsw
+else echo "environment variable MYSYSOUT not set"
+endif

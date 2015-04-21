@@ -1,0 +1,1134 @@
+# remainder of makefile
+#
+#
+#
+#
+##***********************************************************************/
+##									*/
+##	(C) Copyright 1989, 1990, 1991, 1995, 2002 Venue. 		*/
+##		      All Rights Reserved.				*/
+##	Manufactured in the United States of America.			*/
+##									*/
+##	The contents of this file are proprietary information 		*/
+##	belonging to Venue, and are provided to you under license.	*/
+##	They may not be further distributed or disclosed to third	*/
+##	parties without the specific permission of Venue.		*/
+##									*/
+##***********************************************************************/
+#
+#
+#
+#
+# NOTE:  to add a NEW object file you must
+#		1.	Add the file.o to one of the object file lists,
+#			(i.e. OFILES, GCFILES, DEVICES, etc).
+#		2.	Add the "how to make" & dependency info such as:
+#		    (Remember that version.h is REQUIRED in all .c files)
+#
+#	$(OBJECTDIR)<<file-name>>.o :  $(SRCDIR)<<file-name>>.c  $(REQUIRED-INCS) \
+#		 $(INCDIR)lispemul.h $(INCDIR)version.h \
+#		 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+#		 $(INCDIR)stack.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
+#		 $(INCDIR)gc.h
+#		$(CC) $(RFLAGS) $(SRCDIR)<<file-name>>.c $(INLINE) -o $(OBJECTDIR)<<file-name>>.o
+
+# to build sysouts on the sun, you must do the following:
+#	1. setenv OPTFLAGS '-DINIT -g'
+#	2. rm objectdir/bitblt.c objectdir/dspsubrs.c objectdir/keyevent.c
+#	3. makeright -e init
+#	4. follow the instructions on {eris}<lispcore>sunloadup>howto-loadup-sunlisp.txt
+
+
+# '90/04/23 osamu: $INSDIR is defined in makeright 
+#
+#INSDIR = $(RELDIR)install.$(RELEASENAME)/
+CHKDIR = $(RELDIR)checksumdir/
+SCRPTDIR = $(RELDIR)scripts/
+NATDIR = $(RELDIR)usernative/
+
+# OSARCHDIR is the os/architecture dir, where executables all go.
+OSARCHDIR = ../$(OSARCHNAME)/
+
+#
+#  The DISPxxx flags are for compiling files which rely on 'as' much
+#  more than the other files do.  For mc68020, it'll use optimization
+#  -O rather than -O2 which is good for the other files in the system
+#  [JDS 10-26-89] Files affected: xc, arith2, arith4, fvar.
+#
+
+REQUIRED-INCS = $(INCDIR)version.h
+
+CFLAGS = $(OPTFLAGS) $(DFLAGS) $(FPFLAGS)
+DISPCFLAGS = $(DISPOPTFLAGS) $(DFLAGS) $(FPGLAGS)
+RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR) -L$(LIBDIR)
+ANSIRFLAGS = -c $(ANSIOPTFLAGS) $(DFLAGS) $(FPFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
+DISPRFLAGS = -c $(DISPCFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
+
+KEYON  = $(OBJECTDIR)keytst.o
+KEYOFF = $(OBJECTDIR)keytstno.o
+
+OFILES = $(OBJECTDIR)arith2.o \
+	$(OBJECTDIR)arith3.o \
+	$(OBJECTDIR)arith4.o \
+	$(OBJECTDIR)array.o \
+	$(OBJECTDIR)array2.o \
+	$(OBJECTDIR)array3.o \
+	$(OBJECTDIR)array4.o \
+	$(OBJECTDIR)array5.o \
+	$(OBJECTDIR)array6.o \
+	$(OBJECTDIR)bin.o \
+	$(OBJECTDIR)binds.o  \
+	$(OBJECTDIR)bitblt.o  \
+	$(OBJECTDIR)bbtsub.o  \
+	$(OBJECTDIR)blt.o \
+	$(OBJECTDIR)car-cdr.o \
+	$(OBJECTDIR)chardev.o \
+	$(OBJECTDIR)common.o \
+	$(OBJECTDIR)conspage.o \
+	$(OBJECTDIR)mkcell.o \
+	$(OBJECTDIR)draw.o \
+	$(OBJECTDIR)findkey.o \
+	$(OBJECTDIR)fvar.o \
+	$(OBJECTDIR)xc.o \
+	$(OBJECTDIR)gc.o \
+	$(OBJECTDIR)gc2.o \
+	$(OBJECTDIR)gvar2.o \
+	$(OBJECTDIR)hardrtn.o \
+	$(OBJECTDIR)inet.o \
+	$(OBJECTDIR)intcall.o \
+	$(OBJECTDIR)keylib.o \
+	$(OBJECTDIR)lineblt8.o \
+	$(OBJECTDIR)lsthandl.o \
+	$(OBJECTDIR)llcolor.o \
+	$(OBJECTDIR)llstk.o \
+	$(OBJECTDIR)loopsops.o \
+	$(OBJECTDIR)lowlev1.o \
+	$(OBJECTDIR)lowlev2.o \
+	$(OBJECTDIR)misc7.o \
+	$(OBJECTDIR)mvs.o \
+	$(OBJECTDIR)return.o \
+	$(OBJECTDIR)rplcons.o \
+	$(OBJECTDIR)shift.o \
+	$(OBJECTDIR)subr.o \
+	$(OBJECTDIR)miscn.o \
+	$(OBJECTDIR)subr0374.o \
+	$(OBJECTDIR)timer.o \
+	$(OBJECTDIR)typeof.o \
+	$(OBJECTDIR)unwind.o \
+	$(OBJECTDIR)vars3.o \
+	$(OBJECTDIR)unixcomm.o \
+	$(OBJECTDIR)uraid.o \
+	$(OBJECTDIR)rpc.o \
+        $(OBJECTDIR)ufn.o \
+	$(OBJECTDIR)z2.o \
+	$(OBJECTDIR)eqf.o \
+	$(OBJECTDIR)fp.o \
+	$(OBJECTDIR)ubf1.o \
+	$(OBJECTDIR)ubf2.o \
+	$(OBJECTDIR)ubf3.o \
+	$(OBJECTDIR)uutils.o \
+	$(OBJECTDIR)perrno.o \
+	$(OBJECTDIR)foreign.o \
+	$(OBJECTDIR)lisp2c.o \
+	$(OBJECTDIR)hacks.o \
+	$(OBJECTDIR)osmsg.o
+#	$(OBJECTDIR)mnxmeth.o \
+#	$(OBJECTDIR)mnwevent.o
+
+GCFILES = $(OBJECTDIR)gcscan.o \
+	$(OBJECTDIR)gcarray.o \
+	$(OBJECTDIR)gccode.o \
+	$(OBJECTDIR)gcfinal.o \
+	$(OBJECTDIR)gcrcell.o \
+	$(OBJECTDIR)gchtfind.o \
+	$(OBJECTDIR)gcmain3.o \
+	$(OBJECTDIR)gcr.o \
+	$(OBJECTDIR)gcoflow.o
+
+DEVICES = $(OBJECTDIR)dspsubrs.o \
+	$(OBJECTDIR)initdsp.o \
+	$(OBJECTDIR)dsk.o \
+	$(OBJECTDIR)ufs.o \
+	$(OBJECTDIR)dir.o \
+	$(OBJECTDIR)keyevent.o \
+	$(OBJECTDIR)kbdsubrs.o \
+	$(OBJECTDIR)ether.o \
+	$(OBJECTDIR)initkbd.o
+
+TESTFILES = $(OBJECTDIR)dbgtool.o \
+	$(OBJECTDIR)testtool.o \
+	$(OBJECTDIR)kprint.o
+
+MAINFILES = $(OBJECTDIR)main.o \
+	$(OBJECTDIR)initsout.o \
+	$(OBJECTDIR)storage.o \
+	$(OBJECTDIR)allocmds.o \
+	$(OBJECTDIR)vmemsave.o \
+	$(OBJECTDIR)mkatom.o \
+	$(OBJECTDIR)ldsout.o
+
+SXHASHFILE = $(OBJECTDIR)sxhash.o
+
+VFILE = $(OBJECTDIR)vdate
+
+DEVFILES = $(OFILES) $(KEYOFF) $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
+	   $(DEVICES) $(GCFILES) $(SXHASHFILE) $(BITBLTFILE) $(XFILES)    \
+	   $(COLORFILES) $(LPFILES) $(DLPIFILES)
+LIBFILES = $(OFILES) $(KEYON)  $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
+	   $(DEVICES) $(GCFILES) $(SXHASHFILE) $(BITBLTFILE) $(XFILES)    \
+	   $(COLORFILES) $(LPFILES) $(DLPIFILES)
+EXTFILES = $(OBJECTDIR)usrsubr.o
+
+# execute to make /tmp/vdate.c
+
+################################################################################
+# Development targets - copyprotect is OFF here
+################################################################################
+
+default	: $(OSARCHDIR)lde $(OSARCHDIR)$(LDENAME) $(OSARCHDIR)ldeether \
+	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout $(OSARCHDIR)keymaker
+
+$(OSARCHDIR)lde: $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c
+	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c \
+		$(LDELDFLAGS) -o $(OSARCHDIR)lde
+
+$(OSARCHDIR)$(LDENAME) :       $(DEVFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
+	/bin/rm -f $(VFILE).c
+	$(OSARCHDIR)mkvdate > $(VFILE).c
+	$(CC) $(CFLAGS) $(DEVFILES) $(EXTFILES) $(VFILE).c \
+		$(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
+	@ echo ""
+	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
+
+$(OSARCHDIR)ldeether :  $(SRCDIR)ldeether.c $(DLPIFILES)
+	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeether.c $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
+	ls -l $(OSARCHDIR)ldeether
+
+$(OSARCHDIR)mkvdate	: $(SRCDIR)mkvdate.c $(REQUIRED-INCS)
+	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)mkvdate.c -o $(OSARCHDIR)mkvdate
+
+$(OSARCHDIR)tstsout : $(OBJECTDIR)tstsout.o $(BYTESWAPFILES)  $(REQUIRED-INCS)
+	$(CC) $(CFLAGS) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)tstsout
+
+$(OSARCHDIR)setsout : $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
+	$(CC) $(CFLAGS) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)setsout
+
+
+$(OSARCHDIR)testdsp :  $(SRCDIR)testdsp.c $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)display.h $(INCDIR)dbprint.h
+	$(CC) $(CFLAGS) -DDEBUG -I$(INCDIR) $(SRCDIR)testdsp.c -lsuntool -lsunwindow  -lpixrect -lc -lm -o $(OSARCHDIR)testdsp
+
+$(OSARCHDIR)keymaker : ../src/keymaker.c  $(REQUIRED-INCS) $(OBJECTDIR)keylib.o
+	$(CC) $(CFLAGS) -I$(INCDIR) ../src/keymaker.c $(OBJECTDIR)keylib.o -o $(OSARCHDIR)keymaker
+
+#### Component files ######################################################
+
+$(OBJECTDIR)tstsout.o: $(SRCDIR)tstsout.c $(REQUIRED-INCS) 
+	$(CC) -c $(CFLAGS) $(SRCDIR)tstsout.c -I$(INCDIR)  -o $(OBJECTDIR)tstsout$(OEXT)
+
+$(OBJECTDIR)setsout.o: $(SRCDIR)setsout.c  $(REQUIRED-INCS) 
+	$(CC) -c $(CFLAGS) $(SRCDIR)setsout.c -I$(INCDIR)  -o $(OBJECTDIR)setsout$(OEXT)
+
+$(OBJECTDIR)main.o : $(SRCDIR)main.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
+	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h
+	$(CC) $(RFLAGS) $(SRCDIR)main.c $(INLINE) -o $(OBJECTDIR)main$(OEXT)
+
+$(OBJECTDIR)dbgtool.o :  $(SRCDIR)dbgtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)cell.h  $(INCDIR)stack.h
+	$(CC) $(RFLAGS) $(SRCDIR)dbgtool.c $(INLINE) -o $(OBJECTDIR)dbgtool$(OEXT)
+
+$(OBJECTDIR)dlpi.o :  $(SRCDIR)dlpi.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)os.h $(INCDIR)nfswatch.h $(INCDIR)externs.h
+	$(CC) $(RFLAGS) $(SRCDIR)dlpi.c $(INLINE) -o $(OBJECTDIR)dlpi$(OEXT)
+
+$(OBJECTDIR)kprint.o :  $(SRCDIR)kprint.c  $(REQUIRED-INCS) $(INCDIR)print.h  \
+	 $(INCDIR)address.h  $(INCDIR)lispemul.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lspglob.h  $(INCDIR)initatms.h \
+	 $(INCDIR)cell.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)adr68k.h
+	$(CC) $(RFLAGS) $(SRCDIR)kprint.c $(INLINE) -o $(OBJECTDIR)kprint$(OEXT)
+
+$(OBJECTDIR)testtool.o :  $(SRCDIR)testtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)cell.h  $(INCDIR)stack.h  $(INCDIR)ifpage.h
+	$(CC) $(RFLAGS) $(SRCDIR)testtool.c $(INLINE) -o $(OBJECTDIR)testtool$(OEXT)
+
+$(OBJECTDIR)allocmds.o :  $(SRCDIR)allocmds.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)initatms.h  $(INCDIR)sysatms.h  $(INCDIR)lspglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)allocmds.c $(INLINE) -o $(OBJECTDIR)allocmds$(OEXT)
+
+$(OBJECTDIR)arith2.o :  $(SRCDIR)arith2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h $(INLINE)
+	$(CC) $(DISPRFLAGS) $(SRCDIR)arith2.c $(INLINE) -o $(OBJECTDIR)arith2$(OEXT)
+
+$(OBJECTDIR)arith3.o :  $(SRCDIR)arith3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h  $(INLINE) \
+	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)arith.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)arith3.c $(INLINE) -o $(OBJECTDIR)arith3$(OEXT)
+
+$(OBJECTDIR)arith4.o :  $(SRCDIR)arith4.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h $(INLINE) \
+	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)arith.h $(INCDIR)fp.h
+	$(CC) $(DISPRFLAGS) $(SRCDIR)arith4.c $(INLINE) -o $(OBJECTDIR)arith4$(OEXT)
+
+$(OBJECTDIR)array.o :  $(SRCDIR)array.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array.c $(INLINE) -o $(OBJECTDIR)array$(OEXT)
+
+$(OBJECTDIR)array3.o :  $(SRCDIR)array3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array3.c $(INLINE) -o $(OBJECTDIR)array3$(OEXT)
+
+$(OBJECTDIR)array5.o :  $(SRCDIR)array5.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array5.c $(INLINE) -o $(OBJECTDIR)array5$(OEXT)
+
+$(OBJECTDIR)bin.o :  $(SRCDIR)bin.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)stream.h
+	$(CC) $(RFLAGS) $(SRCDIR)bin.c $(INLINE) -o $(OBJECTDIR)bin$(OEXT)
+
+$(OBJECTDIR)binds.o :  $(SRCDIR)binds.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)binds.c $(INLINE) -o $(OBJECTDIR)binds$(OEXT)
+
+$(OBJECTDIR)bitblt.o :  $(SRCDIR)bitblt.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	  $(INCDIR)lspglob.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
+	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h  $(INCDIR)bitblt.h \
+	 $(INCDIR)bb.h
+	$(CC) $(RFLAGS) $(SRCDIR)bitblt.c $(INLINE) -o $(OBJECTDIR)bitblt$(OEXT)
+
+$(OBJECTDIR)bbt68k.o :  $(OBJECTDIR)bbt68k.i $(SRCDIR)bbt68k.s
+	as -O $(OBJECTDIR)bbt68k.i -o $(OBJECTDIR)bbt68k$(OEXT)
+
+$(OBJECTDIR)bbt68k.i : $(SRCDIR)bbt68k.s
+	/lib/cpp $(SRCDIR)bbt68k.s $(OBJECTDIR)bbt68k.i
+
+$(OBJECTDIR)bbtSPARC.o :  $(SRCDIR)bbtSPARC.s
+	as -P $(SRCDIR)bbtSPARC.s -o $(OBJECTDIR)bbtSPARC$(OEXT)
+
+$(OBJECTDIR)bbt386i.o :  $(SRCDIR)bbt386i.s $(OBJECTDIR)bbt386i.i
+	as $(OBJECTDIR)bbt386i.i -o $(OBJECTDIR)bbt386i$(OEXT)
+
+$(OBJECTDIR)bbt386i.i : $(SRCDIR)bbt386i.s
+	/lib/cpp $(SRCDIR)bbt386i.s $(OBJECTDIR)bbt386i.i
+
+$(OBJECTDIR)bbtsub.o :  $(SRCDIR)bbtsub.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
+	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h $(INCDIR)dspdata.h \
+	 $(INCDIR)bitblt.h $(INCDIR)bb.h $(INCDIR)dbprint.h \
+	 $(INCDIR)stack.h $(INCDIR)cell.h $(INCDIR)gc.h $(INCDIR)arith.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)bbtsub.c $(INLINE) -o $(OBJECTDIR)bbtsub$(OEXT)
+
+$(OBJECTDIR)blt.o :  $(SRCDIR)blt.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)address.h  \
+	 $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)stack.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h  $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)blt.c $(INLINE) -o $(OBJECTDIR)blt$(OEXT)
+
+$(OBJECTDIR)byteswap.o: $(SRCDIR)byteswap.c  $(REQUIRED-INCS) $(INLINE)
+	$(CC) $(RFLAGS) $(SRCDIR)byteswap.c $(INLINE) -o $(OBJECTDIR)byteswap$(OEXT)
+
+$(OBJECTDIR)car-cdr.o :  $(SRCDIR)car-cdr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)gc.h  $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)car-cdr.c $(INLINE) -o $(OBJECTDIR)car-cdr$(OEXT)
+
+$(OBJECTDIR)chardev.o :  $(SRCDIR)chardev.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)lspglob.h $(INCDIR)stream.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)arith.h $(INCDIR)locfile.h \
+	 $(INCDIR)sunerrno.h $(INCDIR)suntermios.h $(INCDIR)sunfilio.h \
+	 $(INCDIR)sunioccom.h $(INCDIR)sunttycom.h  $(INCDIR)sunttold.h \
+	 $(INCDIR)sunttydev.h
+	$(CC) $(RFLAGS) $(SRCDIR)chardev.c $(INLINE) -o $(OBJECTDIR)chardev$(OEXT)
+
+$(OBJECTDIR)rawcolor.o :  $(SRCDIR)rawcolor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)lispmap.h $(INCDIR)lsptypes.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
+	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h  $(INCDIR)bitblt.h \
+	 $(INCDIR)arith.h  $(INCDIR)cell.h $(INCDIR)dspdata.h $(INCDIR)debug.h \
+	 $(INCDIR)stream.h
+	$(CC) $(RFLAGS) $(SRCDIR)rawcolor.c $(INLINE) -o $(OBJECTDIR)rawcolor$(OEXT)
+
+$(OBJECTDIR)llcolor.o : $(SRCDIR)llcolor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h $(INCDIR)lispmap.h \
+	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h \
+	$(INCDIR)lspglob.h $(INCDIR)emlglob.h $(INCDIR)display.h \
+	$(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bitblt.h $(INCDIR)pilotbbt.h \
+	$(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)llcolor.c $(INLINE) -o $(OBJECTDIR)llcolor$(OEXT)
+
+$(OBJECTDIR)lineblt8.o :  $(SRCDIR)lineblt8.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
+	$(CC) $(RFLAGS) $(SRCDIR)lineblt8.c $(INLINE) -o $(OBJECTDIR)lineblt8$(OEXT)
+
+$(OBJECTDIR)common.o :  $(SRCDIR)common.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	 $(INCDIR)lispmap.h $(INCDIR)adr68k.h $(INCDIR)lspglob.h \
+	 $(INCDIR)emlglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)common.c $(INLINE) -o $(OBJECTDIR)common$(OEXT)
+
+$(OBJECTDIR)conspage.o :  $(SRCDIR)conspage.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)gc.h  $(INCDIR)lspglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)conspage.c $(INLINE) -o $(OBJECTDIR)conspage$(OEXT)
+
+$(OBJECTDIR)mkcell.o :  $(SRCDIR)mkcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)mkcell.c $(INLINE) -o $(OBJECTDIR)mkcell$(OEXT)
+
+$(OBJECTDIR)draw.o :  $(SRCDIR)draw.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)draw.c $(INLINE) -o $(OBJECTDIR)draw$(OEXT)
+
+$(OBJECTDIR)z2.o :  $(SRCDIR)z2.c  $(REQUIRED-INCS)  \
+	 $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)gc.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)z2.c $(INLINE) -o $(OBJECTDIR)z2$(OEXT)
+
+$(OBJECTDIR)eqf.o :  $(SRCDIR)eqf.c  $(REQUIRED-INCS)  $(INCDIR)fp.h \
+	 $(INCDIR)lispemul.h  $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)eqf.c $(INLINE) -o $(OBJECTDIR)eqf$(OEXT)
+
+$(OBJECTDIR)fp.o :  $(SRCDIR)fp.c  $(REQUIRED-INCS)  \
+	 $(INCDIR)lispemul.h  $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h   \
+	 $(INCDIR)my.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)fp.c $(INLINE) -o $(OBJECTDIR)fp$(OEXT)
+
+$(OBJECTDIR)intcall.o :  $(SRCDIR)intcall.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h $(INCDIR)adr68k.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)lispmap.h $(INCDIR)stack.h $(INCDIR)return.h \
+	 $(INCDIR)emlglob.h $(INCDIR)lspglob.h $(INCDIR)initatms.h \
+	 $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)intcall.c $(INLINE) -o $(OBJECTDIR)intcall$(OEXT)
+
+$(OBJECTDIR)ubf1.o :  $(SRCDIR)ubf1.c  $(REQUIRED-INCS) $(INCDIR)fp.h \
+	 $(INCDIR)lispemul.h  $(INCDIR)adr68k.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)arith.h $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)ubf1.c $(INLINE) -o $(OBJECTDIR)ubf1$(OEXT)
+
+$(OBJECTDIR)ubf2.o :  $(SRCDIR)ubf2.c  $(REQUIRED-INCS)  \
+	 $(INCDIR)lispemul.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)ubf2.c $(INLINE) -o $(OBJECTDIR)ubf2$(OEXT)
+
+$(OBJECTDIR)ubf3.o :  $(SRCDIR)ubf3.c  $(REQUIRED-INCS)  \
+	 $(INCDIR)lispemul.h  $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)ubf3.c $(INLINE) -o $(OBJECTDIR)ubf3$(OEXT)
+
+$(OBJECTDIR)uutils.o :  $(SRCDIR)uutils.c  $(REQUIRED-INCS)  \
+	 $(INCDIR)lsptypes.h $(INCDIR)keyboard.h
+	$(CC) $(RFLAGS) $(SRCDIR)uutils.c $(INLINE) -o $(OBJECTDIR)uutils$(OEXT)
+
+$(OBJECTDIR)dspsubrs.o :  $(SRCDIR)dspsubrs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)display.h $(INCDIR)lsptypes.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)dspsubrs.c $(INLINE) -o $(OBJECTDIR)dspsubrs$(OEXT)
+
+$(OBJECTDIR)dspif.o :  $(SRCDIR)dspif.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)dbprint.h $(INCDIR)devif.h
+	$(CC) $(RFLAGS) $(SRCDIR)dspif.c $(INLINE) -o $(OBJECTDIR)dspif$(OEXT)
+
+$(OBJECTDIR)kbdif.o :  $(SRCDIR)kbdif.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)dbprint.h $(INCDIR)devif.h
+	$(CC) $(RFLAGS) $(SRCDIR)kbdif.c $(INLINE) -o $(OBJECTDIR)kbdif$(OEXT)
+
+$(OBJECTDIR)mouseif.o :  $(SRCDIR)mouseif.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)dbprint.h $(INCDIR)devif.h
+	$(CC) $(RFLAGS) $(SRCDIR)mouseif.c $(INLINE) -o $(OBJECTDIR)mouseif$(OEXT)
+
+$(OBJECTDIR)ether.o :  $(SRCDIR)ether.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)ether.h
+	$(CC) $(RFLAGS) $(SRCDIR)ether.c $(INLINE) -o $(OBJECTDIR)ether$(OEXT)
+
+$(OBJECTDIR)findkey.o :  $(SRCDIR)findkey.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)stack.h  $(INCDIR)lspglob.h  $(INCDIR)adr68k.h
+	$(CC) $(RFLAGS) $(SRCDIR)findkey.c $(INLINE) -o $(OBJECTDIR)findkey$(OEXT)
+
+$(OBJECTDIR)dsk.o :  $(SRCDIR)dsk.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	 $(INCDIR)fp.h $(INCDIR)arith.h  $(INCDIR)stream.h  $(INCDIR)timeout.h \
+	 $(INCDIR)locfile.h $(INCDIR)osmsg.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)dsk.c $(INLINE) -o $(OBJECTDIR)dsk$(OEXT)
+
+$(OBJECTDIR)ufs.o :  $(SRCDIR)ufs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)lispmap.h  \
+	 $(INCDIR)adr68k.h $(INCDIR)dbprint.h  $(INLINE)\
+	 $(INCDIR)lsptypes.h  $(INCDIR)lspglob.h $(INCDIR)arith.h \
+	 $(INCDIR)stream.h $(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)ufs.c $(INLINE) -o $(OBJECTDIR)ufs$(OEXT)
+
+$(OBJECTDIR)dir.o :  $(SRCDIR)dir.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h $(INCDIR)adr68k.h $(INCDIR)lsptypes.h  \
+	 $(INCDIR)arith.h $(INCDIR)lspglob.h $(INCDIR)timeout.h $(INCDIR)locfile.h	
+	$(CC) $(RFLAGS) $(SRCDIR)dir.c $(INLINE) -o $(OBJECTDIR)dir$(OEXT)
+
+$(OBJECTDIR)fvar.o :  $(SRCDIR)fvar.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)stack.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)gc.h $(INCDIR)lsptypes.h
+	$(CC) $(DISPRFLAGS) $(SRCDIR)fvar.c $(INLINE) -o $(OBJECTDIR)fvar$(OEXT)
+
+$(OBJECTDIR)gc.o :  $(SRCDIR)gc.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)gc.h  \
+	 $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)gc.c $(INLINE) -o $(OBJECTDIR)gc$(OEXT)
+
+$(OBJECTDIR)gc2.o :  $(SRCDIR)gc2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)lispmap.h  \
+	 $(INCDIR)lsptypes.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h
+	$(CC) $(RFLAGS) $(SRCDIR)gc2.c $(INLINE) -o $(OBJECTDIR)gc2$(OEXT)
+
+$(OBJECTDIR)gcarray.o :  $(SRCDIR)gcarray.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h \
+	 $(INCDIR)array.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcarray.c $(INLINE) -o $(OBJECTDIR)gcarray$(OEXT)
+
+$(OBJECTDIR)gcfinal.o :  $(SRCDIR)gcfinal.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h \
+	 $(INCDIR)array.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcfinal.c $(INLINE) -o $(OBJECTDIR)gcfinal$(OEXT)
+
+$(OBJECTDIR)gcoflow.o :  $(SRCDIR)gcoflow.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcoflow.c $(INLINE) -o $(OBJECTDIR)gcoflow$(OEXT)
+
+$(OBJECTDIR)gchtfind.o :  $(SRCDIR)gchtfind.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gc.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)gchtfind.c $(INLINE) -o $(OBJECTDIR)gchtfind$(OEXT)
+
+$(OBJECTDIR)gcmain3.o :  $(SRCDIR)gcmain3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)stack.h  $(INCDIR)cell.h  $(INCDIR)ifpage.h \
+	 $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcmain3.c $(INLINE) -o $(OBJECTDIR)gcmain3$(OEXT)
+
+$(OBJECTDIR)gcr.o :  $(SRCDIR)gcr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)emlglob.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)stack.h  $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcr.c $(INLINE) -o $(OBJECTDIR)gcr$(OEXT)
+
+$(OBJECTDIR)gcrcell.o :  $(SRCDIR)gcrcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h $(INCDIR)dbprint.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcrcell.c $(INLINE) -o $(OBJECTDIR)gcrcell$(OEXT)
+
+$(OBJECTDIR)gccode.o :  $(SRCDIR)gccode.c  $(REQUIRED-INCS) \
+	 $(INCDIR)lispemul.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)stack.h  $(INCDIR)cell.h  $(INCDIR)ifpage.h \
+	 $(INCDIR)gc.h  $(INCDIR)array.h
+	$(CC) $(RFLAGS) $(SRCDIR)gccode.c $(INLINE) -o $(OBJECTDIR)gccode$(OEXT)
+
+$(OBJECTDIR)gcscan.o :  $(SRCDIR)gcscan.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)gc.h $(INCDIR)lsptypes.h
+	$(CC) $(RFLAGS) $(SRCDIR)gcscan.c $(INLINE) -o $(OBJECTDIR)gcscan$(OEXT)
+
+$(OBJECTDIR)gvar2.o :  $(SRCDIR)gvar2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)gc.h  $(INCDIR)emlglob.h $(INCDIR)cell.h $(INCDIR)lsptypes.h
+	$(CC) $(RFLAGS) $(SRCDIR)gvar2.c $(INLINE) -o $(OBJECTDIR)gvar2$(OEXT)
+
+$(OBJECTDIR)hardrtn.o :  $(SRCDIR)hardrtn.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)cell.h $(INCDIR)stack.h  $(INCDIR)return.h \
+	 $(INCDIR)emlglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)hardrtn.c $(INLINE) -o $(OBJECTDIR)hardrtn$(OEXT)
+
+$(OBJECTDIR)inet.o : $(SRCDIR)inet.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h $(INCDIR)arith.h \
+	 $(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h $(INCDIR)adr68k.h $(INCDIR)ether.h \
+	 $(INCDIR)dbprint.h $(INCDIR)locfile.h
+	$(CC) $(RFLAGS) $(SRCDIR)inet.c $(INLINE) -o $(OBJECTDIR)inet$(OEXT)
+
+$(OBJECTDIR)initdsp.o :  $(SRCDIR)initdsp.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)display.h $(INCDIR)dbprint.h $(INLINE)
+	$(CC) $(RFLAGS) $(SRCDIR)initdsp.c $(INLINE) -o $(OBJECTDIR)initdsp$(OEXT)
+
+$(OBJECTDIR)initkbd.o :  $(SRCDIR)initkbd.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)address.h  $(INCDIR)iopage.h \
+	 $(INCDIR)ifpage.h
+	$(CC) $(RFLAGS) $(SRCDIR)initkbd.c $(INLINE) -o $(OBJECTDIR)initkbd$(OEXT)
+
+$(OBJECTDIR)initsout.o :  $(SRCDIR)initsout.c  $(REQUIRED-INCS) $(INCDIR)hdw_conf.h  \
+	 $(INCDIR)lispemul.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)ifpage.h  $(INCDIR)iopage.h  $(INCDIR)cell.h \
+	 $(INCDIR)gc.h
+	$(CC) $(RFLAGS) $(SRCDIR)initsout.c $(INLINE) -o $(OBJECTDIR)initsout$(OEXT)
+
+$(OBJECTDIR)kbdsubrs.o :  $(SRCDIR)kbdsubrs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h
+	$(CC) $(RFLAGS) $(SRCDIR)kbdsubrs.c $(INLINE) -o $(OBJECTDIR)kbdsubrs$(OEXT)
+
+$(OBJECTDIR)keyevent.o :  $(SRCDIR)keyevent.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)address.h  $(INCDIR)stack.h  $(INCDIR)iopage.h \
+	 $(INCDIR)ifpage.h $(INCDIR)keyboard.h $(INCDIR)display.h \
+	 $(INCDIR)pilotbbt.h
+	$(CC) $(RFLAGS) $(SRCDIR)keyevent.c $(INLINE) -o $(OBJECTDIR)keyevent$(OEXT)
+
+$(OBJECTDIR)keylib.o :  $(SRCDIR)keylib.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)keylib.c $(INLINE) -o $(OBJECTDIR)keylib$(OEXT)
+
+$(OBJECTDIR)keytst.o :  $(SRCDIR)keytst.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)keytst.c $(INLINE) -o $(OBJECTDIR)keytst$(OEXT)
+
+$(OBJECTDIR)keytstno.o :  $(SRCDIR)keytstno.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)keytstno.c $(INLINE) -o $(OBJECTDIR)keytstno$(OEXT)
+
+$(OBJECTDIR)lsthandl.o :  $(SRCDIR)lsthandl.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)lsthandl.c $(INLINE) -o $(OBJECTDIR)lsthandl$(OEXT)
+
+$(OBJECTDIR)llstk.o :  $(SRCDIR)llstk.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)address.h  $(INCDIR)lsptypes.h  $(INCDIR)initatms.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h  $(INCDIR)cell.h \
+	 $(INCDIR)stack.h
+	$(CC) $(RFLAGS) $(SRCDIR)llstk.c $(INLINE) -o $(OBJECTDIR)llstk$(OEXT)
+
+#$(OBJECTDIR)loader.o :  $(SRCDIR)loader.c $(REQUIRED-INCS) 
+#	$(CC) $(RFLAGS) $(SRCDIR)loader.c $(INLINE) -o $(OBJECTDIR)loader$(OEXT)
+
+$(OBJECTDIR)ldsout.o :  $(SRCDIR)ldsout.c  $(REQUIRED-INCS) $(INCDIR)adr68k.h \
+	 $(INCDIR)lispemul.h $(INCDIR)lispmap.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)ifpage.h $(INCDIR)dbprint.h $(INCDIR)lsptypes.h $(INLINE)
+	$(CC) $(RFLAGS) $(SRCDIR)ldsout.c $(INLINE) -o $(OBJECTDIR)ldsout$(OEXT)
+
+$(OBJECTDIR)loopsops.o : $(SRCDIR)loopsops.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
+	 $(INCDIR)debug.h $(INCDIR)profile.h
+	$(CC) $(RFLAGS) $(SRCDIR)loopsops.c $(INLINE) -o $(OBJECTDIR)loopsops$(OEXT)
+
+$(OBJECTDIR)lowlev1.o :  $(SRCDIR)lowlev1.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h $(INCDIR)lsptypes.h
+	$(CC) $(RFLAGS) $(SRCDIR)lowlev1.c $(INLINE) -o $(OBJECTDIR)lowlev1$(OEXT)
+
+$(OBJECTDIR)lowlev2.o :  $(SRCDIR)lowlev2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)lowlev2.c $(INLINE) -o $(OBJECTDIR)lowlev2$(OEXT)
+
+$(OBJECTDIR)misc7.o :  $(SRCDIR)misc7.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)stack.h $(INCDIR)opcodes.h $(INCDIR)display.h
+	$(CC) $(RFLAGS) $(SRCDIR)misc7.c $(INLINE) -o $(OBJECTDIR)misc7$(OEXT)
+
+$(OBJECTDIR)mvs.o :  $(SRCDIR)mvs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)stack.h $(INCDIR)opcodes.h
+	$(CC) $(RFLAGS) $(SRCDIR)mvs.c $(INLINE) -o $(OBJECTDIR)mvs$(OEXT)
+
+$(OBJECTDIR)mkatom.o :  $(SRCDIR)mkatom.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)adr68k.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)mkatom.c $(INLINE) -o $(OBJECTDIR)mkatom$(OEXT)
+
+$(OBJECTDIR)osmsg.o :  $(SRCDIR)osmsg.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stream.h  $(INCDIR)arith.h \
+	 $(INCDIR)lispmap.h $(INCDIR)lsptypes.h
+	$(CC) $(RFLAGS) $(SRCDIR)osmsg.c $(INLINE) -o $(OBJECTDIR)osmsg$(OEXT)
+
+$(OBJECTDIR)return.o :  $(SRCDIR)return.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)stack.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h  $(INCDIR)initatms.h \
+	 $(INCDIR)return.h $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)return.c $(INLINE) -o $(OBJECTDIR)return$(OEXT)
+
+$(OBJECTDIR)rplcons.o :  $(SRCDIR)rplcons.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)gc.h  $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)rplcons.c $(INLINE) -o $(OBJECTDIR)rplcons$(OEXT)
+
+$(OBJECTDIR)rs232c.o :  $(SRCDIR)rs232c.c  $(REQUIRED-INCS) $(INCDIR)rs232c.h
+	$(CC) $(RFLAGS) $(SRCDIR)rs232c.c $(INLINE) -o $(OBJECTDIR)rs232c$(OEXT)
+
+$(OBJECTDIR)shift.o :  $(SRCDIR)shift.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)arith.h $(INCDIR)fp.h
+	$(CC) $(RFLAGS) $(SRCDIR)shift.c $(INLINE) -o $(OBJECTDIR)shift$(OEXT)
+
+$(OBJECTDIR)storage.o :  $(SRCDIR)storage.c  $(REQUIRED-INCS) $(INCDIR)hdw_conf.h  \
+	 $(INCDIR)lispemul.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lispmap.h  $(INCDIR)stack.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)lsptypes.h \
+	 $(INCDIR)ifpage.h
+	$(CC) $(RFLAGS) $(SRCDIR)storage.c $(INLINE) -o $(OBJECTDIR)storage$(OEXT)
+
+$(OBJECTDIR)subr.o :  $(SRCDIR)subr.c  $(REQUIRED-INCS) \
+	 $(INCDIR)lispemul.h  $(INCDIR)address.h  \
+	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)arith.h $(INCDIR)profile.h
+	$(CC) $(RFLAGS) $(SRCDIR)subr.c $(INLINE) -o $(OBJECTDIR)subr$(OEXT)
+
+$(OBJECTDIR)miscn.o : $(SRCDIR)miscn.c  $(REQUIRED-INCS) \
+	 $(INCDIR)lispemul.h  $(INCDIR)address.h  \
+	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h   \
+	 $(INCDIR)arith.h $(INCDIR)profile.h
+	$(CC) $(RFLAGS) $(SRCDIR)miscn.c $(INLINE) -o $(OBJECTDIR)miscn$(OEXT)
+
+
+$(OBJECTDIR)subr0374.o :  $(SRCDIR)subr0374.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)adr68k.h  $(INCDIR)lspglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)subr0374.c $(INLINE) -o $(OBJECTDIR)subr0374$(OEXT)
+
+$(OBJECTDIR)perrno.o :  $(SRCDIR)perrno.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)perrno.c $(INLINE) -o $(OBJECTDIR)perrno$(OEXT)
+
+$(OBJECTDIR)timer.o :  $(SRCDIR)timer.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)adr68k.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)timer.c $(INLINE) -o $(OBJECTDIR)timer$(OEXT)
+
+$(OBJECTDIR)tty.o :  $(SRCDIR)tty.c  $(REQUIRED-INCS) $(INCDIR)tty.h
+	$(CC) $(RFLAGS) $(SRCDIR)tty.c $(INLINE) -o $(OBJECTDIR)tty$(OEXT)
+
+$(OBJECTDIR)typeof.o :  $(SRCDIR)typeof.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h \
+	 $(INCDIR)lispmap.h
+	$(CC) $(RFLAGS) $(SRCDIR)typeof.c $(INLINE) -o $(OBJECTDIR)typeof$(OEXT)
+
+$(OBJECTDIR)ufn.o :  $(SRCDIR)ufn.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)address.h  \
+	 $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)stack.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h  $(INCDIR)initatms.h \
+	 $(INCDIR)cell.h
+	$(CC) $(RFLAGS) $(SRCDIR)ufn.c $(INLINE) -o $(OBJECTDIR)ufn$(OEXT)
+
+$(OBJECTDIR)unixcomm.o :  $(SRCDIR)unixcomm.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)arith.h
+	$(CC) $(RFLAGS) $(SRCDIR)unixcomm.c $(INLINE) -o $(OBJECTDIR)unixcomm$(OEXT)
+
+$(OBJECTDIR)uraid.o :  $(SRCDIR)uraid.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)debug.h
+	$(CC) $(RFLAGS) $(SRCDIR)uraid.c $(INLINE) -o $(OBJECTDIR)uraid$(OEXT)
+
+$(OBJECTDIR)rpc.o :  $(SRCDIR)rpc.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)arith.h $(INCDIR)locfile.h
+	$(CC) $(RFLAGS) $(SRCDIR)rpc.c $(INLINE) -o $(OBJECTDIR)rpc$(OEXT)
+
+$(OBJECTDIR)unwind.o :  $(SRCDIR)unwind.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)stack.h \
+	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h
+	$(CC) $(RFLAGS) $(SRCDIR)unwind.c $(INLINE) -o $(OBJECTDIR)unwind$(OEXT)
+
+$(OBJECTDIR)vars3.o :  $(SRCDIR)vars3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)lispmap.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)emlglob.h  $(INCDIR)cell.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)stack.h
+	$(CC) $(RFLAGS) $(SRCDIR)vars3.c $(INLINE) -o $(OBJECTDIR)vars3$(OEXT)
+
+$(OBJECTDIR)vmemsave.o :  $(SRCDIR)vmemsave.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lispmap.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)ifpage.h  $(INCDIR)vmemsave.h
+	$(CC) $(RFLAGS) $(SRCDIR)vmemsave.c $(INLINE) -o $(OBJECTDIR)vmemsave$(OEXT)
+
+$(OBJECTDIR)array2.o : $(SRCDIR)array2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array2.c $(INLINE) -o $(OBJECTDIR)array2$(OEXT)
+
+$(OBJECTDIR)array4.o : $(SRCDIR)array4.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array4.c $(INLINE) -o $(OBJECTDIR)array4$(OEXT)
+
+$(OBJECTDIR)array6.o : $(SRCDIR)array6.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h  $(INCDIR)my.h
+	$(CC) $(RFLAGS) $(SRCDIR)array6.c $(INLINE) -o $(OBJECTDIR)array6$(OEXT)
+
+$(OBJECTDIR)socket.o : $(SRCDIR)socket.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)socket.c -o $(OBJECTDIR)socket$(OEXT)
+
+$(OBJECTDIR)socdvr.o : $(SRCDIR)socdvr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+       $(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h \
+       $(INCDIR)arith.h
+	$(CC) $(RFLAGS) $(SRCDIR)socdvr.c -o $(OBJECTDIR)socdvr$(OEXT)
+
+$(OBJECTDIR)sxhash.o : $(SRCDIR)sxhash.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
+	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)arith.h 
+	$(CC) $(RFLAGS) $(SRCDIR)sxhash.c $(INLINE) -o $(OBJECTDIR)sxhash$(OEXT)
+
+$(OBJECTDIR)usrsubr.o : $(SRCDIR)usrsubr.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)usrsubr.c $(INLINE) -o $(OBJECTDIR)usrsubr$(OEXT)
+
+########
+# X-windows-specific files
+#######
+
+$(OBJECTDIR)xinit.o : $(SRCDIR)xinit.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)dbprint.h $(INCDIR)xdefs.h $(INCDIR)devif.h \
+	$(INCDIR)adr68k.h
+	$(CC) $(RFLAGS) $(SRCDIR)xinit.c -o $(OBJECTDIR)xinit$(OEXT)
+
+$(OBJECTDIR)XClose.o : $(SRCDIR)XClose.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h 
+	$(CC) $(RFLAGS) $(SRCDIR)XClose.c -o $(OBJECTDIR)XClose$(OEXT)
+
+$(OBJECTDIR)Cursor.o : $(SRCDIR)Cursor.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h $(INCDIR)MyWindow.h \
+	$(INCDIR)lispemul.h $(INCDIR)display.h 
+	$(CC) $(RFLAGS) $(SRCDIR)Cursor.c -o $(OBJECTDIR)Cursor$(OEXT)
+
+$(OBJECTDIR)XWindow.o : $(SRCDIR)XWindow.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)lispemul.h $(INCDIR)address.h \
+	$(INCDIR)adr68k.h 
+	$(CC) $(RFLAGS) $(SRCDIR)XWindow.c -o $(OBJECTDIR)XWindow$(OEXT)
+
+$(OBJECTDIR)DoRing.o : $(SRCDIR)DoRing.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h
+	$(CC) $(RFLAGS) $(SRCDIR)DoRing.c -o $(OBJECTDIR)DoRing$(OEXT)
+
+$(OBJECTDIR)DoScroll.o : $(SRCDIR)DoScroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
+	$(CC) $(RFLAGS) $(SRCDIR)DoScroll.c -o $(OBJECTDIR)DoScroll$(OEXT)
+
+$(OBJECTDIR)XEvent.o : $(SRCDIR)XEvent.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
+	$(CC) $(RFLAGS) $(SRCDIR)XEvent.c -o $(OBJECTDIR)XEvent$(OEXT)
+
+$(OBJECTDIR)XGravity.o : $(SRCDIR)XGravity.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)XGravity.c -o $(OBJECTDIR)XGravity$(OEXT)
+
+$(OBJECTDIR)XInit.o : $(SRCDIR)XInit.c $(REQUIRED-INCS) 
+	$(CC) $(RFLAGS) $(SRCDIR)XInit.c -o $(OBJECTDIR)XInit$(OEXT)
+
+$(OBJECTDIR)Xevinit.o : $(SRCDIR)Xevinit.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xevinit.c -o $(OBJECTDIR)Xevinit$(OEXT)
+
+$(OBJECTDIR)Xkbdmus.o : $(SRCDIR)Xkbdmus.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xkbdmus.c -o $(OBJECTDIR)Xkbdmus$(OEXT)
+
+$(OBJECTDIR)Xlspwin.o : $(SRCDIR)Xlspwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Xdeflt.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xlspwin.c -o $(OBJECTDIR)Xlspwin$(OEXT)
+
+$(OBJECTDIR)xlspwin.o : $(SRCDIR)xlspwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)xdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)xlspwin.c -o $(OBJECTDIR)xlspwin$(OEXT)
+
+$(OBJECTDIR)Xbbt.o : $(SRCDIR)Xbbt.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xbbt.c -o $(OBJECTDIR)Xbbt$(OEXT)
+
+$(OBJECTDIR)xbbt.o : $(SRCDIR)xbbt.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)xbbt.c -o $(OBJECTDIR)xbbt$(OEXT)
+
+$(OBJECTDIR)LispXdisplay.o : $(SRCDIR)LispXdisplay.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)pilotbbt.h \
+	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
+	$(CC) $(RFLAGS) $(SRCDIR)LispXdisplay.c -o $(OBJECTDIR)LispXdisplay$(OEXT)
+
+$(OBJECTDIR)Xkbd.o : $(SRCDIR)Xkbd.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xkbd.c -o $(OBJECTDIR)Xkbd$(OEXT)
+
+$(OBJECTDIR)Xmkicon.o : $(SRCDIR)Xmkicon.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Xicon.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xmkicon.c -o $(OBJECTDIR)Xmkicon$(OEXT)
+
+$(OBJECTDIR)xmkicon.o : $(SRCDIR)xmkicon.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Xicon.h
+	$(CC) $(RFLAGS) $(SRCDIR)xmkicon.c -o $(OBJECTDIR)xmkicon$(OEXT)
+
+$(OBJECTDIR)Xopendsp.o : $(SRCDIR)Xopendsp.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xopendsp.c -o $(OBJECTDIR)Xopendsp$(OEXT)
+
+$(OBJECTDIR)Xrdopt.o : $(SRCDIR)Xrdopt.c  $(REQUIRED-INCS) $(INCDIR)Xdeflt.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xrdopt.c -o $(OBJECTDIR)Xrdopt$(OEXT)
+
+$(OBJECTDIR)xrdopt.o : $(SRCDIR)xrdopt.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)xrdopt.c -o $(OBJECTDIR)xrdopt$(OEXT)
+
+$(OBJECTDIR)Xreconf.o : $(SRCDIR)Xreconf.c  $(REQUIRED-INCS) \
+	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xreconf.c -o $(OBJECTDIR)Xreconf$(OEXT)
+
+$(OBJECTDIR)XScroll.o : $(SRCDIR)XScroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Stipple.h $(INCDIR)Xcursdef.h \
+	$(INCDIR)XCursors.h
+	$(CC) $(RFLAGS) $(SRCDIR)XScroll.c -o $(OBJECTDIR)XScroll$(OEXT)
+
+$(OBJECTDIR)xscroll.o : $(SRCDIR)xscroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)Stipple.h $(INCDIR)Xcursdef.h \
+	$(INCDIR)XCursors.h
+	$(CC) $(RFLAGS) $(SRCDIR)xscroll.c -o $(OBJECTDIR)xscroll$(OEXT)
+
+$(OBJECTDIR)Xscrolb.o : $(SRCDIR)Xscrolb.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xscrolb.c -o $(OBJECTDIR)Xscrolb$(OEXT)
+
+$(OBJECTDIR)XCursor.o : $(SRCDIR)XCursor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)iopage.h $(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)XCursor.c -o $(OBJECTDIR)XCursor$(OEXT)
+
+$(OBJECTDIR)xcursor.o : $(SRCDIR)xcursor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
+	$(INCDIR)iopage.h $(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)xcursor.c -o $(OBJECTDIR)xcursor$(OEXT)
+
+$(OBJECTDIR)XMouse.o : $(SRCDIR)XMouse.c  $(REQUIRED-INCS) \
+	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h 
+	$(CC) $(RFLAGS) $(SRCDIR)XMouse.c -o $(OBJECTDIR)XMouse$(OEXT)
+
+$(OBJECTDIR)Xsubwin.o : $(SRCDIR)Xsubwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xsubwin.c -o $(OBJECTDIR)Xsubwin$(OEXT)
+
+$(OBJECTDIR)Xcolor.o : $(SRCDIR)Xcolor.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xcolor.c -o $(OBJECTDIR)Xcolor$(OEXT)
+
+$(OBJECTDIR)Xwinman.o : $(SRCDIR)Xwinman.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)Xwinman.c -o $(OBJECTDIR)Xwinman$(OEXT)
+
+$(OBJECTDIR)xwinman.o : $(SRCDIR)xwinman.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman$(OEXT)
+
+$(OBJECTDIR)hacks.o : $(SRCDIR)hacks.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
+	$(CC) $(RFLAGS) $(SRCDIR)hacks.c -o $(OBJECTDIR)hacks$(OEXT)
+
+$(OBJECTDIR)foreign.o : $(SRCDIR)foreign.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
+	$(CC) $(RFLAGS) $(SRCDIR)foreign.c $(INLINE) -o $(OBJECTDIR)foreign$(OEXT)
+
+$(OBJECTDIR)lisp2c.o : $(SRCDIR)lisp2c.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
+	$(CC) $(RFLAGS) $(SRCDIR)lisp2c.c -o $(OBJECTDIR)lisp2c$(OEXT)
+
+$(OBJECTDIR)mnxmeth.o : $(SRCDIR)mnxmeth.c  $(REQUIRED-INCS) $(INCDIR)mnxdefs.h $(INCDIR)lispemul.h
+	$(CC) $(RFLAGS) $(SRCDIR)mnxmeth.c -o $(OBJECTDIR)mnxmeth$(OEXT)
+
+$(OBJECTDIR)mnwevent.o : $(SRCDIR)mnwevent.c  $(REQUIRED-INCS) $(INCDIR)mnxdefs.h $(INCDIR)lispemul.h
+	$(CC) $(RFLAGS) $(SRCDIR)mnwevent.c -o $(OBJECTDIR)mnwevent$(OEXT)
+
+$(OBJECTDIR)lpdual.o : $(SRCDIR)lpdual.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpdual.c -o $(OBJECTDIR)lpdual$(OEXT)
+
+$(OBJECTDIR)lpkit.o : $(SRCDIR)lpkit.c  $(REQUIRED-INCS) $(INCDIR)lpkit.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpkit.c -o $(OBJECTDIR)lpkit$(OEXT)
+
+$(OBJECTDIR)lplex.yy.o : $(SRCDIR)lplex.yy.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lplex.yy.c -o $(OBJECTDIR)lpdual$(OEXT)
+
+$(OBJECTDIR)lpmain.o : $(SRCDIR)lpmain.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpmain.c -o $(OBJECTDIR)lpmain$(OEXT)
+
+$(OBJECTDIR)lpread.o : $(SRCDIR)lpread.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpread.c -o $(OBJECTDIR)lpread$(OEXT)
+
+$(OBJECTDIR)lpsolve.o : $(SRCDIR)lpsolve.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpsolve.c -o $(OBJECTDIR)lpsolve$(OEXT)
+
+$(OBJECTDIR)lptran.o : $(SRCDIR)lptran.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lptran.c -o $(OBJECTDIR)lptran$(OEXT)
+
+$(OBJECTDIR)lpwrite.o : $(SRCDIR)lpwrite.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpwrite.c -o $(OBJECTDIR)lpwrite$(OEXT)
+
+$(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
+			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
+	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpy.tab.c -o $(OBJECTDIR)lpy.tab$(OEXT)
+
+################################################################################
+# Installation targets - copyprotect is ON here
+# library, sysouts, fonts on release directories not handled here.
+# userfiles are separate target explicitly (can make w/o building lde)
+#    $(NATDIR)native.h $(NATDIR)disp68K.il
+################################################################################
+
+prerelease :
+	mkdir $(RELDIR)
+	mkdir $(INSDIR)
+	mkdir $(CHKDIR)
+	mkdir $(SCRPTDIR)
+	
+
+release : $(INSDIR)$(LDENAME).o userfiles $(INSDIR)$(LDENAME) \
+	$(INSDIR)ldeether $(INSDIR)lde csumfiles scriptfiles
+
+userfiles : $(INSDIR)usrsubr.c $(INSDIR)makefile $(INSDIR)ldeether.c
+
+$(INSDIR)lde: $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c
+	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c \
+		$(LDELDFLAGS) -o $(INSDIR)lde
+
+$(OBJECTDIR)$(LDENAME).a :              $(LIBFILES) $(OSARCHDIR)mkvdate
+	/bin/rm -f $(VFILE).c
+	$(OSARCHDIR)mkvdate > $(VFILE).c
+	$(CC) -c $(VFILE).c -o $(VFILE).o
+	rm -f $(LDENAME).a
+	$(AR) $(OBJECTDIR)$(LDENAME).a $(LIBFILES) $(VFILE).o
+	$(RANLIB) $(OBJECTDIR)$(LDENAME).a
+	rm -f $(VFILE).o
+
+$(INSDIR)$(LDENAME).o :                 $(OBJECTDIR)$(LDENAME).a
+	ld -o $(INSDIR)$(LDENAME).o -r -u $(MAIN) $(OBJECTDIR)$(LDENAME).a
+
+$(INSDIR)$(LDENAME) : $(INSDIR)$(LDENAME).o $(INSDIR)usrsubr.o
+	$(CC) $(INSDIR)$(LDENAME).o $(INSDIR)usrsubr.o $(FPFLAGS) $(LDFLAGS)\
+		 -o $(INSDIR)$(LDENAME)
+	rm -f $(INSDIR)usrsubr.o
+
+## ldeether from release - can't tar off with root permission.
+
+$(INSDIR)ldeether :  $(INSDIR)ldeether.c $(DLPIFILES) $(REQUIRED-INCS) 
+	$(CC) $(CFLAGS) $(INSDIR)ldeether.c $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(INSDIR)ldeether
+	- suid $(INSDIR)ldeether"
+
+$(INSDIR)makefile : $(BINDIR)usermakefile-$(OSARCHNAME)
+	rm -f $(INSDIR)makefile
+	ln -s $(BINDIR)usermakefile-$(OSARCHNAME) $(INSDIR)makefile
+
+$(INSDIR)usrsubr.c : $(SRCDIR)usrsubr.c
+	rm -f $(INSDIR)usrsubr.c
+	ln -s $(SRCDIR)usrsubr.c $(INSDIR)usrsubr.c
+
+$(INSDIR)ldeether.c : $(SRCDIR)ldeether.c
+	rm -f $(INSDIR)ldeether.c
+	ln -s $(SRCDIR)ldeether.c $(INSDIR)ldeether.c
+
+csumfiles : $(CHKDIR)checksum $(CHKDIR)ldechecksum $(CHKDIR)README
+
+$(CHKDIR)README : $(BINDIR)checksum-readme
+	rm -f $(CHKDIR)README
+	ln -s $(BINDIR)checksum-readme $(CHKDIR)README
+
+$(CHKDIR)checksum : $(BINDIR)checksum
+	rm -f $(CHKDIR)checksum
+	cp -p $(BINDIR)checksum $(CHKDIR)checksum
+	chmod 755 $(CHKDIR)checksum
+
+$(CHKDIR)ldechecksum : $(BINDIR)ldechecksum
+	rm -f $(CHKDIR)ldechecksum
+	cp -p $(BINDIR)ldechecksum $(CHKDIR)ldechecksum
+	chmod 755 $(CHKDIR)ldechecksum
+
+scriptfiles : $(SCRPTDIR)install-medley $(SCRPTDIR)medley
+
+$(SCRPTDIR)install-medley : $(BINDIR)install-medley
+	rm -f $(SCRPTDIR)install-medley
+	cp -p $(BINDIR)install-medley $(SCRPTDIR)install-medley
+	chmod 755 $(SCRPTDIR)install-medley
+
+$(SCRPTDIR)medley : $(BINDIR)medley
+	rm -f $(SCRPTDIR)medley
+	cp -p $(BINDIR)medley $(SCRPTDIR)medley
+	chmod 755 $(SCRPTDIR)medley
+
+################################################################################
+# Obsolete
+################################################################################
+
+$(NATDIR)native.h : $(INCDIR)native.h
+	rm -f $(NATDIR)native.h
+	ln -s $(INCDIR)native.h $(NATDIR)native.h
+
+$(NATDIR)disp68K.il : $(SRCDIR)disp68K.il
+	rm -f $(NATDIR)disp68K.il
+	ln -s $(SRCDIR)disp68K.il $(NATDIR)disp68K.il
+
+################################################################################
+# Miscellaneous targets
+#	 .c.s. should always have -O
+################################################################################
+
+cleanup :
+	rm  $(LIBFILES) $(EXTFILES) $(KEYOFF)
+
+.c.o:
+	$(CC) $(RFLAGS) $*.c -o $@ $(INLINE)
+
+.c.s:
+	$(CC) -S $(CFLAGS) -I$(INCDIR) $(SRCDIR)$*.c -o $(SRCDIR)$@ $(INLINE)
+
+$(OBJECTDIR)keymaker : ../src/keymaker.c  $(REQUIRED-INCS) $(OBJECTDIR)keylib.o
+	$(CC) $(CFLAGS) -I$(INCDIR) ../src/keymaker.c $(OBJECTDIR)keylib.o -o $(OBJECTDIR)keymaker
+
+cxref :
+	cxref -c  $(DFLAGS) -I$(INCDIR) $(SRCDIR)*.c -o ../all.cxref

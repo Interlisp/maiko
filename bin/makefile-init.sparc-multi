@@ -1,0 +1,104 @@
+# Options for SunOS4 and SPARC
+#  @(#) makefile-init.sparc Version 1.0 (7/18/90). 
+#
+#  MAKE AN INIT-LOADING emulator for sparc.
+#
+#************************************************************************/
+#*									*/
+#*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
+#*	Manufactured in the United States of America.			*/
+#*									*/
+#*	The contents of this file are proprietary information 		*/
+#*	belonging to Venue, and are provided to you under license.	*/
+#*	They may not be further distributed or disclosed to third	*/
+#*	parties without the specific permission of Venue.		*/
+#*									*/
+#************************************************************************/
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -g for init building.
+OPTFLAGS = -g
+DISPOPTFLAGS = -g
+FPFLAGS =
+# Now share the same ldesingle with COLOR(CG4)/MONO Suns
+# If you load MAIKOCOLOR.LCOM etc., you can use color functions
+# for bigatom work, removed  -DSPARCDISP -DSUN4_OS4_IL
+DFLAGS = -DINIT -DKBINT -DFSERROR -DOS4 -DOS4_TYPE4BUG -DCOLOR \
+	-DNEWBITBLT -DLOGINT -DSUNDISPLAY -DDISPLAYBUFFER -DFORKCOMM \
+	-DBIGATOMS -DNOASM -DNOFORN -DRELEASE=210 #  -DNOVERSION -DRELEASE=201
+
+LDFLAGS = -lsuntool -lsunwindow -lpixrect -lc -lm
+#-Dsparc?
+INLINE = # $(SRCDIR)dspSPARC.il
+BITBLTFILE = $(OBJECTDIR)bbtSPARC.o
+BYTESWAPFILES= $(OBJECTDIR)/byteswap.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+COLORFILES = $(OBJECTDIR)rawcolor.o
+
+default: ../$(OSARCHNAME)/$(LDENAME)
+# Special rules to create xc.c on Sun4
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inln68k.h
+	cc -P $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.i
+
+#run c compiler to produce first pass assembly
+$(OBJECTDIR)xc.s1:	$(OBJECTDIR)xc.i
+	rm -f $(OBJECTDIR)xc.s1
+	/lib/ccom - $(FPFLAGS) <$(OBJECTDIR)xc.i >$(OBJECTDIR)xc.s1
+
+#generate C program to remove dispatch loop, optimize
+$(OBJECTDIR)dsphack.c: $(SRCDIR)dsphack.lex
+	rm -f $(OBJECTDIR)dsphack.c
+	lex -t $(SRCDIR)dsphack.lex > $(OBJECTDIR)dsphack.c
+
+#uses this program to find dispatch
+$(OBJECTDIR)find-dsp.c: $(SRCDIR)find-dsp.lex
+	rm -f $(OBJECTDIR)find-dsp.c
+	lex -t $(SRCDIR)find-dsp.lex > $(OBJECTDIR)find-dsp.c
+
+$(OBJECTDIR)find-dsp: $(OBJECTDIR)find-dsp.c
+	cc -o $(OBJECTDIR)find-dsp $(OBJECTDIR)find-dsp.c -ll
+
+$(OBJECTDIR)dspatch-label.c: $(OBJECTDIR)find-dsp $(OBJECTDIR)xc.s1
+	rm -f $(OBJECTDIR)dspatch-label.c
+	$(OBJECTDIR)find-dsp < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)dspatch-label.c
+
+$(OBJECTDIR)dsphack: $(OBJECTDIR)dsphack.c $(OBJECTDIR)dspatch-label.c
+	cc -o $(OBJECTDIR)dsphack $(OBJECTDIR)dspatch-label.c $(OBJECTDIR)dsphack.c -ll
+	rm -f $(OBJECTDIR)dspatch-label.o $(OBJECTDIR)dsphack.o
+
+$(OBJECTDIR)xc.s2:	$(OBJECTDIR)xc.s1 $(OBJECTDIR)dsphack
+	rm -f $(OBJECTDIR)xc.s2
+	$(OBJECTDIR)dsphack < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)xc.s2
+
+$(OBJECTDIR)xc.s3:	$(OBJECTDIR)xc.s2 $(INLINE)
+	rm -f $(OBJECTDIR)xc.s3
+	/usr/lib/inline -i $(INLINE) < $(OBJECTDIR)xc.s2 > $(OBJECTDIR)xc.s3
+
+#$(OBJECTDIR)xc.o: $(OBJECTDIR)xc.s3
+#	/bin/as -o $(OBJECTDIR)xc.o -O1 $(OBJECTDIR)xc.s3
+
+
+############
+#
+#	SPECIAL xc.o  for debugging
+#
+############
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   
+	cc $(DISPRFLAGS) $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o

@@ -1,0 +1,8 @@
+
+FILES USED IN THIS DIRECTORY
+
+  config.guess
+  config.sub	taken from GNU project's "config" directory, on
+		prep.ai.mit.edu/pub/gnu/config.  Update 'em as
+		needed.
+

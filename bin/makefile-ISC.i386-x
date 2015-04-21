@@ -1,0 +1,64 @@
+# Options for SunOS4, SPARC and X-Window
+
+XFILES = $(OBJECTDIR)XClose.o \
+	$(OBJECTDIR)Cursor.o \
+	$(OBJECTDIR)XWindow.o \
+	$(OBJECTDIR)DoRing.o \
+	$(OBJECTDIR)DoScroll.o \
+	$(OBJECTDIR)XEvent.o \
+	$(OBJECTDIR)XGravity.o \
+	$(OBJECTDIR)XInit.o \
+	$(OBJECTDIR)InitXevent.o \
+	$(OBJECTDIR)XKbdMouse.o \
+	$(OBJECTDIR)LispWindow.o \
+        $(OBJECTDIR)LispXbitblt.o \
+	$(OBJECTDIR)XKeyboard.o \
+	$(OBJECTDIR)MakeXicon.o \
+	$(OBJECTDIR)OpenDisplay.o \
+	$(OBJECTDIR)ReadXoption.o \
+	$(OBJECTDIR)XReconfig.o \
+	$(OBJECTDIR)XScroll.o \
+	$(OBJECTDIR)Scrollbar.o \
+	$(OBJECTDIR)XCursor.o \
+	$(OBJECTDIR)XMouse.o \
+	$(OBJECTDIR)Subwindows.o \
+	$(OBJECTDIR)VideoColor.o \
+	$(OBJECTDIR)XWindowMgr.o  
+
+
+XVERSION = XV11R4
+XFLAGS = -DXWINDOW -D$(XVERSION)
+
+FPFLAGS =
+DFLAGS = -DFSERROR -DAIX -DSYSVONLY -DSYSVSIGNALS -DNOASM -DLOGINT -DNOPIXRECT $(XFLAGS) -DBYTESWAP -DAIXPS2 -DFLTINT -D_I386 -DNOETHER -DFORKCOMM
+LDFLAGS = -lX11 -lc -lm -lbsd
+
+INLINE = 
+BITBLTFILE = 
+# for the files that need to be included in byte-swapped implementations:
+BYTESWAPFILES = $(OBJECTDIR)byteswapfns$(OEXT)
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+
+OPTFLAGS = -O -fstrength-reduce -fcombine-regs
+DISPOPTFLAGS = -O -fstrength-reduce -fcombine-regs -finline-functions
+CC = /gcc/gcc
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+
+
+$(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
+	 $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
+	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h  $(INCDIR)dbprint.h\
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
+	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)profile.h
+	$(CC) $(DISPRFLAGS) $(SRCDIR)xc.c $(INLINE) -o $(OBJECTDIR)xc.o
+
+

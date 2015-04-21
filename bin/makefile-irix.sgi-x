@@ -1,0 +1,112 @@
+#
+#************************************************************************/
+#*									*/
+#*	(C) Copyright 1991 Venue. All Rights Reserved.			*/
+#*	Manufactured in the United States of America.			*/
+#*									*/
+#*	The contents of this file are proprietary information 		*/
+#*	belonging to Venue, and are provided to you under license.	*/
+#*	They may not be further distributed or disclosed to third	*/
+#*	parties without the specific permission of Venue.		*/
+#*									*/
+#************************************************************************/
+
+# Options for SGI Indigo under IRIX operating system, X windows.
+
+ANSICC = gcc
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+OLDXFILES = $(OBJECTDIR)XClose.o \
+	$(OBJECTDIR)Cursor.o \
+	$(OBJECTDIR)XWindow.o \
+	$(OBJECTDIR)DoRing.o \
+	$(OBJECTDIR)DoScroll.o \
+	$(OBJECTDIR)XEvent.o \
+	$(OBJECTDIR)XGravity.o \
+	$(OBJECTDIR)XInit.o \
+	$(OBJECTDIR)Xevinit.o \
+	$(OBJECTDIR)Xkbdmus.o \
+	$(OBJECTDIR)Xlspwin.o \
+        $(OBJECTDIR)Xbbt.o \
+	$(OBJECTDIR)Xkbd.o \
+	$(OBJECTDIR)Xmkicon.o \
+	$(OBJECTDIR)Xopendsp.o \
+	$(OBJECTDIR)Xrdopt.o \
+	$(OBJECTDIR)Xreconf.o \
+	$(OBJECTDIR)XScroll.o \
+	$(OBJECTDIR)Xscrolb.o \
+	$(OBJECTDIR)XCursor.o \
+	$(OBJECTDIR)XMouse.o \
+	$(OBJECTDIR)Xsubwin.o \
+	$(OBJECTDIR)Xcolor.o \
+	$(OBJECTDIR)Xwinman.o  
+
+LPFILES = $(OBJECTDIR)lpmain.o \
+		  $(OBJECTDIR)lpread.o \
+		  $(OBJECTDIR)lpsolve.o \
+		  $(OBJECTDIR)lpkit.o
+#		  $(OBJECTDIR)lptran.o \
+#		  $(OBJECTDIR)lpdual.o \
+#		  $(OBJECTDIR)lpwrite.o
+
+XVERSION = XV11R4
+XFLAGS = -DXWINDOW -D$(XVERSION)
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -O2 -Olimit 1600 
+OPTFLAGS =  -O2 -Olimit 1600
+ANSIOPTFLAGS =  -O4 
+DISPOPTFLAGS = -O2 -Olimit 1600
+FPFLAGS =
+DFLAGS = -DFSERROR -DNEW_STORAGE -DAIX -DFORKCOMM -DLOGINT $(XFLAGS)\
+	-D_IEEE -DINDIGO -DSYSVONLY -DNOETHER -DNOPIXRECT -DSYSVSIGNALS -DNOFORN \
+	-DNOASM -DBIGATOMS  -DLPSOLVE -DNOVERSION -DBIGVM -DNEWCDRCODING
+LDFLAGS = -L/usr/lib/X11R4 -L/d/scsistr2/guest/gcc2 -lX11 -ll -lm -ly -lsun
+LDELDFLAGS = $(LDFLAGS)
+# -Dsparc?
+
+CC = cc
+RANLIB = touch
+MAIN = main
+
+INLINE = 
+BITBLTFILE = 
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+
+# Special rules to create xc.c on HP/Apollo Series 700 or 800
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inln68k.h
+	$(CC) -c $(DISPOPTFLAGS) $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o
+
+#$(OBJECTDIR)xc.o:	$(SRCDIR)xc.i $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+#	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+#	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+#	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+#	 $(INCDIR)arith.h $(INCDIR)stream.h \
+#	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+#	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+#	 $(INCDIR)inln68k.h
+#	$(CC) -c $(DISPOPTFLAGS) $(SRCDIR)xc.i -o $(OBJECTDIR)xc.o
+

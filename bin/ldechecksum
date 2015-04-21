@@ -1,0 +1,170 @@
+#! /bin/sh
+# First line invokes Bourne shell
+# ============================================================================
+# ABSTRACT:
+#	Bourne script for checking/generating checksums files for the
+#	Medley release. The script will generate a checksum-file for each
+#	release directory, containing the corresponding checksums for all
+#	files residing in the directory. The files having incorrect
+#	checksums will be reported with a message. The checksum-files will
+#	be put under:
+#	<medleydir>/checksumdir (Normally /usr/local/lde/checksumdir).
+#	
+#
+# SYNOPSIS:
+#	ldechecksum [-cg]  medleydir  [ dir | dirgroup ]
+#
+#	-c 	compare checksumfiles "FOO.check" with "FOO.sum" (default).
+#	-g 	generate checksumfiles "FOO.sum".
+#	medleydir is the name of the Medley installation directory (normally
+#		is "/usr/local/lde").
+#	dir	can be any specific directory residing under medleydir. Only
+#		relative pathnames with respect to medleydir are accepted.
+#	dirgroup can be either "all" (default), "fonts" or "lisp" which
+#		means the "install.sunosX", "lisplibrary" and "lispsysouts" 
+#		directories.
+#
+# CHANGES:
+#	08-23-90 Carl Gadener : Added install.sunos4.1
+#	05-05-89 Carl Gadener : Added lispusers as an option
+#	03-30-89 Carl Gadener : Added fonts and fonts/press
+#	01-19-89 Carl Gadener : Parameter "medleydir" is now mandatory. Also
+#				check that "checksum" files were installed.
+#	12-22-88 Carl Gadener : Compressed the big "case $dirspec" statement
+#	12-15-88 Carl Gadener : Rewrote it for Bourne shell due to limitation
+#				factors in CSH
+#	12-12-88 Carl Gadener & Larry Harada : Creation of script
+# ============================================================================
+#
+# First case statement checks arguments to ldechecksum
+case $# in
+  0) echo "Usage: ldechecksum [ -cg ] medleydir [ dir | dirgroup ] "
+     exit 1 ;;
+  1) case $1 in
+       -*) echo "Usage: ldechecksum [ -cg ] medleydir [ dir | dirgroup ] "
+           exit 1 ;;
+       *)  arg="-c"
+           medleydir=$1
+           dirspec=all
+           break ;;
+     esac ;;
+  [23]) 
+     case $1 in
+       -[cg]) arg=$1
+           medleydir=$2
+           if test $# = 3
+           then 
+             dirspec=$3
+           else
+             dirspec=all
+           fi
+           break  ;;
+       -*) echo "Usage: ldechecksum [ -cg ] medleydir [ dir | dirgroup ] "
+           exit 1 ;;
+       *)  arg="-c"
+           medleydir=$1
+           if test $# = 2
+           then
+              dirspec=$2
+           else
+              echo "Unexpected arg: $3"
+              exit 1
+           fi
+           break  ;;
+     esac ;;
+  *) echo "Usage: ldechecksum [ -cg ] medleydir [ dir | dirgroup ] "
+     exit 1 ;;
+esac
+
+#	Checking if the Medley directory exists
+if test -d $medleydir
+then 
+   cd $medleydir
+
+#	Checking that script is correctly installed
+   if test -d checksumdir \
+        -a -f checksumdir/ldechecksum \
+        -a -f checksumdir/checksum
+   then
+
+      lispdirs="install.sunos3 install.sunos4 install.sunos4.1 lisplibrary lispsysouts"
+      fonts="JIS1 JIS2 chinese miscellaneous presentation printwheel \
+             publishing"
+
+      if test $arg = "-g"
+      then 
+	  operation="Generating"
+      else   #$arg = "-c"
+	  operation="Verifying"
+      fi
+
+      case $dirspec in
+        all)
+          checksumdir/ldechecksum $arg `pwd` lisp
+          checksumdir/ldechecksum $arg `pwd` fonts/display
+          checksumdir/ldechecksum $arg `pwd` fonts/interpress
+          checksumdir/ldechecksum $arg `pwd` fonts/press
+        ;;
+        lisp)
+	   echo "----------------------------------------------------"
+           echo "$operation checksums for Lisp directories"
+	   echo "----------------------------------------------------"
+           for file in $lispdirs
+           do
+              checksumdir/checksum $arg $file
+           done
+        ;;
+        fonts)
+          checksumdir/ldechecksum $arg `pwd` fonts/display
+          checksumdir/ldechecksum $arg `pwd` fonts/interpress
+          checksumdir/ldechecksum $arg `pwd` fonts/press
+        ;;
+        fonts/display | \
+	fonts/interpress)
+	   fonttype=`basename $dirspec`
+	   echo "----------------------------------------------------"
+           echo "$operation checksums for $fonttype font directories"
+	   echo "----------------------------------------------------"
+           for file in $fonts
+           do
+             checksumdir/checksum $arg $dirspec/$file
+       	   done
+        ;;
+#	All Medley directories at the "lowest" level
+        install.sunos3 | \
+	install.sunos4 | \
+	install.sunos4.1 | \
+	lisplibrary | \
+	lispsysouts | \
+	lispusers | \
+        fonts/display/JIS1 | \
+	fonts/display/JIS2 | \
+	fonts/display/chinese | \
+        fonts/display/miscellaneous | \
+	fonts/display/presentation | \
+	fonts/display/printwheel | \
+	fonts/display/publishing | \
+        fonts/interpress/JIS1 | \
+	fonts/interpress/JIS2 | \
+	fonts/interpress/chinese | \
+	fonts/interpress/miscellaneous | \
+	fonts/interpress/presentation | \
+	fonts/interpress/printwheel | \
+	fonts/interpress/publishing | \
+	fonts/press)
+           checksumdir/checksum $arg $dirspec
+	;;
+        *) echo "$dirspec : No such directory/grouping under `pwd`"
+            exit 1 ;;
+      esac
+
+   else 
+     echo "`pwd`/checksumdir : No such directory or script incorrectly installed"
+     exit 1
+   fi
+
+else
+   echo "$medleydir : No such directory"
+   exit 1
+fi
+

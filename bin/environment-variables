@@ -1,0 +1,14 @@
+FILE: environment-variables
+
+LDESRCESYSOUT
+LDESOURCESYSOUT		SYSOUT full-file name you want to run
+
+LDEDESTSYSOUT		SYSOUT name for destination of SAVEVM/LOGOUT
+
+LDEKBDTYPE
+			type2
+			type3
+			type4
+			jle
+			as3000j
+LDEFILETIMEOUT

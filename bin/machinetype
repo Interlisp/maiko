@@ -1,0 +1,24 @@
+#!/bin/sh
+#########################################################################
+#									#
+#                    M A C H I N E T Y P E				#
+#									#
+#  Compute the hardware architecture we're running on.			#
+#									#
+#  (C) Copyright 2001 Venue.  All Rights Reserved			#
+#									#
+#########################################################################
+
+os=`./config.guess`
+
+# o/s switch block
+case "$os" in
+        sparc-*)	      echo sparc ;;
+        alpha-*)	      echo alpha ;;
+	i*86-*-*)             echo 386 ;;
+        powerpc-*)	      echo ppc ;;
+esac
+
+
+### Don't leave the variables set.
+unset os

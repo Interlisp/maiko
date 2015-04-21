@@ -1,0 +1,20 @@
+#!/bin/sh
+
+
+# Location of the add-dir-to-var program
+os=`./config.guess`
+
+# o/s switch block
+case "$os" in
+        sparc-sun-sunos*)	echo sunos4 ;;
+        sparc-sun-solaris1*)	echo sunos4 ;;
+        sparc-sun-solaris2*)	echo sunos5 ;;
+        alpha-dec-osf1)	      echo osf1 ;;
+	i386-*-solaris*)      echo sunos5 ;;
+        *-*-linux*)	      echo linux ;;
+        *-*-openbsd*)         echo openbsd ;;
+esac
+
+
+### Don't leave the variables set.
+unset os

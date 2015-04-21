@@ -1,0 +1,120 @@
+#************************************************************************/
+#*									*/
+#*	Makefile for MAKEINIT processing.				*/
+#*									*/
+#* $Id: makefile-init.sparc,v 1.4 2001/12/26 22:17:08 sybalsky Exp $ */
+#*									*/
+#************************************************************************/
+
+
+
+
+#************************************************************************/
+#*									*/
+#*	(C) Copyright 1991,8 Venue. All Rights Reserved.		*/
+#*	Manufactured in the United States of America.			*/
+#*									*/
+#*	The contents of this file are proprietary information 		*/
+#*	belonging to Venue, and are provided to you under license.	*/
+#*	They may not be further distributed or disclosed to third	*/
+#*	parties without the specific permission of Venue.		*/
+#*									*/
+#************************************************************************/
+
+# Options for SPARC under Solaris-2 operating system, X windows.
+
+CC = gcc
+
+XFILES = $(OBJECTDIR)xlspwin.o \
+        $(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xwinman.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)kbdif.o \
+	$(OBJECTDIR)xinit.o
+
+
+XVERSION = XV11R4
+XFLAGS = -DXWINDOW -DXV11R4 -I/usr/openwin/include
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -g for MAKEINIT, as it needs debugging often.
+OPTFLAGS = -g3 -O
+DISPOPTFLAGS = -g3 -O
+
+MAIN = main
+	
+# Set any debugging options in DEBUGFLAGS.  E.g., to enable stack
+# checking, use -DSTACKCHECK; to enable the fn-call-time stack
+# check, use -DFNSTKCHECK.
+
+DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
+
+MACHINEFLAGS = -DOS5 -DAIX -DUSE_DLPI -DNOPIXRECT \
+		-I$(OPENWINHOME)/include -DSYSVSIGNALS -DSYSVONLY \
+		 -DOLD_CURSOR -DLOGINT -DFORKCOMM -DLOCK_X_UPDATES
+		 
+INLINEFLAGS =
+
+FPFLAGS =
+
+# The LDEINIT wants to have NOVERSION set, so we don't hang up on
+# any change-over in versions.
+
+DFLAGS = -DINIT \
+	 $(XFLAGS) \
+	 $(DEBUGFLAGS) \
+	 $(MACHINEFLAGS) \
+	 $(INLINEFLAGS) \
+	 -DNOVERSION -DRELEASE=351 
+
+
+LDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11 -lc -lm -lsocket -lnsl
+LDELDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11  -lc -lm -lsocket -lnsl
+LDEETHERLDFLAGS = -lc -lm -lsocket -lnsl
+
+# SPARC Assemble optimize check
+# DFLAGS:sh += optck.sh ; true
+
+#-Dsparc?
+INLINE = 
+
+DLPIFILES = $(OBJECTDIR)dlpi.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
+
+#RANLIB = touch
+
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+
+# Special rules to create xc.c with GCC
+
+#run cpp to expand macros
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inln68k.h
+	$(CC) -c $(DISPOPTFLAGS) $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o
+
+#$(OBJECTDIR)xc.o:	$(SRCDIR)xc.i $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
+#	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+#	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+#	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+#	 $(INCDIR)arith.h $(INCDIR)stream.h \
+#	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+#	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
+#	 $(INCDIR)inln68k.h
+#	$(CC) -c $(DISPOPTFLAGS) $(SRCDIR)xc.i -o $(OBJECTDIR)xc.o
+
+
+

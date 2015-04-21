@@ -1,0 +1,182 @@
+
+		Medley compile flags & their meanings
+
+				Created:  28-Sep-89 JDS
+				Updated:
+
+**	Flags that control compilation for various machine
+**	architectures, manufacturers, and OS versions
+
+Flag Name	Meaning/Usage
+_________	________________________________________________________
+BYTESWAP	Used when compiling for a hardware architecture that has
+		byte-swapped words and word-swapped 32-bit cells, e.g. 80386.
+SYSVSIGNALS	True when compiling on a system that requires the use of
+		SYSV (rather than BSD) signal-handling code (just MIPS & ISC
+		for 486, now).
+SYSVONLY	True when compiling on a system that has little or no
+		BSD support (the ISC unix for 486, or MIPS).  E.g. gettimofday
+		is missing.
+I386		True if compiling for the Sun386i (not just any 80386);
+		used because the 386i's display controller is odd.
+OS4		True if compiling for SunOS 4.x
+AIX		
+NOPIXRECT	Used to suppress pixrect/pixwin options when they're not
+		needed or not available.  True if XWINDOW is.
+
+AIX		True if compiling for AIX
+_I386		True if compiling for PS/2 under AIX (not our flag)
+AIXPS2		True if compiling for PS/2 under AIX (our flag)
+APOLLO		True if compiling for the Apollo
+sparc		True if we're compiling on a SPARC machine.
+mc68020		True if we're compiling on a Motorola 680x0 machine.
+sun3		We're compiling for a Sun-3.
+HP9000		We're compiling on an HP9000 RISC machine.
+HPUX		We're compiling for HP-UX
+RS6000		We're compiling for the RS/6000 processor.
+DEC3100		We're compiling for the DECStation 3100.
+RISCOS		We're compiling for the MIPS RISCstation under RISCOS.
+
+UNSAFE		If true, enables the "fast" version of 68020 opcodes.
+NOASM		If true, suppress any attempt to include assembler
+		versions of things in the emulator.  In 'lispemul.c',
+		if this is true, disables:
+			SUN3_OS3_IL
+			SUN3_OS4_IL
+			SUN4_OS4_IL
+			OPDISP
+			NATIVETRAN
+			UNSAFE
+			PROFILE
+		and enables NOASMFNCALL
+C_ONLY
+SUN4_OS4_IL	Try assembler peephole optimizations for SPARC & SunOS4.x
+SUN3_OS3_IL	Try assembler peephole optimizations for 68K & SunOS 3.x
+SUN3_OS4_IL	Try assembler peephole optimizations for 68K & SunOS 4.x
+SUN3_OS3_OR_OS4_IL Try asm optimizations for 68K & either sunOS.  This is
+		turned on whenever either of SUN3_OS3_IL or SUN3_OS4_IL is on.
+
+OPDISP		Use "fast-opcode-dispatch" macros
+SPARCDISP	Use fast-opcode-dispatch macros on SPARC
+HPTIMERBUG	True if we must compile in the patch around the HPUX
+		timer-resetting bug for Series 700.
+
+
+
+
+--Debugging/Tracing/Check-enabling flags--
+
+DEBUG		Used when debugging, to enclose trace and dump code.
+		Best usage is with DBPRINT((controlString, args*));, which
+		calls printf, and compiles only if DEBUG is true.  See
+		dbprint.h for the definition.
+TRACE
+TRACE2
+TRASE
+OPTRACE		If true, the dispatch loop prints the PC & opcode each time thru
+FNTRACE		If true, you see the name of each function called.
+STACKCHECK	If true, you see unusual cases of stack manipulation
+		traced.  E.g., the hard cases of RETURN, like non-contiguous
+		stack frames, get mentioned.
+LISPTRACE	True if you want to see LISP calls & returns traced to
+		stdout; Generally, for traces of lisp-level events.
+PROFILE		If true, the profiling control code is enabled.  You must
+		also change the optflags to contain -p or -pg, to use prof
+		or gprof, respectively.
+CHECK
+FSBCHECK	If true, you see a trace of large free stack blocks when
+		the stack is manipulated; was used for debugging stack code.
+FSMESSAGE	If true, prints a message telling you about the hard links
+		it makes (in support of version numbering), as it makes them.
+
+WINDOW
+INIT		Used when compiling an emulator to build a loadup.  Use it
+		to dike out code that deals with network initialization, e.g.
+
+MYOPTRACE	Used to check the stack's validity on each opcode execution.
+		Requires NOASM, and the absence of SUN..._IL and SPARCDISP &c.
+
+PCTRACE		When true, compiles in a 100-long ring buffer that holds the
+		last 100 PCs, Function-blocks, and Opcodes executed. "pccounter"
+		is the offset where the next one will go.  Also requires NOASM.
+		The 3 tables are called pc_table, fn_table, and op_table.
+
+
+
+
+--Flags that control new features, features under test, etc.--
+
+DISPLAYBUFFER	10/3/89 JDS -- enables the experimental code for copying
+		changed portions of the display bank to the frame buffer.
+		Meant for supporting mono mode on a CG6 with no single-bit
+		bitplane. 1/22/91 JDS:  This is now the standard flag for
+		compiling for color displays.
+FSERROR		Enables the emulator's returning Unix error codes for
+		{DSK} & {UNIX} operations, so Lisp can decode them and
+		give better indication of problems.  FEATURE STANDARD IN 1.1
+WINDOW
+FLIPCURSOR	If true, the "sandbar" line in the cursor will get flipped
+		by the C stack-frame-moving code, just as it does on a D
+		machine.  Otherwise, you don't see it.
+ORG_FILPCORSORBAR If true, you get the pixwin version of cursor changing;
+		otherwise, it gets done by direct writes into the display
+		region.
+OLD_CURSOR	If true, uses the pixwin cursor code (e.g., win_setcursor);
+		otherwise, uses the direct-write technique.
+NATIVETRAN	If true, code to support the native-code translator is
+		included in the emulator.  This feature was never released,
+		and most such code is probably obsolete.
+OS4_TYPE4BUG	If true, includes the patches around SunOS 4.0.x's failure
+		to tell you you've got a Type-4 keyboard.
+ALLDIRSEARCH	CURRENTLY HARD DISABLED IN directory.c; looks like it 
+		controlled recursive directory searches??
+KBINT		If true (it looks like??), the emulator does most of the KBD
+		transition processing in C, rather than interrupting LISP for
+		it, and the transition interrupts happen when the OS signals
+		a transition, rather than by polling?
+RS232INT	If true, the RS232 device (NOT USED, a translation of Lisp's
+		code), uses the interrupt signalling support of timer.c to
+		know when to read characters.  NOT USED, probably obsolete.
+TTYINT		Analogous to RS232INT, for the translated TTY device.
+ETHERINT
+COLOR		If TRUE, supports 8bits-per-pixel color on CG4 and CG6 frame
+		buffer of Sun work station. IF COLOR is TRUE, don't use OLD_CURSOR 
+		flag.
+CATCH		If true, includes some CATCH C code, for finding the blip,
+		finding variable names and PVAR names in frames.  As of 10/2/89
+		this code is unused, and is called nowhere else in the system.
+RECLAIMINC	If true, then the RECLAIMCELL opcode calls gcreclaimcell in
+		C; otherwise it punts.  As of 10/3/89, this was never debugged
+		and is not in any system.  Probably fairly easy to debug??
+KB_SUN4		The kbd type for the Type-4 keyboard.  Defined only because
+		older OS versions of the compiler don't define it automatically.
+FUJI		If true, and you don't set the LDEKBDTYPE environment variable,
+		you'll get a nasty message asking you to set it before
+		running lisp.  Otherwise, you'll default to a type-3 kbd.
+FLTINT		If true, use the floating-point exception interrupts to detect
+		errors and overflows on FP operations.  The interrupt sets a
+		global error flag.  Otherwise, calls library routines to see
+		the condition code from each operation.  For SPARCs, it's not
+		clear that the interrupt trick works, because of code re-
+		arrangement by the C compiler.
+BUFFER		Used (apparently) only in testdisplay.c to decide if it should
+		read the sysout directly, or buffer each page.
+
+IFPAGE_DEFINED	Used in .h files to prevent redefinition of Interface page.
+IOPAGE_DEFINED	" for IO page definition.
+NOWAY		Used to dike out C definitions of RPLACA and RPLACD in the
+		file car-cdrmacro.h
+XWINDOW		True if compiling for an X-windows emulator.
+
+BIGATOMS	True if this emulator will support 3-byte symbols, instead of
+		the old, 2-byte atom numbers.
+
+NEWBITBLT	True if we want to use assembler BITBLT code, rather than
+		have code created inline by macro calls.
+
+bitbltsub.c:#ifdef GETBASE
+testdisplay.c:#ifdef NOTUSED
+uraid.c:#ifdef ETHERINT
+bitblt.c:#ifndef COLOR
+bitbltsub.c:#ifndef prropstyle
+lispmap.h:#ifdef MEDLEY

@@ -1,0 +1,65 @@
+# Options for sun4, mc68020 and X-Window
+
+XFILES = $(OBJECTDIR)XClose.o \
+	$(OBJECTDIR)Cursor.o \
+	$(OBJECTDIR)XWindow.o \
+	$(OBJECTDIR)DoRing.o \
+	$(OBJECTDIR)DoScroll.o \
+	$(OBJECTDIR)XEvent.o \
+	$(OBJECTDIR)XGravity.o \
+	$(OBJECTDIR)XInit.o \
+	$(OBJECTDIR)InitXevent.o \
+	$(OBJECTDIR)XKbdMouse.o \
+	$(OBJECTDIR)LispWindow.o \
+        $(OBJECTDIR)LispXbitblt.o \
+	$(OBJECTDIR)XKeyboard.o \
+	$(OBJECTDIR)MakeXicon.o \
+	$(OBJECTDIR)OpenDisplay.o \
+	$(OBJECTDIR)ReadXoption.o \
+	$(OBJECTDIR)XReconfig.o \
+	$(OBJECTDIR)XScroll.o \
+	$(OBJECTDIR)Scrollbar.o \
+	$(OBJECTDIR)XCursor.o \
+	$(OBJECTDIR)XMouse.o \
+	$(OBJECTDIR)Subwindows.o \
+	$(OBJECTDIR)VideoColor.o \
+	$(OBJECTDIR)XWindowMgr.o  
+
+XVERSION = XV11R4
+XFLAGS = -DXWINDOW -D$(XVERSION)
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+
+OPTFLAGS = -O2
+DISPOPTFLAGS = -O
+FPFLAGS = -f68881
+# DISPLAYBUFFER for Color Sparcstation code testing
+# [I remove DISPLAYBUFFER option .
+# You may run 'makeright x'.  -osamu '90/02/27]
+# NEWBITBLT for assembler version of bitblt.
+DFLAGS = -DFSERROR -DNEW_STORAGE -DOPDISP -DUNSAFE -DOS4 -DSUN3_OS4_IL -DOS4_TYPE4BUG -DNEWBITBLT -DLOGINT $(XFLAGS) -DFORKCOMM -DBIGATOMS
+LDFLAGS = -lX11 -lpixrect -lc -lm
+LDELDFLAGS = -Bstatic -lX11 -lpixrect -Bdynamic -lc -lm
+
+INLINE = $(SRCDIR)disp68K.il
+BITBLTFILE = $(OBJECTDIR)bitblt68K.o
+
+OBJECTDIR = ../sunos4.mc68020-x/
+BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o
+
+default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether
+
+$(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
+	 $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
+	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
+	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
+	 $(INCDIR)inline68K.h  \
+	 $(INCDIR)inlineSPARC.h  $(INCDIR)fast_disp.h  \
+	 $(INCDIR)fastinline68K.h $(INCDIR)profile.h
+	cc $(DISPRFLAGS) $(SRCDIR)xc.c $(INLINE) -o $(OBJECTDIR)xc.o
+

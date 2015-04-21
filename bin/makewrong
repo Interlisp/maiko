@@ -1,0 +1,6 @@
+# Allows user to specify version to make
+# Almost useless, except that I needed it to handle the
+# SunOS 3.2 sparc version
+set relname = $1
+shift
+(echo RELEASENAME = ${relname};cat makefile-header makefile-${relname} makefile-tail) | make -f - $*

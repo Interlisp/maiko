@@ -1,0 +1,38 @@
+# makefile-sunos4.mc68020-multi
+# Options for SunOS4 and mc68020 for CG3 or CG6 
+# Add -DDISPLAYBUFFER in DFLAGS
+# ${RELEASENAME} is "sunos3.mc68020-multi"
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+
+OPTFLAGS = -g
+DISPOPTFLAGS = -O
+FPFLAGS = -f68881
+# DISPLAYBUFFER for Color Sparcstation code testing
+# NEWBITBLT for assembler version of bitblt.
+DFLAGS = -DKBINT -DFSERROR -DOPDISP -DUNSAFE -DSUN3_OS3_IL -DDISPLAYBUFFER -DNEWBITBLT -DLOGINT -DSUNDISPLAY -DFORKCOMM -DBIGATOMS
+LDFLAGS = -lsuntool -lsunwindow -lpixrect -lc -lm
+
+INLINE = $(SRCDIR)disp68K.il
+BITBLTFILE = $(OBJECTDIR)bitblt68K.o
+COLORFILES = $(OBJECTDIR)colorbltfns.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether
+
+$(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
+	 $(INCDIR)address.h \
+	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
+	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
+	 $(INCDIR)tosfuncallmacro.h  $(INCDIR)inlinedefsC.h   \
+	 $(INCDIR)inlinedefs68K.h  \
+	 $(INCDIR)inlinedefsSPARC.h  $(INCDIR)fastdispatch.h  \
+	 $(INCDIR)fastinlinedefs68K.h $(INCDIR)profile.h
+	cc $(DISPRFLAGS) $(SRCDIR)xc.c $(INLINE) -o $(OBJECTDIR)xc.o
+
+
