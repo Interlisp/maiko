@@ -11,6 +11,7 @@ case "$os" in
         sparc-sun-solaris2*)	echo sunos5 ;;
         alpha-dec-osf1)	      echo osf1 ;;
 	i386-*-solaris*)      echo sunos5 ;;
+	i386-apple-darwin*)	echo darwin ;;
         *-*-linux*)	      echo linux ;;
         *-*-openbsd*)         echo openbsd ;;
 esac
