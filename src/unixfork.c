@@ -26,6 +26,7 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 #include "version.h"
 
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef OS4
 #define USETERMIOS
@@ -239,7 +240,7 @@ fork_Unix()
     putenv(tempstring);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "LDESTARTTIME=%d", StartTime);
+    sprintf(tempstring, "LDESTARTTIME=%ld", StartTime);
     putenv(tempstring);
 
     tempstring = (char *)malloc(30);
@@ -356,7 +357,7 @@ fork_Unix()
 	    char PipeName[40];
 	    sock = socket(AF_UNIX, SOCK_STREAM, 0);
 	    if (sock < 0) {perror("slave socket"); exit(0);}
-	    sprintf(PipeName, "/tmp/LPU%d-%d", StartTime, slot);
+	    sprintf(PipeName, "/tmp/LPU%ld-%d", StartTime, slot);
 	    addr.sun_family = AF_UNIX;
 	    strcpy(addr.sun_path, PipeName);
 	    status = connect(sock, (struct sockaddr *)&addr,
