@@ -33,7 +33,7 @@
 
     e.g.  TRACER(expr);
 
-    executes the expression if TRACE is on.
+    executes the expression if TRACE is on.                           */
 /*  ================================================================  */
 
 	/* For debugging print statements */
