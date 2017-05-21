@@ -71,7 +71,7 @@ else
 	fi
 fi
 
-if test $# > 0
+if test $# -gt 0
     then
 	shift
 fi
