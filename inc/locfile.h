@@ -18,25 +18,25 @@
 
 #define	PAGE_SIZE		512	/* 1 page == 512 byte */
 
-#define	RECOG_OLD		S_POSITIVE | 0
-#define	RECOG_OLDEST		S_POSITIVE | 1
-#define	RECOG_NEW		S_POSITIVE | 2
-#define	RECOG_OLD_NEW		S_POSITIVE | 3
-#define	RECOG_NON		S_POSITIVE | 5
+#define	RECOG_OLD		(S_POSITIVE | 0)
+#define	RECOG_OLDEST		(S_POSITIVE | 1)
+#define	RECOG_NEW		(S_POSITIVE | 2)
+#define	RECOG_OLD_NEW		(S_POSITIVE | 3)
+#define	RECOG_NON		(S_POSITIVE | 5)
 
-#define	ACCESS_INPUT		S_POSITIVE | 0
-#define	ACCESS_OUTPUT		S_POSITIVE | 1
-#define	ACCESS_BOTH		S_POSITIVE | 2
-#define	ACCESS_APPEND		S_POSITIVE | 3
+#define	ACCESS_INPUT		(S_POSITIVE | 0)
+#define	ACCESS_OUTPUT		(S_POSITIVE | 1)
+#define	ACCESS_BOTH		(S_POSITIVE | 2)
+#define	ACCESS_APPEND		(S_POSITIVE | 3)
 
 /* For getfileinfo */
-#define	LENGTH			S_POSITIVE | 1
-#define	WDATE			S_POSITIVE | 2
-#define	RDATE			S_POSITIVE | 3
-#define	AUTHOR			S_POSITIVE | 5
-#define	PROTECTION		S_POSITIVE | 6
-#define	EOL			S_POSITIVE | 7
-#define	ALL			S_POSITIVE | 8
+#define	LENGTH			(S_POSITIVE | 1)
+#define	WDATE			(S_POSITIVE | 2)
+#define	RDATE			(S_POSITIVE | 3)
+#define	AUTHOR			(S_POSITIVE | 5)
+#define	PROTECTION		(S_POSITIVE | 6)
+#define	EOL			(S_POSITIVE | 7)
+#define	ALL			(S_POSITIVE | 8)
 
 
 extern	DLword	*Lisp_world;	/* To access LispSysout area */
