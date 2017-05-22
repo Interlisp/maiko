@@ -476,14 +476,14 @@ typedef unsigned short u_short;
 #ifdef SYSVONLY
 #if defined INDIGO
 #elif OS5
-#elif defined(LINUX)
+#elif defined(LINUX) || defined(MACOSX)
 #else
 #define seteuid(x) setresuid(-1, (x), -1)
 #endif /* INDIGO does have seteuid */
 #define getwd(x) getcwd((x), MAXPATHLEN)
 #define getrusage(x, y) 
 #define getpagesize() 4096
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOSX)
 #undef getrusage
 #undef getpagesize
 #undef getwd
