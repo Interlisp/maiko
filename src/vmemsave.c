@@ -36,7 +36,9 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #ifndef DOS
 #include <sys/param.h>
 #ifndef AIX
+#ifndef MACOSX
 #include <sys/vfs.h>
+#endif /* MACOSX */
 #endif /* AIX */
 
 #include <pwd.h>
@@ -240,6 +242,89 @@ vmem_save0(args)
 #endif /* DEMO */
   }
 
+/************************************************************************/
+/*									*/
+/*			s o r t _ f p t o v p				*/
+/*									*/
+/*	Sort the entries in the file-page-to-virtual-page table,	*/
+/*	to try to make a sysout file that has contiguous runs of	*/
+/*	virtual pages in it, for speed.					*/
+/*									*/
+/************************************************************************/
+
+int twowords(i,j)	/* the difference between two  DLwords. */
+  DLword *i, *j;
+  {
+    return(*i - *j);
+  }
+
+
+#define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
+
+void sort_fptovp(fptovp, size)
+  DLword *fptovp;
+  int size;
+  {
+    int oldloc, newloc, oldsize, i;
+    DLword *fptr;
+
+    for(fptr = fptovp, i=0;
+        GETWORD(fptr) != FPTOVP_ENTRY && i < size;
+        fptr++, i++);
+
+    if(GETWORD(fptr) != FPTOVP_ENTRY)
+      {
+	DBPRINT((stderr, "Couldn't find FPTOVP_ENTRY; not munging\n"));
+	return;
+      }
+    oldloc = fptr - fptovp;
+
+    /* Found old fptovp table location, now sort the table */
+    qsort(fptovp, size, sizeof(DLword), twowords);
+
+ONE_MORE_TIME: /* Tacky, but why repeat code? */
+
+    /* Look up FPTOVP_ENTRY again; if it's moved, need to shuffle stuff */
+    for(fptr = fptovp, i=0;
+        GETWORD(fptr) != FPTOVP_ENTRY && i < size;
+        fptr++, i++);
+
+    if(GETWORD(fptr) != FPTOVP_ENTRY) error("Couldn't find FPTOVP_ENTRY second time!\n");
+    newloc = fptr - fptovp;
+
+    /* Supposedly all we have to do is adjust the fptovpstart and nactivepages
+       the ifpage */
+    InterfacePage->fptovpstart += (newloc - oldloc);
+    oldsize = size;
+    for(fptr = fptovp + (size-1); GETWORD(fptr) == 0xffff;
+        fptr--, InterfacePage->nactivepages--, size--);
+
+    if(size != oldsize)
+      DBPRINT(("Found %d holes in fptovp table\n", oldsize - size));
+
+      /* Sanity check; it's just possible there are duplicate entries... */
+      {
+	int dupcount = 0;
+	for(fptr = fptovp, i=1;
+	    i<size;
+	    i++, fptr++)
+	if(GETWORD(fptr) == GETWORD(fptr+1))
+	  {
+	    dupcount++;
+	    GETWORD(fptr) = 0xffff;
+	  }
+
+	/* if duplicates were found, resort to squeeze them out, then mung the
+           size and fptovpstart again (spaghetti-code, HO!) */
+	if(dupcount)
+	  {
+	    qsort(fptovp, size, sizeof(DLword), twowords);
+	    oldloc = newloc;
+	    DBPRINT((stderr, "%d duplicates found\n", dupcount));
+	    goto ONE_MORE_TIME;
+	  }
+      }
+  }
 
 
 /************************************************************************/
@@ -582,86 +667,3 @@ lisp_finish()
 
 
 
-/************************************************************************/
-/*									*/
-/*			s o r t _ f p t o v p				*/
-/*									*/
-/*	Sort the entries in the file-page-to-virtual-page table,	*/
-/*	to try to make a sysout file that has contiguous runs of	*/
-/*	virtual pages in it, for speed.					*/
-/*									*/
-/************************************************************************/
-
-int twowords(i,j)	/* the difference between two  DLwords. */
-  DLword *i, *j;
-  {
-    return(*i - *j);
-  }
-
-
-#define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
-
-sort_fptovp(fptovp, size)
-  DLword *fptovp;
-  int size;
-  {
-    int oldloc, newloc, oldsize, i;
-    DLword *fptr;
-
-    for(fptr = fptovp, i=0;
-        GETWORD(fptr) != FPTOVP_ENTRY && i < size;
-        fptr++, i++);
-
-    if(GETWORD(fptr) != FPTOVP_ENTRY)
-      {
-	DBPRINT((stderr, "Couldn't find FPTOVP_ENTRY; not munging\n"));
-	return;
-      }
-    oldloc = fptr - fptovp;
-
-    /* Found old fptovp table location, now sort the table */
-    qsort(fptovp, size, sizeof(DLword), twowords);
-
-ONE_MORE_TIME: /* Tacky, but why repeat code? */
-
-    /* Look up FPTOVP_ENTRY again; if it's moved, need to shuffle stuff */
-    for(fptr = fptovp, i=0;
-        GETWORD(fptr) != FPTOVP_ENTRY && i < size;
-        fptr++, i++);
-
-    if(GETWORD(fptr) != FPTOVP_ENTRY) error("Couldn't find FPTOVP_ENTRY second time!\n");
-    newloc = fptr - fptovp;
-
-    /* Supposedly all we have to do is adjust the fptovpstart and nactivepages
-       the ifpage */
-    InterfacePage->fptovpstart += (newloc - oldloc);
-    oldsize = size;
-    for(fptr = fptovp + (size-1); GETWORD(fptr) == 0xffff;
-        fptr--, InterfacePage->nactivepages--, size--);
-
-    if(size != oldsize)
-      DBPRINT(("Found %d holes in fptovp table\n", oldsize - size));
-
-      /* Sanity check; it's just possible there are duplicate entries... */
-      {
-	int dupcount = 0;
-	for(fptr = fptovp, i=1;
-	    i<size;
-	    i++, fptr++)
-	if(GETWORD(fptr) == GETWORD(fptr+1))
-	  {
-	    dupcount++;
-	    GETWORD(fptr) = 0xffff;
-	  }
-
-	/* if duplicates were found, resort to squeeze them out, then mung the
-           size and fptovpstart again (spaghetti-code, HO!) */
-	if(dupcount)
-	  {
-	    qsort(fptovp, size, sizeof(DLword), twowords);
-	    oldloc = newloc;
-	    DBPRINT((stderr, "%d duplicates found\n", dupcount));
-	    goto ONE_MORE_TIME;
-	  }
-      }
-  }
