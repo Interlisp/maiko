@@ -20,7 +20,7 @@ SYSVONLY	True when compiling on a system that has little or no
 I386		True if compiling for the Sun386i (not just any 80386);
 		used because the 386i's display controller is odd.
 OS4		True if compiling for SunOS 4.x
-AIX		
+
 NOPIXRECT	Used to suppress pixrect/pixwin options when they're not
 		needed or not available.  True if XWINDOW is.
 
