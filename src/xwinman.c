@@ -82,7 +82,7 @@ int bound( a, b, c)
 
 
 
-Set_BitGravity( event, dsp, window, grav )
+void Set_BitGravity( event, dsp, window, grav )
      XButtonEvent *event;
      DspInterface dsp;
      Window window;
@@ -117,7 +117,7 @@ Set_BitGravity( event, dsp, window, grav )
 }				/* end Set_BitGravity */
 
 
-lisp_Xconfigure( dsp, x, y, lspWinWidth, lspWinHeight )
+void lisp_Xconfigure( dsp, x, y, lspWinWidth, lspWinHeight )
      DspInterface dsp;
        int x, y, lspWinWidth, lspWinHeight;
 {
@@ -177,7 +177,44 @@ lisp_Xconfigure( dsp, x, y, lspWinWidth, lspWinHeight )
 }				/* end lisp_Xconfigure */
 
 
+void enable_Xkeyboard( dsp )
+     DspInterface dsp;
+{
+	XLOCK;
+	XSelectInput( dsp->display_id,
+		     dsp->DisplayWindow,
+		     dsp->EnableEventMask );
+	XFlush( dsp->display_id );
+	XUNLOCK;
+}
 
+
+
+void disable_Xkeyboard( dsp )
+     DspInterface dsp;
+{
+	XLOCK;
+	XSelectInput( dsp->display_id,
+		     dsp->DisplayWindow,
+		     dsp->DisableEventMask );
+	XFlush( dsp->display_id );
+	XUNLOCK;
+}
+
+void beep_Xkeyboard( dsp )
+     DspInterface dsp;
+{
+#ifdef TRACE
+	printf( "TRACE: beep_Xkeyboard()\n" );
+#endif
+
+		XLOCK;
+		XBell( dsp->display_id, (int) 50 );
+		XFlush( dsp->display_id );
+		XUNLOCK;
+
+
+} /* end beep_Xkeyboard */
 
 /************************************************************************/
 /*									*/
@@ -361,60 +398,22 @@ getXsignaldata(dsp)
 	else if (( report.xany.window == dsp->NEGrav ) &&
 		 ( report.xany.type ==  ButtonPress) &&
 		 ((report.xbutton.button & 0xFF) == Button1))
-	  Set_BitGravity(report, dsp, dsp->NEGrav, NorthEastGravity);
+	  Set_BitGravity(&report.xbutton, dsp, dsp->NEGrav, NorthEastGravity);
 	else if (( report.xany.window == dsp->SEGrav ) &&
 		 ( report.xany.type ==  ButtonPress) &&
 		 ((report.xbutton.button & 0xFF) == Button1))
-	  Set_BitGravity(report, dsp, dsp->SEGrav, SouthEastGravity);
+	  Set_BitGravity(&report.xbutton, dsp, dsp->SEGrav, SouthEastGravity);
 	else if (( report.xany.window == dsp->SWGrav ) &&
 		 ( report.xany.type ==  ButtonPress) &&
 		 ((report.xbutton.button & 0xFF) == Button1))
-	  Set_BitGravity(report, dsp, dsp->SWGrav, SouthWestGravity);
+	  Set_BitGravity(&report.xbutton, dsp, dsp->SWGrav, SouthWestGravity);
 	else if (( report.xany.window == dsp->NWGrav ) &&
 		 ( report.xany.type ==  ButtonPress) &&
 		 ((report.xbutton.button & 0xFF) == Button1))
-	  Set_BitGravity(report, dsp, dsp->NWGrav, NorthWestGravity);
+	  Set_BitGravity(&report.xbutton, dsp, dsp->NWGrav, NorthWestGravity);
 	XFlush(dsp->display_id);
       }				/* end while */
   } /* end getXsignaldata() */
 
 
-enable_Xkeyboard( dsp )
-     DspInterface dsp;
-{
-	XLOCK;
-	XSelectInput( dsp->display_id,
-		     dsp->DisplayWindow,
-		     dsp->EnableEventMask );
-	XFlush( dsp->display_id );
-	XUNLOCK;
-}
-
-
-
-disable_Xkeyboard( dsp )
-     DspInterface dsp;
-{
-	XLOCK;
-	XSelectInput( dsp->display_id,
-		     dsp->DisplayWindow,
-		     dsp->DisableEventMask );
-	XFlush( dsp->display_id );
-	XUNLOCK;
-}
-
-beep_Xkeyboard( dsp )
-     DspInterface dsp;
-{
-#ifdef TRACE
-	printf( "TRACE: beep_Xkeyboard()\n" );
-#endif
-
-		XLOCK;
-		XBell( dsp->display_id, (int) 50 );
-		XFlush( dsp->display_id );
-		XUNLOCK;
-
-
-} /* end beep_Xkeyboard */
 
