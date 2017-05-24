@@ -39,7 +39,7 @@ static char *id = "$Id: gc.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 
 ***********************************************************/
  
-OP_gcref(void)
+void OP_gcref(void)
 {
 #ifdef TRACE
 	printPC();
