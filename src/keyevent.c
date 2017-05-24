@@ -654,10 +654,11 @@ int LastCursorClippingY = HARD_CURSORHEIGHT;
 int LastCursorX=0;
 int LastCursorY=0;
 
+void cursor_hidden_bitmap(int, int);
 
 #ifndef COLOR
 /* FOR MONO ONLY */
-taking_mouse_down()
+void taking_mouse_down()
   {
     register DLword	*srcbase, *dstbase;
     static int sx, dx, w, h, srcbpl, dstbpl, backwardflg=0;
@@ -689,7 +690,7 @@ taking_mouse_down()
 			/* For COLOR & MONO */
 extern DLword *ColorDisplayRegion68k;
   /* It assumes that MONO screen size and COLOR screen size are identical */
-taking_mouse_down()
+void taking_mouse_down()
   {
     register DLword	*srcbase, *dstbase;
     static int sx, dx, w, h, srcbpl, dstbpl, backwardflg=0;
@@ -730,30 +731,11 @@ taking_mouse_down()
 #endif /* COLOR */
 
 
-/* I'll make it MACRO */
-taking_mouse_up(newx,newy)
-  int newx,newy;
-  {
-#ifdef DOS
-    (currentdsp->mouse_vissible)(newx, newy);
-#else
-    if(!DisplayInitialized) return;
-    /* save hidden bitmap */
-    cursor_hidden_bitmap(newx,newy);
-    /* Copy Cursor Image */
-#ifndef INIT
-    copy_cursor(newx,newy);
-#endif 
-    LastCursorX=newx;
-    LastCursorY=newy;
-#endif
-  }
-
 /* LastCursorClippingX must be set brfore calling 
  To avoid duplicate caluculation */
 #ifndef COLOR
 /* FOR MONO ONLY */
-copy_cursor(newx,newy)
+void copy_cursor(newx,newy)
   int newx,newy;
   {
     register DLword	*srcbase, *dstbase;
@@ -778,7 +760,7 @@ copy_cursor(newx,newy)
   }
 
 /* store bitmap image inside rect. which specified by x,y */
-cursor_hidden_bitmap(x,y)
+void cursor_hidden_bitmap(x,y)
   int x,y;
   {
     register DLword	*srcbase, *dstbase;
@@ -800,7 +782,7 @@ cursor_hidden_bitmap(x,y)
 #else
 /* For COLOR & MONO */
 #define IMIN(x,y)  (((x) > (y)) ? (y) : (x))
-copy_cursor(newx,newy)
+void copy_cursor(newx,newy)
   int newx,newy;
   {
     register DLword	*srcbase, *dstbase;
@@ -844,8 +826,27 @@ copy_cursor(newx,newy)
 #endif
   }
 
+/* I'll make it MACRO */
+void taking_mouse_up(newx,newy)
+  int newx,newy;
+  {
+#ifdef DOS
+    (currentdsp->mouse_vissible)(newx, newy);
+#else
+    if(!DisplayInitialized) return;
+    /* save hidden bitmap */
+    cursor_hidden_bitmap(newx,newy);
+    /* Copy Cursor Image */
+#ifndef INIT
+    copy_cursor(newx,newy);
+#endif 
+    LastCursorX=newx;
+    LastCursorY=newy;
+#endif
+  }
+
 /* store bitmap image inside rect. which specified by x,y */
-cursor_hidden_bitmap(x,y)
+void cursor_hidden_bitmap(x,y)
 int x,y;
 {
 register DLword	*srcbase, *dstbase;
