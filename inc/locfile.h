@@ -16,7 +16,7 @@
 /************************************************************************/
 
 
-#define	PAGE_SIZE		512	/* 1 page == 512 byte */
+#define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
 
 #define	RECOG_OLD		(S_POSITIVE | 0)
 #define	RECOG_OLDEST		(S_POSITIVE | 1)

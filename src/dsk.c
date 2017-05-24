@@ -167,7 +167,90 @@ FileName *GetNextHighestVersion();
 FileName *GetLowestVersion();
 FileName *VersionlessP();
 
+/*		
+ * Name:	separate_host
+ *
+ * Argument:	char	*lfname	Lisp full file name including host field.
+ *		char	*host	The place where host field will be stored.
+ *
+ * Value:	void
+ *
+ * Side Effect:	lfname will be replaced with the file name except host field,
+ *		and host will be replaced with the host field.
+ *
+ * Description:
+ *
+ * Accepts a Lisp full file name from Lisp code, and separate the host field
+ * from other components.  The result will be appropriate form to pass to
+ * unixpathname.  For convinience to unixpathname, the initial directory
+ * delimiter will be removed from lfname except the case lfname specifies the
+ * very root directory.  And if the lfname is regarded as other directory,
+ * the trail directory delimiter is also removed.
+ *
+ */
 
+#ifdef DOS
+void separate_host(lfname, host, drive)
+	char *drive;
+#else
+void separate_host(lfname, host)
+#endif /* DOS */
+	register char	*lfname;
+	register char	*host;
+{
+	register char	*cp;
+	register int	diff;
+
+	cp = lfname + 1;	/* Skip the initial "{". */
+	
+	while (*cp != '}') *host++ = *cp++;
+	*host = '\0';
+
+	cp++;			/* Now, *cp == '<' or drive letter. */
+#ifdef DOS
+	/* Check if there's a drive specified. */
+	 
+	if (*(cp+1) == DRIVESEP)
+	  {
+	    *drive = *cp;       /* copy the drive letter, if there is one */
+	    cp++; cp++;     /* Move to the real `<`/ */
+	  }
+	else *drive = '\0';     /* no drive */
+#endif /* DOS */
+
+	if (*(cp + 1) == '\0') {
+		/* Root directory is specified. */
+		*lfname = '<';
+		*(lfname + 1) = '\0';
+	} else {
+		diff = (int)cp - (int)lfname;
+		if (*cp == '<' || *cp == DIRSEP
+#ifdef DOS
+			|| *cp == UNIXDIRSEP
+#endif /* DOS */
+		) {
+			/*
+			 * Skip the initial directory delimiter.
+			 */
+			cp++;
+			diff++;
+		}
+		while (*cp) {
+			*(cp - diff) = *cp;
+			cp++;
+		}
+		if (*(cp - 1) == '>' && *(cp - 2) != '\'') {
+			/*
+			 * The last character is a not quoted directory
+			 * delimiter.  We have to remove it from the result
+			 * lfname for the convenience of unixpathname.
+			 */
+			*(cp - diff - 1) = '\0';
+		} else {
+			*(cp - diff) = '\0';
+		}
+	}
+}
 
 /*		
  * Name:	COM_openfile
@@ -2011,7 +2094,7 @@ COM_readpage(args)
 		 * next byte read is at the beggning of the requested page of the
 		 * file.  If the request file is special file, lseek is not needed.
 		 */
-sklp:		TIMEOUT(rval = lseek(fd, (npage * PAGE_SIZE), L_SET));
+sklp:		TIMEOUT(rval = lseek(fd, (npage * FDEV_PAGE_SIZE), L_SET));
 		if(rval == -1) {
 			if (errno == EINTR) goto sklp;	/* interrupted, retry */
 			*Lisp_errno = errno;
@@ -2019,7 +2102,7 @@ sklp:		TIMEOUT(rval = lseek(fd, (npage * PAGE_SIZE), L_SET));
 		}
 	}
 
-rdlp:	TIMEOUT(count = read(fd, bufp, PAGE_SIZE));
+rdlp:	TIMEOUT(count = read(fd, bufp, FDEV_PAGE_SIZE));
 	if(count == -1) {
 		if (errno == EINTR) goto rdlp;	/* interrupted; retry */
 		*Lisp_errno = errno;
@@ -2027,10 +2110,10 @@ rdlp:	TIMEOUT(count = read(fd, bufp, PAGE_SIZE));
 	}
 
 	/* O out the remaining part of the buffer. */
-	for(bp = &bufp[count], rval = count; rval < PAGE_SIZE; ++rval) *bp++ = 0;
+	for(bp = &bufp[count], rval = count; rval < FDEV_PAGE_SIZE; ++rval) *bp++ = 0;
 
 #ifdef BYTESWAP
-	word_swap_page(bufp, PAGE_SIZE / 4);
+	word_swap_page(bufp, FDEV_PAGE_SIZE / 4);
 #endif /* BYTESWAP */
 
 
@@ -2086,7 +2169,7 @@ COM_writepage(args)
 	bufp = (char*)(Addr68k_from_LADDR(args[2]));
 	count = LispNumToCInt(args[3]);
 
-sklp2:	TIMEOUT(rval = lseek(fd, (npage*PAGE_SIZE), L_SET));
+sklp2:	TIMEOUT(rval = lseek(fd, (npage*FDEV_PAGE_SIZE), L_SET));
 	if (rval == -1) {
 		if (errno == EINTR) goto sklp2;	/* interrupted; retry */
 		*Lisp_errno = errno;
@@ -2444,6 +2527,9 @@ COM_getfreeblock(args)
 #elif defined(LINUX)
 	TIMEOUT(rval = statfs(dir, &sfsbuf));
 	if (rval != 0) {
+#elif defined(MACOSX)
+	TIMEOUT(rval = statfs(dir, &sfsbuf));
+	if (rval != 0) {
 #elif HPUX
 	TIMEOUT(rval = statfs(dir, &sfsbuf));
 	if (rval != 0) {
@@ -2485,6 +2571,126 @@ COM_getfreeblock(args)
 /********************************************
 	Subroutines
 ********************************************/
+
+/*		
+ * Name:	separate_version
+ *
+ * Argument:	char	*name   UNIX file name.  It is recommended to pass only
+ *				"root file name" (i.e. without directory) as
+ *				name argument, but full file name is also
+ *				acceptable.
+ *		char	*ver	The place where extracted version will be stored.
+ *		init	checkp	If 1, whether the version field contains only
+ *				numbers or not is checked.  If 0, anything in the
+ *				version field is stored in ver.  If GENERATEFILE
+ *				want to contain a wild card character in a version
+ *				field, checkp should be 0.
+ *
+ * Value:	void
+ *
+ * Side Effect:	If name contains a valid version field, name and version will
+ *		be set to name and version respectively.
+ *
+ * Description:
+ *
+ * Check if name contains the valid version field and if so, separate version
+ * field from name field.  After this operation, name contains only name and
+ * version contains its version.  If name does not contain a valid version
+ * field, version will be NULL string.
+ * If checkp is 1, the version field which contains only numeric characters are
+ * regarded valid.
+ *
+ */
+
+void separate_version(name, ver, checkp)
+	register char	*name;
+	register char	*ver;
+	register int	checkp;
+{
+	register char	*start, *end, *cp;
+	register int	len, ver_no;	
+	char		ver_buf[VERSIONLEN];
+
+	if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
+		start = end;
+		cp = end + 1;
+		while (*cp) {
+			if (*cp == '~') {
+				start = end;
+				end = cp;
+			}
+			cp++;
+		}
+
+		if (start != end && *(start - 1) == '.' && end == (cp - 1)) {
+			/*
+			 * name ends in the form ".~###~". But we have to check
+			 * ### are all numbers or not, if checkp is 1.
+			 */
+			len = (int)end - (int)start - 1;
+			strncpy(ver_buf, start + 1, len);
+			ver_buf[len] = '\0';
+			if (checkp) {
+				NumericStringP(ver_buf, YES, NO);
+			      YES:
+				/*
+				 * name contains a valid version field.
+				 */
+				*(start - 1) = '\0';
+				*end = '\0';
+				/*
+				 * Use atoi to eliminate leading 0s.
+				 */
+				ver_no = atoi(start + 1);
+				sprintf(ver_buf, "%d", ver_no);
+				strcpy(ver, ver_buf);
+				return;
+			} else {
+				*(start - 1) = '\0';
+				strcpy(ver, ver_buf);
+				return;
+			}
+		}
+    }
+	else if (strchr(name,'%')) { strcpy(ver,"0"); return;}
+      NO:
+	/* name does not contain a valid version field. */
+	*ver = '\0';
+}
+
+
+
+
+
+
+#ifdef DOS
+separate_drive(lfname, drive)
+	register char	*lfname;
+  char *drive;
+{
+	register char	*cp;
+
+	cp = lfname ;	
+
+    /* Check if there's a drive specified. */
+
+    if (*(cp+1) == DRIVESEP)
+      {
+	*drive = *cp;		/* copy the drive letter, if there is one */
+	cp++; cp++;		/* Move to the real `<`/ */
+	while (*cp)		/* Move the rest to the left to cover. */
+	  {
+	    *(cp - 2) = *cp;
+	    cp++;
+	  }
+	*(cp-2) = '\0';
+      }
+    else *drive = '\0';		/* no drive */
+
+
+}
+#endif /* DOS */
+
 
 /*		
  * Name:	unpack_filename
@@ -2548,211 +2754,6 @@ unpack_filename(file, dir, name, ver, checkp)
 	separate_version(name, ver, checkp);
 	return(1);
 }
-
-/*		
- * Name:	separate_version
- *
- * Argument:	char	*name   UNIX file name.  It is recommended to pass only
- *				"root file name" (i.e. without directory) as
- *				name argument, but full file name is also
- *				acceptable.
- *		char	*ver	The place where extracted version will be stored.
- *		init	checkp	If 1, whether the version field contains only
- *				numbers or not is checked.  If 0, anything in the
- *				version field is stored in ver.  If GENERATEFILE
- *				want to contain a wild card character in a version
- *				field, checkp should be 0.
- *
- * Value:	void
- *
- * Side Effect:	If name contains a valid version field, name and version will
- *		be set to name and version respectively.
- *
- * Description:
- *
- * Check if name contains the valid version field and if so, separate version
- * field from name field.  After this operation, name contains only name and
- * version contains its version.  If name does not contain a valid version
- * field, version will be NULL string.
- * If checkp is 1, the version field which contains only numeric characters are
- * regarded valid.
- *
- */
-
-separate_version(name, ver, checkp)
-	register char	*name;
-	register char	*ver;
-	register int	checkp;
-{
-	register char	*start, *end, *cp;
-	register int	len, ver_no;	
-	char		ver_buf[VERSIONLEN];
-
-	if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
-		start = end;
-		cp = end + 1;
-		while (*cp) {
-			if (*cp == '~') {
-				start = end;
-				end = cp;
-			}
-			cp++;
-		}
-
-		if (start != end && *(start - 1) == '.' && end == (cp - 1)) {
-			/*
-			 * name ends in the form ".~###~". But we have to check
-			 * ### are all numbers or not, if checkp is 1.
-			 */
-			len = (int)end - (int)start - 1;
-			strncpy(ver_buf, start + 1, len);
-			ver_buf[len] = '\0';
-			if (checkp) {
-				NumericStringP(ver_buf, YES, NO);
-			      YES:
-				/*
-				 * name contains a valid version field.
-				 */
-				*(start - 1) = '\0';
-				*end = '\0';
-				/*
-				 * Use atoi to eliminate leading 0s.
-				 */
-				ver_no = atoi(start + 1);
-				sprintf(ver_buf, "%d", ver_no);
-				strcpy(ver, ver_buf);
-				return;
-			} else {
-				*(start - 1) = '\0';
-				strcpy(ver, ver_buf);
-				return;
-			}
-		}
-    }
-	else if (strchr(name,'%')) { strcpy(ver,"0"); return;}
-      NO:
-	/* name does not contain a valid version field. */
-	*ver = '\0';
-}
-
-
-
-/*		
- * Name:	separate_host
- *
- * Argument:	char	*lfname	Lisp full file name including host field.
- *		char	*host	The place where host field will be stored.
- *
- * Value:	void
- *
- * Side Effect:	lfname will be replaced with the file name except host field,
- *		and host will be replaced with the host field.
- *
- * Description:
- *
- * Accepts a Lisp full file name from Lisp code, and separate the host field
- * from other components.  The result will be appropriate form to pass to
- * unixpathname.  For convinience to unixpathname, the initial directory
- * delimiter will be removed from lfname except the case lfname specifies the
- * very root directory.  And if the lfname is regarded as other directory,
- * the trail directory delimiter is also removed.
- *
- */
-
-#ifdef DOS
-separate_host(lfname, host, drive)
-	char *drive;
-#else
-separate_host(lfname, host)
-#endif /* DOS */
-	register char	*lfname;
-	register char	*host;
-{
-	register char	*cp;
-	register int	diff;
-
-	cp = lfname + 1;	/* Skip the initial "{". */
-	
-	while (*cp != '}') *host++ = *cp++;
-	*host = '\0';
-
-	cp++;			/* Now, *cp == '<' or drive letter. */
-#ifdef DOS
-	/* Check if there's a drive specified. */
-	 
-	if (*(cp+1) == DRIVESEP)
-	  {
-	    *drive = *cp;       /* copy the drive letter, if there is one */
-	    cp++; cp++;     /* Move to the real `<`/ */
-	  }
-	else *drive = '\0';     /* no drive */
-#endif /* DOS */
-
-	if (*(cp + 1) == '\0') {
-		/* Root directory is specified. */
-		*lfname = '<';
-		*(lfname + 1) = '\0';
-	} else {
-		diff = (int)cp - (int)lfname;
-		if (*cp == '<' || *cp == DIRSEP
-#ifdef DOS
-			|| *cp == UNIXDIRSEP
-#endif /* DOS */
-		) {
-			/*
-			 * Skip the initial directory delimiter.
-			 */
-			cp++;
-			diff++;
-		}
-		while (*cp) {
-			*(cp - diff) = *cp;
-			cp++;
-		}
-		if (*(cp - 1) == '>' && *(cp - 2) != '\'') {
-			/*
-			 * The last character is a not quoted directory
-			 * delimiter.  We have to remove it from the result
-			 * lfname for the convenience of unixpathname.
-			 */
-			*(cp - diff - 1) = '\0';
-		} else {
-			*(cp - diff) = '\0';
-		}
-	}
-}
-
-
-
-
-#ifdef DOS
-separate_drive(lfname, drive)
-	register char	*lfname;
-  char *drive;
-{
-	register char	*cp;
-
-	cp = lfname ;	
-
-    /* Check if there's a drive specified. */
-
-    if (*(cp+1) == DRIVESEP)
-      {
-	*drive = *cp;		/* copy the drive letter, if there is one */
-	cp++; cp++;		/* Move to the real `<`/ */
-	while (*cp)		/* Move the rest to the left to cover. */
-	  {
-	    *(cp - 2) = *cp;
-	    cp++;
-	  }
-	*(cp-2) = '\0';
-      }
-    else *drive = '\0';		/* no drive */
-
-
-}
-#endif /* DOS */
-
 
 /*
  * Name:	true_name
