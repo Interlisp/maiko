@@ -79,6 +79,8 @@ extern int URaid_currentFX;
 extern FX *URaid_FXarray[];
 extern int URaid_ArrMAXIndex;
 
+void print_package_name(int index);
+
 /************************************************************************/
 /*									*/
 /*			P R I N T _ A T O M N A M E			*/
@@ -87,7 +89,7 @@ extern int URaid_ArrMAXIndex;
 /*									*/
 /************************************************************************/
 
-print_atomname(LispPTR index)
+void print_atomname(LispPTR index)
                 /* atomindex */
 {
 
@@ -156,7 +158,7 @@ find_package_from_name(char *packname, int len)
 /************************************************************************/
 
 
-print_package_name(int index)
+void print_package_name(int index)
 {
     PACKAGE *package;
     NEWSTRINGP *namestring;
@@ -232,7 +234,7 @@ print_package_name(int index)
 /*									*/
 /************************************************************************/
 
-dump_dtd(void)
+void dump_dtd(void)
 {
     extern DLword *DTDspace;
     struct dtd *dtdp;
@@ -290,7 +292,7 @@ dump_dtd(void)
 /*									*/
 /************************************************************************/
 
-check_type_68k(int type, LispPTR *ptr)
+void check_type_68k(int type, LispPTR *ptr)
 {
  if (type != (GetTypeNumber(LADDR_from_68k(ptr)) ) )
   {
@@ -334,7 +336,7 @@ type_num(LispPTR lispptr)
 /*									*/
 /************************************************************************/
 
-dump_conspage(struct conspage *base, int linking)
+void dump_conspage(struct conspage *base, int linking)
                           /* target conspage address */
                  /* look for chaiing conspage ? T/NIL */
   {
@@ -367,7 +369,7 @@ lp:
 /*********************************/
 /* trace the link in ListpDTD->dtd_nextpage */
 
-trace_listpDTD(void)
+void trace_listpDTD(void)
 {
 extern struct dtd *ListpDTD;
  printf("Dump conspages from ListpDTD chain\n");
@@ -385,7 +387,7 @@ extern struct dtd *ListpDTD;
 /*									*/
 /************************************************************************/
 
-a68k(LispPTR lispptr)
+void a68k(LispPTR lispptr)
 {
     DLword *val;
     val = Addr68k_from_LADDR(lispptr);
@@ -402,40 +404,12 @@ a68k(LispPTR lispptr)
 /*									*/
 /************************************************************************/
 
-laddr(DLword *addr68k)
+void laddr(DLword *addr68k)
 {
     int val;
     val = LADDR_from_68k(addr68k);
     printf("LADDR : 0x%x (%d)\n", val, val);
   }
-
-
-
-/************************************************************************/
-/*									*/
-/*			d u m p _ f n o b j				*/
-/*									*/
-/*	Given an atom number, dump that atom's definition.		*/
-/*									*/
-/************************************************************************/
-
-#define DUMPSIZE 40
-
-dump_fnobj(LispPTR index)
-                 /* atom index */
-  {
-    struct fnhead *fnobj;
-    DefCell *defcell68k;
-    LispPTR cell;
-    DLbyte *scratch;
-    int i;
-
-
-    defcell68k = (DefCell *)GetDEFCELL68k(index);
-
-	dump_fnbody(*defcell68k);
-
-  } /*dump_fnobj end */
 
 
 
@@ -450,7 +424,7 @@ dump_fnobj(LispPTR index)
 /*									*/
 /************************************************************************/
 
-dump_fnbody(LispPTR fnblockaddr)
+void dump_fnbody(LispPTR fnblockaddr)
                        /* atom index */
   {
     struct fnhead *fnobj;
@@ -501,6 +475,34 @@ dump_fnbody(LispPTR fnblockaddr)
 
 
 } /*dump_fnbody end */
+
+
+
+/************************************************************************/
+/*									*/
+/*			d u m p _ f n o b j				*/
+/*									*/
+/*	Given an atom number, dump that atom's definition.		*/
+/*									*/
+/************************************************************************/
+
+#define DUMPSIZE 40
+
+void dump_fnobj(LispPTR index)
+                 /* atom index */
+  {
+    struct fnhead *fnobj;
+    LispPTR *defcell68k;
+    LispPTR cell;
+    DLbyte *scratch;
+    int i;
+
+
+    defcell68k = GetDEFCELL68k(index);
+
+    dump_fnbody(*defcell68k);
+
+  } /*dump_fnobj end */
 
 
 
@@ -716,7 +718,7 @@ struct doko doko(void)
 
 
 /**** dump specified area (in 32 bit width) ***/
-dumpl(LispPTR laddr)
+void dumpl(LispPTR laddr)
 {
     int i;
     LispPTR *ptr;
@@ -731,7 +733,7 @@ dumpl(LispPTR laddr)
 
 /**** dump specified area (in 16 bit width) ***/
 
-dumps(LispPTR laddr)
+void dumps(LispPTR laddr)
 {
     int i;
     DLword *ptr;
@@ -747,7 +749,7 @@ dumps(LispPTR laddr)
 
 
 /***********************/
-printPC(void)
+void printPC(void)
 {
     unsigned short pc;
 
@@ -768,39 +770,14 @@ countchar(char *string)
   }
 
 
-/***************************************************************/
-/*
-	Func Name :	dump_stackframe
-	Desc :		For Debugging Aids
-	Changed		8 JUN 1987 TAKE
-
-*/
-/***************************************************************/
-dump_stackframe(struct frameex1 *fx_addr68k)
-{
-    Bframe *bf;
-    if((fx_addr68k->alink & 1)==0)
-      {   /* FAST */
-	bf = (Bframe *)(((DLword *)fx_addr68k)  - 2 );
-      }
-    else
-      {   /* SLOW */
-	bf =(Bframe *) Addr68k_from_LADDR((fx_addr68k->blink+ STK_OFFSET));
-      }
-    dump_bf(bf);
-    dump_fx((struct frameex1 *)fx_addr68k);
-  }
-
-
-
-dump_bf(Bframe *bf)
+void dump_bf(Bframe *bf)
 {
     DLword *ptr;
     printf("\n*** Basic Frame");
     if (BFRAMEPTR(bf)->flags != 4)
       {
 	printf("\nInvalid basic frame"); 
-	return(0);
+	return;
       };
 
     if (BFRAMEPTR(bf)->residual) {goto printflags;}
@@ -809,7 +786,7 @@ dump_bf(Bframe *bf)
     if ( (((DLword*)bf - ptr) > 512) || (( (UNSIGNED)ptr & 1) != 0) )
       {
 	printf("\nInvalid basic frame");
-	return(0);
+	return;
       }
     while(ptr < (DLword *)bf)
       {
@@ -829,7 +806,7 @@ printflags:
 
 }
 
-dump_fx(struct frameex1 *fx_addr68k)
+void dump_fx(struct frameex1 *fx_addr68k)
 {
     DLword *next68k;
     DLword *ptr;
@@ -840,7 +817,7 @@ dump_fx(struct frameex1 *fx_addr68k)
     if(fx_addr68k->flags != 6)
       {
 	printf("\nInvalid frame,NOT FX"); 
-	return(0);
+	return;
       };
 
 
@@ -879,7 +856,7 @@ dump_fx(struct frameex1 *fx_addr68k)
     if (fx_addr68k == CURRENTFX) {next68k = CurrentStackPTR + 2;}
 
     if ((next68k < ptr) || (((UNSIGNED)next68k & 1) != 0) )
-    {printf ("\nNext block invalid"); return(0);}
+    {printf ("\nNext block invalid"); return;}
 
 
     while(next68k > ptr)
@@ -888,12 +865,35 @@ dump_fx(struct frameex1 *fx_addr68k)
 	printf("\n %x : %x %x",
 		LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr+1));
       }
-    return (0);
-
   } /* end dump_fx */
 
 
-dump_CSTK(int before)
+/***************************************************************/
+/*
+	Func Name :	dump_stackframe
+	Desc :		For Debugging Aids
+	Changed		8 JUN 1987 TAKE
+
+*/
+/***************************************************************/
+void dump_stackframe(struct frameex1 *fx_addr68k)
+{
+    Bframe *bf;
+    if((fx_addr68k->alink & 1)==0)
+      {   /* FAST */
+	bf = (Bframe *)(((DLword *)fx_addr68k)  - 2 );
+      }
+    else
+      {   /* SLOW */
+	bf =(Bframe *) Addr68k_from_LADDR((fx_addr68k->blink+ STK_OFFSET));
+      }
+    dump_bf(bf);
+    dump_fx((struct frameex1 *)fx_addr68k);
+  }
+
+
+
+void dump_CSTK(int before)
 {
     DLword *ptr;
     ptr= CurrentStackPTR - before;
@@ -911,7 +911,7 @@ dump_CSTK(int before)
 /******************************************/
 /* BTV */
 
-btv(void)
+void btv(void)
 {
     struct frameex1 *fx_addr68k;
     LispPTR atomindex;
@@ -922,7 +922,7 @@ btv(void)
 loop:
     dump_stackframe(fx_addr68k);
     if( fx_addr68k->alink == 0 )
-     {printf ("\n BTV end"); return(0);};
+     {printf ("\n BTV end"); return;};
 
     fx_addr68k= get_nextFX(fx_addr68k);
     goto loop;
@@ -1112,7 +1112,7 @@ typedef struct stack_header
 
 
 
-all_stack_dump(DLword start, DLword end, DLword silent)
+void all_stack_dump(DLword start, DLword end, DLword silent)
                            /* Stack offset in DLword */
 {
   STKH *stkptr;
@@ -1238,7 +1238,7 @@ printf("\n<< That's All , last stack :0x%x >>\n",InterfacePage->endofstack);
 
 
 /************************************************************/
-dtd_chain(DLword type)
+void dtd_chain(DLword type)
 {
     struct dtd *dtdp;
     LispPTR next;
@@ -1268,7 +1268,7 @@ dtd_chain(DLword type)
 
 #ifdef DTDDEBUG
 
-check_dtd_chain(type)
+void check_dtd_chain(type)
   DLword          type;
   {
     register LispPTR next, onext;
@@ -1317,7 +1317,7 @@ check_dtd_chain(type)
 /*									*/
 /************************************************************************/
 
-Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos)
+void Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos)
 {
     printf("Calling a %d-arg FN:  ", numargs);
     print_atomname(atomindex);
@@ -1333,7 +1333,7 @@ Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos)
 	fflush(stdout);
   }
 
-Trace_APPLY(int atomindex)
+void Trace_APPLY(int atomindex)
 {
     printf("APPLYing an atom:  ");
     print_atomname(atomindex);
