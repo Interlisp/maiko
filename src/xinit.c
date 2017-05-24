@@ -125,8 +125,10 @@ void init_Xevent(dsp)
 
 #ifdef SYSVONLY
 #ifndef LINUX
+#ifndef MACOSX
     ioctl(ConnectionNumber(dsp->display_id)
 	  , I_SETSIG, S_INPUT); /* so we see X events fast */
+#endif
 #endif
 #endif /* SYSVONLY */
 }				/*end init_Xevent */
@@ -143,8 +145,10 @@ void lisp_Xexit(dsp)
   {
 #ifdef SYSVONLY
 #ifndef LINUX
+#ifndef MACOSX
     ioctl(ConnectionNumber(dsp->display_id)
 	  , I_SETSIG, 0); /* so no interrupts happen during */
+#endif
 #endif
 #endif /* SYSVONLY */
 
