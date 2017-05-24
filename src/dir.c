@@ -2283,7 +2283,7 @@ COM_gen_files(args)
 		  return(GetSmallp(-1));
 		if (dskp) {
 			if (highestp)
-			  count = trim_finfo_highest(&fp);
+			  count = trim_finfo_highest(&fp, highestp);
 			else if (version > 0 && count > 0) 
 			  count = trim_finfo_version(&fp, version);
 			else
