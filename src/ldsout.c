@@ -24,6 +24,7 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>
@@ -64,19 +65,12 @@ extern int	errno;
 int Storage_expanded;  /*  T or NIL */
 
 
-  /* RISCOS doesn't have valloc, and malloc works OK there. */
-#ifdef SYSVONLY
+  /* RISCOS, OSF1 and MACOSX don't have valloc, and malloc works OK there. */
+#if defined(SYSVONLY) || defined(OSF1) || defined(MACOSX)
 #define valloc malloc
-#endif /* SYSVONLY */
-
-
-#ifdef OSF1
-#define valloc malloc
-#endif /* OSF1 */
-
-
+#else
 char *valloc();
-
+#endif /* SYSVONLY || OSF1 */
 
 /************************************************************************/
 /*									*/
