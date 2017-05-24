@@ -41,7 +41,7 @@ int PrintLen[20] ;
 /*									*/
 /************************************************************************/
 
-prindatum(LispPTR x)
+void prindatum(LispPTR x)
 {
     NEWSTRINGP *newstring ;
     struct dtd *dtd_base;
