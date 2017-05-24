@@ -30,6 +30,7 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef ISC
 #include <sys/bsdtypes.h>
@@ -916,8 +917,6 @@ device_before_raid()
 #ifdef SUNDISPLAY
     union wait status;
 #endif /* SUNDISPLAY */
-
-    char *malloc();
 
     int_timer_off();
 
