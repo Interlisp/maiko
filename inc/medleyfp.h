@@ -24,6 +24,7 @@
 #ifdef DOS
 #include <i32.h>
 #endif /* DOS */
+
 #ifdef ULTRIX
 #include <ieeefp.h>
 #endif /* ULTRIX */
@@ -67,18 +68,15 @@ volatile extern int  FP_error;
     For sparc, should also check for isnan?  Don't know what isnormal
     & issubnormal do (these are sunos4.0 only)
  */
-
-#ifdef OS5
-
+#if defined(OS5)
 #define FPCLEAR
 #define FPTEST(result) (!finite(result))
 
 #elif (defined(sparc) || defined(I386) || defined(HPUX))
-
 #define FPCLEAR
 #define FPTEST(result) (isinf(result) || isnan(result))
 
-#elif APOLLO
+#elif defined(APOLLO)
 	/**********************************************************/
 	/*  Need values.h & nan.h, so we all parts of IsNANorINF  */
 	/*  are defined.  IsNANorINF uses structure aliasing to   */
@@ -92,23 +90,28 @@ volatile extern int  FP_error;
 #undef REGISTER
 #define REGISTER
 
-#elif OSF1
+#elif defined(OSF1)
 #include <fp.h>
 #define FPCLEAR
 #define FPTEST(result) (!FINITE(result))
 
-
-#elif INDIGO
+#elif defined(INDIGO)
 #include <nan.h>
 #define FPCLEAR
 #define FPTEST(result) (IsNANorINF(result))
-#else
-#ifdef AIX
+
+#elif defined(AIX)
 #define FPCLEAR
 #define FPTEST(result) ((!finite(result)) || isnan(result))
-#elif DOS
+
+#elif defined(MACOSX) || defined(FREEBSD)
+#define FPCLEAR
+#define FPTEST(result) (!finite(result))
+
+#elif defined(DOS)
 #define FPCLEAR
 #define FPTEST(result) (_getrealerror() & ( I87_ZERO_DIVIDE | I87_OVERFLOW | I87_UNDERFLOW))
+
 #else
 static int constant0 = 0;
 unsigned int fpstatus_();
@@ -116,10 +119,7 @@ unsigned int fpstatus_();
 #define FPCLEAR         fpstatus_(&constant0);
 #define FPTEST(result) (fpstatus_(&constant0) & 0xF0)
 
-#endif /* AIX */
-
-#endif /* sparc | I386 */
-
+#endif
 #endif /* FLTINT */
 
 
