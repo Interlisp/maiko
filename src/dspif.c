@@ -132,7 +132,7 @@ SwitchDisplay(LispPTR display)
   return( display );
 }
 
-describedsp(DspInterface dsp)
+void describedsp(DspInterface dsp)
 {
   if ( dsp == 0 ){
     printf("describedsp: Not a dsp!\n");
