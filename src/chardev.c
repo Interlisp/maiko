@@ -36,7 +36,9 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include        <sys/param.h>
 #include        <sys/time.h>
 #ifndef OS5
+#ifndef FREEBSD
 #include        <sys/dir.h>
+#endif /* FREEBSD */
 #endif /* OS5 */
 #ifndef HPUX
 #ifndef OS5
@@ -64,7 +66,7 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include        "dbprint.h"
 
 
-#ifdef ISC
+#if defined(ISC) || defined(FREEBSD)
 #include        <dirent.h>
 #endif
 
