@@ -49,144 +49,6 @@ static char *id = "$Id: fvar.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyrigh
 #define NAMETABLE       DLword
 #endif
 
-/*************************************************************************
- N_OP_fvarn
-	entry of OPCODE[120b-127b]: FVAR, FVARX
-
-	1. save TopOfStack to evaluation stack.
-	2. set address of searching FVAR slot to chain.
-	3. call lookfor. (It sets some content to FVAR slot)
-	4. get some address by caluculation of content of FVAR slot.
-	5. set the address to TopOfStack.
-**************************************************************************/
-LispPTR N_OP_fvarn(register int n)
-	/* n is word offset */
-                
-  {
-  register DLword *chain;	/* keep FVAR slot2 in CurrentFrameExtension */
-
-  chain = PVar + n;
-
-  if(WBITSPTR(chain)->LSB)
-    {
-      /* check 15bit of FVAR slot1 in CurrentFrameExtension.
-	 0: bound
-	 1: unbound */
-      nfvlookup(CURRENTFX, chain, FuncObj);
-    }
-
-  return(GetLongWord(Addr68k_from_LADDR(POINTERMASK &
-					(((GETBASEWORD(chain,1))<<16) |
-					 GETBASEWORD(chain,0)))));
-  }
-
-
-
-
-/**************************************************************************
- nfvlookup:
-
-	This routine is used by only OP_fvarn.
-		( in addition to N_OP_fvar_() )
-	1. get Atom index number of target fvar slot.
-	2. call fvlookfor.
-
-****************************************************************************/
-nfvlookup(struct frameex1 *apframe1, register DLword *achain, register struct fnhead *apfnhead1)
-                            	/* pointer to current frame extension */
-                          	/* pointer to 1st word of the searching
-				   FVAR slot in CurrentFrameExtension */
-                                    	/* pointer to current function heaer */
-  {
-    register DLword *pfh;	/* pointer to current function header */
-    register int    paoffset;	/* 2word offset in PVAR AREA */
-
-    pfh = (DLword *)apfnhead1;
-    paoffset = ((UNSIGNED)achain - (UNSIGNED)PVar)>>2;
-		/* slot to looked for, 2word offset from PVar */
-#ifdef BIGATOMS
-    nnewframe(apframe1, achain,
-	      (*((LispPTR *)
-		       ((DLword *)pfh + apfnhead1->fvaroffset) + paoffset
-			- apfnhead1->nlocals)));
-#else
-    nnewframe(apframe1, achain,
-	      (GETWORD(pfh + (apfnhead1->fvaroffset + paoffset -
-			      apfnhead1->nlocals))));
-#endif
-  }
-
-
-/******************************************************************************
-
-N_OP_stkscan
-	entry	STKSCAN		OPCODE[057]
-
-	<<Enter>>
-	TopOfStack:	Low word - Atom index number of variable to be saned.
-	<<Exit>>
-	TopOfStack:	Address of found value.
-
-	1. call fvlookup.
-	2. Set *chain to TopOfStack.
-	3. Increment Pc by 1.
-
-******************************************************************************/
-
-LispPTR N_OP_stkscan(LispPTR tos)
-{
-#ifdef I386
-    int scratchx[3];
-    int *scratch = (int *)(0xFFFFFFFC & (3+(UNSIGNED)scratchx));
-    *scratch = tos;
-    nnewframe(CURRENTFX, (DLword *)scratch, POINTERMASK & *scratch );
-    return(swapx(*scratch));
-#else
-    int	scratch;
-    scratch = tos;
-    nnewframe(CURRENTFX, (DLword *)&scratch, POINTERMASK & scratch );
-    return(swapx(scratch));
-#endif /* I386 */
-
-  }
-
-
-
-
-/**************************************************
-N_OP_fvar_
-
-	Entry:	FVAR_		opcode[0143]
-
-
-***************************************************/
-
-LispPTR N_OP_fvar_(register LispPTR tos, register int n)
-{
-    register DLword *ppvar;	/* pointer to argued Fvar slot in pvar area */
-    register DLword *pfreeval;	/* pointer to argued free value */
-    register int l1;		/* return value of fvlookup() */
-
-    ppvar = PVar + n;
-
-    if(WBITSPTR(ppvar)->LSB)	/* check unbound ? */
-      { /* unbound */
-	nfvlookup(CURRENTFX, ppvar, FuncObj);
-      }
-
-    pfreeval =Addr68k_from_LADDR( MaskShift((GETWORD(ppvar+1))) |
-					     GETWORD(ppvar) );
-
-    if( ((0xFF & GETWORD(ppvar+1)) != STK_HI))
-      {
-	GCLOOKUP(*((LispPTR *)pfreeval), DELREF);
-	GCLOOKUP(tos, ADDREF);
-      }
-
-    *((LispPTR *)pfreeval) = tos;
-    return(tos);
-  }
-
 #define FVSTACK		2
 #define FVGLOBAL	6
 
@@ -216,7 +78,7 @@ nnewframe
 
 ******************************************************************************/
 
-nnewframe(register struct frameex1 *newpfra2, register DLword *achain, register int name)
+void nnewframe(register struct frameex1 *newpfra2, register DLword *achain, register int name)
                                      	/* pointer to new frame extension */
                  	           	/* pointer to 1st word of the searching
 					   FVAR slot in CurrentFrameExtension */
@@ -395,6 +257,146 @@ endlookfor:
     goto newframe;		/* scan the next one */
 
   }
+
+/**************************************************************************
+ nfvlookup:
+
+	This routine is used by only OP_fvarn.
+		( in addition to N_OP_fvar_() )
+	1. get Atom index number of target fvar slot.
+	2. call fvlookfor.
+
+****************************************************************************/
+void
+nfvlookup(struct frameex1 *apframe1, register DLword *achain, register struct fnhead *apfnhead1)
+                            	/* pointer to current frame extension */
+                          	/* pointer to 1st word of the searching
+				   FVAR slot in CurrentFrameExtension */
+                                    	/* pointer to current function heaer */
+  {
+    register DLword *pfh;	/* pointer to current function header */
+    register int    paoffset;	/* 2word offset in PVAR AREA */
+
+    pfh = (DLword *)apfnhead1;
+    paoffset = ((UNSIGNED)achain - (UNSIGNED)PVar)>>2;
+		/* slot to looked for, 2word offset from PVar */
+#ifdef BIGATOMS
+    nnewframe(apframe1, achain,
+	      (*((LispPTR *)
+		       ((DLword *)pfh + apfnhead1->fvaroffset) + paoffset
+			- apfnhead1->nlocals)));
+#else
+    nnewframe(apframe1, achain,
+	      (GETWORD(pfh + (apfnhead1->fvaroffset + paoffset -
+			      apfnhead1->nlocals))));
+#endif
+  }
+
+
+/*************************************************************************
+ N_OP_fvarn
+	entry of OPCODE[120b-127b]: FVAR, FVARX
+
+	1. save TopOfStack to evaluation stack.
+	2. set address of searching FVAR slot to chain.
+	3. call lookfor. (It sets some content to FVAR slot)
+	4. get some address by caluculation of content of FVAR slot.
+	5. set the address to TopOfStack.
+**************************************************************************/
+LispPTR N_OP_fvarn(register int n)
+	/* n is word offset */
+                
+  {
+  register DLword *chain;	/* keep FVAR slot2 in CurrentFrameExtension */
+
+  chain = PVar + n;
+
+  if(WBITSPTR(chain)->LSB)
+    {
+      /* check 15bit of FVAR slot1 in CurrentFrameExtension.
+	 0: bound
+	 1: unbound */
+      nfvlookup(CURRENTFX, chain, FuncObj);
+    }
+
+  return(GetLongWord(Addr68k_from_LADDR(POINTERMASK &
+					(((GETBASEWORD(chain,1))<<16) |
+					 GETBASEWORD(chain,0)))));
+  }
+
+
+
+
+/******************************************************************************
+
+N_OP_stkscan
+	entry	STKSCAN		OPCODE[057]
+
+	<<Enter>>
+	TopOfStack:	Low word - Atom index number of variable to be saned.
+	<<Exit>>
+	TopOfStack:	Address of found value.
+
+	1. call fvlookup.
+	2. Set *chain to TopOfStack.
+	3. Increment Pc by 1.
+
+******************************************************************************/
+
+LispPTR N_OP_stkscan(LispPTR tos)
+{
+#ifdef I386
+    int scratchx[3];
+    int *scratch = (int *)(0xFFFFFFFC & (3+(UNSIGNED)scratchx));
+    *scratch = tos;
+    nnewframe(CURRENTFX, (DLword *)scratch, POINTERMASK & *scratch );
+    return(swapx(*scratch));
+#else
+    int	scratch;
+    scratch = tos;
+    nnewframe(CURRENTFX, (DLword *)&scratch, POINTERMASK & scratch );
+    return(swapx(scratch));
+#endif /* I386 */
+
+  }
+
+
+
+
+/**************************************************
+N_OP_fvar_
+
+	Entry:	FVAR_		opcode[0143]
+
+
+***************************************************/
+
+LispPTR N_OP_fvar_(register LispPTR tos, register int n)
+{
+    register DLword *ppvar;	/* pointer to argued Fvar slot in pvar area */
+    register DLword *pfreeval;	/* pointer to argued free value */
+    register int l1;		/* return value of fvlookup() */
+
+    ppvar = PVar + n;
+
+    if(WBITSPTR(ppvar)->LSB)	/* check unbound ? */
+      { /* unbound */
+	nfvlookup(CURRENTFX, ppvar, FuncObj);
+      }
+
+    pfreeval =Addr68k_from_LADDR( MaskShift((GETWORD(ppvar+1))) |
+					     GETWORD(ppvar) );
+
+    if( ((0xFF & GETWORD(ppvar+1)) != STK_HI))
+      {
+	GCLOOKUP(*((LispPTR *)pfreeval), DELREF);
+	GCLOOKUP(tos, ADDREF);
+      }
+
+    *((LispPTR *)pfreeval) = tos;
+    return(tos);
+  }
+
 #ifndef BIGATOMS
 #ifdef SUN3_OS3_OR_OS4_IL
 
@@ -404,26 +406,26 @@ endlookfor:
 #else
 
 #define VALS_HI_RET(x)	\
-	((int) x << 17) + VALS_HI + ((unsigned short) x >> 15)	
+  ((int) (x) << 17) + VALS_HI + ((unsigned short) (x) >> 15)	
 
 #define STK_HI_RET(x)	\
-	((int) x << 16) | 1 | ((unsigned int) x >> 16)
+  ((int) (x) << 16) | 1 | ((unsigned int) (x) >> 16)
 
 #endif /* SUN3_IL */
 
 #else
 
 #ifdef BIGVM
-#define VALS_HI_RET(x)	((((int) x & SEGMASK) == 0) ?			\
+#define VALS_HI_RET(x)	((((int) (x) & SEGMASK) == 0) ?			\
 	(swapx((ATOMS_HI<<16) + (10 * (int) (x)) + NEWATOM_VALUE_OFFSET)) :	\
-	(swapx((int)x + NEWATOM_VALUE_OFFSET)))
+			 (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
 #else
-#define VALS_HI_RET(x)	((((int) x & SEGMASK) == 0) ?			\
-	(((int) x << 17) + VALS_HI + ((unsigned short) x >> 15)) :	\
-	(swapx((int)x + NEWATOM_VALUE_OFFSET)))
+#define VALS_HI_RET(x)	((((int)(x)& SEGMASK) == 0) ?			\
+			 (((int)(x) << 17) + VALS_HI + ((unsigned short)(x) >> 15)) : \
+			 (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
 #endif /* BIGVM */
 
-#define STK_HI_RET(x)	((int) x << 16) | 1 | ((unsigned int) x >> 16) 
+#define STK_HI_RET(x)	((int)(x) << 16) | 1 | ((unsigned int)(x) >> 16) 
 
 #endif /* BIGATOMS */
 
