@@ -6,3 +6,5 @@
 # build directories
 darwin.386-x/**
 darwin.386/**
+freebsd.386-x/**
+freebsd.386/**
