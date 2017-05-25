@@ -414,7 +414,7 @@ LispPTR lcfuncall(register unsigned int atom_index, register int argnum, registe
     {
       LispPTR test;
       test= *((LispPTR*)CurrentStackPTR);
-      // DOSTACKOVERFLOW(argnum,bytenum-1); XXX until we figure out what should be happening
+      /* DOSTACKOVERFLOW(argnum,bytenum-1); XXX until we figure out what should be happening */
       S_CHECK(test==*((LispPTR*)CurrentStackPTR), "overflow in ccfuncall");
     }
   FuncObj = tmp_fn;
