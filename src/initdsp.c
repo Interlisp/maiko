@@ -164,15 +164,152 @@ int Win_security_p;
 #endif /* SUNDISPLAY */
 
 
+/************************************************************************/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
+
+void init_cursor()
+    {
+
+#ifndef NOPIXRECT
+    CursorBitMap = mem_create( CURSORWIDTH, CURSORHEIGHT, 1 );
+    mpr_mdlinebytes(CursorBitMap) = CURSORWIDTH >> 3;/* 2(byte) */
+#endif /* NOPIXRECT */
+
+#ifdef SUNDISPLAY
+    CurrentCursor.cur_xhot = 0;
+    CurrentCursor.cur_yhot = 0;
+    CurrentCursor.cur_shape = CursorBitMap;
+    CurrentCursor.cur_function = PIX_SRC | PIX_DST;
+#endif /* SUNDISPLAY */
+
+    /*  Invisible Cursor */
+
+#ifndef NOPIXRECT
+    InvisibleCursorBitMap = mem_create( 0, 0, 1 );
+#endif /* NOPIXRECT */
+
+#ifdef SUNDISPLAY
+    InvisibleCursor.cur_xhot = 0;
+    InvisibleCursor.cur_yhot = 0;
+    InvisibleCursor.cur_shape = InvisibleCursorBitMap;
+    InvisibleCursor.cur_function = /*PIX_SRC |*/ PIX_DST;
+    win_setcursor( LispWindowFd, &InvisibleCursor);
+    win_setmouseposition(LispWindowFd, 0, 0);
+#endif /* SUNDISPLAY */
+
+    }
+
+/************************************************************************/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
+void set_cursor()
+    {
+#ifdef SUNDISPLAY
+#ifdef OLD_CURSOR
+    (mpr_d(CursorBitMap))->md_image =
+			(short *)(IOPage->dlcursorbitmap);
+				/* BitmapBase of CurrentCursor
+				 * is set to IOPage->dlcursorbitmap
+				 */
+    if( win_setcursor( LispWindowFd, &CurrentCursor )== -1)
+	perror("SET Cursor");
+    if( win_setmouseposition(LispWindowFd, 0, 0)==-1)
+	perror("SET Mouse POS");
+#else
+    if( win_setcursor(LispWindowFd,&InvisibleCursor) ==-1)
+	perror("SET Cursor:");
+#endif
+#endif /* SUNDISPLAY */
+
+#ifdef XWINDOW
+    Init_XCursor();
+#endif /* XWINDOW */
+
+	DBPRINT(("After Set cursor\n"));
+}
+
+
+/************************************************************************/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
+
+#ifndef COLOR
+void clear_display()
+  {
+#ifdef SUNDISPLAY
+#ifndef DISPLAYBUFFER
+    register short *word;
+    register int w, h;
+    word =(short*) DisplayRegion68k;
+    for (h = displayheight; (h--);)
+      {
+	for (w = DisplayRasterWidth; (w--);) {*word++ = 0;}
+      }
+#else
+    pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight,
+	   PIX_CLR,
+	   ColorDisplayPixrect, 0, 0);
+  /* Original images are still kept in SYSOUT(DisplayRegion)  */
+  /*  clear_CG6; */
+#endif /* DISPLAYBUFFER */
+
+#endif /* SUNDISPLAY */
+
+#ifdef DOS
+    TPRINT(("Enter Clear_display\n"));
+    (currentdsp->cleardisplay)(currentdsp);
+    TPRINT(("Exit Clear_display\n"));
+#endif /* DOS */
+
+  }
+
+#else /* COLOR */
+
+void clear_display()
+{
+	register short *word;
+	register int w, h;
+	if( MonoOrColor == MONO_SCREEN ) {
+#ifndef DISPLAYBUFFER
+		word = DisplayRegion68k;
+		for( h=displayheight; (h--);) {
+			for( w=DisplayRasterWidth; (w--);) {*word++ = 0;}
+		} /* end for(h) */
+#else /* DISPLAYBUFFER */
+		pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight,
+	   		PIX_CLR,ColorDisplayPixrect, 0, 0);
+#endif /* DISPLAYBUFFER */
+	} else { /* MonoOrColo is COLOR_SCREEN */
+		word = (short *)ColorDisplayRegion68k;
+		for( h=displayheight; (h--);) {
+			for( w=DisplayRasterWidth*8; (w--);) {*word++ = 0;}
+		} /* end for(h) */
+	} /* end if(MonoOrColor) */ 
+}
+#endif /* COLOR */
+
 /*  ================================================================  */
 /*  Now takes 68k address, function renamed for safety  */
 
-init_display2(display_addr, display_max)
+void init_display2(display_addr, display_max)
   INT   display_addr, display_max;
   {
     int mmapstat;
     int fbgattr_result;
-    char *texture_base, *malloc();
+    char *texture_base;
 
 #ifdef SUNDISPLAY
     struct fbtype my_screen;
@@ -509,81 +646,7 @@ else if( my_screen.fb_type == FBTYPE_SUN4COLOR ) { /* cg3 or cg6 */
 /*									*/
 /*									*/
 /************************************************************************/
-
-init_cursor()
-    {
-
-#ifndef NOPIXRECT
-    CursorBitMap = mem_create( CURSORWIDTH, CURSORHEIGHT, 1 );
-    mpr_mdlinebytes(CursorBitMap) = CURSORWIDTH >> 3;/* 2(byte) */
-#endif /* NOPIXRECT */
-
-#ifdef SUNDISPLAY
-    CurrentCursor.cur_xhot = 0;
-    CurrentCursor.cur_yhot = 0;
-    CurrentCursor.cur_shape = CursorBitMap;
-    CurrentCursor.cur_function = PIX_SRC | PIX_DST;
-#endif /* SUNDISPLAY */
-
-    /*  Invisible Cursor */
-
-#ifndef NOPIXRECT
-    InvisibleCursorBitMap = mem_create( 0, 0, 1 );
-#endif /* NOPIXRECT */
-
-#ifdef SUNDISPLAY
-    InvisibleCursor.cur_xhot = 0;
-    InvisibleCursor.cur_yhot = 0;
-    InvisibleCursor.cur_shape = InvisibleCursorBitMap;
-    InvisibleCursor.cur_function = /*PIX_SRC |*/ PIX_DST;
-    win_setcursor( LispWindowFd, &InvisibleCursor);
-    win_setmouseposition(LispWindowFd, 0, 0);
-#endif /* SUNDISPLAY */
-
-    }
-
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-set_cursor()
-    {
-#ifdef SUNDISPLAY
-#ifdef OLD_CURSOR
-    (mpr_d(CursorBitMap))->md_image =
-			(short *)(IOPage->dlcursorbitmap);
-				/* BitmapBase of CurrentCursor
-				 * is set to IOPage->dlcursorbitmap
-				 */
-    if( win_setcursor( LispWindowFd, &CurrentCursor )== -1)
-	perror("SET Cursor");
-    if( win_setmouseposition(LispWindowFd, 0, 0)==-1)
-	perror("SET Mouse POS");
-#else
-    if( win_setcursor(LispWindowFd,&InvisibleCursor) ==-1)
-	perror("SET Cursor:");
-#endif
-#endif /* SUNDISPLAY */
-
-#ifdef XWINDOW
-    Init_XCursor();
-#endif /* XWINDOW */
-
-	DBPRINT(("After Set cursor\n"));
-}
-
-
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-display_before_exit()
+void display_before_exit()
 	{
 #ifdef SUNDISPLAY
 	union wait status;
@@ -636,67 +699,6 @@ display_before_exit()
 	}
 
 
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-#ifndef COLOR
-clear_display()
-  {
-#ifdef SUNDISPLAY
-#ifndef DISPLAYBUFFER
-    register short *word;
-    register int w, h;
-    word =(short*) DisplayRegion68k;
-    for (h = displayheight; (h--);)
-      {
-	for (w = DisplayRasterWidth; (w--);) {*word++ = 0;}
-      }
-#else
-    pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight,
-	   PIX_CLR,
-	   ColorDisplayPixrect, 0, 0);
-  /* Original images are still kept in SYSOUT(DisplayRegion)  */
-  /*  clear_CG6; */
-#endif /* DISPLAYBUFFER */
-
-#endif /* SUNDISPLAY */
-
-#ifdef DOS
-    TPRINT(("Enter Clear_display\n"));
-    (currentdsp->cleardisplay)(currentdsp);
-    TPRINT(("Exit Clear_display\n"));
-#endif /* DOS */
-
-  }
-
-#else /* COLOR */
-
-clear_display()
-{
-	register short *word;
-	register int w, h;
-	if( MonoOrColor == MONO_SCREEN ) {
-#ifndef DISPLAYBUFFER
-		word = DisplayRegion68k;
-		for( h=displayheight; (h--);) {
-			for( w=DisplayRasterWidth; (w--);) {*word++ = 0;}
-		} /* end for(h) */
-#else /* DISPLAYBUFFER */
-		pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight,
-	   		PIX_CLR,ColorDisplayPixrect, 0, 0);
-#endif /* DISPLAYBUFFER */
-	} else { /* MonoOrColo is COLOR_SCREEN */
-		word = (short *)ColorDisplayRegion68k;
-		for( h=displayheight; (h--);) {
-			for( w=DisplayRasterWidth*8; (w--);) {*word++ = 0;}
-		} /* end for(h) */
-	} /* end if(MonoOrColor) */ 
-}
-#endif /* COLOR */
 
 #ifdef DISPLAYBUFFER
 
@@ -739,7 +741,7 @@ in_display_segment(baseaddr)
 /*									*/
 /************************************************************************/
 
-flush_display_buffer()
+void flush_display_buffer()
   {
 #ifdef SUNDISPLAY
 #ifdef DISPLAYBUFFER
@@ -794,7 +796,7 @@ flush_display_buffer()
 #define BITEPER_DLBYTE 8
 #define DLBYTE_PERLINE        (displaywidth/8)
 
-flush_display_region(x, y, w, h)
+void flush_display_region(x, y, w, h)
   int x, y, w, h;
   {
 #ifdef SUNDISPLAY
@@ -815,7 +817,7 @@ flush_display_region(x, y, w, h)
 #endif /* DOS */
 }
 #ifdef BYTESWAP
-byte_swapped_displayregion(x , y , w , h)
+void byte_swapped_displayregion(x , y , w , h)
   int x ,y,w,h;
 {
   extern unsigned char reversedbits[];
@@ -852,7 +854,7 @@ byte_swapped_displayregion(x , y , w , h)
 /*									*/
 /************************************************************************/
 
-flush_display_lineregion(x, ybase, w, h)
+void flush_display_lineregion(x, ybase, w, h)
   UNSIGNED x, ybase, w, h;
 #ifdef I386
   { /*flush_display_buffer(); */
@@ -908,7 +910,7 @@ flush_display_lineregion(x, ybase, w, h)
 
 #define BITSPERWORD 16
 
-flush_display_ptrregion(ybase, bitoffset, w, h)
+void flush_display_ptrregion(ybase, bitoffset, w, h)
   UNSIGNED bitoffset, ybase, w, h;
 #ifdef I386
   { flush_display_buffer(); }
