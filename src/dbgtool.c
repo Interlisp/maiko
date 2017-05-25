@@ -743,7 +743,7 @@ sff(LispPTR laddr)
 /*****************************************************************/
 #define DUMPSIZE 40
 #define FNOVERHEADWORDS (8)
-nt(LispPTR index)
+void nt(LispPTR index)
                  /* atom index */
   {
     struct fnhead *fnobj;
