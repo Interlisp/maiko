@@ -33,6 +33,81 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 #include "lspglob.h"
 #include "gc.h"
 
+
+
+/************************************************************************/
+/*									*/
+/*			i n i t _ c o n s p a g e			*/
+/*									*/
+/*	Initialize a fresh page of CONS cells.  Sets the count field	*/
+/*	and chains the cells together for ease of searching.		*/
+/*									*/
+/*	A fresh CONS page looks like this:				*/
+/*									*/
+/*	+--------+--------+----------------+				*/
+/*    0 | count  | nxtcell|   (padding)    |	nxtcell = 254.		*/
+/*	+--------+--------+----------------+				*/
+/*    2 |      next_page                   |				*/
+/*	+--------+-------------------------+				*/
+/*    4 |     0  |         N I L           |				*/
+/*	+--------+-------------------------+				*/
+/*    6 |     4  |         N I L           |				*/
+/*	+--------+-------------------------+				*/
+/*  ... |   ...  |         N I L           |				*/
+/*	+--------+-------------------------+				*/
+/*  254 |   252  |         N I L           |				*/
+/*	+--------+-------------------------+				*/
+/*									*/
+/*	The cells are chained together thru their high 8 bits,		*/
+/*	using the word offset within page as the chain.  Cells		*/
+/*	are chained from the top of the page down.			*/
+/*									*/
+/*	Experimental version goes nxtcell = 248								*/
+/*	count/nxtcell in cell 4, next_page in cell 6								*/
+/*	Chain up 4 down 8 ( ^ 6 into word count)								*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
+
+void init_conspage(register struct conspage *base, unsigned int link)
+                                   /* Page Base */
+                      /* Prev Link page number DL->int*/
+  {
+    register ConsCell *cell ;
+    register int j ; /* DL-> int */
+
+#ifdef TRACE2
+    printf("TRACE: init_conspage()\n");
+#endif
+
+
+#ifdef NEWCDRCODING
+    base -> next_cell= 6^(j = 254) ;
+    while (j > 8)
+     {
+	cell = (ConsCell *)((DLword *)base + (6 ^ j) );
+	cell->car_field = NIL_PTR ;
+	j -= 2;
+	((freecons *)cell)->next_free = (6^j) ;
+     }
+	base -> count = 124;
+#else
+    base -> next_cell= j = 254 ;
+    while(j != 0)
+     {
+	cell = (ConsCell *)((DLword *)base + (j) );
+	cell->car_field = NIL_PTR ;
+	j -= 2;
+	((freecons *)cell)->next_free = (j) ;
+     }
+    base -> count = 127 ;
+#endif /* NEWCDRCODING */
+    base -> next_page = link ;
+
+  } /* init_conspage end */
+
 /**********************************************************************/
 /*
 		Func name :	next_conspage
@@ -109,81 +184,6 @@ ex :
     return(page1) ;
   }  /* next_conspage end */
 
-
-
-
-/************************************************************************/
-/*									*/
-/*			i n i t _ c o n s p a g e			*/
-/*									*/
-/*	Initialize a fresh page of CONS cells.  Sets the count field	*/
-/*	and chains the cells together for ease of searching.		*/
-/*									*/
-/*	A fresh CONS page looks like this:				*/
-/*									*/
-/*	+--------+--------+----------------+				*/
-/*    0 | count  | nxtcell|   (padding)    |	nxtcell = 254.		*/
-/*	+--------+--------+----------------+				*/
-/*    2 |      next_page                   |				*/
-/*	+--------+-------------------------+				*/
-/*    4 |     0  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*    6 |     4  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*  ... |   ...  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*  254 |   252  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*									*/
-/*	The cells are chained together thru their high 8 bits,		*/
-/*	using the word offset within page as the chain.  Cells		*/
-/*	are chained from the top of the page down.			*/
-/*									*/
-/*	Experimental version goes nxtcell = 248								*/
-/*	count/nxtcell in cell 4, next_page in cell 6								*/
-/*	Chain up 4 down 8 ( ^ 6 into word count)								*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-init_conspage(register struct conspage *base, unsigned int link)
-                                   /* Page Base */
-                      /* Prev Link page number DL->int*/
-  {
-    register ConsCell *cell ;
-    register int j ; /* DL-> int */
-
-#ifdef TRACE2
-    printf("TRACE: init_conspage()\n");
-#endif
-
-
-#ifdef NEWCDRCODING
-    base -> next_cell= 6^(j = 254) ;
-    while (j > 8)
-     {
-	cell = (ConsCell *)((DLword *)base + (6 ^ j) );
-	cell->car_field = NIL_PTR ;
-	j -= 2;
-	((freecons *)cell)->next_free = (6^j) ;
-     }
-	base -> count = 124;
-#else
-    base -> next_cell= j = 254 ;
-    while(j != 0)
-     {
-	cell = (ConsCell *)((DLword *)base + (j) );
-	cell->car_field = NIL_PTR ;
-	j -= 2;
-	((freecons *)cell)->next_free = (j) ;
-     }
-    base -> count = 127 ;
-#endif /* NEWCDRCODING */
-    base -> next_page = link ;
-
-  } /* init_conspage end */
 
 
 
@@ -278,7 +278,7 @@ ConsCell * find_cdrcodable_pair(LispPTR cdrval)
 
 	for (pg = (struct conspage *)Addr68k_from_LPAGE(pgno); pgno;
 			pg = (struct conspage *)Addr68k_from_LPAGE(pgno = pg->next_page))
-	  if (cell = find_pair_in_page(pg, cdrval)) return(cell);
+	  if ((cell = find_pair_in_page(pg, cdrval))) return(cell);
 
     pg = next_conspage();
 	cell = find_pair_in_page(pg,cdrval);
@@ -355,7 +355,7 @@ N_OP_cons(register int cons_car, register int cons_cdr)
     if(cons_cdr == NIL_PTR)
       {
 #ifdef NEWCDRCODING
-	if (new_cell = find_free_cons_cell())
+	if ((new_cell = find_free_cons_cell()))
 	  {	/* next page has 1 or more free cells */
 #else
 	if ((ListpDTD->dtd_nextpage != 0)
