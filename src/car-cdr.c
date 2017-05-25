@@ -731,7 +731,7 @@ ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart)
 	for ( pg = (struct conspage *)Addr68k_from_LPAGE(pgno = ListpDTD->dtd_nextpage);
           pgno; pg = (struct conspage *)Addr68k_from_LPAGE(pgno = pg->next_page))
       {
-	if (cell = find_cdrpair_in_page(pg, carpart, cdrpart)) return (cell);
+	if ((cell = find_cdrpair_in_page(pg, carpart, cdrpart))) return (cell);
 	  }
 
     return (find_cdrpair_in_page(next_conspage(), carpart, cdrpart));
