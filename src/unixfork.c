@@ -450,7 +450,7 @@ fork_Unix()
     case 'W':			/* Wait for a process to die. */
       {
 	int pid;
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(WAITINT)
 	int status;
 #else
 	union wait status;
@@ -458,7 +458,7 @@ fork_Unix()
 
 	int slot;
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(WAITINT)
 	status = 0;
 #else
 	status.w_status = 0;
@@ -478,7 +478,7 @@ fork_Unix()
 	  {
 	    /* Ignore processes which are suspended but haven't exited
 	       (this shouldn't happen) */
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(WAITINT)
 	    if (WIFSTOPPED(status )) break;
 	    IOBuf[3] = status >>8;
 	    IOBuf[2] = status & 0xFF;
