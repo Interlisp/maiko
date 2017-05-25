@@ -37,7 +37,7 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 #include <sys/time.h>
 #endif
 #ifndef SYSVONLY
-#ifdef DOS
+#if defined(DOS) || defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
 #else
 #include <strings.h>

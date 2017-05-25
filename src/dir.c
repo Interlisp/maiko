@@ -24,7 +24,9 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #ifndef DOS
 #include	<sys/param.h>
 #ifndef OS5
+#ifndef FREEBSD
 #include	<sys/dir.h>
+#endif /* FREEBSD */
 #endif /* OS5 */
 #include	<sys/stat.h>
 #include	<setjmp.h>
@@ -36,7 +38,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 /*  #include <string.h> */
 #endif /* SYSVONLY */
 
-#ifdef LINUX
+#if defined(LINUX) || defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
 #endif /* LINUX */
 
@@ -75,7 +77,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include <unistd.h>
 #endif /* SYSVONLY */
 
-#ifdef OS5
+#if defined(OS5) || defined(FREEBSD)
 #include <dirent.h>
 #define direct dirent
 #endif

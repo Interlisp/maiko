@@ -33,6 +33,7 @@ static char *id = "$Id: dbgtool.c,v 1.4 2001/12/24 01:09:00 sybalsky Exp $ Copyr
 */
 /***************************************************************/
 #include <stdio.h>
+#include <string.h>
 #include  <setjmp.h>
 #include "lispemul.h"
 #include "lispmap.h"

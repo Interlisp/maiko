@@ -31,6 +31,7 @@ static char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copy
    ===================================================================== */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 

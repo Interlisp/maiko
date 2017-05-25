@@ -39,6 +39,7 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 #include <netdb.h>
 #include <errno.h>
 #include <sys/ioctl.h>
+#include <string.h>	/* for memset/memcpy */
 #endif /* DOS */
 #include "lispemul.h"
 #include "lispmap.h"
