@@ -37,6 +37,7 @@ static char *id = "$Id: loopsops.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copy
 #include "stack.h"
 #include "gc.h"
 
+LispPTR lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum);
 LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword packlen, int externalp);
 static char il_string[]="INTERLISP";
 #define GET_IL_ATOM(string)	get_package_atom((string),(sizeof(string)-1), \
@@ -375,8 +376,8 @@ LCPutIVValue(register LispPTR object, register LispPTR iv, register LispPTR val)
 #endif
 
 
-
-lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum)
+
+LispPTR lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum)
                                          /* Atomindex for Function to invoke */
                             /* Number of ARGS on TOS and STK */
                             /* Number of bytes of Caller's
@@ -413,7 +414,7 @@ lcfuncall(register unsigned int atom_index, register int argnum, register int by
     {
       LispPTR test;
       test= *((LispPTR*)CurrentStackPTR);
-      DOSTACKOVERFLOW(argnum,bytenum-1);
+      // DOSTACKOVERFLOW(argnum,bytenum-1); XXX until we figure out what should be happening
       S_CHECK(test==*((LispPTR*)CurrentStackPTR), "overflow in ccfuncall");
     }
   FuncObj = tmp_fn;
