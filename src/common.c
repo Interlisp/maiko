@@ -34,7 +34,7 @@ static char *id = "$Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ Copyri
 #include <pixrect/pixrect_hs.h>
 #endif
 
-stab()
+void stab()
   {
     DBPRINT(("Now in stab\n"));
   }
@@ -86,8 +86,7 @@ extern int FrameBufferFd;
 /************************************************************************/
 
 #define URMAXCOMM	512
-error(cp)
-  char	*cp;
+void error(char *cp)
   {
     char *ptr;
     if(device_before_raid()<0)
@@ -141,7 +140,7 @@ uraidloop:
 	fflush(stdin);
 	goto uraidloop;
       }
-    return(0);
+    return;
   }
 
 
@@ -154,7 +153,7 @@ uraidloop:
 /*									*/
 /************************************************************************/
 
-warn(s)
+void warn(s)
   char *s;
   { printf("\nWARN: %s \n",s); }
 
@@ -194,7 +193,7 @@ stackoverflow
 	1.error handling of stack overflow.
 ******************************************************************/
 
-stackoverflow()
+void stackoverflow()
   {
 #ifdef	TRACE2
     printf("TRACE:stackoverflow()\n");
