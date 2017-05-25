@@ -157,7 +157,7 @@ switch(width)\
 
 /* I don't care sourcetype & operation NOW */
 
-lineBlt8(DLword *srcbase, register int offset, register u_char *destl, register int width, u_char color0, u_char color1, LispPTR sourcetype, LispPTR operation)
+void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, register int width, u_char color0, u_char color1, LispPTR sourcetype, LispPTR operation)
                   
                       
   /* register u_int *destl;*/
