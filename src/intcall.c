@@ -37,7 +37,7 @@ static char *id = "$Id: intcall.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copyr
 
 
 
-cause_interruptcall(register unsigned int atom_index)
+void cause_interruptcall(register unsigned int atom_index)
                                       /* Atomindex for Function you want to invoke */
 {
   register struct definition_cell *defcell68k ;  /* Definition Cell PTR */
