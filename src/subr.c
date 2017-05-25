@@ -92,7 +92,7 @@ char *atom_to_str(LispPTR atom_index)
 		}							\
 }
 
-OP_subrcall(int subr_no, int argnum)
+void OP_subrcall(int subr_no, int argnum)
 {
   static LispPTR args[30];
   int  arg_num;
