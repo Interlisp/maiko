@@ -399,10 +399,11 @@ typedef signed char s_char;
 /********************************************************/
 /*							*/
 /********************************************************/
-#ifdef MACOSX
+#if defined(MACOSX) || defined(FREEBSD)
 /* MACOSX, mostly POSIX-compliant Unix */
 #define NOETHER 1
 #define XWINDOWS 1
+#define WAITINT 1
 /* JDS trial 12/22/01 #define USETIMEFN 1 */
 
 #undef REGISTER
@@ -414,7 +415,7 @@ typedef signed char s_char;
 
 #define MAXNAMLEN NAME_MAX
 
-#endif /* MACOSX */
+#endif /* MACOSX || FREEBSD */
 
 
 
