@@ -66,7 +66,7 @@ extern int MonoOrColor;
 
 
 #ifdef DISPLAYBUFFER 
-n_new_cursorin_CG6( dx, dy, w, h )
+LispPTR n_new_cursorin_CG6( dx, dy, w, h )
 register int dx, dy, w, h;
   {
     if((dx < MOUSEXR)&&(dx + w > MOUSEXL)&&(dy < MOUSEYH)&&(dy + h > MOUSEYL))
