@@ -51,6 +51,8 @@ Unix Interface Communications
 #include <termio.h>
 #elif MACOSX
 #include <termios.h>
+#elif FREEBSD
+#include <termios.h>
 #else
 #include <sys/termio.h>
 #endif /* OS4 */
