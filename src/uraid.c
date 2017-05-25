@@ -73,7 +73,10 @@ extern int Win_security_p;
 #ifdef OS5
 #include <stropts.h>
 #endif /* OS5 */
-
+#ifdef FREEBSD
+/* for memset */
+#include <string.h>
+#endif
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -388,7 +391,7 @@ uraid_commands()
  LispPTR index;
  DefCell *defcell68k;
 #ifndef DOS
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(WAITINT)
 int status;
 #else
  union wait status;

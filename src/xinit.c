@@ -47,7 +47,9 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #ifndef ULTRIX
 #ifndef LINUX
 #ifndef MACOSX
+#ifndef FREEBSD
 #include <stropts.h>
+#endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* LINUX */
 #endif /* ULTRIX */

@@ -38,7 +38,7 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 /************************************************************************/
 
 extern int errno;
-#ifdef MACOSX
+#if defined(MACOSX) || defined(FREEBSD)
 extern const char * const sys_errlist[];
 extern const int sys_nerr;
 #else

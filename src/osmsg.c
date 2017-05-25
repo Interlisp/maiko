@@ -54,7 +54,9 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #ifndef AIX
 #ifndef APOLLO
 #ifndef MACOSX
+#ifndef FREEBSD
 #include	<sys/vfs.h>
+#endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* APOLLO */
 #endif /* AIX */

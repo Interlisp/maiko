@@ -21,7 +21,7 @@ static char *id = "$Id: xcursor.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyr
 
 
 #include <stdio.h>
-#ifdef MACOSX
+#if defined(MACOSX) || defined(FREEBSD)
 #include <stdlib.h>
 #else
 #include <malloc.h>

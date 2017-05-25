@@ -37,7 +37,9 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include <sys/param.h>
 #ifndef AIX
 #ifndef MACOSX
+#ifndef FREEBSD
 #include <sys/vfs.h>
+#endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* AIX */
 
@@ -47,7 +49,7 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include <signal.h>
 #include <setjmp.h>
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
 #include <sys/fcntl.h>
 #include <dirent.h>
 #include <unistd.h>

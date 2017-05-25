@@ -17,7 +17,9 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-
+#if defined(MACOSX) || defined(FREEBSD)
+#include <string.h>
+#endif
 
 #include	<sys/types.h>
 #ifndef DOS
@@ -27,7 +29,11 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include	<strings.h>
 #endif /* OS5  Solaris doesn't need strings.h */
 #ifndef SYSVONLY
+#ifndef MACOSX
+#ifndef FREEBSD
 #include	<sys/dir.h>
+#endif /* FREEBSD */
+#endif /* MACOSX */
 #endif /* SYSVONLY */
 
 #include	<sys/stat.h>
@@ -82,7 +88,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #endif /* ISC */
 
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
 #include	<dirent.h>
 #include	<unistd.h>
 #define direct dirent
@@ -111,7 +117,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include	"osmsg.h"
 #include	"dbprint.h"
 
-#if defined(ULTRIX) || defined(MACOSX) 
+#if defined(ULTRIX) || defined(MACOSX) || defined(FREEBSD)
 #include	<sys/mount.h>
 #elif OSF1
 #include	<sys/mount.h>
@@ -2527,7 +2533,7 @@ COM_getfreeblock(args)
 #elif defined(LINUX)
 	TIMEOUT(rval = statfs(dir, &sfsbuf));
 	if (rval != 0) {
-#elif defined(MACOSX)
+#elif defined(MACOSX) || defined(FREEBSD)
 	TIMEOUT(rval = statfs(dir, &sfsbuf));
 	if (rval != 0) {
 #elif HPUX

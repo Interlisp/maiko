@@ -27,7 +27,7 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 
 #include <stdio.h>
 #include <string.h>
-#ifdef MACOSX
+#if defined(MACOSX) || defined(FREEBSD)
 #include <stdlib.h>
 #else
 #include <malloc.h>
@@ -172,7 +172,7 @@ init_ifpage(int sysout_size)
      char *s = (char*)Addr68k_from_LADDR(0155001);
 	/* try getpwuid first; use cuserid if it fails */
 	if((pwd = getpwuid(getuid())) == NULL)
-#ifdef MACOSX
+#if defined(MACOSX) || defined(FREEBSD)
         ;
 #else
         cuserid(s+1);

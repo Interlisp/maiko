@@ -31,7 +31,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #ifndef DOS
 #include	<sys/param.h>
 #include        <sys/time.h>
-#else
+#else /* DOS */
 #define MAXPATHLEN 128
 #define R_OK 04
 #define index strchr
@@ -73,6 +73,10 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #ifdef ISC
 #include <unistd.h>
 #include <sys/dirent.h>
+#endif
+
+#if defined(MACOSX) || defined(FREEBSD)
+#include <string.h>
 #endif
 
 #include	<errno.h>
@@ -859,7 +863,11 @@ print_info_lines ()
 #elif (RELEASE == 351)
       printf("Emulator for Medley release 3.51\n");
 #endif /* RELEASE */
+#if defined(MACOSX) || defined(FREEBSD)
+      printf("Creation date: %s", ctime((const time_t *)&MDate));
+#else
       printf("Creation date: %s", ctime(&MDate));
+#endif
 #ifdef DEMO
       printf("Demonstration emulator, not for commercial use\n");
 #endif /* DEMO */
