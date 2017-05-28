@@ -62,7 +62,7 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 			};				\
 
 
-gc_handleoverflow(DLword arg)
+DLword gc_handleoverflow(DLword arg)
 { struct htoverflow  *cell;
      struct dtd	        *ptr;
      LispPTR		cellcnt;
@@ -86,7 +86,7 @@ gc_handleoverflow(DLword arg)
 	return(arg);
    }
 
-gcmaptable(DLword arg)
+DLword gcmaptable(DLword arg)
 { struct htoverflow	*cell;
 	struct dtd	*ptr;
 	LispPTR		cellcnt;

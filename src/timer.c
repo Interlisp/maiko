@@ -158,6 +158,8 @@ int Event_Req = FALSE;
 
 #define SIGERRCHK(set, str) if (set == SIG_ERR) perror(str)
 
+void update_miscstats();
+
 /************************************************************************/
 /*									*/
 /*			i n i t _ m i s c s t a t s			*/
@@ -168,7 +170,7 @@ int Event_Req = FALSE;
 /*									*/
 /************************************************************************/
 
-init_miscstats()
+void init_miscstats()
   {
     MiscStats->starttime = gettime(0);
     MiscStats->gctime = 0;
@@ -187,7 +189,7 @@ init_miscstats()
 /*									*/
 /************************************************************************/
 
-update_miscstats()
+void update_miscstats()
   {
 #ifdef DOS
     struct dostime_t dtm;	/* holds DOS time, so we can get .01 secs */
@@ -378,7 +380,7 @@ int gettime(casep)
 /*									*/
 /************************************************************************/
 
-subr_settime(args)
+void subr_settime(args)
   LispPTR	args[];
   {
 #ifdef DOS
@@ -427,7 +429,7 @@ subr_settime(args)
 /*									*/
 /************************************************************************/
 
-subr_copytimestats(args)
+void subr_copytimestats(args)
   LispPTR args[];
  {
     MISCSTATS *source;
@@ -491,7 +493,7 @@ LispPTR N_OP_rclk(tos)
 /*									*/
 /************************************************************************/
 
-update_timer()
+void update_timer()
   {
 #ifdef USETIMEFN
     MiscStats -> secondstmp = MiscStats->secondsclock
@@ -848,8 +850,8 @@ void int_unblock()
 #endif /* DOS */
 }
 
-int_timer_on () {int_unblock();}
-int_timer_off() {int_block  ();}
+void int_timer_on () {int_unblock();}
+void int_timer_off() {int_block  ();}
 
 
 /************************************************************************/
@@ -1253,7 +1255,7 @@ void int_init()
    int_timer_init();	/* periodic interrupt timer */
    int_io_init();	/* SIGIO and SIGPOLL async I/O handlers */
    int_file_init();	/* file-io TIMEOUT support */
-   int_panic_init();    /* catch for all other dangerous interrupts */
+   /* int_panic_init();    /* catch for all other dangerous interrupts */
 
 #ifdef FLTINT
    int_fp_init();	/* Floating-point exception handler */

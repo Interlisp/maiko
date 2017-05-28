@@ -34,7 +34,7 @@ static char *id = "$Id: ubf3.c,v 1.3 1999/05/31 23:35:45 sybalsky Exp $ Copyrigh
 062/0	POLY
 ***********************************************************/
 
-N_OP_ubfloat3(int arg3, LispPTR arg2, LispPTR arg1, int alpha)
+LispPTR N_OP_ubfloat3(int arg3, LispPTR arg2, LispPTR arg1, int alpha)
 {
     REGISTER float val;
     REGISTER float ans;

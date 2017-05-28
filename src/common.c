@@ -86,7 +86,7 @@ extern int FrameBufferFd;
 /************************************************************************/
 
 #define URMAXCOMM	512
-void error(char *cp)
+int error(char *cp)
   {
     char *ptr;
     if(device_before_raid()<0)
@@ -140,7 +140,7 @@ uraidloop:
 	fflush(stdin);
 	goto uraidloop;
       }
-    return;
+    return (0);
   }
 
 
@@ -172,7 +172,7 @@ stackcheck
 	2.if overflow, return T (not 0).
 	  Otherwise, return F (0).
 ******************************************************************/
-stackcheck()
+int stackcheck()
   {
 #ifdef	TRACE2
     printf("TRACE:stackcheck()\n");

@@ -73,7 +73,7 @@ extern int LispWindowFd,
 
 extern int errno;
 
-KB_enable( args )
+void KB_enable( args )
 LispPTR	*args;		/* args[0] :	ON/OFF flag
 			 *		T -- ON
 			 *		NIL -- OFF
@@ -123,7 +123,7 @@ extern int LispKbdFd;
   int bell_status_word;
 #endif /* DOS */
 
-KB_beep( args )
+void KB_beep( args )
 LispPTR	*args;		/* args[0] :	ON/OFF flag
 			 *		T -- ON
 			 *		NIL -- OFF
@@ -173,12 +173,7 @@ LispPTR	*args;		/* args[0] :	ON/OFF flag
 
   }
 #endif /* SUNDISPLAY, XWINDOW, DOS */
-
-
-
 }
-
-
 
 /****************************************************
  *
@@ -187,7 +182,7 @@ LispPTR	*args;		/* args[0] :	ON/OFF flag
  *
  ****************************************************/
 
-KB_setmp( args )
+void KB_setmp( args )
 LispPTR	*args;		/* args[0] :	MPCODE	*/
 {
 
@@ -195,7 +190,6 @@ LispPTR	*args;		/* args[0] :	MPCODE	*/
 	printf("MP: %d\n", args[0] & 0xffff );
 #endif
 }
-
 
 /****************************************************
  *
@@ -209,7 +203,7 @@ LispPTR	*args;		/* args[0] :	MPCODE	*/
  *
  ****************************************************/
 
-KB_setled( args )
+void KB_setled( args )
 LispPTR	*args;
 {
 #ifdef DOS

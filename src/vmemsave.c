@@ -123,7 +123,7 @@ extern int      please_fork;
 /*									*/
 /************************************************************************/
 
-lispstringP(Lisp)
+int lispstringP(Lisp)
   LispPTR	Lisp;
   {
     switch( ((OneDArray *)(Addr68k_from_LADDR(Lisp)))->typenumber )
@@ -135,7 +135,7 @@ lispstringP(Lisp)
       }
   }
 
-
+LispPTR vmem_save(register char *sysout_file_name);
 
 /************************************************************************/
 /*									*/
@@ -173,7 +173,7 @@ lispstringP(Lisp)
 /*									*/
 /************************************************************************/
 
-vmem_save0(args)
+LispPTR vmem_save0(args)
   register LispPTR	*args;
   {
     register char	*def;
@@ -362,8 +362,8 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
 /* diagnostic flag value to limit the size of write() s */
 int maxpages = 65536;
 
-vmem_save(sysout_file_name)
-  register char	*sysout_file_name;
+LispPTR vmem_save(sysout_file_name)
+     register char	*sysout_file_name;
   {
     int		sysout;	/* SysoutFile descriptor */
 #ifdef BIGVM
@@ -642,7 +642,7 @@ extern int UnixPID;
 
 /* Make sure that we kill off any Unix subprocesses before we go away */
 
-lisp_finish()
+void lisp_finish()
   {
     char d[4];
 

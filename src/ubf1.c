@@ -37,7 +37,7 @@ static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 355/4	UFIX
 ***********************************************************/
 
-N_OP_ubfloat1(int arg, int alpha)
+LispPTR N_OP_ubfloat1(int arg, int alpha)
 {
   switch (alpha) {
     case 0: /* box */

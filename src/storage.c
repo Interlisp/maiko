@@ -1,5 +1,5 @@
 /* $Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
-static char *id = "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyright (C) Venue";
+static const char *id = "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyright (C) Venue";
 
 
 
@@ -45,6 +45,8 @@ static char *id = "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyr
 #define IFPVALID_KEY		5603
 
 
+void advance_array_seg(register unsigned int nxtpage);
+void set_storage_state(void);
 
 
 /*****************************************************************/
@@ -54,15 +56,16 @@ static char *id = "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyr
 		Created	:	Oct. 7, 1987 Takeshi Shimizu
 		Changed :	Oct. 12,1987 take
 
+		Used to be LispPTR T/NIL return, but result never used
 */
 /*****************************************************************/
 
 
-checkfor_storagefull(register unsigned int npages)
+void checkfor_storagefull(register unsigned int npages)
 {
     register int pagesleft;
     register INTSTAT *int_state;
-    DLword advance_storagestate(DLword flg);
+    void  advance_storagestate(DLword flg);
 
 #ifdef BIGVM
     pagesleft = (*Next_MDSpage_word ) -
@@ -104,7 +107,7 @@ checkfor_storagefull(register unsigned int npages)
 #ifdef  DEBUG
 	    printf("\n checkfor_storagefull:DORECLAIM.....\n");
 #endif
-	    return(NIL);
+	    return; /*(NIL); */
 
 	  break;
 
@@ -116,7 +119,8 @@ checkfor_storagefull(register unsigned int npages)
 		      *LeastMDSPage_word= *Next_Array_word;
 		      *Next_MDSpage_word= *SecondMDSPage_word;
 		      advance_storagestate(SFS_FULLYSWITCHED);
-		      return(advance_array_seg((*SecondArrayPage_word)));
+		      advance_array_seg(*SecondArrayPage_word);
+		      return;
 		    }
 		}
 	      else if (npages > pagesleft)
@@ -125,7 +129,8 @@ checkfor_storagefull(register unsigned int npages)
 		    but leave MDS to fill the rest of the low pages   */
 		  *LeastMDSPage_word= *Next_Array_word;
 		  advance_storagestate(SFS_ARRAYSWITCHED);
-		  return(advance_array_seg((*SecondArrayPage_word)));
+		  advance_array_seg(*SecondArrayPage_word);
+		  return;
 		}
 	    break ;
 #ifdef BIGVM
@@ -137,8 +142,9 @@ checkfor_storagefull(register unsigned int npages)
 #endif
 				      {
 					*Next_MDSpage_word= *SecondMDSPage_word;
-					return(advance_storagestate
-							(SFS_FULLYSWITCHED));
+					advance_storagestate
+							(SFS_FULLYSWITCHED);
+					return;
 				      }
 				     else if (npages != NIL)
 					     if((npages + GUARDSTORAGEFULL) >=
@@ -149,17 +155,17 @@ checkfor_storagefull(register unsigned int npages)
 						  ((*SecondMDSPage_word & 0xffff)-
 						    (*Next_Array_word & 0xffff)))
 #endif
-							return(NIL);
-				     return(T);
+	  return;  /*  (NIL); */
+	  return; /* (T); */
 				  /* break; */
 
-	   default :		     error("checkfor_storagefull: Shouldn't <%d>",(*STORAGEFULLSTATE_word) & 0xffff);
+      default :		     error("checkfor_storagefull: Shouldn't"); /* (*STORAGEFULLSTATE_word) & 0xffff) */
 				     break;
 
 	 }
  }
  else
-	return(NIL);
+   return; /*(NIL); */
 }/* checkfor_storagefull end */
 
 /*****************************************************************/
@@ -172,7 +178,7 @@ checkfor_storagefull(register unsigned int npages)
 */
 /*****************************************************************/
 
-advance_array_seg(register unsigned int nxtpage)
+void advance_array_seg(register unsigned int nxtpage)
                                 /* rare page num */
 {
 
@@ -215,7 +221,7 @@ else
  *ArrayFrLst_word = nxtpage << 8 ;
  *ArraySpace2_word = *ArrayFrLst_word;
 
- return(S_POSITIVE);
+ /* return(S_POSITIVE); making function void as result never used */
 
 } /* advance_array_seg end */
 
@@ -229,8 +235,8 @@ else
 */
 /*****************************************************************/
 
-DLword
-advance_storagestate(DLword flg)
+/* DLword */
+void advance_storagestate(DLword flg)
 {
  LispPTR dremove(LispPTR x, LispPTR l);
 #ifdef DEBUG
@@ -251,7 +257,7 @@ advance_storagestate(DLword flg)
 
 */
 /*****************************************************************/
-set_storage_state(void)
+void set_storage_state(void)
 {
  LispPTR cons(LispPTR cons_car, LispPTR cons_cdr);
 
@@ -438,7 +444,7 @@ LispPTR newpage(LispPTR base)
 		Changed :	
 */
 /*****************************************************************/
-init_storage(void)
+void init_storage(void)
 {
 
 #ifdef BIGVM

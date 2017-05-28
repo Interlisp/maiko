@@ -96,7 +96,7 @@ BIGNUM  (integer that can't be represented bigger than 32 bits)
 /*									*/
 /************************************************************************/
 
-int N_OP_clequal(register int arg1, register int arg2)
+LispPTR N_OP_clequal(register int arg1, register int arg2)
 {
     register int type;
 
@@ -145,7 +145,7 @@ int N_OP_clequal(register int arg1, register int arg2)
 /*									*/
 /************************************************************************/
 
-int N_OP_eqlop(register int arg1, register int arg2)
+LispPTR N_OP_eqlop(register int arg1, register int arg2)
 {
     register int type;
 
@@ -189,7 +189,7 @@ int N_OP_eqlop(register int arg1, register int arg2)
 /*									*/
 /************************************************************************/
 
-N_OP_equal(register int arg1, register int arg2)
+LispPTR N_OP_equal(register int arg1, register int arg2)
 {
     register int type, type2;
 
@@ -253,7 +253,7 @@ arg2_small:
 /*									*/
 /************************************************************************/
 
-N_OP_eqq(register int arg1, register int arg2) /* CL:=    opcode 0377 */
+LispPTR N_OP_eqq(register int arg1, register int arg2) /* CL:=    opcode 0377 */
                           
   {
     register int type1, type2;

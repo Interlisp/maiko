@@ -146,7 +146,7 @@ static struct nit_ioc nioc;
 /*									*/
 /************************************************************************/
 
-ether_suspend(args)
+LispPTR ether_suspend(args)
   LispPTR	  args[];
   {
 #ifndef NOETHER
@@ -203,7 +203,7 @@ ether_suspend(args)
 /*									*/
 /************************************************************************/
 
-ether_resume(args)
+LispPTR ether_resume(args)
   LispPTR	  args[];
   {
 #ifndef NOETHER
@@ -255,7 +255,7 @@ ether_resume(args)
 /*									*/
 /************************************************************************/
 
-ether_ctrlr(args)
+LispPTR ether_ctrlr(args)
   LispPTR	  args[];
   {
     if (ether_fd < 0) return(NIL);
@@ -268,7 +268,7 @@ ether_ctrlr(args)
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-ether_reset(args)
+LispPTR ether_reset(args)
   LispPTR args[];
   {
     int i;
@@ -302,7 +302,7 @@ ether_reset(args)
 /*									*/
 /************************************************************************/
 
-ether_get(args)
+LispPTR ether_get(args)
   LispPTR	args[];
   {
     LispPTR MaxByteCount;
@@ -345,7 +345,7 @@ ether_get(args)
  **********************************************************************/
 #define OFFSET sizeof(sa.sa_data)
 
-ether_send(args)
+LispPTR ether_send(args)
 LispPTR	args[];
 {
 #ifndef NOETHER
@@ -416,7 +416,7 @@ LispPTR	args[];
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
 
-ether_setfilter(args)
+LispPTR ether_setfilter(args)
   LispPTR	args[];
   {
     return(NIL);
@@ -461,7 +461,7 @@ static	struct timeval	EtherTimeout = {
 static int nitpos=0, nitlen=0; /* for NIT read buffer in OS3 */
 #endif
 
-check_ether()
+LispPTR check_ether()
   {
 	/*
 	 *	If receiver active then check if any packets are
@@ -593,7 +593,7 @@ check_ether()
 /*									*/
 /************************************************************************/
 
-get_packet()
+LispPTR get_packet()
   {
 #ifndef NOETHER
 #ifndef PKTFILTER
@@ -697,7 +697,7 @@ get_packet()
  *	This is believed obsolete with packet filtering enabled
  **********************************************************************/
 
-check_filter(buffer)
+int check_filter(buffer)
   u_char* buffer;
   {
     /* broadcast packets */
@@ -727,7 +727,7 @@ check_filter(buffer)
  *	Also believed obsolete
  **********************************************************************/
 
-ether_addr_equal(add1, add2)
+int ether_addr_equal(add1, add2)
 
 u_char add1[], add2[];
   {
@@ -742,7 +742,7 @@ u_char add1[], add2[];
  *	init_uid()
  *	sets effective user-id to real user-id
  **********************************************************************/
-init_uid()
+void init_uid()
   {
 #ifndef NOETHER
     int rid;
@@ -761,7 +761,7 @@ init_uid()
 /*									*/
 /************************************************************************/
 
-init_ifpage_ether()
+void init_ifpage_ether()
   {
     InterfacePage->nshost0 = (DLword)((ether_host[0] << 8) + ether_host[1]);
     InterfacePage->nshost1 = (DLword)((ether_host[2] << 8) + ether_host[3]);
@@ -787,7 +787,7 @@ struct sockaddr_nit snit;
 /*	open nit socket, called from main before starting BCE.		*/
 /*      								*/
 /************************************************************************/
-init_ether()
+void init_ether()
   {
 
 #ifndef NOETHER
@@ -837,7 +837,7 @@ init_ether()
 
 	if (ioctl(ether_fd, I_STR, &si) < 0) {
 		perror("ioctl: I_STR PFIOCSETF");
-		return(-1);
+		return;
 	}
 
 	flags = fcntl(ether_fd, F_GETFL, 0);
@@ -923,7 +923,7 @@ I_Give_Up:
 		      close(ether_fd);
 		      ether_fd = -1;
 #ifndef OS4
-		      return(NIL);
+		      return;
 #else /* OS4 */
 
 		      goto I_Give_Up;
@@ -1033,7 +1033,7 @@ if (ether_fd >= 0) {
 
 	    close(ether_fd);
 	    ether_fd = -1;
-	    return(NIL);
+	    return;
 	}
 #else /* PKTFILTER */
 
@@ -1052,7 +1052,7 @@ if (ether_fd >= 0) {
 		perror("init_ether nopf ioctl: I_STR PFIOCSETF");
 	    close(ether_fd);
 	    ether_fd = -1;
-	    return(NIL);
+	    return;
 	}
 
 #else
@@ -1061,7 +1061,7 @@ if (ether_fd >= 0) {
 
 	    close(ether_fd);
 	    ether_fd = -1;
-	    return(NIL);
+	    return;
 	}
 #endif /* USE_DLPI */
 #endif /* PKTFILTER -- jds 23 sep 96 unmatched if fix */
@@ -1107,7 +1107,7 @@ if (ether_fd >= 0) {
 		perror("init_ether goodpf ioctl: I_STR PFIOCSETF");
 	    close(ether_fd);
 	    ether_fd = -1;
-		return(NIL);
+		return;
 	}
 
 #else
@@ -1115,7 +1115,7 @@ if (ether_fd >= 0) {
 		perror("init_ether: NIOCSETF failed:\n");
 	    close(ether_fd);
 	    ether_fd = -1;
-	    return(NIL);
+	    return;
 	}
 #endif /* USE_DLPI */
 #ifndef USE_DLPI
@@ -1125,7 +1125,7 @@ if (ether_fd >= 0) {
 	    perror("init_ether: I_SETSIG failed:\n");
 	    close(ether_fd);
 	    ether_fd = -1;
-	    return(NIL);
+	    return;
 	  }
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
@@ -1160,7 +1160,7 @@ if (ether_fd >= 0) {
 /*									*/
 /************************************************************************/
 
-check_sum(args)
+LispPTR check_sum(args)
   register LispPTR *args;
   {
     register  LispPTR checksum;

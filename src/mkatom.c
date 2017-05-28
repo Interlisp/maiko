@@ -73,7 +73,7 @@ extern DLword *Lisp_world ;
 /**********************************************************************/
 
 
-compute_hash (char *char_base, DLword offset, DLword length)
+DLword compute_hash (char *char_base, DLword offset, DLword length)
 {
     DLword hash;
     DLword number;
@@ -107,7 +107,7 @@ compute_hash (char *char_base, DLword offset, DLword length)
 /**********************************************************************/
 
 
-compute_lisp_hash (char *char_base, DLword offset, DLword length, DLword fatp)
+DLword compute_lisp_hash (char *char_base, DLword offset, DLword length, DLword fatp)
 {
     DLword hash;
     DLword number;
@@ -165,7 +165,7 @@ compute_lisp_hash (char *char_base, DLword offset, DLword length, DLword fatp)
 */
 /**********************************************************************/
 
-compare_chars(register char *char1, register char *char2, register DLword length)
+LispPTR compare_chars(register char *char1, register char *char2, register DLword length)
 {
 #ifndef BYTESWAP
     if (memcmp ( char1, char2, length ) == 0)
@@ -183,7 +183,7 @@ compare_chars(register char *char1, register char *char2, register DLword length
 
   } /* end compare_chars */
 #ifdef BYTESWAP
-bytecmp (char1, char2, len)
+int bytecmp (char1, char2, len)
   char *char1;
   char *char2;
   int   len;
@@ -217,7 +217,7 @@ bytecmp (char1, char2, len)
 */
 /**********************************************************************/
 
-compare_lisp_chars(register char *char1, register char *char2, register DLword length, DLword fat1, DLword fat2)
+LispPTR compare_lisp_chars(register char *char1, register char *char2, register DLword length, DLword fat1, DLword fat2)
 {
     if ((!fat1) == (!fat2))
       { /* both fat or both non-fat. */
@@ -260,7 +260,7 @@ compare_lisp_chars(register char *char1, register char *char2, register DLword l
 
 
 
-lispcmp (DLword *char1, unsigned char *char2, int len)
+int lispcmp (DLword *char1, unsigned char *char2, int len)
 {
     int index;
     for (index=0; index<len; index++)

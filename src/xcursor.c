@@ -76,6 +76,8 @@ int Current_Hot_X = 0,
     Current_Hot_Y = 0;
 
 
+void set_Xcursor(DspInterface, unsigned char *, int, int, Cursor *, int);
+
 /************************************************************************/
 /*									*/
 /*			I n i t _ X C u r s o r				*/
@@ -85,7 +87,7 @@ int Current_Hot_X = 0,
 /*									*/
 /************************************************************************/
 
-Init_XCursor()
+void Init_XCursor()
 {
   int i;
   DLword *newbm = (DLword *) (IOPage->dlcursorbitmap);
@@ -96,7 +98,7 @@ Init_XCursor()
   cursorlist->next = NULL;
   for(i=0; i<CURSORHEIGHT; i++)
     cursorlist->bitmap[i] = newbm[i];
-  set_Xcursor( currentdsp, newbm, 0, 0, &(cursorlist->Xid), 1);
+  set_Xcursor( currentdsp, (unsigned char *)newbm, 0, 0, &(cursorlist->Xid), 1);
   DefineCursor(currentdsp->display_id,
 	       currentdsp->DisplayWindow,
 	       &(cursorlist->Xid));
@@ -122,7 +124,7 @@ Init_XCursor()
 /*									*/
 /************************************************************************/
 
-Set_XCursor( x, y )
+void Set_XCursor( x, y )
   int x, y;
 {
   /* compare cursor in IOPage memory with cursors we've seen before */
@@ -145,9 +147,9 @@ Set_XCursor( x, y )
       clp->bitmap[i] = newbm[i];
 #ifdef NEWXCURSOR
     /* JDS 000521 Added "15-" to fix cursor troubles at window edge */
-    set_Xcursor( currentdsp, newbm, x, 15-y, &(clp->Xid), 1);
+    set_Xcursor( currentdsp, (unsigned char *) newbm, x, 15-y, &(clp->Xid), 1);
 #else
-    set_Xcursor( currentdsp, newbm, 0, 0, &(clp->Xid), 1);
+    set_Xcursor( currentdsp, (unsigned char *) newbm, 0, 0, &(clp->Xid), 1);
 #endif /* NEWXCURSOR */
     clp->next = cursorlist;
     cursorlist = clp;
@@ -187,7 +189,7 @@ Set_XCursor( x, y )
 /*									*/
 /************************************************************************/
 
-init_Xcursor(display, window)
+void init_Xcursor(display, window)
      Display *display;
 {
 
@@ -257,7 +259,7 @@ init_Xcursor(display, window)
 /*									*/
 /************************************************************************/
 
-set_Xcursor( dsp, bitmap, hotspot_x, hotspot_y, return_cursor, from_lisp )
+void set_Xcursor( dsp, bitmap, hotspot_x, hotspot_y, return_cursor, from_lisp )
      DspInterface dsp;
      unsigned char *bitmap;
      int hotspot_x

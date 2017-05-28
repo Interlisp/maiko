@@ -67,7 +67,7 @@ extern int ScreenLocked;
 
 
 /***	N_OP_misc7  -- pseudocolor or fbitmapbit   ***/
-N_OP_misc7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, alpha)
+LispPTR N_OP_misc7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, alpha)
   int alpha;
   register LispPTR arg1, arg2, arg3, arg4, arg5, arg6, arg7;
   {

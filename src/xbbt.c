@@ -105,7 +105,7 @@ clipping_Xbitblt(dsp, dummy, x, y, w, h)
 		y - dsp->Vissible.y, w, h );
       XFlush(dsp->display_id);
       XUNLOCK;
-      return(0);
     }
+  return(0);
 
 }				/* end clipping_Xbitblt */

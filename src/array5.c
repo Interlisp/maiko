@@ -50,7 +50,7 @@ static char *id = "@(#) array5.c	2.7 10/12/88";
 /*									*/
 /************************************************************************/
 
-N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1)
+LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1)
 {
 #define REG
      LispPTR baseL;

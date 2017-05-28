@@ -146,7 +146,7 @@ LispPTR atom_instance = 0,	/* various atom indices */
 
 /* Called once to initialize the "constants" above */
 
-LCinit(void) {
+LispPTR LCinit(void) {
   atom_instance = GET_IL_ATOM("instance");
   atom_class = GET_IL_ATOM("class");
   atom_annotatedValue = GET_IL_ATOM("annotatedValue");
@@ -350,7 +350,7 @@ LCGetIVValue(register LispPTR object, register LispPTR iv)
 */
 }
 
-LCPutIVValue(register LispPTR object, register LispPTR iv, register LispPTR val)
+LispPTR LCPutIVValue(register LispPTR object, register LispPTR iv, register LispPTR val)
 {
   register struct LCInstance *objptr;
   register LispPTR *valptr;

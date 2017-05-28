@@ -163,7 +163,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp)
 /*									*/
 /************************************************************************/
 
-check_unix_password(LispPTR *args)
+LispPTR check_unix_password(LispPTR *args)
 {
 #ifndef DOS
   struct passwd *pwd;
@@ -202,7 +202,7 @@ check_unix_password(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-unix_username(LispPTR *args)
+LispPTR unix_username(LispPTR *args)
 {
 #ifndef DOS
   struct passwd *pwd;
@@ -248,7 +248,7 @@ unix_username(LispPTR *args)
 
 char* getenv(const char *);
 
-unix_getparm(LispPTR *args)
+LispPTR unix_getparm(LispPTR *args)
 {
     char            envname[20], result[128], *envvalue;
     if (lisp_string_to_c_string(args[0], envname, sizeof envname))
@@ -380,7 +380,7 @@ unix_getparm(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-unix_getenv(LispPTR *args)
+LispPTR unix_getenv(LispPTR *args)
 {
 	char            envname[20], *envvalue;
 	if (lisp_string_to_c_string(args[0], envname, sizeof envname))
@@ -403,7 +403,7 @@ unix_getenv(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-unix_fullname(LispPTR *args)
+LispPTR unix_fullname(LispPTR *args)
 {
 #ifndef DOS
   struct passwd *pwd;
@@ -432,7 +432,7 @@ extern DLword  *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K,
 extern DLword  *EmKbdAd168K,*EmKbdAd268K,*EmKbdAd368K,
 	       *EmKbdAd468K,*EmKbdAd568K;
 
-suspend_lisp(LispPTR *args)
+LispPTR suspend_lisp(LispPTR *args)
 {
 #ifndef DOS
     extern DLword *CTopKeyevent;

@@ -49,7 +49,7 @@ type    size    typenumber
 ***********************************************************/
 
 /***	N_OP_misc3  -- op 372/9 (base typenumber index)   ***/
-N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha)
+LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha)
 {
     register int result;
     register int index, type;

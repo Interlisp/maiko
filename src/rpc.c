@@ -59,7 +59,7 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 #define ToMem memcpy
 #endif /* OS5 */
 
-rpc(args)
+LispPTR rpc(args)
   LispPTR *args;
 {
 #ifndef DOS

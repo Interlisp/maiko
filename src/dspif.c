@@ -47,7 +47,7 @@ extern DspInterface X_init( DspInterface dsp,
 extern int dosdisplaymode;
 #endif /* DOS */
 
-make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, int depth_hint)
+void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, int depth_hint)
 {
 #ifdef DOS
 
@@ -120,7 +120,7 @@ void GenericPanic(DspInterface dsp)
 }
 
 
-SwitchDisplay(LispPTR display)
+LispPTR SwitchDisplay(LispPTR display)
 {
   DspInterface tmp;		/* Switch-a-roo! */
 

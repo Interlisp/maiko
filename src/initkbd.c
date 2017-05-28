@@ -363,8 +363,10 @@ u_char DOSLispKeyMap_101[0x80] =
 /* 7*/  0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
 };
 
+void set_kbd_iopointers();
+void keyboardtype(int fd);
 
-init_keyboard(flg)
+void init_keyboard(flg)
   int flg ; /* if 0 init else re-init */
   {
     int keytrans;
@@ -427,7 +429,7 @@ init_keyboard(flg)
 
 /*  ----------------------------------------------------------------*/
 
-device_before_exit()
+void device_before_exit()
 {
 #ifdef SUNDISPLAY
 	int keytrans;
@@ -456,7 +458,7 @@ device_before_exit()
 
 /*  ----------------------------------------------------------------*/
 
-set_kbd_iopointers()
+void set_kbd_iopointers()
 {
 	IOPage68K       = (IOPAGE *)IOPage;
 	EmMouseX68K     = (DLword *) &(IOPage68K->dlmousex);
@@ -491,7 +493,7 @@ set_kbd_iopointers()
 /*  ----------------------------------------------------------------*/
 
 #ifdef SUNDISPLAY
-seteventmask( eventmask )
+void seteventmask( eventmask )
 struct inputmask *eventmask;
 {
 	input_imnull( eventmask );
@@ -671,7 +673,7 @@ int find_unused_key(map, minkey, len, syms, sym, table)
 /*									*/
 /************************************************************************/
 
-keyboardtype(fd)
+void keyboardtype(fd)
   int fd;
   {
     int type;

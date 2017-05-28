@@ -54,17 +54,17 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 
 #ifdef USETIMEFN
 	/* RISCOS doesn't have the BSD time functions */
-main()
+int main(void)
   {
     long dtime;
     time(&dtime);
     fprintf(stderr, "Mdate :%d\n", dtime);
     printf("long MDate= %d;\n", dtime);
-    exit(0);
+    return (0);
   }
 #else
 	/* Version for every other Unix */
-main(void)
+int main(void)
 {
     struct timeval time;
 
@@ -73,7 +73,7 @@ main(void)
     fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
 
     printf("long MDate= %d;\n", time.tv_sec);
-    exit(0);
+    return (0);
   }
 
 #endif /* SYSVONLY */

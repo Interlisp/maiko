@@ -169,7 +169,7 @@ int n_mask_array[16] = {	1, 3, 7, 0xf,
 extern int TIMER_INTERVAL;
 
 
-dispatch(void)
+void dispatch(void)
 {
 	register InstPtr pccache;
 
@@ -1853,5 +1853,5 @@ FP_noint:	DW	003fh	;; No interrupts, round to closest, 24bit precision");
 
 
 int retfun(void) {return(0);}
-do_brk(void) {}
+void do_brk(void) {}
 

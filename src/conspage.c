@@ -316,17 +316,6 @@ ConsCell * find_free_cons_cell(void)
 
 
 /**********************************************************************/
-/* function cons same as N_OP_cons				      */
-/**********************************************************************/
-
-cons(LispPTR cons_car, LispPTR cons_cdr)
-{
-    return(N_OP_cons(cons_car, cons_cdr));
-  }
-  
-
-
-/**********************************************************************/
 /*
 	Func name :N_OP_cons	
 		Execute CONS OPCODE
@@ -337,7 +326,7 @@ cons(LispPTR cons_car, LispPTR cons_cdr)
 */
 /**********************************************************************/
 
-N_OP_cons(register int cons_car, register int cons_cdr)
+LispPTR N_OP_cons(register int cons_car, register int cons_cdr)
 {
     extern struct dtd *ListpDTD ;
 
@@ -494,3 +483,12 @@ N_OP_cons(register int cons_car, register int cons_cdr)
     return(new_page);
 
   } /* N_OP_cons() end */
+
+/**********************************************************************/
+/* function cons same as N_OP_cons				      */
+/**********************************************************************/
+
+LispPTR cons(LispPTR cons_car, LispPTR cons_cdr)
+{
+    return(N_OP_cons(cons_car, cons_cdr));
+}

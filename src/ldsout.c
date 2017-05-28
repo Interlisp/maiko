@@ -85,7 +85,7 @@ static char *metersyms = "-\\|/";
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
-sysout_loader(sysout_file_name, sys_size)
+int sysout_loader(sysout_file_name, sys_size)
   char	*sysout_file_name;
   int	sys_size;   /* sysout size in megabytes */
 {

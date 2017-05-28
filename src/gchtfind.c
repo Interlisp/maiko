@@ -455,7 +455,7 @@ nolink:			/* no match */
 
 /************************************************************************/
 /*									*/
-/*			r e d _ h t f i n d				*/
+/*			r e c _ h t f i n d				*/
 /*									*/
 /*	Version of HTFIND used during reclaims (part of GC process)	*/
 /*	Same purpose, but doesn't increment the GC count-down, and	*/

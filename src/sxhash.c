@@ -41,6 +41,14 @@ static char *id = "$Id: sxhash.c,v 1.4 2001/12/24 01:09:06 sybalsky Exp $ Copyri
 #define EQHASHINGBITS(item)  ( (((item)>>16)&0xFFFF) ^ ( (((item)&0x1FFF)<<3) ^ (((item)>>9)& 0x7f) ) )
 
   
+unsigned short sxhash (LispPTR obj);
+unsigned short sxhash_rotate(short unsigned int value);
+unsigned short sxhash_string(OneDArray *obj);
+unsigned short sxhash_bitvec(OneDArray *obj);
+unsigned short sxhash_list(LispPTR obj);
+unsigned short sxhash_pathname(LispPTR obj);
+unsigned short stringequalhash(LispPTR obj);
+unsigned short stringhash(LispPTR obj);
 
 
 /****************************************************************/
@@ -70,7 +78,7 @@ LispPTR SX_hash (register SXHASHARG *args)
 /* Fails to handle ratios, complex's, bitvectors pathnames & odd */
 /* cases */
 /*****************************************************************/
-sxhash (LispPTR obj)
+unsigned short sxhash (LispPTR obj)
 {
    /* unsigned short hashOffset; Not Used */
     unsigned int cell;
@@ -133,8 +141,7 @@ sxhash (LispPTR obj)
 
 #ifndef SUN3_OS3_OR_OS4_IL
 /* Rotates the 16-bit work to the left 7 bits (or to the right 9 bits) */
-short unsigned
-sxhash_rotate(short unsigned int value)
+unsigned short sxhash_rotate(short unsigned int value)
 {
     return ((value<<7) | ((value>>9) & 0x7f));
   }
@@ -142,7 +149,7 @@ sxhash_rotate(short unsigned int value)
 #endif
 
 
-sxhash_string(OneDArray *obj)
+unsigned short sxhash_string(OneDArray *obj)
 {
     unsigned i, len, offset;
     register unsigned short hash = 0;
@@ -177,7 +184,7 @@ sxhash_string(OneDArray *obj)
     return(hash);
   }
 
-sxhash_bitvec(OneDArray *obj)
+unsigned short sxhash_bitvec(OneDArray *obj)
 {
     unsigned short *base;
     unsigned i, len, offset, bitoffset;
@@ -200,7 +207,7 @@ sxhash_bitvec(OneDArray *obj)
   }
 
 
-sxhash_list(LispPTR obj)
+unsigned short sxhash_list(LispPTR obj)
 {
     unsigned short hash = 0;
     int counter;
@@ -212,7 +219,7 @@ sxhash_list(LispPTR obj)
     return(hash);
   }
 
-sxhash_pathname(LispPTR obj)
+unsigned short sxhash_pathname(LispPTR obj)
 {
     unsigned short hash = 0;
     PATHNAME *path;
@@ -240,7 +247,7 @@ LispPTR STRING_EQUAL_HASHBITS(SXHASHARG *args)
      return(S_POSITIVE | ( 0xFFFF & (stringequalhash(args->object))));
   } /* STRING_EQUAL_HASHBITS */
 
-stringequalhash(LispPTR obj)
+unsigned short stringequalhash(LispPTR obj)
 {
     unsigned i, len, offset, fatp, ind;
     register unsigned short hash = 0;
@@ -319,7 +326,7 @@ LispPTR STRING_HASHBITS(SXHASHARG *args)
      return(S_POSITIVE | ( 0xFFFF & (stringhash(args->object))));
   } /* STRING_HASHBITS */
 
-stringhash(LispPTR obj)
+unsigned short stringhash(LispPTR obj)
 {
     unsigned i, len, offset, fatp, ind;
     register unsigned short hash = 0;

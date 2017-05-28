@@ -72,7 +72,7 @@ unsigned long make_verification (long unsigned int x, long unsigned int y)
  =============================================================================*/
 
 
-imod64bit (long unsigned int x1, long unsigned int x0, long unsigned int y)
+int imod64bit (long unsigned int x1, long unsigned int x0, long unsigned int y)
 {
 /* JDS 990601 ansi    return (((x0 % y) + ((x1 % y) * (((ULONG_MAX % y) + 1 ) % y)  )) % y); */
   return (((x0 % y) + ((x1 % y) * ((y + 1 ) % y)  )) % y);

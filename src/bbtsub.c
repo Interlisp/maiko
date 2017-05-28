@@ -1865,6 +1865,47 @@ typedef struct {
 
 /** changecharset_display,sfffixy are not tested *****I don't use TAKE **/
 
+LispPTR sfffixy(displaydata68k, csinfo68k, pbt68k)
+DISPLAYDATA *displaydata68k;
+CHARSETINFO *csinfo68k;
+PILOTBBT *pbt68k;
+
+{
+  int y;
+  int chartop, top;
+  BITMAP *bm68k;
+  register LispPTR base, ypos, yoff;
+
+  FGetNum2(displaydata68k->ddyoffset, yoff);
+  FGetNum2(displaydata68k->ddyposition, ypos);
+
+  y = ypos + yoff;
+
+  displaydata68k->ddcharsetascent = csinfo68k->CHARSETASCENT;
+  chartop = y + displaydata68k->ddcharsetascent;
+
+  bm68k = (BITMAP *)Addr68k_from_LADDR(displaydata68k->dddestination);
+  base = bm68k->bmbase;
+  top = IMAX(IMIN(displaydata68k->ddclippingtop, chartop), 0);
+  base = base + (bm68k->bmrasterwidth * (bm68k->bmheight - top));
+  pbt68k->pbtdesthi = base >> 16;
+  pbt68k->pbtdestlo = base;
+
+  bm68k = (BITMAP *)Addr68k_from_LADDR(csinfo68k->CHARSETBITMAP);
+  base = bm68k->bmbase;
+  displaydata68k->ddcharheightdelta = IMIN(IMAX(chartop - top, 0), 65535); /* always positive */
+  base = base + bm68k->bmrasterwidth * displaydata68k->ddcharheightdelta;
+  pbt68k->pbtsourcehi = base >> 16;
+  pbt68k->pbtsourcelo = base;
+
+  displaydata68k->ddcharsetdescent = csinfo68k->CHARSETDESCENT;
+
+  pbt68k->pbtheight =
+      IMAX(0, top - (IMAX(y - displaydata68k->ddcharsetdescent, displaydata68k->ddclippingbottom)));
+  return (T);
+
+} /* sfffixy */
+
 LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword charset) {
   register PILOTBBT *pbt68k;
   register FONTDESC *fontd68k;
@@ -1908,45 +1949,6 @@ LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword chars
   }
 } /* changecharset_display */
 
-sfffixy(displaydata68k, csinfo68k, pbt68k) DISPLAYDATA *displaydata68k;
-CHARSETINFO *csinfo68k;
-PILOTBBT *pbt68k;
-
-{
-  int y;
-  int chartop, top;
-  BITMAP *bm68k;
-  register LispPTR base, ypos, yoff;
-
-  FGetNum2(displaydata68k->ddyoffset, yoff);
-  FGetNum2(displaydata68k->ddyposition, ypos);
-
-  y = ypos + yoff;
-
-  displaydata68k->ddcharsetascent = csinfo68k->CHARSETASCENT;
-  chartop = y + displaydata68k->ddcharsetascent;
-
-  bm68k = (BITMAP *)Addr68k_from_LADDR(displaydata68k->dddestination);
-  base = bm68k->bmbase;
-  top = IMAX(IMIN(displaydata68k->ddclippingtop, chartop), 0);
-  base = base + (bm68k->bmrasterwidth * (bm68k->bmheight - top));
-  pbt68k->pbtdesthi = base >> 16;
-  pbt68k->pbtdestlo = base;
-
-  bm68k = (BITMAP *)Addr68k_from_LADDR(csinfo68k->CHARSETBITMAP);
-  base = bm68k->bmbase;
-  displaydata68k->ddcharheightdelta = IMIN(IMAX(chartop - top, 0), 65535); /* always positive */
-  base = base + bm68k->bmrasterwidth * displaydata68k->ddcharheightdelta;
-  pbt68k->pbtsourcehi = base >> 16;
-  pbt68k->pbtsourcelo = base;
-
-  displaydata68k->ddcharsetdescent = csinfo68k->CHARSETDESCENT;
-
-  pbt68k->pbtheight =
-      IMAX(0, top - (IMAX(y - displaydata68k->ddcharsetdescent, displaydata68k->ddclippingbottom)));
-  return (T);
-
-} /* sfffixy */
 
 /******************************************************************/
 

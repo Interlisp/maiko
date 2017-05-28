@@ -23,8 +23,9 @@ static char *id = "$Id: ldeether.c,v 1.3 2001/12/24 01:09:04 sybalsky Exp $ Copy
 
 #ifdef NOETHER
 	/* No ethernet, so have a dummy here. */
-main (argc, argv, argp) int argc; char **argv, **argp;
+int main (int argc, char *argv[])
   {
+    return(0);
   }
 #else
 		/* THERE -IS- AN ETHERNET */
@@ -97,7 +98,7 @@ char filetorun[30] = "lde";
 
 
 
-main(argc, argv, envp) int argc; char **argv, **envp;
+int main(int argc, char *argv[])
 {
 	char	Earg[30], Ename[30], **newargv;
 	int i;
@@ -284,8 +285,7 @@ newargv[i] = 0;
 /* then execve the LDE executable */
 execvp(filetorun, newargv);
 perror(filetorun);
-exit(1);
+return(1);
 }
 
 #endif /* NOETHER */
-

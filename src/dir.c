@@ -200,7 +200,7 @@ extern	int	Dummy_errno;
  * number of characters.
  */
 
-match_pattern(tp, pp)
+int match_pattern(tp, pp)
 	register char	*tp;
 	register char	*pp;
 {
@@ -378,7 +378,7 @@ unsigned	MAXFINFO;
  */
 
 #ifdef FSDEBUG
-print_finfo(fp)
+void print_finfo(fp)
 	FINFO	*fp;
 {
 	FINFO	*sp;
@@ -414,7 +414,7 @@ print_finfo(fp)
  * This routine is invoked at very first stage of emulator start up.
  */
 
-init_finfo()
+int init_finfo()
 {
 	register FINFO	*cp;
 	register int	n;
@@ -465,7 +465,7 @@ init_finfo()
  * FINFOARRAYRSIZE.
  */
 
-get_finfo_id()
+int get_finfo_id()
 {
 	register int	i;
 	DFINFO		*dfap;
@@ -512,7 +512,7 @@ get_finfo_id()
  */
 
 #ifdef DOS
-enum_dsk_prop(dir, name, ver, finfo_buf)
+int enum_dsk_prop(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -678,7 +678,7 @@ enum_dsk_prop(dir, name, ver, finfo_buf)
 	return(n);
 }
 #else /* DOS */
-enum_dsk_prop(dir, name, ver, finfo_buf)
+int enum_dsk_prop(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -803,7 +803,7 @@ enum_dsk_prop(dir, name, ver, finfo_buf)
  * Similar to enum_dsk_prop, but file properties are not stored.
  */
 #ifdef DOS
-enum_dsk(dir, name, ver, finfo_buf)
+int enum_dsk(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -953,7 +953,7 @@ enum_dsk(dir, name, ver, finfo_buf)
 
 #else /* DOS */
 
-enum_dsk(dir, name, ver, finfo_buf)
+int enum_dsk(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -1067,7 +1067,7 @@ enum_dsk(dir, name, ver, finfo_buf)
  * of FINFO structures. 
  */
 #ifdef DOS
-enum_ufs_prop(dir, name, ver, finfo_buf)
+int enum_ufs_prop(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -1158,7 +1158,7 @@ enum_ufs_prop(dir, name, ver, finfo_buf)
 	return(n);
 }
 #else /* DOS */
-enum_ufs_prop(dir, name, ver, finfo_buf)
+int enum_ufs_prop(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -1277,7 +1277,7 @@ enum_ufs_prop(dir, name, ver, finfo_buf)
  * Similar to enum_ufs_prop, but file properties are not stored.
  */
 #ifdef DOS
-enum_ufs(dir, name, ver, finfo_buf)
+int enum_ufs(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -1352,7 +1352,7 @@ enum_ufs(dir, name, ver, finfo_buf)
 	return(n);
 }
 #else /* DOS */
-enum_ufs(dir, name, ver, finfo_buf)
+int enum_ufs(dir, name, ver, finfo_buf)
 	char	*dir;
 	char	*name;
 	char	*ver;
@@ -1455,7 +1455,7 @@ enum_ufs(dir, name, ver, finfo_buf)
  * This routine is only used by DSK codes.
  */
 
-trim_finfo(fp)
+int trim_finfo(fp)
 	FINFO	**fp;
 {
 #ifndef DOS
@@ -1584,7 +1584,7 @@ trim_finfo(fp)
  * of.
  */
 
-trim_finfo_highest(fp, highestp)
+int trim_finfo_highest(fp, highestp)
 	FINFO	**fp;
 	int	highestp;
 {
@@ -1726,7 +1726,7 @@ trim_finfo_highest(fp, highestp)
  * are got rid of.
  */
 
-trim_finfo_version(fp, rver)
+int trim_finfo_version(fp, rver)
 	FINFO	**fp;
 	int	rver;
 {
@@ -1958,7 +1958,7 @@ prepare_sort_buf(fp, n)
  * Note that the result is in the reversed order.
  */
 
-dsk_filecmp(fp1, fp2)
+int dsk_filecmp(fp1, fp2)
 	FINFO	**fp1;
 	FINFO	**fp2;
 {
@@ -1992,7 +1992,7 @@ dsk_filecmp(fp1, fp2)
  * Note that the result is in the reversed order.
  */
 
-unix_filecmp(f1, f2)
+int unix_filecmp(f1, f2)
 	register FINFO	**f1;
 	register FINFO	**f2;
 {
@@ -2018,7 +2018,7 @@ unix_filecmp(f1, f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-file_sort(fpp, n, sortfn)
+int file_sort(fpp, n, sortfn)
 	register FINFO	**fpp;
 	register int	n;
 	register int	(*sortfn)();
@@ -2156,7 +2156,7 @@ typedef struct ufsgfs {
  * Enumerates files matching pattern.
  */
 
-COM_gen_files(args)
+LispPTR COM_gen_files(args)
 	register LispPTR	*args;
 {
 	char		fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
@@ -2318,7 +2318,7 @@ COM_gen_files(args)
  * name.
  */
 
-COM_next_file(args)
+LispPTR COM_next_file(args)
 	register LispPTR	*args;
 {
 	register LispPTR	laddr;
@@ -2393,12 +2393,12 @@ COM_next_file(args)
  * Abandon all cached information corresponding to the generator.
  */
 
-COM_finish_finfo(args)
+LispPTR COM_finish_finfo(args)
 	register LispPTR	*args;
 {
 	register DFINFO		*dfp;
 	register FINFO		*fp;
-	register		finfoid;
+	register int		finfoid;
 
 	ERRSETJMP(NIL);
 	

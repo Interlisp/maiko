@@ -49,7 +49,7 @@ static char *id = "@(#) array2.c	2.9 10/12/88";
 /*									*/
 /************************************************************************/
 
-N_OP_misc4(register LispPTR data, register LispPTR base, register LispPTR typenumber, register LispPTR inx, int alpha)
+LispPTR N_OP_misc4(register LispPTR data, register LispPTR base, register LispPTR typenumber, register LispPTR inx, int alpha)
 {  
     register int new;
     register int index;

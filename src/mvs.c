@@ -58,6 +58,8 @@ static char *id = "$Id: mvs.c,v 1.3 1999/05/31 23:35:40 sybalsky Exp $ Copyright
 
 LispPTR MVLIST_index;
 
+LispPTR make_value_list(int argcount, LispPTR *argarray);
+void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner);
 
 /****************************************************************/
 /*                                                              */
@@ -297,7 +299,7 @@ newpc:
 /*									*/
 /************************************************************************/
 
-make_value_list(int argcount, LispPTR *argarray)
+LispPTR make_value_list(int argcount, LispPTR *argarray)
 {
     register LispPTR result = NIL_PTR;
     register int i;
@@ -322,7 +324,7 @@ make_value_list(int argcount, LispPTR *argarray)
 /*									*/
 /************************************************************************/
 
-simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner)
+void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner)
 {
     int unbind;
     LispPTR *stackptr;

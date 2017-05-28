@@ -51,7 +51,7 @@ static char *id = "@(#) array4.c	2.7 10/12/88";
 /*									*/
 /************************************************************************/
 
-N_OP_aset1(register LispPTR data, LispPTR arrayarg, register int inx)
+LispPTR N_OP_aset1(register LispPTR data, LispPTR arrayarg, register int inx)
 {
     register int type;
     register OneDArray *arrayblk;

@@ -90,7 +90,7 @@ extern int LispWindowRequestedX,
 /*									*/
 /************************************************************************/
 
-Create_LispWindow(dsp)
+void Create_LispWindow(dsp)
      DspInterface dsp;
 {
   XSizeHints  szhint;
@@ -418,7 +418,7 @@ Create_LispWindow(dsp)
 } 
 
 
-lisp_Xvideocolor( flag )
+void lisp_Xvideocolor( flag )
 int flag;
 {
   XLOCK;
@@ -447,7 +447,7 @@ int flag;
 
 extern int Current_Hot_X, Current_Hot_Y;  /* Cursor hotspot */
 
-set_Xmouseposition( x, y )
+void set_Xmouseposition( x, y )
      int x
        , y;
 {
@@ -481,7 +481,7 @@ set_Xmouseposition( x, y )
 /*									*/
 /************************************************************************/
 
-DoRing()
+void DoRing()
   {
     DLword w
          , r;

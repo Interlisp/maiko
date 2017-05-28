@@ -51,6 +51,7 @@ static char *id = "$Id: gccode.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyri
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"
+#include <stdio.h>
 
 #define min(a,b)		((a > b)?b:a)
 
@@ -217,7 +218,7 @@ typedef ByteCode *InstPtr;
 /*									*/
 /************************************************************************/
 
-map_code_pointers(LispPTR codeblock, short int casep)
+LispPTR map_code_pointers(LispPTR codeblock, short int casep)
 {
     InstPtr         codeptr;
     register unsigned int opnum;
@@ -362,7 +363,7 @@ LispPTR reclaimcodeblock(LispPTR codebase)
 /*									*/
 /************************************************************************/
 
-code_block_size(long unsigned int codeblock68k)
+int code_block_size(long unsigned int codeblock68k)
 {
     InstPtr         codeptr, initcodeptr;
     register unsigned int opnum;

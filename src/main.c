@@ -329,6 +329,10 @@ char *helpstring = "\n\
  -info        Print general info about the system\n\
  -help        Print this message\n";
 #endif /* DOS */
+
+void start_lisp();
+void print_info_lines();
+
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
@@ -336,7 +340,7 @@ char *helpstring = "\n\
 /*									*/
 /************************************************************************/
 
-main(argc, argv)
+int main(argc, argv)
   int	argc ;
   char	**argv ;
   {
@@ -673,6 +677,7 @@ main(argc, argv)
 
     /* now start up lisp */
     start_lisp();
+    return (0);
   }
 
 
@@ -687,7 +692,7 @@ main(argc, argv)
 /*									*/
 /************************************************************************/
 
-start_lisp()
+void start_lisp()
   {
     DLword *freeptr,*next68k;
 
@@ -746,7 +751,7 @@ start_lisp()
 /*									*/
 /************************************************************************/
 
-makepathname(src, dst)
+int makepathname(src, dst)
   register char	*src;
   register char	*dst;				
   {
@@ -848,7 +853,7 @@ makepathname(src, dst)
 
 
 
-print_info_lines ()
+void print_info_lines ()
   {
 #if (RELEASE == 200)
       printf("Emulator for Medley release 2.0\n");

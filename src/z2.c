@@ -48,7 +48,7 @@ static char *id = "$Id: z2.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 struct cadr_cell cadr(LispPTR cell_adr);
 
 /*   N_OP_classoc()  OP 33Q  */
-N_OP_classoc(LispPTR key, LispPTR list)
+LispPTR N_OP_classoc(LispPTR key, LispPTR list)
 {
 REGISTER struct cadr_cell cadr1;
 register LispPTR	cdrcell;	/* address of (cdr A-list); Lisp address */
@@ -92,7 +92,7 @@ register LispPTR	cdrcell;	/* address of (cdr A-list); Lisp address */
 } /* end N_OP_classoc() */
 
 /*   (CL:FMEMB item list)  OP 35Q  */
-N_OP_clfmemb(register LispPTR item, register LispPTR list)
+LispPTR N_OP_clfmemb(register LispPTR item, register LispPTR list)
 {  /* OP 35Q */
 
 
@@ -169,7 +169,7 @@ fin:	DelRef tail
 
 ***********************************************************/
 
-N_OP_restlist(register LispPTR tail, register int last, register int skip)
+LispPTR N_OP_restlist(register LispPTR tail, register int last, register int skip)
 {
 
   last &= 0xFFFF;

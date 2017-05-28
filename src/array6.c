@@ -33,7 +33,7 @@ static char *id = "@(#) array6.c	2.10 4/21/92";
 #include "my.h"
 
 /***	N_OP_aset2   -- op 357   (new-value array index0 index1)   ***/
-N_OP_aset2(register LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1)
+LispPTR N_OP_aset2(register LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1)
 {
 
 register int type;

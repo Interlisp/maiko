@@ -48,29 +48,10 @@ extern int	errno;
 
 /* JDS protoize char *valloc(size_t); */
 
-main(int argc, char **argv)
-{
-    int version, res;
-    if (argc < 3) 
-      {
-	printf("setsysout version sysout-name\n");
-	return(-1);
-      }
-    if ((version = atoi(argv[1])) == 0)
-      {
-	printf("version must be an integer > 0.\n");
-	return(-1);
-      }
-    set_sysout(version, argv[2]);
-    exit(0);
-  }
-
-set_sysout(int version, char *sysout_file_name)
+void set_sysout(int version, char *sysout_file_name)
 {
     int             sysout;	/* SysoutFile descriptor */
-
     IFPAGE         ifpage;	/* IFPAGE */
-
     char            errmsg [ 255 ];
 
     /*
@@ -115,7 +96,23 @@ set_sysout(int version, char *sysout_file_name)
 	exit(-1);
     }
 
-
     close(sysout);
     printf("%d", ifpage.minbversion);
 }
+
+int main(int argc, char **argv)
+{
+    int version, res;
+    if (argc < 3) 
+      {
+	printf("setsysout version sysout-name\n");
+	return(-1);
+      }
+    if ((version = atoi(argv[1])) == 0)
+      {
+	printf("version must be an integer > 0.\n");
+	return(-1);
+      }
+    set_sysout(version, argv[2]);
+    exit(0);
+  }

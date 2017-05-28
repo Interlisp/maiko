@@ -26,7 +26,7 @@ typedef char  DLbyte;
 typedef unsigned int  LispPTR;
 /* 32 bit Cell Chang. 14 Jan 87 take */
 typedef DLword mds_page;  /* Top word of the MDS */
-typedef (*CFuncPTR)();
+typedef int (*CFuncPTR)();
 
 #ifdef BIGVM
 typedef struct  consstr
@@ -184,7 +184,7 @@ typedef char  DLbyte;
 typedef unsigned int  LispPTR;
 /* 32 bit Cell Chang. 14 Jan 87 take */
 typedef DLword mds_page;  /* Top word of the MDS */
-typedef (*CFuncPTR)();
+typedef int (*CFuncPTR)();
 
 #ifdef BIGVM
 typedef struct  consstr
@@ -473,6 +473,7 @@ extern DLword *createcell68k(unsigned int type);
 extern LispPTR *alloc_mdspage(register short int type);
 extern UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep);
 extern char *getenv(const char *);
+extern int error(char *);
 #include <stdlib.h>
 
 

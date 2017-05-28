@@ -63,7 +63,7 @@ static char *id = "$Id: return.c,v 1.4 2001/12/24 01:09:05 sybalsky Exp $ Copyri
 /***********************************************************************/
 
 
-OP_contextsw(void)
+void OP_contextsw(void)
 {
   void contextsw( DLword fxnum, 
 	          DLword bytenum,

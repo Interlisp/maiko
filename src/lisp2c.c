@@ -53,7 +53,7 @@ int LispStringLength (LispPTR lispstring)
 
 
 
-LispStringToCStr (LispPTR lispstring, char *cstring)
+void LispStringToCStr (LispPTR lispstring, char *cstring)
 {
   OneDArray *arrayp;
   char	*base;

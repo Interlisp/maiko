@@ -35,7 +35,9 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 	/* Indigo has this duplicated in dirent.h, sigh. */
 #ifndef OS5
 #ifndef HPUX
+#ifndef FREEBSD
 #include	<sys/dir.h>
+#endif
 #endif
 #endif
 #endif /* INDIGO */
@@ -52,10 +54,10 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #endif /* APOLLO */
 #endif /* AIX */
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(FREEBSD)
 #include	<dirent.h>
 #include	<unistd.h>
-#endif /* SYSVONLY */
+#endif /* SYSVONLY | FREEBSD */
 
 #include	<pwd.h>
 #else /* DOS */
@@ -206,7 +208,7 @@ exit_host_filesystem()
  * can open the file with the specified mode or not.
  */
 
-UFS_getfilename(args)
+LispPTR UFS_getfilename(args)
 	register LispPTR	*args;
 {
 	register char	*base;
@@ -299,7 +301,7 @@ UFS_getfilename(args)
  * a specified file.
  */
 
-UFS_deletefile(args)
+LispPTR UFS_deletefile(args)
 	register LispPTR	*args;
 {
 	char			file[MAXPATHLEN], fbuf[MAXPATHLEN];
@@ -358,7 +360,7 @@ UFS_deletefile(args)
  * a specified file.
  */
 
-UFS_renamefile(args)
+LispPTR UFS_renamefile(args)
 	register LispPTR	*args;
 {
 	char			fbuf[MAXPATHLEN], src[MAXPATHLEN], dst[MAXPATHLEN];
@@ -432,7 +434,7 @@ UFS_renamefile(args)
  * the directory name representation.
  */
 
-UFS_directorynamep(args)
+LispPTR UFS_directorynamep(args)
  	register LispPTR	*args;
 {
 	char		dirname[MAXPATHLEN];
@@ -520,12 +522,12 @@ UFS_directorynamep(args)
  *
  */
 #ifdef DOS
-unixpathname(src, dst, versionp, genp, drive, extlenptr, rawname)
+int unixpathname(src, dst, versionp, genp, drive, extlenptr, rawname)
 	char *drive;
 	int *extlenptr;
 	char *rawname;
 #else
-unixpathname(src, dst, versionp, genp)
+int unixpathname(src, dst, versionp, genp)
 #endif /* DOS */
 	register char	*src;
 	register char	*dst;
@@ -938,7 +940,7 @@ unixpathname(src, dst, versionp, genp)
  *
  */
 
-lisppathname(fullname, lispname, dirp, versionp)
+int lisppathname(fullname, lispname, dirp, versionp)
 	register char	*fullname;
 	register char	*lispname;
 	register int	dirp;
@@ -1214,7 +1216,7 @@ lisppathname(fullname, lispname, dirp, versionp)
  * Lisp sense or not.
  */
 
-quote_fname(file)
+int quote_fname(file)
 	register char	*file;
 {
 	register char	*cp, *dp;
@@ -1284,6 +1286,7 @@ quote_fname(file)
 	}
 	UnixVersionToLispVersion(namebuf, 1);
 	strcpy(file, namebuf);
+	return (1);
 }
 
 
@@ -1308,7 +1311,7 @@ quote_fname(file)
  * and being converted to {UNIX} name.
  */
 
-quote_fname_ufs(file)
+int quote_fname_ufs(file)
 	register char	*file;
 {
 	register char	*cp, *dp;
@@ -1371,6 +1374,7 @@ quote_fname_ufs(file)
 		*cp = '\0';
 	}
 	strcpy(file, fbuf);
+	return (1);
 }
 
 
@@ -1393,7 +1397,7 @@ quote_fname_ufs(file)
  * name.  Both {DSK} and {UNIX} uses this routine.
  */
 
-quote_dname(dir)
+int quote_dname(dir)
 	register char	*dir;
 {
 	register char	*cp, *dp;
@@ -1426,4 +1430,5 @@ quote_dname(dir)
 	}
 
 	strcpy(dir, fbuf);
+	return (1);
 }

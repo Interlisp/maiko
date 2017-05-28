@@ -91,7 +91,7 @@ unsigned int word_swap_longword(word)
 /*            This does NOT swap words in a long-word!          */
 /*                                                              */
 /****************************************************************/
-byte_swap_page(short unsigned int *page, int wordcount)
+void byte_swap_page(short unsigned int *page, int wordcount)
 {
     int i;
     for (i = 0; i < wordcount; i++)
@@ -188,7 +188,7 @@ void word_swap_page(short unsigned int *page, int longwordcount)
 ******/
 #define reverse_bits(word) ((reversedbits[((word)>>8) & 0xFF] <<8) | reversedbits[(word) & 0xff])
 
-bit_reverse_region(register short unsigned int *top, int width, int height, int rasterwidth)
+void bit_reverse_region(register short unsigned int *top, int width, int height, int rasterwidth)
 {
     register int i, j, wordwid = ((width+31)>>5)<<1;
     register unsigned short *word;

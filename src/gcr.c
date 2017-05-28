@@ -107,7 +107,7 @@ static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright
 #endif /* BYTESWAP */
 
 
-gcarrangementstack(void)
+void gcarrangementstack(void)
 {  LispPTR tmpnextblock;
 	PushCStack;
 	tmpnextblock = LADDR_from_68k(CurrentStackPTR+=WORDSPERCELL);
@@ -125,19 +125,18 @@ if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack
 /* remaining the system status.					*/
 /****************************************************************/
 
-dogc01(void)
+void dogc01(void)
 {
     gcarrangementstack();
     gcscanstack();
     gcmapscan();
     gcmapunscan();
     PopCStack;
-    return(NIL);
   }
 
 /*!!!!!! should update clock in Miscstats */
 
-doreclaim(void)
+void doreclaim(void)
 {
     int gctm1;
     MISCSTATS gcmisc;
@@ -160,7 +159,7 @@ doreclaim(void)
 
 
 
-disablegc1(int noerror)
+void disablegc1(int noerror)
 {
     struct interruptstate *gcinterruptstate;
     int                   count, i;
@@ -182,5 +181,4 @@ disablegc1(int noerror)
 	*PENDINGINTERRUPT_word = ATOM_T;
       };
     *GcDisabled_word = ATOM_T;
-    return(NIL);
   }

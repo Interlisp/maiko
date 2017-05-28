@@ -80,7 +80,7 @@ LispPTR N_OP_addbase(register int base, register int offset)
 
 ***********************************************************/
 
-N_OP_getbasebyte(register LispPTR base_addr, register int byteoffset)
+LispPTR N_OP_getbasebyte(register LispPTR base_addr, register int byteoffset)
 {
 	switch( (SEGMASK & byteoffset) ){
 	case S_POSITIVE:
@@ -115,7 +115,7 @@ N_OP_getbasebyte(register LispPTR base_addr, register int byteoffset)
 
 ***********************************************************/
 
-N_OP_putbasebyte(register LispPTR base_addr, register int byteoffset, register int tos)
+LispPTR N_OP_putbasebyte(register LispPTR base_addr, register int byteoffset, register int tos)
 {
 	if(((SEGMASK & tos ) != S_POSITIVE) || ((unsigned short)tos >= 256))
 		ERROR_EXIT(tos);

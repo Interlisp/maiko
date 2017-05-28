@@ -187,7 +187,7 @@ int find_process_slot(register int pid)
 /*									*/
 /************************************************************************/
 
-wait_for_comm_processes(void)
+void wait_for_comm_processes(void)
 {
   int pid;
   int slot;
@@ -274,7 +274,7 @@ int desc;
 /************************************************************************/
 
 
-close_unix_descriptors(void) /* Get ready to shut Maiko down */
+void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 {
   int slot;
 
@@ -331,7 +331,7 @@ close_unix_descriptors(void) /* Get ready to shut Maiko down */
 /*                                                                      */
 /************************************************************************/
 
-FindUnixPipes(void)
+int FindUnixPipes(void)
 {
   char *envtmp, *getenv(const char *);
   register int i;
@@ -398,7 +398,7 @@ FindUnixPipes(void)
 
 /* Find the first PTY pair that is not in use */
 
-FindAvailablePty(char *Master, char *Slave)
+int FindAvailablePty(char *Master, char *Slave)
 {
   int res, flags;
   char *let, *num;
@@ -447,11 +447,7 @@ FindAvailablePty(char *Master, char *Slave)
   return(-1);
 }
 
-
-
-
-
-
+void WriteLispStringToPipe (LispPTR lispstr);
 
 /************************************************************************/
 /*									*/
@@ -495,7 +491,7 @@ FindAvailablePty(char *Master, char *Slave)
 /************************************************************************/
 
 
-Unix_handlecomm(LispPTR *args)
+LispPTR Unix_handlecomm(LispPTR *args)
 {
     int command,c, dest, PID, i, slot, sock, res;
     LispPTR retval;
@@ -1221,7 +1217,7 @@ printf("Shell job %d, PID = %d\n", slot, UJ[slot].PID);
 /*									*/
 /************************************************************************/
 
-WriteLispStringToPipe (LispPTR lispstr)
+void WriteLispStringToPipe (LispPTR lispstr)
 { unsigned short len;
     LispStringToCString(lispstr, shcom, 2048);
     /* Write string length, then string */

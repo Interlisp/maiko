@@ -110,6 +110,7 @@ unsigned todo_uses = 0;
 unsigned todo_misses = 0;
 unsigned todo_reads = 0;
 
+void freelistcell(LispPTR cell);
 
 /************************************************************************/
 /*									*/
@@ -119,7 +120,7 @@ unsigned todo_reads = 0;
 /*									*/
 /************************************************************************/
 
-gcreccell(LispPTR cell)
+LispPTR gcreccell(LispPTR cell)
 {
     register ConsCell *ptr;
     struct dtd *typdtd; 
@@ -338,7 +339,7 @@ gcreccell(LispPTR cell)
 /*									*/
 /************************************************************************/
 
-freelistcell(LispPTR cell)
+void freelistcell(LispPTR cell)
 {
     struct conspage *pbase; 
     register ConsCell *cell68k;

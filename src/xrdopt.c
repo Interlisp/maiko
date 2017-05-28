@@ -123,6 +123,52 @@ extern struct sockaddr_nit snit;
 #endif /* USE_DLPI */
 #endif /* NOETHER */
 
+/************************************************************************/
+/*									*/
+/*			p r i n t _ X u s a g e				*/
+/*									*/
+/*	Print out command-line options for X, to help user.		*/
+/*									*/
+/************************************************************************/
+
+void print_Xusage( prog )
+  char *prog;
+  {
+    fprintf(stderr, " %s options:\n", prog);
+    fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
+    fprintf(stderr, " -k[ey] <access-key>                  -see manual for details\n");
+    fprintf(stderr, " -h[elp]                              -prints this text\n");
+    fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
+    fprintf(stderr, " -g[eometry] <geom>                   -size & placement for the medley window on your X screen\n");
+    fprintf(stderr, " -sc[reen] <geom>                     -size & placement for the medley display\n");
+    fprintf(stderr, " -t[itle] <string>                    -titlebar text for the window manager\n");
+    fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
+    fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
+    fprintf(stderr, " -xsync                               -turn  XSyncronize on. (default is off)\n\n");
+    fprintf(stderr, "If you have any further questions, please refer to the manual or\n");
+    fprintf(stderr, "call our tech support at (800)228-5325 or (510)763-0516.\n\n");
+    exit(0);
+  } /* end print_Xusage() */
+
+/************************************************************************/
+/*									*/
+/*			p r i n t _ l i s p u s a g e			*/
+/*									*/
+/*	Print out command-line usage info if user enters wrong stuff.	*/
+/*									*/
+/************************************************************************/
+
+void print_lispusage( prog )
+  char *prog;
+  {
+    TPRINT(( "TRACE: print_lisp_usage()\n" ));
+
+    /* Lisp Option */
+    fprintf(stderr,"lde[ether] [sysout] [-k access-key]");
+    fprintf(stderr," [-E <ethernet-info>]");
+    fprintf(stderr,"\n");
+
+  } /* end print_lisp_usage() */
 
 /************************************************************************/
 /*									*/
@@ -390,53 +436,3 @@ void read_Xoption( argc, argv )
 }				/* end readXoption */
 
 
-
-/************************************************************************/
-/*									*/
-/*			p r i n t _ l i s p u s a g e			*/
-/*									*/
-/*	Print out command-line usage info if user enters wrong stuff.	*/
-/*									*/
-/************************************************************************/
-
-print_lispusage( prog )
-  char *prog;
-  {
-    TPRINT(( "TRACE: print_lisp_usage()\n" ));
-
-    /* Lisp Option */
-    fprintf(stderr,"lde[ether] [sysout] [-k access-key]");
-    fprintf(stderr," [-E <ethernet-info>]");
-    fprintf(stderr,"\n");
-
-  } /* end print_lisp_usage() */
-
-
-
-
-/************************************************************************/
-/*									*/
-/*			p r i n t _ X u s a g e				*/
-/*									*/
-/*	Print out command-line options for X, to help user.		*/
-/*									*/
-/************************************************************************/
-
-print_Xusage( prog )
-  char *prog;
-  {
-    fprintf(stderr, " %s options:\n", prog);
-    fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
-    fprintf(stderr, " -k[ey] <access-key>                  -see manual for details\n");
-    fprintf(stderr, " -h[elp]                              -prints this text\n");
-    fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
-    fprintf(stderr, " -g[eometry] <geom>                   -size & placement for the medley window on your X screen\n");
-    fprintf(stderr, " -sc[reen] <geom>                     -size & placement for the medley display\n");
-    fprintf(stderr, " -t[itle] <string>                    -titlebar text for the window manager\n");
-    fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
-    fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
-    fprintf(stderr, " -xsync                               -turn  XSyncronize on. (default is off)\n\n");
-    fprintf(stderr, "If you have any further questions, please refer to the manual or\n");
-    fprintf(stderr, "call our tech support at (800)228-5325 or (510)763-0516.\n\n");
-    exit(0);
-  } /* end print_Xusage() */

@@ -63,6 +63,7 @@ static char *id = "$Id: gcfinal.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"
+#include <stdio.h>
 
 #ifdef NEVER
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1) /* segnum field */
@@ -121,10 +122,11 @@ struct buf {
 };
 #endif /* BYTESWAP */
 
+void printarrayblock(LispPTR base);
 
 /************* The following procedure is common !! **************************/
 
-integerlength(unsigned int n)
+int integerlength(unsigned int n)
 {int	cnt;
    if (n <= 2)
 	return(n);
@@ -589,7 +591,7 @@ LispPTR reclaimstackp (LispPTR ptr)		/* This is the entry function */
 /*									*/
 /************************************************************************/
 
-printarrayblock(LispPTR base)
+void printarrayblock(LispPTR base)
 {
     struct arrayblock 	*bbase, *btrailer, *ptrailer;
     struct arrayblock	*bfwd, *bbwd, *rbase;

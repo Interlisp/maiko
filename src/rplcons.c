@@ -44,7 +44,7 @@ static char *id = "$Id: rplcons.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 
 /***************************************************/
 
-N_OP_rplcons(register LispPTR list, register LispPTR item)
+LispPTR N_OP_rplcons(register LispPTR list, register LispPTR item)
 {
     register struct conspage *conspage ;
     register ConsCell *new_cell , *list68k;

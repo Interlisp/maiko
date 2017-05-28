@@ -69,6 +69,11 @@ DLword	REPLACE_atom;
 #define GCENTRY DLword
 #endif
 
+/* forward references */
+void init_for_keyhandle(void);
+void init_for_bltchar(void);
+void init_for_bitblt(void);
+
 /************************************************************************/
 /*									*/
 /*	f i x p _ v a l u e			*/
@@ -114,7 +119,7 @@ LispPTR * fixp_value(LispPTR *ptr)
 
 #define PAGES_IN_MBYTE 2048
 
-init_ifpage(int sysout_size)
+void init_ifpage(int sysout_size)
 {
     extern long MDate;
     extern int DisplayType;
@@ -201,7 +206,7 @@ init_ifpage(int sysout_size)
 /*									*/
 /************************************************************************/
 
-init_iopage(void)
+void init_iopage(void)
 {
 
     /*
@@ -232,7 +237,7 @@ extern int for_makeinit;
 
 extern LispPTR *MakeAtom68k(char *string);
 
-build_lisp_map(void)
+void build_lisp_map(void)
 {
     DLword index;
 
@@ -392,7 +397,7 @@ build_lisp_map(void)
 /*									*/
 /************************************************************************/
 
-init_for_keyhandle(void)
+void init_for_keyhandle(void)
 {
     DLword index;
     extern DLword *CTopKeyevent;
@@ -474,7 +479,7 @@ init_for_keyhandle(void)
 /*									*/
 /************************************************************************/
 
-init_for_bltchar(void)
+void init_for_bltchar(void)
 { LispPTR index;
     char *IL;
 
@@ -523,7 +528,7 @@ init_for_bltchar(void)
 /*									*/
 /************************************************************************/
 
-init_for_bitblt(void)
+void init_for_bitblt(void)
 {
     LispPTR index;
     char *IL;

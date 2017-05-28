@@ -9,18 +9,7 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 /*	dard-error output so it appears in the prompt window.		*/
 /*									*/
 /*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
 /************************************************************************/
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -35,7 +24,6 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 /************************************************************************/
 
 #include "version.h"
-
 
 
 #ifndef DOS
@@ -110,7 +98,7 @@ extern u_int LispReadFds;
 /*									*/
 /************************************************************************/
 
-mess_init()
+void mess_init()
   {
 #ifndef XWINDOW
 #ifndef DOS
@@ -135,7 +123,7 @@ needpty:
 	if( (ptyfd=open(ptyname, 2)) >= 0 ) goto gotpty;
 	ptynum++;
       }
-    return(NIL);
+    return;
 gotpty:
     ttyname[9] = ptyname[9];
     if( (ttyfd=open(ttyname, 2)) < 0)
@@ -180,11 +168,11 @@ gotpty:
     sprintf(logfile,"/tmp/%s-lisp.log", pwd->pw_name);
     if( unlink(logfile) == -1)
       {	/* delete old log file */
-	if(errno != ENOENT) return(NIL);
+	if(errno != ENOENT) return;
       }
 
     if( (log_id = open(logfile, (O_RDWR | O_CREAT), 0666)) < 0 )
-      return(NIL);
+      return;
 #ifdef LOGINT
     LogFileFd = 1 << cons_pty;
     flags = fcntl(cons_pty, F_GETFL, 0);
@@ -217,7 +205,7 @@ gotpty:
 /*									*/
 /************************************************************************/
 
-mess_reset()
+void mess_reset()
   {
 #ifndef DOS
 #ifndef XWINDOW
@@ -252,7 +240,7 @@ mess_reset()
 #ifndef DOS
 static struct timeval	selecttimeout = {0, 0};
 #endif
-mess_readp()
+LispPTR mess_readp()
   {
 #ifndef DOS
 #ifndef XWINDOW
@@ -278,9 +266,9 @@ mess_readp()
 * * * * * * * * * * * * * */
 
     if (logChanged) return(ATOM_T);
-    return(NIL);
 #endif /* XWINDOW */
 #endif /* DOS */
+    return(NIL);
 }
 
 
@@ -297,12 +285,13 @@ mess_readp()
 /*									*/
 /************************************************************************/
 
-mess_read(args)
+LispPTR mess_read(args)
   LispPTR	*args;
   /* args[0]		buffer	*/
   {
-#ifndef DOS
-#ifndef XWINDOW
+#if defined(DOS) || defined(XWINDOW)
+    return (NIL);
+#else
     int	id;
     struct stat sbuf;
     int	size, save_size;
@@ -363,8 +352,7 @@ mess_read(args)
 	StrNCpyFromCToLisp(base,temp_buf, size);
 
     return(GetSmallp(size));
-#endif /* XWINDOW */
-#endif /* DOS */
+#endif /* DOS | XWINDOW*/
 
   }
 
@@ -381,10 +369,11 @@ mess_read(args)
 /*									*/
 /************************************************************************/
 
-flush_pty()
+LispPTR flush_pty()
   {
-#ifndef DOS
-#ifndef XWINDOW
+#if defined(DOS) || defined(XWINDOW)
+    return (NIL);
+#else
     int	id;
     struct stat sbuf;
     char buf[MESSAGE_BUFFER_SIZE];	/* Buffer between pty and log file */
@@ -452,8 +441,7 @@ flush_pty()
 	    return(ATOM_T);
 	  }
       }
-#endif /* XWINDOW */
-#endif /* DOS */
+#endif /* XWINDOW | DOS */
   }
 
 

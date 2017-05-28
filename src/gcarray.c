@@ -65,6 +65,7 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #include "array.h"
 #include "debug.h"
 #include "lispmap.h"
+#include <stdio.h>
 
 /*** not currently used -FS
 	#define min(a,b)		((a > b)?b:a)

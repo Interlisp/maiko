@@ -48,7 +48,7 @@ extern char *sys_errlist[];
 #endif /* LINUX */
 #endif
 
-perrorn(char *s, int n)
+void perrorn(char *s, int n)
 {
   if ( s != NULL && *s != '\0' ) {
     fprintf(stderr, "%s: ",s);
@@ -71,7 +71,7 @@ perrorn(char *s, int n)
 /*									*/
 /************************************************************************/
 
-err_mess(char *from, int no)
+void err_mess(char *from, int no)
 {
     int	save_errno=errno;	/* Save errno around OSMESSAGE_PRINT */
 

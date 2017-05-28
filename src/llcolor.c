@@ -126,10 +126,11 @@ cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
 
 #else /* COLOR */
 
-cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
+LispPTR cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
     LispPTR color_bitmapbase;  /* COLOR BITMAP ADDRESS */
 {
 	printf( "Color is not supported.\n" );
+	return (NIL);
 }
 #endif /* COLOR */
 
@@ -142,7 +143,7 @@ cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
 */
 /*******************************************************************/
 #ifdef COLOR
-cgfour_change_screen_mode(which_screen)
+LispPTR cgfour_change_screen_mode(which_screen)
     LispPTR which_screen;
     { /* subr 0211 */
     struct pixrect *ColorFb;
@@ -227,10 +228,11 @@ cgfour_change_screen_mode(which_screen)
     }
 #else /* COLOR */
 
-cgfour_change_screen_mode(which_screen)
+LispPTR cgfour_change_screen_mode(which_screen)
     LispPTR which_screen;
 {
 	printf( "Color is not supported.\n" );
+	return (NIL);
 }
 #endif /* COLOR */
 
@@ -250,7 +252,7 @@ unsigned char GRN_colormap;
 unsigned char BLU_colormap;
 
 #ifdef COLOR
-cgfour_set_colormap(args)
+LispPTR cgfour_set_colormap(args)
     LispPTR args[];
     {
     int index;
@@ -274,10 +276,11 @@ cgfour_set_colormap(args)
     }
 #else /* COLOR */
 
-cgfour_set_colormap(args)
+LispPTR cgfour_set_colormap(args)
     LispPTR args[];
 {
 	printf( "Color is not supported.\n" );
+	return (NIL);
 }
 #endif /* COLOR */
 
@@ -287,7 +290,7 @@ cgfour_set_colormap(args)
 static struct pixrect *saved_screen;
 static int Screen_Saved = T;
 
-save_color_screen()
+void save_color_screen()
 {
 	if( !Screen_Saved ) {
 		saved_screen = mem_point( displaywidth
@@ -301,7 +304,7 @@ save_color_screen()
 	} /* end if(!Screen_Saved) */	
 } /* end save_color_screen() */
 
-restore_color_screen()
+void restore_color_screen()
 {
 	if( Screen_Saved ) {
 		saved_screen = mem_point( displaywidth
@@ -321,7 +324,7 @@ static unsigned char red_colormap[256]
 		   , green_colormap[256]
 		   , blue_colormap[256];
 static int Saved_Colormap = NIL;
-save_colormap()
+void save_colormap()
 {
 	struct pixrect *Color_Fb;
 
@@ -339,7 +342,7 @@ save_colormap()
 	} /* end if( !Saved_Colormap ) */
 } /* end save_colormap() */
 
-restore_colormap()
+void restore_colormap()
 {
 	struct pixrect *Color_Fb;
 

@@ -65,7 +65,7 @@ static char *id = "$Id: hardrtn.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyr
 */
 /********************************************************************/
 
-slowreturn(void)
+int slowreturn(void)
 {
  register DLword *next68k;
  register DLword *freeptr;

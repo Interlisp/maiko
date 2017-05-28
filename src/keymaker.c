@@ -67,7 +67,7 @@ unsigned long modify(long unsigned int hostid);
 /*									*/
 /************************************************************************/
 
-writeresults(FILE *fp, char *host, char *expdate, int key1, int key2, int key3, char *info)
+void writeresults(FILE *fp, char *host, char *expdate, int key1, int key2, int key3, char *info)
 {
     fprintf(fp, "Host ID: %-14s Expiration: %-9s",host, expdate);
     fprintf(fp, " Key: %8x %8x %8x", key1, key2, key3);
@@ -84,7 +84,7 @@ writeresults(FILE *fp, char *host, char *expdate, int key1, int key2, int key3, 
 /*									*/
 /************************************************************************/
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     int  logfile = 0;	/* set to 1 if logfile on command line */
     FILE *fp;		/* file pointer for the logfile */
@@ -227,6 +227,7 @@ main(int argc, char **argv)
     if (commandlineargs)
       {
 	printf("%8x %8x %8x\n", *keyarray, *(keyarray+1), *(keyarray+2));
+	exit(1);
       }
     else
       {

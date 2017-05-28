@@ -119,7 +119,7 @@ void print_atomname(LispPTR index)
 
 #define PACKAGES_LIMIT 255
 /** GET PACKAGE INDEX from PACKAGE FULL NAME */
-find_package_from_name(char *packname, int len)
+int find_package_from_name(char *packname, int len)
 {
     int index;
     PACKAGE *package;
@@ -316,7 +316,7 @@ void check_type_68k(int type, LispPTR *ptr)
 /*									*/
 /************************************************************************/
 
-type_num(LispPTR lispptr)
+int type_num(LispPTR lispptr)
 {
   int type;
   type = GetTypeNumber(lispptr);
@@ -552,7 +552,7 @@ char * opcode_table[256] =
   };
 
 
-print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj)
+int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj)
 {
     /* Print the opcode at addr, including args, and return length */
     /* if this opcode is the last, return -1			   */
@@ -760,7 +760,7 @@ void printPC(void)
 
 
 /***************************/
-countchar(char *string)
+int countchar(char *string)
 {
     int cnt=0;
 
@@ -928,7 +928,7 @@ loop:
     goto loop;
   } /*end btv*/
 
-get_framename(struct frameex1 *fx_addr68k)
+int get_framename(struct frameex1 *fx_addr68k)
 {
     struct fnhead *fnheader;
     LispPTR scratch;
@@ -973,7 +973,7 @@ FX *get_nextFX(FX *fx)
 
 
 
-MAKEATOM(char *string)
+int MAKEATOM(char *string)
 {
     int length;
     length = countchar(string);
@@ -1013,7 +1013,7 @@ DLword *MakeAtom68k(char *string)
 /*	Print the top-level value of a given atom; for use in dbx.			*/
 /*									*/
 /************************************************************************/
-GETTOPVAL(char *string)
+void GETTOPVAL(char *string)
 {
     int index;
     LispPTR *cell68k;
@@ -1038,7 +1038,7 @@ GETTOPVAL(char *string)
 /*									*/
 /************************************************************************/
 
-S_TOPVAL(char *string)
+void S_TOPVAL(char *string)
 {
     int index;
     LispPTR *cell68k;
@@ -1058,7 +1058,7 @@ S_TOPVAL(char *string)
 
 
 /***************/
-S_MAKEATOM(char *string)
+int S_MAKEATOM(char *string)
 {
   int index=0;
  int length;

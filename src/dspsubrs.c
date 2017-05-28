@@ -49,7 +49,7 @@ extern int Mouse_Included;
  *
  ****************************************************/
 
-DSP_dspbout( args )
+void DSP_dspbout( args )
 LispPTR	*args;		/* args[0] :	charcode	*/
   {
     putc( (args[0] & 0xFFFF) & 0x7f, BCPLDISPLAY );
@@ -66,7 +66,7 @@ LispPTR	*args;		/* args[0] :	charcode	*/
 
 extern int DisplayInitialized ;
 
-DSP_showdisplay( args )
+void DSP_showdisplay( args )
 LispPTR	*args;
 {
     DisplayInitialized = 1;
@@ -81,7 +81,7 @@ LispPTR	*args;
  *
  ****************************************************/
 
-DSP_VideoColor( args )
+LispPTR DSP_VideoColor( args )
 LispPTR	*args;		/* args[0] :	black flag	*/
 {
     int invert;
@@ -115,7 +115,7 @@ extern int errno;
  *			called from \HARDCURSORUP etc.
  *
  ****************************************************/
-DSP_Cursor( args , argnum)
+void DSP_Cursor( args , argnum)
 LispPTR *args;	int argnum;
 			/* args[0] :	hot sopt X
 			 * args[1] :	hot spot Y
@@ -187,7 +187,7 @@ LispPTR *args;	int argnum;
  *
  ****************************************************/
 
-DSP_SetMousePos( args )
+void DSP_SetMousePos( args )
 register LispPTR *args;	/* args[0] :	X pos
 			 * args[1] :	Y pos
 			 */
@@ -235,7 +235,7 @@ register LispPTR *args;	/* args[0] :	X pos
  *			called from  \Katana.DisplayWidth.
  *
  ****************************************************/
-DSP_ScreenWidth( args )
+LispPTR DSP_ScreenWidth( args )
 LispPTR *args;
 {
 	return( S_POSITIVE | (0xFFFF & displaywidth) );
@@ -247,7 +247,7 @@ LispPTR *args;
  *			called from  \Katana.DisplayHeight.
  *
  ****************************************************/
-DSP_ScreenHight( args )
+LispPTR DSP_ScreenHight( args )
 LispPTR *args;
 {
 	return( S_POSITIVE | (0xFFFF & displayheight) );
@@ -266,7 +266,7 @@ extern int for_makeinit;
 extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
-flip_cursor()
+void flip_cursor()
   {
     register DLword *word;
     register int cnt;

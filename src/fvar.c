@@ -441,7 +441,7 @@ native_newframe
 	3. return the pointer
 
 ******************************************************************************/
-native_newframe(int slot)
+LispPTR native_newframe(int slot)
      	     			/* index of FVAR slot. */
   {
     register struct frameex2 *newpfra2;	/* pointer to new frame extension */

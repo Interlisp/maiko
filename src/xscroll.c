@@ -30,47 +30,11 @@ static char *id = "$Id: xscroll.c,v 1.2 1999/01/03 02:07:48 sybalsky Exp $ Copyr
 
 int ScrollPitch = SCROLL_PITCH;
 
-JumpScrollVer( dsp, y )
-     DspInterface dsp;
-{
-  Scroll( dsp, dsp->Vissible.x, (int)((dsp->Display.width *y) / dsp->Vissible.height));
-}
-
-JumpScrollHor( dsp, x )
-     DspInterface dsp;
-{
-  Scroll( dsp, (int)((dsp->Display.width *x) / dsp->Vissible.width), dsp->Vissible.y);
-}
-
-ScrollLeft( dsp )
-     DspInterface dsp;
-{
-  Scroll( dsp, dsp->Vissible.x - ScrollPitch, dsp->Vissible.y);
-}
-
-ScrollRight( dsp )
-     DspInterface dsp;
-{
-  Scroll( dsp, dsp->Vissible.x + ScrollPitch, dsp->Vissible.y);
-}
-
-ScrollUp( dsp )
-     DspInterface dsp;
-{
-  Scroll( dsp, dsp->Vissible.x, dsp->Vissible.y - ScrollPitch);
-}
-
-ScrollDown( dsp )
-     DspInterface dsp;
-{
-  Scroll( dsp, dsp->Vissible.x, dsp->Vissible.y + ScrollPitch);
-}
-
 
 /* Move the DisplayWindow and the ScrollButtons to a new */
 /* position. newX, newY refers to the uppre left corner */
 /* of the LispDisplay */
-Scroll( dsp, newX, newY)
+void Scroll( dsp, newX, newY)
      DspInterface dsp;
      int newX, newY;
 {
@@ -87,3 +51,39 @@ Scroll( dsp, newX, newY)
   (dsp->bitblt_to_screen)( dsp, 0, dsp->Vissible.x, dsp->Vissible.y,
 			  dsp->Vissible.width, dsp->Vissible.height);
 }/* end Scroll */
+
+void JumpScrollVer( dsp, y )
+     DspInterface dsp;
+{
+  Scroll( dsp, dsp->Vissible.x, (int)((dsp->Display.width *y) / dsp->Vissible.height));
+}
+
+void JumpScrollHor( dsp, x )
+     DspInterface dsp;
+{
+  Scroll( dsp, (int)((dsp->Display.width *x) / dsp->Vissible.width), dsp->Vissible.y);
+}
+
+void ScrollLeft( dsp )
+     DspInterface dsp;
+{
+  Scroll( dsp, dsp->Vissible.x - ScrollPitch, dsp->Vissible.y);
+}
+
+void ScrollRight( dsp )
+     DspInterface dsp;
+{
+  Scroll( dsp, dsp->Vissible.x + ScrollPitch, dsp->Vissible.y);
+}
+
+void ScrollUp( dsp )
+     DspInterface dsp;
+{
+  Scroll( dsp, dsp->Vissible.x, dsp->Vissible.y - ScrollPitch);
+}
+
+void ScrollDown( dsp )
+     DspInterface dsp;
+{
+  Scroll( dsp, dsp->Vissible.x, dsp->Vissible.y + ScrollPitch);
+}

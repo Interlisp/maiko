@@ -285,7 +285,7 @@ void separate_host(lfname, host)
  * open a specified file.
  */
 
-COM_openfile(args)
+LispPTR COM_openfile(args)
 	register LispPTR	*args;
 {
 	char		lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
@@ -640,7 +640,7 @@ COM_openfile(args)
  * Lisp and it is passed to COM_closefile.
  */
 
-COM_closefile(args)
+LispPTR COM_closefile(args)
 	register LispPTR	*args;
 {
 
@@ -943,7 +943,7 @@ COM_closefile(args)
  * can open the file with the specified mode or not.
  */
 
-DSK_getfilename(args)
+LispPTR DSK_getfilename(args)
 	register LispPTR	*args;
 {
 	register char	*base;
@@ -1247,7 +1247,7 @@ DSK_getfilename(args)
  * a specified file.
  */
 
-DSK_deletefile(args)
+LispPTR DSK_deletefile(args)
 	register LispPTR	*args;
 {
 	char			file[MAXPATHLEN], fbuf[MAXPATHLEN], vless[MAXPATHLEN];
@@ -1398,7 +1398,7 @@ DSK_deletefile(args)
  * a specified file.
  */
 
-DSK_renamefile(args)
+LispPTR DSK_renamefile(args)
 	register LispPTR	*args;
 {
 	char			src[MAXPATHLEN], dst[MAXPATHLEN];
@@ -1630,7 +1630,7 @@ DSK_renamefile(args)
  * the directory name representation.
  */
 
-DSK_directorynamep(args)
+LispPTR DSK_directorynamep(args)
  	register LispPTR	*args;
 {
 	char		dirname[MAXPATHLEN];
@@ -1720,7 +1720,7 @@ DSK_directorynamep(args)
  * Lisp sense.
  */
 
-COM_getfileinfo(args)
+LispPTR COM_getfileinfo(args)
 	register LispPTR	*args;
 {
 	register int		dskp, rval;
@@ -1929,7 +1929,7 @@ COM_getfileinfo(args)
  * make sense.
  */
 
-COM_setfileinfo(args)
+LispPTR COM_setfileinfo(args)
 	register LispPTR	*args;
 {
 	register int		dskp, rval, date;
@@ -2073,7 +2073,7 @@ COM_setfileinfo(args)
  * remaining region of a buffer will be zero outed.  The size of a page is 512 bytes.
  */
 
-COM_readpage(args)
+LispPTR COM_readpage(args)
 	register LispPTR	*args;
 {
 	register char	*bufp;
@@ -2159,7 +2159,7 @@ rdlp:	TIMEOUT(count = read(fd, bufp, FDEV_PAGE_SIZE));
  * The actual size of data written is specified with args[3].
  */
 
-COM_writepage(args)
+LispPTR COM_writepage(args)
 	register LispPTR	*args;
 {
 	register int	fd;
@@ -2237,7 +2237,7 @@ wlp:	TIMEOUT(rval = write(fd, bufp, count));
  * truncate a file.
  */
 
-COM_truncatefile(args)
+LispPTR COM_truncatefile(args)
 	register LispPTR	*args;
 {
 	register int	fd;
@@ -2321,7 +2321,7 @@ COM_truncatefile(args)
  * Change the current directory of the process to the specified directory.
  */
 
-COM_changedir(args)
+LispPTR COM_changedir(args)
 	register LispPTR	*args;
 {
 	register int		dskp, rval;
@@ -2424,7 +2424,7 @@ COM_changedir(args)
  * strips the version field by invoking DSK_getfilename with NON recognition mode. 
  */
 
-COM_getfreeblock(args)
+LispPTR COM_getfreeblock(args)
 	register LispPTR *args;
 {
 	register int	dskp, rval, *buf;
@@ -2670,7 +2670,7 @@ void separate_version(name, ver, checkp)
 
 
 #ifdef DOS
-separate_drive(lfname, drive)
+void separate_drive(lfname, drive)
 	register char	*lfname;
   char *drive;
 {
@@ -2724,7 +2724,7 @@ separate_drive(lfname, drive)
  *
  */
 
-unpack_filename(file, dir, name, ver, checkp)
+int unpack_filename(file, dir, name, ver, checkp)
 	register char	*file;
 	register char	*dir;
 	register char	*name;
@@ -2782,7 +2782,7 @@ unpack_filename(file, dir, name, ver, checkp)
  *
  */
 
-true_name(path)
+int true_name(path)
 	register char	*path;
 {
 	char		dir[MAXPATHLEN];
@@ -2876,7 +2876,7 @@ true_name(path)
  *
  */
 
-locate_file(dir, name)
+int locate_file(dir, name)
 	register char	*dir;
 	register char	*name;
 {
@@ -2982,7 +2982,7 @@ locate_file(dir, name)
  *
  */
 
-make_directory(dir)
+int make_directory(dir)
 	register char	*dir;
 {
 	register char	*cp, *dp;
@@ -3256,7 +3256,7 @@ make_directory(dir)
 /*									*/
 /************************************************************************/
 
-get_version_array(dir, file, varray, cache)
+int get_version_array(dir, file, varray, cache)
   register char		*dir;
   register char		*file;
   register FileName	*varray;
@@ -3505,7 +3505,7 @@ get_version_array(dir, file, varray, cache)
  * to maintain the directory on which a file is being created.
  */
 
-maintain_version(file, varray, forcep)
+int maintain_version(file, varray, forcep)
 	register char		*file;
 	register FileName	*varray;
 	register int		forcep;
@@ -3673,7 +3673,7 @@ maintain_version(file, varray, forcep)
  *
  */
 
-get_versionless(varray, file, dir)
+int get_versionless(varray, file, dir)
 	register FileName	*varray;
 	register char		*file;
 	register char		*dir;
@@ -3730,7 +3730,7 @@ return(0);
  *
  */
 
-check_vless_link(vless, varray, to_file, highest_p)
+int check_vless_link(vless, varray, to_file, highest_p)
 	register char		*vless;
 	register FileName	*varray;
 	register char		*to_file;
@@ -3836,7 +3836,7 @@ check_vless_link(vless, varray, to_file, highest_p)
  *
  */
 
-get_old(dir, varray, afile, vfile)
+int get_old(dir, varray, afile, vfile)
 	register char		*dir;
 	register FileName	*varray;
 	register char		*afile;
@@ -4038,7 +4038,7 @@ get_old(dir, varray, afile, vfile)
  *
  */
 
-get_oldest(dir, varray, afile, vfile)
+int get_oldest(dir, varray, afile, vfile)
 	register char		*dir;
 	register FileName	*varray;
 	register char		*afile;
@@ -4239,7 +4239,7 @@ get_oldest(dir, varray, afile, vfile)
  *
  */
 
-get_new(dir, varray, afile, vfile)
+int get_new(dir, varray, afile, vfile)
 	register char		*dir;
 	register FileName	*varray;
 	register char		*afile;
@@ -4539,7 +4539,7 @@ get_new(dir, varray, afile, vfile)
  *
  */
 
-get_old_new(dir, varray, afile, vfile)
+int get_old_new(dir, varray, afile, vfile)
 	register char		*dir;
 	register FileName	*varray;
 	register char		*afile;

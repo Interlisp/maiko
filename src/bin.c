@@ -47,7 +47,7 @@ static char *id = "$Id: bin.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright
 #include "cell.h" 
 #include "stream.h" 
  
-N_OP_bin(register int tos)
+LispPTR N_OP_bin(register int tos)
 {
     register Stream *stream68k; /* stream instance on TOS */
     register  char *buff68k;     /* pointer to BUFF */

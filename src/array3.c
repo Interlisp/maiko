@@ -39,7 +39,7 @@ static char *id = "@(#) array3.c	2.9 10/12/88";
 #include "my.h"
 
 /***	N_OP_aref1   -- op 266   (array index)   ***/
-N_OP_aref1(register LispPTR arrayarg, register LispPTR inx)
+LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx)
 {
 
     register LispPTR baseL;

@@ -109,7 +109,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 
 #ifdef GCC386
 		/* byte-swapped, 386 assembler version */
-gcmapscan()
+LispPTR gcmapscan()
   {
     volatile DLword probe;
     volatile DLword *entry;
@@ -303,7 +303,7 @@ returNIL:	\n\
 #else
 
 
-gcmapscan(void)
+LispPTR gcmapscan(void)
 {
     register GCENTRY probe;
     register GCENTRY *entry;
@@ -360,7 +360,7 @@ gcmapscan(void)
 
 
 
-gcmapunscan(void)
+LispPTR gcmapunscan(void)
 {
 	register GCENTRY			probe;
 	register GCENTRY			*entry;
@@ -406,7 +406,7 @@ gcmapunscan(void)
 
 
 
-gcscanstack(void)
+LispPTR gcscanstack(void)
 { 
   register  Bframe	*bascframe;
   Bframe                *obascframe;

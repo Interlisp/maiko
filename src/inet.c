@@ -98,7 +98,7 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 extern u_int LispIOFds, LispReadFds;
 extern int *Lisp_errno;
 
-subr_TCP_ops (op, nameConn, proto, length, bufaddr, maxlen)
+LispPTR subr_TCP_ops (op, nameConn, proto, length, bufaddr, maxlen)
   int op;
   LispPTR nameConn, proto, length, bufaddr, maxlen; 
   {

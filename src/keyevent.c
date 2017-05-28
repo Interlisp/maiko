@@ -17,8 +17,6 @@ static char *id = "$Id: keyevent.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copy
 
 #include "version.h"
 
-
-
 /*
  *	This file contains the routines that interface Lisp to the
  *	Sun keyboard and mouse.
@@ -328,7 +326,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH/COLORPIXELS_IN_DLWORD * CURSORHEIGHT];
 /*									*/
 /************************************************************************/
 
-getsignaldata(sig, code, scp)
+void getsignaldata(sig, code, scp)
   int sig, code;
   struct sigcontext *scp;
   {
@@ -447,8 +445,7 @@ getmore:
 #endif /* DOS */
   } /* end getsignaldata */
 
-
-
+void kb_trans( u_short keycode, u_short upflg );
 
 /************************************************************************/
 /*									*/
@@ -594,7 +591,7 @@ register struct inputevent *event;
 /*									*/
 /************************************************************************/
 
-kb_trans( keycode, upflg )
+void kb_trans( keycode, upflg )
   u_short keycode;
   u_short upflg;
   {

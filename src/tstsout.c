@@ -42,18 +42,7 @@ extern int	errno;
 
 /* JDS protoize char *valloc(size_t); */
 
-main(int argc, char **argv)
-{
-    if (argc != 2) 
-      {
-	printf("You forgot to supply a file name.");
-	return(-1);
-      }
-    check_sysout(argv[1]);
-    exit(0);
-  }
-
-check_sysout(char *sysout_file_name)
+void check_sysout(char *sysout_file_name)
 {
     int             sysout;	/* SysoutFile descriptor */
 
@@ -91,3 +80,15 @@ check_sysout(char *sysout_file_name)
     close(sysout);
     printf("%d", ifpage.minbversion);
 }
+
+int main(int argc, char **argv)
+{
+    if (argc != 2) 
+      {
+	printf("You forgot to supply a file name.");
+	return(-1);
+      }
+    check_sysout(argv[1]);
+    exit(0);
+}
+

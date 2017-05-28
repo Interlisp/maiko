@@ -284,10 +284,10 @@ LispPTR get_fn_fvar_name(struct fnhead *fnobj, DLword offset)
 LispPTR get_fvar_name(struct frameex1 *fx_addr68k, DLword offset)
 {
 #ifdef BIGVM
-    get_fn_fvar_name((struct fnhead *)Addr68k_from_LADDR((fx_addr68k)->fnheader), offset);
+  return (get_fn_fvar_name((struct fnhead *)Addr68k_from_LADDR((fx_addr68k)->fnheader), offset));
 #else
-    get_fn_fvar_name(
-	    (struct fnhead *)Addr68k_from_LADDR(((int)(fx_addr68k)->hi2fnheader << 16) | (fx_addr68k)->lofnheader), offset);
+  return (get_fn_fvar_name(
+			   (struct fnhead *)Addr68k_from_LADDR(((int)(fx_addr68k)->hi2fnheader << 16) | (fx_addr68k)->lofnheader), offset));
 #endif /* BIGVM */
   }/* end get_fvar_name */
 
@@ -304,7 +304,7 @@ LispPTR get_fvar_name(struct frameex1 *fx_addr68k, DLword offset)
 /*									*/
 /************************************************************************/
 
-sf(struct frameex1 *fx_addr68k)
+int sf(struct frameex1 *fx_addr68k)
 {
     Bframe *bf;
     DLword *next68k ;
@@ -596,13 +596,7 @@ sf(struct frameex1 *fx_addr68k)
 /*									*/
 /************************************************************************/
 
-bt(void)
-{
-    bt1(CURRENTFX);
-  }
-
-
-bt1(FX *startFX)
+void bt1(FX *startFX)
 {
     FX	*fx ;
     struct fnhead	*fnobj;
@@ -664,6 +658,12 @@ bt1_exit: URaid_ArrMAXIndex=fnum-1;
 	URaid_currentFX=0;
   }/* end bt */
 
+void bt(void)
+{
+    bt1(CURRENTFX);
+  }
+
+
 
 
 
@@ -691,7 +691,7 @@ bt1_exit: URaid_ArrMAXIndex=fnum-1;
 /*									*/
 /************************************************************************/
 
-btvv(void)
+void btvv(void)
 {
 	struct frameex1 *fx_addr68k;
 	LispPTR atomindex ;
@@ -730,7 +730,7 @@ btvv(void)
 /*							NMitani		*/
 /************************************************************************/
 
-sff(LispPTR laddr)
+void sff(LispPTR laddr)
 {
     sf((FX *)Addr68k_from_LADDR(laddr));
   }
@@ -744,7 +744,12 @@ sff(LispPTR laddr)
 /*****************************************************************/
 #define DUMPSIZE 40
 #define FNOVERHEADWORDS (8)
-void nt(LispPTR index)
+
+void nt1(LispPTR *start, int size, char *str);
+
+void ntheader(struct fnhead *fnobj);
+
+  void nt(LispPTR index)
                  /* atom index */
   {
     struct fnhead *fnobj;
@@ -779,7 +784,7 @@ void nt(LispPTR index)
     ntheader(fnobj);
 }
 
-ntheader(struct fnhead *fnobj)
+void ntheader(struct fnhead *fnobj)
 {
     LispPTR *localnt1;
     int localntsize;
@@ -805,7 +810,7 @@ ntheader(struct fnhead *fnobj)
 
   }
 
-nts(struct frameex1 *fxp)
+void nts(struct frameex1 *fxp)
 {
   struct fnhead *nt;
 
@@ -833,7 +838,7 @@ nts(struct frameex1 *fxp)
 
 #define VAROFFSET(X) (X & 0xFFFFFFF)
 
-nt1(LispPTR *start, int size, char *str)
+void nt1(LispPTR *start, int size, char *str)
 {
   LispPTR *endp, *entry2p;
 

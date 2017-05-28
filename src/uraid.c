@@ -345,7 +345,7 @@ LispPTR make_atom();
 */
 /***********************************************************************/
 
-uraid_commclear()
+void uraid_commclear()
 {
   memset(URaid_inputstring, 0, URMAXCOMM);
   memset(URaid_arg1, 0, URMAXCOMM/2);
@@ -358,7 +358,7 @@ uraid_commclear()
 
 
 
-copy_region ( src, dst, width, h )
+void copy_region ( src, dst, width, h )
 register short *src, *dst;
 int width;
 register int h;
@@ -385,7 +385,7 @@ register int h;
 */
 /***********************************************************************/
 
-uraid_commands()
+LispPTR uraid_commands()
 {
  int num,address,val,tmp;
  LispPTR index;
@@ -910,7 +910,7 @@ extern struct pixrect *ColorDisplayPixrect,*DisplayRegionPixrect;
 #endif /* SUNDISPLAY */
 
 
-device_before_raid()
+int device_before_raid()
   {
     int keytrans;
     int size;
@@ -1122,9 +1122,13 @@ int size;
 
 */
 /***********************************************************************/
+/*
+ * Seems like a bad return type or bad code, returning 0, -1, or NIL
+ * NBriggs May 2017
+ */
 #define KB_ALLUP                0xffff
 
-device_after_raid()
+int device_after_raid()
   {
     extern DLword  *EmMouseX68K, *EmMouseY68K,
                    *EmKbdAd068K, *EmRealUtilin68K;
@@ -1150,7 +1154,7 @@ device_after_raid()
 	perror("after-uraid: I_SETSIG for ether failed:\n");
 	close(ether_fd);
 	ether_fd = -1;
-	return(NIL);
+	return(-1);
       }
 #endif /* USE_DLPI */
 #endif /* NOETHER */
@@ -1207,7 +1211,7 @@ device_after_raid()
 /***********************************************************************/
 #ifndef COLOR
 
-re_init_display(lisp_display_addr, display_max)
+int re_init_display(lisp_display_addr, display_max)
   int lisp_display_addr, display_max;
   {
     int mmapstat, size;

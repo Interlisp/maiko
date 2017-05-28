@@ -31,13 +31,18 @@ static char *id = "$Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrig
 
 DLword	*createcell68k(unsigned int type);
 
+/*
+ * XXX: it feels as though something is not clean here, looks like the
+ * "int a" arguments are really LispPTR types, though perhaps it doesn't
+ * matter.  NBriggs, May 2017
+ */
 
 /************************************************************
 N_OP_llsh1
 	entry		LLSH1		OPCODE[0340]
 	return(a << 1)
 ************************************************************/
-N_OP_llsh1(int a)
+LispPTR N_OP_llsh1(int a)
 {
 	N_ARITH_BODY_1_UNSIGNED(a, 1, <<);
 }
@@ -47,7 +52,7 @@ N_OP_llsh8
 	entry		LLSH8		OPCODE[0341]
 	return(a << 8)
 ************************************************************/
-N_OP_llsh8(int a)
+LispPTR N_OP_llsh8(int a)
 {
 	N_ARITH_BODY_1_UNSIGNED(a, 8, <<);
 }
@@ -57,7 +62,7 @@ N_OP_lrsh1
 	entry		LRSH1		OPCODE[0342]
 	return(a >> 1)
 ************************************************************/
-N_OP_lrsh1(int a)
+LispPTR N_OP_lrsh1(int a)
 {
 	N_ARITH_BODY_1_UNSIGNED(a, 1, >>);
 }
@@ -67,7 +72,7 @@ N_OP_lrsh8
 	entry		LRSH8		OPCODE[0343]
 	return(a >> 8)
 ************************************************************/
-N_OP_lrsh8(int a)
+LispPTR N_OP_lrsh8(int a)
 {
 	N_ARITH_BODY_1_UNSIGNED(a, 8, >>);
 }
@@ -77,7 +82,7 @@ N_OP_lsh
 	entry		LSH		OPCODE[0347]
 	return(a <?> b)
 ************************************************************/
-N_OP_lsh(int a, int b)
+LispPTR N_OP_lsh(int a, int b)
 {
 register int	arg,arg2;
 register int	size;

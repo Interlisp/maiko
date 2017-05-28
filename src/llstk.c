@@ -47,7 +47,7 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 extern int extended_frame;
 
 
-
+void blt(register DLword *dest68k, register DLword *source68k, int nw);
 
 /******************************************************************/
 /*
@@ -607,7 +607,7 @@ void flip_cursorbar(int n)
                 blt(dest,source,size)
 */
 /**************************************************************/
-blt(register DLword *dest68k, register DLword *source68k, int nw)
+void blt(register DLword *dest68k, register DLword *source68k, int nw)
 {
 /******* OLD def ,
  Due to C compiler's bug, we can't use pre-decriment for register val
@@ -625,8 +625,6 @@ blt(register DLword *dest68k, register DLword *source68k, int nw)
   {
     GETWORD(dest68k--) = GETWORD(source68k--);
   }
-
-
 }
 
 
@@ -1246,7 +1244,7 @@ void check_BF(Bframe *bf68k)
 /*									*/
 /************************************************************************/
 
-check_stack_rooms(FX *fx68k)
+int check_stack_rooms(FX *fx68k)
 {
     int size;
     DLword *freeptr68k,*endstk68k;

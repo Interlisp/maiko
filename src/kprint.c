@@ -35,6 +35,12 @@ int Printdepth=0;
 int PrintMaxLen = 10;
 int PrintLen[20] ;
 
+/* forward references */
+void print_string(LispPTR x);
+void print_NEWstring(LispPTR x);
+void print_fixp(LispPTR x);
+void print_floatp(LispPTR x);
+
 /************************************************************************/
 /*									*/
 /*			P R I N D A T U M				*/
@@ -155,7 +161,7 @@ LispPTR	print(LispPTR x)
 /*									*/
 /************************************************************************/
 
-print_string(LispPTR x)
+void print_string(LispPTR x)
 {
     struct stringp	*string_point;
     DLword	st_length;
@@ -190,7 +196,7 @@ print_string(LispPTR x)
 /*									*/
 /************************************************************************/
 
-print_NEWstring(LispPTR x)
+void print_NEWstring(LispPTR x)
 {
     NEWSTRINGP *string_point;
     DLword	st_length;
@@ -224,7 +230,7 @@ print_NEWstring(LispPTR x)
 /*									*/
 /************************************************************************/
 
-print_fixp(LispPTR x)
+void print_fixp(LispPTR x)
 {
     int	*addr_fixp;
 
@@ -242,7 +248,7 @@ print_fixp(LispPTR x)
 /*									*/
 /************************************************************************/
 
-print_floatp(LispPTR x)
+void print_floatp(LispPTR x)
 {
     float *addr_floatp;
 
