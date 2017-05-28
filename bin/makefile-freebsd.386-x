@@ -1,6 +1,6 @@
 # Options for Linux, Intel 386/486 and X-Window
 
-CC = gcc -m32 -std=c89
+CC = gcc -m32 -std=c89 -Wall
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
