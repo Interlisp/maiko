@@ -1,8 +1,6 @@
-/* $Id: doscomm.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: doscomm.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: doscomm.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,10 +15,6 @@ static char *id = "$Id: doscomm.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
 
-
-DOS_handlecomm(int args)
-{
-}
+DOS_handlecomm(int args) {}

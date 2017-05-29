@@ -1,10 +1,6 @@
 /* $Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright (C) Venue";
 
-
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -19,8 +15,6 @@ static char *id = "$Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-
-
 /*
  *
  *	Author :  Takeshi Shimizu
@@ -28,10 +22,10 @@ static char *id = "$Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright
  */
 /******************************************************************/
 /*
-		File Name  :	blt.c
-		Including  :	OP_blt
+                File Name  :	blt.c
+                Including  :	OP_blt
 
-		Created    :	jul 9, 1987 by T.Shimizu
+                Created    :	jul 9, 1987 by T.Shimizu
 */
 /******************************************************************/
 
@@ -47,29 +41,26 @@ static char *id = "$Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright
 
 /*
   N_OP_blt takes 3 arguments.
-	STK-1 has destination's pointer.
-	STK has source's pointer.
-	TOS has number of words to be translated.
+        STK-1 has destination's pointer.
+        STK has source's pointer.
+        TOS has number of words to be translated.
 */
 
+LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, register LispPTR wordcount) {
+  register DLword *source68k;
+  register DLword *dest68k;
+  register int nw;
 
-LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, register LispPTR wordcount)
-{
-    register  DLword *source68k;
-    register  DLword *dest68k ;
-    register int nw;
+  if ((wordcount & SEGMASK) != S_POSITIVE) ERROR_EXIT(wordcount);
+  nw = wordcount & 0xffff;
 
-    if((wordcount & SEGMASK) != S_POSITIVE) ERROR_EXIT(wordcount);
-    nw = wordcount & 0xffff ;
+  source68k = Addr68k_from_LADDR(sourceptr) + nw;
+  dest68k = Addr68k_from_LADDR(destptr) + nw;
 
-    source68k = Addr68k_from_LADDR(sourceptr) + nw;
-    dest68k = Addr68k_from_LADDR(destptr) + nw;
+  while (nw) {
+    (GETWORD(--dest68k)) = GETWORD(--source68k);
+    nw--;
+  }
 
-    while(nw)	{  (GETWORD(--dest68k))= GETWORD(--source68k) ; nw--; }
-
-    return(wordcount);
-  } /* end N_OP_blt */
-
-
-
-
+  return (wordcount);
+} /* end N_OP_blt */

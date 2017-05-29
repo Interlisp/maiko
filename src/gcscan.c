@@ -1,7 +1,6 @@
-/* $Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -16,7 +15,6 @@ static char *id = "$Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyri
 /************************************************************************/
 
 #include "version.h"
-
 
 /*************************************************************************/
 /*                                                                       */
@@ -60,46 +58,41 @@ static char *id = "$Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyri
 #include "lsptypes.h"
 
 #ifdef BIGVM
-#define HTSTKBIT 		0x10000		/* = 512 */
-#define HTENDS 			((struct hashentry *) htlptr)
-#define GetStkCnt(entry1)	(entry1 >> 16)
+#define HTSTKBIT 0x10000 /* = 512 */
+#define HTENDS ((struct hashentry *)htlptr)
+#define GetStkCnt(entry1) (entry1 >> 16)
 #else
-#define HTSTKBIT 		0x200		/* = 512 */
-#define HTENDS 			((struct hashentry *) htlptr)
-#define GetStkCnt(entry1)	(entry1 >> 9)
+#define HTSTKBIT 0x200 /* = 512 */
+#define HTENDS ((struct hashentry *)htlptr)
+#define GetStkCnt(entry1) (entry1 >> 9)
 #endif /* BIGVM */
 
-
-
-
-DLword gcscan1 (register int probe)
-               	      				/* probe is offset */
-  { register struct htlinkptr *htlptr;		/* overlay access method */ 
-    register int contents;
-    while (--probe >= 0)			/* End of HTmain Table ? */
-      { 
-	/* Start addr. of scanning */	
-	htlptr = (struct htlinkptr *)(HTmain+probe);
-	contents = ((struct htlinkptr *)GCPTR(htlptr))->contents;
-	if (contents && (((struct hashentry *)GCPTR(HTENDS))->collision
-	    || (GetStkCnt(contents) == 0)))
-	  return(probe);
-      }
-    return(NIL);
-   }
-
-
-
-DLword gcscan2 (register int probe)
-               	      				/* probe is offset */
+DLword gcscan1(register int probe)
+/* probe is offset */
+{
+  register struct htlinkptr *htlptr; /* overlay access method */
+  register int contents;
+  while (--probe >= 0) /* End of HTmain Table ? */
   {
-    register struct htlinkptr *htlptr;		/* overlay access method */ 
-    while (--probe >= 0)			/* End of HTmain Table ? */
-      {
-	htlptr = (struct htlinkptr *)(HTmain+probe);
-						/* Start addr. of scanning */
-	if (((HTSTKBIT | 1) & ((struct htlinkptr *)GCPTR(htlptr))->contents) != 0)
-	    return(probe);		/* stackref or collision ON */
-      }
-    return(NIL);
+    /* Start addr. of scanning */
+    htlptr = (struct htlinkptr *)(HTmain + probe);
+    contents = ((struct htlinkptr *)GCPTR(htlptr))->contents;
+    if (contents && (((struct hashentry *)GCPTR(HTENDS))->collision || (GetStkCnt(contents) == 0)))
+      return (probe);
   }
+  return (NIL);
+}
+
+DLword gcscan2(register int probe)
+/* probe is offset */
+{
+  register struct htlinkptr *htlptr; /* overlay access method */
+  while (--probe >= 0)               /* End of HTmain Table ? */
+  {
+    htlptr = (struct htlinkptr *)(HTmain + probe);
+    /* Start addr. of scanning */
+    if (((HTSTKBIT | 1) & ((struct htlinkptr *)GCPTR(htlptr))->contents) != 0)
+      return (probe); /* stackref or collision ON */
+  }
+  return (NIL);
+}

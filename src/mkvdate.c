@@ -1,8 +1,6 @@
-/* $Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,8 +15,6 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 /************************************************************************/
 
 #include "version.h"
-
-
 
 /************************************************************************/
 /*									*/
@@ -37,44 +33,39 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-
 #ifdef OSF1
 #include "time.h"
 #endif
 
-#include	<stdio.h>
+#include <stdio.h>
 #ifdef USETIMEFN
-#include	<time.h>
+#include <time.h>
 #elif DOS
-#include	<time.h>
+#include <time.h>
 #else
-#include	<sys/time.h>
+#include <sys/time.h>
 #endif /* USETIMEFN */
 
-
 #ifdef USETIMEFN
-	/* RISCOS doesn't have the BSD time functions */
-int main(void)
-  {
-    long dtime;
-    time(&dtime);
-    fprintf(stderr, "Mdate :%d\n", dtime);
-    printf("long MDate= %d;\n", dtime);
-    return (0);
-  }
+/* RISCOS doesn't have the BSD time functions */
+int main(void) {
+  long dtime;
+  time(&dtime);
+  fprintf(stderr, "Mdate :%d\n", dtime);
+  printf("long MDate= %d;\n", dtime);
+  return (0);
+}
 #else
-	/* Version for every other Unix */
-int main(void)
-{
-    struct timeval time;
+/* Version for every other Unix */
+int main(void) {
+  struct timeval time;
 
-    gettimeofday(&time, NULL);
-    fprintf(stderr, "Mdate :%d\n", time.tv_sec);
-    fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
+  gettimeofday(&time, NULL);
+  fprintf(stderr, "Mdate :%d\n", time.tv_sec);
+  fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
 
-    printf("long MDate= %d;\n", time.tv_sec);
-    return (0);
-  }
+  printf("long MDate= %d;\n", time.tv_sec);
+  return (0);
+}
 
 #endif /* SYSVONLY */
-

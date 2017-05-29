@@ -1,7 +1,6 @@
-/* $Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,17 +16,13 @@ static char *id = "$Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-
-
-
 /****************************************************************/
 /* LISTP(3Q),NTYPEX(4Q),TYPEP(5Q),DTEST(6Q) ,INSTANCEP(303Q)    */
 /****************************************************************/
 /*
-				changed : Jan. 13 1987 take
-				changed : Feb. 05 1987 take
-				changed : Jul. 24 1987 take
+                                changed : Jan. 13 1987 take
+                                changed : Feb. 05 1987 take
+                                changed : Jul. 24 1987 take
 
 */
 
@@ -37,7 +32,6 @@ static char *id = "$Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyri
 #include "lispmap.h"
 #include "lspglob.h"
 
-
 /************************************************************************/
 /*									*/
 /*			N _ O P _ d t e s t				*/
@@ -46,26 +40,20 @@ static char *id = "$Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_dtest(register LispPTR tos, register int atom_index)
-{
-    register struct dtd *dtd68k ;
+LispPTR N_OP_dtest(register LispPTR tos, register int atom_index) {
+  register struct dtd *dtd68k;
 
-    for(dtd68k=(struct dtd *) GetDTD(GetTypeNumber(tos));
+  for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(tos));
 #ifdef BIGVM
-	atom_index != dtd68k->dtd_name;
+       atom_index != dtd68k->dtd_name;
 #else
-	atom_index != dtd68k->dtd_namelo+(dtd68k->dtd_namehi<<16) ;
+       atom_index != dtd68k->dtd_namelo + (dtd68k->dtd_namehi << 16);
 #endif /* BIGVM */
-	dtd68k=(struct dtd *) GetDTD(dtd68k->dtd_supertype))
-      {
-	if( dtd68k->dtd_supertype == 0) ERROR_EXIT(tos);
-      }
-    return(tos);
-  } /* OP_DTEST END */
-
-
-
-
+       dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
+    if (dtd68k->dtd_supertype == 0) ERROR_EXIT(tos);
+  }
+  return (tos);
+} /* OP_DTEST END */
 
 /************************************************************************/
 /*									*/
@@ -75,22 +63,19 @@ LispPTR N_OP_dtest(register LispPTR tos, register int atom_index)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_instancep(register LispPTR tos, register int atom_index)
-{
-    register unsigned int type ;
-    register struct dtd *dtd68k ;
+LispPTR N_OP_instancep(register LispPTR tos, register int atom_index) {
+  register unsigned int type;
+  register struct dtd *dtd68k;
 
-    for(  dtd68k=(struct dtd *)GetDTD(GetTypeNumber(tos));
+  for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(tos));
 #ifdef BIGVM
-	atom_index != dtd68k->dtd_name;
+       atom_index != dtd68k->dtd_name;
 #else
-	atom_index != dtd68k->dtd_namelo+(dtd68k->dtd_namehi<<16) ;
+       atom_index != dtd68k->dtd_namelo + (dtd68k->dtd_namehi << 16);
 #endif /* BIGVM */
-	  dtd68k=(struct dtd *)GetDTD(dtd68k->dtd_supertype) )
-      {
-	if( dtd68k->dtd_supertype== 0) { return(NIL_PTR); }
-      }
-    return(ATOM_T);
+       dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
+    if (dtd68k->dtd_supertype == 0) { return (NIL_PTR); }
+  }
+  return (ATOM_T);
 
-  } /* N_OP_instancep END */
-
+} /* N_OP_instancep END */

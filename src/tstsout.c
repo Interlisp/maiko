@@ -1,10 +1,9 @@
-/* $Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyright (C) Venue";
 /*
  *	tstsout.c
  */
-
-
 
 /************************************************************************/
 /*									*/
@@ -19,7 +18,6 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 /************************************************************************/
 
 #include "version.h"
-
 
 #include <stdio.h>
 #include <sys/file.h>
@@ -36,59 +34,53 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 #include "ifpage.h"
 #include "dbprint.h"
 
-#define	IFPAGE_ADDRESS	512
-#define MBYTE	0x100000 /* 1 Mbyte */
-extern int	errno;
+#define IFPAGE_ADDRESS 512
+#define MBYTE 0x100000 /* 1 Mbyte */
+extern int errno;
 
 /* JDS protoize char *valloc(size_t); */
 
-void check_sysout(char *sysout_file_name)
-{
-    int             sysout;	/* SysoutFile descriptor */
+void check_sysout(char *sysout_file_name) {
+  int sysout; /* SysoutFile descriptor */
 
-    IFPAGE         ifpage;	/* IFPAGE */
+  IFPAGE ifpage; /* IFPAGE */
 
-    char            errmsg [ 255 ];
+  char errmsg[255];
 
-    /*
-     * first read the IFPAGE(InterfacePage)
-     */
+  /*
+   * first read the IFPAGE(InterfacePage)
+   */
 
-    /* open SysoutFile */
-    sysout = open(sysout_file_name, O_RDONLY, NULL);
-    if (sysout == -1) {
-	sprintf( errmsg,
-                 "sysout_loader: can't open sysout file: %s",
-		 sysout_file_name);
-	perror( errmsg );
-	exit(-1);
-    }
-    /* seek to IFPAGE */
-    if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
-	perror("sysout_loader: can't seek to IFPAGE");
-	exit(-1);
-    }
-    /* reads IFPAGE into scratch_page */
-    if (read(sysout, &ifpage, sizeof(IFPAGE)) == -1) {
-	perror("sysout_loader: can't read IFPAGE");
-	exit(-1);
-    }
+  /* open SysoutFile */
+  sysout = open(sysout_file_name, O_RDONLY, NULL);
+  if (sysout == -1) {
+    sprintf(errmsg, "sysout_loader: can't open sysout file: %s", sysout_file_name);
+    perror(errmsg);
+    exit(-1);
+  }
+  /* seek to IFPAGE */
+  if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
+    perror("sysout_loader: can't seek to IFPAGE");
+    exit(-1);
+  }
+  /* reads IFPAGE into scratch_page */
+  if (read(sysout, &ifpage, sizeof(IFPAGE)) == -1) {
+    perror("sysout_loader: can't read IFPAGE");
+    exit(-1);
+  }
 
 #ifdef BYTESWAP
-    word_swap_page(&ifpage, (3+sizeof(IFPAGE))/4);
+  word_swap_page(&ifpage, (3 + sizeof(IFPAGE)) / 4);
 #endif
-    close(sysout);
-    printf("%d", ifpage.minbversion);
+  close(sysout);
+  printf("%d", ifpage.minbversion);
 }
 
-int main(int argc, char **argv)
-{
-    if (argc != 2) 
-      {
-	printf("You forgot to supply a file name.");
-	return(-1);
-      }
-    check_sysout(argv[1]);
-    exit(0);
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    printf("You forgot to supply a file name.");
+    return (-1);
+  }
+  check_sysout(argv[1]);
+  exit(0);
 }
-

@@ -151,28 +151,28 @@ extern int ScreenLocked; /* for mouse tracking */
                                        (EQ Operation (QUOTE ERASE))) 0)
                                   (T 1))))))
 *****************************************************************/
-#define PixOperationLisp(SRCTYPE, OPERATION)                                                       \
-  (SRCTYPE == INVERT_atom                                                                          \
-       ? (OPERATION == REPLACE_atom                                                                \
-              ? PIX_NOT(PIX_SRC)                                                                   \
-              : (OPERATION == PAINT_atom                                                           \
-                     ? PIX_NOT(PIX_SRC) | PIX_DST                                                  \
-                     : (OPERATION == ERASE_atom                                                    \
-                            ? PIX_SRC & PIX_DST                                                    \
-                            : (OPERATION == INVERT_atom ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR))))   \
-       : /*  SRCTYPE == INPUT, TEXTURE */                                                          \
-       (OPERATION == REPLACE_atom                                                                  \
-            ? PIX_SRC                                                                              \
-            : (OPERATION == PAINT_atom                                                             \
-                   ? PIX_SRC | PIX_DST                                                             \
-                   : (OPERATION == ERASE_atom                                                      \
-                          ? PIX_NOT(PIX_SRC) & PIX_DST                                             \
+#define PixOperationLisp(SRCTYPE, OPERATION)                                                     \
+  (SRCTYPE == INVERT_atom                                                                        \
+       ? (OPERATION == REPLACE_atom                                                              \
+              ? PIX_NOT(PIX_SRC)                                                                 \
+              : (OPERATION == PAINT_atom                                                         \
+                     ? PIX_NOT(PIX_SRC) | PIX_DST                                                \
+                     : (OPERATION == ERASE_atom                                                  \
+                            ? PIX_SRC & PIX_DST                                                  \
+                            : (OPERATION == INVERT_atom ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR)))) \
+       : /*  SRCTYPE == INPUT, TEXTURE */                                                        \
+       (OPERATION == REPLACE_atom                                                                \
+            ? PIX_SRC                                                                            \
+            : (OPERATION == PAINT_atom                                                           \
+                   ? PIX_SRC | PIX_DST                                                           \
+                   : (OPERATION == ERASE_atom                                                    \
+                          ? PIX_NOT(PIX_SRC) & PIX_DST                                           \
                           : (OPERATION == INVERT_atom ? PIX_SRC ^ PIX_DST : ERROR)))))
 
-#define bbop(SRCTYPE, OPERATION)                                                                   \
-  (OPERATION == PAINT_atom                                                                         \
-       ? op_fn_or                                                                                  \
-       : (OPERATION == ERASE_atom ? op_fn_and                                                      \
+#define bbop(SRCTYPE, OPERATION)              \
+  (OPERATION == PAINT_atom                    \
+       ? op_fn_or                             \
+       : (OPERATION == ERASE_atom ? op_fn_and \
                                   : (OPERATION == INVERT_atom ? op_fn_xor : op_repl_src)))
 
 /********************************************************/
@@ -186,14 +186,14 @@ extern int ScreenLocked; /* for mouse tracking */
 /*                                                      */
 /********************************************************/
 
-#define bbsrc_type(SRCTYPE, OPERATION)                                                             \
-  (SRCTYPE == INVERT_atom ? (OPERATION == ERASE_atom ? 0 : 1) /*  SRCTYPE == INPUT, TEXTURE */     \
+#define bbsrc_type(SRCTYPE, OPERATION)                                                         \
+  (SRCTYPE == INVERT_atom ? (OPERATION == ERASE_atom ? 0 : 1) /*  SRCTYPE == INPUT, TEXTURE */ \
                           : (OPERATION == ERASE_atom ? 1 : 0))
 
-#define init_kbd_startup                                                                           \
-  if (!kbd_for_makeinit) {                                                                         \
-    init_keyboard(0);                                                                              \
-    kbd_for_makeinit = 1;                                                                          \
+#define init_kbd_startup   \
+  if (!kbd_for_makeinit) { \
+    init_keyboard(0);      \
+    kbd_for_makeinit = 1;  \
   };
 
 extern struct pixrect *SrcePixRect, *DestPixRect, *TexturePixRect;
@@ -273,8 +273,7 @@ void bitbltsub(LispPTR *argv) {
 
     w = pbt->pbtwidth;
     h = pbt->pbtheight;
-    if ((h <= 0) || (w <= 0))
-      return;
+    if ((h <= 0) || (w <= 0)) return;
     src_comp = bbsrc_type(sourcetype, operation);
     op = bbop(sourcetype, operation);
 
@@ -372,8 +371,7 @@ do_it_now:
 
 #ifdef REALCURSOR
   displayflg |= n_new_cursorin(dstbase, dx, dty, w, h);
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
 #ifdef NEWBITBLT
@@ -397,8 +395,7 @@ do_it_now:
 
 #ifdef XWINDOW
   XLOCK;
-  if (in_display_segment(dstbase))
-    flush_display_region(dx, dty, w, h);
+  if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
   XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
@@ -412,8 +409,7 @@ do_it_now:
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
 #ifdef DOS
@@ -503,18 +499,18 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
 #endif /* COLOR */
 
 #define BITBLTBITMAP_argnum 14
-#define PUNT_TO_BITBLTBITMAP                                                                       \
-  {                                                                                                \
-    if (BITBLTBITMAP_index == 0xffffffff) {                                                        \
-      BITBLTBITMAP_index = get_package_atom("\\PUNT.BITBLT.BITMAP", 19, "INTERLISP", 9, NIL);      \
-      if (BITBLTBITMAP_index == 0xffffffff) {                                                      \
-        error("BITBLTBITMAP install failed");                                                      \
-        return (NIL);							\
-      }                                                                                            \
-    }                                                                                              \
-    CurrentStackPTR += (BITBLTBITMAP_argnum - 1) * DLWORDSPER_CELL;                                \
-    ccfuncall(BITBLTBITMAP_index, BITBLTBITMAP_argnum, 3);                                         \
-    return (T);								\
+#define PUNT_TO_BITBLTBITMAP                                                                  \
+  {                                                                                           \
+    if (BITBLTBITMAP_index == 0xffffffff) {                                                   \
+      BITBLTBITMAP_index = get_package_atom("\\PUNT.BITBLT.BITMAP", 19, "INTERLISP", 9, NIL); \
+      if (BITBLTBITMAP_index == 0xffffffff) {                                                 \
+        error("BITBLTBITMAP install failed");                                                 \
+        return (NIL);                                                                         \
+      }                                                                                       \
+    }                                                                                         \
+    CurrentStackPTR += (BITBLTBITMAP_argnum - 1) * DLWORDSPER_CELL;                           \
+    ccfuncall(BITBLTBITMAP_index, BITBLTBITMAP_argnum, 3);                                    \
+    return (T);                                                                               \
   }
 
 LispPTR BITBLTBITMAP_index;
@@ -576,9 +572,7 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   sourcetype = args[8];
   /* sourcetype == MERGE_atom case must be handled in
       Lisp func \\BITMAP.BITBLT */
-  if (sourcetype == MERGE_atom) {
-    PUNT_TO_BITBLTBITMAP;
-  }
+  if (sourcetype == MERGE_atom) { PUNT_TO_BITBLTBITMAP; }
 
   N_GETNUMBER(args[1], sleft, bad_arg);
   N_GETNUMBER(args[2], sbottom, bad_arg);
@@ -641,8 +635,7 @@ LispPTR bitblt_bitmap(LispPTR *args) {
     top = min(temp, min(top - stody, clipbottom + height));
   }
 
-  if ((right <= left) || (top <= bottom))
-    return (NIL);
+  if ((right <= left) || (top <= bottom)) return (NIL);
 
   /*** PUT SOURCETYPE MERGE special code HERE ***/
   /**** See avobe, earler in this code check
@@ -650,26 +643,26 @@ LispPTR bitblt_bitmap(LispPTR *args) {
 
   if (sourcebits == destbits) { /* not 1-bit-per-pixel, so adjust limits by pixel size */
     switch (sourcebits) {
-    case 4:
-      left = left * 4;
-      right = right * 4;
-      stodx = stodx * 4;
-      /* Put color texture merge case here */
-      break;
+      case 4:
+        left = left * 4;
+        right = right * 4;
+        stodx = stodx * 4;
+        /* Put color texture merge case here */
+        break;
 
-    case 8:
-      left = left * 8;
-      right = right * 8;
-      stodx = stodx * 8;
-      /* Put color texture merge case here */
-      break;
+      case 8:
+        left = left * 8;
+        right = right * 8;
+        stodx = stodx * 8;
+        /* Put color texture merge case here */
+        break;
 
-    case 24:
-      left = left * 24;
-      right = right * 24;
-      stodx = stodx * 24;
-      /* Put color texture merge case here */
-      break;
+      case 24:
+        left = left * 24;
+        right = right * 24;
+        stodx = stodx * 24;
+        /* Put color texture merge case here */
+        break;
     }
   } else {
     /*      DBPRINT(("BITBLT between bitmaps of different sizes, unimplemented.")); */
@@ -723,8 +716,7 @@ do_it_now:
 
 #ifdef REALCURSOR
   displayflg |= n_new_cursorin(dstbase, dlx, dty, width, height);
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /*  REALCURSOR */
 
 #ifdef NEWBITBLT
@@ -762,8 +754,7 @@ do_it_now:
 
 #ifdef XWINDOW
   XLOCK;
-  if (in_display_segment(dstbase))
-    flush_display_region(dlx, dty, width, height);
+  if (in_display_segment(dstbase)) flush_display_region(dlx, dty, width, height);
   XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
@@ -777,8 +768,7 @@ do_it_now:
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
   UNLOCKSCREEN;
@@ -790,18 +780,18 @@ bad_arg:
 } /* end of bitblt_bitmap */
 
 #define BLTSHADEBITMAP_argnum 8
-#define PUNT_TO_BLTSHADEBITMAP                                                                     \
-  {                                                                                                \
-    if (BLTSHADEBITMAP_index == 0xffffffff) {                                                      \
-      BLTSHADEBITMAP_index = get_package_atom("\\PUNT.BLTSHADE.BITMAP", 21, "INTERLISP", 9, NIL);  \
-      if (BLTSHADEBITMAP_index == 0xffffffff) {                                                    \
-        error("BLTSHADEBITMAP install failed");                                                    \
-        return (NIL);							\
-      }                                                                                            \
-    }                                                                                              \
-    CurrentStackPTR += (BLTSHADEBITMAP_argnum - 1) * DLWORDSPER_CELL;                              \
-    ccfuncall(BLTSHADEBITMAP_index, BLTSHADEBITMAP_argnum, 3);                                     \
-    return (T);								\
+#define PUNT_TO_BLTSHADEBITMAP                                                                    \
+  {                                                                                               \
+    if (BLTSHADEBITMAP_index == 0xffffffff) {                                                     \
+      BLTSHADEBITMAP_index = get_package_atom("\\PUNT.BLTSHADE.BITMAP", 21, "INTERLISP", 9, NIL); \
+      if (BLTSHADEBITMAP_index == 0xffffffff) {                                                   \
+        error("BLTSHADEBITMAP install failed");                                                   \
+        return (NIL);                                                                             \
+      }                                                                                           \
+    }                                                                                             \
+    CurrentStackPTR += (BLTSHADEBITMAP_argnum - 1) * DLWORDSPER_CELL;                             \
+    ccfuncall(BLTSHADEBITMAP_index, BLTSHADEBITMAP_argnum, 3);                                    \
+    return (T);                                                                                   \
   }
 
 LispPTR BLTSHADEBITMAP_index;
@@ -856,9 +846,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   }
 
   DestBitmap = (BITMAP *)Addr68k_from_LADDR(args[1]);
-  if ((destbits = DestBitmap->bmbitperpixel) != 1) {
-    PUNT_TO_BLTSHADEBITMAP;
-  }
+  if ((destbits = DestBitmap->bmbitperpixel) != 1) { PUNT_TO_BLTSHADEBITMAP; }
 
   N_GETNUMBER(args[2], dleft, bad_arg);
   N_GETNUMBER(args[3], dbottom, bad_arg);
@@ -904,19 +892,15 @@ LispPTR bitshade_bitmap(LispPTR *args) {
     top = min(top, dbottom + height);
   }
 
-  if ((right <= left) || (top <= bottom))
-    return (NIL);
+  if ((right <= left) || (top <= bottom)) return (NIL);
 
   height = top - bottom;
   width = right - left;
   dty = DestBitmap->bmheight - top;
 
-  if ((dty < 0) || ((dty + height) > DestBitmap->bmheight))
-    error("dty bad.");
-  if ((bottom < 0))
-    error("bottom bad.");
-  if ((bottom > 2048))
-    error("bottom suspicious");
+  if ((dty < 0) || ((dty + height) > DestBitmap->bmheight)) error("dty bad.");
+  if ((bottom < 0)) error("bottom bad.");
+  if ((bottom > 2048)) error("bottom suspicious");
 
   /*** Stolen from bitbltsub, to avoid the call overhead: ***/
   src_comp = bbsrc_type(0, operation);
@@ -924,8 +908,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
 
   dstbpl = rasterwidth << 4;
 
-  if ((left < 0) || (right > dstbpl))
-    error("left/right bad.");
+  if ((left < 0) || (right > dstbpl)) error("left/right bad.");
 
   slx = left % BITSPERWORD;
 
@@ -980,8 +963,7 @@ do_it_now:
 
 #ifdef REALCURSOR
   displayflg |= n_new_cursorin(dstbase, left, dty, width, height);
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
 #ifdef NEWBITBLT
@@ -1019,8 +1001,7 @@ do_it_now:
 
 #ifdef XWINDOW
   XLOCK;
-  if (in_display_segment(dstbase))
-    flush_display_region(left, dty, width, height);
+  if (in_display_segment(dstbase)) flush_display_region(left, dty, width, height);
   XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
@@ -1034,8 +1015,7 @@ do_it_now:
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /*  REALCURSOR */
 
   UNLOCKSCREEN;
@@ -1176,8 +1156,7 @@ void bltchar(register BLTC *args)
   dstbpl = abs(pbt->pbtdestbpl);
   h = pbt->pbtheight;
   w = args->right - args->left;
-  if ((h <= 0) || (w <= 0))
-    return;
+  if ((h <= 0) || (w <= 0)) return;
 
   base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + args->char8code));
   sx = base + args->left - args->curx;
@@ -1197,8 +1176,7 @@ void bltchar(register BLTC *args)
   LOCKSCREEN;
 
 #ifdef REALCURSOR
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
 #ifdef NEWBITBLT
@@ -1213,26 +1191,21 @@ void bltchar(register BLTC *args)
   if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
 
-    if (in_display_segment(dstbase)) {
-      flush_display_lineregion(dx, dstbase, w, h);
-    }
+    if (in_display_segment(dstbase)) { flush_display_lineregion(dx, dstbase, w, h); }
 #endif
 
 #ifdef XWINDOW
   XLOCK;
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(dx, dstbase, w, h);
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
   XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(dx, dstbase, w, h);
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
   UNLOCKSCREEN;
@@ -1307,8 +1280,7 @@ LispPTR bltchar(register BLTC *args)
   LOCKSCREEN;
 
 #ifdef REALCURSOR
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
   if (pr_rop(DestPixRect, args->left, 0, (args->right - args->left), pbt->pbtheight, pix_op,
@@ -1336,13 +1308,11 @@ LispPTR bltchar(register BLTC *args)
 #endif /* XWINDOW */
 
 #ifdef DOS
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(dx, dstbase, w, h);
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
   ScreenLocked = NIL;
@@ -1364,69 +1334,69 @@ LispPTR bltchar(register BLTC *args)
 
 #define BLTCHAR_argnum 3
 #ifndef INIT
-#define PUNT_TO_BLTCHAR                                                                            \
-  {                                                                                                \
-    if ((BLTCHAR_index == 0)) {                                                                    \
-      BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL);            \
-      if (BLTCHAR_index == 0xffffffff) {                                                           \
-        error("\\MAIKO.PUNTBLTCHAR install failed");                                               \
-        return;							\
-      }                                                                                            \
-    }                                                                                              \
-    CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                                     \
-    ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                                   \
-    return;								\
+#define PUNT_TO_BLTCHAR                                                                 \
+  {                                                                                     \
+    if ((BLTCHAR_index == 0)) {                                                         \
+      BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL); \
+      if (BLTCHAR_index == 0xffffffff) {                                                \
+        error("\\MAIKO.PUNTBLTCHAR install failed");                                    \
+        return;                                                                         \
+      }                                                                                 \
+    }                                                                                   \
+    CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                          \
+    ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                        \
+    return;                                                                             \
   }
 #else
-#define PUNT_TO_BLTCHAR                                                                            \
-  { /* Version that is silent instead of erroring for init */                                      \
-    if ((BLTCHAR_index == 0)) {                                                                    \
-      BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL);            \
-      if (BLTCHAR_index == 0xffffffff) {                                                           \
-        /*   error("\\MAIKO.PUNTBLTCHAR install failed");      */                                  \
-        return;							\
-      }                                                                                            \
-    }                                                                                              \
-    CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                                     \
-    ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                                   \
-    return;								\
+#define PUNT_TO_BLTCHAR                                                                 \
+  { /* Version that is silent instead of erroring for init */                           \
+    if ((BLTCHAR_index == 0)) {                                                         \
+      BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL); \
+      if (BLTCHAR_index == 0xffffffff) {                                                \
+        /*   error("\\MAIKO.PUNTBLTCHAR install failed");      */                       \
+        return;                                                                         \
+      }                                                                                 \
+    }                                                                                   \
+    CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                          \
+    ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                        \
+    return;                                                                             \
   }
 #endif /* INIT */
 
 #define TEDIT_BLTCHAR_argnum 6
-#define PUNT_TO_TEDIT_BLTCHAR                                                                      \
-  {                                                                                                \
-    if (TEDIT_BLTCHAR_index == 0xffffffff) {                                                       \
-      TEDIT_BLTCHAR_index = get_package_atom("\\TEDIT.BLTCHAR", 14, "INTERLISP", 9, NIL);          \
-      if (TEDIT_BLTCHAR_index == 0xffffffff) {                                                     \
-        error("TEDIT install failed");                                                             \
-        return;							\
-      }                                                                                            \
-    }                                                                                              \
-    CurrentStackPTR += (TEDIT_BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                               \
-    ccfuncall(TEDIT_BLTCHAR_index, TEDIT_BLTCHAR_argnum, 3);                                       \
-    return;								\
+#define PUNT_TO_TEDIT_BLTCHAR                                                             \
+  {                                                                                       \
+    if (TEDIT_BLTCHAR_index == 0xffffffff) {                                              \
+      TEDIT_BLTCHAR_index = get_package_atom("\\TEDIT.BLTCHAR", 14, "INTERLISP", 9, NIL); \
+      if (TEDIT_BLTCHAR_index == 0xffffffff) {                                            \
+        error("TEDIT install failed");                                                    \
+        return;                                                                           \
+      }                                                                                   \
+    }                                                                                     \
+    CurrentStackPTR += (TEDIT_BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                      \
+    ccfuncall(TEDIT_BLTCHAR_index, TEDIT_BLTCHAR_argnum, 3);                              \
+    return;                                                                               \
   }
 
-#define FGetNum(ptr, place)                                                                        \
-  {                                                                                                \
-    if (((ptr)&SEGMASK) == S_POSITIVE) {                                                           \
-      (place) = ((ptr)&0xffff);                                                                    \
-    } else if (((ptr)&SEGMASK) == S_NEGATIVE) {                                                    \
-      (place) = (int)((ptr) | 0xffff0000);                                                         \
-    } else {                                                                                       \
-      PUNT_TO_BLTCHAR;                                                                             \
-    }                                                                                              \
+#define FGetNum(ptr, place)                     \
+  {                                             \
+    if (((ptr)&SEGMASK) == S_POSITIVE) {        \
+      (place) = ((ptr)&0xffff);                 \
+    } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
+      (place) = (int)((ptr) | 0xffff0000);      \
+    } else {                                    \
+      PUNT_TO_BLTCHAR;                          \
+    }                                           \
   }
-#define FGetNum2(ptr, place)                                                                       \
-  {                                                                                                \
-    if (((ptr)&SEGMASK) == S_POSITIVE) {                                                           \
-      (place) = ((ptr)&0xffff);                                                                    \
-    } else if (((ptr)&SEGMASK) == S_NEGATIVE) {                                                    \
-      (place) = (int)((ptr) | 0xffff0000);                                                         \
-    } else {                                                                                       \
-      return (-1);                                                                                 \
-    }                                                                                              \
+#define FGetNum2(ptr, place)                    \
+  {                                             \
+    if (((ptr)&SEGMASK) == S_POSITIVE) {        \
+      (place) = ((ptr)&0xffff);                 \
+    } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
+      (place) = (int)((ptr) | 0xffff0000);      \
+    } else {                                    \
+      return (-1);                              \
+    }                                           \
   }
 
 LispPTR *TOPWDS68k;          /* Top of window stack's DS */
@@ -1484,9 +1454,7 @@ void newbltchar(register BLTARG *args) {
     PUNT_TO_BLTCHAR;
   }
 
-  if (displaydata68k->ddslowprintingcase) {
-    PUNT_TO_BLTCHAR; /** \SLOWBLTCHAR--return;**/
-  }
+  if (displaydata68k->ddslowprintingcase) { PUNT_TO_BLTCHAR; /** \SLOWBLTCHAR--return;**/ }
 
   FGetNum(displaydata68k->ddxposition, curx);
   FGetNum(displaydata68k->ddrightmargin, rmargin);
@@ -1497,10 +1465,8 @@ void newbltchar(register BLTARG *args) {
       curx +
       GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
 
-  if ((right > rmargin) && (curx > lmargin))
-    PUNT_TO_BLTCHAR;
-  if (args->displaystream != *TOPWDS68k)
-    PUNT_TO_BLTCHAR;
+  if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
+  if (args->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
 
   {
     register int newpos;
@@ -1518,8 +1484,7 @@ void newbltchar(register BLTARG *args) {
 
   curx += xoff;
   right += xoff;
-  if (right > (int)(displaydata68k->ddclippingright))
-    right = displaydata68k->ddclippingright;
+  if (right > (int)(displaydata68k->ddclippingright)) right = displaydata68k->ddclippingright;
 
   if (curx > (int)(displaydata68k->ddclippingleft))
     left = curx;
@@ -1529,8 +1494,7 @@ void newbltchar(register BLTARG *args) {
   pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
   h = pbt->pbtheight;
   w = right - left;
-  if ((h <= 0) || (w <= 0))
-    return;
+  if ((h <= 0) || (w <= 0)) return;
 
   srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
@@ -1550,8 +1514,7 @@ void newbltchar(register BLTARG *args) {
 #ifdef REALCURSOR
   displayflg = (cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (left >> 4)), (right - left),
                          pbt->pbtheight, pbt->pbtbackward));
-  if (displayflg)
-    HideCursor;
+  if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
 #ifdef NEWBITBLT
@@ -1573,17 +1536,14 @@ void newbltchar(register BLTARG *args) {
 #endif
 
 #ifdef XWINDOW
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(dx, dstbase, w, h);
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
 #ifdef DOS
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(dx, dstbase, w, h);
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* DOS */
 
 #ifdef REALCURSOR
-  if (displayflg)
-    ShowCursor;
+  if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
   UNLOCKSCREEN;
@@ -1614,9 +1574,7 @@ LispPTR newbltchar(register BLTARG *args) {
     { PUNT_TO_BLTCHAR; }
   }
 
-  if (displaydata68k->ddslowprintingcase) {
-    PUNT_TO_BLTCHAR; /** \SLOWBLTCHAR--return;**/
-  }
+  if (displaydata68k->ddslowprintingcase) { PUNT_TO_BLTCHAR; /** \SLOWBLTCHAR--return;**/ }
 
   FGetNum(displaydata68k->ddxposition, curx);
   FGetNum(displaydata68k->ddrightmargin, rmargin);
@@ -1627,10 +1585,8 @@ LispPTR newbltchar(register BLTARG *args) {
       curx +
       GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
 
-  if ((right > rmargin) && (curx > lmargin))
-    PUNT_TO_BLTCHAR;
-  if (args->displaystream != *TOPWDS68k)
-    PUNT_TO_BLTCHAR;
+  if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
+  if (args->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
   {
     register int newpos;
     newpos = curx +
@@ -1647,8 +1603,7 @@ LispPTR newbltchar(register BLTARG *args) {
 
   curx += xoff;
   right += xoff;
-  if (right > (int)(displaydata68k->ddclippingright))
-    right = displaydata68k->ddclippingright;
+  if (right > (int)(displaydata68k->ddclippingright)) right = displaydata68k->ddclippingright;
 
   if (curx > (int)(displaydata68k->ddclippingleft))
     left = curx;
@@ -1712,8 +1667,7 @@ LispPTR newbltchar(register BLTARG *args) {
            * (right - left), pbt->pbtheight)); */
 
           flush_display_lineregion(left, dstbase, (right - left), pbt->pbtheight);
-          if (displayflg)
-            ShowCursor; /* because hide is done earlier */
+          if (displayflg) ShowCursor; /* because hide is done earlier */
         }
 #endif
 #endif /* SUNDISPLAY */
@@ -1729,10 +1683,8 @@ LispPTR newbltchar(register BLTARG *args) {
 #endif /* XWINDOW */
 
 #ifdef DOS
-      if (in_display_segment(dstbase))
-        flush_display_lineregion(dx, dstbase, w, h);
-      if (displayflg)
-        ShowCursor;
+      if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
+      if (displayflg) ShowCursor;
 #endif /* DOS */
 
       ScreenLocked = NIL;
@@ -1865,8 +1817,7 @@ typedef struct {
 
 /** changecharset_display,sfffixy are not tested *****I don't use TAKE **/
 
-LispPTR sfffixy(displaydata68k, csinfo68k, pbt68k)
-DISPLAYDATA *displaydata68k;
+LispPTR sfffixy(displaydata68k, csinfo68k, pbt68k) DISPLAYDATA *displaydata68k;
 CHARSETINFO *csinfo68k;
 PILOTBBT *pbt68k;
 
@@ -1918,9 +1869,7 @@ LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword chars
   fontd68k = (FONTDESC *)Addr68k_from_LADDR(displaydata68k->ddfont);
   base68k = (LispPTR *)Addr68k_from_LADDR(fontd68k->FONTCHARSETVECTOR);
 
-  if ((csinfo = *(base68k + charset)) == NIL) {
-    return (-1); /* punt case */
-  }
+  if ((csinfo = *(base68k + charset)) == NIL) { return (-1); /* punt case */ }
   csinfo68k = (CHARSETINFO *)Addr68k_from_LADDR(csinfo);
   /* REF CNT */
 
@@ -1949,14 +1898,14 @@ LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword chars
   }
 } /* changecharset_display */
 
-
 /******************************************************************/
 
-void ccfuncall(atom_index, argnum,
-          bytenum) register unsigned int atom_index; /* Atomindex for Function you want to invoke */
-register int argnum;                                 /* Number of ARGS on TOS and STK */
-register int bytenum;                                /* Number of bytes of Caller's
-                                                    OPCODE(including multi-byte) */
+void ccfuncall(
+    atom_index, argnum,
+    bytenum) register unsigned int atom_index; /* Atomindex for Function you want to invoke */
+register int argnum;                           /* Number of ARGS on TOS and STK */
+register int bytenum;                          /* Number of bytes of Caller's
+                                              OPCODE(including multi-byte) */
 {
   register struct definition_cell *defcell68k; /* Definition Cell PTR */
   register short pv_num;                       /* scratch for pv */
@@ -2220,8 +2169,7 @@ register int x, w, h, y;
   else
     return (NIL);
 
-  if (backward)
-    y -= h;
+  if (backward) y -= h;
 
   if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL))
     return (T);
@@ -2250,8 +2198,7 @@ register int x, w, h, y;
     else
       return (NIL);
 
-    if (backward)
-      y -= h;
+    if (backward) y -= h;
 
     if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL))
       return (T);
@@ -2265,8 +2212,7 @@ register int x, w, h, y;
     } else
       return (NIL);
 
-    if (backward)
-      y -= h;
+    if (backward) y -= h;
     /*  printf("old_c:x=%d,y=%d,w=%d,h=%d\n",x,y,w,h);*/
     if ((x < MOUSEXR) && ((x + (w >> 3)) > MOUSEXL) && (y < MOUSEYH) &&
         (y + h > MOUSEYL)) { /* printf("old_c T\n");*/

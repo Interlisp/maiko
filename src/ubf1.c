@@ -1,7 +1,6 @@
 /* $Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyright (C) Venue";
 
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -16,9 +15,6 @@ static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 
 #include "version.h"
 
-
-
-
 #include <stdio.h>
 #include "lispemul.h"
 #include "adr68k.h"
@@ -29,7 +25,7 @@ static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 #include "medleyfp.h"
 #include "my.h"
 /************************************************************
-	OP_ubfloat1  -- op 355  ==  UBFLOAT1
+        OP_ubfloat1  -- op 355  ==  UBFLOAT1
 355/0	BOX
 355/1	UNBOX
 355/2	ABS
@@ -37,37 +33,32 @@ static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 355/4	UFIX
 ***********************************************************/
 
-LispPTR N_OP_ubfloat1(int arg, int alpha)
-{
+LispPTR N_OP_ubfloat1(int arg, int alpha) {
   switch (alpha) {
     case 0: /* box */
-      {
+    {
       register DLword *wordp;
       DLword *createcell68k(unsigned int type);
       wordp = createcell68k(TYPE_FLOATP);
       *((int *)wordp) = arg;
-      return(LADDR_from_68k(wordp));
-      }
+      return (LADDR_from_68k(wordp));
+    }
     case 1: /* unbox */
-      {
+    {
       float dest;
       int ret;
       N_MakeFloat(arg, dest, arg);
       ret = *(int *)&dest;
-      return(ret);
-      }
-    case 2: /* abs */
-      return(0x7FFFFFFF & arg);
-    case 3: /* neg */
-      return(0x80000000 ^ arg);
+      return (ret);
+    }
+    case 2: /* abs */ return (0x7FFFFFFF & arg);
+    case 3: /* neg */ return (0x80000000 ^ arg);
     case 4: /* ufix */
-      {
+    {
       register float temp;
       int val;
       temp = *(float *)&arg;
-      if ( (temp > ((float) 0x7fffffff)) ||
-           (temp < ((float) 0x80000000)) )
-               ERROR_EXIT(arg);
+      if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) ERROR_EXIT(arg);
 #ifdef I386
       I386Reset;
 #endif /* I386 */
@@ -77,18 +68,9 @@ LispPTR N_OP_ubfloat1(int arg, int alpha)
       I386Round;
 #endif
       N_ARITH_SWITCH(val);
-      }
+    }
     default: ERROR_EXIT(arg);
-  }/* end switch */
-}/* end N_OP_ubfloat1() */
+  } /* end switch */
+} /* end N_OP_ubfloat1() */
 
-	/* end module */
-
-
-
-
-
-
-
-
-
+/* end module */

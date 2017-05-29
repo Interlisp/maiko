@@ -1,11 +1,7 @@
-/* $Id: dspsubrs.c,v 1.3 2001/12/26 22:17:02 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: dspsubrs.c,v 1.3 2001/12/26 22:17:02 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: dspsubrs.c,v 1.3 2001/12/26 22:17:02 sybalsky Exp $ Copyright (C) Venue";
 /*** ADOPTED NEW VERSION ***/
-
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -21,13 +17,11 @@ static char *id = "$Id: dspsubrs.c,v 1.3 2001/12/26 22:17:02 sybalsky Exp $ Copy
 
 #include "version.h"
 
-
 #include <stdio.h>
 #ifndef NOPIXRECT
 #include <sunwindow/window_hs.h>
 #include <pixrect/memvar.h>
 #endif /* NOPIXRECT */
-
 
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -41,7 +35,6 @@ extern int displaywidth, displayheight;
 extern int Mouse_Included;
 #endif /* XWINDOW */
 
-
 /****************************************************
  *
  *	DSP_dspbout() entry of SUBRCALL 9 1
@@ -49,13 +42,8 @@ extern int Mouse_Included;
  *
  ****************************************************/
 
-void DSP_dspbout( args )
-LispPTR	*args;		/* args[0] :	charcode	*/
-  {
-    putc( (args[0] & 0xFFFF) & 0x7f, BCPLDISPLAY );
-  }
-
-
+void DSP_dspbout(args) LispPTR *args; /* args[0] :	charcode	*/
+{ putc((args[0] & 0xFFFF) & 0x7f, BCPLDISPLAY); }
 
 /****************************************************
  *
@@ -64,15 +52,10 @@ LispPTR	*args;		/* args[0] :	charcode	*/
  *
  ****************************************************/
 
-extern int DisplayInitialized ;
+extern int DisplayInitialized;
 
-void DSP_showdisplay( args )
-LispPTR	*args;
-{
-    DisplayInitialized = 1;
-}
-
-
+void DSP_showdisplay(args) LispPTR *args;
+{ DisplayInitialized = 1; }
 
 /****************************************************
  *
@@ -81,33 +64,27 @@ LispPTR	*args;
  *
  ****************************************************/
 
-LispPTR DSP_VideoColor( args )
-LispPTR	*args;		/* args[0] :	black flag	*/
+LispPTR DSP_VideoColor(args) LispPTR *args; /* args[0] :	black flag	*/
 {
-    int invert;
+  int invert;
 #ifdef SUNDISPLAY
-    return NIL;
+  return NIL;
 #endif /* SUNDISPLAY */
 
-
 #ifdef XWINDOW
-    invert = args[0] & 0xFFFF;
-    lisp_Xvideocolor( invert );
-    if( invert )
-		return ATOM_T;
-    else
-		return NIL;
+  invert = args[0] & 0xFFFF;
+  lisp_Xvideocolor(invert);
+  if (invert)
+    return ATOM_T;
+  else
+    return NIL;
 #endif /* XWINDOW */
-
 }
-
-
 
 extern struct cursor CurrentCursor;
 extern int LispWindowFd;
 
 extern int errno;
-
 
 /****************************************************
  *
@@ -115,70 +92,63 @@ extern int errno;
  *			called from \HARDCURSORUP etc.
  *
  ****************************************************/
-void DSP_Cursor( args , argnum)
-LispPTR *args;	int argnum;
-			/* args[0] :	hot sopt X
-			 * args[1] :	hot spot Y
-			 */
+void DSP_Cursor(args, argnum) LispPTR *args;
+int argnum;
+/* args[0] :	hot sopt X
+ * args[1] :	hot spot Y
+ */
 {
-    extern int ScreenLocked;
-    extern DLword *EmCursorX68K,*EmCursorY68K;
-    extern int LastCursorX,LastCursorY;
-    static int Init=T;
+  extern int ScreenLocked;
+  extern DLword *EmCursorX68K, *EmCursorY68K;
+  extern int LastCursorX, LastCursorY;
+  static int Init = T;
 
 #ifdef SUNDISPLAY
-    if (argnum == 2) {
-	CurrentCursor.cur_xhot=args[0] & 0xffff;
-	CurrentCursor.cur_yhot=args[1] & 0xffff;
-	};
+  if (argnum == 2) {
+    CurrentCursor.cur_xhot = args[0] & 0xffff;
+    CurrentCursor.cur_yhot = args[1] & 0xffff;
+  };
 
 #ifdef OLD_CURSOR
-    win_setcursor( LispWindowFd, &CurrentCursor );
+  win_setcursor(LispWindowFd, &CurrentCursor);
 #else
 #ifndef INIT
-    ScreenLocked =T;
-    if(!Init){
-	  taking_mouse_down();
-	  taking_mouse_up(*EmCursorX68K,*EmCursorY68K);
-	}
-    else{
-	  Init=NIL;
-	  cursor_hidden_bitmap(0,0);
-	  taking_mouse_up(0,0);
-	  *EmCursorX68K=LastCursorX=0;
-	  *EmCursorY68K=LastCursorY=0;
-	}
+  ScreenLocked = T;
+  if (!Init) {
+    taking_mouse_down();
+    taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
+  } else {
+    Init = NIL;
+    cursor_hidden_bitmap(0, 0);
+    taking_mouse_up(0, 0);
+    *EmCursorX68K = LastCursorX = 0;
+    *EmCursorY68K = LastCursorY = 0;
+  }
 
-    ScreenLocked=NIL;
+  ScreenLocked = NIL;
 #else
-/* Init specific lde only */
-    ScreenLocked =T;
-    if(!Init){
-	  taking_mouse_down();
-	  taking_mouse_up(0,0);
-	}
-    else{
-	  Init=NIL;
-	  cursor_hidden_bitmap(0,0);
-	  taking_mouse_up(0,0);
-	}
+  /* Init specific lde only */
+  ScreenLocked = T;
+  if (!Init) {
+    taking_mouse_down();
+    taking_mouse_up(0, 0);
+  } else {
+    Init = NIL;
+    cursor_hidden_bitmap(0, 0);
+    taking_mouse_up(0, 0);
+  }
 
-    ScreenLocked=NIL;
+  ScreenLocked = NIL;
 #endif /* INIT */
 
 #endif
 #endif /* SUNDISPLAY */
 
-
 #ifdef XWINDOW
-    /* For X-Windows, set the cursor the the given location. */
-    Set_XCursor( (int)(args[0]&0xFFFF), (int)(args[1]&0xFFFF) );
+  /* For X-Windows, set the cursor the the given location. */
+  Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
 #endif /* XWINDOW */
-
-
 }
-
-
 
 /****************************************************
  *
@@ -187,46 +157,41 @@ LispPTR *args;	int argnum;
  *
  ****************************************************/
 
-void DSP_SetMousePos( args )
-register LispPTR *args;	/* args[0] :	X pos
-			 * args[1] :	Y pos
-			 */
+void DSP_SetMousePos(args) register LispPTR *args; /* args[0] :	X pos
+                                                    * args[1] :	Y pos
+                                                    */
 {
 #ifdef SUNDISPLAY
 #ifdef OLD_CURSOR
-    register int x ,y;
-    x=GetSmalldata(args[0]);
-    y=GetSmalldata(args[1]); /* debug */
-    win_setmouseposition(LispWindowFd, GetSmalldata(args[0]),
-			                   GetSmalldata(args[1]));
+  register int x, y;
+  x = GetSmalldata(args[0]);
+  y = GetSmalldata(args[1]); /* debug */
+  win_setmouseposition(LispWindowFd, GetSmalldata(args[0]), GetSmalldata(args[1]));
 #else
-    extern int ScreenLocked;
-    extern DLword *EmCursorX68K,*EmCursorY68K,*EmMouseX68K,*EmMouseY68K;
-    register int x ,y;
-    ScreenLocked=T;
-    x=GetSmalldata(args[0]);
-    y=GetSmalldata(args[1]);
-    /* for Suntool's invisible cursor */
-    win_setmouseposition(LispWindowFd, x,y);
-    /* for REAL cursor image */
-    taking_mouse_down();
-    taking_mouse_up(x,y);
+  extern int ScreenLocked;
+  extern DLword *EmCursorX68K, *EmCursorY68K, *EmMouseX68K, *EmMouseY68K;
+  register int x, y;
+  ScreenLocked = T;
+  x = GetSmalldata(args[0]);
+  y = GetSmalldata(args[1]);
+  /* for Suntool's invisible cursor */
+  win_setmouseposition(LispWindowFd, x, y);
+  /* for REAL cursor image */
+  taking_mouse_down();
+  taking_mouse_up(x, y);
 
 #ifndef INIT
-    *EmMouseX68K=x;
-    *EmMouseY68K=y;
+  *EmMouseX68K = x;
+  *EmMouseY68K = y;
 #endif
-    ScreenLocked=NIL;
+  ScreenLocked = NIL;
 #endif
 #endif /* SUNDISPLAY */
 
-
 #ifdef XWINDOW
-    if( Mouse_Included )
-		set_Xmouseposition( (int)(GetSmalldata(args[0]))
-				  , (int)(GetSmalldata(args[1])) );
+  if (Mouse_Included)
+    set_Xmouseposition((int)(GetSmalldata(args[0])), (int)(GetSmalldata(args[1])));
 #endif /* XWINDOW */
-
 }
 
 /****************************************************
@@ -235,11 +200,8 @@ register LispPTR *args;	/* args[0] :	X pos
  *			called from  \Katana.DisplayWidth.
  *
  ****************************************************/
-LispPTR DSP_ScreenWidth( args )
-LispPTR *args;
-{
-	return( S_POSITIVE | (0xFFFF & displaywidth) );
-}
+LispPTR DSP_ScreenWidth(args) LispPTR *args;
+{ return (S_POSITIVE | (0xFFFF & displaywidth)); }
 
 /****************************************************
  *
@@ -247,11 +209,8 @@ LispPTR *args;
  *			called from  \Katana.DisplayHeight.
  *
  ****************************************************/
-LispPTR DSP_ScreenHight( args )
-LispPTR *args;
-{
-	return( S_POSITIVE | (0xFFFF & displayheight) );
-}
+LispPTR DSP_ScreenHight(args) LispPTR *args;
+{ return (S_POSITIVE | (0xFFFF & displayheight)); }
 
 /****************************************************
  *
@@ -266,63 +225,54 @@ extern int for_makeinit;
 extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
-void flip_cursor()
-  {
-    register DLword *word;
-    register int cnt;
-    extern int ScreenLocked;
-    extern DLword *EmCursorX68K,*EmCursorY68K;
+void flip_cursor() {
+  register DLword *word;
+  register int cnt;
+  extern int ScreenLocked;
+  extern DLword *EmCursorX68K, *EmCursorY68K;
 
-	word = EmCursorBitMap68K;
+  word = EmCursorBitMap68K;
 
 #ifdef INIT
 
-	/* since this is called frequently, and you don't want to have
-	   to build a different LDE to run the 2 parts of a Loadup, there is 
-	   an ifdef AND a test.  This way we don't generate
-	   extra code for anybody elses building an LDE
-	   except those who want to try building loadups.  */
+  /* since this is called frequently, and you don't want to have
+     to build a different LDE to run the 2 parts of a Loadup, there is
+     an ifdef AND a test.  This way we don't generate
+     extra code for anybody elses building an LDE
+     except those who want to try building loadups.  */
 
-	if (!for_makeinit){
-		for (cnt = CURSORHEIGHT;(cnt--);)
-		   {
-			GETWORD(word++) ^= 0xFFFF;
-	 	   };
-	};
+  if (!for_makeinit) {
+    for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; };
+  };
 
 #else
 
-	for (cnt = CURSORHEIGHT;(cnt--);)
-	  {
-	    GETWORD(word++) ^= 0xFFFF;
-	  };
+  for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; };
 
 #endif
 
 #ifdef SUNDISPLAY
 #ifdef OLD_CURSOR
 
-	win_setcursor( LispWindowFd, &CurrentCursor );
+  win_setcursor(LispWindowFd, &CurrentCursor);
 #else
-	ScreenLocked=T;
-	taking_mouse_down();
+  ScreenLocked = T;
+  taking_mouse_down();
 #ifndef INIT
-	taking_mouse_up(*EmCursorX68K,*EmCursorY68K);
+  taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
 #else
-	if(!for_makeinit)
-	  taking_mouse_up(*EmCursorX68K,*EmCursorY68K);
-	else
-	  taking_mouse_up(0,0);
+  if (!for_makeinit)
+    taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
+  else
+    taking_mouse_up(0, 0);
 #endif /* INIT */
 
-	ScreenLocked=NIL;
+  ScreenLocked = NIL;
 #endif
 #endif /* SUNDISPLAY */
 
-
 #ifdef XWINDOW
-	/* JDS 011213: 15- cur y, as function does same! */
-	Set_XCursor( Current_Hot_X, 15-Current_Hot_Y );
+  /* JDS 011213: 15- cur y, as function does same! */
+  Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
 #endif /* XWINDOW */
-
 }

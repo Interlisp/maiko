@@ -1,7 +1,6 @@
-/* $Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ (C) Copyright Venue, All Rights
+ * Reserved  */
 static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -16,7 +15,6 @@ static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Cop
 /************************************************************************/
 
 #include "version.h"
-
 
 #include <sys/types.h>
 #include <sys/termios.h>
@@ -37,316 +35,282 @@ static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Cop
 #include "debug.h"
 #include "rawrs232c.h"
 
-#define MIN_CHARS       256
-#define MIN_TIME        1
-
-
+#define MIN_CHARS 256
+#define MIN_TIME 1
 
 /************************************************************/
 /*
 
-	raw232c.c
-	Access RS device from Lisp by using FD
-	This provides low-level access to RS device.
+        raw232c.c
+        Access RS device from Lisp by using FD
+        This provides low-level access to RS device.
 
-	Created:  Feb.12 1991
-	By Takeshi Shimizu
-	
-	CopyRight   Fuji Xerox Co., LTD 1991
+        Created:  Feb.12 1991
+        By Takeshi Shimizu
+
+        CopyRight   Fuji Xerox Co., LTD 1991
 
 
 */
 /************************************************************/
 
-raw_rs232c_open(portname)
-LispPTR portname;
-{ 
+raw_rs232c_open(portname) LispPTR portname;
+{
   ONED_ARRAY *head;
-  
+
   char *lispname;
   int fd;
 
+  if (GetTypeNumber(portname) != TYPE_ONED_ARRAY) error("PORTNAME is not string");
+  head = (ONED_ARRAY *)Addr68k_from_LADDR(portname);
+  lispname = (char *)Addr68k_from_LADDR(head->BASE);
 
-  if(GetTypeNumber(portname) != TYPE_ONED_ARRAY)
-	error("PORTNAME is not string");
-  head = (ONED_ARRAY*)Addr68k_from_LADDR(portname);
-  lispname =(char*)Addr68k_from_LADDR(head->BASE);
- 
-  if((fd=open(lispname,O_RDWR)) < 0){
-	perror("RS open fail: ");
-	return(NIL);
+  if ((fd = open(lispname, O_RDWR)) < 0) {
+    perror("RS open fail: ");
+    return (NIL);
   }
 
-return(S_POSITIVE | fd);
-
+  return (S_POSITIVE | fd);
 
 } /* raw_rs232c_open */
 
-raw_rs232c_setparams(fd,data)
-LispPTR          fd;
-LispPTR		data;
+raw_rs232c_setparams(fd, data) LispPTR fd;
+LispPTR data;
 {
-RawRSParam *ndata;
-struct termios termdata;
+  RawRSParam *ndata;
+  struct termios termdata;
 
-/* Get Current params */
- if (ioctl((fd & 0xffff), TCGETS ,&termdata) < 0) 
-   {
-	perror("RS get params:");
-	return(NIL);
-   }
+  /* Get Current params */
+  if (ioctl((fd & 0xffff), TCGETS, &termdata) < 0) {
+    perror("RS get params:");
+    return (NIL);
+  }
 
- ndata =(RawRSParam*)Addr68k_from_LADDR(data);
+  ndata = (RawRSParam *)Addr68k_from_LADDR(data);
 
-/* Input  */
-		termdata.c_iflag |= IXON|IXOFF;
-		termdata.c_iflag &= ~(INPCK);
+  /* Input  */
+  termdata.c_iflag |= IXON | IXOFF;
+  termdata.c_iflag &= ~(INPCK);
 
-		/*termdata.c_iflag &= ~IGNBRK;*/
-		termdata.c_iflag &= ~IGNPAR;
-		termdata.c_iflag &= ~IUCLC;
-	if(ndata->InEOL ==RAW_RS_CR){
-		termdata.c_iflag |= INLCR;
-		termdata.c_iflag &= ~ICRNL;
-	}
+  /*termdata.c_iflag &= ~IGNBRK;*/
+  termdata.c_iflag &= ~IGNPAR;
+  termdata.c_iflag &= ~IUCLC;
+  if (ndata->InEOL == RAW_RS_CR) {
+    termdata.c_iflag |= INLCR;
+    termdata.c_iflag &= ~ICRNL;
+  }
 
-	else if(ndata->InEOL ==RAW_RS_LF){
-		termdata.c_iflag &= ~INLCR;
-		termdata.c_iflag |= ICRNL;
-	}
-	else if (ndata->InEOL ==RAW_RS_CRLF){
-		termdata.c_iflag &= ~INLCR;
-		termdata.c_iflag &= ~ICRNL;
-	}
-/* Flow CNT */
-	if((ndata->FlowCnt & 0xff) == RAW_RS_XON)
-		termdata.c_iflag |= IXON|IXOFF;
-	else {
-		termdata.c_iflag &= ~(IXON|IXOFF);
-	}
+  else if (ndata->InEOL == RAW_RS_LF) {
+    termdata.c_iflag &= ~INLCR;
+    termdata.c_iflag |= ICRNL;
+  } else if (ndata->InEOL == RAW_RS_CRLF) {
+    termdata.c_iflag &= ~INLCR;
+    termdata.c_iflag &= ~ICRNL;
+  }
+  /* Flow CNT */
+  if ((ndata->FlowCnt & 0xff) == RAW_RS_XON)
+    termdata.c_iflag |= IXON | IXOFF;
+  else {
+    termdata.c_iflag &= ~(IXON | IXOFF);
+  }
 
-		termdata.c_iflag &= ~(ISTRIP);
+  termdata.c_iflag &= ~(ISTRIP);
 
+  /* Output   */
 
-/* Output   */
+  termdata.c_oflag |= ~OPOST;
+  termdata.c_oflag &= ~OLCUC;
+  termdata.c_oflag &= ~OFILL;
+  termdata.c_oflag &= ~OFDEL;
+  termdata.c_oflag &= ~NLDLY;
+  termdata.c_oflag &= ~CRDLY;
+  termdata.c_oflag &= ~BSDLY;
+  termdata.c_oflag &= ~VTDLY;
+  termdata.c_oflag &= ~FFDLY;
 
-                termdata.c_oflag |= ~OPOST;
-                termdata.c_oflag &= ~OLCUC;
-                termdata.c_oflag &= ~OFILL;
-                termdata.c_oflag &= ~OFDEL;
-                termdata.c_oflag &= ~NLDLY;
-                termdata.c_oflag &= ~CRDLY;
-                termdata.c_oflag &= ~BSDLY;
-                termdata.c_oflag &= ~VTDLY;
-                termdata.c_oflag &= ~FFDLY;
+  if (ndata->OutEOL == RAW_RS_CR) {
+    termdata.c_oflag |= ONLRET;
+    termdata.c_oflag &= ~OCRNL;
+    termdata.c_oflag &= ~ONLCR;
+  } else if (ndata->OutEOL == RAW_RS_LF) {
+    termdata.c_oflag &= ~ONLRET;
+    termdata.c_oflag |= OCRNL;
+    termdata.c_oflag &= ~ONLCR;
+  } else if (ndata->OutEOL == RAW_RS_CRLF) {
+    termdata.c_oflag &= ~ONLRET;
+    termdata.c_oflag &= ~OCRNL;
+    termdata.c_oflag |= ONLCR;
+  }
 
-	if(ndata->OutEOL == RAW_RS_CR){
-		termdata.c_oflag |= ONLRET;
-		termdata.c_oflag &= ~OCRNL;
-		termdata.c_oflag &= ~ONLCR;
-	}
-        else if (ndata->OutEOL == RAW_RS_LF){
-		termdata.c_oflag &= ~ONLRET;
-		termdata.c_oflag |= OCRNL;
-		termdata.c_oflag &= ~ONLCR;
-	}
-        else if (ndata->OutEOL == RAW_RS_CRLF){
-		termdata.c_oflag &= ~ONLRET;
-		termdata.c_oflag &= ~OCRNL;
-		termdata.c_oflag |= ONLCR;
-	}
+  /* LOCAL */
 
+  termdata.c_lflag &= ~ISIG;
+  termdata.c_lflag &= ~ICANON;
+  termdata.c_lflag &= ~XCASE;
 
-/* LOCAL */
+  if (ndata->Echo == ATOM_T)
+    termdata.c_lflag |= ECHO;
+  else
+    termdata.c_lflag &= ~ECHO;
 
-                termdata.c_lflag &= ~ISIG;
-                termdata.c_lflag &= ~ICANON;
-                termdata.c_lflag &= ~XCASE;
+  termdata.c_lflag &= ~ECHOE;
+  termdata.c_lflag &= ~ECHOK;
+  termdata.c_lflag &= ~ECHONL;
+  termdata.c_lflag &= ~NOFLSH;
+  termdata.c_lflag &= ~TOSTOP;
+  termdata.c_lflag &= ~ECHOCTL;
+  termdata.c_lflag &= ~ECHOPRT;
+  termdata.c_lflag &= ~ECHOKE;
+  termdata.c_lflag &= ~FLUSHO;
+  termdata.c_lflag &= ~PENDIN;
 
-	if(ndata->Echo == ATOM_T)
-                termdata.c_lflag |= ECHO;
-	else	termdata.c_lflag &= ~ECHO;
+  /* Minimum and Timeout */
+  termdata.c_cc[VMIN] = MIN_CHARS;
+  termdata.c_cc[VTIME] = MIN_TIME;
 
-                termdata.c_lflag &= ~ECHOE;
-                termdata.c_lflag &= ~ECHOK;
-                termdata.c_lflag &= ~ECHONL;
-                termdata.c_lflag &= ~NOFLSH;
-                termdata.c_lflag &= ~TOSTOP;
-                termdata.c_lflag &= ~ECHOCTL;
-                termdata.c_lflag &= ~ECHOPRT;
-                termdata.c_lflag &= ~ECHOKE;
-                termdata.c_lflag &= ~FLUSHO;
-                termdata.c_lflag &= ~PENDIN;
+  /*  Control */
 
- 
-                /* Minimum and Timeout */
-                termdata.c_cc[VMIN] = MIN_CHARS;
-                termdata.c_cc[VTIME] = MIN_TIME;
+  termdata.c_cflag = (CREAD | HUPCL);
 
- /*  Control */
+  /* Local or DialUP */
 
-termdata.c_cflag=( CREAD | HUPCL);
+  if (ndata->LocalLine == ATOM_T)
+    termdata.c_cflag |= CLOCAL;
+  else
+    termdata.c_cflag &= ~CLOCAL;
 
-/* Local or DialUP */
+  /* Bau Rate */
 
-if(ndata->LocalLine == ATOM_T)
-	termdata.c_cflag |= CLOCAL;
-else 	termdata.c_cflag &= ~CLOCAL;
+  if (ndata->BauRate != NIL) {
+    switch (ndata->BauRate & 0xffff) {
+      case 1200: termdata.c_cflag |= B1200; break;
 
-/* Bau Rate */
+      case 2400: termdata.c_cflag |= B2400; break;
 
- if (ndata->BauRate != NIL){
-	switch(ndata->BauRate & 0xffff){
-		case 1200:	termdata.c_cflag |= B1200;
-				break;
+      case 4800: termdata.c_cflag |= B4800; break;
 
-		case 2400:	termdata.c_cflag |= B2400;
-				break;
+      case 9600: termdata.c_cflag |= 96200; break;
 
-		case 4800:	termdata.c_cflag |= B4800;
-				break;
+      default: termdata.c_cflag |= B1200;
+    }
+  }
 
-		case 9600:	termdata.c_cflag |= 96200;
-				break;
+  /* CTS/RTS */
+  if ((ndata->RTSCTSCnt & 0xff) == ATOM_T)
+    termdata.c_cflag |= CRTSCTS;
+  else
+    termdata.c_cflag &= ~CRTSCTS;
 
-		default: termdata.c_cflag |= B1200;
-	}
- }
+  /* Character size */
 
-/* CTS/RTS */
-	if((ndata->RTSCTSCnt & 0xff) == ATOM_T)
-		termdata.c_cflag |=CRTSCTS;
-	else	termdata.c_cflag &= ~CRTSCTS;
+  if ((ndata->BitsPerChar & 0xf) == 7)
+    termdata.c_cflag |= CS7;
+  else if ((ndata->BitsPerChar & 0xf) == 8)
+    termdata.c_cflag |= CS8;
+  else {
+    error("RS232:Not supported char size");
+    return (NIL);
+  }
 
+  /* Parity */
+  if ((ndata->Parity & 0xf) == RAW_RS_NONE) {
+    termdata.c_iflag &= (~(INPCK));
+    termdata.c_cflag &= (~PARENB);
+  } else if ((ndata->Parity & 0xf) == RAW_RS_EVEN)
+    termdata.c_cflag |= PARENB;
+  else if ((ndata->Parity & 0xf) == RAW_RS_ODD)
+    termdata.c_cflag |= (PARENB | PARODD);
 
+  /* Stop bits */
+  if ((ndata->NoOfStopBits & 0x2) == 2)
+    termdata.c_cflag |= CSTOPB;
+  else
+    termdata.c_cflag &= ~(CSTOPB);
 
-/* Character size */
+  /* Set parameters */
 
- 	if((ndata->BitsPerChar & 0xf)== 7) 
-		termdata.c_cflag |= CS7;
- 	else if((ndata->BitsPerChar & 0xf)== 8)
-		termdata.c_cflag |= CS8;
- 	else {error("RS232:Not supported char size");
-		   return(NIL);}
+  if (ioctl((fd & 0xffff), TCSETS, &termdata) < 0) {
+    perror("RS set params");
+    return (NIL);
+  }
 
-/* Parity */
-	 if((ndata->Parity & 0xf) == RAW_RS_NONE)
-		{termdata.c_iflag &= (~(INPCK));
-		 termdata.c_cflag &=( ~PARENB);}
-	 else if((ndata->Parity & 0xf) == RAW_RS_EVEN)
-		termdata.c_cflag |= PARENB;
-	 else if((ndata->Parity & 0xf) == RAW_RS_ODD)
-		termdata.c_cflag |= (PARENB | PARODD);
-
-/* Stop bits */
-	if((ndata->NoOfStopBits & 0x2) == 2)
-		termdata.c_cflag |= CSTOPB;
-	else 
-		termdata.c_cflag &= ~(CSTOPB);
-
-
-/* Set parameters */
-
-if(ioctl((fd & 0xffff), TCSETS, &termdata) < 0)
-	{perror("RS set params");
-	 return(NIL);}
-
-return(ATOM_T);
+  return (ATOM_T);
 
 } /* raw_rs232c_setparams */
 
-
-raw_rs232c_close(fd)
- LispPTR fd;
+raw_rs232c_close(fd) LispPTR fd;
 {
-  if(close(0xffff & fd) <0) {
-	perror("RS close : ");
-	return(NIL);
-   }
-  else return(ATOM_T);
-
+  if (close(0xffff & fd) < 0) {
+    perror("RS close : ");
+    return (NIL);
+  } else
+    return (ATOM_T);
 }
 
-
-raw_rs232c_write(fd,baseptr,len)
-LispPTR fd;
+raw_rs232c_write(fd, baseptr, len) LispPTR fd;
 LispPTR baseptr;
 LispPTR len;
 {
- unsigned char *ptr;
+  unsigned char *ptr;
 
- ptr = (unsigned char *)Addr68k_from_LADDR(baseptr);
+  ptr = (unsigned char *)Addr68k_from_LADDR(baseptr);
 
-	if(write((fd & 0xffff),ptr,(len & 0xffff)) <0){
-		perror("RS-write :");
-		return(NIL);
-	}
-  return(ATOM_T);
+  if (write((fd & 0xffff), ptr, (len & 0xffff)) < 0) {
+    perror("RS-write :");
+    return (NIL);
+  }
+  return (ATOM_T);
 }
 
 /* Assume numbers are SMALLPOSP */
-struct timeval RS_TimeOut = {0,0};
-raw_rs232c_read(fd,buff,nbytes)
-LispPTR fd;
+struct timeval RS_TimeOut = {0, 0};
+raw_rs232c_read(fd, buff, nbytes) LispPTR fd;
 LispPTR buff;
 LispPTR nbytes;
 
 {
-unsigned char *buffptr;
-int length;
-u_int real_fd;
-u_int readfds;
+  unsigned char *buffptr;
+  int length;
+  u_int real_fd;
+  u_int readfds;
 
+  real_fd = fd & 0xffff;
+  readfds = (1 << real_fd);
 
- real_fd = fd & 0xffff ;
- readfds = (1 << real_fd );
+  select(32, &readfds, NULL, NULL, &RS_TimeOut);
+  if (readfds & (1 << real_fd)) {
+    buffptr = (unsigned char *)Addr68k_from_LADDR(buff);
 
- select(32,&readfds,NULL,NULL,&RS_TimeOut);
- if(readfds & (1<<real_fd)){
-  
+    if ((length = read(real_fd, buffptr, (nbytes & 0xffff))) < 0) {
+      perror("RS read :");
+      return (NIL);
+    } else {
+      Irq_Stk_End = Irq_Stk_Check = 0;
+      return (S_POSITIVE | length);
+    }
+  }
 
- 	buffptr=(unsigned char *)Addr68k_from_LADDR(buff);
+  return (S_POSITIVE); /* There is nothing to read */
 
-  	if((length=read(real_fd,buffptr,(nbytes & 0xffff))) < 0)
-   	{
-		perror("RS read :"); return(NIL);
-   	}
-  	else {
-		Irq_Stk_End=Irq_Stk_Check=0;
-		return(S_POSITIVE | length);
-	 }
- }
+} /* raw_rs232c_read  */
 
-  return(S_POSITIVE); /* There is nothing to read */
-
-}/* raw_rs232c_read  */
-
-raw_rs232c_setint(fd,onoff)
-LispPTR fd;
+raw_rs232c_setint(fd, onoff) LispPTR fd;
 LispPTR onoff;
 {
- extern u_int LispReadFds;
- extern u_int LispIOFds ;
- u_int real_fd;
+  extern u_int LispReadFds;
+  extern u_int LispIOFds;
+  u_int real_fd;
 
-real_fd = (fd & 0xffff);
+  real_fd = (fd & 0xffff);
 
-  if(onoff == ATOM_T){
-     LispReadFds |= (1 << real_fd);
-     LispIOFds |= (1 << real_fd);
-     int_io_open(real_fd);
+  if (onoff == ATOM_T) {
+    LispReadFds |= (1 << real_fd);
+    LispIOFds |= (1 << real_fd);
+    int_io_open(real_fd);
+  } else {
+    int_io_close(real_fd);
+    LispReadFds &= ~(1 << real_fd);
+    LispIOFds &= ~(1 << real_fd);
   }
-  else {
-	int_io_close(real_fd);
-	LispReadFds &= ~(1 << real_fd);
-	LispIOFds &= ~(1 << real_fd);
-
-  }
-return(ATOM_T);
+  return (ATOM_T);
 }
-
-
-
-
-
-

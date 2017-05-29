@@ -1,8 +1,5 @@
-/* $Id: kbdif.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: kbdif.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: kbdif.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,13 +14,9 @@ static char *id = "$Id: kbdif.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copyrig
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
 
-
-
 /* * K Y E B O A R D   I N T E R F A C E * */
-
 
 #include "lispemul.h"
 #include "dbprint.h"
@@ -39,9 +32,7 @@ extern void ExitDosKbd();
 extern unsigned long GenericReturnT();
 #endif /* DOS */
 
-
-make_kbd_instance(KbdInterface kbd)
-{
+make_kbd_instance(KbdInterface kbd) {
 #ifdef DOS
   kbd->device_event = &Kbd_event; /*  */
   kbd->device.enter = &EnterDosKbd;

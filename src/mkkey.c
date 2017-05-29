@@ -1,6 +1,5 @@
-/* $Id: mkkey.c,v 1.2 1999/01/03 02:07:24 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: mkkey.c,v 1.2 1999/01/03 02:07:24 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: mkkey.c,v 1.2 1999/01/03 02:07:24 sybalsky Exp $ Copyright (C) Venue";
-
 
 /************************************************************************/
 /*									*/
@@ -15,5 +14,3 @@ static char *id = "$Id: mkkey.c,v 1.2 1999/01/03 02:07:24 sybalsky Exp $ Copyrig
 /************************************************************************/
 
 #include "version.h"
-
-

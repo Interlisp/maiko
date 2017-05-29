@@ -1,11 +1,5 @@
-/* $Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -21,9 +15,6 @@ static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 
 #include "version.h"
 
-
-
-
 #include <stdio.h>
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -33,8 +24,6 @@ static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 #include "emlglob.h"
 #include "cell.h"
 #include "dbprint.h"
-
-
 
 /************************************************************************/
 /*									*/
@@ -51,29 +40,25 @@ static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 /*	* If Hash Table is overflow, call fn1ext.			*/
 /*									*/
 /************************************************************************/
- 
-LispPTR N_OP_gvar_(register LispPTR tos, unsigned int atom_index)
-{
-    register LispPTR *pslot;	/* pointer to argued GVAR slot */
+
+LispPTR N_OP_gvar_(register LispPTR tos, unsigned int atom_index) {
+  register LispPTR *pslot; /* pointer to argued GVAR slot */
 
 #ifdef BIGATOMS
-    if (0 != (atom_index & SEGMASK))
-      pslot = (LispPTR *) Addr68k_from_LADDR(atom_index + NEWATOM_VALUE_OFFSET);
-    else
+  if (0 != (atom_index & SEGMASK))
+    pslot = (LispPTR *)Addr68k_from_LADDR(atom_index + NEWATOM_VALUE_OFFSET);
+  else
 #endif /* BIGATOMS */
 
 #ifdef BIGVM
-    pslot = ((LispPTR *) AtomSpace) + (5 * atom_index) + NEWATOM_VALUE_PTROFF;
+    pslot = ((LispPTR *)AtomSpace) + (5 * atom_index) + NEWATOM_VALUE_PTROFF;
 #else
-    pslot = (LispPTR *) Valspace + atom_index;
+    pslot = (LispPTR *)Valspace + atom_index;
 #endif /* BIGVM */
-    DEBUGGER(if (tos&0xF0000000) error("Setting GVAR with high bits on"));
-    FRPLPTR(((struct xpointer*)pslot)->addr, tos);
-    return(tos);
-  }
-
-
-
+  DEBUGGER(if (tos & 0xF0000000) error("Setting GVAR with high bits on"));
+  FRPLPTR(((struct xpointer *)pslot)->addr, tos);
+  return (tos);
+}
 
 /************************************************************************/
 /*									*/
@@ -89,13 +74,10 @@ LispPTR N_OP_gvar_(register LispPTR tos, unsigned int atom_index)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_rplptr(register LispPTR tos_m_1, register LispPTR tos, unsigned int alpha)
-{
-    register DLword *pslot;	/* pointer to argued slot (68 address) */
+LispPTR N_OP_rplptr(register LispPTR tos_m_1, register LispPTR tos, unsigned int alpha) {
+  register DLword *pslot; /* pointer to argued slot (68 address) */
 
-    pslot = Addr68k_from_LADDR(tos_m_1 + alpha );
-    FRPLPTR( ((struct xpointer*)pslot)->addr,tos);
-    return(tos_m_1);
-  }
-
-
+  pslot = Addr68k_from_LADDR(tos_m_1 + alpha);
+  FRPLPTR(((struct xpointer *)pslot)->addr, tos);
+  return (tos_m_1);
+}

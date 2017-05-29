@@ -1,7 +1,6 @@
-/* $Id: socdvr.c,v 1.2 1999/01/03 02:07:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: socdvr.c,v 1.2 1999/01/03 02:07:33 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: socdvr.c,v 1.2 1999/01/03 02:07:33 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,8 +16,6 @@ static char *id = "$Id: socdvr.c,v 1.2 1999/01/03 02:07:33 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-
 #include <stdio.h>
 #include <sys/time.h>
 #include <sys/file.h>
@@ -31,66 +28,62 @@ static char *id = "$Id: socdvr.c,v 1.2 1999/01/03 02:07:33 sybalsky Exp $ Copyri
 #include "lsptypes.h"
 #include "lispmap.h"
 
-#define min(x,y)  (((x) > (y)) ? (y) : (x))
+#define min(x, y) (((x) > (y)) ? (y) : (x))
 
+/***********************************************************/
+/*	       L S t r i n g T o C S t r i n g		   */
+/*							   */
+/*  Convert a lisp string to a C string up to MaxLen long. */
+/***********************************************************/
 
-
-	/***********************************************************/
-	/*	       L S t r i n g T o C S t r i n g		   */
-	/*							   */
-	/*  Convert a lisp string to a C string up to MaxLen long. */
-	/***********************************************************/
-
-#define	LStringToCString(Lisp, C, MaxLen ,Len)				\
-  {									\
-    OneDArray	*arrayp;						\
-    char	*base;							\
-    short	*sbase;							\
-    int	i;								\
-									\
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));	\
-    Len = min(MaxLen, arrayp->fillpointer);				\
-									\
-    switch(arrayp->typenumber)						\
-      {									\
-        case THIN_CHAR_TYPENUMBER:					\
-	    base = ((char *)						\
-	            (Addr68k_from_LADDR((unsigned int)arrayp->base)))	\
-	           + ((int)(arrayp->offset));				\
-	    for(i=0;i<Len;i++)						\
-	        C[i] = base[i];						\
-	    C[Len] = '\0';						\
-	    break;							\
-									\
-        case FAT_CHAR_TYPENUMBER:					\
-	    sbase = ((short *)						\
-		     (Addr68k_from_LADDR((unsigned int)arrayp->base)))	\
-	           + ((int)(arrayp->offset));				\
-	    base = (char *)sbase;					\
-	    for(i=0;i<Len*2;i++)					\
-	        C[i] = base[i];						\
-	    C[Len*2] = '\0';						\
-	    break;							\
-									\
-        default:							\
-	    error("LStringToCString can not handle\n");			\
-      }									\
+#define LStringToCString(Lisp, C, MaxLen, Len)                                                     \
+  {                                                                                                \
+    OneDArray *arrayp;                                                                             \
+    char *base;                                                                                    \
+    short *sbase;                                                                                  \
+    int i;                                                                                         \
+                                                                                                   \
+    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    Len = min(MaxLen, arrayp->fillpointer);                                                        \
+                                                                                                   \
+    switch (arrayp->typenumber) {                                                                  \
+      case THIN_CHAR_TYPENUMBER:                                                                   \
+        base =                                                                                     \
+            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+        for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
+        C[Len] = '\0';                                                                             \
+        break;                                                                                     \
+                                                                                                   \
+      case FAT_CHAR_TYPENUMBER:                                                                    \
+        sbase =                                                                                    \
+            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+        base = (char *)sbase;                                                                      \
+        for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
+        C[Len * 2] = '\0';                                                                         \
+        break;                                                                                     \
+                                                                                                   \
+      default: error("LStringToCString can not handle\n");                                         \
+    }                                                                                              \
   }
 
-#define FGetNum(ptr, place) { \
-             if(((ptr) & SEGMASK)== S_POSITIVE) {(place) = ((ptr) & 0xffff);}\
-        else if(((ptr) & SEGMASK)== S_NEGATIVE) {(place) = (int)((ptr)| 0xffff0000);}\
-        else {return(NIL);}}
+#define FGetNum(ptr, place)                     \
+  {                                             \
+    if (((ptr)&SEGMASK) == S_POSITIVE) {        \
+      (place) = ((ptr)&0xffff);                 \
+    } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
+      (place) = (int)((ptr) | 0xffff0000);      \
+    } else {                                    \
+      return (NIL);                             \
+    }                                           \
+  }
 
 #define MAX_NAME_LEN 256
-static char XServer_Name[MAX_NAME_LEN];	/* Name of host with X server */
-static int XPort_Number = 0;		/* Display # to ask for on it */
+static char XServer_Name[MAX_NAME_LEN]; /* Name of host with X server */
+static int XPort_Number = 0;            /* Display # to ask for on it */
 
-int XServer_Fd = -1;	/* The socket for the X server */
+int XServer_Fd = -1; /* The socket for the X server */
 
 extern DLword *Lisp_world;
-
-
 
 /************************************************************************/
 /*									*/
@@ -106,42 +99,37 @@ extern DLword *Lisp_world;
 /*									*/
 /************************************************************************/
 
-Open_Socket( args )
-  LispPTR *args;
-  {
+Open_Socket(args) LispPTR *args;
+{
 #ifdef TRACE
-    printf( "TRACE: Open_Socket()\n" );
+  printf("TRACE: Open_Socket()\n");
 #endif
 
-    int length;
+  int length;
 
-    LStringToCString( args[0], XServer_Name, MAX_NAME_LEN, length );
-    FGetNum( args[1], XPort_Number );
-    XPort_Number -= X_TCP_PORT;
+  LStringToCString(args[0], XServer_Name, MAX_NAME_LEN, length);
+  FGetNum(args[1], XPort_Number);
+  XPort_Number -= X_TCP_PORT;
 
-    if( XServer_Fd == -1 )
-      {
-	XServer_Fd = connect_to_server( XServer_Name, XPort_Number );
+  if (XServer_Fd == -1) {
+    XServer_Fd = connect_to_server(XServer_Name, XPort_Number);
 
-	if (XServer_Fd < 0) /* error in connect. */
-	  {
-	    perror("connecting to X server");
-	    return(NIL);
-	  }
+    if (XServer_Fd < 0) /* error in connect. */
+    {
+      perror("connecting to X server");
+      return (NIL);
+    }
 
-	{ /* Make it non-blocking I/O */
-	  int res;
-	  res = fcntl( XServer_Fd, F_GETFL );
-	  res |= FNDELAY;
-	  res = fcntl( XServer_Fd, F_SETFL, res );
-	}
-      } /* end if(XServer_Fd) */
+    { /* Make it non-blocking I/O */
+      int res;
+      res = fcntl(XServer_Fd, F_GETFL);
+      res |= FNDELAY;
+      res = fcntl(XServer_Fd, F_SETFL, res);
+    }
+  } /* end if(XServer_Fd) */
 
-    return( ATOM_T );
-
+  return (ATOM_T);
 }
-
-
 
 /************************************************************************/
 /*									*/
@@ -151,29 +139,23 @@ Open_Socket( args )
 /*									*/
 /************************************************************************/
 
-Close_Socket()
-  {
-    int stat;
+Close_Socket() {
+  int stat;
 
-#ifdef TRACE 
-    printf( "TRACE: Close_Socket()\n" );
+#ifdef TRACE
+  printf("TRACE: Close_Socket()\n");
 #endif
 
-    if( (stat = close( XServer_Fd )) == -1 )
-      { /* close failed; return NIL, but squash the old fd anyhow */
-	XServer_Fd = -1;
-	perror("Close_socket");
-	return( NIL );
-      }
-    else
-      { /* close succeeded; return T. */
-	XServer_Fd = -1;
-	return( ATOM_T );
-      }
+  if ((stat = close(XServer_Fd)) ==
+      -1) { /* close failed; return NIL, but squash the old fd anyhow */
+    XServer_Fd = -1;
+    perror("Close_socket");
+    return (NIL);
+  } else { /* close succeeded; return T. */
+    XServer_Fd = -1;
+    return (ATOM_T);
+  }
 } /* end Close_Socket */
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -183,60 +165,48 @@ Close_Socket()
 /*									*/
 /************************************************************************/
 
-typedef struct
-  { /* Format for an X-server packet */
-    DLword nil[22];     /* Packet header */
-    DLword length;	/* Request byte length */
-    char   data[592];   /* Data body */
-  } PACKET;
-
+typedef struct {  /* Format for an X-server packet */
+  DLword nil[22]; /* Packet header */
+  DLword length;  /* Request byte length */
+  char data[592]; /* Data body */
+} PACKET;
 
 #define PACKET_DEFOFFSET 46
-#define PACKET_MAXSIZE   638
+#define PACKET_MAXSIZE 638
 
-Read_Socket( args )
-  LispPTR *args;
-  {
-    PACKET *packet;
-    char   *buffer;
-    int    length
-         , actlen;
+Read_Socket(args) LispPTR *args;
+{
+  PACKET *packet;
+  char *buffer;
+  int length, actlen;
 
 #ifdef TRACE
-    printf( "TRACE: Read_Socket()\n" );
+  printf("TRACE: Read_Socket()\n");
 #endif
 
-    if( XServer_Fd >= 0 )
+  if (XServer_Fd >= 0) {
+    packet = (PACKET *)Addr68k_from_LADDR(args[0]);
+
+    if ((length = (int)(packet->length) - PACKET_DEFOFFSET) > 0) {
+      buffer = &(packet->data[0]);
+
+      if ((actlen = read(XServer_Fd, buffer, length)) > 0) {
+        packet->length = (DLword)(actlen + PACKET_DEFOFFSET);
+        return (ATOM_T);
+      }               /* end if(actlen) */
+      if (actlen < 0) /* error !*/
       {
+        if ((errno != EWOULDBLOCK) & (errno != EINTR)) perror("reading X connection");
+        return (NIL);
+      }
 
-	packet = (PACKET *) Addr68k_from_LADDR( args[0] );
+    } /* end if(length) */
 
-	if( (length = (int)(packet->length)-PACKET_DEFOFFSET) > 0 )
-	  {
-	    buffer = &(packet->data[0]);
+  } /* end if( fd ) */
 
-	    if( (actlen = read( XServer_Fd, buffer, length )) > 0 )
-	      {
-		packet->length = (DLword)(actlen + PACKET_DEFOFFSET);
-		return(ATOM_T); 
-	      } /* end if(actlen) */
-	    if(actlen < 0) /* error !*/
-	      {
-		if ((errno != EWOULDBLOCK) & (errno != EINTR))
-		  perror("reading X connection");
-		return(NIL);
-	      }
+  return (NIL);
 
-	  } /* end if(length) */
-
-      } /* end if( fd ) */
-
-
-    return( NIL );
-
-  } /* end Read_Socket */
-
-
+} /* end Read_Socket */
 
 /************************************************************************/
 /*									*/
@@ -246,51 +216,41 @@ Read_Socket( args )
 /*									*/
 /************************************************************************/
 
-Write_Socket( args )
-  LispPTR *args;
-  {
-    PACKET *packet;
-    char *buffer;
-    int length
-      , actlen;
+Write_Socket(args) LispPTR *args;
+{
+  PACKET *packet;
+  char *buffer;
+  int length, actlen;
 
 #ifdef TRACE
-    printf( "TRACE: Write_Socket()\n" );
+  printf("TRACE: Write_Socket()\n");
 #endif
 
-    if( XServer_Fd >= 0 )
+  if (XServer_Fd >= 0) {
+    packet = (PACKET *)Addr68k_from_LADDR(args[0]);
+
+    if ((length = (int)(packet->length) - PACKET_DEFOFFSET) > 0) {
+      buffer = &(packet->data[0]);
+
+      if ((actlen = write(XServer_Fd, buffer, length)) > 0) {
+        packet->length = (DLword)(actlen + PACKET_DEFOFFSET);
+        return (ATOM_T);
+
+      }               /* end if( actlen ) */
+      if (actlen < 0) /* error !*/
       {
+        if (errno != EINTR) perror("writing X connection");
+        return (NIL);
+      }
 
-	packet = (PACKET *) Addr68k_from_LADDR( args[0] );
+    } /* end if(length) */
 
-	if( (length = (int)(packet->length)-PACKET_DEFOFFSET) > 0 )
-	  {
-	    buffer = &(packet->data[0]);
+  } /* end if( fd ) */
 
-	    if( (actlen = write( XServer_Fd, buffer, length )) > 0 )
-	      {
-		packet->length = (DLword)(actlen + PACKET_DEFOFFSET);
-		return(ATOM_T); 
+  packet->length = 0;
+  return (NIL);
 
-	      } /* end if( actlen ) */
-	    if(actlen < 0) /* error !*/
-	      {
-		if (errno != EINTR) perror("writing X connection");
-		return(NIL);
-	      }
-
-
-	  }  /* end if(length) */
-
-      }  /* end if( fd ) */
-
-    packet->length = 0;
-    return(NIL);
-
-  } /* end Write_Socket */
-
-
-
+} /* end Write_Socket */
 
 /************************************************************************/
 /*									*/
@@ -304,19 +264,20 @@ Write_Socket( args )
 /************************************************************************/
 extern int KBDEventFlg;
 
-Kbd_Transition( args )
-  LispPTR *args;
-	/* args[0] is key-number */
-	/* args[1] is up-flg     */
-  {
-    DLword key_number;
-	
-    key_number = (DLword)(args[0] & 0xffff);
-    if( args[1] ) kb_trans( key_number, 1 );
-    else kb_trans( key_number, 0 );
+Kbd_Transition(args) LispPTR *args;
+/* args[0] is key-number */
+/* args[1] is up-flg     */
+{
+  DLword key_number;
 
-    DoRing();
-    /* If there's something for lisp to do, ask for an interrupt: */  
-    if( (KBDEventFlg += 1) > 0 ) Irq_Stk_End = Irq_Stk_Check = 0;
+  key_number = (DLword)(args[0] & 0xffff);
+  if (args[1])
+    kb_trans(key_number, 1);
+  else
+    kb_trans(key_number, 0);
 
-  } /* end Kbd_Transition */
+  DoRing();
+  /* If there's something for lisp to do, ask for an interrupt: */
+  if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+
+} /* end Kbd_Transition */

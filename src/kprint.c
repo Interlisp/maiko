@@ -1,7 +1,6 @@
-/* $Id: kprint.c,v 1.2 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: kprint.c,v 1.2 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: kprint.c,v 1.2 1999/05/31 23:35:36 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,23 +16,22 @@ static char *id = "$Id: kprint.c,v 1.2 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-#include	<stdio.h>
-#include	"print.h"
-#include	"address.h"
-#include	"lispemul.h"
-#include	"lsptypes.h"
-#include	"lspglob.h"
-#include	"initatms.h"
-#include	"cell.h"
-#include	"emlglob.h"
-#include	"lispmap.h"
-#include	"adr68k.h"
+#include <stdio.h>
+#include "print.h"
+#include "address.h"
+#include "lispemul.h"
+#include "lsptypes.h"
+#include "lspglob.h"
+#include "initatms.h"
+#include "cell.h"
+#include "emlglob.h"
+#include "lispmap.h"
+#include "adr68k.h"
 
-
-int PrintMaxLevel= 3;
-int Printdepth=0;
+int PrintMaxLevel = 3;
+int Printdepth = 0;
 int PrintMaxLen = 10;
-int PrintLen[20] ;
+int PrintLen[20];
 
 /* forward references */
 void print_string(LispPTR x);
@@ -47,93 +45,89 @@ void print_floatp(LispPTR x);
 /*									*/
 /************************************************************************/
 
-void prindatum(LispPTR x)
-{
-    NEWSTRINGP *newstring ;
-    struct dtd *dtd_base;
-    int	typen;
-    LispPTR	typename;
+void prindatum(LispPTR x) {
+  NEWSTRINGP *newstring;
+  struct dtd *dtd_base;
+  int typen;
+  LispPTR typename;
 
-    if(Printdepth >= PrintMaxLevel)
-      {
-	if (Printdepth = PrintMaxLevel){ if(GetTypeNumber(x)==TYPE_LISTP)
-	  {
-	    printf("(-)");
-	  }
-	  else printf("*");}
-	return;
-      }
-	
+  if (Printdepth >= PrintMaxLevel) {
+    if (Printdepth = PrintMaxLevel) {
+      if (GetTypeNumber(x) == TYPE_LISTP) {
+        printf("(-)");
+      } else
+        printf("*");
+    }
+    return;
+  }
+
   x = x & POINTERMASK;
-  switch (typen = GetTypeNumber(x))
-   {
-      case TYPE_LITATOM:
+  switch (typen = GetTypeNumber(x)) {
+    case TYPE_LITATOM:
 #ifdef BIGATOMS
-      case TYPE_NEWATOM:
+    case TYPE_NEWATOM:
 #endif /* BIGATOMS */
-			print_atomname(x);
-			break;
-      case TYPE_LISTP:
-		Printdepth++;
-		PrintLen[Printdepth] = 0;
-		printf("%c" , LEFT_PAREN);		/* print "(" */
-		lp: if (PrintLen[Printdepth] ++ > PrintMaxLen) {printf("%c", RIGHT_PAREN); Printdepth--;  break;}
-			prindatum(car(x));
-		    if (Listp (cdr(x)) == 0) 
-		      {	/* print dotted pair */
-			if ((x = cdr(x)) != NIL)
-			  {
-			    printf(" . ");
-			    prindatum(x);
-			  }
-		      }
-		     else
-		      {
-			printf("%c" , SPACE);
-			x = cdr(x);
-			goto lp;
-		      }
-		    printf("%c" , RIGHT_PAREN);	/* print ")" */
-		    Printdepth--;
-		    break;
-	
-	case	TYPE_SMALLP:
-			if ((x & SEGMASK) == S_POSITIVE)
-				printf("%d" , LOLOC(x));	/* print positive smallp */
-				else						
-				printf("%d" , (LOLOC(x) | 0xffff0000));	/* print negative smallp */
-			break;
-	case	TYPE_FIXP:
-			print_fixp(x);		/* print fixp  */
-			break;
-	case TYPE_FLOATP:
-			print_floatp(x);
-			break;
-	case TYPE_STRINGP:
-			print_string(x);		/* print string */
-			break;
-	case TYPE_ONED_ARRAY :
-	case TYPE_GENERAL_ARRAY :
-			newstring=(NEWSTRINGP *)Addr68k_from_LADDR(x);
-			if(newstring->stringp){
-			  print_NEWstring(x);
-			  break; }
+      print_atomname(x);
+      break;
+    case TYPE_LISTP:
+      Printdepth++;
+      PrintLen[Printdepth] = 0;
+      printf("%c", LEFT_PAREN); /* print "(" */
+    lp:
+      if (PrintLen[Printdepth]++ > PrintMaxLen) {
+        printf("%c", RIGHT_PAREN);
+        Printdepth--;
+        break;
+      }
+      prindatum(car(x));
+      if (Listp(cdr(x)) == 0) { /* print dotted pair */
+        if ((x = cdr(x)) != NIL) {
+          printf(" . ");
+          prindatum(x);
+        }
+      } else {
+        printf("%c", SPACE);
+        x = cdr(x);
+        goto lp;
+      }
+      printf("%c", RIGHT_PAREN); /* print ")" */
+      Printdepth--;
+      break;
 
-	default: 
-		dtd_base = (struct dtd *)GetDTD(typen);
-		printf("{");
-#ifdef BIGVM 
-		if((typename = dtd_base->dtd_name) != 0)
+    case TYPE_SMALLP:
+      if ((x & SEGMASK) == S_POSITIVE)
+        printf("%d", LOLOC(x)); /* print positive smallp */
+      else
+        printf("%d", (LOLOC(x) | 0xffff0000)); /* print negative smallp */
+      break;
+    case TYPE_FIXP:
+      print_fixp(x); /* print fixp  */
+      break;
+    case TYPE_FLOATP: print_floatp(x); break;
+    case TYPE_STRINGP:
+      print_string(x); /* print string */
+      break;
+    case TYPE_ONED_ARRAY:
+    case TYPE_GENERAL_ARRAY:
+      newstring = (NEWSTRINGP *)Addr68k_from_LADDR(x);
+      if (newstring->stringp) {
+        print_NEWstring(x);
+        break;
+      }
+
+    default: dtd_base = (struct dtd *)GetDTD(typen); printf("{");
+#ifdef BIGVM
+      if ((typename = dtd_base->dtd_name) != 0)
 #else
-		if((typename = dtd_base->dtd_namelo+(dtd_base->dtd_namehi<<16)) != 0)
+      if ((typename = dtd_base->dtd_namelo + (dtd_base->dtd_namehi << 16)) != 0)
 #endif
-		  print_atomname(typename);
-		else printf("unknown");
-		printf("}0x");
-		printf("%x" , x);	/* print lisp address in hex */
-	}
+        print_atomname(typename);
+      else
+        printf("unknown");
+      printf("}0x");
+      printf("%x", x); /* print lisp address in hex */
+  }
 }
-
 
 /************************************************************************/
 /*									*/
@@ -143,15 +137,12 @@ void prindatum(LispPTR x)
 /*									*/
 /************************************************************************/
 
-LispPTR	print(LispPTR x)
-{
-    Printdepth=0;
-    prindatum(x&POINTERMASK);
-    /* printf("\n"); */		/* print CR */
-    return (x);
-  }
-
-
+LispPTR print(LispPTR x) {
+  Printdepth = 0;
+  prindatum(x & POINTERMASK);
+  /* printf("\n"); */ /* print CR */
+  return (x);
+}
 
 /************************************************************************/
 /*									*/
@@ -161,31 +152,26 @@ LispPTR	print(LispPTR x)
 /*									*/
 /************************************************************************/
 
-void print_string(LispPTR x)
-{
-    struct stringp	*string_point;
-    DLword	st_length;
-    DLbyte	*string_base;
+void print_string(LispPTR x) {
+  struct stringp *string_point;
+  DLword st_length;
+  DLbyte *string_base;
 
-    int		i;
+  int i;
 
+  string_point = (struct stringp *)Addr68k_from_LADDR(x);
+  st_length = string_point->length;
+  string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
 
-    string_point = (struct stringp *)Addr68k_from_LADDR(x);
-    st_length = string_point->length;
-    string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
+  printf("%c", DOUBLEQUOTE); /* print %" */
 
-    printf("%c" , DOUBLEQUOTE);	/* print %" */
-		
-    for (i = 1 ; i <= st_length ; i++)
-      {
-	printf("%c" , GETBYTE(string_base));
-	string_base++;
-      }
-
-    printf("%c" , DOUBLEQUOTE);	/* print %" */
+  for (i = 1; i <= st_length; i++) {
+    printf("%c", GETBYTE(string_base));
+    string_base++;
   }
 
-
+  printf("%c", DOUBLEQUOTE); /* print %" */
+}
 
 /************************************************************************/
 /*									*/
@@ -196,31 +182,27 @@ void print_string(LispPTR x)
 /*									*/
 /************************************************************************/
 
-void print_NEWstring(LispPTR x)
-{
-    NEWSTRINGP *string_point;
-    DLword	st_length;
-    DLbyte	*string_base;
+void print_NEWstring(LispPTR x) {
+  NEWSTRINGP *string_point;
+  DLword st_length;
+  DLbyte *string_base;
 
-    int		i;
+  int i;
 
-    string_point = (NEWSTRINGP *)Addr68k_from_LADDR(x);
-    st_length = string_point->fillpointer;
-    string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
-    string_base += string_point->offset ;
+  string_point = (NEWSTRINGP *)Addr68k_from_LADDR(x);
+  st_length = string_point->fillpointer;
+  string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
+  string_base += string_point->offset;
 
-    printf("%c" , DOUBLEQUOTE);	/* print %" */
-		
-    for (i = 0 ; i < st_length ; i++)
-      {
-	printf("%c" , GETBYTE(string_base));
-	string_base++;
-      }
+  printf("%c", DOUBLEQUOTE); /* print %" */
 
-    printf("%c" , DOUBLEQUOTE);	/* print %" */
+  for (i = 0; i < st_length; i++) {
+    printf("%c", GETBYTE(string_base));
+    string_base++;
   }
 
-
+  printf("%c", DOUBLEQUOTE); /* print %" */
+}
 
 /************************************************************************/
 /*									*/
@@ -230,15 +212,12 @@ void print_NEWstring(LispPTR x)
 /*									*/
 /************************************************************************/
 
-void print_fixp(LispPTR x)
-{
-    int	*addr_fixp;
+void print_fixp(LispPTR x) {
+  int *addr_fixp;
 
-    addr_fixp = (int *)Addr68k_from_LADDR(x);
-    printf("%d" , *addr_fixp);
-  }
-
-
+  addr_fixp = (int *)Addr68k_from_LADDR(x);
+  printf("%d", *addr_fixp);
+}
 
 /************************************************************************/
 /*									*/
@@ -248,12 +227,9 @@ void print_fixp(LispPTR x)
 /*									*/
 /************************************************************************/
 
-void print_floatp(LispPTR x)
-{
-    float *addr_floatp;
+void print_floatp(LispPTR x) {
+  float *addr_floatp;
 
-    addr_floatp = (float *)Addr68k_from_LADDR(x);
-    printf("%f" , *addr_floatp);
- }
-
-	
+  addr_floatp = (float *)Addr68k_from_LADDR(x);
+  printf("%f", *addr_floatp);
+}

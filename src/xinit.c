@@ -1,7 +1,5 @@
-/* $Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,8 +15,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 /************************************************************************/
 
 #include "version.h"
-
-
 
 #include <stdio.h>
 #include <X11/X.h>
@@ -62,36 +58,29 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #endif /* ISC */
 
 #define FALSE 0
-#define TRUE  !FALSE
+#define TRUE !FALSE
 #define PERCENT_OF_SCREEN 95
-#define DISPLAY_MAX 65536*16*2		/* same magic number is */
-					/* in loadsysout.c      */
+#define DISPLAY_MAX 65536 * 16 * 2 /* same magic number is */
+                                   /* in loadsysout.c      */
 extern DLword *Lisp_world;
 extern int Lisp_Xinitialized;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
 int xsync = False;
 
-int Byte_Order
-  , Bitmap_Bit_Order
-  , Bitmap_Pad
-  , Default_Depth
-  , Display_Height
-  , Display_Width;
+int Byte_Order, Bitmap_Bit_Order, Bitmap_Pad, Default_Depth, Display_Height, Display_Width;
 
 int LispWindowRequestedX = 0;
-int LispWindowRequestedY =  0;
+int LispWindowRequestedY = 0;
 int LispWindowRequestedWidth = DEF_WIN_WIDTH;
 int LispWindowRequestedHeight = DEF_WIN_HEIGHT;
 
-int LispDisplayRequestedX,
-  LispDisplayRequestedY,
-  LispDisplayRequestedWidth,
-  LispDisplayRequestedHeight;
+int LispDisplayRequestedX, LispDisplayRequestedY, LispDisplayRequestedWidth,
+    LispDisplayRequestedHeight;
 
 Colormap Colors;
 
-int XLocked = 0;  /* non-zero while doing X ops, to avoid signals */
+int XLocked = 0; /* non-zero while doing X ops, to avoid signals */
 extern int LispReadFds;
 extern PFUL GenericReturnT();
 extern PFUL clipping_Xbitblt();
@@ -103,16 +92,15 @@ extern PFUL clipping_Xbitblt();
 /*	Turn on the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void init_Xevent(dsp)
-     DspInterface dsp;
-{	
+void init_Xevent(dsp) DspInterface dsp;
+{
   int GravMask, BarMask, LispMask, DisplayMask;
 
-  GravMask = ButtonPressMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | StructureNotifyMask;
+  GravMask =
+      ButtonPressMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | StructureNotifyMask;
   BarMask = GravMask;
   DisplayMask = GravMask | PointerMotionMask | ExposureMask | KeyPressMask | KeyReleaseMask;
   LispMask = StructureNotifyMask;
-
 
   XSelectInput(dsp->display_id, dsp->LispWindow, dsp->EnableEventMask);
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
@@ -128,12 +116,11 @@ void init_Xevent(dsp)
 #ifdef SYSVONLY
 #ifndef LINUX
 #ifndef MACOSX
-    ioctl(ConnectionNumber(dsp->display_id)
-	  , I_SETSIG, S_INPUT); /* so we see X events fast */
+  ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, S_INPUT); /* so we see X events fast */
 #endif
 #endif
 #endif /* SYSVONLY */
-}				/*end init_Xevent */
+} /*end init_Xevent */
 
 /************************************************************************/
 /*									*/
@@ -142,25 +129,22 @@ void init_Xevent(dsp)
 /*	Turn off the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void lisp_Xexit(dsp)
-     DspInterface dsp;
-  {
+void lisp_Xexit(dsp) DspInterface dsp;
+{
 #ifdef SYSVONLY
 #ifndef LINUX
 #ifndef MACOSX
-    ioctl(ConnectionNumber(dsp->display_id)
-	  , I_SETSIG, 0); /* so no interrupts happen during */
+  ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
 #endif
 #endif
 #endif /* SYSVONLY */
 
-    XDestroySubwindows( dsp->display_id, dsp->LispWindow );
-    XDestroyWindow( dsp->display_id, dsp->LispWindow );
-    XCloseDisplay( dsp->display_id );
-	
-    Lisp_Xinitialized = FALSE;
-  } /* end lisp_Xexit */
+  XDestroySubwindows(dsp->display_id, dsp->LispWindow);
+  XDestroyWindow(dsp->display_id, dsp->LispWindow);
+  XCloseDisplay(dsp->display_id);
 
+  Lisp_Xinitialized = FALSE;
+} /* end lisp_Xexit */
 
 /************************************************************************/
 /*									*/
@@ -170,26 +154,23 @@ void lisp_Xexit(dsp)
 /*	the X windows we use for Medley's display.			*/
 /*									*/
 /************************************************************************/
-void Xevent_before_raid(dsp)
-     DspInterface dsp;
-  {
-    TPRINT(( "TRACE: Xevent_before_raid()\n" ));
+void Xevent_before_raid(dsp) DspInterface dsp;
+{
+  TPRINT(("TRACE: Xevent_before_raid()\n"));
 
-    XSelectInput( dsp->display_id, dsp->LispWindow,    NoEventMask );
-    XSelectInput( dsp->display_id, dsp->DisplayWindow, NoEventMask );
-    XSelectInput( dsp->display_id, dsp->VerScrollBar,    NoEventMask );
-    XSelectInput( dsp->display_id, dsp->HorScrollBar,    NoEventMask );
-    XSelectInput( dsp->display_id, dsp->NEGrav, NoEventMask);
-    XSelectInput( dsp->display_id, dsp->SEGrav, NoEventMask);
-    XSelectInput( dsp->display_id, dsp->SWGrav, NoEventMask);
-    XSelectInput (dsp->display_id, dsp->NWGrav, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->LispWindow, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->DisplayWindow, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->VerScrollBar, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->HorScrollBar, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->NEGrav, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->SEGrav, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->SWGrav, NoEventMask);
+  XSelectInput(dsp->display_id, dsp->NWGrav, NoEventMask);
 
-    XLOCK;
-    XFlush( dsp->display_id );
-    XUNLOCK;
-  }				/* end Xevent_before_raid */
-
-
+  XLOCK;
+  XFlush(dsp->display_id);
+  XUNLOCK;
+} /* end Xevent_before_raid */
 
 /************************************************************************/
 /*									*/
@@ -199,20 +180,16 @@ void Xevent_before_raid(dsp)
 /*	from the X server in the windows we use for the display.	*/
 /*									*/
 /************************************************************************/
-void Xevent_after_raid(dsp)
-     DspInterface dsp;
+void Xevent_after_raid(dsp) DspInterface dsp;
 {
-    init_Xevent( dsp );
-    (dsp->bitblt_to_screen)( dsp, 0,
-			    dsp->Vissible.x,
-			    dsp->Vissible.y,
-			    dsp->Vissible.width,
-			    dsp->Vissible.height );
-    XLOCK;
-    XFlush( dsp->display_id );
-    XUNLOCK;
+  init_Xevent(dsp);
+  (dsp->bitblt_to_screen)(dsp, 0, dsp->Vissible.x, dsp->Vissible.y, dsp->Vissible.width,
+                          dsp->Vissible.height);
+  XLOCK;
+  XFlush(dsp->display_id);
+  XUNLOCK;
 
-  } /* end Xevent_after_raid */
+} /* end Xevent_after_raid */
 
 /************************************************************************/
 /*									*/
@@ -224,17 +201,14 @@ void Xevent_after_raid(dsp)
 /*									*/
 /*									*/
 /************************************************************************/
-void Open_Display( dsp )
-     DspInterface dsp;
+void Open_Display(dsp) DspInterface dsp;
 {
-
   LispReadFds |= (1 << ConnectionNumber(dsp->display_id));
 #ifndef ISC
 #ifndef HPUX
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
-#endif				/* HPUX */
-#endif				/* ISC */
-
+#endif /* HPUX */
+#endif /* ISC */
 
   /****************************************************/
   /* If debugging, set the X connection so that	*/
@@ -244,19 +218,17 @@ void Open_Display( dsp )
   /****************************************************/
   XSynchronize(dsp->display_id, xsync);
 
-  Colors = DefaultColormapOfScreen ( ScreenOfDisplay( dsp->display_id,
-						     DefaultScreen( dsp->display_id ) ) );
+  Colors =
+      DefaultColormapOfScreen(ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
 
   /* When we make the initial screen we haven't yet read in the */
   /* displayregion bitmap. Fix this now. */
-  if (dsp->ScreenBitmap.data == NULL)
-    dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
+  if (dsp->ScreenBitmap.data == NULL) dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
 
-  Create_LispWindow(dsp);	/* Make the main window */
+  Create_LispWindow(dsp); /* Make the main window */
   Lisp_Xinitialized = TRUE;
-  init_Xevent( dsp );		/* Turn on the intrpts. */
-}				/* end OpenDisplay */
-
+  init_Xevent(dsp); /* Turn on the intrpts. */
+} /* end OpenDisplay */
 
 /*********************************************************************/
 /*                                                                   */
@@ -282,25 +254,20 @@ void Open_Display( dsp )
 /*                                                                   */
 /*********************************************************************/
 
-DspInterface X_init( DspInterface dsp, 
-		     char *lispbitmap, 
-		     int width_hint, 
-		     int height_hint, 
-		     int depth_hint )
-{
+DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
+                    int depth_hint) {
   Screen *Xscreen;
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */
-				  /* has to dealt with in a more */
-				  /* gracefull way. */
+                                  /* has to dealt with in a more */
+                                  /* gracefull way. */
 
   /* Try to open the X display. If this isn't possible, we just */
   /* return FALSE. */
-  if( (dsp->display_id = XOpenDisplay( dsp->identifier )) == NULL )
-    return(NULL);
+  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) return (NULL);
   /* Load the dsp structure */
 
-  Xscreen = ScreenOfDisplay( dsp->display_id, DefaultScreen( dsp->display_id ) ); 
+  Xscreen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
 
   /* Set the scrollbar and border widths */
   dsp->ScrollBarWidth = SCROLL_WIDTH;
@@ -310,30 +277,26 @@ DspInterface X_init( DspInterface dsp,
   dsp->Vissible.y = LispDisplayRequestedY;
 
   /* Set the width and height of the display.  */
-  if ( height_hint == 0 ){
-    dsp->Display.height = HeightOfScreen( Xscreen ) -
-      OUTER_SB_WIDTH(dsp); /* In the default case,
-			      adjust for scroll gadgets*/
-  }
-  else dsp->Display.height = bound(WIN_MIN_HEIGHT,
-				  height_hint,
-				  WIN_MAX_HEIGHT);
+  if (height_hint == 0) {
+    dsp->Display.height =
+        HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+                                                          adjust for scroll gadgets*/
+  } else
+    dsp->Display.height = bound(WIN_MIN_HEIGHT, height_hint, WIN_MAX_HEIGHT);
 
-  if ( width_hint == 0 ){
-    dsp->Display.width = WidthOfScreen( Xscreen ) -
-      OUTER_SB_WIDTH(dsp); /* In the default case,
-			      adjust for scroll gadgets*/
-  }
-  else dsp->Display.width = bound(WIN_MIN_WIDTH,
-				  width_hint,
-				  WIN_MAX_WIDTH);
+  if (width_hint == 0) {
+    dsp->Display.width =
+        WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+                                                         adjust for scroll gadgets*/
+  } else
+    dsp->Display.width = bound(WIN_MIN_WIDTH, width_hint, WIN_MAX_WIDTH);
 
   /************************************************************/
   /* 		Set the size of ScreenBitMap                  */
   /* The display's width is rounded to a 32-bit multiple,     */
   /* so that little-Endian machines can display right.        */
   /************************************************************/
-  dsp->Display.width = ((dsp->Display.width+31) >> 5) << 5;
+  dsp->Display.width = ((dsp->Display.width + 31) >> 5) << 5;
 
   dsp->device.enter = (PFV)Open_Display;
   dsp->device.exit = (PFV)lisp_Xexit;
@@ -349,53 +312,49 @@ DspInterface X_init( DspInterface dsp,
   dsp->set_color_map_entry = (PFUL)GenericReturnT;
 
   /* Set the geometry of the Vissible (Lisp) window. */
-  dsp->Vissible.width = bound(OUTER_SB_WIDTH(dsp),
-			     LispWindowRequestedWidth,
-			     min(dsp->Display.width,
-				 (WidthOfScreen( Xscreen ) -
-				  OUTER_SB_WIDTH(dsp))));
-  dsp->Vissible.height = bound(OUTER_SB_WIDTH(dsp),
-			       LispWindowRequestedHeight,
-			       min(dsp->Display.height,
-				   (HeightOfScreen( Xscreen ) -
-				    OUTER_SB_WIDTH(dsp))));
+  dsp->Vissible.width =
+      bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedWidth,
+            min(dsp->Display.width, (WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
+  dsp->Vissible.height =
+      bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedHeight,
+            min(dsp->Display.height, (HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
 
   /* Initialize the screen image structure. */
-  dsp->ScreenBitmap.width   = dsp->Display.width;
-  dsp->ScreenBitmap.height  = dsp->Display.height; 
+  dsp->ScreenBitmap.width = dsp->Display.width;
+  dsp->ScreenBitmap.height = dsp->Display.height;
   dsp->ScreenBitmap.xoffset = 0;
-  dsp->bitsperpixel = DefaultDepthOfScreen( ScreenOfDisplay( dsp->display_id,
-							    DefaultScreen( dsp->display_id ) ) );
+  dsp->bitsperpixel =
+      DefaultDepthOfScreen(ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
 #if (defined(BYTESWAP))
-    dsp->ScreenBitmap.byte_order = LSBFirst;
-#else				/* BYTESWAP */
-    dsp->ScreenBitmap.byte_order = MSBFirst;
-#endif				/* BYTESWAP */
+  dsp->ScreenBitmap.byte_order = LSBFirst;
+#else  /* BYTESWAP */
+  dsp->ScreenBitmap.byte_order = MSBFirst;
+#endif /* BYTESWAP */
 
-  dsp->ScreenBitmap.data = (char *)(lispbitmap?Addr68k_from_LADDR((LispPTR)lispbitmap):0);
-    
-  switch(depth_hint){
-  case 8:			/* Color Screen */
-    dsp->ScreenBitmap.format  = ZPixmap;
-    dsp->ScreenBitmap.bitmap_unit = BitmapUnit( dsp->display_id );
-    dsp->ScreenBitmap.bitmap_bit_order = MSBFirst;
-    dsp->ScreenBitmap.bitmap_pad = 32;
-    dsp->ScreenBitmap.depth = 8;
-    dsp->ScreenBitmap.bits_per_pixel = 8;
-    dsp->ScreenBitmap.bytes_per_line = (dsp->Display.width);
-    dsp->ScreenBitmap.red_mask = 7;
-    dsp->ScreenBitmap.green_mask = 7;
-    dsp->ScreenBitmap.blue_mask = 3;
-    break;
-  default:			/* B/W Screen */
-    dsp->ScreenBitmap.format  = XYBitmap;
-    dsp->ScreenBitmap.bitmap_unit = BitmapUnit( dsp->display_id );
-    dsp->ScreenBitmap.bitmap_bit_order = MSBFirst;
-    dsp->ScreenBitmap.bitmap_pad = 32;
-    dsp->ScreenBitmap.depth = 1;
-    dsp->ScreenBitmap.bytes_per_line = ((dsp->Display.width+(BITSPER_DLWORD-1))
-					/BITSPER_DLWORD) * (BITSPER_DLWORD/8);
-    break;
+  dsp->ScreenBitmap.data = (char *)(lispbitmap ? Addr68k_from_LADDR((LispPTR)lispbitmap) : 0);
+
+  switch (depth_hint) {
+    case 8: /* Color Screen */
+      dsp->ScreenBitmap.format = ZPixmap;
+      dsp->ScreenBitmap.bitmap_unit = BitmapUnit(dsp->display_id);
+      dsp->ScreenBitmap.bitmap_bit_order = MSBFirst;
+      dsp->ScreenBitmap.bitmap_pad = 32;
+      dsp->ScreenBitmap.depth = 8;
+      dsp->ScreenBitmap.bits_per_pixel = 8;
+      dsp->ScreenBitmap.bytes_per_line = (dsp->Display.width);
+      dsp->ScreenBitmap.red_mask = 7;
+      dsp->ScreenBitmap.green_mask = 7;
+      dsp->ScreenBitmap.blue_mask = 3;
+      break;
+    default: /* B/W Screen */
+      dsp->ScreenBitmap.format = XYBitmap;
+      dsp->ScreenBitmap.bitmap_unit = BitmapUnit(dsp->display_id);
+      dsp->ScreenBitmap.bitmap_bit_order = MSBFirst;
+      dsp->ScreenBitmap.bitmap_pad = 32;
+      dsp->ScreenBitmap.depth = 1;
+      dsp->ScreenBitmap.bytes_per_line =
+          ((dsp->Display.width + (BITSPER_DLWORD - 1)) / BITSPER_DLWORD) * (BITSPER_DLWORD / 8);
+      break;
   }
-  return( dsp );
+  return (dsp);
 }

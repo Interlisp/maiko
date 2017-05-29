@@ -1,8 +1,6 @@
 /* $Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright (C) Venue";
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -58,9 +56,7 @@ static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright
 /*                                                               \tomtom */
 /*************************************************************************/
 
-
 #include "version.h"
-
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -72,51 +68,46 @@ static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright
 #include "stack.h"
 #include "gc.h"
 
-
-
-#define MAXSMALLP		65535
-#define HTBIGENTRYSIZE		4
-#define WORDSPERPAGE		256
-#define WORDSPERCELL		2
-#define MAXTYPENUMBER		INIT_TYPENUM
-#define STK_HI			1
+#define MAXSMALLP 65535
+#define HTBIGENTRYSIZE 4
+#define WORDSPERPAGE 256
+#define WORDSPERCELL 2
+#define MAXTYPENUMBER INIT_TYPENUM
+#define STK_HI 1
 
 #ifndef BYTESWAP
-   struct interruptstate
- {      unsigned nil1             :3;
-        unsigned gcdisabled       :1;
-	unsigned vmemfull         :1;
-	unsigned stackoverflow    :1;
-	unsigned storagefull      :1;
-	unsigned waitinginterrupt :1;
-	unsigned nil2             :8;
-	DLword   intcharcode;
-	};
+struct interruptstate {
+  unsigned nil1 : 3;
+  unsigned gcdisabled : 1;
+  unsigned vmemfull : 1;
+  unsigned stackoverflow : 1;
+  unsigned storagefull : 1;
+  unsigned waitinginterrupt : 1;
+  unsigned nil2 : 8;
+  DLword intcharcode;
+};
 #else
-   struct interruptstate
- {
-	DLword   intcharcode;
-	unsigned nil2             :8;
-	unsigned waitinginterrupt :1;
-	unsigned storagefull      :1;
-	unsigned stackoverflow    :1;
-	unsigned vmemfull         :1;
-        unsigned gcdisabled       :1;
-	unsigned nil1             :3;
-	};
+struct interruptstate {
+  DLword intcharcode;
+  unsigned nil2 : 8;
+  unsigned waitinginterrupt : 1;
+  unsigned storagefull : 1;
+  unsigned stackoverflow : 1;
+  unsigned vmemfull : 1;
+  unsigned gcdisabled : 1;
+  unsigned nil1 : 3;
+};
 #endif /* BYTESWAP */
 
-
-void gcarrangementstack(void)
-{  LispPTR tmpnextblock;
-	PushCStack;
-	tmpnextblock = LADDR_from_68k(CurrentStackPTR+=WORDSPERCELL);
-	CURRENTFX->nextblock = LOLOC(tmpnextblock);
-if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack block.");
-  GETWORD(CurrentStackPTR)=STK_FSB_WORD;
-  GETWORD(CurrentStackPTR+1)=(((UNSIGNED)EndSTKP-(UNSIGNED)CurrentStackPTR)>>1);
+void gcarrangementstack(void) {
+  LispPTR tmpnextblock;
+  PushCStack;
+  tmpnextblock = LADDR_from_68k(CurrentStackPTR += WORDSPERCELL);
+  CURRENTFX->nextblock = LOLOC(tmpnextblock);
+  if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack block.");
+  GETWORD(CurrentStackPTR) = STK_FSB_WORD;
+  GETWORD(CurrentStackPTR + 1) = (((UNSIGNED)EndSTKP - (UNSIGNED)CurrentStackPTR) >> 1);
 }
-
 
 /****************************************************************/
 /* The following function is the caller that is the reclaimer.  */
@@ -125,60 +116,49 @@ if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack
 /* remaining the system status.					*/
 /****************************************************************/
 
-void dogc01(void)
-{
-    gcarrangementstack();
-    gcscanstack();
-    gcmapscan();
-    gcmapunscan();
-    PopCStack;
-  }
+void dogc01(void) {
+  gcarrangementstack();
+  gcscanstack();
+  gcmapscan();
+  gcmapunscan();
+  PopCStack;
+}
 
 /*!!!!!! should update clock in Miscstats */
 
-void doreclaim(void)
-{
-    int gctm1;
-    MISCSTATS gcmisc;
+void doreclaim(void) {
+  int gctm1;
+  MISCSTATS gcmisc;
 
-    if (*GcDisabled_word == NIL)
-      {
-	update_miscstats();
-	gcmisc = *((MISCSTATS *)MiscStats);
-	*Reclaim_cnt_word = NIL;
-	if (*GcMess_word != NIL) flip_cursor();
-	dogc01();
-	if (*GcMess_word != NIL) flip_cursor();
-	*Reclaim_cnt_word = *ReclaimMin_word;
-	update_miscstats();
-	MiscStats->gctime = MiscStats->gctime +
-		MiscStats->totaltime - gcmisc.totaltime +
-		MiscStats->swapwaittime - gcmisc.swapwaittime;
-      }
-  }
-
-
-
-void disablegc1(int noerror)
-{
-    struct interruptstate *gcinterruptstate;
-    int                   count, i;
-    DLword                typeword;
-    gcinterruptstate = (struct interruptstate *)
-			Addr68k_from_LADDR(*INTERRUPTSTATE_word);
-    count = (128)*256; /* This is test value. 128 is *MdsTTsize(\MDSTTsize) */
-    for(i = 0;i < count;i++)
-      {
-	typeword = GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl)+i));
-	GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl)+i) )
-                 = (typeword | TT_NOREF);
-      }
+  if (*GcDisabled_word == NIL) {
+    update_miscstats();
+    gcmisc = *((MISCSTATS *)MiscStats);
     *Reclaim_cnt_word = NIL;
-    *ReclaimMin_word  = NIL;
-    if ((noerror == NIL) && (*GcDisabled_word == NIL))
-      {
-	gcinterruptstate->gcdisabled = T;
-	*PENDINGINTERRUPT_word = ATOM_T;
-      };
-    *GcDisabled_word = ATOM_T;
+    if (*GcMess_word != NIL) flip_cursor();
+    dogc01();
+    if (*GcMess_word != NIL) flip_cursor();
+    *Reclaim_cnt_word = *ReclaimMin_word;
+    update_miscstats();
+    MiscStats->gctime = MiscStats->gctime + MiscStats->totaltime - gcmisc.totaltime +
+                        MiscStats->swapwaittime - gcmisc.swapwaittime;
   }
+}
+
+void disablegc1(int noerror) {
+  struct interruptstate *gcinterruptstate;
+  int count, i;
+  DLword typeword;
+  gcinterruptstate = (struct interruptstate *)Addr68k_from_LADDR(*INTERRUPTSTATE_word);
+  count = (128) * 256; /* This is test value. 128 is *MdsTTsize(\MDSTTsize) */
+  for (i = 0; i < count; i++) {
+    typeword = GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl) + i));
+    GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl) + i)) = (typeword | TT_NOREF);
+  }
+  *Reclaim_cnt_word = NIL;
+  *ReclaimMin_word = NIL;
+  if ((noerror == NIL) && (*GcDisabled_word == NIL)) {
+    gcinterruptstate->gcdisabled = T;
+    *PENDINGINTERRUPT_word = ATOM_T;
+  };
+  *GcDisabled_word = ATOM_T;
+}

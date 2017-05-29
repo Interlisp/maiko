@@ -1,8 +1,6 @@
-/* $Id: call-c.c,v 1.2 1999/01/03 02:06:48 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: call-c.c,v 1.2 1999/01/03 02:06:48 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: call-c.c,v 1.2 1999/01/03 02:06:48 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -18,8 +16,6 @@ static char *id = "$Id: call-c.c,v 1.2 1999/01/03 02:06:48 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-
 /************************************************************************/
 /*									*/
 /*    F O R E I G N - F U N C T I O N   C A L L   I N T E R F A C E	*/
@@ -30,10 +26,9 @@ static char *id = "$Id: call-c.c,v 1.2 1999/01/03 02:06:48 sybalsky Exp $ Copyri
 
 #include "lispemul.h"
 
-
 lispPTR call_c_fn(args);
-  {
-    void() *fn = args[0];
-    (*fn)();
-    return(NIL);
-  }
+{
+  void() *fn = args[0];
+  (*fn)();
+  return (NIL);
+}

@@ -1,8 +1,6 @@
-/* $Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -18,7 +16,6 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 
 #include "version.h"
 
-
 /************************************************************************/
 /*                                                                      */
 /*            C H A R A C T E R - D E V I C E   S U P P O R T           */
@@ -27,53 +24,49 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 /*                                                                      */
 /************************************************************************/
 
-
 #ifndef DOS
 #include <stdio.h>
-#include        <sys/types.h>
-#include        <sys/file.h>
-#include        <sys/stat.h>
-#include        <sys/param.h>
-#include        <sys/time.h>
+#include <sys/types.h>
+#include <sys/file.h>
+#include <sys/stat.h>
+#include <sys/param.h>
+#include <sys/time.h>
 #ifndef OS5
 #ifndef FREEBSD
-#include        <sys/dir.h>
+#include <sys/dir.h>
 #endif /* FREEBSD */
 #endif /* OS5 */
 #ifndef HPUX
 #ifndef OS5
-#include        <strings.h>
+#include <strings.h>
 #endif /* OS5 */
 #endif /* HPUX */
-#include        <sys/ioctl.h>
+#include <sys/ioctl.h>
 #else /* DOS */
 #include <string.h>
 #endif /* DOS */
 
-#include        <setjmp.h>
-#include        <signal.h>
-#include        <errno.h>
-#include        <fcntl.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #include "lispemul.h"
-#include        "lispmap.h"
-#include        "adr68k.h"
-#include        "lsptypes.h"
-#include        "arith.h"
-#include        "timeout.h"
-#include        "locfile.h"
-#include        "osmsg.h"
-#include        "dbprint.h"
-
+#include "lispmap.h"
+#include "adr68k.h"
+#include "lsptypes.h"
+#include "arith.h"
+#include "timeout.h"
+#include "locfile.h"
+#include "osmsg.h"
+#include "dbprint.h"
 
 #if defined(ISC) || defined(FREEBSD)
-#include        <dirent.h>
+#include <dirent.h>
 #endif
 
-extern  int*    Lisp_errno;
-extern  int     Dummy_errno;
-
-
+extern int *Lisp_errno;
+extern int Dummy_errno;
 
 /************************************************************************/
 /*                                                                      */
@@ -90,79 +83,63 @@ extern  int     Dummy_errno;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_openfile(args)
-  register LispPTR      *args;
-  /* args[0]            fullname */
-  /* args[1]            access */
-  /* args[2]            errno */
-  {
+LispPTR CHAR_openfile(args) register LispPTR *args;
+/* args[0]            fullname */
+/* args[1]            access */
+/* args[2]            errno */
+{
 #ifndef DOS
-    register int id;            /* return value  of open system call. */
-    register int        flags;  /* open system call's argument */
-    register int        rval;
-    register int        linkflag =0;
-    register int        *bufp;
-    struct stat statbuf;
-    char        pathname[MAXPATHLEN];
+  register int id;    /* return value  of open system call. */
+  register int flags; /* open system call's argument */
+  register int rval;
+  register int linkflag = 0;
+  register int *bufp;
+  struct stat statbuf;
+  char pathname[MAXPATHLEN];
 
 #if (defined(RS6000) || defined(HPUX))
-    static int one=1;           /* Used in charopenfile, etc. */
+  static int one = 1; /* Used in charopenfile, etc. */
 #endif
 
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
 
-    Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));  
-
-    LispStringToCString(args[0], pathname, MAXPATHLEN);
-    flags = O_NDELAY;
-    ERRSETJMP(NIL);
-/*    TIMEOUT( rval=stat(pathname, &statbuf) );
-    if(rval == 0){      } */
-    switch(args[1])
-      {
-        case    ACCESS_INPUT:
-                        flags |= O_RDONLY;
-                        break;
-        case    ACCESS_OUTPUT:
-                        flags |= (O_WRONLY | O_CREAT);
-                        break;
-        case    ACCESS_APPEND:
-                        flags |= (O_APPEND | O_RDWR | O_CREAT);
-                        break;
-        case    ACCESS_BOTH:
-                        flags |= (O_RDWR | O_CREAT);
-                        break;
-        default:
-                        return(NIL);
-      }
-    TIMEOUT( id=open(pathname, flags) );
-    if(id == -1)
-      {
-        err_mess("open", errno);
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    /* Prevent I/O requests from blocking -- make them error */
-    /* if no char is available, or there's no room in pipe.  */
+  LispStringToCString(args[0], pathname, MAXPATHLEN);
+  flags = O_NDELAY;
+  ERRSETJMP(NIL);
+  /*    TIMEOUT( rval=stat(pathname, &statbuf) );
+      if(rval == 0){      } */
+  switch (args[1]) {
+    case ACCESS_INPUT: flags |= O_RDONLY; break;
+    case ACCESS_OUTPUT: flags |= (O_WRONLY | O_CREAT); break;
+    case ACCESS_APPEND: flags |= (O_APPEND | O_RDWR | O_CREAT); break;
+    case ACCESS_BOTH: flags |= (O_RDWR | O_CREAT); break;
+    default: return (NIL);
+  }
+  TIMEOUT(id = open(pathname, flags));
+  if (id == -1) {
+    err_mess("open", errno);
+    *Lisp_errno = errno;
+    return (NIL);
+  }
+/* Prevent I/O requests from blocking -- make them error */
+/* if no char is available, or there's no room in pipe.  */
 #ifdef RS6000
-    ioctl(id, FIONBIO, &one);
-    fcntl(id, F_SETOWN, getpid());
+  ioctl(id, FIONBIO, &one);
+  fcntl(id, F_SETOWN, getpid());
 #else
 #ifdef HPUX
-    ioctl(id, FIOSNBIO, &one);
+  ioctl(id, FIOSNBIO, &one);
 #else
-    rval = fcntl(id, F_GETFL, 0);
-    rval |= FNDELAY;
-    rval = fcntl(id, F_SETFL, rval);
+  rval = fcntl(id, F_GETFL, 0);
+  rval |= FNDELAY;
+  rval = fcntl(id, F_SETFL, rval);
 #endif /* HPUX */
 
 #endif /* RS6000 */
 
-    return(GetSmallp(id));
+  return (GetSmallp(id));
 #endif /* DOS */
-
-  }
-
-
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -178,40 +155,34 @@ LispPTR CHAR_openfile(args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_closefile(args)
-  register LispPTR      *args;
-  /* args[0]            id      */
-  /* args[1]            errno   */
-  {
+LispPTR CHAR_closefile(args) register LispPTR *args;
+/* args[0]            id      */
+/* args[1]            errno   */
+{
 #ifndef DOS
-    register int        id;     /* FileID */
-    register int        rval;
-    char        pathname[MAXPATHLEN];
-    Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));  
-    id = LispNumToCInt(args[0]);
-    ERRSETJMP(NIL);
-    TIMEOUT( rval=close(id) );
-    if( rval == -1)
-      {
-        /** This if is a patch for an apparent problem **/
-        /** in SunOS 4 that causes a close on /dev/ttya **/
-        /** to error with 'not owner' **/
-        if (errno == 1)
-          {
-            DBPRINT(("Got errno 1 on a CLOSE!"));
-            return(ATOM_T);
-          }
-        DBPRINT(("Closing char device descriptor #%d.\n", id));
-        err_mess("close", errno);
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    return(ATOM_T);
-#endif /* DOS */
-
+  register int id; /* FileID */
+  register int rval;
+  char pathname[MAXPATHLEN];
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
+  id = LispNumToCInt(args[0]);
+  ERRSETJMP(NIL);
+  TIMEOUT(rval = close(id));
+  if (rval == -1) {
+    /** This if is a patch for an apparent problem **/
+    /** in SunOS 4 that causes a close on /dev/ttya **/
+    /** to error with 'not owner' **/
+    if (errno == 1) {
+      DBPRINT(("Got errno 1 on a CLOSE!"));
+      return (ATOM_T);
+    }
+    DBPRINT(("Closing char device descriptor #%d.\n", id));
+    err_mess("close", errno);
+    *Lisp_errno = errno;
+    return (NIL);
   }
-
-
+  return (ATOM_T);
+#endif /* DOS */
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -231,32 +202,27 @@ LispPTR CHAR_closefile(args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_ioctl(args)
-  LispPTR *args;
-  {
+LispPTR CHAR_ioctl(args) LispPTR *args;
+{
 #ifndef DOS
-    int id, request, data;
-    register int        rval;
-    char        *base;
-    struct stat sbuf;
-    Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));  
-    id = LispNumToCInt(args[0]);
-    request = LispNumToCInt(args[1]);
-    data = (int)(Addr68k_from_LADDR(args[2]));  
-    ERRSETJMP(NIL);
-    TIMEOUT(rval=ioctl(id, request, data));
-    if(rval != 0)
-      {
-        err_mess("ioctl", errno);
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    return(ATOM_T);
+  int id, request, data;
+  register int rval;
+  char *base;
+  struct stat sbuf;
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  id = LispNumToCInt(args[0]);
+  request = LispNumToCInt(args[1]);
+  data = (int)(Addr68k_from_LADDR(args[2]));
+  ERRSETJMP(NIL);
+  TIMEOUT(rval = ioctl(id, request, data));
+  if (rval != 0) {
+    err_mess("ioctl", errno);
+    *Lisp_errno = errno;
+    return (NIL);
+  }
+  return (ATOM_T);
 #endif /* DOS */
-
 }
-
-
 
 /************************************************************************/
 /*                                                                      */
@@ -269,34 +235,28 @@ LispPTR CHAR_ioctl(args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bin(id, errn)
-  register int  id;
-  register LispPTR      errn;
-  {
+LispPTR CHAR_bin(id, errn) register int id;
+register LispPTR errn;
+{
 #ifndef DOS
-    register int rval, size;
-    unsigned char ch[4];
-    Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
-    ERRSETJMP(NIL);
-    id = LispNumToCInt(id);
-    /* Read PAGE_SIZE bytes file contents from filepointer. */
-    TIMEOUT( rval=read(id, ch, 1) );
-    if ( rval == 0 )
-      {
-        *Lisp_errno = EWOULDBLOCK;
-        return(NIL);
-      }
-    if ( rval == -1 )
-      {
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    return(GetSmallp(ch[0]));
-#endif /* DOS */
-
+  register int rval, size;
+  unsigned char ch[4];
+  Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
+  ERRSETJMP(NIL);
+  id = LispNumToCInt(id);
+  /* Read PAGE_SIZE bytes file contents from filepointer. */
+  TIMEOUT(rval = read(id, ch, 1));
+  if (rval == 0) {
+    *Lisp_errno = EWOULDBLOCK;
+    return (NIL);
   }
-
-
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
+  }
+  return (GetSmallp(ch[0]));
+#endif /* DOS */
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -308,36 +268,31 @@ LispPTR CHAR_bin(id, errn)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bout(id, ch, errn)
-  register int  id;
-  register LispPTR      ch, errn;
-  {
+LispPTR CHAR_bout(id, ch, errn) register int id;
+register LispPTR ch, errn;
+{
 #ifndef DOS
-    register int rval;
-    char buf[4];
-    Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
-    ERRSETJMP(NIL);
-    id = LispNumToCInt(id);
-    buf[0] = LispNumToCInt(ch);
-    /* Write PAGE_SIZE bytes file contents from filepointer. */
+  register int rval;
+  char buf[4];
+  Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
+  ERRSETJMP(NIL);
+  id = LispNumToCInt(id);
+  buf[0] = LispNumToCInt(ch);
+  /* Write PAGE_SIZE bytes file contents from filepointer. */
 
-    TIMEOUT( rval=write(id, buf, 1) );
+  TIMEOUT(rval = write(id, buf, 1));
 
-    if (rval == -1)
-      {
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    if (rval == 0)
-      {
-        *Lisp_errno = EWOULDBLOCK;
-        return(NIL);
-      }
-    return(ATOM_T);
-#endif /* DOS */
-
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
   }
-
+  if (rval == 0) {
+    *Lisp_errno = EWOULDBLOCK;
+    return (NIL);
+  }
+  return (ATOM_T);
+#endif /* DOS */
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -360,42 +315,35 @@ LispPTR CHAR_bout(id, ch, errn)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bins(args)
-  register LispPTR      *args;
-  {
+LispPTR CHAR_bins(args) register LispPTR *args;
+{
 #ifndef DOS
-    register int id, rval;
-    char        *buffer;
-    int offset, nbytes;
-    Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
-    ERRSETJMP(NIL);
-    id = LispNumToCInt(args[0]);
-    buffer = ((char *) (Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
-    nbytes = LispNumToCInt(args[3]);
-    /* Read PAGE_SIZE bytes file contents from filepointer. */
-    TIMEOUT( rval=read(id, buffer, nbytes) );
-    if ( rval == 0 )
-      {
-        *Lisp_errno = EWOULDBLOCK;
-        return(NIL);
-      }
-    if ( rval == -1 )
-      {
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-
-#ifdef BYTESWAP
-    word_swap_page(buffer, (nbytes+3)>>2);
-#endif /* BYTESWAP */
-
-
-    return(GetSmallp(rval));
-#endif /* DOS */
-
+  register int id, rval;
+  char *buffer;
+  int offset, nbytes;
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
+  ERRSETJMP(NIL);
+  id = LispNumToCInt(args[0]);
+  buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
+  nbytes = LispNumToCInt(args[3]);
+  /* Read PAGE_SIZE bytes file contents from filepointer. */
+  TIMEOUT(rval = read(id, buffer, nbytes));
+  if (rval == 0) {
+    *Lisp_errno = EWOULDBLOCK;
+    return (NIL);
+  }
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
   }
 
+#ifdef BYTESWAP
+  word_swap_page(buffer, (nbytes + 3) >> 2);
+#endif /* BYTESWAP */
 
+  return (GetSmallp(rval));
+#endif /* DOS */
+}
 
 /************************************************************************/
 /*                                                                      */
@@ -418,39 +366,35 @@ LispPTR CHAR_bins(args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bouts(args)
-  register LispPTR      *args;
-  {
+LispPTR CHAR_bouts(args) register LispPTR *args;
+{
 #ifndef DOS
-    register int id, rval;
-    char *buffer;
-    int nbytes, offset;
-    Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
-    ERRSETJMP(NIL);
-    id = LispNumToCInt(args[0]);
-    buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
-    nbytes = LispNumToCInt(args[3]);
-    /* Write PAGE_SIZE bytes file contents from filepointer. */
+  register int id, rval;
+  char *buffer;
+  int nbytes, offset;
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
+  ERRSETJMP(NIL);
+  id = LispNumToCInt(args[0]);
+  buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
+  nbytes = LispNumToCInt(args[3]);
+/* Write PAGE_SIZE bytes file contents from filepointer. */
 #ifdef BYTESWAP
-    word_swap_page(buffer, (nbytes+3)>>2);
+  word_swap_page(buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
-    TIMEOUT( rval=write(id, buffer, nbytes) );
+  TIMEOUT(rval = write(id, buffer, nbytes));
 #ifdef BYTESWAP
-    word_swap_page(buffer, (nbytes+3)>>2);
+  word_swap_page(buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
-    if (rval == -1)
-      {
-        *Lisp_errno = errno;
-        return(NIL);
-      }
-    if (rval == 0)
-      {
-        *Lisp_errno = EWOULDBLOCK;
-        return(NIL);
-      }
-    return(GetSmallp(rval));
-#endif /* DOS */
-
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
   }
+  if (rval == 0) {
+    *Lisp_errno = EWOULDBLOCK;
+    return (NIL);
+  }
+  return (GetSmallp(rval));
+#endif /* DOS */
+}

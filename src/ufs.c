@@ -1,9 +1,6 @@
 /* $Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright (C) Venue";
 
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -18,48 +15,45 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-
-
-
-#include	<sys/types.h>
+#include <sys/types.h>
 #ifndef DOS
-#include	<sys/param.h>
+#include <sys/param.h>
 #if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
-#include	<string.h>
+#include <string.h>
 #else
-#include	<strings.h>
+#include <strings.h>
 #endif /* SYSVONLY */
 
-#include	<sys/file.h>
+#include <sys/file.h>
 #ifndef INDIGO
-	/* Indigo has this duplicated in dirent.h, sigh. */
+/* Indigo has this duplicated in dirent.h, sigh. */
 #ifndef OS5
 #ifndef HPUX
 #ifndef FREEBSD
-#include	<sys/dir.h>
+#include <sys/dir.h>
 #endif
 #endif
 #endif
 #endif /* INDIGO */
 
-#include	<sys/stat.h>
-#include	<sys/time.h>
+#include <sys/stat.h>
+#include <sys/time.h>
 #ifndef AIX
 #ifndef APOLLO
 #ifndef MACOSX
 #ifndef FREEBSD
-#include	<sys/vfs.h>
+#include <sys/vfs.h>
 #endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* APOLLO */
 #endif /* AIX */
 
 #if defined(SYSVONLY) || defined(FREEBSD)
-#include	<dirent.h>
-#include	<unistd.h>
+#include <dirent.h>
+#include <unistd.h>
 #endif /* SYSVONLY | FREEBSD */
 
-#include	<pwd.h>
+#include <pwd.h>
 #else /* DOS */
 #include <sys/stat.h>
 #include <unistd.h>
@@ -67,35 +61,35 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #include <dos.h>
 #include <string.h>
 
-#include <i32.h>                       /* "#pragma interrupt" & '_chain_intr'*/  
+#include <i32.h> /* "#pragma interrupt" & '_chain_intr'*/
 #include <sys\types.h>
 #include <io.h>
-#include <stk.h>                       /* _XSTACK struct definition          */
+#include <stk.h> /* _XSTACK struct definition          */
 
 #define MAXPATHLEN _MAX_PATH
-#define MAXNAMLEN  _MAX_PATH
+#define MAXNAMLEN _MAX_PATH
 #define index strchr
 #define rindex strrchr
 #define alarm(x) 1
 #endif /* DOS */
 
-#include	<setjmp.h>
-#include	<fcntl.h>
-#include	<stdio.h>
-#include	<errno.h>
-#include	"lispemul.h"
-#include	"lispmap.h"
-#include	"adr68k.h"
-#include	"lsptypes.h"
-#include	"lspglob.h"
-#include	"arith.h"
-#include	"stream.h"
-#include	"timeout.h"
-#include	"locfile.h"
-#include	"dbprint.h"
+#include <setjmp.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <errno.h>
+#include "lispemul.h"
+#include "lispmap.h"
+#include "adr68k.h"
+#include "lsptypes.h"
+#include "lspglob.h"
+#include "arith.h"
+#include "stream.h"
+#include "timeout.h"
+#include "locfile.h"
+#include "dbprint.h"
 
-int	*Lisp_errno;
-int	Dummy_errno;	/* If errno cell is not provided by Lisp, dummy_errno is used. */
+int *Lisp_errno;
+int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
 
 /***********************************************/
 /*  file-system-specific defns                 */
@@ -109,21 +103,22 @@ int	Dummy_errno;	/* If errno cell is not provided by Lisp, dummy_errno is used. 
 #endif
 #define DRIVESEP ':'
 
-   /* Used to limit DOS filenames to 8.3 format */
+/* Used to limit DOS filenames to 8.3 format */
 
 #ifdef DOS
 #define NameValid extensionp ? (extlen < 3) : (namelen < 8)
-#define CountNameChars { extensionp ? extlen++ : namelen++; }
+#define CountNameChars \
+  { extensionp ? extlen++ : namelen++; }
 
 #else
-   /* Other file systems don't care */
+/* Other file systems don't care */
 #define NameValid 1
 #define CountNameChars
 #endif /* DOS */
 
 #ifdef DOS
 
-void      (*prev_int_24)();            /* keeps address of previous 24 handlr*/
+void (*prev_int_24)(); /* keeps address of previous 24 handlr*/
 #pragma interrupt(Int24)
 
 /*
@@ -133,22 +128,21 @@ void      (*prev_int_24)();            /* keeps address of previous 24 handlr*/
  *        DOS issues.
  *
  */
-void  Int24(void)
-{
-  unsigned       deverr, errcode;
+void Int24(void) {
+  unsigned deverr, errcode;
 
-  union REGS     regs;
-  _XSTACK    *stk;
+  union REGS regs;
+  _XSTACK *stk;
   stk = (_XSTACK *)_get_stk_frame(); /* get ptr to the V86 _XSTACK frame   */
   deverr = stk->eax;
 
   if ((deverr & 0x00008000) == 0) /* is a disk error                    */
-    {
-      stk->eax = _HARDERR_FAIL;
-      stk->opts |= _STK_NOINT;    /* set _STK_NOINT to prevent V86 call */
-      _chain_intr(prev_int_24);   /* call previous int 24 handlr, if any*/
-              /* (pts to 'ret' if no prev installed)*/
-    }
+  {
+    stk->eax = _HARDERR_FAIL;
+    stk->opts |= _STK_NOINT;  /* set _STK_NOINT to prevent V86 call */
+    _chain_intr(prev_int_24); /* call previous int 24 handlr, if any*/
+                              /* (pts to 'ret' if no prev installed)*/
+  }
 }
 
 /*
@@ -157,10 +151,9 @@ void  Int24(void)
  * Description: Initialize the hosts filesystem by installing
  *        the "critical error handler".
  */
-init_host_filesystem()
-{
+init_host_filesystem() {
   prev_int_24 = _dos_getvect(0x24); /* get addr of current handler, if any */
-  _dos_setvect(0x24, Int24);  /* hook our int handler to interrupt   */
+  _dos_setvect(0x24, Int24);        /* hook our int handler to interrupt   */
   _dpmi_lockregion((void *)prev_int_24, sizeof(prev_int_24));
   _dpmi_lockregion((void *)&Int24, 4096);
 }
@@ -171,8 +164,7 @@ init_host_filesystem()
  * Description: Cleanup the filesystem specific patches.
  *
  */
-exit_host_filesystem()
-{
+exit_host_filesystem() {
   _dos_setvect(0x24, prev_int_24); /* unhook our handlr, install previous*/
   _dpmi_unlockregion((void *)prev_int_24, sizeof(prev_int_24));
   _dpmi_unlockregion((void *)&Int24, 4096);
@@ -180,8 +172,7 @@ exit_host_filesystem()
 
 #endif /* DOS */
 
-
-/*		
+/*
  * Name:	UFS_getfilename
  *
  * Argument:	LispPTR	*args	args[0]
@@ -198,7 +189,7 @@ exit_host_filesystem()
  * Value:	If succeed, returns the Lisp smallp which represents the length
  *		of the recognized full file name, otherwise Lisp NIL.
  *
- * Side Effect:	If succeed, name area (args[2]) will be replaced with the 
+ * Side Effect:	If succeed, name area (args[2]) will be replaced with the
  *		recognized full file name.
  *
  * Description:
@@ -208,81 +199,75 @@ exit_host_filesystem()
  * can open the file with the specified mode or not.
  */
 
-LispPTR UFS_getfilename(args)
-	register LispPTR	*args;
+LispPTR UFS_getfilename(args) register LispPTR *args;
 {
-	register char	*base;
-	register int	len, rval;
-	char		lfname[MAXPATHLEN], file[MAXPATHLEN];
+  register char *base;
+  register int len, rval;
+  char lfname[MAXPATHLEN], file[MAXPATHLEN];
 
-	ERRSETJMP(NIL);
-	Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
-	
-	LispStringLength(args[0], len, rval);
-	len += 1;		/* Add 1 for tuminating NULL char. */
-	if (len > MAXPATHLEN) FileNameTooLong(NIL);
+  ERRSETJMP(NIL);
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
 
-	LispStringToCString(args[0], lfname, MAXPATHLEN);
-	/*
-	 * Convert a Lisp file name to UNIX one.  This is a UNIX device method.
-	 * Thus we don't need to convert a version field.  Third argument for
-	 * unixpathname specifies it.
-	 */
+  LispStringLength(args[0], len, rval);
+  len += 1; /* Add 1 for tuminating NULL char. */
+  if (len > MAXPATHLEN) FileNameTooLong(NIL);
+
+  LispStringToCString(args[0], lfname, MAXPATHLEN);
+/*
+ * Convert a Lisp file name to UNIX one.  This is a UNIX device method.
+ * Thus we don't need to convert a version field.  Third argument for
+ * unixpathname specifies it.
+ */
 #ifdef DOS
-	if (unixpathname(lfname, file, 0, 0, 0, 0, 0) == 0) return(NIL);
+  if (unixpathname(lfname, file, 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-	if (unixpathname(lfname, file, 0, 0) == 0) return(NIL);
+  if (unixpathname(lfname, file, 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
-	switch (args[1]) {
+  switch (args[1]) {
+    case RECOG_OLD:
+    case RECOG_OLDEST:
+      /*
+       * "Old" and "Oldest" means the "existing" file.  All we have to do
+       * is to make sure it is an existing file or not.
+       */
+      TIMEOUT(rval = access(file, F_OK));
+      if (rval == -1) {
+        *Lisp_errno = errno;
+        return (NIL);
+      }
+      break;
 
-	      case RECOG_OLD:
-	      case RECOG_OLDEST:
-		/*
-		 * "Old" and "Oldest" means the "existing" file.  All we have to do
-		 * is to make sure it is an existing file or not.
-		 */
-		TIMEOUT(rval = access(file, F_OK));
-		if (rval == -1) {
-			*Lisp_errno = errno;
-			return(NIL);
-		}
-		break;
+    case RECOG_NEW:
+    case RECOG_OLD_NEW:
+    case RECOG_NON:
+      /*
+       * "New" file means the "not existing" file.  UNIX device always
+       * recognizes a not existing file as if, the subsequent OPENFILE will
+       * find the truth.
+       * "Non" reognition is used to recognize a sysout file.
+       */
+      break;
+  }
+  /*
+   * Now, we convert a file name back to Lisp format.  The version field have not
+   * to be converted.  The fourth argument for lisppathname specifies it.
+   */
+  if (lisppathname(file, lfname, 0, 0) == 0) return (NIL);
 
-	      case RECOG_NEW:
-	      case RECOG_OLD_NEW:
-	      case RECOG_NON:
-		/*
-		 * "New" file means the "not existing" file.  UNIX device always
-		 * recognizes a not existing file as if, the subsequent OPENFILE will
-		 * find the truth.
-		 * "Non" reognition is used to recognize a sysout file.
-		 */
-		break;
-	}
-	/*
-	 * Now, we convert a file name back to Lisp format.  The version field have not
-	 * to be converted.  The fourth argument for lisppathname specifies it.
-	 */
-	if (lisppathname(file, lfname, 0, 0) == 0) return(NIL);
-
-	STRING_BASE(args[2], base);
-	len = strlen(lfname);
+  STRING_BASE(args[2], base);
+  len = strlen(lfname);
 
 #ifndef BYTESWAP
-	strncpy(base, lfname, len + 1);
+  strncpy(base, lfname, len + 1);
 #else
-	StrNCpyFromCToLisp(base, lfname, len + 1);
+  StrNCpyFromCToLisp(base, lfname, len + 1);
 #endif /* BYTESWAP */
 
-
-	return(GetSmallp(len));
+  return (GetSmallp(len));
 }
 
-
-
-
-/*		
+/*
  * Name:	UFS_deletefile
  *
  * Argument:	LispPTR	*args	args[0]
@@ -301,43 +286,39 @@ LispPTR UFS_getfilename(args)
  * a specified file.
  */
 
-LispPTR UFS_deletefile(args)
-	register LispPTR	*args;
+LispPTR UFS_deletefile(args) register LispPTR *args;
 {
-	char			file[MAXPATHLEN], fbuf[MAXPATHLEN];
-	register int		len, rval;
-	
-	ERRSETJMP(NIL);
-	Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
-	
-	LispStringLength(args[0], len, rval);
-	len += 1;
-	if (len > MAXPATHLEN) FileNameTooLong(NIL);
+  char file[MAXPATHLEN], fbuf[MAXPATHLEN];
+  register int len, rval;
 
-	LispStringToCString(args[0], fbuf, MAXPATHLEN);
+  ERRSETJMP(NIL);
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
+
+  LispStringLength(args[0], len, rval);
+  len += 1;
+  if (len > MAXPATHLEN) FileNameTooLong(NIL);
+
+  LispStringToCString(args[0], fbuf, MAXPATHLEN);
 
 #ifdef DOS
-	if (unixpathname(fbuf, file, 0, 0, 0, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, file, 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-	if (unixpathname(fbuf, file, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, file, 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
-	/*
-	 * On UNIX device, all we have to do is just to unlink the file.
-	 */
-	TIMEOUT(rval = unlink(file));
-	if (rval == -1) {
-		*Lisp_errno = errno;
-		return(NIL);
-	}
+  /*
+   * On UNIX device, all we have to do is just to unlink the file.
+   */
+  TIMEOUT(rval = unlink(file));
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
+  }
 
-	return(ATOM_T);
+  return (ATOM_T);
 }
 
-
-
-
-/*		
+/*
  * Name:	UFS_renamefile
  *
  * Argument:	LispPTR	*args	args[0]
@@ -360,47 +341,43 @@ LispPTR UFS_deletefile(args)
  * a specified file.
  */
 
-LispPTR UFS_renamefile(args)
-	register LispPTR	*args;
+LispPTR UFS_renamefile(args) register LispPTR *args;
 {
-	char			fbuf[MAXPATHLEN], src[MAXPATHLEN], dst[MAXPATHLEN];
-	int			rval, len;
-	
-	ERRSETJMP(NIL);
-	Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
-	
-	LispStringLength(args[0], len, rval);
-	len += 1;
-	if (len > MAXPATHLEN) FileNameTooLong(NIL);
+  char fbuf[MAXPATHLEN], src[MAXPATHLEN], dst[MAXPATHLEN];
+  int rval, len;
 
-	LispStringLength(args[1], len, rval);
-	len += 1;
-	if (len > MAXPATHLEN) FileNameTooLong(NIL);
+  ERRSETJMP(NIL);
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
 
-	LispStringToCString(args[0], fbuf, MAXPATHLEN);
+  LispStringLength(args[0], len, rval);
+  len += 1;
+  if (len > MAXPATHLEN) FileNameTooLong(NIL);
+
+  LispStringLength(args[1], len, rval);
+  len += 1;
+  if (len > MAXPATHLEN) FileNameTooLong(NIL);
+
+  LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
-	if (unixpathname(fbuf, src, 0, 0, 0, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, src, 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-	if (unixpathname(fbuf, src, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, src, 0, 0) == 0) return (NIL);
 #endif /* DOS */
-	LispStringToCString(args[1], fbuf, MAXPATHLEN);
+  LispStringToCString(args[1], fbuf, MAXPATHLEN);
 #ifdef DOS
-	if (unixpathname(fbuf, dst, 0, 0, 0, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, dst, 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-	if (unixpathname(fbuf, dst, 0, 0) == 0) return(NIL);
+  if (unixpathname(fbuf, dst, 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
-	TIMEOUT(rval = rename(src, dst));
-	if (rval == -1) {
-		*Lisp_errno = errno;
-		return(NIL);
-	}
+  TIMEOUT(rval = rename(src, dst));
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
+  }
 
-	return(ATOM_T);
+  return (ATOM_T);
 }
-
-
-
 
 /*
  * Name:	UFS_directorynamep
@@ -434,60 +411,55 @@ LispPTR UFS_renamefile(args)
  * the directory name representation.
  */
 
-LispPTR UFS_directorynamep(args)
- 	register LispPTR	*args;
+LispPTR UFS_directorynamep(args) register LispPTR *args;
 {
-	char		dirname[MAXPATHLEN];
-	char		fullname[MAXPATHLEN];
-	register int	len, rval;
-	register char	*base;
-	struct stat	sbuf;
+  char dirname[MAXPATHLEN];
+  char fullname[MAXPATHLEN];
+  register int len, rval;
+  register char *base;
+  struct stat sbuf;
 
-	ERRSETJMP(NIL);
-	Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
-	
-	LispStringLength(args[0], len, rval);
-	len += 1;
-	/* -2 for the initial and trail directory delimitor. */
-	if (len > MAXPATHLEN - 2) FileNameTooLong(NIL);
+  ERRSETJMP(NIL);
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
 
-	LispStringToCString(args[0], dirname, MAXPATHLEN);
+  LispStringLength(args[0], len, rval);
+  len += 1;
+  /* -2 for the initial and trail directory delimitor. */
+  if (len > MAXPATHLEN - 2) FileNameTooLong(NIL);
 
-	/* Convert Xerox Lisp file naming convention to Unix one. */
+  LispStringToCString(args[0], dirname, MAXPATHLEN);
+
+/* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
-	if (unixpathname(dirname, fullname, 0, 0, 0, 0, 0) == 0) return(NIL);
+  if (unixpathname(dirname, fullname, 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-	if (unixpathname(dirname, fullname, 0, 0) == 0) return(NIL);
+  if (unixpathname(dirname, fullname, 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
-	TIMEOUT(rval = stat(fullname, &sbuf));
-	if (rval == -1) {
-		*Lisp_errno = errno;
-		return(NIL);
-	}
+  TIMEOUT(rval = stat(fullname, &sbuf));
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
+  }
 
-	if ((sbuf.st_mode & S_IFMT) != S_IFDIR) return(NIL);
- 
-	/* Convert Unix file naming convention to Xerox Lisp one. */
-	if (lisppathname(fullname, dirname, 1, 0) == 0) return(NIL);
- 
-	len = strlen(dirname);
-	STRING_BASE(args[1], base);
- 
-#ifndef	BYTESWAP
-	strncpy(base, dirname, len + 1);
+  if ((sbuf.st_mode & S_IFMT) != S_IFDIR) return (NIL);
+
+  /* Convert Unix file naming convention to Xerox Lisp one. */
+  if (lisppathname(fullname, dirname, 1, 0) == 0) return (NIL);
+
+  len = strlen(dirname);
+  STRING_BASE(args[1], base);
+
+#ifndef BYTESWAP
+  strncpy(base, dirname, len + 1);
 #else
-	StrNCpyFromCToLisp(base, dirname, len + 1);
+  StrNCpyFromCToLisp(base, dirname, len + 1);
 #endif /* BYTESWAP */
 
- 
-	return(GetSmallp(len));
+  return (GetSmallp(len));
 }
 
-
-
-
-/*		
+/*
  * Name:	unixpathname
  *
  * Argument:	char	*src	Xerox Lisp syntax pathname.
@@ -522,388 +494,383 @@ LispPTR UFS_directorynamep(args)
  *
  */
 #ifdef DOS
-int unixpathname(src, dst, versionp, genp, drive, extlenptr, rawname)
-	char *drive;
-	int *extlenptr;
-	char *rawname;
+int unixpathname(src, dst, versionp, genp, drive, extlenptr, rawname) char *drive;
+int *extlenptr;
+char *rawname;
 #else
 int unixpathname(src, dst, versionp, genp)
 #endif /* DOS */
-	register char	*src;
-	register char	*dst;
-	register int	versionp;
-	register int	genp;
+register char *src;
+register char *dst;
+register int versionp;
+register int genp;
 {
-	register char	*cp, *dp, *np, *rp;
-	register int	newdirflg;
-	char		name[64];
-	char		lfname[MAXPATHLEN], fbuf1[MAXPATHLEN], fbuf2[MAXPATHLEN];
-	char		ver1[VERSIONLEN], ver2[VERSIONLEN];
-	struct passwd	*pwd;
-  
+  register char *cp, *dp, *np, *rp;
+  register int newdirflg;
+  char name[64];
+  char lfname[MAXPATHLEN], fbuf1[MAXPATHLEN], fbuf2[MAXPATHLEN];
+  char ver1[VERSIONLEN], ver2[VERSIONLEN];
+  struct passwd *pwd;
+
 #ifdef DOS
-     int namelen = 0, extlen = 0;  /* lengths of name & extension */
-     int extensionp = 0;       /* T if we're in the extension */
-     int version = 1;      /* version # for this file */
+  int namelen = 0, extlen = 0; /* lengths of name & extension */
+  int extensionp = 0;          /* T if we're in the extension */
+  int version = 1;             /* version # for this file */
+#endif                         /* DOS */
+
+/* If there's a drive letter, it and a colon come first */
+#ifdef DOS
+  if (drive && (*drive)) {
+    *dst++ = *drive;
+    *dst++ = DRIVESEP;
+  }
 #endif /* DOS */
 
+  /*
+   * The UNIX root directory is represented as "<" in Xerox Lisp generic
+   * file system code.
+   */
+  if (strcmp(src, "<") == 0) {
+    strcpy(dst, DIRSEPSTR);
+    return (1);
+  }
 
-     /* If there's a drive letter, it and a colon come first */
+  /* Copy src to protect it from destructive modification. */
+  strcpy(lfname, src);
+
+/*
+ * If versionp is specified, we have to deal with the version field first,
+ * because the quotation mark which quotes the semicolon might be lost
+ * in the course of the following conversion.
+ */
 #ifdef DOS
-     if (drive && (*drive))
-       {
-   *dst++ = *drive;
-   *dst++ = DRIVESEP;
-       }
-#endif /* DOS */
-
-	/*
-	 * The UNIX root directory is represented as "<" in Xerox Lisp generic
-	 * file system code.
-	 */
-	if (strcmp(src, "<") == 0) {
-		strcpy(dst, DIRSEPSTR);
-		return(1);
-	}
-
-	/* Copy src to protect it from destructive modification. */
-	strcpy(lfname, src);
-	
-	/*
-	 * If versionp is specified, we have to deal with the version field first,
-	 * because the quotation mark which quotes the semicolon might be lost
-	 * in the course of the following conversion.
-	 */
-#ifdef DOS
-	if (versionp) LispVersionToUnixVersion(lfname, version)
-	else version = -1;
+  if (versionp) LispVersionToUnixVersion(lfname, version) else version = -1;
 #else
-	if (versionp) LispVersionToUnixVersion(lfname);
+  if (versionp) LispVersionToUnixVersion(lfname);
 #endif /* DOS */
 
-	cp = lfname;
-	dp = dst;
+  cp = lfname;
+  dp = dst;
 
-	/*
-	 * We have to deal with the case in which the pathname is started with
-	 * the meta character ('.', '~').
-	 */
+  /*
+   * We have to deal with the case in which the pathname is started with
+   * the meta character ('.', '~').
+   */
 
-	switch (*cp) {
-		
-	      case '.':
-		switch (*(cp + 1)) {
-
-		      case '.':
-			if (*(cp + 2) == '>' || *(cp +2) == '\0') {
-				/*
-				 * "..>" or ".." means the parent directory of the
-				 * user's current working directory.
-				 */
-				if (getwd(dst) == 0) return(0);
+  switch (*cp) {
+    case '.':
+      switch (*(cp + 1)) {
+        case '.':
+          if (*(cp + 2) == '>' || *(cp + 2) == '\0') {
+            /*
+             * "..>" or ".." means the parent directory of the
+             * user's current working directory.
+             */
+            if (getwd(dst) == 0) return (0);
 #ifdef DOS
-				dp = max(strrchr(dst,'/'),strrchr(dst,DIRSEP));
+            dp = max(strrchr(dst, '/'), strrchr(dst, DIRSEP));
 #else
-				dp = strrchr(dst, '/');
+            dp = strrchr(dst, '/');
 #endif /* DOS */
-				
-				dp++;
-				if (*(cp + 2) == '\0')
-				  cp += 2;
-				else
-				  cp += 3;
-			} else {
-				/* Insert the initial directory delimiter. */
-				*dp++ = DIRSEP;
-			}
-			break;
+
+            dp++;
+            if (*(cp + 2) == '\0')
+              cp += 2;
+            else
+              cp += 3;
+          } else {
+            /* Insert the initial directory delimiter. */
+            *dp++ = DIRSEP;
+          }
+          break;
 #ifdef DOS
-			  case '/':
-			  case DIRSEP:
+        case '/':
+        case DIRSEP:
 #endif
-		      case '>':
-			/* ".>" means the user's current working directory. */
-			if (getwd(dst) == 0) return(0);
-			while (*dp != '\0') dp++;
+        case '>':
+          /* ".>" means the user's current working directory. */
+          if (getwd(dst) == 0) return (0);
+          while (*dp != '\0') dp++;
 
-			*dp++ = DIRSEP;
-			cp += 2;
-			break;
-			
-		      case '\0':
-			/* "." also means the user's current working directory. */
-			if (getwd(dst) == 0) return(0);
-			while (*dp != '\0') dp++;
+          *dp++ = DIRSEP;
+          cp += 2;
+          break;
 
-			*dp++ = DIRSEP;
-			cp++;
-			break;
+        case '\0':
+          /* "." also means the user's current working directory. */
+          if (getwd(dst) == 0) return (0);
+          while (*dp != '\0') dp++;
 
-		      default:
-			/* Insert the initial directory delimiter. */
-			*dp++ = DIRSEP;
-			break;
-		}
-		break;
+          *dp++ = DIRSEP;
+          cp++;
+          break;
+
+        default:
+          /* Insert the initial directory delimiter. */
+          *dp++ = DIRSEP;
+          break;
+      }
+      break;
 #ifndef DOS
-	      case '~':
-		if (*(cp + 1) == '>' || *(cp +  1) == '\0') {
-			/* "~>" or "~" means the user's home directory. */
-			TIMEOUT(pwd = getpwuid(getuid()));
-			if (pwd == NULL) return(0);
+    case '~':
+      if (*(cp + 1) == '>' || *(cp + 1) == '\0') {
+        /* "~>" or "~" means the user's home directory. */
+        TIMEOUT(pwd = getpwuid(getuid()));
+        if (pwd == NULL) return (0);
 
-			strcpy(dst, pwd->pw_dir);
-			while (*dp != '\0') dp++;
-			if (*(dp -1) != DIRSEP) {
-				/*
-				 * Usually system administrators specify the users'
-				 * home directories in the /etc/passwd without
-				 * the trail directory delimiter.
-				 */
-				*dp++ = DIRSEP;
-			}
-			if (*(cp + 1) == '\0')
-			  cp++;
-			else
-			  cp += 2;
-		} else {
-			/*
-			 * In this case, we assume some user's home directory
-			 * is specifed in the form "~username".
-			 */
-			for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++ ;
-			*np = '\0';
-			TIMEOUT(pwd = getpwnam(name));
-			if (pwd == NULL) return(0);
+        strcpy(dst, pwd->pw_dir);
+        while (*dp != '\0') dp++;
+        if (*(dp - 1) != DIRSEP) {
+          /*
+           * Usually system administrators specify the users'
+           * home directories in the /etc/passwd without
+           * the trail directory delimiter.
+           */
+          *dp++ = DIRSEP;
+        }
+        if (*(cp + 1) == '\0')
+          cp++;
+        else
+          cp += 2;
+      } else {
+        /*
+         * In this case, we assume some user's home directory
+         * is specifed in the form "~username".
+         */
+        for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
+        *np = '\0';
+        TIMEOUT(pwd = getpwnam(name));
+        if (pwd == NULL) return (0);
 
-			strcpy(dst, pwd->pw_dir);
-			while (*dp != '\0') dp++;
-			if (*(dp -1) != DIRSEP) {
-				/*
-				 * Usually system administrators specify the users'
-				 * home directories in the /etc/passwd without
-				 * the trail directory delimiter.
-				 */
-				*dp++ = DIRSEP;
-			}
+        strcpy(dst, pwd->pw_dir);
+        while (*dp != '\0') dp++;
+        if (*(dp - 1) != DIRSEP) {
+          /*
+           * Usually system administrators specify the users'
+           * home directories in the /etc/passwd without
+           * the trail directory delimiter.
+           */
+          *dp++ = DIRSEP;
+        }
 
-			if (*cp == '>') cp++;
-		}
-		break;
+        if (*cp == '>') cp++;
+      }
+      break;
 
 #else
-	/* For DOS, ignore ~> or ~/ or ~ */
-	case '~':
-	  if (*(cp + 1) == '>' || *(cp +  1) == '\0')
-	    {
-	      /* "~>" or "~" means the user's home directory. */
+    /* For DOS, ignore ~> or ~/ or ~ */
+    case '~':
+      if (*(cp + 1) == '>' || *(cp + 1) == '\0') {
+        /* "~>" or "~" means the user's home directory. */
 
-	      *dp++ = DIRSEP;
-	      if (*(cp + 1) == '\0') cp++;
-	      else cp += 2;
-	    }
-	  else
-	    {
-	      /*
-	       * In this case, we assume some user's home directory
-	       * is specifed in the form "~username".
-	       */
-	      for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++ ;
-	      *dp++ = DIRSEP;
+        *dp++ = DIRSEP;
+        if (*(cp + 1) == '\0')
+          cp++;
+        else
+          cp += 2;
+      } else {
+        /*
+         * In this case, we assume some user's home directory
+         * is specifed in the form "~username".
+         */
+        for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
+        *dp++ = DIRSEP;
 
-	      if (*cp == '>') cp++;
-	    }
-	  break;
+        if (*cp == '>') cp++;
+      }
+      break;
 
 #endif /* DOS */
-	      default:
-		*dp++ = '/';	/* Insert the initial directory delimiter. */
-		break;
-	}
+    default:
+      *dp++ = '/'; /* Insert the initial directory delimiter. */
+      break;
+  }
 
-	/*
-	 * At this point, cp is placed at the point from which the source pathname
-	 * will be scaned, and dp is placed at the point on dst from which the
-	 * pathname will be copied.
-	 */
+  /*
+   * At this point, cp is placed at the point from which the source pathname
+   * will be scaned, and dp is placed at the point on dst from which the
+   * pathname will be copied.
+   */
 
-	newdirflg = 1;
-	while (*cp != '\0') {
-		if (newdirflg) {
-			/*
-			 * The new directory component starts.  We have to care about
-			 * the meta characters again.  This time, the tilde character
-			 * has no special meaning.
-			 */
-			switch (*cp) {
+  newdirflg = 1;
+  while (*cp != '\0') {
+    if (newdirflg) {
+      /*
+       * The new directory component starts.  We have to care about
+       * the meta characters again.  This time, the tilde character
+       * has no special meaning.
+       */
+      switch (*cp) {
+        case '.':
+          switch (*(cp + 1)) {
+            case '.':
+              /* "..>" or ".." */
+              if (*(cp + 2) == '>' || *(cp + 2) == '\0') {
+                /*
+                 * We have to check if we have already
+                 * backed to the root directory or not.
+                 */
+                if ((dp - 1) != dst) {
+                  /*
+                   * We are not at the root
+                   * directory.  Back to the
+                   * parent directory.
+                   */
+                  for (dp -= 2; *dp != '/'; dp--) {}
+                  dp++;
+                }
+                if (*(cp + 2) == '\0')
+                  cp += 2;
+                else
+                  cp += 3;
+              } else {
+                /*
+                 * (IL:DIRECTORY "{DSK}.") is translated
+                 * as (IL:DIRECTORY "{DSK}~>.;*").
+                 * The Lisp directory is translated as
+                 * like "/users/akina/..~*~" by
+                 * unixpathname.   Although such
+                 * file name representaion makes no sense,
+                 * to avoid infinite loop, skip the
+                 * first period here, as well as down
+                 * a newdirflg.
+                 */
+                cp++;
+                newdirflg = 0;
+              }
+              break;
 
-			      case '.':
-				switch (*(cp + 1)) {
+            case '>':
+              /* ".>" */
+              cp += 2;
+              break;
 
-				      case '.':
-					/* "..>" or ".." */
-					if (*(cp + 2) == '>' || *(cp + 2) == '\0') {
-						/*
-						 * We have to check if we have already
-						 * backed to the root directory or not.
-						 */
-						if ((dp - 1) != dst) {
-							/*
-							 * We are not at the root
-							 * directory.  Back to the
-							 * parent directory.
-							 */
-							for (dp -= 2; *dp != '/'; dp--) {}
-							dp++;
-						}
-						if (*(cp + 2) == '\0')
-						  cp += 2;
-						else
-						  cp += 3;
-					} else {
-						/*
-						 * (IL:DIRECTORY "{DSK}.") is translated
-						 * as (IL:DIRECTORY "{DSK}~>.;*").
-						 * The Lisp directory is translated as
-						 * like "/users/akina/..~*~" by
-						 * unixpathname.   Although such
-						 * file name representaion makes no sense,
-						 * to avoid infinite loop, skip the
-						 * first period here, as well as down
-						 * a newdirflg.
-						 */
-						cp++;
-						newdirflg = 0;
-					}
-					break;
+            case '\0':
+              /* "." */
+              cp++;
+              break;
 
-				      case '>':
-					/* ".>" */
-					cp += 2;
-					break;
-					
-				      case '\0':
-					/* "." */
-					cp++;
-					break;
+            default:
+              *dp++ = *cp++;
+              newdirflg = 0;
+              break;
+          }
+          break;
 
-				      default:
-					*dp++ = *cp++;
-					newdirflg = 0;
-					break;
-				}
-				break;
+        case '\'':
+          /*
+           * The first character of the new directory component
+           * is a quotation mark which is the quote character
+           * in the Xerox Lisp file naming convention.  Copy the
+           * next character and skip the quoted character.
+           */
+          *dp++ = *(cp + 1);
+          cp += 2;
+          newdirflg = 0;
+          break;
 
-			      case '\'':
-				/*
-				 * The first character of the new directory component
-				 * is a quotation mark which is the quote character
-				 * in the Xerox Lisp file naming convention.  Copy the
-				 * next character and skip the quoted character.
-				 */
-				*dp++ = *(cp + 1);
-				cp += 2;
-				newdirflg = 0;
-				break;
-
-			      default:
-				*dp++ = *cp++;
-				newdirflg = 0;
-				break;
-			}
-		} else {
-			switch (*cp) {
+        default:
+          *dp++ = *cp++;
+          newdirflg = 0;
+          break;
+      }
+    } else {
+      switch (*cp) {
 #ifdef DOS
-				  case '/':  /* in DOS, must xlate / also. */
-#endif /* DOS */
-			      case '>':
-				/*
-				 * Xerox Lisp directory delimiter '>' is translated into
-				 * UNIX one, '/'.
-				 */
-				*dp = DIRSEP;
-				dp++;
-				cp++;
-				newdirflg = 1; /* Turn on the new directory flag. */
+        case '/': /* in DOS, must xlate / also. */
+#endif            /* DOS */
+        case '>':
+          /*
+           * Xerox Lisp directory delimiter '>' is translated into
+           * UNIX one, '/'.
+           */
+          *dp = DIRSEP;
+          dp++;
+          cp++;
+          newdirflg = 1; /* Turn on the new directory flag. */
 #ifdef DOS
-				namelen = extlen = 0;
-				rp = dp; 	/* remember where raw filename starts */
-#endif /* DOS */
-				break;
-				
-			      case '\'':
-				/*
-				 * The special characters in the Xerox Lisp file naming
-				 * convention are quoted with the quote character.
-				 * They are all valid in the UNIX file naming convention.
-				 * So only we have to do is to skip the quotation mark
-				 * and copy the next character.
-				 */
+          namelen = extlen = 0;
+          rp = dp; /* remember where raw filename starts */
+#endif             /* DOS */
+          break;
+
+        case '\'':
+/*
+ * The special characters in the Xerox Lisp file naming
+ * convention are quoted with the quote character.
+ * They are all valid in the UNIX file naming convention.
+ * So only we have to do is to skip the quotation mark
+ * and copy the next character.
+ */
 #ifdef DOS
           if (NameValid) *dp++ = *(cp + 1);
-           CountNameChars;
+          CountNameChars;
 #endif /* DOS */
-				cp += 2;
-				break;
+          cp += 2;
+          break;
 #ifdef DOS
         case '.': /* start of extension, if not already */
-          if (!extensionp) *dp++ = *cp++; else cp++;
+          if (!extensionp)
+            *dp++ = *cp++;
+          else
+            cp++;
           extensionp = 1;
           break;
 #endif /* DOS */
-			      default:
-				if (NameValid) *dp++ = *cp++; else cp++;
-				CountNameChars;
-				break;
-			}
-		}
-	}
-	*dp = '\0';
-	if (!newdirflg && !genp) {
-		/*
-		 * If the last chracter in dst is a period, it have to be handled
-		 * specially, because it might be used to specify that src has no
-		 * extension field.  This case can be distinguish by examining the
-		 * character just before the period.
-		 * If the specified pathname is one like "~>..", the last meta character
-		 * matches this case.  Thus we check newdirflg first so as not to be
-		 * confused by this case.
-		 *
-		 * Only case in which genp is 1 is unixpathname is used to convert
-		 * a pattern which is used to enumerate directory.  In this csae,
-		 * for the convinience of the pattern matching routines, we don't
-		 * care about the last period character.
-		 */
-		strcpy(fbuf1, lfname);
-		strcpy(fbuf2, dst);
-		separate_version(fbuf1, ver1, 1);
-		separate_version(fbuf2, ver2, 1);
-		for (cp = fbuf1; *cp; cp++) {}
-		for (dp = fbuf2; *dp; dp++) {}
-		if (*(cp - 1) == '.') {
-			if (*(cp - 2) != '\'' ||
-			    ((cp - 3) > fbuf1 && *(cp - 3) == '\'')) {
-				/*
-				 * The last period is not been quoted.  It is used
-				 * to specify the no extension case.  We have to
-				 * omit this period.
-				 */
-				*(dp - 1) = '\0';
-			}
-		}
+        default:
+          if (NameValid)
+            *dp++ = *cp++;
+          else
+            cp++;
+          CountNameChars;
+          break;
+      }
+    }
+  }
+  *dp = '\0';
+  if (!newdirflg && !genp) {
+    /*
+     * If the last chracter in dst is a period, it have to be handled
+     * specially, because it might be used to specify that src has no
+     * extension field.  This case can be distinguish by examining the
+     * character just before the period.
+     * If the specified pathname is one like "~>..", the last meta character
+     * matches this case.  Thus we check newdirflg first so as not to be
+     * confused by this case.
+     *
+     * Only case in which genp is 1 is unixpathname is used to convert
+     * a pattern which is used to enumerate directory.  In this csae,
+     * for the convinience of the pattern matching routines, we don't
+     * care about the last period character.
+     */
+    strcpy(fbuf1, lfname);
+    strcpy(fbuf2, dst);
+    separate_version(fbuf1, ver1, 1);
+    separate_version(fbuf2, ver2, 1);
+    for (cp = fbuf1; *cp; cp++) {}
+    for (dp = fbuf2; *dp; dp++) {}
+    if (*(cp - 1) == '.') {
+      if (*(cp - 2) != '\'' || ((cp - 3) > fbuf1 && *(cp - 3) == '\'')) {
+        /*
+         * The last period is not been quoted.  It is used
+         * to specify the no extension case.  We have to
+         * omit this period.
+         */
+        *(dp - 1) = '\0';
+      }
+    }
 #ifdef DOS
-  if (version >= 0) sprintf(ver2, "%d", version);
-  else *ver2 = '\0';
+    if (version >= 0)
+      sprintf(ver2, "%d", version);
+    else
+      *ver2 = '\0';
 #endif /* DOS */
-		ConcNameAndVersion(fbuf2, ver2, dst);
-	}
-	return(1);
+    ConcNameAndVersion(fbuf2, ver2, dst);
+  }
+  return (1);
 }
 
-
-
-
-/*		
+/*
  * Name:	lisppathname
  *
  * Argument:	char	*fullname	UNIX full pathname.
@@ -940,255 +907,237 @@ int unixpathname(src, dst, versionp, genp)
  *
  */
 
-int lisppathname(fullname, lispname, dirp, versionp)
-	register char	*fullname;
-	register char	*lispname;
-	register int	dirp;
-	register int	versionp;
+int lisppathname(fullname, lispname, dirp, versionp) register char *fullname;
+register char *lispname;
+register int dirp;
+register int versionp;
 {
-	register char	*cp, *dp, *lnamep, *cnamep;
-	char		namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN], drive;
-	register int	i, mask, extensionp;
-	
-	if (strcmp(fullname, DIRSEPSTR) == 0) {
-		strcpy(lispname, "<");
-		return(1);
-	}
-    /* Split off the drive, if there is one. */
-    if (fullname[1] == DRIVESEP)
-      {
-  *lispname++ = *fullname++;
-  *lispname++ = *fullname++;
+  register char *cp, *dp, *lnamep, *cnamep;
+  char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN], drive;
+  register int i, mask, extensionp;
+
+  if (strcmp(fullname, DIRSEPSTR) == 0) {
+    strcpy(lispname, "<");
+    return (1);
+  }
+  /* Split off the drive, if there is one. */
+  if (fullname[1] == DRIVESEP) {
+    *lispname++ = *fullname++;
+    *lispname++ = *fullname++;
+  }
+
+  if (!dirp) {
+    /*
+     * The characters which are dealt with specialy (i.e. are quoted)
+     * in the Xerox Lisp file naming convention are all valid in UNIX
+     * file name convetion.  So the conversion rule is almost
+     * straightforward except the "extension" field.  Only glancing
+     * the UNIX file name, we cannot determine which period character
+     * should be quoted in the result Xerox Lisp file name when more
+     * than one period are included in the UNIX file name.  In such
+     * case, we have to refer to the Xerox Lisp file name representation
+     * which is specified the user.  Thus, at first, extract the
+     * name field from the original Lisp file name.
+     */
+    cp = lispname;
+    lnamep = cp - 1;
+    while (*cp != '\0') {
+      switch (*cp) {
+        case '>':
+          lnamep = cp + 1;
+          cp++;
+          break;
+
+        case '\'':
+          if (*(cp + 1) != '\0')
+            cp += 2;
+          else
+            cp++;
+          break;
+
+        default: cp++; break;
       }
+    }
+    /* Name field in the UNIX file name representation. */
+    cnamep = strrchr(fullname, DIRSEP) + 1;
+  } else {
+    cnamep = fullname + strlen(fullname);
+  }
 
-	if (!dirp) {
-		/*
-		 * The characters which are dealt with specialy (i.e. are quoted)
-		 * in the Xerox Lisp file naming convention are all valid in UNIX
-		 * file name convetion.  So the conversion rule is almost
-		 * straightforward except the "extension" field.  Only glancing
-		 * the UNIX file name, we cannot determine which period character
-		 * should be quoted in the result Xerox Lisp file name when more
-		 * than one period are included in the UNIX file name.  In such
-		 * case, we have to refer to the Xerox Lisp file name representation
-		 * which is specified the user.  Thus, at first, extract the
-		 * name field from the original Lisp file name.
-		 */
-		cp = lispname;
-		lnamep = cp - 1;
-		while (*cp != '\0') {
-			switch (*cp) {
-				
-			      case '>':
-				lnamep = cp + 1;
-				cp++;
-				break;
+  /*
+   * Convertion rule of file name from UNIX to Xerox Lisp.
+   *	UNIX		Lisp
+   *	/		<    only if it is used as a root directory
+   *			     delimiter.
+   *	/		>    if used as a directory delimiter for other
+   *			     directories than root directory.
+   *	>		'>
+   *	;		';
+   *	'		''
+   *	.		'.   only if it is used as a part of the extension
+   *			     field.
+   *	others		as if
+   */
 
-			      case '\'':
-				if (*(cp + 1) != '\0')
-				  cp += 2;
-				else
-				  cp++;
-				break;
+  cp = fullname + 1;
+  dp = namebuf;
+  *dp++ = '<';
 
-			      default:
-				cp++;
-				break;
-			}
-		}
-		/* Name field in the UNIX file name representation. */
-		cnamep = strrchr(fullname, DIRSEP) + 1;
-	} else {
-		cnamep = fullname + strlen(fullname);
-	}
+  if (*cp == '<') {
+    /*
+     * If the first character of the initial directory is '<',
+     * it should be quoted in the result Lisp file name.
+     */
+    *dp++ = '\'';
+    *dp++ = *cp++;
+  }
 
-	/*
-	 * Convertion rule of file name from UNIX to Xerox Lisp.
-	 *	UNIX		Lisp
-	 *	/		<    only if it is used as a root directory
-	 *			     delimiter.
-	 *	/		>    if used as a directory delimiter for other
-	 *			     directories than root directory.
-	 *	>		'>
-	 *	;		';
-	 *	'		''
-	 *	.		'.   only if it is used as a part of the extension
-	 *			     field.
-	 *	others		as if
-	 */
-
-	cp = fullname + 1;
-	dp = namebuf;
-	*dp++ = '<';
-
-	if (*cp == '<') {
-		/*
-		 * If the first character of the initial directory is '<',
-		 * it should be quoted in the result Lisp file name.
-		 */
-		*dp++ = '\'';
-		*dp++ = *cp++;
-	}
-	
-	while (cp < cnamep) {
-		switch (*cp) {
-			
-		      case '>':
-		      case ';':
+  while (cp < cnamep) {
+    switch (*cp) {
+      case '>':
+      case ';':
 #ifndef DOS
-		      case '\'':
+      case '\'':
 #endif /* DOS */
-			*dp++ = '\'';
-			*dp++ = *cp++;
-			break;
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
 
 #ifdef DOS
-			case '/':
+      case '/':
 #endif
-		      case DIRSEP:
-			*dp++ = '>';
-			cp++;
-			break;
+      case DIRSEP:
+        *dp++ = '>';
+        cp++;
+        break;
 
-		      default:
-			*dp++ = *cp++;
-			break;
-		}
-	}
+      default: *dp++ = *cp++; break;
+    }
+  }
 
-	if (dirp) {
-		if (*(dp - 1) != '>' ||  *(dp - 2) == '\'') *dp++ = '>';
-		*dp = '\0';
-		strcpy(lispname, namebuf);
-		return(1);
-	}
+  if (dirp) {
+    if (*(dp - 1) != '>' || *(dp - 2) == '\'') *dp++ = '>';
+    *dp = '\0';
+    strcpy(lispname, namebuf);
+    return (1);
+  }
 
-	/*
-	 * Be careful dealing with the extenstion field.  If we encounter with the
-	 * period mark which was quoted in the original Lisp file name, we have
-	 * to quote it in the result file name.
-	 * First we count the period mark included in the Lisp file name, and
-	 * remember the position of the quoted period.  Then when we met the
-	 * period while we are converting the UNIX file name into Lisp one,
-	 * examine it if it is a quoted one or not, then if so, we quote it.
-	 */
+  /*
+   * Be careful dealing with the extenstion field.  If we encounter with the
+   * period mark which was quoted in the original Lisp file name, we have
+   * to quote it in the result file name.
+   * First we count the period mark included in the Lisp file name, and
+   * remember the position of the quoted period.  Then when we met the
+   * period while we are converting the UNIX file name into Lisp one,
+   * examine it if it is a quoted one or not, then if so, we quote it.
+   */
 
-	mask = 0;
-	i = 1;
-	lnamep++;
+  mask = 0;
+  i = 1;
+  lnamep++;
 
-	while (*lnamep) {
-		if (*lnamep == '.') {
-			if (lnamep != lispname && *(lnamep - 1) == '\'') mask |= i;
-			i <<= 1;
-		}
-		lnamep++;
-	}
-			
-	i = 1;
-	while (*cp) {
-		switch (*cp) {
+  while (*lnamep) {
+    if (*lnamep == '.') {
+      if (lnamep != lispname && *(lnamep - 1) == '\'') mask |= i;
+      i <<= 1;
+    }
+    lnamep++;
+  }
+
+  i = 1;
+  while (*cp) {
+    switch (*cp) {
 #ifdef DOS
-		      case DIRSEP: *dp++ = '/'; cp++; break;
+      case DIRSEP:
+        *dp++ = '/';
+        cp++;
+        break;
 #endif
-		      case '>':
-		      case ';':
-		      case '\'':
-			*dp++ = '\'';
-			*dp++ = *cp++;
-			break;
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
 
-		      case '.':
-			if ((i & mask) == i) {
-				/* This period should be quoted. */
-				*dp++ = '\'';
-				*dp++ = *cp++;
-			} else {
-				*dp++ = *cp++;
-			}
-			i <<= 1;
-			break;
+      case '.':
+        if ((i & mask) == i) {
+          /* This period should be quoted. */
+          *dp++ = '\'';
+          *dp++ = *cp++;
+        } else {
+          *dp++ = *cp++;
+        }
+        i <<= 1;
+        break;
 
-		      default:
-			*dp++ = *cp++;
-			break;
-		}
-	}
+      default: *dp++ = *cp++; break;
+    }
+  }
 
-	*dp = '\0';
+  *dp = '\0';
 
-	/*
-	 * exntensionp indicates whether exentsion field is included in a file name
-	 * or not.  If extenstion field is not included, we have to add a period
-	 * to specify empty extension field.
-	 */
-	strcpy(fbuf, namebuf);
-	dp = cp = fbuf;
-	while (*cp) {
-		switch (*cp) {
+  /*
+   * exntensionp indicates whether exentsion field is included in a file name
+   * or not.  If extenstion field is not included, we have to add a period
+   * to specify empty extension field.
+   */
+  strcpy(fbuf, namebuf);
+  dp = cp = fbuf;
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+        dp = cp;
+        cp++;
+        break;
 
-		      case '>':
-			dp = cp;
-			cp++;
-			break;
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
 
-		      case '\'':
-			if (*(cp + 1) != '\0')
-			  cp += 2;
-			else
-			  cp++;
-			break;
+      default: cp++; break;
+    }
+  }
+  cp = dp + 1;
+  if (versionp) separate_version(fbuf, ver, 1);
+  extensionp = 0;
+  while (*cp && !extensionp) {
+    switch (*cp) {
+      case '.': extensionp = 1; break;
 
-		      default:
-			cp++;
-			break;
-		}
-	}
-	cp = dp + 1;
-	if (versionp) separate_version(fbuf, ver, 1);
-	extensionp = 0;
-	while (*cp && !extensionp) {
-		switch (*cp) {
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
 
-		      case '.':
-			extensionp = 1;
-			break;
+      default: cp++; break;
+    }
+  }
+  if (!extensionp) {
+    *cp++ = '.';
+    *cp = '\0';
+  }
+  if (versionp && *ver != '\0') {
+    ConcNameAndVersion(fbuf, ver, namebuf);
+  } else {
+    strcpy(namebuf, fbuf);
+  }
 
-		      case '\'':
-			if (*(cp + 1) != '\0')
-			  cp += 2;
-			else
-			  cp++;
-			break;
+  /*
+   * Now, it's time to convert the version field.
+   */
+  if (!dirp && versionp) UnixVersionToLispVersion(namebuf, 0);
 
-		      default:
-			cp++;
-			break;
-		}
-	}
-	if (!extensionp) {
-		*cp++ = '.';
-		*cp = '\0';
-	}
-	if (versionp && *ver != '\0') {
-		ConcNameAndVersion(fbuf, ver, namebuf);
-	} else {
-		strcpy(namebuf, fbuf);
-	}
-
-	/*
-	 * Now, it's time to convert the version field.
-	 */
-	if (!dirp && versionp) UnixVersionToLispVersion(namebuf, 0);
-	
-	strcpy(lispname, namebuf);
-	return(1);
+  strcpy(lispname, namebuf);
+  return (1);
 }
 
-
-
-
-/*		
+/*
  * Name:	quote_fname
  *
  * Argument:	char	*file		The root file name in UNIX format.  "Root"
@@ -1216,83 +1165,73 @@ int lisppathname(fullname, lispname, dirp, versionp)
  * Lisp sense or not.
  */
 
-int quote_fname(file)
-	register char	*file;
+int quote_fname(file) register char *file;
 {
-	register char	*cp, *dp;
-	register int	extensionp;
-	char		fbuf[MAXNAMLEN + 1], namebuf[MAXNAMLEN + 1], ver[VERSIONLEN];
-	
-	cp = file;
-	dp = fbuf;
+  register char *cp, *dp;
+  register int extensionp;
+  char fbuf[MAXNAMLEN + 1], namebuf[MAXNAMLEN + 1], ver[VERSIONLEN];
 
-	while (*cp) {
-		switch (*cp) {
+  cp = file;
+  dp = fbuf;
 
-		      case '>':
-		      case ';':
-		      case '\'':
-			*dp++ = '\'';
-			*dp++ = *cp++;
-			break;
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
 
-		      default:
-			*dp++ = *cp++;
-			break;
-		}
-	}
-	*dp = '\0';
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
 
-	/*
-	 * exntensionp indicates whether exentsion field is included in a file
-	 * name or not.  If extenstion field is not included, we have to add a
-	 * period to specify empty extension field.
-	 */
-	separate_version(fbuf, ver, 1);
-	cp = fbuf;
-	extensionp = 0;
-	while (*cp && !extensionp) {
-		switch (*cp) {
+  /*
+   * exntensionp indicates whether exentsion field is included in a file
+   * name or not.  If extenstion field is not included, we have to add a
+   * period to specify empty extension field.
+   */
+  separate_version(fbuf, ver, 1);
+  cp = fbuf;
+  extensionp = 0;
+  while (*cp && !extensionp) {
+    switch (*cp) {
+      case '.':
+        if (*(cp + 1)) extensionp = 1;
+        cp++;
+        break;
 
-		      case '.':
-			if (*(cp + 1)) extensionp = 1;
-			cp++;
-			break;
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
 
-		      case '\'':
-			if (*(cp + 1) != '\0')
-			  cp += 2;
-			else
-			  cp++;
-			break;
-
-		      default:
-			cp++;
-			break;
-		}
-	}
-	if (!extensionp) {
-		if (*(cp - 1) == '.') {
-			*(cp - 1) = '\'';
-			*cp++ = '.';
-		}
-		*cp++ = '.';
-		*cp = '\0';
-	}
-	if (*ver != '\0') {
-		ConcNameAndVersion(fbuf, ver, namebuf);
-	} else {
-		strcpy(namebuf, fbuf);
-	}
-	UnixVersionToLispVersion(namebuf, 1);
-	strcpy(file, namebuf);
-	return (1);
+      default: cp++; break;
+    }
+  }
+  if (!extensionp) {
+    if (*(cp - 1) == '.') {
+      *(cp - 1) = '\'';
+      *cp++ = '.';
+    }
+    *cp++ = '.';
+    *cp = '\0';
+  }
+  if (*ver != '\0') {
+    ConcNameAndVersion(fbuf, ver, namebuf);
+  } else {
+    strcpy(namebuf, fbuf);
+  }
+  UnixVersionToLispVersion(namebuf, 1);
+  strcpy(file, namebuf);
+  return (1);
 }
 
-
-
-
-/*		
+/*
  * Name:	quote_fname_ufs
  *
  * Argument:	char	*file		The root file name in UNIX format.  "Root"
@@ -1311,76 +1250,66 @@ int quote_fname(file)
  * and being converted to {UNIX} name.
  */
 
-int quote_fname_ufs(file)
-	register char	*file;
+int quote_fname_ufs(file) register char *file;
 {
-	register char	*cp, *dp;
-	register int	extensionp;
-	char		fbuf[MAXNAMLEN + 1];
-	
-	cp = file;
-	dp = fbuf;
+  register char *cp, *dp;
+  register int extensionp;
+  char fbuf[MAXNAMLEN + 1];
 
-	while (*cp) {
-		switch (*cp) {
+  cp = file;
+  dp = fbuf;
 
-		      case '>':
-		      case ';':
-		      case '\'':
-			*dp++ = '\'';
-			*dp++ = *cp++;
-			break;
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
 
-		      default:
-			*dp++ = *cp++;
-			break;
-		}
-	}
-	*dp = '\0';
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
 
-	/*
-	 * exntensionp indicates whether exentsion field is included in a file
-	 * name or not.  If extenstion field is not included, we have to add a
-	 * period to specify empty extension field.
-	 */
-	cp = fbuf;
-	extensionp = 0;
-	while (*cp && !extensionp) {
-		switch (*cp) {
+  /*
+   * exntensionp indicates whether exentsion field is included in a file
+   * name or not.  If extenstion field is not included, we have to add a
+   * period to specify empty extension field.
+   */
+  cp = fbuf;
+  extensionp = 0;
+  while (*cp && !extensionp) {
+    switch (*cp) {
+      case '.':
+        if (*(cp + 1)) extensionp = 1;
+        cp++;
+        break;
 
-		      case '.':
-			if (*(cp + 1)) extensionp = 1;
-			cp++;
-			break;
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
 
-		      case '\'':
-			if (*(cp + 1) != '\0')
-			  cp += 2;
-			else
-			  cp++;
-			break;
-
-		      default:
-			cp++;
-			break;
-		}
-	}
-	if (!extensionp) {
-		if (*(cp - 1) == '.') {
-			*(cp - 1) = '\'';
-			*cp++ = '.';
-		}
-		*cp++ = '.';
-		*cp = '\0';
-	}
-	strcpy(file, fbuf);
-	return (1);
+      default: cp++; break;
+    }
+  }
+  if (!extensionp) {
+    if (*(cp - 1) == '.') {
+      *(cp - 1) = '\'';
+      *cp++ = '.';
+    }
+    *cp++ = '.';
+    *cp = '\0';
+  }
+  strcpy(file, fbuf);
+  return (1);
 }
 
-
-
-
-/*		
+/*
  * Name:	quote_dname
  *
  * Argument:	char	*dir		The directory name in UNIX format.  Does not
@@ -1397,38 +1326,34 @@ int quote_fname_ufs(file)
  * name.  Both {DSK} and {UNIX} uses this routine.
  */
 
-int quote_dname(dir)
-	register char	*dir;
+int quote_dname(dir) register char *dir;
 {
-	register char	*cp, *dp;
-	char		fbuf[MAXNAMLEN + 1];
-	
-	cp = dir;
-	dp = fbuf;
+  register char *cp, *dp;
+  char fbuf[MAXNAMLEN + 1];
 
-	while (*cp) {
-		switch (*cp) {
+  cp = dir;
+  dp = fbuf;
 
-		      case '>':
-		      case ';':
-		      case '\'':
-			*dp++ = '\'';
-			*dp++ = *cp++;
-			break;
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
 
-		      default:
-			*dp++ = *cp++;
-			break;
-		}
-	}
-	*dp = '\0';
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
 
-	if (*(dp - 1) == '.') {
-		/* Trail period should be quoted. */
-		*(dp - 1) = '\'';
-		*dp++ = '.';
-	}
+  if (*(dp - 1) == '.') {
+    /* Trail period should be quoted. */
+    *(dp - 1) = '\'';
+    *dp++ = '.';
+  }
 
-	strcpy(dir, fbuf);
-	return (1);
+  strcpy(dir, fbuf);
+  return (1);
 }

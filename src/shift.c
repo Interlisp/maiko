@@ -1,7 +1,5 @@
-/* $Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,7 +15,6 @@ static char *id = "$Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrig
 
 #include "version.h"
 
-
 #include <stdio.h>
 #include "lispemul.h"
 #include "lspglob.h"
@@ -27,9 +24,9 @@ static char *id = "$Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrig
 #include "lsptypes.h"
 #include "arith.h"
 
-#define	LSH	0347
+#define LSH 0347
 
-DLword	*createcell68k(unsigned int type);
+DLword *createcell68k(unsigned int type);
 
 /*
  * XXX: it feels as though something is not clean here, looks like the
@@ -39,78 +36,61 @@ DLword	*createcell68k(unsigned int type);
 
 /************************************************************
 N_OP_llsh1
-	entry		LLSH1		OPCODE[0340]
-	return(a << 1)
+        entry		LLSH1		OPCODE[0340]
+        return(a << 1)
 ************************************************************/
-LispPTR N_OP_llsh1(int a)
-{
-	N_ARITH_BODY_1_UNSIGNED(a, 1, <<);
-}
+LispPTR N_OP_llsh1(int a) { N_ARITH_BODY_1_UNSIGNED(a, 1, <<); }
 
 /************************************************************
 N_OP_llsh8
-	entry		LLSH8		OPCODE[0341]
-	return(a << 8)
+        entry		LLSH8		OPCODE[0341]
+        return(a << 8)
 ************************************************************/
-LispPTR N_OP_llsh8(int a)
-{
-	N_ARITH_BODY_1_UNSIGNED(a, 8, <<);
-}
+LispPTR N_OP_llsh8(int a) { N_ARITH_BODY_1_UNSIGNED(a, 8, <<); }
 
 /************************************************************
 N_OP_lrsh1
-	entry		LRSH1		OPCODE[0342]
-	return(a >> 1)
+        entry		LRSH1		OPCODE[0342]
+        return(a >> 1)
 ************************************************************/
-LispPTR N_OP_lrsh1(int a)
-{
-	N_ARITH_BODY_1_UNSIGNED(a, 1, >>);
-}
+LispPTR N_OP_lrsh1(int a) { N_ARITH_BODY_1_UNSIGNED(a, 1, >>); }
 
 /************************************************************
 N_OP_lrsh8
-	entry		LRSH8		OPCODE[0343]
-	return(a >> 8)
+        entry		LRSH8		OPCODE[0343]
+        return(a >> 8)
 ************************************************************/
-LispPTR N_OP_lrsh8(int a)
-{
-	N_ARITH_BODY_1_UNSIGNED(a, 8, >>);
-}
+LispPTR N_OP_lrsh8(int a) { N_ARITH_BODY_1_UNSIGNED(a, 8, >>); }
 
 /************************************************************
 N_OP_lsh
-	entry		LSH		OPCODE[0347]
-	return(a <?> b)
+        entry		LSH		OPCODE[0347]
+        return(a <?> b)
 ************************************************************/
-LispPTR N_OP_lsh(int a, int b)
-{
-register int	arg,arg2;
-register int	size;
-/*DLword	*wordp;*/
+LispPTR N_OP_lsh(int a, int b) {
+  register int arg, arg2;
+  register int size;
+  /*DLword	*wordp;*/
 
-	N_GETNUMBER(b, size, do_ufn);
-	N_GETNUMBER(a, arg2, do_ufn);
+  N_GETNUMBER(b, size, do_ufn);
+  N_GETNUMBER(a, arg2, do_ufn);
 
+  if (size > 0) {
+    if (size > 31) goto do_ufn;
+    arg = arg2 << size;
+    if ((arg >> size) != arg2) goto do_ufn;
+  } else if (size < 0) {
+    if (size < -31) goto do_ufn;
+    arg = arg2 >> -size;
+    /*** Commented out JDS 1/27/89:  This punts if you shifted ***/
+    /*** ANY 1 bits off the right edge.  You CAN'T overflow    ***/
+    /*** in this direction!!                                   ***/
+    /*		if ((arg << -size) != arg2) goto do_ufn; */
+  } else
+    return (a);
 
-	if (size > 0) {
-		if (size > 31) goto do_ufn;
-		arg = arg2 << size;
-		if ((arg >> size) != arg2) goto do_ufn;
-	} else
-	if (size < 0) {
-		if (size < -31) goto do_ufn;
-		arg = arg2 >> -size;
-/*** Commented out JDS 1/27/89:  This punts if you shifted ***/
-/*** ANY 1 bits off the right edge.  You CAN'T overflow    ***/
-/*** in this direction!!                                   ***/
-/*		if ((arg << -size) != arg2) goto do_ufn; */
-	} else return(a);
+  N_ARITH_SWITCH(arg);
 
-
-
-	N_ARITH_SWITCH(arg);
-
-do_ufn:	ERROR_EXIT(b);
+do_ufn:
+  ERROR_EXIT(b);
 }
-
-

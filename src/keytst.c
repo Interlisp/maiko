@@ -1,8 +1,6 @@
-/* $Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -18,18 +16,15 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-
-
 /* =========================================================================
-	The functions defined in this file are used to validate the copyright
-	protection keys for NewCo's Maiko software. The main function is
-	'keytester', which takes an input key string and returns a status
-	code after processing the keys.
-	
-	The external functions called were stored in file 'keylib.o'.
+        The functions defined in this file are used to validate the copyright
+        protection keys for NewCo's Maiko software. The main function is
+        'keytester', which takes an input key string and returns a status
+        code after processing the keys.
 
-	Creation date: May, 1988
+        The external functions called were stored in file 'keylib.o'.
+
+        Creation date: May, 1988
   ====================================================================== */
 
 #include <stdio.h>
@@ -37,165 +32,154 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 #include <ctype.h>
 
 #ifdef HPUX
-	/* On HPUX, use the UNAME syscall to get hostid */
-#include	<sys/utsname.h>
+/* On HPUX, use the UNAME syscall to get hostid */
+#include <sys/utsname.h>
 #endif
 
-
-#define	GOLDEN_RATIO_HACK			-478700649
-#define	floadbyte(number,pos)		((number >> pos) & 0xFFFF)
-#define	hash_unhash(number,hashkey)	(number ^ (GOLDEN_RATIO_HACK * (floadbyte(hashkey,16) + floadbyte(hashkey,0)) ))
-#define	KEYNUMBERS					3
-#define	RC0						0
+#define GOLDEN_RATIO_HACK -478700649
+#define floadbyte(number, pos) ((number >> pos) & 0xFFFF)
+#define hash_unhash(number, hashkey) \
+  (number ^ (GOLDEN_RATIO_HACK * (floadbyte(hashkey, 16) + floadbyte(hashkey, 0))))
+#define KEYNUMBERS 3
+#define RC0 0
 
 /*   meaning of symbolic constants used:
- 
-		FAILURE2	invalid date
-		FAILURE3	invalid key 
-		FAILURE4	key expired           
-		FAILURE99	invalid date  (this shouldn't happen unless string format returned by ctime got changed) */
 
-#define	FAILURE2					-2
-#define	FAILURE3					-3
-#define	FAILURE4					-4
-#define 	FAILURE99					-99
+                FAILURE2	invalid date
+                FAILURE3	invalid key
+                FAILURE4	key expired
+                FAILURE99	invalid date  (this shouldn't happen unless string format returned
+   by ctime got changed) */
 
-
+#define FAILURE2 -2
+#define FAILURE3 -3
+#define FAILURE4 -4
+#define FAILURE99 -99
 
 unsigned long make_verification(long unsigned int x, long unsigned int y);
 unsigned long date_integer16(char *date);
 unsigned long idate(char *str);
 unsigned long modify(long unsigned int hostid);
 
-
 /* =====================================================================
-	KEYTESTER checks the input key string.  
+        KEYTESTER checks the input key string.
      It returns 0 if the keys are valid, otherwise it returns non-0.
   ====================================================================== */
-int keytester(char *keystring)
-{    unsigned long keyarray[KEYNUMBERS];	/* array which holds numeric keys */
-    unsigned long	hostid ;	/* 32-bit unique identifier of the current host  */
-    unsigned long	hashedword;
-    int			rc;		/* return code */
+int keytester(char *keystring) {
+  unsigned long keyarray[KEYNUMBERS]; /* array which holds numeric keys */
+  unsigned long hostid;               /* 32-bit unique identifier of the current host  */
+  unsigned long hashedword;
+  int rc; /* return code */
 #ifdef HPUX
-    struct utsname unameinfo;
+  struct utsname unameinfo;
 #endif
 
+  /* check the keys and convert them from hexdecimal strings to numbers  */
+  if (keystring == NULL) return FAILURE3;
+  if (read_hex(keystring, keyarray) == FAILURE3) return FAILURE3;
 
-	/* check the keys and convert them from hexdecimal strings to numbers  */
-    if (keystring == NULL) return FAILURE3;
-    if ( read_hex(keystring , keyarray) == FAILURE3)  return FAILURE3 ;
-
-
-    /*  get machines host id  */
+/*  get machines host id  */
 #ifdef HPUX
-    uname(&unameinfo);
-    hostid = atol(unameinfo.idnumber);
+  uname(&unameinfo);
+  hostid = atol(unameinfo.idnumber);
 #else
-    hostid = gethostid();
-	printf("hostid = 0x%x\n", hostid);
+  hostid = gethostid();
+  printf("hostid = 0x%x\n", hostid);
 #endif
 
-    hostid = modify(hostid);
+  hostid = modify(hostid);
 
-    /*  generate hashword */
-    hashedword = hash_unhash(keyarray[1] , hostid);
-	
-    /*  validate keys	*/
-    if (keyarray[0] != hash_unhash(hostid , hostid))  return FAILURE3; 
-    if ((rc = ok_date(floadbyte(hashedword , 16))) != RC0) return rc;
-    if (keyarray[2] != make_verification(keyarray[0] , keyarray[1]))
-      return FAILURE3;
-	
-    return 0;  
-  }
+  /*  generate hashword */
+  hashedword = hash_unhash(keyarray[1], hostid);
+
+  /*  validate keys	*/
+  if (keyarray[0] != hash_unhash(hostid, hostid)) return FAILURE3;
+  if ((rc = ok_date(floadbyte(hashedword, 16))) != RC0) return rc;
+  if (keyarray[2] != make_verification(keyarray[0], keyarray[1])) return FAILURE3;
+
+  return 0;
+}
 
 /* =====================================================================
-	READ_HEX reads in keys from the input string , validates them, then  
+        READ_HEX reads in keys from the input string , validates them, then
      stores them in the input array.
   ====================================================================== */
 
-int read_hex(char *s1, long unsigned int *array)
-{
-    char *s2 = {" "};
-    char *ptr;
-    char *hexdigits = {"0123456789abcdefABCDEF"};
-    int i ;
-	
-    for (i = 0 ; (i < KEYNUMBERS) && ((ptr = strtok(s1 , s2)) != NULL) ; ++i)
-      {
+int read_hex(char *s1, long unsigned int *array) {
+  char *s2 = {" "};
+  char *ptr;
+  char *hexdigits = {"0123456789abcdefABCDEF"};
+  int i;
 
-	/* make sure the key contains only hexadecimal characters */
-	if ( (strspn (ptr,hexdigits)) != strlen(ptr)) return FAILURE3;
+  for (i = 0; (i < KEYNUMBERS) && ((ptr = strtok(s1, s2)) != NULL); ++i) {
+    /* make sure the key contains only hexadecimal characters */
+    if ((strspn(ptr, hexdigits)) != strlen(ptr)) return FAILURE3;
 
-	/* convert key to numeric format*/
+/* convert key to numeric format*/
 #ifdef HPUX
-	*(array + i) = strtoul(ptr,NULL,16);	/* On HP, must convert to unsigned */
+    *(array + i) = strtoul(ptr, NULL, 16); /* On HP, must convert to unsigned */
 #elif defined(APOLLO)
-	*(array + i) = strtoul(ptr,NULL,16);	/* On APOLLO, must convert to unsigned */
+    *(array + i) = strtoul(ptr, NULL, 16); /* On APOLLO, must convert to unsigned */
 #elif defined(INDIGO)
-	*(array + i) = strtoul(ptr,NULL,16);	/* On Indigo, must convert to unsigned */
+    *(array + i) = strtoul(ptr, NULL, 16); /* On Indigo, must convert to unsigned */
 #elif defined(RS6000)
-	*(array + i) = strtoul(ptr,NULL,16);	/* On RS/6000, must convert to unsigned */
+    *(array + i) = strtoul(ptr, NULL, 16); /* On RS/6000, must convert to unsigned */
 #elif defined(OSF1)
-	*(array + i) = strtoul(ptr,NULL,16);	/* On Alpha, must convert to unsigned */
+    *(array + i) = strtoul(ptr, NULL, 16); /* On Alpha, must convert to unsigned */
 #else
-	*(array + i) = strtol(ptr,NULL,16);	/* On suns, this works OK */
+    *(array + i) = strtol(ptr, NULL, 16); /* On suns, this works OK */
 #endif
-printf("0x%x ", *(array+i)); fflush(stdout);
-	/* continue search the next one */
-	s1 = NULL;
-      };
+    printf("0x%x ", *(array + i));
+    fflush(stdout);
+    /* continue search the next one */
+    s1 = NULL;
+  };
 
-    if (i == KEYNUMBERS) return RC0; 
-      else return FAILURE3;
-  }
+  if (i == KEYNUMBERS)
+    return RC0;
+  else
+    return FAILURE3;
+}
 
 /* ============================================
-	OK_DATE checks the expiration of the key
+        OK_DATE checks the expiration of the key
    ============================================ */
 
-int ok_date (long unsigned int date)
-{
-    char current_date[30];
-    char *mptr, *dptr, *yptr, *str;
-    long realtime , *clock;
+int ok_date(long unsigned int date) {
+  char current_date[30];
+  char *mptr, *dptr, *yptr, *str;
+  long realtime, *clock;
 
-    /* first check if the expiration date is set to indefinite */
+  /* first check if the expiration date is set to indefinite */
 
-      printf("\narg date: %ld  %x\n", date, date); 
-      printf("\narg date ?????: %ld  %x\n", date_integer16("29-DEC-77"), date_integer16("29-DEC-77")); 
+  printf("\narg date: %ld  %x\n", date, date);
+  printf("\narg date ?????: %ld  %x\n", date_integer16("29-DEC-77"), date_integer16("29-DEC-77"));
 
-    if  (date == date_integer16("29-DEC-77")) return RC0;
+  if (date == date_integer16("29-DEC-77")) return RC0;
 
+  /* next check if current date is less than or equal to the expiration date */
+  /* get the current date  string */
+  realtime = time(0);
+  clock = &realtime;
+  str = (char *)ctime(clock);
 
-    /* next check if current date is less than or equal to the expiration date */
-    /* get the current date  string */
-	realtime = time(0);
-	clock = &realtime;
-	str =  (char *) ctime(clock);
+  /* delete day and time info and rearrange the string format to be dd-mmm-yy */
+  mptr = strtok(str, " ");
+  mptr = strtok(NULL, " ");
+  dptr = strtok(NULL, " ");
+  yptr = strtok(NULL, " ");
+  yptr = strtok(NULL, " \n"); /* watch out for newline char */
+  current_date[0] = '\0';
+  strcat(current_date, dptr);
+  strcat(current_date, "-");
+  strcat(current_date, mptr);
+  strcat(current_date, "-");
+  strcat(current_date, yptr);
 
-	/* delete day and time info and rearrange the string format to be dd-mmm-yy */
-    mptr = strtok(str," ");
-    mptr = strtok(NULL," ");
-    dptr = strtok(NULL," ");
-    yptr = strtok(NULL," ");
-    yptr = strtok(NULL," \n");		/* watch out for newline char */
-    current_date[0] = '\0';
-    strcat(current_date , dptr);
-    strcat(current_date , "-");
-    strcat(current_date , mptr);
-    strcat(current_date , "-");
-    strcat(current_date , yptr);
+  /* check the date */
+  if (idate(current_date) == FAILURE2) return FAILURE99;
 
-    /* check the date */
-    if (idate(current_date) == FAILURE2) return FAILURE99;
+  printf("*current date*: %ld %x\n", date_integer16(current_date), date_integer16(current_date));
 
-	
-     printf("*current date*: %ld %x\n", date_integer16(current_date), date_integer16(current_date)); 
-
-    return (date_integer16(current_date) <= date ) ? RC0 : FAILURE4;
- }
-
-
-
+  return (date_integer16(current_date) <= date) ? RC0 : FAILURE4;
+}

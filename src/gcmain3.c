@@ -1,9 +1,6 @@
-/* $Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,9 +14,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
-
 
 /*************************************************************************/
 /*                                                                       */
@@ -44,7 +39,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>  /* for sprintf */
+#include <stdio.h> /* for sprintf */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"
@@ -61,62 +56,59 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "inlnPS2.h"
 #endif
 
-
-
-#define WORDSPERCELL	2
-#define MAXHTCNT	63
-#define PADDING	4
-#define FNOVERHEADWORDS	8
-#define ADD_OFFSET(ptr, dloffset) ((LispPTR *) ((DLword *) (ptr) + (dloffset)))
+#define WORDSPERCELL 2
+#define MAXHTCNT 63
+#define PADDING 4
+#define FNOVERHEADWORDS 8
+#define ADD_OFFSET(ptr, dloffset) ((LispPTR *)((DLword *)(ptr) + (dloffset)))
 
 #ifdef BIGVM
-#define BIND_BITS(value)	((unsigned int) (value) >> 28)
-#define BF_FLAGS(value)		((unsigned int) (value) >> 29)
-#define PTR_BITS(entry)		((unsigned int)(entry) & POINTERMASK)
-#define GetSegnuminColl(entry1) (((entry1) & 0xFFFE) >> 1)
-#define GetStkCnt(entry1)	((entry1) >> 16)
-#define StkCntIsZero(entry1)	(!((entry1) & 0xFFFF0000))
-#define StkrefP(entry1)		((entry1) & 0x10000)
-#define SinglerefP(entry1)	(((entry1) & 0xFFFE0000) == 0x20000)
-#define Boundp(frame_field)	((frame_field) == 0)
-#define Stkref(ptr)		REC_GCLOOKUP(ptr, STKREF)
-#define GcreclaimLp(ptr) 	while((ptr = gcreccell(ptr)) != NIL)  \
-				  REC_GCLOOKUP(ptr, ADDREF)
-#define HTLPTR ((struct htlinkptr *) (entry))
-#define HENTRY ((struct hashentry *) (entry))
+#define BIND_BITS(value) ((unsigned int)(value) >> 28)
+#define BF_FLAGS(value) ((unsigned int)(value) >> 29)
+#define PTR_BITS(entry) ((unsigned int)(entry)&POINTERMASK)
+#define GetSegnuminColl(entry1) (((entry1)&0xFFFE) >> 1)
+#define GetStkCnt(entry1) ((entry1) >> 16)
+#define StkCntIsZero(entry1) (!((entry1)&0xFFFF0000))
+#define StkrefP(entry1) ((entry1)&0x10000)
+#define SinglerefP(entry1) (((entry1)&0xFFFE0000) == 0x20000)
+#define Boundp(frame_field) ((frame_field) == 0)
+#define Stkref(ptr) REC_GCLOOKUP(ptr, STKREF)
+#define GcreclaimLp(ptr) \
+  while ((ptr = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
+#define HTLPTR ((struct htlinkptr *)(entry))
+#define HENTRY ((struct hashentry *)(entry))
 #define HTMAIN_ENTRY_COUNT (HTMAIN_SIZE >> 1)
-#define STKREFBIT 0x10000	/* the bit that says "I'm on the stack" */
+#define STKREFBIT 0x10000 /* the bit that says "I'm on the stack" */
 
 #else
-#define BIND_BITS(value)	((unsigned int) (value) >> 24)
-#define BF_FLAGS(value)		((unsigned int) (value) >> 29)
-#define PTR_BITS(entry)		((unsigned int)((unsigned int)((entry) << 8) >> 8))
-#define GetSegnuminColl(entry1) 	((entry1 & 0x01fe) >> 1)
-#define GetStkCnt(entry1)	((entry1 & 0x0fe00) >> 9)
-#define StkCntIsZero(entry1)	(!((entry1) & 0x0fe00))
-#define StkrefP(entry1)		((entry1) & 0x0200)
-#define SinglerefP(entry1)	(((entry1) & 0xFC00) == 0x0400)
-#define Boundp(frame_field)	((frame_field) == 0)
-#define Stkref(ptr)		REC_GCLOOKUP(ptr, STKREF)
-#define GcreclaimLp(ptr) 	while((ptr = gcreccell(ptr)) != NIL)  \
-				  REC_GCLOOKUP(ptr, ADDREF)
-#define HTLPTR ((struct htlinkptr *) WORDPTR(entry))
-#define HENTRY ((struct hashentry *) WORDPTR(entry))
+#define BIND_BITS(value) ((unsigned int)(value) >> 24)
+#define BF_FLAGS(value) ((unsigned int)(value) >> 29)
+#define PTR_BITS(entry) ((unsigned int)((unsigned int)((entry) << 8) >> 8))
+#define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1)
+#define GetStkCnt(entry1) ((entry1 & 0x0fe00) >> 9)
+#define StkCntIsZero(entry1) (!((entry1)&0x0fe00))
+#define StkrefP(entry1) ((entry1)&0x0200)
+#define SinglerefP(entry1) (((entry1)&0xFC00) == 0x0400)
+#define Boundp(frame_field) ((frame_field) == 0)
+#define Stkref(ptr) REC_GCLOOKUP(ptr, STKREF)
+#define GcreclaimLp(ptr) \
+  while ((ptr = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
+#define HTLPTR ((struct htlinkptr *)WORDPTR(entry))
+#define HENTRY ((struct hashentry *)WORDPTR(entry))
 #define HTMAIN_ENTRY_COUNT HTMAIN_SIZE
 #define STKREFBIT 0x200
 #endif /* BIGVM */
 
-
 #ifdef GCC386
-		/* byte-swapped, 386 assembler version */
-LispPTR gcmapscan()
-  {
-    volatile DLword probe;
-    volatile DLword *entry;
-    volatile DLword offset;
-    volatile LispPTR ptr;
+/* byte-swapped, 386 assembler version */
+LispPTR gcmapscan() {
+  volatile DLword probe;
+  volatile DLword *entry;
+  volatile DLword offset;
+  volatile LispPTR ptr;
 
-    asm volatile(" \n\
+  asm volatile(
+      " \n\
 	movl $32768,%%edi	/ probe = HTSIZE.			\n\
 	.align 4							\n\
 nextentry:			/ nextentry:				\n\
@@ -296,335 +288,301 @@ gclp2:	/ GcreclaimLp	\n\
 	jmp gclp2	\n\
 	.align 4	\n\
 returNIL:	\n\
-    " : "=g" (entry), "=g" (offset), "=g" (ptr) : : "ax", "dx", "cx", "bx", "si", "di");
+    "
+      : "=g"(entry), "=g"(offset), "=g"(ptr)
+      :
+      : "ax", "dx", "cx", "bx", "si", "di");
 
-    return NIL;
-  }
+  return NIL;
+}
 #else
 
+LispPTR gcmapscan(void) {
+  register GCENTRY probe;
+  register GCENTRY *entry;
+  GCENTRY offset, dbgentry, dbgcontents;
+  register LispPTR ptr;
 
-LispPTR gcmapscan(void)
-{
-    register GCENTRY probe;
-    register GCENTRY *entry;
-    GCENTRY  offset, dbgentry, dbgcontents;
-    register LispPTR ptr;
+  probe = HTMAIN_ENTRY_COUNT;
+nextentry:
+  while ((probe = gcscan1(probe)) != NIL) {
+    entry = (GCENTRY *)HTmain + probe;
+    dbgentry = GETGC(entry);
+  retry:
+    if (HENTRY->collision) {
+      register GCENTRY *prev;
+      register GCENTRY *link;
+      LispPTR content, dbgfree;
 
-    probe = HTMAIN_ENTRY_COUNT;
-      nextentry:
-    while ((probe = gcscan1(probe)) != NIL)
-      {
-	entry = (GCENTRY *)HTmain + probe;
-	dbgentry = GETGC(entry);
-      retry:
-	if (HENTRY->collision)
-	  {
-	    register GCENTRY *prev;
-	    register GCENTRY *link;
-	    LispPTR content, dbgfree;
-		
-	    prev = (GCENTRY *)0;
-	    link = (GCENTRY *)HTcoll + GetLinkptr((content = HTLPTR->contents));
-          linkloop:
-	    offset = ((struct htcoll *)link)->free_ptr;
-	    dbgfree = ((struct htcoll *)link)->next_free;
-	    if (StkCntIsZero(offset))
-	      {
-		/* Reclaimable object */
-		ptr = VAG2(GetSegnuminColl(offset), (probe << 1));
-		DelLink(link, prev, entry);
-		GcreclaimLp(ptr);
-		if (HTLPTR->contents == 0)
-		  goto nextentry;
-		else
-		  goto retry;
-	      }
-	    if ((offset = ((struct htcoll *)link)->next_free))
-	      {
-		prev = link;
-		link = (GCENTRY *)(HTcoll + offset);
-		goto linkloop;
-	      }
-	    goto nextentry;
-	  }
-	if (StkCntIsZero(dbgcontents = HTLPTR->contents)) {
-		ptr = VAG2(HENTRY->segnum, (probe << 1));
-		HTLPTR->contents = 0;
-		GcreclaimLp(ptr);
-	  }
+      prev = (GCENTRY *)0;
+      link = (GCENTRY *)HTcoll + GetLinkptr((content = HTLPTR->contents));
+    linkloop:
+      offset = ((struct htcoll *)link)->free_ptr;
+      dbgfree = ((struct htcoll *)link)->next_free;
+      if (StkCntIsZero(offset)) {
+        /* Reclaimable object */
+        ptr = VAG2(GetSegnuminColl(offset), (probe << 1));
+        DelLink(link, prev, entry);
+        GcreclaimLp(ptr);
+        if (HTLPTR->contents == 0)
+          goto nextentry;
+        else
+          goto retry;
       }
-    return(NIL);
+      if ((offset = ((struct htcoll *)link)->next_free)) {
+        prev = link;
+        link = (GCENTRY *)(HTcoll + offset);
+        goto linkloop;
+      }
+      goto nextentry;
+    }
+    if (StkCntIsZero(dbgcontents = HTLPTR->contents)) {
+      ptr = VAG2(HENTRY->segnum, (probe << 1));
+      HTLPTR->contents = 0;
+      GcreclaimLp(ptr);
+    }
   }
+  return (NIL);
+}
 #endif /* GCC386 */
 
+LispPTR gcmapunscan(void) {
+  register GCENTRY probe;
+  register GCENTRY *entry;
+  GCENTRY offset;
+  register LispPTR ptr;
 
+  probe = HTMAIN_ENTRY_COUNT;
+  while ((probe = gcscan2(probe)) != NIL) {
+    entry = (GCENTRY *)HTmain + probe;
+  retry:
+    if (HENTRY->collision) {
+      register GCENTRY *prev;
+      register GCENTRY *link;
 
-
-LispPTR gcmapunscan(void)
-{
-	register GCENTRY			probe;
-	register GCENTRY			*entry;
-	GCENTRY				offset;
-	register LispPTR		ptr;
-
-	probe = HTMAIN_ENTRY_COUNT;
-	while ((probe = gcscan2(probe)) != NIL) {
-		entry = (GCENTRY *)HTmain + probe;
-	      retry:
-		if (HENTRY->collision) {
-			register GCENTRY	*prev;
-			register GCENTRY *link;
-
-			prev = (GCENTRY *)0;
-			link = (GCENTRY *)(HTcoll + GetLinkptr(HTLPTR->contents));
-		      scnlp:
-			offset = ((struct htcoll *)link)->free_ptr;
-			if (StkrefP(offset)) {
-				if (SinglerefP(offset)) {
-					DelLink(link, prev, entry);
-					goto retry;
-				} else {
-					GETGC((GCENTRY *)link) =
-					  offset & (~ STKREFBIT);
-				}
-			}
-			if ((offset = ((struct htcoll *)link)->next_free)) {
-				prev = link;
-				link = (GCENTRY *)(HTcoll + offset);
-				goto scnlp;
-			}
-		} else if (HENTRY->stackref) {
-			if (HENTRY->count == 1)
-			  HTLPTR->contents = 0;
-			else
-			  HENTRY->stackref = 0;
-		}
-	}
-	return(NIL);
+      prev = (GCENTRY *)0;
+      link = (GCENTRY *)(HTcoll + GetLinkptr(HTLPTR->contents));
+    scnlp:
+      offset = ((struct htcoll *)link)->free_ptr;
+      if (StkrefP(offset)) {
+        if (SinglerefP(offset)) {
+          DelLink(link, prev, entry);
+          goto retry;
+        } else {
+          GETGC((GCENTRY *)link) = offset & (~STKREFBIT);
+        }
+      }
+      if ((offset = ((struct htcoll *)link)->next_free)) {
+        prev = link;
+        link = (GCENTRY *)(HTcoll + offset);
+        goto scnlp;
+      }
+    } else if (HENTRY->stackref) {
+      if (HENTRY->count == 1)
+        HTLPTR->contents = 0;
+      else
+        HENTRY->stackref = 0;
+    }
+  }
+  return (NIL);
 }
 
+LispPTR gcscanstack(void) {
+  register Bframe *bascframe;
+  Bframe *obascframe;
+  LispPTR scanptr, scanend;
+  UNSIGNED scanend68K;
+  struct fnhead *nametable;
+  int ftyp;
+  int pvcount;
 
-
-
-LispPTR gcscanstack(void)
-{ 
-  register  Bframe	*bascframe;
-  Bframe                *obascframe;
-  LispPTR		scanptr,scanend;
-  UNSIGNED		scanend68K;
-  struct fnhead		*nametable;
-  int			ftyp;
-  int			pvcount;
-
-  scanptr = VAG2(STK_HI,InterfacePage->stackbase);
-  scanend = VAG2(STK_HI,InterfacePage->endofstack);
-  scanend68K = (UNSIGNED) Addr68k_from_LADDR(scanend);
+  scanptr = VAG2(STK_HI, InterfacePage->stackbase);
+  scanend = VAG2(STK_HI, InterfacePage->endofstack);
+  scanend68K = (UNSIGNED)Addr68k_from_LADDR(scanend);
   bascframe = (Bframe *)Addr68k_from_LADDR(scanptr);
 
-  if (0 != 3 & (UNSIGNED)bascframe)
-    {
-      char debugStr[100];
-      sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-	      "at start of gcscanstack.", bascframe);
-      error(debugStr);
-    }
+  if (0 != 3 & (UNSIGNED)bascframe) {
+    char debugStr[100];
+    sprintf(debugStr,
+            "Frame ptr (0x%x) not to word bound "
+            "at start of gcscanstack.",
+            bascframe);
+    error(debugStr);
+  }
 
-  while (1)  {
-
+  while (1) {
     /*This is endless loop until encountering tail of stack */
 
     ftyp = (int)bascframe->flags;
-    switch(ftyp)
-      {
-      case STK_FX:
-	{
-	  { 
-	    register struct frameex1 *frameex;
-	    register struct fnhead *fnheader;
-	    frameex = (struct frameex1 *)bascframe;
-	    scanptr = LADDR_from_68k(frameex);
-	    { 
-	      register LispPTR fn_head;
+    switch (ftyp) {
+      case STK_FX: {
+        {
+          register struct frameex1 *frameex;
+          register struct fnhead *fnheader;
+          frameex = (struct frameex1 *)bascframe;
+          scanptr = LADDR_from_68k(frameex);
+          {
+            register LispPTR fn_head;
 #ifdef BIGVM
-	      fn_head = (LispPTR) (frameex->fnheader);
+            fn_head = (LispPTR)(frameex->fnheader);
 #else
-	      fn_head = (LispPTR)
-		VAG2(frameex->hi2fnheader,
-		     frameex->lofnheader);
+            fn_head = (LispPTR)VAG2(frameex->hi2fnheader, frameex->lofnheader);
 #endif /* BIGVM */
-	      Stkref(fn_head);
-	      fnheader = (struct fnhead *)
-		Addr68k_from_LADDR(fn_head);
-	    };
-	    {
-	      register int pcou;
-	      register LispPTR *pvars;
-	      pvars =(LispPTR *)
-		((DLword *)bascframe + FRAMESIZE);
-	      for (pcou = fnheader->nlocals;pcou-- != 0;) {
-		register LispPTR value;
-		value = *pvars;
-		if Boundp(BIND_BITS(value)) Stkref(value);
-		++pvars;
-	      }; /* for */
-	    }; /* register int pcou */
-	    
-	    {
-	      register UNSIGNED qtemp;
-	      register UNSIGNED next;
-	      register UNSIGNED ntend;
-	      
-	      next = qtemp = (UNSIGNED) 
-		Addr68k_from_StkOffset(frameex->nextblock);
-	      /* this is offset */
-	      ntend = 0;	/* init flag */
-	      if (frameex->validnametable) {
-		register LispPTR nametable;
+            Stkref(fn_head);
+            fnheader = (struct fnhead *)Addr68k_from_LADDR(fn_head);
+          };
+          {
+            register int pcou;
+            register LispPTR *pvars;
+            pvars = (LispPTR *)((DLword *)bascframe + FRAMESIZE);
+            for (pcou = fnheader->nlocals; pcou-- != 0;) {
+              register LispPTR value;
+              value = *pvars;
+              if
+                Boundp(BIND_BITS(value)) Stkref(value);
+              ++pvars;
+            }; /* for */
+          };   /* register int pcou */
+
+          {
+            register UNSIGNED qtemp;
+            register UNSIGNED next;
+            register UNSIGNED ntend;
+
+            next = qtemp = (UNSIGNED)Addr68k_from_StkOffset(frameex->nextblock);
+            /* this is offset */
+            ntend = 0; /* init flag */
+            if (frameex->validnametable) {
+              register LispPTR nametable;
 #ifdef BIGVM
-		nametable = frameex->nametable;
-#define hi2nametable (nametable >> 16 )
+              nametable = frameex->nametable;
+#define hi2nametable (nametable >> 16)
 #else
-		register unsigned int hi2nametable;
-		register unsigned int lonametable;
-		lonametable = frameex->lonametable;
-		hi2nametable = frameex->hi2nametable;
-		nametable = VAG2(hi2nametable,lonametable);
+              register unsigned int hi2nametable;
+              register unsigned int lonametable;
+              lonametable = frameex->lonametable;
+              hi2nametable = frameex->hi2nametable;
+              nametable = VAG2(hi2nametable, lonametable);
 #endif /* BIGVM */
-		if (STK_HI == hi2nametable)
-		  {
-		    Stkref(fnheader->framename);
+              if (STK_HI == hi2nametable) {
+                Stkref(fnheader->framename);
 #ifdef BIGVM
-		    qtemp = (UNSIGNED) 
-		      Addr68k_from_StkOffset(nametable&0xFFFF);
+                qtemp = (UNSIGNED)Addr68k_from_StkOffset(nametable & 0xFFFF);
 #else
-		    qtemp = (UNSIGNED) 
-		      Addr68k_from_StkOffset(lonametable);
+                qtemp = (UNSIGNED)Addr68k_from_StkOffset(lonametable);
 #endif
-		    ntend = (UNSIGNED) (
-					((DLword *)qtemp) + 
-					FNHEADSIZE +
-					(((struct fnhead *)qtemp)->ntsize)*2);
-		  } else Stkref(nametable);
-	      }; /* frameex->validnametable */
+                ntend = (UNSIGNED)(((DLword *)qtemp) + FNHEADSIZE +
+                                   (((struct fnhead *)qtemp)->ntsize) * 2);
+              } else
+                Stkref(nametable);
+            }; /* frameex->validnametable */
 
-	      obascframe = bascframe;
-	      bascframe = (Bframe *) 
-		ADD_OFFSET(bascframe, FRAMESIZE+PADDING+
-			   (((fnheader->pv)+1)<<2));
+            obascframe = bascframe;
+            bascframe =
+                (Bframe *)ADD_OFFSET(bascframe, FRAMESIZE + PADDING + (((fnheader->pv) + 1) << 2));
 
-	      if (0 != 3 & (UNSIGNED)bascframe)
-		{
-		  char debugStr[100];
-		  sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-			  "in gcscanstack() STK_FX case; old frame = 0x%x.",
-			  bascframe, obascframe);
-		  error(debugStr);
-		}
+            if (0 != 3 & (UNSIGNED)bascframe) {
+              char debugStr[100];
+              sprintf(debugStr,
+                      "Frame ptr (0x%x) not to word bound "
+                      "in gcscanstack() STK_FX case; old frame = 0x%x.",
+                      bascframe, obascframe);
+              error(debugStr);
+            }
 
-	    scantemps:
-	      while((UNSIGNED)bascframe < (UNSIGNED	)qtemp) { 
-		register LispPTR value;
-		value = *((LispPTR *) bascframe);
-		if Boundp(BIND_BITS(value))  Stkref(value);
-		bascframe++;
-	      }; /* while */
-	      
-	      if (ntend != 0) { 
-		obascframe = bascframe;
-		bascframe = (Bframe *)
-		  Addr68k_from_StkOffset(ntend);
-		if (0 != 3 & (UNSIGNED)bascframe)
-		  {
-		    char debugStr[100];
-		    sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-			    "in gcscanstack() scantemps; old frame = 0x%x.",
-			    bascframe, obascframe);
-		    error(debugStr);
-		  }
+          scantemps:
+            while ((UNSIGNED)bascframe < (UNSIGNED)qtemp) {
+              register LispPTR value;
+              value = *((LispPTR *)bascframe);
+              if
+                Boundp(BIND_BITS(value)) Stkref(value);
+              bascframe++;
+            }; /* while */
 
-		qtemp = next;
-		ntend = 0;
-		goto scantemps;
-	      };
+            if (ntend != 0) {
+              obascframe = bascframe;
+              bascframe = (Bframe *)Addr68k_from_StkOffset(ntend);
+              if (0 != 3 & (UNSIGNED)bascframe) {
+                char debugStr[100];
+                sprintf(debugStr,
+                        "Frame ptr (0x%x) not to word bound "
+                        "in gcscanstack() scantemps; old frame = 0x%x.",
+                        bascframe, obascframe);
+                error(debugStr);
+              }
 
-	      obascframe = bascframe;
-	      bascframe = (Bframe *) next;
+              qtemp = next;
+              ntend = 0;
+              goto scantemps;
+            };
 
-	      if (0 != 3 & (UNSIGNED)bascframe)
-		{
-		  char debugStr[100];
-		  sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-			  "in gcscanstack(), end scantemps; old frame = 0x%x.",
-			  bascframe, obascframe);
-		  error(debugStr);
-		}
+            obascframe = bascframe;
+            bascframe = (Bframe *)next;
 
-	      
-	    }; /* LOCAL regs qtemp next */
-	  }; /* local regs fnheader frameex */
-	  break;
-	};
-      case STK_GUARD:/* stack's tail ? */ {
-	if ((UNSIGNED) bascframe >= (UNSIGNED) scanend68K)
-	  return(NIL);
-	else {
-	  obascframe = bascframe;
-	  bascframe = (Bframe *)((DLword *) 
-				 bascframe + bascframe->ivar);
+            if (0 != 3 & (UNSIGNED)bascframe) {
+              char debugStr[100];
+              sprintf(debugStr,
+                      "Frame ptr (0x%x) not to word bound "
+                      "in gcscanstack(), end scantemps; old frame = 0x%x.",
+                      bascframe, obascframe);
+              error(debugStr);
+            }
 
-	  if (0 != 3 & (UNSIGNED)bascframe)
-	    {
-	      char debugStr[100];
-	      sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-		      "in gcscanstack() STK_GUARD; old frame = 0x%x.",
-		      bascframe, obascframe);
-	      error(debugStr);
-	    }
-
-	};
-	break;
+          }; /* LOCAL regs qtemp next */
+        };   /* local regs fnheader frameex */
+        break;
       };
-      case STK_FSB: { 
-	obascframe = bascframe;
-	bascframe = (Bframe *)((DLword *) 
-			       bascframe + bascframe->ivar);
+      case STK_GUARD: /* stack's tail ? */ {
+        if ((UNSIGNED)bascframe >= (UNSIGNED)scanend68K)
+          return (NIL);
+        else {
+          obascframe = bascframe;
+          bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
 
-	if (0 != 3 & (UNSIGNED)bascframe)
-	  {
-	    char debugStr[100];
-	    sprintf(debugStr, "Frame ptr (0x%x) not to word bound "
-		    "in gcscanstack() STK_FSB; old frame = 0x%x.",
-		    bascframe, obascframe);
-	    error(debugStr);
-	  }
-
-	break;
+          if (0 != 3 & (UNSIGNED)bascframe) {
+            char debugStr[100];
+            sprintf(debugStr,
+                    "Frame ptr (0x%x) not to word bound "
+                    "in gcscanstack() STK_GUARD; old frame = 0x%x.",
+                    bascframe, obascframe);
+            error(debugStr);
+          }
+        };
+        break;
       };
-      default:	/* must be basic frame !! */
-	{
-	  register LispPTR bf_word;
-	  while(STK_BF != BF_FLAGS(bf_word = *((LispPTR *)bascframe)))
-	    {	Stkref(PTR_BITS(bf_word));
-	    bascframe++;
-	    };
-	  bascframe++;
-	}; 
-      
-      
-      /* **** NOTE THIS CODE DOES NOT COMPILE CORRECTLY ON THE SUN 4
-	 {register LispPTR bf_word;
-	 while(STK_BF != BF_FLAGS(
-	 bf_word = *((LispPTR *)bascframe++)))
-	 { Stkref(PTR_BITS(bf_word));
-	 };
-	 }; 
-	 **** */
-      };	/* switch */
-  };	/* while(1) */
+      case STK_FSB: {
+        obascframe = bascframe;
+        bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
+
+        if (0 != 3 & (UNSIGNED)bascframe) {
+          char debugStr[100];
+          sprintf(debugStr,
+                  "Frame ptr (0x%x) not to word bound "
+                  "in gcscanstack() STK_FSB; old frame = 0x%x.",
+                  bascframe, obascframe);
+          error(debugStr);
+        }
+
+        break;
+      };
+      default: /* must be basic frame !! */
+      {
+        register LispPTR bf_word;
+        while (STK_BF != BF_FLAGS(bf_word = *((LispPTR *)bascframe))) {
+          Stkref(PTR_BITS(bf_word));
+          bascframe++;
+        };
+        bascframe++;
+      };
+
+        /* **** NOTE THIS CODE DOES NOT COMPILE CORRECTLY ON THE SUN 4
+           {register LispPTR bf_word;
+           while(STK_BF != BF_FLAGS(
+           bf_word = *((LispPTR *)bascframe++)))
+           { Stkref(PTR_BITS(bf_word));
+           };
+           };
+           **** */
+    }; /* switch */
+  };   /* while(1) */
 }
-
-
-
-
-
-

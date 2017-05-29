@@ -1,7 +1,6 @@
-/* $Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright (C) Venue";
-
-
 
 /************************************************************************/
 /*									*/
@@ -34,9 +33,7 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-
 #include "version.h"
-
 
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -45,74 +42,67 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "gc.h"
 
+#define MAXSMALLP 65535
+#define HTBIGENTRYSIZE 4
+#define WORDSPERPAGE 256
+#define MAXTYPENUMBER INIT_TYPENUM
+#define Oddp(num) (((num % 2) != 0) ? 1 : 0)
+#define Evenp(num, prim) (((num % prim) == 0) ? 1 : 0)
+#define Increment_Allocation_Count(n) \
+  if (*Reclaim_cnt_word != NIL)       \
+    if (*Reclaim_cnt_word > n)        \
+      (*Reclaim_cnt_word) -= n;       \
+    else {                            \
+      *Reclaim_cnt_word = NIL;        \
+      doreclaim();                    \
+    };
 
+DLword gc_handleoverflow(DLword arg) {
+  struct htoverflow *cell;
+  struct dtd *ptr;
+  LispPTR cellcnt;
+  LispPTR addr;
+  cell = (struct htoverflow *)HToverflow;
+  /* This proc. protected from interrupt */
+  while ((addr = cell->ptr) != NIL) {
+    REC_GCLOOKUP(addr, cell->pcase);
+    cell->ptr = 0;
+    cell->pcase = 0;
+    ++cell; /* (\ADDBASE CELL WORDSPERCELL) */
+  };
+  ptr = (struct dtd *)GetDTD(TYPE_LISTP);
+  /* same as "extern struct dtd *ListpDTD" */
+  if ((cellcnt = ptr->dtd_cnt0) > 1024) {
+    Increment_Allocation_Count(cellcnt);
+    ptr->dtd_oldcnt += cellcnt;
+    ptr->dtd_cnt0 = 0;
+  };
+  return (arg);
+}
 
-#define MAXSMALLP		65535
-#define HTBIGENTRYSIZE		4
-#define WORDSPERPAGE		256
-#define MAXTYPENUMBER		INIT_TYPENUM
-#define Oddp(num) (((num % 2) != 0)?1:0)
-#define Evenp(num,prim) (((num % prim) == 0)?1:0)
-#define Increment_Allocation_Count(n)			\
-    if (*Reclaim_cnt_word != NIL) 			\
-		if (*Reclaim_cnt_word > n)		\
-			(*Reclaim_cnt_word) -= n;	\
-		else { *Reclaim_cnt_word = NIL; 	\
-			  doreclaim();  		\
-			};				\
-
-
-DLword gc_handleoverflow(DLword arg)
-{ struct htoverflow  *cell;
-     struct dtd	        *ptr;
-     LispPTR		cellcnt;
-     LispPTR            addr;
-	  cell = (struct htoverflow *)HToverflow;
-			/* This proc. protected from interrupt */
-	while((addr = cell->ptr) != NIL)
-	   {
-		REC_GCLOOKUP(addr, cell->pcase);
-		cell->ptr = 0;
-		cell->pcase = 0;
-		++cell; /* (\ADDBASE CELL WORDSPERCELL) */
-	   };
-	ptr = (struct dtd *)GetDTD(TYPE_LISTP);
-		/* same as "extern struct dtd *ListpDTD" */
-	if ((cellcnt = ptr->dtd_cnt0) > 1024)
-	   { Increment_Allocation_Count(cellcnt);
-		ptr->dtd_oldcnt += cellcnt;
-		ptr->dtd_cnt0 = 0;
-	   };
-	return(arg);
-   }
-
-DLword gcmaptable(DLword arg)
-{ struct htoverflow	*cell;
-	struct dtd	*ptr;
-	LispPTR		cellcnt;
-	int		typnum;
-	LispPTR		addr;			
-	cell = (struct htoverflow *)HToverflow;	
-			/* This proc. protected from interrupt */
-	while((addr = cell->ptr) != NIL)
-	   {
-		REC_GCLOOKUP(addr, cell->pcase);
-		cell->ptr = 0;
-		cell->pcase = 0;
-		++cell; /* (\ADDBASE CELL WORDSPERCELL) */
-	   };
-	for(typnum = 1; typnum <= *MaxTypeNumber_word; ++typnum)
-	   /* applied alltype */
-	   { ptr = (struct dtd *)GetDTD(typnum);
-		if ((cellcnt = ptr->dtd_cnt0) != 0)
-		   { ptr->dtd_oldcnt += cellcnt;
-		     ptr->dtd_cnt0 = 0;
-		     Increment_Allocation_Count(cellcnt);
-		   };
-	   };
-	return(arg);
-   }
-
-
-
-
+DLword gcmaptable(DLword arg) {
+  struct htoverflow *cell;
+  struct dtd *ptr;
+  LispPTR cellcnt;
+  int typnum;
+  LispPTR addr;
+  cell = (struct htoverflow *)HToverflow;
+  /* This proc. protected from interrupt */
+  while ((addr = cell->ptr) != NIL) {
+    REC_GCLOOKUP(addr, cell->pcase);
+    cell->ptr = 0;
+    cell->pcase = 0;
+    ++cell; /* (\ADDBASE CELL WORDSPERCELL) */
+  };
+  for (typnum = 1; typnum <= *MaxTypeNumber_word; ++typnum)
+  /* applied alltype */
+  {
+    ptr = (struct dtd *)GetDTD(typnum);
+    if ((cellcnt = ptr->dtd_cnt0) != 0) {
+      ptr->dtd_oldcnt += cellcnt;
+      ptr->dtd_cnt0 = 0;
+      Increment_Allocation_Count(cellcnt);
+    };
+  };
+  return (arg);
+}

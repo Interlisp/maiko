@@ -1,6 +1,6 @@
-/* $Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright (C) Venue";
-
 
 /************************************************************************/
 /*									*/
@@ -16,8 +16,6 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-
 /************************************************************************/
 /*									*/
 /*			    U U T I L S . C				*/
@@ -25,7 +23,6 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 /*	Utility subrs for dealing with the host OS.			*/
 /*									*/
 /************************************************************************/
-
 
 #ifndef DOS
 #include <pwd.h>
@@ -56,8 +53,6 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 #define gethostid() 0
 #endif /* OS5 */
 
-
-
 /************************************************************************/
 /*									*/
 /*		l i s p _ s t r i n g _ t o _ c _ s t r i n g		*/
@@ -68,39 +63,35 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
-int lisp_string_to_c_string(LispPTR Lisp, char *C, int length)
-{
-	register OneDArray	*arrayp;
-	register char	*base;
+int lisp_string_to_c_string(LispPTR Lisp, char *C, int length) {
+  register OneDArray *arrayp;
+  register char *base;
 
-	if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) {return (-1);}
+  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
 
-	arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
-	if (arrayp->fillpointer >= length) {return(-1);} /* too long */
+  arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
+  if (arrayp->fillpointer >= length) { return (-1); } /* too long */
 
-	switch(arrayp->typenumber){
-	case THIN_CHAR_TYPENUMBER:
-		base = ((char *)(Addr68k_from_LADDR(arrayp->base))) +
-		       ((int)(arrayp->offset));
+  switch (arrayp->typenumber) {
+    case THIN_CHAR_TYPENUMBER:
+      base = ((char *)(Addr68k_from_LADDR(arrayp->base))) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
-		strncpy(C, base, arrayp->fillpointer);
+      strncpy(C, base, arrayp->fillpointer);
 #else
-	{  register int i,length ;
-	   register char *dp;
-		for(i=0,dp=C, length = arrayp->fillpointer;
-			i<length;i++)				
-		{*dp++ =(char)(GETBYTE(base++));}
-	}
+      {
+        register int i, length;
+        register char *dp;
+        for (i = 0, dp = C, length = arrayp->fillpointer; i < length; i++) {
+          *dp++ = (char)(GETBYTE(base++));
+        }
+      }
 #endif /* BYTESWAP */
 
-		C[arrayp->fillpointer] = '\0';
-		return 0;
-	default:
-		return -1;
-	}
+      C[arrayp->fillpointer] = '\0';
+      return 0;
+    default: return -1;
+  }
 }
-
-
 
 /************************************************************************/
 /*									*/
@@ -114,46 +105,41 @@ int lisp_string_to_c_string(LispPTR Lisp, char *C, int length)
 /*									*/
 /************************************************************************/
 
-int c_string_to_lisp_string(char *C, LispPTR Lisp)
-{
-	register OneDArray	*arrayp;
-	char	*base;
-	register int	length;
+int c_string_to_lisp_string(char *C, LispPTR Lisp) {
+  register OneDArray *arrayp;
+  char *base;
+  register int length;
 
-	length = strlen(C);
-	if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) {return (-1);}
+  length = strlen(C);
+  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
 
-	arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
-	if (arrayp->totalsize < length+1) {return(-1);}
-	    /* too short for C string */
+  arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
+  if (arrayp->totalsize < length + 1) { return (-1); }
+  /* too short for C string */
 
-	switch(arrayp->typenumber){
-	case THIN_CHAR_TYPENUMBER:
-		base = ((char *)(Addr68k_from_LADDR(arrayp->base))) +
-		       ((int)(arrayp->offset));
+  switch (arrayp->typenumber) {
+    case THIN_CHAR_TYPENUMBER:
+      base = ((char *)(Addr68k_from_LADDR(arrayp->base))) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
-		strcpy(base, C);
+      strcpy(base, C);
 #else
-	{ register int i;
-	  register char *dp;
-		for(i=0,dp = C;i <= length + 1;i++)
-		{
-			int ch = *dp++;
+      {
+        register int i;
+        register char *dp;
+        for (i = 0, dp = C; i <= length + 1; i++) {
+          int ch = *dp++;
 #ifdef DOS
-			if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
+          if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
 #endif /* DOS */
-			GETBYTE(base++) = ch;
-		}
-	}
+          GETBYTE(base++) = ch;
+        }
+      }
 #endif /* BYTESWAP */
 
-		return 0;
-	default:
-		return -1;
-	}
+      return 0;
+    default: return -1;
+  }
 }
-
-
 
 /************************************************************************/
 /*									*/
@@ -163,8 +149,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp)
 /*									*/
 /************************************************************************/
 
-LispPTR check_unix_password(LispPTR *args)
-{
+LispPTR check_unix_password(LispPTR *args) {
 #ifndef DOS
   struct passwd *pwd;
   char *password, *getpass(const char *);
@@ -174,26 +159,22 @@ LispPTR check_unix_password(LispPTR *args)
   char salt[3];
   char name[100], pass[100];
 
-  if (lisp_string_to_c_string(args[0], name, sizeof name)) {return NIL;}
-  if (lisp_string_to_c_string(args[1], pass, sizeof pass)) {return NIL;}
+  if (lisp_string_to_c_string(args[0], name, sizeof name)) { return NIL; }
+  if (lisp_string_to_c_string(args[1], pass, sizeof pass)) { return NIL; }
 
-  if ((pwd = getpwnam(name)) == 0) {
-    return(NIL);	/* can't find entry for name */
-  }
+  if ((pwd = getpwnam(name)) == 0) { return (NIL); /* can't find entry for name */ }
   salt[0] = pwd->pw_passwd[0];
   salt[1] = pwd->pw_passwd[1];
   salt[2] = '\0';
   if (strcmp((char *)crypt(pass, salt), pwd->pw_passwd) == 0)
-    return(ATOM_T);
+    return (ATOM_T);
   else
-    return(NIL);
+    return (NIL);
 #else
   return ATOM_T;
 #endif /* DOS */
 }
 
-
-
 /************************************************************************/
 /*									*/
 /*									*/
@@ -202,20 +183,15 @@ LispPTR check_unix_password(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-LispPTR unix_username(LispPTR *args)
-{
+LispPTR unix_username(LispPTR *args) {
 #ifndef DOS
   struct passwd *pwd;
 
-  if ((pwd = getpwuid(getuid())) == NULL)
-    return NIL;
-  if (c_string_to_lisp_string(pwd->pw_name, args[0]))
-    return NIL;
+  if ((pwd = getpwuid(getuid())) == NULL) return NIL;
+  if (c_string_to_lisp_string(pwd->pw_name, args[0])) return NIL;
 #endif /* DOS */
   return ATOM_T;
 }
-
-
 
 /************************************************************************/
 /*									*/
@@ -246,40 +222,37 @@ LispPTR unix_username(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-char* getenv(const char *);
+char *getenv(const char *);
 
-LispPTR unix_getparm(LispPTR *args)
-{
-    char            envname[20], result[128], *envvalue;
-    if (lisp_string_to_c_string(args[0], envname, sizeof envname))
-    	return NIL;
-    if (strcmp(envname, "MACH") == 0)
-      {
+LispPTR unix_getparm(LispPTR *args) {
+  char envname[20], result[128], *envvalue;
+  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) return NIL;
+  if (strcmp(envname, "MACH") == 0) {
 #if defined(sparc)
-	envvalue = "sparc";
+    envvalue = "sparc";
 #else
 #if defined(I386)
-	envvalue = "i386";
+    envvalue = "i386";
 #else
 #ifdef RS6000
-	envvalue = "rs/6000";
+    envvalue = "rs/6000";
 #else
 #ifdef HP9000
-	envvalue = "hp9000";
+    envvalue = "hp9000";
 #else
 #ifdef ISC
-	envvalue = "i386";
+    envvalue = "i386";
 #else
 #ifdef INDIGO
-	envvalue = "mips";
+    envvalue = "mips";
 #else
 #ifdef RISCOS
-	envvalue = "mips";
+    envvalue = "mips";
 #else
 #ifdef DOS
-	envvalue = "386";
+    envvalue = "386";
 #else
-	envvalue = "mc68020";
+    envvalue = "mc68020";
 #endif
 #endif
 #endif
@@ -288,34 +261,32 @@ LispPTR unix_getparm(LispPTR *args)
 #endif
 #endif
 #endif
-      }
-    else if (strcmp(envname, "ARCH") == 0)
-      {
+  } else if (strcmp(envname, "ARCH") == 0) {
 #if defined(sparc)
-	envvalue = "sun4";
+    envvalue = "sun4";
 #else
 #if defined(I386)
-	envvalue = "sun386";
+    envvalue = "sun386";
 #else
 #ifdef RS6000
-	envvalue = "rs/6000";
+    envvalue = "rs/6000";
 #else
 #ifdef HP9000
-	envvalue = "hp9000";
+    envvalue = "hp9000";
 #else
 #ifdef ISC
-	envvalue = "i386";
+    envvalue = "i386";
 #else
 #ifdef INDIGO
-	envvalue = "mips";
+    envvalue = "mips";
 #else
 #ifdef RISCOS
-	envvalue = "mips";
-#else	
-#ifdef DOS
-	envvalue = "dos";
+    envvalue = "mips";
 #else
-	envvalue = "sun3";
+#ifdef DOS
+    envvalue = "dos";
+#else
+    envvalue = "sun3";
 #endif
 #endif
 #endif
@@ -324,100 +295,77 @@ LispPTR unix_getparm(LispPTR *args)
 #endif
 #endif
 #endif
-      } 
-    else if (strcmp(envname, "DISPLAY") == 0)
-      {
+  } else if (strcmp(envname, "DISPLAY") == 0) {
 #if defined(XWINDOW)
-	envvalue = "X";
+    envvalue = "X";
 #else
 #if defined(DISPLAYBUFFER)
-	envvalue = "BUFFERED";
-#else	
-	envvalue = "DIRECT";
+    envvalue = "BUFFERED";
+#else
+    envvalue = "DIRECT";
 #endif /* DISPLAYBUFFER */
 
 #endif /* XWINDOW */
 
-
-      } 
-#ifndef DOS
-    else if (strcmp(envname, "HOSTNAME") == 0) 
-      {
-	if (gethostname(result, sizeof result)) return NIL;
-	envvalue = result;
-      } 
-    else if (strcmp(envname, "LOGNAME") == 0)
-      {
-	struct passwd  *pwd;
-	if ((pwd = getpwuid(getuid())) == NULL) return NIL;
-	envvalue = pwd->pw_name;
-      } 
-    else if (strcmp(envname, "FULLUSERNAME") == 0)
-      {
-	struct passwd  *pwd;
-	if ((pwd = getpwuid(getuid())) == NULL) return NIL;
-	envvalue = pwd->pw_gecos;
-      }
-    else if (strcmp(envname, "HOSTID") == 0)
-      {
-	sprintf(result, "%x", gethostid());
-	envvalue = result;
-      }
-#endif /* DOS */
-    else return NIL;
-
-    if (c_string_to_lisp_string(envvalue, args[1])) return NIL;
-    return ATOM_T;
   }
-
-
-
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-LispPTR unix_getenv(LispPTR *args)
-{
-	char            envname[20], *envvalue;
-	if (lisp_string_to_c_string(args[0], envname, sizeof envname))
-		return NIL;
-	envvalue = getenv(envname);
-	if (!envvalue)
-		return NIL;
-	if (c_string_to_lisp_string(envvalue, args[1]))
-		return NIL;
-	return ATOM_T;
-}
-
-
-
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-LispPTR unix_fullname(LispPTR *args)
-{
 #ifndef DOS
-  struct passwd *pwd;
-
-  if ((pwd = getpwuid(getuid())) == NULL)
-    return NIL;
-  if (c_string_to_lisp_string(pwd->pw_gecos, args[0]))
-    return NIL;
+  else if (strcmp(envname, "HOSTNAME") == 0) {
+    if (gethostname(result, sizeof result)) return NIL;
+    envvalue = result;
+  } else if (strcmp(envname, "LOGNAME") == 0) {
+    struct passwd *pwd;
+    if ((pwd = getpwuid(getuid())) == NULL) return NIL;
+    envvalue = pwd->pw_name;
+  } else if (strcmp(envname, "FULLUSERNAME") == 0) {
+    struct passwd *pwd;
+    if ((pwd = getpwuid(getuid())) == NULL) return NIL;
+    envvalue = pwd->pw_gecos;
+  } else if (strcmp(envname, "HOSTID") == 0) {
+    sprintf(result, "%x", gethostid());
+    envvalue = result;
+  }
 #endif /* DOS */
+  else
+    return NIL;
+
+  if (c_string_to_lisp_string(envvalue, args[1])) return NIL;
   return ATOM_T;
 }
 
+/************************************************************************/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
 
+LispPTR unix_getenv(LispPTR *args) {
+  char envname[20], *envvalue;
+  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) return NIL;
+  envvalue = getenv(envname);
+  if (!envvalue) return NIL;
+  if (c_string_to_lisp_string(envvalue, args[1])) return NIL;
+  return ATOM_T;
+}
 
+/************************************************************************/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/*									*/
+/************************************************************************/
+
+LispPTR unix_fullname(LispPTR *args) {
+#ifndef DOS
+  struct passwd *pwd;
+
+  if ((pwd = getpwuid(getuid())) == NULL) return NIL;
+  if (c_string_to_lisp_string(pwd->pw_gecos, args[0])) return NIL;
+#endif /* DOS */
+  return ATOM_T;
+}
 
 /************************************************************************/
 /*									*/
@@ -427,75 +375,68 @@ LispPTR unix_fullname(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-extern DLword  *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, 
-	       *EmRealUtilin68K,*EmUtilin68K;
-extern DLword  *EmKbdAd168K,*EmKbdAd268K,*EmKbdAd368K,
-	       *EmKbdAd468K,*EmKbdAd568K;
+extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUtilin68K;
+extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 
-LispPTR suspend_lisp(LispPTR *args)
-{
+LispPTR suspend_lisp(LispPTR *args) {
 #ifndef DOS
-    extern DLword *CTopKeyevent;
-    extern LispPTR *KEYBUFFERING68k;
+  extern DLword *CTopKeyevent;
+  extern LispPTR *KEYBUFFERING68k;
 
-    DLword w, r;
-    KBEVENT *kbevent;
+  DLword w, r;
+  KBEVENT *kbevent;
 
+  if (device_before_raid() < 0) {
+    OSMESSAGE_PRINT(printf("Can't suspend\n"));
+    return NIL;
+  }
 
-    if(device_before_raid() < 0)
-      {
-	OSMESSAGE_PRINT( printf("Can't suspend\n") );
-	return NIL;
-      }
+  OSMESSAGE_PRINT(printf("suspending...\n"));
 
-    OSMESSAGE_PRINT( printf("suspending...\n") );
-
-  /* Send a terminal-stop signal to the whole process-group, not
-     just this process, so that if we are running as part of a
-     C-shell file the shell will be suspended too. */
+/* Send a terminal-stop signal to the whole process-group, not
+   just this process, so that if we are running as part of a
+   C-shell file the shell will be suspended too. */
 #ifdef SYSVONLY
-    kill(0, SIGTSTP);
+  kill(0, SIGTSTP);
 #else
-    killpg(getpgrp(0), SIGTSTP);
+  killpg(getpgrp(0), SIGTSTP);
 #endif /* SYSVONLY */
 
+  OSMESSAGE_PRINT(printf("resuming\n"));
+  device_after_raid();
 
+  r = RING_READ(CTopKeyevent);
+  w = RING_WRITE(CTopKeyevent);
 
-    OSMESSAGE_PRINT( printf("resuming\n") );
-    device_after_raid();
+  /*NO CARE about event queue FULL */
 
-    r=RING_READ(CTopKeyevent);
-    w=RING_WRITE(CTopKeyevent);
+  GETWORD(EmKbdAd068K) = KB_ALLUP;
+  GETWORD(EmKbdAd168K) = KB_ALLUP;
+  GETWORD(EmKbdAd268K) = KB_ALLUP;
+  GETWORD(EmKbdAd368K) = KB_ALLUP;
+  GETWORD(EmKbdAd468K) = KB_ALLUP;
+  GETWORD(EmKbdAd568K) = KB_ALLUP;
+  GETWORD(EmRealUtilin68K) = KB_ALLUP;
 
-   /*NO CARE about event queue FULL */
+  kbevent = (KBEVENT *)(CTopKeyevent + w);
 
-    GETWORD(EmKbdAd068K)= KB_ALLUP;
-    GETWORD(EmKbdAd168K)= KB_ALLUP;
-    GETWORD(EmKbdAd268K)= KB_ALLUP;
-    GETWORD(EmKbdAd368K)= KB_ALLUP;
-    GETWORD(EmKbdAd468K)= KB_ALLUP;
-    GETWORD(EmKbdAd568K)= KB_ALLUP;
-    GETWORD(EmRealUtilin68K)= KB_ALLUP;
+  /*    RCLK(kbevent->time); */
 
-    kbevent=(KBEVENT*)(CTopKeyevent+ w);
+  kbevent->W0 = GETWORD(EmKbdAd068K);
+  kbevent->W1 = GETWORD(EmKbdAd168K);
+  kbevent->W2 = GETWORD(EmKbdAd268K);
+  kbevent->W3 = GETWORD(EmKbdAd368K);
+  kbevent->W4 = GETWORD(EmKbdAd468K);
+  kbevent->W5 = GETWORD(EmKbdAd568K);
+  kbevent->WU = GETWORD(EmRealUtilin68K);
 
-/*    RCLK(kbevent->time); */
+  if (r == 0) /* Queue was empty */
+    ((RING *)CTopKeyevent)->read = w;
 
-    kbevent->W0= GETWORD(EmKbdAd068K);
-    kbevent->W1= GETWORD(EmKbdAd168K);
-    kbevent->W2= GETWORD(EmKbdAd268K);
-    kbevent->W3= GETWORD(EmKbdAd368K);
-    kbevent->W4= GETWORD(EmKbdAd468K);
-    kbevent->W5= GETWORD(EmKbdAd568K);
-    kbevent->WU= GETWORD(EmRealUtilin68K);
-
-    if(r==0) /* Queue was empty */
-	((RING*)CTopKeyevent)->read=w;
-
-    if(w >= MAXKEYEVENT)
-	((RING*)CTopKeyevent)->write = MINKEYEVENT;
-    else
-	((RING*)CTopKeyevent)->write = w + KEYEVENTSIZE;
+  if (w >= MAXKEYEVENT)
+    ((RING *)CTopKeyevent)->write = MINKEYEVENT;
+  else
+    ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
 #endif /* DOS, which doesn't support suspend-lisp */
-    return ATOM_T;
-  }
+  return ATOM_T;
+}

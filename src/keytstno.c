@@ -1,9 +1,8 @@
-/* $Id: keytstno.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: keytstno.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: keytstno.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyright (C) Venue";
 
 /* Loaded instead of keytst.c, with unlocked definition of keytester */
-
-
 
 /************************************************************************/
 /*									*/
@@ -19,8 +18,4 @@ static char *id = "$Id: keytstno.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copy
 
 #include "version.h"
 
-
-int keytester (void)
-{
-    return 0;
-    }
+int keytester(void) { return 0; }

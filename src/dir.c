@@ -1,8 +1,6 @@
 /* $Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright (C) Venue";
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-99 Venue. All Rights Reserved.		*/
@@ -15,25 +13,23 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
 
-
-#include	<sys/types.h>
+#include <sys/types.h>
 #include <setjmp.h>
 #ifndef DOS
-#include	<sys/param.h>
+#include <sys/param.h>
 #ifndef OS5
 #ifndef FREEBSD
-#include	<sys/dir.h>
+#include <sys/dir.h>
 #endif /* FREEBSD */
 #endif /* OS5 */
-#include	<sys/stat.h>
-#include	<setjmp.h>
-#include	<pwd.h>
+#include <sys/stat.h>
+#include <setjmp.h>
+#include <pwd.h>
 
 #ifndef SYSVONLY
-#include	<strings.h>
+#include <strings.h>
 /*  #else  */
 /*  #include <string.h> */
 #endif /* SYSVONLY */
@@ -47,14 +43,14 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #endif
 
 #ifdef RISCOS
-#include	<dirent.h>
+#include <dirent.h>
 #define direct dirent
 #endif /* RISCOS */
 
 #ifdef ISC
-#include	<dirent.h>
-#include	<unistd.h>
-#include	<sys/bsdtypes.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <sys/bsdtypes.h>
 #define direct dirent
 #endif /* ISC */
 
@@ -72,7 +68,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #define alarm(x) 1
 #endif /* DOS */
 
-
 #ifdef SYSVONLY
 #include <unistd.h>
 #endif /* SYSVONLY */
@@ -82,29 +77,28 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #define direct dirent
 #endif
 
+#include <stdio.h>
+#include <errno.h>
+#include "lispemul.h"
+#include "lispmap.h"
+#include "adr68k.h"
+#include "lsptypes.h"
+#include "arith.h"
+#include "lspglob.h"
+#include "timeout.h"
+#include "locfile.h"
 
-#include	<stdio.h>
-#include	<errno.h>
-#include	"lispemul.h"
-#include	"lispmap.h"
-#include	"adr68k.h"
-#include	"lsptypes.h"
-#include	"arith.h"
-#include	"lspglob.h"
-#include	"timeout.h"
-#include	"locfile.h"
+extern int *Lisp_errno;
+extern int Dummy_errno;
 
-extern	int*	Lisp_errno;
-extern	int	Dummy_errno;
-
-#define DIRCHAR	'>'
+#define DIRCHAR '>'
 
 /************************************************************************
-	SUBROUTINES
-	For pattern matching check
+        SUBROUTINES
+        For pattern matching check
 ************************************************************************/
 
-/*		
+/*
  * Name:	SetupMatch
  *
  * Argument:	char	*tname	Target name including name ,extension and version.
@@ -126,65 +120,62 @@ extern	int	Dummy_errno;
  * routine.
  */
 
-#define SetupMatch(tname, pname, text, pext, tver) {				\
-	  register char	*pp;							\
-										\
-	  separate_version(tname, tver, 0);					\
-										\
-	  if ((pp = (char *)rindex(tname, '.')) == NULL) {				\
-		  *text = '\0';							\
-	  } else {								\
-		  *pp = '\0';							\
-		  strcpy(text, pp + 1);						\
-	  }									\
-										\
-	  if ((pp = (char *)rindex(pname, '.')) == NULL) {				\
-		  *pext = '\0';							\
-	  } else {								\
-		  *pp = '\0';							\
-		  strcpy(pext, pp + 1);						\
-	  }									\
+#define SetupMatch(tname, pname, text, pext, tver)   \
+  {                                                  \
+    register char *pp;                               \
+                                                     \
+    separate_version(tname, tver, 0);                \
+                                                     \
+    if ((pp = (char *)rindex(tname, '.')) == NULL) { \
+      *text = '\0';                                  \
+    } else {                                         \
+      *pp = '\0';                                    \
+      strcpy(text, pp + 1);                          \
+    }                                                \
+                                                     \
+    if ((pp = (char *)rindex(pname, '.')) == NULL) { \
+      *pext = '\0';                                  \
+    } else {                                         \
+      *pp = '\0';                                    \
+      strcpy(pext, pp + 1);                          \
+    }                                                \
   }
 
-#define MatchP(target, name, ver, matchtag, unmatchtag) {			   \
-										   \
-	char	tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];		   \
-	char	pname[MAXNAMLEN], pext[MAXNAMLEN];   				   \
-										   \
-	strcpy(tname, target);						   	   \
-	DOWNCASE(tname);						   	   \
-	strcpy(pname, name);						   	   \
-	DOWNCASE(pname);						   	   \
-										   \
-	SetupMatch(tname, pname, text, pext, tver);				   \
-										   \
-	if (match_pattern(tname, pname) &&			   		   \
-	    match_pattern(text, pext) &&	   				   \
-	    match_pattern(tver, ver))	   					   \
-	  goto matchtag;							   \
-	else									   \
-	  goto unmatchtag;							   \
-}
+#define MatchP(target, name, ver, matchtag, unmatchtag)                                       \
+  {                                                                                           \
+    char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
+    char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
+                                                                                              \
+    strcpy(tname, target);                                                                    \
+    DOWNCASE(tname);                                                                          \
+    strcpy(pname, name);                                                                      \
+    DOWNCASE(pname);                                                                          \
+                                                                                              \
+    SetupMatch(tname, pname, text, pext, tver);                                               \
+                                                                                              \
+    if (match_pattern(tname, pname) && match_pattern(text, pext) && match_pattern(tver, ver)) \
+      goto matchtag;                                                                          \
+    else                                                                                      \
+      goto unmatchtag;                                                                        \
+  }
 
-#define MatchP_Case(target, name, ver, matchtag, unmatchtag) {			   \
-										   \
-	char	tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];		   \
-	char	pname[MAXNAMLEN], pext[MAXNAMLEN];   				   \
-										   \
-	strcpy(tname, target);						   	   \
-	strcpy(pname, name);						   	   \
-										   \
-	SetupMatch(tname, pname, text, pext, tver);				   \
-										   \
-	if (match_pattern(tname, pname) &&			   		   \
-	    match_pattern(text, pext) &&   					   \
-	    match_pattern(tver, ver))	   					   \
-	  goto matchtag;							   \
-	else									   \
-	  goto unmatchtag;							   \
-}
+#define MatchP_Case(target, name, ver, matchtag, unmatchtag)                                  \
+  {                                                                                           \
+    char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
+    char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
+                                                                                              \
+    strcpy(tname, target);                                                                    \
+    strcpy(pname, name);                                                                      \
+                                                                                              \
+    SetupMatch(tname, pname, text, pext, tver);                                               \
+                                                                                              \
+    if (match_pattern(tname, pname) && match_pattern(text, pext) && match_pattern(tver, ver)) \
+      goto matchtag;                                                                          \
+    else                                                                                      \
+      goto unmatchtag;                                                                        \
+  }
 
-/*		
+/*
  * Name:	match_pattern
  *
  * Argument:	char	*tp	String which is matched against pattern.
@@ -200,84 +191,79 @@ extern	int	Dummy_errno;
  * number of characters.
  */
 
-int match_pattern(tp, pp)
-	register char	*tp;
-	register char	*pp;
+int match_pattern(tp, pp) register char *tp;
+register char *pp;
 {
-	register char	*tsp, *psp;
-	register int	inastr;
-	
+  register char *tsp, *psp;
+  register int inastr;
+
 #ifdef DOS
-    /* % is not allowed in DOS names for Medley. */
-    if (strchr(tp, '%')) return 0;
+  /* % is not allowed in DOS names for Medley. */
+  if (strchr(tp, '%')) return 0;
 
 #endif /* DOS */
 
-	for (tsp = tp, psp = pp, inastr = 0;;tp++, pp++) {
-		switch (*pp) {
+  for (tsp = tp, psp = pp, inastr = 0;; tp++, pp++) {
+    switch (*pp) {
+      case '\0': return ((*tp == '\0') ? 1 : 0);
 
-		      case '\0':
-			return ((*tp == '\0') ? 1 : 0);
+      case '*':
+        while (*pp == '*') pp++; /* Skip successive '*'s. */
+        if (*pp == '\0') return (1);
 
-		      case '*':
-			while (*pp == '*') pp++; /* Skip successive '*'s. */
-			if (*pp == '\0') return(1);
+        psp = pp;
+        while (*tp != *pp && *tp != '\0') tp++;
 
-			psp = pp;
-			while (*tp != *pp && *tp != '\0') tp++;
+        if (*tp == '\0') return (0);
 
-			if (*tp == '\0') return(0);
+        tsp = tp;
+        inastr = 1;
 
-			tsp = tp;
-			inastr = 1;
+        continue;
 
-			continue;
+      default:
+        if (*tp == *pp) continue;
 
-		      default:
-			if (*tp == *pp) continue;
-
-			if (inastr) {
-				/*
-				 * Try to find a character which match to
-				 * a character psp points from a charcter
-				 * next to tsp.  If found retry from there.
-				 */
-				for (tp = tsp + 1;
-				     *tp != '\0' && *tp != *psp;
-				     tp++) {}
-				if (*tp == '\0') return(0);
-				pp = psp;
-				tsp = tp;
-				continue;
-			} else {
-				return(0);
-			}
-		}
-	}
+        if (inastr) {
+          /*
+           * Try to find a character which match to
+           * a character psp points from a charcter
+           * next to tsp.  If found retry from there.
+           */
+          for (tp = tsp + 1; *tp != '\0' && *tp != *psp; tp++) {}
+          if (*tp == '\0') return (0);
+          pp = psp;
+          tsp = tp;
+          continue;
+        } else {
+          return (0);
+        }
+    }
+  }
 }
 
-
-
 #ifdef DOS
 
-int make_old_version(old, file)
-  char *old, *file;
-  {
-    int len = (int)strlen(file)-1;
-    if(file[len] == DIRCHAR) return 0;
-    /* look up old versions of files for version # 0's */
-    strcpy(old, file);
+int make_old_version(old, file) char *old, *file;
+{
+  int len = (int)strlen(file) - 1;
+  if (file[len] == DIRCHAR) return 0;
+  /* look up old versions of files for version # 0's */
+  strcpy(old, file);
 
-    if (old[len] == '.') strcat(old, "%");
-    else if ( (len > 0) && old[len-1] == '.') strcat(old, "%");
-    else if ( (len > 1) && old[len-2] == '.') strcat(old, "%");
-    else if ( (len > 2) && old[len-3] == '.') old[len] = '%';
-    else strcat(old, ".%");
-    return 1;
-  }
+  if (old[len] == '.')
+    strcat(old, "%");
+  else if ((len > 0) && old[len - 1] == '.')
+    strcat(old, "%");
+  else if ((len > 1) && old[len - 2] == '.')
+    strcat(old, "%");
+  else if ((len > 2) && old[len - 3] == '.')
+    old[len] = '%';
+  else
+    strcat(old, ".%");
+  return 1;
+}
 #endif /* DOS */
-
-
 
 /************************************************************************/
 /******** E N D   O F   P A T T E R N - M A T C H I N G   C O D E *******/
@@ -309,95 +295,95 @@ int make_old_version(old, file)
  */
 
 typedef struct fprop {
-	unsigned	length;		/* Byte length of this file. */
-	unsigned	wdate;		/* Written (Creation) date in Lisp sense. */
-	unsigned	rdate;		/* Read date in Lisp sense. */
-	unsigned	protect;	/* Protect mode of this file. */
-	char		author[256];	/* Author in Lisp sense. */
-	u_short		au_len;		/* Byte length of author. */
-	unsigned long	nil;		/* padding to 8-byte multiple */
+  unsigned length;   /* Byte length of this file. */
+  unsigned wdate;    /* Written (Creation) date in Lisp sense. */
+  unsigned rdate;    /* Read date in Lisp sense. */
+  unsigned protect;  /* Protect mode of this file. */
+  char author[256];  /* Author in Lisp sense. */
+  u_short au_len;    /* Byte length of author. */
+  unsigned long nil; /* padding to 8-byte multiple */
 } FPROP;
 
- /* This structure has a pointer at each end to force alignment to
-    be correct when a pointer is 8 bytes long. */
+/* This structure has a pointer at each end to force alignment to
+   be correct when a pointer is 8 bytes long. */
 typedef struct finfo {
-	FPROP		*prop;			/* File properties Lisp needs. */
-	char		lname[MAXNAMLEN];	/* Name in Lisp Format. */
-	u_short		lname_len; 		/* Byte length of lname. */
-	char		no_ver_name[MAXNAMLEN];
-						/*
-					 	 * Name in UNIX Format.  Does not
-						 * include Version field.
-						 * All lower case.
-					 	 */
-	ino_t		ino;			/* I-node number of this file. */
-	unsigned	version;		/* Version in Lisp sense. */
-	u_short		dirp;			/* If 1, this file is a directory. */
-	struct finfo	*next;			/*
-					         * Link to a next entry.  Last entry is
-					 	 * indicated by NULL pointer.
-						 */
+  FPROP *prop;           /* File properties Lisp needs. */
+  char lname[MAXNAMLEN]; /* Name in Lisp Format. */
+  u_short lname_len;     /* Byte length of lname. */
+  char no_ver_name[MAXNAMLEN];
+  /*
+   * Name in UNIX Format.  Does not
+   * include Version field.
+   * All lower case.
+   */
+  ino_t ino;          /* I-node number of this file. */
+  unsigned version;   /* Version in Lisp sense. */
+  u_short dirp;       /* If 1, this file is a directory. */
+  struct finfo *next; /*
+                       * Link to a next entry.  Last entry is
+                       * indicated by NULL pointer.
+                       */
 } FINFO;
 
 typedef struct dfinfo {
-	FINFO		*head;		/* Head of the linked FINFO structures. */
-	FINFO		*next;		/* FINFO structure generated next time. */
+  FINFO *head; /* Head of the linked FINFO structures. */
+  FINFO *next; /* FINFO structure generated next time. */
 } DFINFO;
 
-FINFO		*FreeFinfoList;
-#define		INITFINFONUM	1024
+FINFO *FreeFinfoList;
+#define INITFINFONUM 1024
 
-DFINFO		*FinfoArray;
-#define		INITFINFOARRAY	32
+DFINFO *FinfoArray;
+#define INITFINFOARRAY 32
 
-unsigned	MAXFINFO;
+unsigned MAXFINFO;
 
-#define		FINFOARRAYRSIZE	16
+#define FINFOARRAYRSIZE 16
 
-#define AllocFinfo(fp) {							\
-	if (FreeFinfoList != (FINFO *)NULL) {					\
-		fp = FreeFinfoList;						\
-		FreeFinfoList = fp->next;					\
-	} else if ((fp = (FINFO *)calloc(1, sizeof(FINFO))) == NULL) {		\
-		fp = (FINFO *)NULL;						\
-	} else if ((fp->prop = (FPROP *)calloc(1, sizeof(FPROP))) == NULL) {	\
-		free(fp);							\
-		fp = (FINFO *)NULL;						\
-	}									\
-}
+#define AllocFinfo(fp)                                                   \
+  {                                                                      \
+    if (FreeFinfoList != (FINFO *)NULL) {                                \
+      fp = FreeFinfoList;                                                \
+      FreeFinfoList = fp->next;                                          \
+    } else if ((fp = (FINFO *)calloc(1, sizeof(FINFO))) == NULL) {       \
+      fp = (FINFO *)NULL;                                                \
+    } else if ((fp->prop = (FPROP *)calloc(1, sizeof(FPROP))) == NULL) { \
+      free(fp);                                                          \
+      fp = (FINFO *)NULL;                                                \
+    }                                                                    \
+  }
 
-#define FreeFinfo(fp) {								\
-	register FINFO	*lastp;							\
-	for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {}	\
-	lastp->next = FreeFinfoList;						\
-	FreeFinfoList = fp;							\
-}
+#define FreeFinfo(fp)                                                      \
+  {                                                                        \
+    register FINFO *lastp;                                                 \
+    for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {} \
+    lastp->next = FreeFinfoList;                                           \
+    FreeFinfoList = fp;                                                    \
+  }
 
 /*
  * For debug aid.
  */
 
 #ifdef FSDEBUG
-void print_finfo(fp)
-	FINFO	*fp;
+void print_finfo(fp) FINFO *fp;
 {
-	FINFO	*sp;
-	sp = fp;
+  FINFO *sp;
+  sp = fp;
 
-	if (fp != (FINFO *)NULL) {
-		do {
-			printf("%s -> ", fp->lname);
-			printf("%d\n", fp->version);
-			fp = fp->next;
-		} while (fp != (FINFO *)NULL && fp != sp);
+  if (fp != (FINFO *)NULL) {
+    do {
+      printf("%s -> ", fp->lname);
+      printf("%d\n", fp->version);
+      fp = fp->next;
+    } while (fp != (FINFO *)NULL && fp != sp);
 
-		if (fp = sp) printf("Circular detected!\n");
-	}
+    if (fp = sp) printf("Circular detected!\n");
+  }
 }
 #endif /* FSDEBUG */
 
-
-/*		
+/*
  * Name:	init_finfo
  *
  * Argument:	None.
@@ -414,36 +400,33 @@ void print_finfo(fp)
  * This routine is invoked at very first stage of emulator start up.
  */
 
-int init_finfo()
-{
-	register FINFO	*cp;
-	register int	n;
+int init_finfo() {
+  register FINFO *cp;
+  register int n;
 
-	if ((FreeFinfoList =
-	     (FINFO *)calloc(sizeof(FINFO) + sizeof(FPROP), INITFINFONUM))
-	    == (FINFO *)NULL) {
-		*Lisp_errno = errno;
-		return(0);
-	}
-	for (cp = FreeFinfoList, n = INITFINFONUM; n > 1; n--) {
-		cp->prop = (FPROP *)(cp + 1);
-		cp->next = (FINFO *)((char *)cp + sizeof(FINFO) + sizeof(FPROP));
-		cp = cp->next;
-	}
-	cp->prop = (FPROP *)(cp + 1);
-	cp->next = (FINFO *)NULL;
+  if ((FreeFinfoList = (FINFO *)calloc(sizeof(FINFO) + sizeof(FPROP), INITFINFONUM)) ==
+      (FINFO *)NULL) {
+    *Lisp_errno = errno;
+    return (0);
+  }
+  for (cp = FreeFinfoList, n = INITFINFONUM; n > 1; n--) {
+    cp->prop = (FPROP *)(cp + 1);
+    cp->next = (FINFO *)((char *)cp + sizeof(FINFO) + sizeof(FPROP));
+    cp = cp->next;
+  }
+  cp->prop = (FPROP *)(cp + 1);
+  cp->next = (FINFO *)NULL;
 
-	if ((FinfoArray = (DFINFO *)calloc(sizeof(DFINFO), INITFINFOARRAY))
-	    == (DFINFO *)NULL) {
-		*Lisp_errno = errno;
-		return(0);
-	}
-	MAXFINFO = INITFINFOARRAY;
+  if ((FinfoArray = (DFINFO *)calloc(sizeof(DFINFO), INITFINFOARRAY)) == (DFINFO *)NULL) {
+    *Lisp_errno = errno;
+    return (0);
+  }
+  MAXFINFO = INITFINFOARRAY;
 
-	return(1);
+  return (1);
 }
 
-/*		
+/*
  * Name:	get_finfo_id
  *
  * Argument:	None.
@@ -465,30 +448,28 @@ int init_finfo()
  * FINFOARRAYRSIZE.
  */
 
-int get_finfo_id()
-{
-	register int	i;
-	DFINFO		*dfap;
+int get_finfo_id() {
+  register int i;
+  DFINFO *dfap;
 
-	for (i = 0; i < MAXFINFO; i++) if (FinfoArray[i].head == (FINFO *)0)
-	  return (i);
+  for (i = 0; i < MAXFINFO; i++)
+    if (FinfoArray[i].head == (FINFO *)0) return (i);
 
-	if ((dfap = (DFINFO *)calloc(sizeof(DFINFO), MAXFINFO + FINFOARRAYRSIZE))
-	    == (DFINFO *)NULL) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
-	for (i = 0; i < MAXFINFO; i++) {
-		dfap[i].head = FinfoArray[i].head;
-		dfap[i].next = FinfoArray[i].next;
-	}
-	free(FinfoArray);
-	MAXFINFO += FINFOARRAYRSIZE;
-	FinfoArray = dfap;
-	return(i);
+  if ((dfap = (DFINFO *)calloc(sizeof(DFINFO), MAXFINFO + FINFOARRAYRSIZE)) == (DFINFO *)NULL) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
+  for (i = 0; i < MAXFINFO; i++) {
+    dfap[i].head = FinfoArray[i].head;
+    dfap[i].next = FinfoArray[i].next;
+  }
+  free(FinfoArray);
+  MAXFINFO += FINFOARRAYRSIZE;
+  FinfoArray = dfap;
+  return (i);
 }
 
-/*		
+/*
  * Name:	enum_dsk_prop
  *
  * Argument:	char	*dir	Absolute path of directory in UNIX format.
@@ -508,282 +489,276 @@ int get_finfo_id()
  * Enumerates files and directories matching to the pattern on the specified
  * directory.  The pattern matching is done in case insensitive manner.
  * File properties Lisp will need later are also stored in the result linked list
- * of FINFO structures. 
+ * of FINFO structures.
  */
 
 #ifdef DOS
-int enum_dsk_prop(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+int enum_dsk_prop(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval, res, isslash = 0, drive = 0;
-	struct find_t			dirp;
-	register struct passwd	*pwd;	
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
-	char			fver[VERSIONLEN];
-	char old[MAXNAMLEN];
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval, res, isslash = 0, drive = 0;
+  struct find_t dirp;
+  register struct passwd *pwd;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
+  char fver[VERSIONLEN];
+  char old[MAXNAMLEN];
 
+  /* The null directory has to be special cased */
+  /* because adjacent \'s in the pathname don't match anything */
+  if (dir[1] == DRIVESEP) drive = dir[0];
 
+  if (strcmp(dir, "\\") == 0)
+    isslash = 1;
+  else if (drive && (strcmp(dir + 2, "\\") == 0))
+    isslash = 1;
 
-    /* The null directory has to be special cased */
-    /* because adjacent \'s in the pathname don't match anything */
-    if (dir[1] == DRIVESEP) drive = dir[0];
+  if (!isslash)
+    strcpy(namebuf, dir); /* Only add the dir if it's real */
+  else if (drive) {
+    namebuf[0] = drive;
+    namebuf[1] = DRIVESEP;
+    namebuf[2] = '\0';
+  } else
+    *namebuf = '\0';
 
-    if (strcmp(dir, "\\")==0) isslash = 1;
-    else if (drive && (strcmp(dir+2, "\\")==0)) isslash = 1;
+  strcat(namebuf, DIRSEPSTR);
+  strcat(namebuf, name);
 
-    if (!isslash) strcpy(namebuf, dir); /* Only add the dir if it's real */
-    else if (drive)
-      {
-	namebuf[0] = drive;
-	namebuf[1] = DRIVESEP;
-	namebuf[2] = '\0';
-      }
-    else *namebuf = '\0';
+  TIMEOUT(res = _dos_findfirst(namebuf, _A_NORMAL | _A_SUBDIR, &dirp));
+  if (res < 0) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-    strcat(namebuf,DIRSEPSTR);
-    strcat(namebuf, name);
+  for (nextp = prevp = (FINFO *)NULL, n = 0; res == 0;
+       S_TOUT(res = _dos_findnext(&dirp)), prevp = nextp) {
+    if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0) continue;
+    MatchP(dirp.name, name, ver, match, unmatch);
+  unmatch:
+    continue;
+  match:
+    AllocFinfo(nextp);
+    if (nextp == (FINFO *)NULL) {
+      FreeFinfo(prevp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+    nextp->next = prevp;
+    if (isslash) {
+      if (drive)
+        sprintf(namebuf, "%c:\\%s", drive, dirp.name);
+      else
+        sprintf(namebuf, "\\%s", dirp.name);
+    } else
+      sprintf(namebuf, "%s\\%s", dir, dirp.name);
 
+    TIMEOUT(rval = stat(namebuf, &sbuf));
+    if (rval == -1 && errno != ENOENT) {
+      /*
+       * ENOENT error might be caused by missing symbolic
+       * link. We should ignore such error here.
+       */
+      FreeFinfo(nextp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
 
-        TIMEOUT(res = _dos_findfirst(namebuf, _A_NORMAL|_A_SUBDIR, &dirp));
-	if (res < 0) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+    strcpy(namebuf, dirp.name);
+    if (sbuf.st_mode & S_IFDIR) {
+      nextp->dirp = 1;
+      quote_dname(namebuf);
+      strcpy(nextp->lname, namebuf);
+      len = strlen(namebuf);
+      *(nextp->lname + len) = DIRCHAR;
+      *(nextp->lname + len + 1) = '\0';
+      nextp->lname_len = len + 1;
+    } else {
+      /* All other types than directory. */
+      nextp->dirp = 0;
+      strcat(namebuf, ".~1~");
+      quote_fname(namebuf);
+      len = strlen(namebuf);
+      strcpy(nextp->lname, namebuf);
+      *(nextp->lname + len) = '\0';
+      nextp->lname_len = len;
+    }
 
-	for (nextp = prevp = (FINFO *)NULL, n = 0;
-	     res == 0;
-	     S_TOUT(res = _dos_findnext(&dirp)), prevp = nextp) {
-		if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0 ) continue;
-		MatchP(dirp.name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-	if (isslash)
-	  {
-	    if (drive) sprintf(namebuf,"%c:\\%s", drive, dirp.name);
-	    else sprintf(namebuf, "\\%s", dirp.name);
-	  }
-		else sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    strcpy(namebuf, dirp.name);
+    len = strlen(namebuf);
+    DOWNCASE(namebuf);
+    strcpy(nextp->no_ver_name, namebuf);
+    nextp->version = 1;
+    nextp->ino = sbuf.st_ino;
+    nextp->prop->length = (unsigned)sbuf.st_size;
+    nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
+    nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
+    nextp->prop->protect = (unsigned)sbuf.st_mode;
+    /*	TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+            if (pwd == (struct passwd *)NULL) {
+                    nextp->prop->au_len = 0;
+            } else {
+                    len = strlen(pwd->pw_name);
+                    strcpy(nextp->prop->author, pwd->pw_name);
+                    *(nextp->prop->author + len) = '\0';
+                    nextp->prop->au_len = len;
+            } */
+    n++;
+  }
 
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dirp.name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			strcat(namebuf,".~1~");
-			quote_fname(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  /***********************/
+  /* Now go looking for version-0 entries */
+  /***********************/
 
-		strcpy(namebuf, dirp.name);
-		len = strlen(namebuf);
-		DOWNCASE(namebuf);
-		strcpy(nextp->no_ver_name, namebuf);
-		  nextp->version = 1;
-		nextp->ino = sbuf.st_ino;
-		nextp->prop->length = (unsigned)sbuf.st_size;
-		nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
-		nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
-		nextp->prop->protect = (unsigned)sbuf.st_mode;
-	/*	TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-		if (pwd == (struct passwd *)NULL) {
-			nextp->prop->au_len = 0;
-		} else {
-			len = strlen(pwd->pw_name);
-			strcpy(nextp->prop->author, pwd->pw_name);
-			*(nextp->prop->author + len) = '\0';
-			nextp->prop->au_len = len;
-		} */
-		n++;
-	}
+  for (nextp = prevp; nextp; nextp = nextp->next) {
+    FINFO *newp;
 
+    if (!make_old_version(old, nextp->no_ver_name)) continue;
 
-    /***********************/
-    /* Now go looking for version-0 entries */
-    /***********************/
+    if (isslash) {
+      if (drive)
+        sprintf(namebuf, "%c:\\%s", drive, old);
+      else
+        sprintf(namebuf, "\\%s", old);
+    } else
+      sprintf(namebuf, "%s\\%s", dir, old);
+    TIMEOUT(rval = stat(namebuf, &sbuf));
 
-    for (nextp = prevp; nextp; nextp = nextp -> next)
-      {
-	FINFO *newp;
+    if (rval == -1) continue;
 
-	if (!make_old_version(old, nextp->no_ver_name)) continue;
+    AllocFinfo(newp);
+    newp->next = prevp;
+    /* All other types than directory. */
+    newp->dirp = 0;
+    sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
+    quote_fname(namebuf);
+    len = strlen(namebuf);
+    strcpy(newp->lname, namebuf);
+    *(newp->lname + len) = '\0';
+    newp->lname_len = len;
 
-	if (isslash)
-	  {
-	    if (drive) sprintf(namebuf,"%c:\\%s", drive, old);
-	    else sprintf(namebuf, "\\%s", old);
-	  }
-	else sprintf(namebuf, "%s\\%s", dir, old);
-	TIMEOUT(rval = stat(namebuf, &sbuf));
-
-	if (rval == -1 ) continue;
-
-	AllocFinfo(newp);
-	newp->next = prevp;
-	/* All other types than directory. */
-	newp->dirp = 0;
-	sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
-	quote_fname(namebuf);
-	len = strlen(namebuf);
-	strcpy(newp->lname, namebuf);
-	*(newp->lname + len) = '\0';
-	newp->lname_len = len;
-
-	strcpy(newp->no_ver_name, old);
-	newp->version = 0;
-	newp->ino = sbuf.st_ino;
-	newp->prop->length = (unsigned)sbuf.st_size;
-	newp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
-	newp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
-	newp->prop->protect = (unsigned)sbuf.st_mode;
-	n++;
-	prevp = newp;
-      }
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+    strcpy(newp->no_ver_name, old);
+    newp->version = 0;
+    newp->ino = sbuf.st_ino;
+    newp->prop->length = (unsigned)sbuf.st_size;
+    newp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
+    newp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
+    newp->prop->protect = (unsigned)sbuf.st_mode;
+    n++;
+    prevp = newp;
+  }
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
-#else /* DOS */
-int enum_dsk_prop(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+#else  /* DOS */
+int enum_dsk_prop(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	DIR			*dirp;
-	register struct passwd	*pwd;	
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
-	char			fver[VERSIONLEN];
-	
-	errno=0;
-        TIMEOUT0(dirp = opendir(dir));
-	if (dirp == NULL) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  DIR *dirp;
+  register struct passwd *pwd;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
+  char fver[VERSIONLEN];
 
-	for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-	     dp != (struct direct *)NULL || errno == EINTR;
-	     errno=0, S_TOUT(dp = readdir(dirp)), prevp = nextp) 
-	  if (dp)
-	    {
-		if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 ||
-		    dp->d_ino == 0) continue;
-		MatchP((char *)dp->d_name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s/%s", dir, dp->d_name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dp->d_name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  errno = 0;
+  TIMEOUT0(dirp = opendir(dir));
+  if (dirp == NULL) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-		strcpy(namebuf, dp->d_name);
-		len = strlen(namebuf);
-		separate_version(namebuf, fver, 1);
-		DOWNCASE(namebuf);
-		strcpy(nextp->no_ver_name, namebuf);
-		if (*fver == '\0')
-		  nextp->version = 0;
-		else
-		  nextp->version = atoi(fver);
-		nextp->ino = sbuf.st_ino;
-		nextp->prop->length = (unsigned)sbuf.st_size;
-		nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
-		nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
-		nextp->prop->protect = (unsigned)sbuf.st_mode;
-		TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-		if (pwd == (struct passwd *)NULL) {
-			nextp->prop->au_len = 0;
-		} else {
-			len = strlen(pwd->pw_name);
-			strcpy(nextp->prop->author, pwd->pw_name);
-			*(nextp->prop->author + len) = '\0';
-			nextp->prop->au_len = len;
-		}
-		n++;
-	}
-	closedir(dirp);
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+  for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
+       dp != (struct direct *)NULL || errno == EINTR;
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+    if (dp) {
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      MatchP((char *)dp->d_name, name, ver, match, unmatch);
+    unmatch:
+      continue;
+    match:
+      AllocFinfo(nextp);
+      if (nextp == (FINFO *)NULL) {
+        FreeFinfo(prevp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
+      nextp->next = prevp;
+      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      TIMEOUT(rval = stat(namebuf, &sbuf));
+      if (rval == -1 && errno != ENOENT) {
+        /*
+         * ENOENT error might be caused by missing symbolic
+         * link. We should ignore such error here.
+         */
+        FreeFinfo(nextp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
+
+      strcpy(namebuf, dp->d_name);
+      if (sbuf.st_mode & S_IFDIR) {
+        nextp->dirp = 1;
+        quote_dname(namebuf);
+        strcpy(nextp->lname, namebuf);
+        len = strlen(namebuf);
+        *(nextp->lname + len) = DIRCHAR;
+        *(nextp->lname + len + 1) = '\0';
+        nextp->lname_len = len + 1;
+      } else {
+        /* All other types than directory. */
+        nextp->dirp = 0;
+        quote_fname(namebuf);
+        len = strlen(namebuf);
+        strcpy(nextp->lname, namebuf);
+        *(nextp->lname + len) = '\0';
+        nextp->lname_len = len;
+      }
+
+      strcpy(namebuf, dp->d_name);
+      len = strlen(namebuf);
+      separate_version(namebuf, fver, 1);
+      DOWNCASE(namebuf);
+      strcpy(nextp->no_ver_name, namebuf);
+      if (*fver == '\0')
+        nextp->version = 0;
+      else
+        nextp->version = atoi(fver);
+      nextp->ino = sbuf.st_ino;
+      nextp->prop->length = (unsigned)sbuf.st_size;
+      nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
+      nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
+      nextp->prop->protect = (unsigned)sbuf.st_mode;
+      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+      if (pwd == (struct passwd *)NULL) {
+        nextp->prop->au_len = 0;
+      } else {
+        len = strlen(pwd->pw_name);
+        strcpy(nextp->prop->author, pwd->pw_name);
+        *(nextp->prop->author + len) = '\0';
+        nextp->prop->au_len = len;
+      }
+      n++;
+    }
+  closedir(dirp);
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
 #endif /* DOS */
 
-/*		
+/*
  * Name:	enum_dsk
  *
  * Argument:	char	*dir	Absolute path of directory in UNIX format.
@@ -803,248 +778,242 @@ int enum_dsk_prop(dir, name, ver, finfo_buf)
  * Similar to enum_dsk_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_dsk(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+int enum_dsk(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-    register struct direct	*dp;
-    register FINFO	*prevp;
-    register FINFO	*nextp;
-    int			n, len, rval, isslash = 0, drive = 0;
-    struct find_t	dirp;
-    struct stat		sbuf;
-    char		namebuf[MAXPATHLEN];
-    char		fver[VERSIONLEN];
-    char		old[MAXPATHLEN];
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval, isslash = 0, drive = 0;
+  struct find_t dirp;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
+  char fver[VERSIONLEN];
+  char old[MAXPATHLEN];
 
+  /* The null directory has to be special cased */
+  /* because adjacent \'s in the pathname don't match anything */
+  if (dir[1] == DRIVESEP) drive = dir[0];
 
-    /* The null directory has to be special cased */
-    /* because adjacent \'s in the pathname don't match anything */
-    if (dir[1] == DRIVESEP) drive = dir[0];
+  if (strcmp(dir, "\\") == 0)
+    isslash = 1;
+  else if (drive && (strcmp(dir + 2, "\\") == 0))
+    isslash = 1;
 
-    if (strcmp(dir, "\\")==0) isslash = 1;
-    else if (drive && (strcmp(dir+2, "\\")==0)) isslash = 1;
+  if (!isslash)
+    strcpy(namebuf, dir); /* Only add the dir if it's real */
+  else if (drive) {
+    namebuf[0] = drive;
+    namebuf[1] = DRIVESEP;
+    namebuf[2] = '\0';
+  } else
+    *namebuf = '\0';
 
-    if (!isslash) strcpy(namebuf, dir); /* Only add the dir if it's real */
-    else if (drive)
-      {
-	namebuf[0] = drive;
-	namebuf[1] = DRIVESEP;
-	namebuf[2] = '\0';
-      }
-    else *namebuf = '\0';
+  strcat(namebuf, DIRSEPSTR);
+  strcat(namebuf, name);
 
-    strcat(namebuf,DIRSEPSTR);
-    strcat(namebuf, name);
-
-
-    TIMEOUT(rval = _dos_findfirst(namebuf, _A_NORMAL|_A_SUBDIR, &dirp));
-    if (rval != 0)
-      {
-	*Lisp_errno = errno;
-	return(-1);
-      }
-
-    for (nextp = prevp = (FINFO *)NULL, n = 0;
-	     rval == 0;
-	     S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp)
-      {
-	if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0 ) continue;
-	MatchP(dirp.name, name, ver, match, unmatch);
-      unmatch:
-	continue;
-      match:
-	AllocFinfo(nextp);
-	if (nextp == (FINFO *)NULL) {
-		FreeFinfo(prevp);
-		*Lisp_errno = errno;
-		return(-1);
-	}
-	nextp->next = prevp;
-	if (isslash)
-	  {
-	    if (drive) sprintf(namebuf,"%c:\\%s", drive, dirp.name);
-	    else sprintf(namebuf, "\\%s", dirp.name);
-	  }
-	else sprintf(namebuf, "%s\\%s", dir, dirp.name);
-	TIMEOUT(rval = stat(namebuf, &sbuf));
-	if (rval == -1 && errno != ENOENT) {
-		/*
-		 * ENOENT error might be caused by missing symbolic
-		 * link. We should ignore such error here.
-		 */
-		FreeFinfo(nextp);
-		*Lisp_errno = errno;
-		return(-1);
-	}
-
-	strcpy(namebuf, dirp.name); /* moved from below 2/26/93 */
-	if (sbuf.st_mode & S_IFDIR) {
-		nextp->dirp = 1;
-		quote_dname(namebuf);
-		strcpy(nextp->lname, namebuf);
-		len = strlen(namebuf);
-		*(nextp->lname + len) = DIRCHAR;
-		*(nextp->lname + len + 1) = '\0';
-		nextp->lname_len = len + 1;
-	} else {
-		/* All other types than directory. */
-		nextp->dirp = 0;
-		strcat(namebuf,".~1~");
-		quote_fname(namebuf);
-		len = strlen(namebuf);
-		strcpy(nextp->lname, namebuf);
-		*(nextp->lname + len) = '\0';
-		nextp->lname_len = len;
-	}
-
-	strcpy(namebuf, dirp.name); /* to get real versionless name */
-	len = strlen(namebuf);
-	DOWNCASE(namebuf);
-	strcpy(nextp->no_ver_name, namebuf);
-	  nextp->version = 1;
-	nextp->ino = sbuf.st_ino;
-	n++;
-      }
-
-    /***********************/
-    /* Now go looking for version-0 entries */
-    /***********************/
-
-    for (nextp = prevp; nextp; nextp = nextp -> next)
-      {
-	FINFO *newp;
-
-	if (!make_old_version(old, nextp->no_ver_name)) continue;
-
-	if (isslash)
-	  {
-	    if (drive) sprintf(namebuf,"%c:\\%s", drive, old);
-	    else sprintf(namebuf, "\\%s", old);
-	  }
-	else sprintf(namebuf, "%s\\%s", dir, old);
-	TIMEOUT(rval = stat(namebuf, &sbuf));
-
-	if (rval == -1 ) continue;
-
-	AllocFinfo(newp);
-	newp->next = prevp;
-	/* All other types than directory. */
-	newp->dirp = 0;
-	sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
-	quote_fname(namebuf);
-	len = strlen(namebuf);
-	strcpy(newp->lname, namebuf);
-	*(newp->lname + len) = '\0';
-	newp->lname_len = len;
-
-	strcpy(newp->no_ver_name, old);
-	newp->version = 0;
-	newp->ino = sbuf.st_ino;
-	n++;
-	prevp = newp;
-      }
-
-    if (n > 0) *finfo_buf = prevp;
-    return(n);
+  TIMEOUT(rval = _dos_findfirst(namebuf, _A_NORMAL | _A_SUBDIR, &dirp));
+  if (rval != 0) {
+    *Lisp_errno = errno;
+    return (-1);
   }
 
-#else /* DOS */
+  for (nextp = prevp = (FINFO *)NULL, n = 0; rval == 0;
+       S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp) {
+    if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0) continue;
+    MatchP(dirp.name, name, ver, match, unmatch);
+  unmatch:
+    continue;
+  match:
+    AllocFinfo(nextp);
+    if (nextp == (FINFO *)NULL) {
+      FreeFinfo(prevp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+    nextp->next = prevp;
+    if (isslash) {
+      if (drive)
+        sprintf(namebuf, "%c:\\%s", drive, dirp.name);
+      else
+        sprintf(namebuf, "\\%s", dirp.name);
+    } else
+      sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    TIMEOUT(rval = stat(namebuf, &sbuf));
+    if (rval == -1 && errno != ENOENT) {
+      /*
+       * ENOENT error might be caused by missing symbolic
+       * link. We should ignore such error here.
+       */
+      FreeFinfo(nextp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
 
-int enum_dsk(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+    strcpy(namebuf, dirp.name); /* moved from below 2/26/93 */
+    if (sbuf.st_mode & S_IFDIR) {
+      nextp->dirp = 1;
+      quote_dname(namebuf);
+      strcpy(nextp->lname, namebuf);
+      len = strlen(namebuf);
+      *(nextp->lname + len) = DIRCHAR;
+      *(nextp->lname + len + 1) = '\0';
+      nextp->lname_len = len + 1;
+    } else {
+      /* All other types than directory. */
+      nextp->dirp = 0;
+      strcat(namebuf, ".~1~");
+      quote_fname(namebuf);
+      len = strlen(namebuf);
+      strcpy(nextp->lname, namebuf);
+      *(nextp->lname + len) = '\0';
+      nextp->lname_len = len;
+    }
+
+    strcpy(namebuf, dirp.name); /* to get real versionless name */
+    len = strlen(namebuf);
+    DOWNCASE(namebuf);
+    strcpy(nextp->no_ver_name, namebuf);
+    nextp->version = 1;
+    nextp->ino = sbuf.st_ino;
+    n++;
+  }
+
+  /***********************/
+  /* Now go looking for version-0 entries */
+  /***********************/
+
+  for (nextp = prevp; nextp; nextp = nextp->next) {
+    FINFO *newp;
+
+    if (!make_old_version(old, nextp->no_ver_name)) continue;
+
+    if (isslash) {
+      if (drive)
+        sprintf(namebuf, "%c:\\%s", drive, old);
+      else
+        sprintf(namebuf, "\\%s", old);
+    } else
+      sprintf(namebuf, "%s\\%s", dir, old);
+    TIMEOUT(rval = stat(namebuf, &sbuf));
+
+    if (rval == -1) continue;
+
+    AllocFinfo(newp);
+    newp->next = prevp;
+    /* All other types than directory. */
+    newp->dirp = 0;
+    sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
+    quote_fname(namebuf);
+    len = strlen(namebuf);
+    strcpy(newp->lname, namebuf);
+    *(newp->lname + len) = '\0';
+    newp->lname_len = len;
+
+    strcpy(newp->no_ver_name, old);
+    newp->version = 0;
+    newp->ino = sbuf.st_ino;
+    n++;
+    prevp = newp;
+  }
+
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
+}
+
+#else  /* DOS */
+
+int enum_dsk(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	DIR			*dirp;
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
-	char			fver[VERSIONLEN];
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  DIR *dirp;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
+  char fver[VERSIONLEN];
 
-	errno=0;
-        TIMEOUT0(dirp = opendir(dir));
-	if (dirp == NULL) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  errno = 0;
+  TIMEOUT0(dirp = opendir(dir));
+  if (dirp == NULL) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-	for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-	     dp != (struct direct *)NULL || errno == EINTR;
-	     errno=0, S_TOUT(dp = readdir(dirp)), prevp = nextp) 
-	  if (dp)
-	    {
-		if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 ||
-		    dp->d_ino == 0) continue;
-		MatchP((char *)dp->d_name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s/%s", dir, dp->d_name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dp->d_name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
+       dp != (struct direct *)NULL || errno == EINTR;
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+    if (dp) {
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      MatchP((char *)dp->d_name, name, ver, match, unmatch);
+    unmatch:
+      continue;
+    match:
+      AllocFinfo(nextp);
+      if (nextp == (FINFO *)NULL) {
+        FreeFinfo(prevp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
+      nextp->next = prevp;
+      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      TIMEOUT(rval = stat(namebuf, &sbuf));
+      if (rval == -1 && errno != ENOENT) {
+        /*
+         * ENOENT error might be caused by missing symbolic
+         * link. We should ignore such error here.
+         */
+        FreeFinfo(nextp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
 
-		strcpy(namebuf, dp->d_name);
-		len = strlen(namebuf);
-		separate_version(namebuf, fver, 1);
-		DOWNCASE(namebuf);
-		strcpy(nextp->no_ver_name, namebuf);
-		if (*fver == '\0')
-		  nextp->version = 0;
-		else
-		  nextp->version = atoi(fver);
-		nextp->ino = sbuf.st_ino;
-		n++;
-	}
-	closedir(dirp);
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+      strcpy(namebuf, dp->d_name);
+      if (sbuf.st_mode & S_IFDIR) {
+        nextp->dirp = 1;
+        quote_dname(namebuf);
+        strcpy(nextp->lname, namebuf);
+        len = strlen(namebuf);
+        *(nextp->lname + len) = DIRCHAR;
+        *(nextp->lname + len + 1) = '\0';
+        nextp->lname_len = len + 1;
+      } else {
+        /* All other types than directory. */
+        nextp->dirp = 0;
+        quote_fname(namebuf);
+        len = strlen(namebuf);
+        strcpy(nextp->lname, namebuf);
+        *(nextp->lname + len) = '\0';
+        nextp->lname_len = len;
+      }
+
+      strcpy(namebuf, dp->d_name);
+      len = strlen(namebuf);
+      separate_version(namebuf, fver, 1);
+      DOWNCASE(namebuf);
+      strcpy(nextp->no_ver_name, namebuf);
+      if (*fver == '\0')
+        nextp->version = 0;
+      else
+        nextp->version = atoi(fver);
+      nextp->ino = sbuf.st_ino;
+      n++;
+    }
+  closedir(dirp);
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
 #endif /* DOS */
 
-/*		
+/*
  * Name:	enum_ufs_prop
  *
  * Argument:	char	*dir	Absolute path of directory in UNIX format.
@@ -1064,200 +1033,195 @@ int enum_dsk(dir, name, ver, finfo_buf)
  * Enumerates files and directories matching to the pattern on the specified
  * directory.  The pattern matching is done in case sensitive manner.
  * File properties Lisp will need later are also stored in the result linked list
- * of FINFO structures. 
+ * of FINFO structures.
  */
 #ifdef DOS
-int enum_ufs_prop(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+int enum_ufs_prop(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	struct find_t		dirp;
-	register struct passwd	*pwd;	
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
-	
-        TIMEOUT(rval = _dos_findfirst(dir, _A_SUBDIR, &dirp));
-	if (rval != 0) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  struct find_t dirp;
+  register struct passwd *pwd;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
 
-	for (nextp = prevp = (FINFO *)NULL, n = 0;
-	     rval == 0;
-	     S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp) {
-		if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0 ) continue;
-		MatchP_Case(dirp.name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s\\%s", dir, dirp.name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dirp.name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname_ufs(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  TIMEOUT(rval = _dos_findfirst(dir, _A_SUBDIR, &dirp));
+  if (rval != 0) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-		strcpy(namebuf, dirp.name);
-		len = strlen(namebuf);
-		nextp->ino = sbuf.st_ino;
-		nextp->prop->length = (unsigned)sbuf.st_size;
-		nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
-		nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
-		nextp->prop->protect = (unsigned)sbuf.st_mode;
-/*
-		TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-		if (pwd == (struct passwd *)NULL) {
-			nextp->prop->au_len = 0;
-		} else {
-			len = strlen(pwd->pw_name);
-			strcpy(nextp->prop->author, pwd->pw_name);
-			*(nextp->prop->author + len) = '\0';
-			nextp->prop->au_len = len;
-		}
-*/
-		n++;
-	}
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+  for (nextp = prevp = (FINFO *)NULL, n = 0; rval == 0;
+       S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp) {
+    if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0) continue;
+    MatchP_Case(dirp.name, name, ver, match, unmatch);
+  unmatch:
+    continue;
+  match:
+    AllocFinfo(nextp);
+    if (nextp == (FINFO *)NULL) {
+      FreeFinfo(prevp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+    nextp->next = prevp;
+    sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    TIMEOUT(rval = stat(namebuf, &sbuf));
+    if (rval == -1 && errno != ENOENT) {
+      /*
+       * ENOENT error might be caused by missing symbolic
+       * link. We should ignore such error here.
+       */
+      FreeFinfo(nextp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+
+    strcpy(namebuf, dirp.name);
+    if (sbuf.st_mode & S_IFDIR) {
+      nextp->dirp = 1;
+      quote_dname(namebuf);
+      strcpy(nextp->lname, namebuf);
+      len = strlen(namebuf);
+      *(nextp->lname + len) = DIRCHAR;
+      *(nextp->lname + len + 1) = '\0';
+      nextp->lname_len = len + 1;
+    } else {
+      /* All other types than directory. */
+      nextp->dirp = 0;
+      quote_fname_ufs(namebuf);
+      len = strlen(namebuf);
+      strcpy(nextp->lname, namebuf);
+      *(nextp->lname + len) = '\0';
+      nextp->lname_len = len;
+    }
+
+    strcpy(namebuf, dirp.name);
+    len = strlen(namebuf);
+    nextp->ino = sbuf.st_ino;
+    nextp->prop->length = (unsigned)sbuf.st_size;
+    nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
+    nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
+    nextp->prop->protect = (unsigned)sbuf.st_mode;
+    /*
+                    TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+                    if (pwd == (struct passwd *)NULL) {
+                            nextp->prop->au_len = 0;
+                    } else {
+                            len = strlen(pwd->pw_name);
+                            strcpy(nextp->prop->author, pwd->pw_name);
+                            *(nextp->prop->author + len) = '\0';
+                            nextp->prop->au_len = len;
+                    }
+    */
+    n++;
+  }
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
-#else /* DOS */
-int enum_ufs_prop(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+#else  /* DOS */
+int enum_ufs_prop(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	DIR			*dirp;
-	register struct passwd	*pwd;	
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  DIR *dirp;
+  register struct passwd *pwd;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
 
-	errno = 0;
-        TIMEOUT(dirp = opendir(dir));
-	if (dirp == NULL) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  errno = 0;
+  TIMEOUT(dirp = opendir(dir));
+  if (dirp == NULL) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-	for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-	     dp != (struct direct *)NULL || errno == EINTR;
-	     errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) 
-	  if (dp)
-	    {
-		if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 ||
-		    dp->d_ino == 0) continue;
-		MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s/%s", dir, dp->d_name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dp->d_name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname_ufs(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
+       dp != (struct direct *)NULL || errno == EINTR;
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+    if (dp) {
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
+    unmatch:
+      continue;
+    match:
+      AllocFinfo(nextp);
+      if (nextp == (FINFO *)NULL) {
+        FreeFinfo(prevp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
+      nextp->next = prevp;
+      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      TIMEOUT(rval = stat(namebuf, &sbuf));
+      if (rval == -1 && errno != ENOENT) {
+        /*
+         * ENOENT error might be caused by missing symbolic
+         * link. We should ignore such error here.
+         */
+        FreeFinfo(nextp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
 
-		strcpy(namebuf, dp->d_name);
-		len = strlen(namebuf);
-		nextp->ino = sbuf.st_ino;
-		nextp->prop->length = (unsigned)sbuf.st_size;
-		nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
-		nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
-		nextp->prop->protect = (unsigned)sbuf.st_mode;
-/*
-		TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-		if (pwd == (struct passwd *)NULL) {
-			nextp->prop->au_len = 0;
-		} else {
-			len = strlen(pwd->pw_name);
-			strcpy(nextp->prop->author, pwd->pw_name);
-			*(nextp->prop->author + len) = '\0';
-			nextp->prop->au_len = len;
-		}
-*/
-		n++;
-	}
-	closedir(dirp);
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+      strcpy(namebuf, dp->d_name);
+      if (sbuf.st_mode & S_IFDIR) {
+        nextp->dirp = 1;
+        quote_dname(namebuf);
+        strcpy(nextp->lname, namebuf);
+        len = strlen(namebuf);
+        *(nextp->lname + len) = DIRCHAR;
+        *(nextp->lname + len + 1) = '\0';
+        nextp->lname_len = len + 1;
+      } else {
+        /* All other types than directory. */
+        nextp->dirp = 0;
+        quote_fname_ufs(namebuf);
+        len = strlen(namebuf);
+        strcpy(nextp->lname, namebuf);
+        *(nextp->lname + len) = '\0';
+        nextp->lname_len = len;
+      }
+
+      strcpy(namebuf, dp->d_name);
+      len = strlen(namebuf);
+      nextp->ino = sbuf.st_ino;
+      nextp->prop->length = (unsigned)sbuf.st_size;
+      nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
+      nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
+      nextp->prop->protect = (unsigned)sbuf.st_mode;
+      /*
+                      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+                      if (pwd == (struct passwd *)NULL) {
+                              nextp->prop->au_len = 0;
+                      } else {
+                              len = strlen(pwd->pw_name);
+                              strcpy(nextp->prop->author, pwd->pw_name);
+                              *(nextp->prop->author + len) = '\0';
+                              nextp->prop->au_len = len;
+                      }
+      */
+      n++;
+    }
+  closedir(dirp);
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
 #endif /* DOS */
 
-/*		
+/*
  * Name:	enum_ufs
  *
  * Argument:	char	*dir	Absolute path of directory in UNIX format.
@@ -1277,167 +1241,160 @@ int enum_ufs_prop(dir, name, ver, finfo_buf)
  * Similar to enum_ufs_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_ufs(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+int enum_ufs(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	struct find_t		dirp;
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
-	
-        TIMEOUT(rval = _dos_findfirst(dir, _A_SUBDIR, &dirp));
-	if (rval != 0) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  struct find_t dirp;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
 
-	for (nextp = prevp = (FINFO *)NULL, n = 0;
-	     rval == 0;
-	     S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp) {
-		if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0 ) continue;
-		MatchP_Case(dirp.name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s\\%s", dir, dirp.name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dirp.name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname_ufs(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  TIMEOUT(rval = _dos_findfirst(dir, _A_SUBDIR, &dirp));
+  if (rval != 0) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-		strcpy(namebuf, dirp.name);
-		len = strlen(namebuf);
-		nextp->ino = sbuf.st_ino;
-		n++;
-	}
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+  for (nextp = prevp = (FINFO *)NULL, n = 0; rval == 0;
+       S_TOUT(rval = _dos_findnext(&dirp)), prevp = nextp) {
+    if (strcmp(dirp.name, ".") == 0 || strcmp(dirp.name, "..") == 0) continue;
+    MatchP_Case(dirp.name, name, ver, match, unmatch);
+  unmatch:
+    continue;
+  match:
+    AllocFinfo(nextp);
+    if (nextp == (FINFO *)NULL) {
+      FreeFinfo(prevp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+    nextp->next = prevp;
+    sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    TIMEOUT(rval = stat(namebuf, &sbuf));
+    if (rval == -1 && errno != ENOENT) {
+      /*
+       * ENOENT error might be caused by missing symbolic
+       * link. We should ignore such error here.
+       */
+      FreeFinfo(nextp);
+      *Lisp_errno = errno;
+      return (-1);
+    }
+
+    strcpy(namebuf, dirp.name);
+    if (sbuf.st_mode & S_IFDIR) {
+      nextp->dirp = 1;
+      quote_dname(namebuf);
+      strcpy(nextp->lname, namebuf);
+      len = strlen(namebuf);
+      *(nextp->lname + len) = DIRCHAR;
+      *(nextp->lname + len + 1) = '\0';
+      nextp->lname_len = len + 1;
+    } else {
+      /* All other types than directory. */
+      nextp->dirp = 0;
+      quote_fname_ufs(namebuf);
+      len = strlen(namebuf);
+      strcpy(nextp->lname, namebuf);
+      *(nextp->lname + len) = '\0';
+      nextp->lname_len = len;
+    }
+
+    strcpy(namebuf, dirp.name);
+    len = strlen(namebuf);
+    nextp->ino = sbuf.st_ino;
+    n++;
+  }
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
-#else /* DOS */
-int enum_ufs(dir, name, ver, finfo_buf)
-	char	*dir;
-	char	*name;
-	char	*ver;
-	FINFO	**finfo_buf;
+#else  /* DOS */
+int enum_ufs(dir, name, ver, finfo_buf) char *dir;
+char *name;
+char *ver;
+FINFO **finfo_buf;
 {
-	register struct direct	*dp;
-	register FINFO		*prevp;
-	register FINFO		*nextp;
-	int			n, len, rval;
-	DIR			*dirp;
-	struct stat		sbuf;
-	char			namebuf[MAXPATHLEN];
+  register struct direct *dp;
+  register FINFO *prevp;
+  register FINFO *nextp;
+  int n, len, rval;
+  DIR *dirp;
+  struct stat sbuf;
+  char namebuf[MAXPATHLEN];
 
-	errno = 0;
-        TIMEOUT(dirp = opendir(dir));
-	if (dirp == NULL) {
-		*Lisp_errno = errno;
-		return(-1);
-	}
+  errno = 0;
+  TIMEOUT(dirp = opendir(dir));
+  if (dirp == NULL) {
+    *Lisp_errno = errno;
+    return (-1);
+  }
 
-	for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-	     dp != (struct direct *)NULL || errno == EINTR;
-	     errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) 
-	  if (dp)
-	    {
-		if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 ||
-		    dp->d_ino == 0) continue;
-		MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
-	      unmatch:
-		continue;
-	      match:
-		AllocFinfo(nextp);
-		if (nextp == (FINFO *)NULL) {
-			FreeFinfo(prevp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-		nextp->next = prevp;
-		sprintf(namebuf, "%s/%s", dir, dp->d_name);
-		TIMEOUT(rval = stat(namebuf, &sbuf));
-		if (rval == -1 && errno != ENOENT) {
-			/*
-			 * ENOENT error might be caused by missing symbolic
-			 * link. We should ignore such error here.
-			 */
-			FreeFinfo(nextp);
-			closedir(dirp);
-			*Lisp_errno = errno;
-			return(-1);
-		}
-			
-		strcpy(namebuf, dp->d_name);
-		if (sbuf.st_mode & S_IFDIR) {
-			nextp->dirp = 1;
-			quote_dname(namebuf);
-			strcpy(nextp->lname, namebuf);
-			len = strlen(namebuf);
-			*(nextp->lname + len) = DIRCHAR;
-			*(nextp->lname + len + 1) = '\0';
-			nextp->lname_len = len + 1;
-		} else {
-			/* All other types than directory. */
-			nextp->dirp = 0;
-			quote_fname_ufs(namebuf);
-			len = strlen(namebuf);
-			strcpy(nextp->lname, namebuf);
-			*(nextp->lname + len) = '\0';
-			nextp->lname_len = len;
-		}
+  for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
+       dp != (struct direct *)NULL || errno == EINTR;
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+    if (dp) {
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
+    unmatch:
+      continue;
+    match:
+      AllocFinfo(nextp);
+      if (nextp == (FINFO *)NULL) {
+        FreeFinfo(prevp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
+      nextp->next = prevp;
+      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      TIMEOUT(rval = stat(namebuf, &sbuf));
+      if (rval == -1 && errno != ENOENT) {
+        /*
+         * ENOENT error might be caused by missing symbolic
+         * link. We should ignore such error here.
+         */
+        FreeFinfo(nextp);
+        closedir(dirp);
+        *Lisp_errno = errno;
+        return (-1);
+      }
 
-		strcpy(namebuf, dp->d_name);
-		len = strlen(namebuf);
-		nextp->ino = sbuf.st_ino;
-		n++;
-	}
-	closedir(dirp);
-	if (n > 0) *finfo_buf = prevp;
-	return(n);
+      strcpy(namebuf, dp->d_name);
+      if (sbuf.st_mode & S_IFDIR) {
+        nextp->dirp = 1;
+        quote_dname(namebuf);
+        strcpy(nextp->lname, namebuf);
+        len = strlen(namebuf);
+        *(nextp->lname + len) = DIRCHAR;
+        *(nextp->lname + len + 1) = '\0';
+        nextp->lname_len = len + 1;
+      } else {
+        /* All other types than directory. */
+        nextp->dirp = 0;
+        quote_fname_ufs(namebuf);
+        len = strlen(namebuf);
+        strcpy(nextp->lname, namebuf);
+        *(nextp->lname + len) = '\0';
+        nextp->lname_len = len;
+      }
+
+      strcpy(namebuf, dp->d_name);
+      len = strlen(namebuf);
+      nextp->ino = sbuf.st_ino;
+      n++;
+    }
+  closedir(dirp);
+  if (n > 0) *finfo_buf = prevp;
+  return (n);
 }
 #endif /* DOS*/
 
-
-
-/*		
+/*
  * Name:	trim_finfo
  *
  * Argument:	FINFO	**fp	Linked list of the numerated FINFO structures.
@@ -1455,121 +1412,121 @@ int enum_ufs(dir, name, ver, finfo_buf)
  * This routine is only used by DSK codes.
  */
 
-int trim_finfo(fp)
-	FINFO	**fp;
+int trim_finfo(fp) FINFO **fp;
 {
 #ifndef DOS
-	register FINFO	*tp, *sp, *mp, *cp, *pp;
-	register int	num, pnum;
-	int		linkp;
-	char		ver[VERSIONLEN];
+  register FINFO *tp, *sp, *mp, *cp, *pp;
+  register int num, pnum;
+  int linkp;
+  char ver[VERSIONLEN];
 
-	sp = mp = cp = *fp;
-	pp = (FINFO *)NULL;
-	num = pnum = 0;
+  sp = mp = cp = *fp;
+  pp = (FINFO *)NULL;
+  num = pnum = 0;
 
-	do {
-		if (cp->dirp) {
-			pp = cp;
-			sp = cp = cp->next;
-			pnum++;
-			num++;
-			continue;
-		}
+  do {
+    if (cp->dirp) {
+      pp = cp;
+      sp = cp = cp->next;
+      pnum++;
+      num++;
+      continue;
+    }
 
-		if (cp->next != (FINFO *)NULL &&
-		    strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-			mp = cp = cp->next;
-			num++;
-			while (cp->next != (FINFO *)NULL &&
-			       strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-				cp = cp->next;
-				num++;
-			}
-		} else {
-			mp = cp;
-		}
+    if (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+      mp = cp = cp->next;
+      num++;
+      while (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+        cp = cp->next;
+        num++;
+      }
+    } else {
+      mp = cp;
+    }
 
-		if (sp->version == 0) {
-			if (cp != sp) {
-				/*
-				 * Both versionless and versioned files exists.
-				 */
-				linkp = 0;
-				tp = sp;
-				do {
-					tp = tp->next;
-					if (tp->ino == sp->ino) {
-						linkp = 1;
-						break;
-					}
-				} while (cp != tp);
+    if (sp->version == 0) {
+      if (cp != sp) {
+        /*
+         * Both versionless and versioned files exists.
+         */
+        linkp = 0;
+        tp = sp;
+        do {
+          tp = tp->next;
+          if (tp->ino == sp->ino) {
+            linkp = 1;
+            break;
+          }
+        } while (cp != tp);
 
-				if (!linkp) {
-					/*
-					 * Versionless is not linked to any versioned
-					 * file.
-					 */
-					sprintf(ver, ";%d", mp->version + 1);
-					strcat(sp->lname, ver);
-					sp->lname_len = strlen(sp->lname);
-					pnum = ++num;
-					pp = cp;
-					sp = cp = cp->next;
-				} else {
-					/*
-					 * Versionless is linked to one of versionless
-					 * files. We can remove it.
-					 */
-					sp->next = (FINFO *)NULL;
-					FreeFinfo(sp);
-					pnum = num;
-					if (pp != (FINFO *)NULL)
-					  pp->next = mp;
-					else
-					  *fp = mp;
-					pp = cp;
-					sp = cp = cp->next;
-				}
-			} else {
-				/*
-				 * Only versionless file exists. It is regarded as
-				 * version 1.
-				 */
-				strcat(cp->lname, ";1");
-				cp->lname_len += 2;
-				pp = cp;
-				sp = cp = cp->next;
-				num = ++pnum;
-			}
-		} else {
-			if (cp != sp) {
-				/*
-				 * All files are versioned.
-				 */
-				pnum = ++num;
-			} else {
-				/*
-				 * A versioned file only exists.
-				 */
-				num = ++pnum;
-			}
-			pp = cp;
-			sp = cp = cp->next;
-		}
-	} while (sp != (FINFO *)NULL) ;
+        if (!linkp) {
+          /*
+           * Versionless is not linked to any versioned
+           * file.
+           */
+          sprintf(ver, ";%d", mp->version + 1);
+          strcat(sp->lname, ver);
+          sp->lname_len = strlen(sp->lname);
+          pnum = ++num;
+          pp = cp;
+          sp = cp = cp->next;
+        } else {
+          /*
+           * Versionless is linked to one of versionless
+           * files. We can remove it.
+           */
+          sp->next = (FINFO *)NULL;
+          FreeFinfo(sp);
+          pnum = num;
+          if (pp != (FINFO *)NULL)
+            pp->next = mp;
+          else
+            *fp = mp;
+          pp = cp;
+          sp = cp = cp->next;
+        }
+      } else {
+        /*
+         * Only versionless file exists. It is regarded as
+         * version 1.
+         */
+        strcat(cp->lname, ";1");
+        cp->lname_len += 2;
+        pp = cp;
+        sp = cp = cp->next;
+        num = ++pnum;
+      }
+    } else {
+      if (cp != sp) {
+        /*
+         * All files are versioned.
+         */
+        pnum = ++num;
+      } else {
+        /*
+         * A versioned file only exists.
+         */
+        num = ++pnum;
+      }
+      pp = cp;
+      sp = cp = cp->next;
+    }
+  } while (sp != (FINFO *)NULL);
 
-#else /* DOS version */
-	int num = 0;
-	FINFO *tp;
-	tp = *fp;
-	while (tp) { num++; tp = tp->next; }
+#else  /* DOS version */
+  int num = 0;
+  FINFO *tp;
+  tp = *fp;
+  while (tp) {
+    num++;
+    tp = tp->next;
+  }
 #endif /* DOS */
 
-	return(num);
+  return (num);
 }
 
-/*		
+/*
  * Name:	trim_finfo_highest
  *
  * Argument:	FINFO	**fp	Linked list of the numerated FINFO structures.
@@ -1584,133 +1541,130 @@ int trim_finfo(fp)
  * of.
  */
 
-int trim_finfo_highest(fp, highestp)
-	FINFO	**fp;
-	int	highestp;
+int trim_finfo_highest(fp, highestp) FINFO **fp;
+int highestp;
 {
-	register FINFO	*tp, *sp, *mp, *cp, *pp;
-	register int	num, pnum;
-	int		linkp;
-	char		ver[VERSIONLEN];
+  register FINFO *tp, *sp, *mp, *cp, *pp;
+  register int num, pnum;
+  int linkp;
+  char ver[VERSIONLEN];
 
-	sp = mp = cp = *fp;
-	pp = (FINFO *)NULL;
-	num = pnum = 0;
+  sp = mp = cp = *fp;
+  pp = (FINFO *)NULL;
+  num = pnum = 0;
 
-	do {
-		if (cp->dirp) {
-			pp = cp;
-			sp = cp = cp->next;
-			pnum++;
-			num++;
-			continue;
-		}
+  do {
+    if (cp->dirp) {
+      pp = cp;
+      sp = cp = cp->next;
+      pnum++;
+      num++;
+      continue;
+    }
 
-		if (cp->next != (FINFO *)NULL &&
-		    strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-			mp = cp = cp->next;
-			num++;
-			while (cp->next != (FINFO *)NULL &&
-			       strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-				cp = cp->next;
-				num++;
-			}
-		} else {
-			mp = cp;
-		}
+    if (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+      mp = cp = cp->next;
+      num++;
+      while (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+        cp = cp->next;
+        num++;
+      }
+    } else {
+      mp = cp;
+    }
 
-		if (sp->version == 0) {
-			if (cp != sp) {
-				/*
-				 * Both versionless and versioned files exists.
-				 */
-				linkp = 0;
-				tp = sp;
-				do {
-					tp = tp->next;
-					if (tp->ino == sp->ino) {
-						linkp = 1;
-						break;
-					}
-				} while (cp != tp);
+    if (sp->version == 0) {
+      if (cp != sp) {
+        /*
+         * Both versionless and versioned files exists.
+         */
+        linkp = 0;
+        tp = sp;
+        do {
+          tp = tp->next;
+          if (tp->ino == sp->ino) {
+            linkp = 1;
+            break;
+          }
+        } while (cp != tp);
 
-				if (!linkp) {
-					/*
-					 * Versionless is not linked to any versioned
-					 * file.
-					 */
-					sprintf(ver, ";%d", mp->version + 1);
-					strcat(sp->lname, ver);
-					sp->lname_len = strlen(sp->lname);
-					/*
-					 * Lower versioned files, mp to cp
-					 * inclusive, should be removed.
-					 */
-					sp->next = cp->next;
-					cp->next = (FINFO *)NULL;
-					FreeFinfo(mp);
-					num = ++pnum;
-					pp = sp;
-					sp = cp = pp->next;
-				} else {
-					/*
-					 * Versionless is linked to one of versionless
-					 * files. We can remove it.
-					 */
+        if (!linkp) {
+          /*
+           * Versionless is not linked to any versioned
+           * file.
+           */
+          sprintf(ver, ";%d", mp->version + 1);
+          strcat(sp->lname, ver);
+          sp->lname_len = strlen(sp->lname);
+          /*
+           * Lower versioned files, mp to cp
+           * inclusive, should be removed.
+           */
+          sp->next = cp->next;
+          cp->next = (FINFO *)NULL;
+          FreeFinfo(mp);
+          num = ++pnum;
+          pp = sp;
+          sp = cp = pp->next;
+        } else {
+          /*
+           * Versionless is linked to one of versionless
+           * files. We can remove it.
+           */
 
-					if (mp != cp) {
-						sp->next = mp->next;
-						mp->next = cp->next;
-						cp->next = (FINFO *)NULL;
-					} else {
-						sp->next = (FINFO *)NULL;
-					}
-					FreeFinfo(sp);
-					num = ++pnum;
-					if (pp != (FINFO *)NULL)
-					  pp->next = mp;
-					else
-					  *fp = mp;
-					pp = mp;
-					sp = cp = mp->next;
-				}
-			} else {
-				/*
-				 * Only versionless file exists. It is regared as
-				 * version 1.
-				 */
-				strcat(cp->lname, ";1");
-				cp->lname_len += 2;
-				pp = cp;
-				sp = cp = cp->next;
-				num = ++pnum;
-			}
-		} else {
-			if (cp != sp) {
-				/*
-				 * All files are versioned.
-				 * Lower versioned files can be removed.
-				 */
-				tp = sp->next;
-				sp->next = cp->next;
-				cp->next = (FINFO *)NULL;
-				FreeFinfo(tp);
-				num = ++pnum;
-			} else {
-				/*
-				 * A versioned file only exists.
-				 */
-				num = ++pnum;
-			}
-			pp = sp;
-			sp = cp = sp->next;
-		}
-	} while (sp != (FINFO *)NULL) ;
+          if (mp != cp) {
+            sp->next = mp->next;
+            mp->next = cp->next;
+            cp->next = (FINFO *)NULL;
+          } else {
+            sp->next = (FINFO *)NULL;
+          }
+          FreeFinfo(sp);
+          num = ++pnum;
+          if (pp != (FINFO *)NULL)
+            pp->next = mp;
+          else
+            *fp = mp;
+          pp = mp;
+          sp = cp = mp->next;
+        }
+      } else {
+        /*
+         * Only versionless file exists. It is regared as
+         * version 1.
+         */
+        strcat(cp->lname, ";1");
+        cp->lname_len += 2;
+        pp = cp;
+        sp = cp = cp->next;
+        num = ++pnum;
+      }
+    } else {
+      if (cp != sp) {
+        /*
+         * All files are versioned.
+         * Lower versioned files can be removed.
+         */
+        tp = sp->next;
+        sp->next = cp->next;
+        cp->next = (FINFO *)NULL;
+        FreeFinfo(tp);
+        num = ++pnum;
+      } else {
+        /*
+         * A versioned file only exists.
+         */
+        num = ++pnum;
+      }
+      pp = sp;
+      sp = cp = sp->next;
+    }
+  } while (sp != (FINFO *)NULL);
 
-	return(num);
+  return (num);
 }
 
-/*		
+/*
  * Name:	trim_finfo_version
  *
  * Argument:	FINFO	**fp	Linked list of the numerated FINFO structures.
@@ -1726,174 +1680,170 @@ int trim_finfo_highest(fp, highestp)
  * are got rid of.
  */
 
-int trim_finfo_version(fp, rver)
-	FINFO	**fp;
-	int	rver;
+int trim_finfo_version(fp, rver) FINFO **fp;
+int rver;
 {
-	register FINFO	*tp, *sp, *mp, *cp, *pp, *vp;
-	register int	num, pnum;
-	int		linkp;
-	char		ver[VERSIONLEN];
+  register FINFO *tp, *sp, *mp, *cp, *pp, *vp;
+  register int num, pnum;
+  int linkp;
+  char ver[VERSIONLEN];
 
-	sp = mp = cp = *fp;
-	pp = (FINFO *)NULL;
-	num = pnum = 0;
+  sp = mp = cp = *fp;
+  pp = (FINFO *)NULL;
+  num = pnum = 0;
 
-	do {
-		if (cp->dirp) {
-			/*
-			 * Directory has no version, thus they should be remvoed.
-			 */
-			sp = cp = cp->next;
-			continue;
-		}
-		
-		if (cp->next != (FINFO *)NULL &&
-		    strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-			mp = cp = cp->next;
-			num++;
-			while (cp->next != (FINFO *)NULL &&
-			       strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
-				cp = cp->next;
-				num++;
-			}
-		} else {
-			mp = cp;
-		}
+  do {
+    if (cp->dirp) {
+      /*
+       * Directory has no version, thus they should be remvoed.
+       */
+      sp = cp = cp->next;
+      continue;
+    }
 
-		for (tp = sp, vp = (FINFO *)NULL; tp != cp->next; tp = tp->next) {
-			if (tp->version == rver) {
-				vp = tp;
-				break;
-			}
-		}
+    if (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+      mp = cp = cp->next;
+      num++;
+      while (cp->next != (FINFO *)NULL && strcmp(cp->next->no_ver_name, cp->no_ver_name) == 0) {
+        cp = cp->next;
+        num++;
+      }
+    } else {
+      mp = cp;
+    }
 
-		if (vp != (FINFO *)NULL) {
-			/*
-			 * Specified version file exists.  Other files should be
-			 * removed.
-			 */
-			if (vp == sp) {
-				if (cp != sp) {
-					vp->next = cp->next;
-					cp->next = (FINFO *)NULL;
-					FreeFinfo(mp);
-				}
-			} else {
-				for (tp = sp; tp->next != vp; tp = tp->next) {}
-				if (vp != cp) {
-					tp->next = vp->next;
-					vp->next = cp->next;
-					cp->next = (FINFO *)NULL;
-				} else {
-					tp->next = (FINFO *)NULL;
-				}
-				if (pp != (FINFO *)NULL)
-				  pp->next = vp;
-				else
-				  *fp = vp;
-				FreeFinfo(sp);
-			}
-			pp = vp;
-			sp = cp = vp->next;
-			num = ++pnum;
-			continue;
+    for (tp = sp, vp = (FINFO *)NULL; tp != cp->next; tp = tp->next) {
+      if (tp->version == rver) {
+        vp = tp;
+        break;
+      }
+    }
 
-		}
+    if (vp != (FINFO *)NULL) {
+      /*
+       * Specified version file exists.  Other files should be
+       * removed.
+       */
+      if (vp == sp) {
+        if (cp != sp) {
+          vp->next = cp->next;
+          cp->next = (FINFO *)NULL;
+          FreeFinfo(mp);
+        }
+      } else {
+        for (tp = sp; tp->next != vp; tp = tp->next) {}
+        if (vp != cp) {
+          tp->next = vp->next;
+          vp->next = cp->next;
+          cp->next = (FINFO *)NULL;
+        } else {
+          tp->next = (FINFO *)NULL;
+        }
+        if (pp != (FINFO *)NULL)
+          pp->next = vp;
+        else
+          *fp = vp;
+        FreeFinfo(sp);
+      }
+      pp = vp;
+      sp = cp = vp->next;
+      num = ++pnum;
+      continue;
+    }
 
-		/*
-		 * Although there is no file with specified version, versionless
-		 * file might be interpreted the specified version.
-		 */
-		if (sp->version == 0) {
-			if (cp != sp) {
-				/*
-				 * Both versionless and versioned files exists.
-				 */
-				linkp = 0;
-				tp = sp;
-				do {
-					tp = tp->next;
-					if (tp->ino == sp->ino) {
-						linkp = 1;
-						break;
-					}
-				} while (cp != tp);
+    /*
+     * Although there is no file with specified version, versionless
+     * file might be interpreted the specified version.
+     */
+    if (sp->version == 0) {
+      if (cp != sp) {
+        /*
+         * Both versionless and versioned files exists.
+         */
+        linkp = 0;
+        tp = sp;
+        do {
+          tp = tp->next;
+          if (tp->ino == sp->ino) {
+            linkp = 1;
+            break;
+          }
+        } while (cp != tp);
 
-				if (!linkp) {
-					/*
-					 * Versionless is not linked to any versioned
-					 * file.
-					 */
-					if (mp->version + 1 == rver) {
-						sprintf(ver, ";%d", rver);
-						strcat(sp->lname, ver);
-						sp->lname_len = strlen(sp->lname);
-						/*
-						 * Lower versioned files, mp to cp
-						 * inclusive, should be removed.
-						 */
-						sp->next = cp->next;
-						cp->next = (FINFO *)NULL;
-						FreeFinfo(mp);
-						num = ++pnum;
-						pp = sp;
-						sp = cp = pp->next;
-					} else {
-						/*
-						 * sp to cp inclusive, all files,
-						 * should be removed.
-						 */
-						tp = cp->next;
-						if (pp != (FINFO *)NULL)
-						  pp->next = tp;
-						else
-						  *fp = tp;
-						cp->next = (FINFO *)NULL;
-						FreeFinfo(sp);
-						sp = cp = tp;
-					}
-				} else {
-					/*
-					 * Versionless is linked to one of versionless
-					 * files.  We can remove all files, because
-					 * no versioned file match with rver.
-					 */
-					tp = cp->next;
-					if (pp != (FINFO *)NULL)
-					  pp->next = tp;
-					else
-					  *fp = tp;
-					cp->next = (FINFO *)NULL;
-					FreeFinfo(sp);
-					sp = cp = tp;
-				}
-			} else {
-				/*
-				 * Only versionless file exists. It is regared as
-				 * version 1.  Unless rver is 1, we can remove it.
-				 */
-				if (rver != 1) {
-					cp = sp->next;
-					if (pp != (FINFO *)NULL)
-					  pp->next = cp;
-					else
-					  *fp = cp;
-					sp->next = (FINFO *)NULL;
-					FreeFinfo(sp);
-					sp = cp;
-				} else {
-					strcat(cp->lname, ";1");
-					cp->lname_len += 2;
-					pp = cp;
-					sp = cp = cp->next;
-					num = ++pnum;
-				}
-			}
-		}
-	} while (sp != (FINFO *)NULL) ;
+        if (!linkp) {
+          /*
+           * Versionless is not linked to any versioned
+           * file.
+           */
+          if (mp->version + 1 == rver) {
+            sprintf(ver, ";%d", rver);
+            strcat(sp->lname, ver);
+            sp->lname_len = strlen(sp->lname);
+            /*
+             * Lower versioned files, mp to cp
+             * inclusive, should be removed.
+             */
+            sp->next = cp->next;
+            cp->next = (FINFO *)NULL;
+            FreeFinfo(mp);
+            num = ++pnum;
+            pp = sp;
+            sp = cp = pp->next;
+          } else {
+            /*
+             * sp to cp inclusive, all files,
+             * should be removed.
+             */
+            tp = cp->next;
+            if (pp != (FINFO *)NULL)
+              pp->next = tp;
+            else
+              *fp = tp;
+            cp->next = (FINFO *)NULL;
+            FreeFinfo(sp);
+            sp = cp = tp;
+          }
+        } else {
+          /*
+           * Versionless is linked to one of versionless
+           * files.  We can remove all files, because
+           * no versioned file match with rver.
+           */
+          tp = cp->next;
+          if (pp != (FINFO *)NULL)
+            pp->next = tp;
+          else
+            *fp = tp;
+          cp->next = (FINFO *)NULL;
+          FreeFinfo(sp);
+          sp = cp = tp;
+        }
+      } else {
+        /*
+         * Only versionless file exists. It is regared as
+         * version 1.  Unless rver is 1, we can remove it.
+         */
+        if (rver != 1) {
+          cp = sp->next;
+          if (pp != (FINFO *)NULL)
+            pp->next = cp;
+          else
+            *fp = cp;
+          sp->next = (FINFO *)NULL;
+          FreeFinfo(sp);
+          sp = cp;
+        } else {
+          strcat(cp->lname, ";1");
+          cp->lname_len += 2;
+          pp = cp;
+          sp = cp = cp->next;
+          num = ++pnum;
+        }
+      }
+    }
+  } while (sp != (FINFO *)NULL);
 
-	return(num);
+  return (num);
 }
 
 /************************************************************************/
@@ -1904,7 +1854,7 @@ int trim_finfo_version(fp, rver)
 /********* B E G I N  O F   F I L E - S O R T I N G   C O D E ***********/
 /************************************************************************/
 
-/*		
+/*
  * Name:	prepare_sort_buf
  *
  * Argument:	FINFO	*fp	Linked list of FINFO structures being sorted.
@@ -1922,24 +1872,22 @@ int trim_finfo_version(fp, rver)
  * Caller have to free the area after sorting done.
  */
 
-FINFO **
-prepare_sort_buf(fp, n)
-	register FINFO	*fp;
-	register int	n;
+FINFO **prepare_sort_buf(fp, n) register FINFO *fp;
+register int n;
 {
-	register FINFO	**bp;
-	register FINFO	**bufp;
-	
-	if ((bufp = (FINFO **)malloc(sizeof(FINFO *) * n)) == NULL) {
-		*Lisp_errno = errno;
-		return((FINFO **)NULL);
-	}
-	for (bp = bufp; fp != (FINFO *)NULL; fp = fp->next, bp++) *bp = fp;
+  register FINFO **bp;
+  register FINFO **bufp;
 
-	return(bufp);
+  if ((bufp = (FINFO **)malloc(sizeof(FINFO *) * n)) == NULL) {
+    *Lisp_errno = errno;
+    return ((FINFO **)NULL);
+  }
+  for (bp = bufp; fp != (FINFO *)NULL; fp = fp->next, bp++) *bp = fp;
+
+  return (bufp);
 }
 
-/*		
+/*
  * Name:	dsk_filecmp
  *
  * Argument:	FINFO	*fp1	A FINFO structure, a file name in it is being compared.
@@ -1958,24 +1906,22 @@ prepare_sort_buf(fp, n)
  * Note that the result is in the reversed order.
  */
 
-int dsk_filecmp(fp1, fp2)
-	FINFO	**fp1;
-	FINFO	**fp2;
+int dsk_filecmp(fp1, fp2) FINFO **fp1;
+FINFO **fp2;
 {
-	register int	res, v1, v2;
+  register int res, v1, v2;
 
-	if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0)
-	  return(res);
+  if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) return (res);
 
-	if ((*fp1)->version == (*fp2)->version) return(0);
+  if ((*fp1)->version == (*fp2)->version) return (0);
 #ifndef DOS
-	if ((v1 = (*fp1)->version) == 0) return(-1);
-	if ((v2 = (*fp2)->version) == 0) return(1);
+  if ((v1 = (*fp1)->version) == 0) return (-1);
+  if ((v2 = (*fp2)->version) == 0) return (1);
 #endif /* DOS */
-	return((v1 < v2) ? 1 : -1);
+  return ((v1 < v2) ? 1 : -1);
 }
 
-/*		
+/*
  * Name:	unix_filecmp
  *
  * Argument:	FINFO	*f1	A FINFO structure, a file name in it is being compared.
@@ -1992,14 +1938,11 @@ int dsk_filecmp(fp1, fp2)
  * Note that the result is in the reversed order.
  */
 
-int unix_filecmp(f1, f2)
-	register FINFO	**f1;
-	register FINFO	**f2;
-{
-	return(strcmp((*f1)->lname, (*f2)->lname));
-}
+int unix_filecmp(f1, f2) register FINFO **f1;
+register FINFO **f2;
+{ return (strcmp((*f1)->lname, (*f2)->lname)); }
 
-/*		
+/*
  * Name:	file_sort
  *
  * Argument:	FINFO	**fpp	A pointer to a pointer adressing the linked FINFO
@@ -2018,29 +1961,28 @@ int unix_filecmp(f1, f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-int file_sort(fpp, n, sortfn)
-	register FINFO	**fpp;
-	register int	n;
-	register int	(*sortfn)();
+int file_sort(fpp, n, sortfn) register FINFO **fpp;
+register int n;
+register int (*sortfn)();
 {
-	register FINFO	**fp;
-	register FINFO	**sort_bufp;
+  register FINFO **fp;
+  register FINFO **sort_bufp;
 
-	if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) return(0);
+  if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) return (0);
 
-	qsort(sort_bufp, n, sizeof(FINFO *), sortfn);
+  qsort(sort_bufp, n, sizeof(FINFO *), sortfn);
 
-	/*
-	 * Relink FINFO structures in a buffer.
-	 */
-	for (fp = sort_bufp; n > 1; fp++, n--) (*fp)->next = *(fp + 1);
-	(*fp)->next = (FINFO *)NULL;
+  /*
+   * Relink FINFO structures in a buffer.
+   */
+  for (fp = sort_bufp; n > 1; fp++, n--) (*fp)->next = *(fp + 1);
+  (*fp)->next = (FINFO *)NULL;
 
-	*fpp = *sort_bufp;
+  *fpp = *sort_bufp;
 
-	free((char *)sort_bufp);
+  free((char *)sort_bufp);
 
-	return(1);
+  return (1);
 }
 
 /************************************************************************/
@@ -2050,41 +1992,41 @@ int file_sort(fpp, n, sortfn)
 #ifndef BYTESWAP
 #ifdef BIGVM
 typedef struct ufsgfs {
-	unsigned	finfoid;
-	unsigned	fileid;
-	unsigned	totalnum;
-	LispPTR		directory;
-	unsigned	propp		: 1;
-	unsigned	padding		: 3;
-	unsigned	dev		:28;
-	LispPTR		thisfile;
-	int		errnum;
-	LispPTR		name;
-	unsigned	length;
-	unsigned	wdate;
-	unsigned	rdate;
-	unsigned	protection;
-	LispPTR		author;
-	unsigned	aulen;
+  unsigned finfoid;
+  unsigned fileid;
+  unsigned totalnum;
+  LispPTR directory;
+  unsigned propp : 1;
+  unsigned padding : 3;
+  unsigned dev : 28;
+  LispPTR thisfile;
+  int errnum;
+  LispPTR name;
+  unsigned length;
+  unsigned wdate;
+  unsigned rdate;
+  unsigned protection;
+  LispPTR author;
+  unsigned aulen;
 } UFSGFS;
 #else
 typedef struct ufsgfs {
-	unsigned	finfoid;
-	unsigned	fileid;
-	unsigned	totalnum;
-	LispPTR		directory;
-	unsigned	propp		: 1;
-	unsigned	padding		: 7;
-	unsigned	dev		:24;
-	LispPTR		thisfile;
-	int		errnum;
-	LispPTR		name;
-	unsigned	length;
-	unsigned	wdate;
-	unsigned	rdate;
-	unsigned	protection;
-	LispPTR		author;
-	unsigned	aulen;
+  unsigned finfoid;
+  unsigned fileid;
+  unsigned totalnum;
+  LispPTR directory;
+  unsigned propp : 1;
+  unsigned padding : 7;
+  unsigned dev : 24;
+  LispPTR thisfile;
+  int errnum;
+  LispPTR name;
+  unsigned length;
+  unsigned wdate;
+  unsigned rdate;
+  unsigned protection;
+  LispPTR author;
+  unsigned aulen;
 } UFSGFS;
 #endif /* BIGVM */
 
@@ -2092,47 +2034,46 @@ typedef struct ufsgfs {
 
 #ifdef BIGVM
 typedef struct ufsgfs {
-	unsigned	finfoid;
-	unsigned	fileid;
-	unsigned	totalnum;
-	LispPTR		directory;
-	unsigned	dev		:28;
-	unsigned	padding		: 3;
-	unsigned	propp		: 1;
-	LispPTR		thisfile;
-	int		errnum;
-	LispPTR		name;
-	unsigned	length;
-	unsigned	wdate;
-	unsigned	rdate;
-	unsigned	protection;
-	LispPTR		author;
-	unsigned	aulen;
+  unsigned finfoid;
+  unsigned fileid;
+  unsigned totalnum;
+  LispPTR directory;
+  unsigned dev : 28;
+  unsigned padding : 3;
+  unsigned propp : 1;
+  LispPTR thisfile;
+  int errnum;
+  LispPTR name;
+  unsigned length;
+  unsigned wdate;
+  unsigned rdate;
+  unsigned protection;
+  LispPTR author;
+  unsigned aulen;
 } UFSGFS;
 #else
 typedef struct ufsgfs {
-	unsigned	finfoid;
-	unsigned	fileid;
-	unsigned	totalnum;
-	LispPTR		directory;
-	unsigned	dev		:24;
-	unsigned	padding		: 7;
-	unsigned	propp		: 1;
-	LispPTR		thisfile;
-	int		errnum;
-	LispPTR		name;
-	unsigned	length;
-	unsigned	wdate;
-	unsigned	rdate;
-	unsigned	protection;
-	LispPTR		author;
-	unsigned	aulen;
+  unsigned finfoid;
+  unsigned fileid;
+  unsigned totalnum;
+  LispPTR directory;
+  unsigned dev : 24;
+  unsigned padding : 7;
+  unsigned propp : 1;
+  LispPTR thisfile;
+  int errnum;
+  LispPTR name;
+  unsigned length;
+  unsigned wdate;
+  unsigned rdate;
+  unsigned protection;
+  LispPTR author;
+  unsigned aulen;
 } UFSGFS;
 #endif /* BIGVM */
 #endif /* BYTESWAP */
 
-
-/*		
+/*
  * Name:	COM_gen_files
  *
  * Argument:	LispPTR	*args	args[0]
@@ -2156,151 +2097,146 @@ typedef struct ufsgfs {
  * Enumerates files matching pattern.
  */
 
-LispPTR COM_gen_files(args)
-	register LispPTR	*args;
+LispPTR COM_gen_files(args) register LispPTR *args;
 {
-	char		fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
-	char		host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN], drive[1];
-	int		dskp, count, highestp, propp, id, version;
-	register char	*cp;
-	FINFO		*fp;
-	int		dsk_filecmp(), unix_filecmp();
+  char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
+  char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN], drive[1];
+  int dskp, count, highestp, propp, id, version;
+  register char *cp;
+  FINFO *fp;
+  int dsk_filecmp(), unix_filecmp();
 
-	ERRSETJMP(GetSmallp(-1));
-	
-	Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
-	
-	LispStringLength(args[0], count, dskp);
-	/*
-	 * Because of the version number convention, Lisp pathname might
-	 * be shorter than UNIX one.  For THIN string, the difference
-	 * is 2 bytes, for FAT string, 4 bytes.  Add 1 byte for NULL
-	 * terminating character.
-	 */
-	count = dskp ? count + 4 + 1 : count + 2 + 1;
-	/* Add 5 for the host name field in Lisp format. */
-	if (count > MAXPATHLEN + 5) FileNameTooLong((GetSmallp(-1)));
+  ERRSETJMP(GetSmallp(-1));
 
-	LispStringToCString(args[0], fbuf, MAXPATHLEN);
+  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+
+  LispStringLength(args[0], count, dskp);
+  /*
+   * Because of the version number convention, Lisp pathname might
+   * be shorter than UNIX one.  For THIN string, the difference
+   * is 2 bytes, for FAT string, 4 bytes.  Add 1 byte for NULL
+   * terminating character.
+   */
+  count = dskp ? count + 4 + 1 : count + 2 + 1;
+  /* Add 5 for the host name field in Lisp format. */
+  if (count > MAXPATHLEN + 5) FileNameTooLong((GetSmallp(-1)));
+
+  LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
-	separate_host(fbuf, host, drive);
+  separate_host(fbuf, host, drive);
 #else
-	separate_host(fbuf, host);
+  separate_host(fbuf, host);
 #endif /* DOS */
 
-	UPCASE(host);
-	if (strcmp(host, "DSK") == 0)
-	  dskp = 1;
-	else if (strcmp(host, "UNIX") == 0)
-	  dskp = 0;
-	else
-	  return(NIL);
+  UPCASE(host);
+  if (strcmp(host, "DSK") == 0)
+    dskp = 1;
+  else if (strcmp(host, "UNIX") == 0)
+    dskp = 0;
+  else
+    return (NIL);
 
-	if (args[1] == NIL)
-	  propp = 0;
-	else
-	  propp = 1;
+  if (args[1] == NIL)
+    propp = 0;
+  else
+    propp = 1;
 
-	/*
-	 * The way to deal with the version field in file enumeration is a little
-	 * bit tricky because of the bad specification of original {UNIX} device.
-	 *
-	 * According to the Medley 1.1 release note, in the representation
-	 * "{UNIX}<dir>name.ext;3", ';' and '3' are regarded as a part of the
-	 * file name, not its version.  On the other hand, in 1.1 implementation,
-	 * in the pattern "{UNIX}<dir>*.*;*", the ';' and the last '*' are regarded
-	 * as a version field, not part of the file name.  Actually the pattern
-	 * "{UNIX}<tmp>*.*;*" enumerates all of the files on /tmp directory
-	 * even if they never include ';' character in its name, as well as '.'.
-	 *
-	 * Thus I beleive, the specification should be clean upped as like,
-	 * "UNIX device always ignores the version field in it file name representation
-	 * even if a user specifies it expricitly".
-	 * But to keep a compatibility to an already released version, we have
-	 * to do some trick here.
-	 */
+/*
+ * The way to deal with the version field in file enumeration is a little
+ * bit tricky because of the bad specification of original {UNIX} device.
+ *
+ * According to the Medley 1.1 release note, in the representation
+ * "{UNIX}<dir>name.ext;3", ';' and '3' are regarded as a part of the
+ * file name, not its version.  On the other hand, in 1.1 implementation,
+ * in the pattern "{UNIX}<dir>*.*;*", the ';' and the last '*' are regarded
+ * as a version field, not part of the file name.  Actually the pattern
+ * "{UNIX}<tmp>*.*;*" enumerates all of the files on /tmp directory
+ * even if they never include ';' character in its name, as well as '.'.
+ *
+ * Thus I beleive, the specification should be clean upped as like,
+ * "UNIX device always ignores the version field in it file name representation
+ * even if a user specifies it expricitly".
+ * But to keep a compatibility to an already released version, we have
+ * to do some trick here.
+ */
 
 #ifdef DOS
-	if (!unixpathname(fbuf, pattern, 1, 1, drive, 0, 0)) {
+  if (!unixpathname(fbuf, pattern, 1, 1, drive, 0, 0)) {
 #else
-	if (!unixpathname(fbuf, pattern, 1, 1)) {
+  if (!unixpathname(fbuf, pattern, 1, 1)) {
 #endif /* DOS */
-		/* Yes, always dskp is on */
-		return(GetSmallp(-1));
-	}
+    /* Yes, always dskp is on */
+    return (GetSmallp(-1));
+  }
 
-	if (!unpack_filename(pattern, dir, name, ver, 0)) return(GetSmallp(-1));
+  if (!unpack_filename(pattern, dir, name, ver, 0)) return (GetSmallp(-1));
 
-	if (dskp) {
-		/*
-		 * On {DSK}, we have to make sure dir is case insensitively exisiting
-		 * directory.
-		 */
-		if (true_name(dir) != -1) return(GetSmallp(-1));
+  if (dskp) {
+    /*
+     * On {DSK}, we have to make sure dir is case insensitively exisiting
+     * directory.
+     */
+    if (true_name(dir) != -1) return (GetSmallp(-1));
 
-		if (*ver != '\0') {
-			highestp = 0;
-			version = atoi(ver);
-			if (version > 0) strcpy(ver, "*");
-		} else {
-			version = 0;
-			for (cp = fbuf; *cp; cp++) {}
-			if (*(cp - 1) == ';' && *(cp - 2) != '\'') {
-				/*
-				 * An empty version is interpreted as wanting the
-				 * highest version.  In this case, at first enumerate
-				 * all version.  trim_finfo_highest will get rid of
-				 * lower versions.
-				 */
-				strcpy(ver, "*");
-				highestp = 1;
-			} else {
-				highestp = 0;
-			}
-		}
-		if (propp)
-		  count = enum_dsk_prop(dir, name, ver, &fp);
-		else
-		  count = enum_dsk(dir, name, ver, &fp);
-	} else {
-		/* Makes UNIX device matchts any version. */
-		strcpy(ver, "*");
+    if (*ver != '\0') {
+      highestp = 0;
+      version = atoi(ver);
+      if (version > 0) strcpy(ver, "*");
+    } else {
+      version = 0;
+      for (cp = fbuf; *cp; cp++) {}
+      if (*(cp - 1) == ';' && *(cp - 2) != '\'') {
+        /*
+         * An empty version is interpreted as wanting the
+         * highest version.  In this case, at first enumerate
+         * all version.  trim_finfo_highest will get rid of
+         * lower versions.
+         */
+        strcpy(ver, "*");
+        highestp = 1;
+      } else {
+        highestp = 0;
+      }
+    }
+    if (propp)
+      count = enum_dsk_prop(dir, name, ver, &fp);
+    else
+      count = enum_dsk(dir, name, ver, &fp);
+  } else {
+    /* Makes UNIX device matchts any version. */
+    strcpy(ver, "*");
 
-		if (propp)
-		  count = enum_ufs_prop(dir, name, ver, &fp);
-		else
-		  count = enum_ufs(dir, name, ver, &fp);
-	}
-	
-	switch (count) {
+    if (propp)
+      count = enum_ufs_prop(dir, name, ver, &fp);
+    else
+      count = enum_ufs(dir, name, ver, &fp);
+  }
 
-	      case -1:
-		return(GetSmallp(-1));
+  switch (count) {
+    case -1: return (GetSmallp(-1));
 
-	      case 0:
-		return(GetSmallp(0));
+    case 0: return (GetSmallp(0));
 
-	      default:
-		if (!file_sort(&fp, count, dskp ? dsk_filecmp : unix_filecmp))
-		  return(GetSmallp(-1));
-		if (dskp) {
-			if (highestp)
-			  count = trim_finfo_highest(&fp, highestp);
-			else if (version > 0 && count > 0) 
-			  count = trim_finfo_version(&fp, version);
-			else
-			  count = trim_finfo(&fp);
-		}
+    default:
+      if (!file_sort(&fp, count, dskp ? dsk_filecmp : unix_filecmp)) return (GetSmallp(-1));
+      if (dskp) {
+        if (highestp)
+          count = trim_finfo_highest(&fp, highestp);
+        else if (version > 0 && count > 0)
+          count = trim_finfo_version(&fp, version);
+        else
+          count = trim_finfo(&fp);
+      }
 
-		if ((id = get_finfo_id()) < 0) return(GetSmallp(-1));
-		*(int *)(Addr68k_from_LADDR(args[2])) = id;
-		FinfoArray[id].head = fp;
-		FinfoArray[id].next = fp;
-		return(GetSmallp(count));
-	}
+      if ((id = get_finfo_id()) < 0) return (GetSmallp(-1));
+      *(int *)(Addr68k_from_LADDR(args[2])) = id;
+      FinfoArray[id].head = fp;
+      FinfoArray[id].next = fp;
+      return (GetSmallp(count));
+  }
 }
 
-/*		
+/*
  * Name:	COM_next_file
  *
  * Argument:	LispPTR	*args	args[0]
@@ -2318,65 +2254,61 @@ LispPTR COM_gen_files(args)
  * name.
  */
 
-LispPTR COM_next_file(args)
-	register LispPTR	*args;
+LispPTR COM_next_file(args) register LispPTR *args;
 {
-	register LispPTR	laddr;
-	register FPROP		*pp;
-	register FINFO		*fp;
-	register char		*base;
-	register DFINFO		*dfp;
-	register UFSGFS		*gfsp;
-	int			finfoid, propp;
+  register LispPTR laddr;
+  register FPROP *pp;
+  register FINFO *fp;
+  register char *base;
+  register DFINFO *dfp;
+  register UFSGFS *gfsp;
+  int finfoid, propp;
 
-	ERRSETJMP(-1);
-	Lisp_errno = &Dummy_errno;
+  ERRSETJMP(-1);
+  Lisp_errno = &Dummy_errno;
 
-	gfsp = (UFSGFS *)(Addr68k_from_LADDR(args[0]));
+  gfsp = (UFSGFS *)(Addr68k_from_LADDR(args[0]));
 
-	finfoid = (int)gfsp->finfoid;
+  finfoid = (int)gfsp->finfoid;
 
-	if (finfoid < 0 || MAXFINFO - 1 < finfoid) return(GetSmallp(-1));
+  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (GetSmallp(-1));
 
-	propp = gfsp->propp;
+  propp = gfsp->propp;
 
-	dfp = &FinfoArray[finfoid];
-	if (dfp->head == (FINFO *)0 || (fp = dfp->next) == (FINFO *)0)
-	  return(GetSmallp(-1));
-	dfp->next = fp->next;
+  dfp = &FinfoArray[finfoid];
+  if (dfp->head == (FINFO *)0 || (fp = dfp->next) == (FINFO *)0) return (GetSmallp(-1));
+  dfp->next = fp->next;
 
-	laddr = gfsp->name;
-	STRING_BASE(laddr, base);
+  laddr = gfsp->name;
+  STRING_BASE(laddr, base);
 #ifndef BYTESWAP
-	strncpy(base, fp->lname, fp->lname_len);
+  strncpy(base, fp->lname, fp->lname_len);
 #else
-	StrNCpyFromCToLisp(base, fp->lname, fp->lname_len);
+  StrNCpyFromCToLisp(base, fp->lname, fp->lname_len);
 #endif /* BYTESWAP	 */
 
+  if (!propp) return (GetSmallp(fp->lname_len));
 
-	if (!propp) return(GetSmallp(fp->lname_len));
+  pp = fp->prop;
+  gfsp->length = pp->length;
+  gfsp->wdate = pp->wdate;
+  gfsp->rdate = pp->rdate;
+  gfsp->protection = pp->protect;
 
-	pp = fp->prop;
-	gfsp->length = pp->length;
-	gfsp->wdate = pp->wdate;
-	gfsp->rdate = pp->rdate;
-	gfsp->protection = pp->protect;
-
-	laddr = gfsp->author;
-	STRING_BASE(laddr, base);
+  laddr = gfsp->author;
+  STRING_BASE(laddr, base);
 #ifndef BYTESWAP
-	strncpy(base, pp->author, pp->au_len);
+  strncpy(base, pp->author, pp->au_len);
 #else
-	StrNCpyFromCToLisp(base, pp->author, pp->au_len);
+  StrNCpyFromCToLisp(base, pp->author, pp->au_len);
 #endif /* BYTESWAP	 */
 
+  gfsp->aulen = pp->au_len;
 
-	gfsp->aulen = pp->au_len;
-
-	return(GetSmallp(fp->lname_len));
+  return (GetSmallp(fp->lname_len));
 }
 
-/*		
+/*
  * Name:	COM_finish_finfo
  *
  * Argument:	LispPTR	*args	args[0]
@@ -2393,30 +2325,29 @@ LispPTR COM_next_file(args)
  * Abandon all cached information corresponding to the generator.
  */
 
-LispPTR COM_finish_finfo(args)
-	register LispPTR	*args;
+LispPTR COM_finish_finfo(args) register LispPTR *args;
 {
-	register DFINFO		*dfp;
-	register FINFO		*fp;
-	register int		finfoid;
+  register DFINFO *dfp;
+  register FINFO *fp;
+  register int finfoid;
 
-	ERRSETJMP(NIL);
-	
-	Lisp_errno = &Dummy_errno;
+  ERRSETJMP(NIL);
 
-	finfoid = LispNumToCInt(args[0]);
+  Lisp_errno = &Dummy_errno;
 
-	if (finfoid < 0 || MAXFINFO - 1 < finfoid) return(NIL);
+  finfoid = LispNumToCInt(args[0]);
 
-	dfp = &FinfoArray[finfoid];
-	if ((fp = dfp->head) == (FINFO *)0) {
-		dfp->next = (FINFO *)0;
-		return(NIL);
-	}
+  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (NIL);
 
-	dfp->head = (FINFO *)0;
-	dfp->next = (FINFO *)0;
-	FreeFinfo(fp);
+  dfp = &FinfoArray[finfoid];
+  if ((fp = dfp->head) == (FINFO *)0) {
+    dfp->next = (FINFO *)0;
+    return (NIL);
+  }
 
-	return(ATOM_T);
+  dfp->head = (FINFO *)0;
+  dfp->next = (FINFO *)0;
+  FreeFinfo(fp);
+
+  return (ATOM_T);
 }

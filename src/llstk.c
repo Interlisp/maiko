@@ -1,9 +1,5 @@
-/* $Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -19,8 +15,6 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 
 #include "version.h"
 
-
-
 /******************************************************************/
 /*
         File Name :     llstk.c
@@ -31,7 +25,7 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 
 */
 /******************************************************************/
-#include <stdio.h>  /* for printf */
+#include <stdio.h> /* for printf */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
@@ -46,7 +40,6 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 
 extern int extended_frame;
 
-
 void blt(register DLword *dest68k, register DLword *source68k, int nw);
 
 /******************************************************************/
@@ -56,235 +49,198 @@ void blt(register DLword *dest68k, register DLword *source68k, int nw);
         Edited by :     Take(March 14, 1988)
 */
 /******************************************************************/
-LispPTR moveframe(register FX *oldfx68k)
-{
-    register int size;
-    register DLword *next68k;
-    register DLword *new68k;
-    DLword *freestackblock(DLword n, StackWord *start68k, int align);
-    DLword *extendstack(void);
-    int nametbl_on_stk =NIL;
-    int at_eos = NIL;
+LispPTR moveframe(register FX *oldfx68k) {
+  register int size;
+  register DLword *next68k;
+  register DLword *new68k;
+  DLword *freestackblock(DLword n, StackWord * start68k, int align);
+  DLword *extendstack(void);
+  int nametbl_on_stk = NIL;
+  int at_eos = NIL;
 
-    PreMoveFrameCheck(oldfx68k);
+  PreMoveFrameCheck(oldfx68k);
 #ifdef FLIPCURSOR
-    flip_cursorbar(10);
+  flip_cursorbar(10);
 #endif
 
-    size = FX_size(oldfx68k) + DLWORDSPER_CELL;
-    S_CHECK(size > 0, "size of stack block < 0");
-    next68k=Addr68k_from_StkOffset(oldfx68k->nextblock);
+  size = FX_size(oldfx68k) + DLWORDSPER_CELL;
+  S_CHECK(size > 0, "size of stack block < 0");
+  next68k = Addr68k_from_StkOffset(oldfx68k->nextblock);
 
 tryfsb:
-    if(FSBP(next68k))
-      {
-        /* merge free blocks */
-        new68k = next68k + FSB_size(next68k);
-	if(FSBP(new68k))
-	  {
-	    for(;FSBP(new68k); new68k = new68k + FSB_size(new68k))
-                FSB_size(next68k) += FSB_size(new68k);
-	    new68k=(DLword *)oldfx68k;
-	    goto out;
-	  }
-	else if(StkOffset_from_68K(new68k) == InterfacePage->endofstack)
-          {
-	    if((StkOffset_from_68K(new68k) > LOLOC(*GuardStackAddr_word)) &&
-		((*STACKOVERFLOW_word)== NIL) )
-	      at_eos = T; /* search FSB in earler STACK area by freestackblock */
-            else if(extendstack() != NIL)
-	      {
-		new68k=(DLword *)oldfx68k;
-		goto out;
-	      }
-	    else
-	      {
-		/* These lines are different from Original Code */
-		return(0xFFFF); /* No space */
-	      }
-          }/* else if end */
-
+  if (FSBP(next68k)) {
+    /* merge free blocks */
+    new68k = next68k + FSB_size(next68k);
+    if (FSBP(new68k)) {
+      for (; FSBP(new68k); new68k = new68k + FSB_size(new68k))
+        FSB_size(next68k) += FSB_size(new68k);
+      new68k = (DLword *)oldfx68k;
+      goto out;
+    } else if (StkOffset_from_68K(new68k) == InterfacePage->endofstack) {
+      if ((StkOffset_from_68K(new68k) > LOLOC(*GuardStackAddr_word)) &&
+          ((*STACKOVERFLOW_word) == NIL))
+        at_eos = T; /* search FSB in earler STACK area by freestackblock */
+      else if (extendstack() != NIL) {
+        new68k = (DLword *)oldfx68k;
+        goto out;
+      } else {
+        /* These lines are different from Original Code */
+        return (0xFFFF); /* No space */
       }
+    } /* else if end */
+  }
 
-    CHECK_FX(oldfx68k);
+  CHECK_FX(oldfx68k);
 
-    S_CHECK(oldfx68k->usecount == 0, "use count > 0");
-    /* we don't check \INTERRUPTABLE */
+  S_CHECK(oldfx68k->usecount == 0, "use count > 0");
+/* we don't check \INTERRUPTABLE */
 #ifdef BIGVM
-    if(oldfx68k->validnametable && ((oldfx68k->nametable>>16)==STK_HI))
+  if (oldfx68k->validnametable && ((oldfx68k->nametable >> 16) == STK_HI))
 #else
-    if(oldfx68k->validnametable && (oldfx68k->hi2nametable==STK_HI))
+  if (oldfx68k->validnametable && (oldfx68k->hi2nametable == STK_HI))
 #endif /* BIGVM */
-      {
-	/* frame contains a name table, so we care that the alignment
-	 of the new block be same as old */
+  {
+/* frame contains a name table, so we care that the alignment
+ of the new block be same as old */
 #ifdef STACKCHECK
-        { DLword n;
+    {
+      DLword n;
 #ifdef BIGVM
-	  n = oldfx68k->nametable & 0xFFFF;
+      n = oldfx68k->nametable & 0xFFFF;
 #else
-	  n=oldfx68k->lonametable;
+      n = oldfx68k->lonametable;
 #endif /* BIGVM */
-	  if((n <= StkOffset_from_68K(oldfx68k))
-                  && (n >= oldfx68k->nextblock))
-	    {  WARN("moveframe:check!!", sff(LADDR_from_68k(oldfx68k)));}
-        }
+      if ((n <= StkOffset_from_68K(oldfx68k)) && (n >= oldfx68k->nextblock)) {
+        WARN("moveframe:check!!", sff(LADDR_from_68k(oldfx68k)));
+      }
+    }
 #endif
-	nametbl_on_stk = T;
-	/* Find a free stack block */
-	new68k=freestackblock(size,(StackWord *)oldfx68k,
-               (LADDR_from_68k(oldfx68k)-DLWORDSPER_CELL)% DLWORDSPER_QUAD);
-      }
-    else
-	new68k=freestackblock(size,(StackWord *)oldfx68k,-1);/* Not needed to align */
+    nametbl_on_stk = T;
+    /* Find a free stack block */
+    new68k = freestackblock(size, (StackWord *)oldfx68k,
+                            (LADDR_from_68k(oldfx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
+  } else
+    new68k = freestackblock(size, (StackWord *)oldfx68k, -1); /* Not needed to align */
 
+  if (new68k == 0) return (0xFFFF); /* exhausted */
+  if (new68k < Stackspace) error("freestackblock returned gunk.");
 
-    if(new68k==0) return(0xFFFF);  /* exhausted */
-if (new68k < Stackspace) error("freestackblock returned gunk.");
+  if (at_eos && ((UNSIGNED)new68k > (UNSIGNED)oldfx68k)) {
+    /* extendstack already done in freestackblock */
+    ((STKBLK *)new68k)->flagword = STK_FSB_WORD;
+    if (((STKBLK *)new68k)->size == 0) error("0-long stack freeblock.");
+    goto tryfsb;
+  }
 
-    if( at_eos && ((UNSIGNED)new68k > (UNSIGNED)oldfx68k))
-      {
-	/* extendstack already done in freestackblock */
-	((STKBLK*)new68k)->flagword = STK_FSB_WORD;
-if (((STKBLK *)new68k)->size == 0) error("0-long stack freeblock.");
-	goto tryfsb;
-      }
+  /* copy frame and dummy bf pointer too */
+  blt(new68k, (((DLword *)oldfx68k) - DLWORDSPER_CELL), size);
 
-    /* copy frame and dummy bf pointer too */
-    blt(new68k,(((DLword*)oldfx68k) - DLWORDSPER_CELL),size);
+  ((Bframe *)new68k)->residual = T;
+  new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
+  ((FX *)new68k)->nextblock = (StkOffset_from_68K(new68k) + size) - DLWORDSPER_CELL;
+  /* (CHECK (fetch (BF CHECKED) of (fetch (FX BLINK) of OLDFRAME)))*/
+  CHECK_BF(Addr68k_from_StkOffset(GETBLINK(oldfx68k)));
 
-    ((Bframe*)new68k)->residual =T;
-    new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
-    ((FX*)new68k)->nextblock = (StkOffset_from_68K(new68k) + size)
-				-DLWORDSPER_CELL;
-    /* (CHECK (fetch (BF CHECKED) of (fetch (FX BLINK) of OLDFRAME)))*/
-    CHECK_BF(Addr68k_from_StkOffset(GETBLINK(oldfx68k)));
+  /* Set true BFptr,not residual */
+  SETBLINK(new68k, GETBLINK(oldfx68k));
 
-    /* Set true BFptr,not residual */
-    SETBLINK(new68k,GETBLINK(oldfx68k));
-
-    if(nametbl_on_stk)
-      {
-	S_CHECK(( (((UNSIGNED)new68k - (UNSIGNED)oldfx68k)>>1) % DLWORDSPER_QUAD) == 0,
-		 "Misalignment of stack blocks, with nametable on stack");
+  if (nametbl_on_stk) {
+    S_CHECK(((((UNSIGNED)new68k - (UNSIGNED)oldfx68k) >> 1) % DLWORDSPER_QUAD) == 0,
+            "Misalignment of stack blocks, with nametable on stack");
 #ifdef BIGVM
-	((FX*)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)oldfx68k)>>1);
+    ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)oldfx68k) >> 1);
 #else
-	((FX*)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)oldfx68k)>>1);
+    ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)oldfx68k) >> 1);
 #endif
-      }
-    if( ((Bframe*)DUMMYBF(oldfx68k))->residual )
-      {
-        MAKEFREEBLOCK(((DLword*)oldfx68k)-DLWORDSPER_CELL , size);
-      }
-    else
-      {
-        MAKEFREEBLOCK(oldfx68k,size - DLWORDSPER_CELL);
-      }
+  }
+  if (((Bframe *)DUMMYBF(oldfx68k))->residual) {
+    MAKEFREEBLOCK(((DLword *)oldfx68k) - DLWORDSPER_CELL, size);
+  } else {
+    MAKEFREEBLOCK(oldfx68k, size - DLWORDSPER_CELL);
+  }
 
 out:
 #ifdef FLIPCURSOR
-    flip_cursorbar(10);
+  flip_cursorbar(10);
 #endif
 
-    return(S_POSITIVE|StkOffset_from_68K(new68k));
-  } /* moveframe end */
-
+  return (S_POSITIVE | StkOffset_from_68K(new68k));
+} /* moveframe end */
 
 /******************************************************************/
 /*
         Func Name :     do_stackoverflow(incallp)
 
-		retval: If There is no space for stack then return 1
-					else return 0
-		incallp:
-			If Calling during function call,incallp=T
-			else NIL
+                retval: If There is no space for stack then return 1
+                                        else return 0
+                incallp:
+                        If Calling during function call,incallp=T
+                        else NIL
         Edited by :     Take(March 28, 1988)
 */
 /******************************************************************/
-int do_stackoverflow(int incallp)
-{
-    register DLword *next68k;
-    DLword newfx;
-    DLword savenext;
-    DLword *oldPVar;
-    int movedistance;
-    LispPTR moveframe(register FX *oldfx68k);
+int do_stackoverflow(int incallp) {
+  register DLword *next68k;
+  DLword newfx;
+  DLword savenext;
+  DLword *oldPVar;
+  int movedistance;
+  LispPTR moveframe(register FX * oldfx68k);
 #ifdef STACKCHECK
-    LispPTR stackcontents;
-    LispPTR TopIVAR;
+  LispPTR stackcontents;
+  LispPTR TopIVAR;
 
-    stackcontents= *((LispPTR*)CurrentStackPTR);
-    TopIVAR= *((LispPTR*)IVar);
+  stackcontents = *((LispPTR *)CurrentStackPTR);
+  TopIVAR = *((LispPTR *)IVar);
 #endif
 
-   /* Don't care PC,FuncObj, */
-   /*if incall flag ON ,Don't care IVar
-	,became resudual and it is pointed by copied FX's BLINK*/
-    oldPVar=PVar;
+  /* Don't care PC,FuncObj, */
+  /*if incall flag ON ,Don't care IVar
+       ,became resudual and it is pointed by copied FX's BLINK*/
+  oldPVar = PVar;
 
-    if(*NeedHardreturnCleanup_word)
-      {
-	warn("HardreturnCleanup in do_stackoverflow");
-      }
-    if(incallp)
-      {
-	savenext=CURRENTFX->nextblock; /* save old nextblock */
-      }
+  if (*NeedHardreturnCleanup_word) { warn("HardreturnCleanup in do_stackoverflow"); }
+  if (incallp) { savenext = CURRENTFX->nextblock; /* save old nextblock */ }
 
-    BEFORE_CONTEXTSW;	/* Don't Use MIDPUNT and Don't care IFPAGE */
+  BEFORE_CONTEXTSW; /* Don't Use MIDPUNT and Don't care IFPAGE */
 
+  /* Call MOVEFRAME directly */
+  if ((newfx = (DLword)moveframe(CURRENTFX)) == 0xFFFF) {
+    /* To make immidiately call HARDRESET */
+    Irq_Stk_Check = 0;
+    Irq_Stk_End = 0;
+    return (1); /* Whole space exausted */
+  }
 
-    /* Call MOVEFRAME directly */
-    if((newfx=(DLword)moveframe(CURRENTFX)) == 0xFFFF)
-      {
-	 /* To make immidiately call HARDRESET */
-	Irq_Stk_Check = 0;
-	Irq_Stk_End=0;
-	return(1); /* Whole space exausted */
-      }
+  /* Return from MOVEFRAME directly */
 
+  PVar = (DLword *)Addr68k_from_StkOffset(newfx + FRAMESIZE);
+  movedistance = ((UNSIGNED)PVar - (UNSIGNED)oldPVar) >> 1;
+  AFTER_CONTEXTSW;
 
-    /* Return from MOVEFRAME directly */
+  if (incallp) {
+    /* set next(it pointed to old IVar) with offset */
+    CURRENTFX->nextblock = savenext + movedistance;
 
-    PVar=(DLword*)Addr68k_from_StkOffset(newfx+FRAMESIZE);
-    movedistance= ((UNSIGNED)PVar-(UNSIGNED)oldPVar) >>1;
-    AFTER_CONTEXTSW;
-
-    if(incallp)
-      {
-	/* set next(it pointed to old IVar) with offset */
-	CURRENTFX->nextblock= savenext + movedistance;
-
-	/* including Last Arg(kept in TOS */
+/* including Last Arg(kept in TOS */
 #ifdef BIGVM
-	S_CHECK(FuncObj == (struct fnhead *)
-			Addr68k_from_LADDR(CURRENTFX->fnheader),
-		 "in call, but stack frame doesn't match FN being executed." );
+    S_CHECK(FuncObj == (struct fnhead *)Addr68k_from_LADDR(CURRENTFX->fnheader),
+            "in call, but stack frame doesn't match FN being executed.");
 #else
-	S_CHECK(FuncObj == (struct fnhead *)
-			Addr68k_from_LADDR(
-				(CURRENTFX->hi2fnheader << 16) |
-				CURRENTFX->lofnheader),
-		 "in call, but stack frame doesn't match FN being executed." );
+    S_CHECK(FuncObj == (struct fnhead *)Addr68k_from_LADDR((CURRENTFX->hi2fnheader << 16) |
+                                                           CURRENTFX->lofnheader),
+            "in call, but stack frame doesn't match FN being executed.");
 #endif /* BIGVM */
-	CHECK_FX(CURRENTFX);
+    CHECK_FX(CURRENTFX);
 
-	 /* We should re-Set up IVAR,CURRENTFX->nextblock */
-	 IVar += movedistance;
-      } /* incallp */
+    /* We should re-Set up IVAR,CURRENTFX->nextblock */
+    IVar += movedistance;
+  } /* incallp */
 
-    return(0); /* Normal return */
-    /* If  incallp ,we CAN continue executing FN or APPLY by just returning */
-    /* new PVar will set in funcall */
-  }/* end do_stackoverflow */
-
-
-
-
-
-
+  return (0); /* Normal return */
+  /* If  incallp ,we CAN continue executing FN or APPLY by just returning */
+  /* new PVar will set in funcall */
+} /* end do_stackoverflow */
 
 /******************************************************************/
 /*
@@ -296,44 +252,36 @@ int do_stackoverflow(int incallp)
 
 */
 /******************************************************************/
-DLword *extendstack(void)
-{
-    register LispPTR easp;
-    register LispPTR scanptr;
+DLword *extendstack(void) {
+  register LispPTR easp;
+  register LispPTR scanptr;
 
-    easp = InterfacePage->endofstack;
+  easp = InterfacePage->endofstack;
 
-    if (easp < LOLOC(*LastStackAddr_word))
-      {
-	if((easp > LOLOC(*GuardStackAddr_word)) &&
-                ((*STACKOVERFLOW_word)== NIL) )
-	  { extended_frame = 1;
-            ((INTSTAT*)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->stackoverflow = 1;
-             *STACKOVERFLOW_word = *PENDINGINTERRUPT_word=ATOM_T;
-          }
-        newpage(STK_OFFSET|(scanptr=easp+2));
-        /* I don't concern about DOLOCKPAGES */
+  if (easp < LOLOC(*LastStackAddr_word)) {
+    if ((easp > LOLOC(*GuardStackAddr_word)) && ((*STACKOVERFLOW_word) == NIL)) {
+      extended_frame = 1;
+      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->stackoverflow = 1;
+      *STACKOVERFLOW_word = *PENDINGINTERRUPT_word = ATOM_T;
+    }
+    newpage(STK_OFFSET | (scanptr = easp + 2));
+    /* I don't concern about DOLOCKPAGES */
 
-        MAKEFREEBLOCK(Addr68k_from_StkOffset(scanptr),DLWORDSPER_PAGE-2);
-	InterfacePage->endofstack = scanptr=easp+DLWORDSPER_PAGE;
-        SETUPGUARDBLOCK(
-		Addr68k_from_StkOffset(InterfacePage->endofstack), 2);
-        MAKEFREEBLOCK(Addr68k_from_StkOffset(easp) , 2);
-        return((DLword*)Addr68k_from_StkOffset(scanptr));
-      }
-    else return(NIL);
-  } /* end extendstack */
-
-
-
-
+    MAKEFREEBLOCK(Addr68k_from_StkOffset(scanptr), DLWORDSPER_PAGE - 2);
+    InterfacePage->endofstack = scanptr = easp + DLWORDSPER_PAGE;
+    SETUPGUARDBLOCK(Addr68k_from_StkOffset(InterfacePage->endofstack), 2);
+    MAKEFREEBLOCK(Addr68k_from_StkOffset(easp), 2);
+    return ((DLword *)Addr68k_from_StkOffset(scanptr));
+  } else
+    return (NIL);
+} /* end extendstack */
 
 /******************************************************************/
 /*
         Func Name :     freestackblock(n,sart,align)
         Desc.     :     Search the FSB has specified size n or more
                         Return useful area's ptr.
-				   If there is no space for STACK,return 0
+                                   If there is no space for STACK,return 0
 
         Edited by :     take(15-Jul-87)
                         take(11-Apr-88)
@@ -341,153 +289,132 @@ DLword *extendstack(void)
 /******************************************************************/
 
 DLword *freestackblock(DLword n, StackWord *start68k, int align)
-                /* size you want(in DLword) */
-                       /* searching will start68k at here */
-             /* if Negative,it needn't align */
-  {
-    register int wantedsize;
-    register StackWord *scanptr68k;
-StackWord *ooscan, *oscan;
-    register StackWord *orig68k;
-    register STKBLK *freeptr68k;
-    register StackWord *easp68k;
-    register DLword freesize;
+/* size you want(in DLword) */
+/* searching will start68k at here */
+/* if Negative,it needn't align */
+{
+  register int wantedsize;
+  register StackWord *scanptr68k;
+  StackWord *ooscan, *oscan;
+  register StackWord *orig68k;
+  register STKBLK *freeptr68k;
+  register StackWord *easp68k;
+  register DLword freesize;
 
-    DLword *extendstack(void);
+  DLword *extendstack(void);
 
-    if (n%2) error("asking for odd-length stack block");
+  if (n % 2) error("asking for odd-length stack block");
 
-    /* compute actually size you needed */
-    wantedsize = n + STACKAREA_SIZE + MINEXTRASTACKWORDS;
+  /* compute actually size you needed */
+  wantedsize = n + STACKAREA_SIZE + MINEXTRASTACKWORDS;
 
-    easp68k =(StackWord*) (Addr68k_from_StkOffset(InterfacePage->endofstack));
+  easp68k = (StackWord *)(Addr68k_from_StkOffset(InterfacePage->endofstack));
 
+  /*** DEBUG ***/
+  S_CHECK(n > 2, "asking for block < 2 words long");
+  S_CHECK(start68k != 0, "start68k = 0");
+  S_CHECK(start68k >= (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase),
+          "start68k before stack base");
 
-    /*** DEBUG ***/
-    S_CHECK(n>2, "asking for block < 2 words long");
-    S_CHECK(start68k != 0, "start68k = 0");
-    S_CHECK(start68k >=
-	    (StackWord*)Addr68k_from_StkOffset(InterfacePage->stackbase),
-	    "start68k before stack base");
+STARTOVER:
+  if (start68k)
+    scanptr68k = start68k;
+  else
+    scanptr68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
 
-STARTOVER :
-    if(start68k) scanptr68k = start68k;
-    else scanptr68k =
-	    (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
+SCAN:
+  switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
+    case STK_FSB: goto FREESCAN; break;
+    case STK_GUARD:
+      if ((UNSIGNED)scanptr68k < (UNSIGNED)easp68k) goto FREESCAN;
+      if (start68k) {
+        scanptr68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
+        goto SCAN;
+      } else
+        goto NEWPAGE;
+      break;
+    case STK_FX:
+      scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
+      break;
+    default:
+      orig68k = scanptr68k;
 
-SCAN :  switch((unsigned)(STKWORD(scanptr68k)->flags))
-	  {
-            case STK_FSB :  goto FREESCAN;
-                            break;
-            case STK_GUARD: if((UNSIGNED)scanptr68k < (UNSIGNED)easp68k)
-                            goto FREESCAN;
-                            if (start68k)
-			      {
-                                scanptr68k =(StackWord *)Addr68k_from_StkOffset
-                                		(InterfacePage->stackbase);
-                                goto SCAN;
-			      }
-                            else goto NEWPAGE;
-                            break;
-            case STK_FX :   scanptr68k =(StackWord *)Addr68k_from_StkOffset(
-					    ((FX*)scanptr68k)->nextblock);
-                            break;
-            default :       orig68k = scanptr68k;
-
-                            while(STKWORD(scanptr68k)->flags != STK_BF)
-			      {
-                                S_WARN(STKWORD(scanptr68k)->flags==STK_NOTFLG,
-					"NOTFLG not on", scanptr68k);
-			        scanptr68k = (StackWord *)
-					       (((DLword *)scanptr68k)
-					            + DLWORDSPER_CELL);
-                             };
+      while (STKWORD(scanptr68k)->flags != STK_BF) {
+        S_WARN(STKWORD(scanptr68k)->flags == STK_NOTFLG, "NOTFLG not on", scanptr68k);
+        scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
+      };
 
 #ifdef STACKCHECK
-			   if(((Bframe*)scanptr68k)->residual)
-                             { if(scanptr68k != orig68k)
-                                {
-				  WARN("freestackblock:scanptr68k !=org",
-					printf(":0x%x\n",
-						LADDR_from_68k(scanptr68k)));
-				}
-			     }
-			  else
-			    {
-			      if(((Bframe*)scanptr68k)->ivar
-					!= StkOffset_from_68K(orig68k))
-				{
-				  WARN("BF doesn't point TopIVAR",
-					printf(":0x%x\n",
-						LADDR_from_68k(scanptr68k)));
-				}
-			    }
+      if (((Bframe *)scanptr68k)->residual) {
+        if (scanptr68k != orig68k) {
+          WARN("freestackblock:scanptr68k !=org", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+        }
+      } else {
+        if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(orig68k)) {
+          WARN("BF doesn't point TopIVAR", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+        }
+      }
 #endif
-		/* Used to be a +=, but SunOS4/Sparc compiles it wrong */
-                            scanptr68k = (StackWord *)
-					    ((DLword *)scanptr68k
-						+ DLWORDSPER_CELL);
-                            break;
+      /* Used to be a +=, but SunOS4/Sparc compiles it wrong */
+      scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+      break;
 
-      } /* end switch(scanptr68k */
+  } /* end switch(scanptr68k */
 
-NEXT: if(scanptr68k != start68k)
-      {
-	S_CHECK((UNSIGNED)scanptr68k <=(UNSIGNED)easp68k, "scan ptr past end of stack");
-	goto SCAN;
-      }
-NEWPAGE : easp68k =(StackWord*)extendstack();
-	  if(easp68k) goto STARTOVER;
-	  else
-	   {
-	    warn("freestackblock:StackFull MP9319");
-	    return(0);
-	   }
+NEXT:
+  if (scanptr68k != start68k) {
+    S_CHECK((UNSIGNED)scanptr68k <= (UNSIGNED)easp68k, "scan ptr past end of stack");
+    goto SCAN;
+  }
+NEWPAGE:
+  easp68k = (StackWord *)extendstack();
+  if (easp68k)
+    goto STARTOVER;
+  else {
+    warn("freestackblock:StackFull MP9319");
+    return (0);
+  }
 
-FREESCAN :      freeptr68k=(STKBLK *)scanptr68k;
-                freesize=FSB_size(freeptr68k);
+FREESCAN:
+  freeptr68k = (STKBLK *)scanptr68k;
+  freesize = FSB_size(freeptr68k);
 FREE:
-		ooscan = oscan; oscan = scanptr68k;
-                scanptr68k = (StackWord *)(((DLword *)freeptr68k) + freesize);
-		if (freesize == 0) error("FREESIZE = 0");
+  ooscan = oscan;
+  oscan = scanptr68k;
+  scanptr68k = (StackWord *)(((DLword *)freeptr68k) + freesize);
+  if (freesize == 0) error("FREESIZE = 0");
 
-                switch((unsigned)(STKWORD(scanptr68k)->flags))
-		  {
-		    case STK_FSB:  freesize = freesize + FSB_size(scanptr68k);
-                                   goto FREE;
-                                    
-		    case STK_GUARD: if((UNSIGNED)scanptr68k<(UNSIGNED)easp68k)
-				      {
-					freesize = freesize + FSB_size(scanptr68k);
-					goto FREE;
-                                       }
-                                     break;
+  switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
+    case STK_FSB: freesize = freesize + FSB_size(scanptr68k); goto FREE;
 
-		    default :       break;
-
- 		  } /* end switch(scanp.. */
-
-    if(freesize >= wantedsize)
-      {
-	if((align<0) ||
-	    (align==(StkOffset_from_68K(freeptr68k) % DLWORDSPER_QUAD)))
-          wantedsize= MINEXTRASTACKWORDS;
-	else wantedsize= MINEXTRASTACKWORDS+DLWORDSPER_CELL;
-
-	scanptr68k =(StackWord*) (((DLword *)freeptr68k) + wantedsize);
-
-	SETUPGUARDBLOCK(scanptr68k, n);
-	MAKEFREEBLOCK(freeptr68k,wantedsize);
-	MAKEFREEBLOCK(((DLword*)scanptr68k) + n, freesize - wantedsize -n);
-	return((DLword*)scanptr68k);
+    case STK_GUARD:
+      if ((UNSIGNED)scanptr68k < (UNSIGNED)easp68k) {
+        freesize = freesize + FSB_size(scanptr68k);
+        goto FREE;
       }
-    else MAKEFREEBLOCK( freeptr68k, freesize);
+      break;
 
-    goto NEXT;
-  } /* freestackblock end */
+    default: break;
 
+  } /* end switch(scanp.. */
 
+  if (freesize >= wantedsize) {
+    if ((align < 0) || (align == (StkOffset_from_68K(freeptr68k) % DLWORDSPER_QUAD)))
+      wantedsize = MINEXTRASTACKWORDS;
+    else
+      wantedsize = MINEXTRASTACKWORDS + DLWORDSPER_CELL;
 
+    scanptr68k = (StackWord *)(((DLword *)freeptr68k) + wantedsize);
+
+    SETUPGUARDBLOCK(scanptr68k, n);
+    MAKEFREEBLOCK(freeptr68k, wantedsize);
+    MAKEFREEBLOCK(((DLword *)scanptr68k) + n, freesize - wantedsize - n);
+    return ((DLword *)scanptr68k);
+  } else
+    MAKEFREEBLOCK(freeptr68k, freesize);
+
+  goto NEXT;
+} /* freestackblock end */
 
 /******************************************************************/
 /*
@@ -498,69 +425,52 @@ FREE:
         Edited by :     take(March 14, 1988)
 */
 /******************************************************************/
-#define BF_size(ptr68k) ((StkOffset_from_68K(ptr68k)) - ((Bframe*)(ptr68k))->ivar + 2)
+#define BF_size(ptr68k) ((StkOffset_from_68K(ptr68k)) - ((Bframe *)(ptr68k))->ivar + 2)
 
-void decusecount68k(register FX *frame68k)
-{
- DLword *alink68k;
- register Bframe *blink68k;
- DLword *clink68k;
- register DLword *ivar68k;
- register int size;
+void decusecount68k(register FX *frame68k) {
+  DLword *alink68k;
+  register Bframe *blink68k;
+  DLword *clink68k;
+  register DLword *ivar68k;
+  register int size;
 
-if(FX_INVALIDP(frame68k)) return;
-CHECK_FX(frame68k);
-/* I don't check if \INTERRUPTABLE is NIL */
- while(StkOffset_from_68K(frame68k))
- {
-        if(frame68k->usecount != 0)
-        {
-                frame68k->usecount--;
-                return;
-         }
-        else
-        {
-                alink68k = Addr68k_from_StkOffset(GETALINK(frame68k));
-                blink68k =(Bframe*) Addr68k_from_StkOffset(GETBLINK(frame68k));
-                clink68k = Addr68k_from_StkOffset(GETCLINK(frame68k));
+  if (FX_INVALIDP(frame68k)) return;
+  CHECK_FX(frame68k);
+  /* I don't check if \INTERRUPTABLE is NIL */
+  while (StkOffset_from_68K(frame68k)) {
+    if (frame68k->usecount != 0) {
+      frame68k->usecount--;
+      return;
+    } else {
+      alink68k = Addr68k_from_StkOffset(GETALINK(frame68k));
+      blink68k = (Bframe *)Addr68k_from_StkOffset(GETBLINK(frame68k));
+      clink68k = Addr68k_from_StkOffset(GETCLINK(frame68k));
 
-                size = FX_size(frame68k);
+      size = FX_size(frame68k);
 
-                if(((Bframe*)DUMMYBF(frame68k))->residual)
-                { /* this frame has dummy BF */
-                        MAKEFREEBLOCK(((DLword*)frame68k) -DLWORDSPER_CELL,size+DLWORDSPER_CELL);
-                }
-                else
-                {
-                        MAKEFREEBLOCK(frame68k,size);
-                }
+      if (((Bframe *)DUMMYBF(frame68k))->residual) { /* this frame has dummy BF */
+        MAKEFREEBLOCK(((DLword *)frame68k) - DLWORDSPER_CELL, size + DLWORDSPER_CELL);
+      } else {
+        MAKEFREEBLOCK(frame68k, size);
+      }
 
-                if(blink68k->usecnt !=0)
-                {
-                        blink68k->usecnt--;
-                }
-                else
-                {
-                    /***    ivar68k=Addr68k_from_StkOffset(blink68k->ivar);
-                        GETWORD(ivar68k)=STK_FSB_WORD;
-                        GETWORD(ivar68k+1)=ivar68k -(DLword *)blink68k +2; **/
+      if (blink68k->usecnt != 0) {
+        blink68k->usecnt--;
+      } else {
+        /***    ivar68k=Addr68k_from_StkOffset(blink68k->ivar);
+            GETWORD(ivar68k)=STK_FSB_WORD;
+            GETWORD(ivar68k+1)=ivar68k -(DLword *)blink68k +2; **/
 
-				MAKEFREEBLOCK(Addr68k_from_StkOffset(blink68k->ivar),
-							BF_size(blink68k));
-                }
-                if(alink68k!= clink68k)
-                        decusecount68k((FX *)alink68k);
+        MAKEFREEBLOCK(Addr68k_from_StkOffset(blink68k->ivar), BF_size(blink68k));
+      }
+      if (alink68k != clink68k) decusecount68k((FX *)alink68k);
 
-                frame68k = (FX*)clink68k;
+      frame68k = (FX *)clink68k;
 
-        } /* else end */
+    } /* else end */
 
- }/*while end */
+  } /*while end */
 } /* decusecount68k end */
-
-
-
-
 
 #ifdef ORG_FILPCORSORBAR
 extern DLword *EmCursorBitMap68K;
@@ -570,226 +480,185 @@ extern int LispWindowFd;
 extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
-
 extern struct cursor CurrentCursor;
-void flip_cursorbar(n)
-    int n;
-  {
-    GETWORD(EmCursorBitMap68K +n) = ~(GETWORD(EmCursorBitMap68K +n));
+void flip_cursorbar(n) int n;
+{
+  GETWORD(EmCursorBitMap68K + n) = ~(GETWORD(EmCursorBitMap68K + n));
 #ifdef SUNDISPLAY
-    win_setcursor(LispWindowFd,&CurrentCursor);
+  win_setcursor(LispWindowFd, &CurrentCursor);
 #endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
-    /* JDS 011213 When using current_hot_y, remember fn does 15-it! */
-    Set_XCursor( Current_Hot_X, 15-Current_Hot_Y );
+  /* JDS 011213 When using current_hot_y, remember fn does 15-it! */
+  Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
 #endif /* XWINDOW */
-
 }
 #else
 extern short *DisplayRegion68k;
 extern int DisplayRasterWidth;
 
-void flip_cursorbar(int n)
-  {
-    register short *word;
-    word = DisplayRegion68k + (n * DisplayRasterWidth);
-    GETWORD(word) ^= 0xFFFF;
-  }
+void flip_cursorbar(int n) {
+  register short *word;
+  word = DisplayRegion68k + (n * DisplayRasterWidth);
+  GETWORD(word) ^= 0xFFFF;
+}
 #endif
-
-
-
-
 
 /**************************************************************/
 /*
                 blt(dest,source,size)
 */
 /**************************************************************/
-void blt(register DLword *dest68k, register DLword *source68k, int nw)
-{
-/******* OLD def ,
- Due to C compiler's bug, we can't use pre-decriment for register val
-  source68k += nw;
-  dest68k += nw;
-  while(nw)
-  {
-    GETWORD(--dest68k)= GETWORD(--source68k);
-    nw--;
-   }
-**** OLD def ****/
-  source68k = source68k + nw-1;
-  dest68k = dest68k + nw-1;
-  while(nw--)
-  {
-    GETWORD(dest68k--) = GETWORD(source68k--);
-  }
+void blt(register DLword *dest68k, register DLword *source68k, int nw) {
+  /******* OLD def ,
+   Due to C compiler's bug, we can't use pre-decriment for register val
+    source68k += nw;
+    dest68k += nw;
+    while(nw)
+    {
+      GETWORD(--dest68k)= GETWORD(--source68k);
+      nw--;
+     }
+  **** OLD def ****/
+  source68k = source68k + nw - 1;
+  dest68k = dest68k + nw - 1;
+  while (nw--) { GETWORD(dest68k--) = GETWORD(source68k--); }
 }
-
-
 
 /**************************************************************/
 /*
-		stack_check(start68k)
-		for DEBUG
+                stack_check(start68k)
+                for DEBUG
 */
 /**************************************************************/
-void stack_check(StackWord *start68k)
-{
-    StackWord *scanptr68k;
-    StackWord *endstack68k;
-    DLword *top_ivar;
-    DLword save_nextblock;
-    DLword savestack1,savestack2;
-    DLword setflg=NIL;
-    DLword freesize;
+void stack_check(StackWord *start68k) {
+  StackWord *scanptr68k;
+  StackWord *endstack68k;
+  DLword *top_ivar;
+  DLword save_nextblock;
+  DLword savestack1, savestack2;
+  DLword setflg = NIL;
+  DLword freesize;
 
 #ifdef FSBCHECK
-    struct big_fsbs {   DLword offset; DLword size;} bigFSB[100];
-    int bigFSBindex=0;
+  struct big_fsbs {
+    DLword offset;
+    DLword size;
+  } bigFSB[100];
+  int bigFSBindex = 0;
 
-    memset((char*)bigFSB, 0, 100 * 2 * 2);
+  memset((char *)bigFSB, 0, 100 * 2 * 2);
 #endif
 
-    if((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR))
-	||(!FSBP(CurrentStackPTR)))
-      {
-	if((DLword*)CURRENTFX >= CurrentStackPTR)
-	  {
-	    WARN("CURRENTFX >= CurrentStackPTR??\n",
-	    printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n",
-		    LADDR_from_68k(CURRENTFX),LADDR_from_68k(CurrentStackPTR)));
-	  }
-	setflg=T;
-	printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
-	save_nextblock=CURRENTFX->nextblock;
-	savestack1= GETWORD(CurrentStackPTR+2);
-	savestack2= GETWORD(CurrentStackPTR+3);
-	CURRENTFX->nextblock=StkOffset_from_68K(CurrentStackPTR+2);
-	GETWORD(CurrentStackPTR+2)=STK_FSB_WORD;
-	GETWORD(CurrentStackPTR+3)= (((UNSIGNED)EndSTKP-(UNSIGNED)(CurrentStackPTR+2))>>1);
-      }
-
-
-    if(start68k) scanptr68k =start68k;
-    else scanptr68k =
-	  (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
-    endstack68k=(StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
-
-    if(STKWORD(endstack68k)->flags !=STK_GUARD)
-      printf("?? endstack is not GUARD BLK\n");
-
-    while(scanptr68k <endstack68k)
-      {
-	switch((unsigned)(STKWORD(scanptr68k)->flags))
-	  {
-	    case STK_FSB :	freesize= FSB_size(scanptr68k);
-				if (freesize == 0)
-				  {
-				    warn("FSB freesize = 0!");
-				  }
-#ifdef FSBCHECK
-			if(freesize > STACKAREA_SIZE+MINEXTRASTACKWORDS)
-			  {
-			    if(bigFSBindex < 100)
-			      {
-				bigFSB[bigFSBindex].offset = StkOffset_from_68K(scanptr68k);
-				bigFSB[bigFSBindex].size = freesize;
-				bigFSBindex++;
-			      }
-			  }
-#endif
-                                scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-				putchar('F');
-				break;
-
-	     case STK_GUARD:	freesize = FSB_size(scanptr68k);
-				if (freesize == 0)
-				  {
-				    warn("Guard block freesize = 0!");
-				  }
-				scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-				putchar('G');
-				break;
-
-              case STK_FX :	CHECK_FX(scanptr68k);
-				scanptr68k =(StackWord *)Addr68k_from_StkOffset(
-						((FX*)scanptr68k)->nextblock);
-				putchar('X');
-				break;
-
-	           default:	top_ivar=(DLword*)scanptr68k;
-				while(STKWORD(scanptr68k)->flags != STK_BF)
-				  {
-				    if (STKWORD(scanptr68k)->flags!=STK_NOTFLG)
-				      {
-                                	WARN("StackCheck:!=STK_NOTFLG",
-					     printf("content:0x%x\n",GETWORD(scanptr68k)));
-				      }
-				    scanptr68k = (StackWord *)
-					    ((DLword *)scanptr68k + DLWORDSPER_CELL);
-                           	  }/* while end */;
-				CHECK_BF(scanptr68k);
-				if(((Bframe*)scanptr68k)->residual)
-				  {
-				    if((DLword*)scanptr68k != top_ivar)
-					printf("Residual has real IVAR:0x%x\n",
-						LADDR_from_68k(scanptr68k));
-				  }
-				else
-				  {
-				    if(((Bframe*)scanptr68k)->ivar
-					!= StkOffset_from_68K(top_ivar))
-				      printf("BF doesn't point TopIVAR:0x%x\n",
-					     LADDR_from_68k(scanptr68k));
-				  }
-				scanptr68k = (StackWord *)
-						((DLword *)scanptr68k
-				      		  + DLWORDSPER_CELL);
-				putchar('B');
-				break;
-
-	}/*switch end */
-
-  if(scanptr68k != start68k)
-    {
-      if(scanptr68k >endstack68k)
-	{
-   	  WARN("scanptr exceeded end stack",
-		printf("scanptr68k=0x%x endstack68k=0x%x",scanptr68k,endstack68k));
-	}
+  if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+    if ((DLword *)CURRENTFX >= CurrentStackPTR) {
+      WARN("CURRENTFX >= CurrentStackPTR??\n",
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
+                  LADDR_from_68k(CurrentStackPTR)));
     }
-  }/* while end */
+    setflg = T;
+    printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
+    save_nextblock = CURRENTFX->nextblock;
+    savestack1 = GETWORD(CurrentStackPTR + 2);
+    savestack2 = GETWORD(CurrentStackPTR + 3);
+    CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR + 2);
+    GETWORD(CurrentStackPTR + 2) = STK_FSB_WORD;
+    GETWORD(CurrentStackPTR + 3) = (((UNSIGNED)EndSTKP - (UNSIGNED)(CurrentStackPTR + 2)) >> 1);
+  }
+
+  if (start68k)
+    scanptr68k = start68k;
+  else
+    scanptr68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
+  endstack68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
+
+  if (STKWORD(endstack68k)->flags != STK_GUARD) printf("?? endstack is not GUARD BLK\n");
+
+  while (scanptr68k < endstack68k) {
+    switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
+      case STK_FSB:
+        freesize = FSB_size(scanptr68k);
+        if (freesize == 0) { warn("FSB freesize = 0!"); }
+#ifdef FSBCHECK
+        if (freesize > STACKAREA_SIZE + MINEXTRASTACKWORDS) {
+          if (bigFSBindex < 100) {
+            bigFSB[bigFSBindex].offset = StkOffset_from_68K(scanptr68k);
+            bigFSB[bigFSBindex].size = freesize;
+            bigFSBindex++;
+          }
+        }
+#endif
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+        putchar('F');
+        break;
+
+      case STK_GUARD:
+        freesize = FSB_size(scanptr68k);
+        if (freesize == 0) { warn("Guard block freesize = 0!"); }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+        putchar('G');
+        break;
+
+      case STK_FX:
+        CHECK_FX(scanptr68k);
+        scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
+        putchar('X');
+        break;
+
+      default:
+        top_ivar = (DLword *)scanptr68k;
+        while (STKWORD(scanptr68k)->flags != STK_BF) {
+          if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
+            WARN("StackCheck:!=STK_NOTFLG", printf("content:0x%x\n", GETWORD(scanptr68k)));
+          }
+          scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        } /* while end */;
+        CHECK_BF(scanptr68k);
+        if (((Bframe *)scanptr68k)->residual) {
+          if ((DLword *)scanptr68k != top_ivar)
+            printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+        } else {
+          if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
+            printf("BF doesn't point TopIVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+        }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        putchar('B');
+        break;
+
+    } /*switch end */
+
+    if (scanptr68k != start68k) {
+      if (scanptr68k > endstack68k) {
+        WARN("scanptr exceeded end stack",
+             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+      }
+    }
+  } /* while end */
 
 #ifdef FSBCHECK
-if(bigFSBindex!=0){
-   int i;
+  if (bigFSBindex != 0) {
+    int i;
 
-   printf("\nBIG FSB(s):\n");
+    printf("\nBIG FSB(s):\n");
 
-   for(i=0;i<bigFSBindex;i++){
-	printf("Offset: 0x%x , Size: 0x%x\n",bigFSB[i].offset,bigFSB[i].size);
-   }
-}
+    for (i = 0; i < bigFSBindex; i++) {
+      printf("Offset: 0x%x , Size: 0x%x\n", bigFSB[i].offset, bigFSB[i].size);
+    }
+  }
 #endif
-printf("\nStack Check done\n");
- if(setflg)
- {
-	CURRENTFX->nextblock=save_nextblock;
-	GETWORD(CurrentStackPTR+2)=savestack1;
-	GETWORD(CurrentStackPTR+3)=savestack2;
- }
+  printf("\nStack Check done\n");
+  if (setflg) {
+    CURRENTFX->nextblock = save_nextblock;
+    GETWORD(CurrentStackPTR + 2) = savestack1;
+    GETWORD(CurrentStackPTR + 3) = savestack2;
+  }
 
-}/*stack_check end */
-
+} /*stack_check end */
 
 /**************************************************************/
 /*
-		walk_stack(start68k)
-		for DEBUG
+                walk_stack(start68k)
+                for DEBUG
 
        Walk the stack, printing information about what we
        see as we go.  Unlike stack_check, this prints frame
@@ -797,353 +666,291 @@ printf("\nStack Check done\n");
 
 */
 /**************************************************************/
-void walk_stack(StackWord *start68k)
-{
-    StackWord *scanptr68k;
-    StackWord *endstack68k;
-    DLword *top_ivar;
-    DLword save_nextblock;
-    DLword savestack1,savestack2;
-    DLword setflg=NIL;
-    DLword freesize;
+void walk_stack(StackWord *start68k) {
+  StackWord *scanptr68k;
+  StackWord *endstack68k;
+  DLword *top_ivar;
+  DLword save_nextblock;
+  DLword savestack1, savestack2;
+  DLword setflg = NIL;
+  DLword freesize;
 
-
-    if((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR))
-	||(!FSBP(CurrentStackPTR)))
-      {
-	if((DLword*)CURRENTFX >= CurrentStackPTR)
-	  {
-	    WARN("CURRENTFX >= CurrentStackPTR??\n",
-	    printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n",
-		    LADDR_from_68k(CURRENTFX),LADDR_from_68k(CurrentStackPTR)));
-	  }
-	setflg=T;
-	printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
-	save_nextblock=CURRENTFX->nextblock;
-	savestack1= GETWORD(CurrentStackPTR+2);
-	savestack2= GETWORD(CurrentStackPTR+3);
-	CURRENTFX->nextblock=StkOffset_from_68K(CurrentStackPTR+2);
-	GETWORD(CurrentStackPTR+2)=STK_FSB_WORD;
-	GETWORD(CurrentStackPTR+3)= (((UNSIGNED)EndSTKP-(UNSIGNED)(CurrentStackPTR+2))>>1);
-      }
-
-    /* Start from where caller specifies, (as real address!); if addr=0 */
-    /* start from stackbase. */
-
-    if(start68k)
-      {
-	 scanptr68k =(StackWord *) ((unsigned long)start68k & -2 );
-	printf("Starting at 0x%x.", (DLword*)scanptr68k-Stackspace);
-      }
-    else
-      {
-	scanptr68k =
-	  (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
-	printf("Stack base = 0x%x.", (DLword*)scanptr68k-Stackspace);
-      }
-
-    endstack68k=(StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
-
-    printf("  End of stack = 0x%x.\n\n", (DLword*)endstack68k-Stackspace);
-
-    if(STKWORD(endstack68k)->flags !=STK_GUARD)
-      printf("?? endstack is not GUARD BLK\nendstack = 0x%x, flags = %d\n\n",
-	     endstack68k, STKWORD(endstack68k)->flags);
-
-    while(scanptr68k < endstack68k)
-      {
-	switch((unsigned)(STKWORD(scanptr68k)->flags))
-	  {
-	      /* Free stack block */
-	    case STK_FSB :	freesize= FSB_size(scanptr68k);
-		                printf("%04x:  Free block (len %d/0x%x)\n",
-				       (DLword*)scanptr68k-Stackspace, freesize,
-				       freesize);
-
-				if (freesize == 0)
-				  {
-				    freesize = 2;
-				  }
-
-                                scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-
-				break;
-
-	     case STK_GUARD:	freesize = FSB_size(scanptr68k);
-		                printf("%04x:  Guard block (len %d/0x%x)\n",
-				       (DLword*)scanptr68k-Stackspace, freesize,
-				       freesize);
-				if (freesize == 0)
-				  {
-				    freesize = 2;
-				  }
-				scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-
-				break;
-
-              case STK_FX :	CHECK_FX(scanptr68k);
-
-				printf("%04x:  ",
-				       (DLword*)scanptr68k-Stackspace);
-
-				{
-				  FX *fx = (FX *)scanptr68k;
-				  struct fnhead *fnobj;
-#ifdef BIGVM
-				  fnobj = (struct fnhead *)
-					    Addr68k_from_LADDR(fx->fnheader);
-#else
-				  fnobj = (struct fnhead *)
-					    Addr68k_from_LADDR(
-						((int)fx->hi2fnheader << 16)
-						| fx->lofnheader);
-#endif /* BIGVM */
-				  print(fnobj->framename);
-				  printf("\talink: 0x%04x, clink: 0x%04x, next: 0x%04x\n",
-					 fx->alink, fx->clink, fx->nextblock);
-				}
-
-				{
-				  Bframe *dummybf,*mtmp;
-				  int mblink;
-
-				  /* Now make sure the FX is connected to */
-				  /* a Basic Frame.                       */
-
-				  dummybf=(Bframe*)DUMMYBF(scanptr68k);
-
-				  /* Check for connection via BLINK field: */
-				  if(StkOffset_from_68K(dummybf)
-				      != GETBLINK(scanptr68k))
-				    {
-				      mblink=GETBLINK(scanptr68k);
-				      mtmp=(Bframe*)
-					     Addr68k_from_StkOffset(mblink);
-				      if( ( dummybf->residual == NIL ) ||
-				  	  ( dummybf->ivar != mtmp->ivar ) )
-				        printf("       [Bad residual]\n");
-				    }
-				}
-
-				scanptr68k =(StackWord *)Addr68k_from_StkOffset(
-						((FX*)scanptr68k)->nextblock);
-				break;
-
-	           default:	top_ivar=(DLword*)scanptr68k;
-				while(STKWORD(scanptr68k)->flags != STK_BF)
-				  {
-				    if (STKWORD(scanptr68k)->flags!=STK_NOTFLG)
-				      {
-                                	printf("%04x:  Bad BF IVAR 0x%x\n",
-				               (DLword*)scanptr68k-Stackspace,
-					       GETWORD(scanptr68k));
-				      }
-				    scanptr68k = (StackWord *)
-					    ((DLword *)scanptr68k + DLWORDSPER_CELL);
-                           	  }/* while end */;
-				/* CHECK_BF(scanptr68k); */
-				{
-				  Bframe *bf = (Bframe *)scanptr68k;
-				  printf("%04x:  BF  usecnt %d, resid %d, padding %d, ivar 0x%04x\n",
-				         (DLword*)scanptr68k-Stackspace,
-					 bf->usecnt, bf->residual, bf->padding,
-					 bf->ivar);
-					 
-				    if(((Bframe*)scanptr68k)->ivar
-					!= StkOffset_from_68K(top_ivar))
-				      printf("       [but top_ivar = 0x%04x]\n",
-					      top_ivar - Stackspace);
-				}
-				scanptr68k = (StackWord *)
-						((DLword *)scanptr68k
-				      		  + DLWORDSPER_CELL);
-				break;
-
-	}/*switch end */
-
-  if(scanptr68k != start68k)
-    {
-      if(scanptr68k >endstack68k)
-	{
-   	  WARN("scanptr exceeded end stack",
-		printf("scanptr68k=0x%x endstack68k=0x%x",scanptr68k,endstack68k));
-	}
+  if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+    if ((DLword *)CURRENTFX >= CurrentStackPTR) {
+      WARN("CURRENTFX >= CurrentStackPTR??\n",
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
+                  LADDR_from_68k(CurrentStackPTR)));
     }
-  }/* while end */
+    setflg = T;
+    printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
+    save_nextblock = CURRENTFX->nextblock;
+    savestack1 = GETWORD(CurrentStackPTR + 2);
+    savestack2 = GETWORD(CurrentStackPTR + 3);
+    CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR + 2);
+    GETWORD(CurrentStackPTR + 2) = STK_FSB_WORD;
+    GETWORD(CurrentStackPTR + 3) = (((UNSIGNED)EndSTKP - (UNSIGNED)(CurrentStackPTR + 2)) >> 1);
+  }
+
+  /* Start from where caller specifies, (as real address!); if addr=0 */
+  /* start from stackbase. */
+
+  if (start68k) {
+    scanptr68k = (StackWord *)((unsigned long)start68k & -2);
+    printf("Starting at 0x%x.", (DLword *)scanptr68k - Stackspace);
+  } else {
+    scanptr68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
+    printf("Stack base = 0x%x.", (DLword *)scanptr68k - Stackspace);
+  }
+
+  endstack68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
+
+  printf("  End of stack = 0x%x.\n\n", (DLword *)endstack68k - Stackspace);
+
+  if (STKWORD(endstack68k)->flags != STK_GUARD)
+    printf("?? endstack is not GUARD BLK\nendstack = 0x%x, flags = %d\n\n", endstack68k,
+           STKWORD(endstack68k)->flags);
+
+  while (scanptr68k < endstack68k) {
+    switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
+      /* Free stack block */
+      case STK_FSB:
+        freesize = FSB_size(scanptr68k);
+        printf("%04x:  Free block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
+               freesize);
+
+        if (freesize == 0) { freesize = 2; }
+
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+
+        break;
+
+      case STK_GUARD:
+        freesize = FSB_size(scanptr68k);
+        printf("%04x:  Guard block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
+               freesize);
+        if (freesize == 0) { freesize = 2; }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+
+        break;
+
+      case STK_FX:
+        CHECK_FX(scanptr68k);
+
+        printf("%04x:  ", (DLword *)scanptr68k - Stackspace);
+
+        {
+          FX *fx = (FX *)scanptr68k;
+          struct fnhead *fnobj;
+#ifdef BIGVM
+          fnobj = (struct fnhead *)Addr68k_from_LADDR(fx->fnheader);
+#else
+          fnobj =
+              (struct fnhead *)Addr68k_from_LADDR(((int)fx->hi2fnheader << 16) | fx->lofnheader);
+#endif /* BIGVM */
+          print(fnobj->framename);
+          printf("\talink: 0x%04x, clink: 0x%04x, next: 0x%04x\n", fx->alink, fx->clink,
+                 fx->nextblock);
+        }
+
+        {
+          Bframe *dummybf, *mtmp;
+          int mblink;
+
+          /* Now make sure the FX is connected to */
+          /* a Basic Frame.                       */
+
+          dummybf = (Bframe *)DUMMYBF(scanptr68k);
+
+          /* Check for connection via BLINK field: */
+          if (StkOffset_from_68K(dummybf) != GETBLINK(scanptr68k)) {
+            mblink = GETBLINK(scanptr68k);
+            mtmp = (Bframe *)Addr68k_from_StkOffset(mblink);
+            if ((dummybf->residual == NIL) || (dummybf->ivar != mtmp->ivar))
+              printf("       [Bad residual]\n");
+          }
+        }
+
+        scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
+        break;
+
+      default:
+        top_ivar = (DLword *)scanptr68k;
+        while (STKWORD(scanptr68k)->flags != STK_BF) {
+          if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
+            printf("%04x:  Bad BF IVAR 0x%x\n", (DLword *)scanptr68k - Stackspace,
+                   GETWORD(scanptr68k));
+          }
+          scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        } /* while end */;
+        /* CHECK_BF(scanptr68k); */
+        {
+          Bframe *bf = (Bframe *)scanptr68k;
+          printf("%04x:  BF  usecnt %d, resid %d, padding %d, ivar 0x%04x\n",
+                 (DLword *)scanptr68k - Stackspace, bf->usecnt, bf->residual, bf->padding,
+                 bf->ivar);
+
+          if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
+            printf("       [but top_ivar = 0x%04x]\n", top_ivar - Stackspace);
+        }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        break;
+
+    } /*switch end */
+
+    if (scanptr68k != start68k) {
+      if (scanptr68k > endstack68k) {
+        WARN("scanptr exceeded end stack",
+             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+      }
+    }
+  } /* while end */
 
 #ifdef FSBCHECK
-if(bigFSBindex!=0){
-   int i;
+  if (bigFSBindex != 0) {
+    int i;
 
-   printf("\nBIG FSB(s):\n");
+    printf("\nBIG FSB(s):\n");
 
-   for(i=0;i<bigFSBindex;i++){
-	printf("Offset: 0x%x , Size: 0x%x\n",bigFSB[i].offset,bigFSB[i].size);
-   }
-}
+    for (i = 0; i < bigFSBindex; i++) {
+      printf("Offset: 0x%x , Size: 0x%x\n", bigFSB[i].offset, bigFSB[i].size);
+    }
+  }
 #endif
-printf("\nStack Check done\n");
- if(setflg)
- {
-	CURRENTFX->nextblock=save_nextblock;
-	GETWORD(CurrentStackPTR+2)=savestack1;
-	GETWORD(CurrentStackPTR+3)=savestack2;
- }
+  printf("\nStack Check done\n");
+  if (setflg) {
+    CURRENTFX->nextblock = save_nextblock;
+    GETWORD(CurrentStackPTR + 2) = savestack1;
+    GETWORD(CurrentStackPTR + 3) = savestack2;
+  }
 
-  }  /* walk_stack end */
-
+} /* walk_stack end */
 
 /**************************************************************/
 /*
-		quick_stack_check()
-		for DEBUGING using FNSTKCHECK
+                quick_stack_check()
+                for DEBUGING using FNSTKCHECK
 */
 /**************************************************************/
-void quick_stack_check(void)
-{
-    StackWord *start68k;
-    StackWord *scanptr68k;
-    StackWord *endstack68k;
-    DLword *top_ivar;
-    DLword save_nextblock;
-    DLword savestack1,savestack2;
-    DLword setflg=NIL;
-    DLword freesize;
+void quick_stack_check(void) {
+  StackWord *start68k;
+  StackWord *scanptr68k;
+  StackWord *endstack68k;
+  DLword *top_ivar;
+  DLword save_nextblock;
+  DLword savestack1, savestack2;
+  DLword setflg = NIL;
+  DLword freesize;
 
 #ifdef FSBCHECK
-    struct big_fsbs {   DLword offset; DLword size;} bigFSB[100];
-    int bigFSBindex=0;
+  struct big_fsbs {
+    DLword offset;
+    DLword size;
+  } bigFSB[100];
+  int bigFSBindex = 0;
 
-    memset((char*)bigFSB, 0, 100 * 2 * 2);
+  memset((char *)bigFSB, 0, 100 * 2 * 2);
 #endif
 
-    if((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR))
-	||(!FSBP(CurrentStackPTR)))
-      {
-	if((DLword*)CURRENTFX >= CurrentStackPTR)
-	  {
-	    WARN("CURRENTFX >= CurrentStackPTR??\n",
-	    printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n",
-		    LADDR_from_68k(CURRENTFX),LADDR_from_68k(CurrentStackPTR)));
-	    return;
-	  }
-	setflg=T;
-	save_nextblock=CURRENTFX->nextblock;
-	savestack1= GETWORD(CurrentStackPTR+2);
-	savestack2= GETWORD(CurrentStackPTR+3);
-	CURRENTFX->nextblock=StkOffset_from_68K(CurrentStackPTR+2);
-	GETWORD(CurrentStackPTR+2)=STK_FSB_WORD;
-	GETWORD(CurrentStackPTR+3)= (((UNSIGNED)EndSTKP-(UNSIGNED)(CurrentStackPTR+2))>>1);
-      }
-
-
-    scanptr68k = start68k =
-	  (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
-    endstack68k=(StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
-
-    if(STKWORD(endstack68k)->flags !=STK_GUARD)
-      printf("?? endstack is not GUARD BLK\n");
-
-    while(scanptr68k <endstack68k)
-      {
-	switch((unsigned)(STKWORD(scanptr68k)->flags))
-	  {
-	    case STK_FSB :	freesize= FSB_size(scanptr68k);
-				if (freesize == 0)
-				  {
-				    warn("FSB freesize = 0!");
-				    return;
-				  }
-#ifdef FSBCHECK
-			if(freesize > STACKAREA_SIZE+MINEXTRASTACKWORDS){
-			    if(bigFSBindex < 100){
-				bigFSB[bigFSBindex].offset = StkOffset_from_68K(scanptr68k);
-				bigFSB[bigFSBindex].size = freesize;
-				bigFSBindex++;
-			    }
-			}
-#endif
-                        scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-					break;
-	     case STK_GUARD:	freesize = FSB_size(scanptr68k);
-				if (freesize == 0)
-				  {
-				    warn("Guard block freesize = 0!");
-				    return;
-				  }
-				scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + freesize);
-				break;
-        case STK_FX :	CHECK_FX(scanptr68k);
-					scanptr68k =(StackWord *)Addr68k_from_StkOffset(
-					((FX*)scanptr68k)->nextblock);
-					break;
-	   default:		top_ivar=(DLword*)scanptr68k;
-					while(STKWORD(scanptr68k)->flags != STK_BF) {
-						if (STKWORD(scanptr68k)->flags!=STK_NOTFLG)
-						{
-                                warn("StackCheck:!=STK_NOTFLG");
-				printf("content:0x%x\n",GETWORD(scanptr68k));
-				return;
-						}
-				scanptr68k = (StackWord *)
-					((DLword *)scanptr68k + DLWORDSPER_CELL);
-                           }/* while end */;
-					CHECK_BF(scanptr68k);
-					if(((Bframe*)scanptr68k)->residual)
-					 {
-						if((DLword*)scanptr68k != top_ivar)
-							printf("Residual has real IVAR:0x%x\n",LADDR_from_68k(scanptr68k));
-					  }
-					else
-					 {
-					   if(((Bframe*)scanptr68k)->ivar
-						!= StkOffset_from_68K(top_ivar))
-						printf("BF doesn't point TopIVAR:0x%x\n",LADDR_from_68k(scanptr68k));
-					  }
-					scanptr68k = (StackWord *)
-							((DLword *)scanptr68k
-					      		  + DLWORDSPER_CELL);
-					break;
-  }/*switch end */
-  if(scanptr68k != start68k)
-  {
-	if(scanptr68k >endstack68k)
-	{
-		WARN("scanptr exceeded end stack",printf("scanptr68k=0x%x endstack68k=0x%x",scanptr68k,endstack68k));
-	}
+  if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+    if ((DLword *)CURRENTFX >= CurrentStackPTR) {
+      WARN("CURRENTFX >= CurrentStackPTR??\n",
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
+                  LADDR_from_68k(CurrentStackPTR)));
+      return;
+    }
+    setflg = T;
+    save_nextblock = CURRENTFX->nextblock;
+    savestack1 = GETWORD(CurrentStackPTR + 2);
+    savestack2 = GETWORD(CurrentStackPTR + 3);
+    CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR + 2);
+    GETWORD(CurrentStackPTR + 2) = STK_FSB_WORD;
+    GETWORD(CurrentStackPTR + 3) = (((UNSIGNED)EndSTKP - (UNSIGNED)(CurrentStackPTR + 2)) >> 1);
   }
-}/* while end */
+
+  scanptr68k = start68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
+  endstack68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
+
+  if (STKWORD(endstack68k)->flags != STK_GUARD) printf("?? endstack is not GUARD BLK\n");
+
+  while (scanptr68k < endstack68k) {
+    switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
+      case STK_FSB:
+        freesize = FSB_size(scanptr68k);
+        if (freesize == 0) {
+          warn("FSB freesize = 0!");
+          return;
+        }
 #ifdef FSBCHECK
-if(bigFSBindex!=0){
-   int i;
+        if (freesize > STACKAREA_SIZE + MINEXTRASTACKWORDS) {
+          if (bigFSBindex < 100) {
+            bigFSB[bigFSBindex].offset = StkOffset_from_68K(scanptr68k);
+            bigFSB[bigFSBindex].size = freesize;
+            bigFSBindex++;
+          }
+        }
+#endif
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+        break;
+      case STK_GUARD:
+        freesize = FSB_size(scanptr68k);
+        if (freesize == 0) {
+          warn("Guard block freesize = 0!");
+          return;
+        }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
+        break;
+      case STK_FX:
+        CHECK_FX(scanptr68k);
+        scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
+        break;
+      default:
+        top_ivar = (DLword *)scanptr68k;
+        while (STKWORD(scanptr68k)->flags != STK_BF) {
+          if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
+            warn("StackCheck:!=STK_NOTFLG");
+            printf("content:0x%x\n", GETWORD(scanptr68k));
+            return;
+          }
+          scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        } /* while end */;
+        CHECK_BF(scanptr68k);
+        if (((Bframe *)scanptr68k)->residual) {
+          if ((DLword *)scanptr68k != top_ivar)
+            printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+        } else {
+          if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
+            printf("BF doesn't point TopIVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+        }
+        scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
+        break;
+    } /*switch end */
+    if (scanptr68k != start68k) {
+      if (scanptr68k > endstack68k) {
+        WARN("scanptr exceeded end stack",
+             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+      }
+    }
+  } /* while end */
+#ifdef FSBCHECK
+  if (bigFSBindex != 0) {
+    int i;
 
-   printf("\nBIG FSB(s):\n");
+    printf("\nBIG FSB(s):\n");
 
-   for(i=0;i<bigFSBindex;i++){
-	printf("Offset: 0x%x , Size: 0x%x\n",bigFSB[i].offset,bigFSB[i].size);
-   }
-}
+    for (i = 0; i < bigFSBindex; i++) {
+      printf("Offset: 0x%x , Size: 0x%x\n", bigFSB[i].offset, bigFSB[i].size);
+    }
+  }
 #endif
 
- if(setflg)
- {
-	CURRENTFX->nextblock=save_nextblock;
-	GETWORD(CurrentStackPTR+2)=savestack1;
-	GETWORD(CurrentStackPTR+3)=savestack2;
- }
- return;
+  if (setflg) {
+    CURRENTFX->nextblock = save_nextblock;
+    GETWORD(CurrentStackPTR + 2) = savestack1;
+    GETWORD(CurrentStackPTR + 3) = savestack2;
+  }
+  return;
 
-}/* quick_stack_check end */
-
-
-
-
-
-
+} /* quick_stack_check end */
 
 /************************************************************************/
 /*									*/
@@ -1157,47 +964,39 @@ if(bigFSBindex!=0){
 /*									*/
 /************************************************************************/
 
-void check_FX(FX *fx68k)
-{
-    Bframe *dummybf,*mtmp;
-    int mblink;
+void check_FX(FX *fx68k) {
+  Bframe *dummybf, *mtmp;
+  int mblink;
 
-    /* The FX better really be an FX */
+  /* The FX better really be an FX */
 
-    if(((FX*)(fx68k))->flags != STK_FX)
-    	error("CheckFX:NOT FX");
+  if (((FX *)(fx68k))->flags != STK_FX) error("CheckFX:NOT FX");
 
-    /* Make sure the NEXTBLOCK field of the FX */
-    /* Points BEYOND the start of the FX; some */
-    /* stack blocks have been corrupted this   */
-    /* way.  --JDS 2/3/98                      */
+  /* Make sure the NEXTBLOCK field of the FX */
+  /* Points BEYOND the start of the FX; some */
+  /* stack blocks have been corrupted this   */
+  /* way.  --JDS 2/3/98                      */
 
-    if (fx68k->nextblock < StkOffset_from_68K(fx68k)/*+FRAMESIZE*/)
-      {
-	error("FX's nextblock field < the FFX.");
-      }
+  if (fx68k->nextblock < StkOffset_from_68K(fx68k) /*+FRAMESIZE*/) {
+    error("FX's nextblock field < the FFX.");
+  }
 
-    /* Now make sure the FX is connected to */
-    /* a Basic Frame.                       */
+  /* Now make sure the FX is connected to */
+  /* a Basic Frame.                       */
 
-    dummybf=(Bframe*)DUMMYBF(fx68k);
+  dummybf = (Bframe *)DUMMYBF(fx68k);
 
-    /* Check for connection via BLINK field: */
-    if(StkOffset_from_68K(dummybf) == GETBLINK(fx68k)) return;
+  /* Check for connection via BLINK field: */
+  if (StkOffset_from_68K(dummybf) == GETBLINK(fx68k)) return;
 
-    mblink=GETBLINK(fx68k);
-    mtmp=(Bframe*)Addr68k_from_StkOffset(mblink);
-    if( ( dummybf->residual != NIL ) &&
-    	( dummybf->ivar == mtmp->ivar ) )
-    		return;
-    else error("CheckFX:bad residual case");
+  mblink = GETBLINK(fx68k);
+  mtmp = (Bframe *)Addr68k_from_StkOffset(mblink);
+  if ((dummybf->residual != NIL) && (dummybf->ivar == mtmp->ivar))
+    return;
+  else
+    error("CheckFX:bad residual case");
 
-
-  } /* END check_FX */
-
-
-
-
+} /* END check_FX */
 
 /************************************************************************/
 /*									*/
@@ -1208,33 +1007,29 @@ void check_FX(FX *fx68k)
 /*									*/
 /************************************************************************/
 
-void check_BF(Bframe *bf68k)
-{
-    Bframe *iptr68k;
+void check_BF(Bframe *bf68k) {
+  Bframe *iptr68k;
 
-    /* For starterd, it must BE a BF */
-    if(bf68k->flags != STK_BF) error("checkBF:not BF1");
+  /* For starterd, it must BE a BF */
+  if (bf68k->flags != STK_BF) error("checkBF:not BF1");
 
-    /* If the frame is residual (whatever that means), it's OK */
-    if(bf68k->residual == T) return;
+  /* If the frame is residual (whatever that means), it's OK */
+  if (bf68k->residual == T)
+    return;
+  else {
+    if (bf68k->ivar & 1)
+      error("IVAR is ODD in a BF");
     else
+      for (iptr68k = (Bframe *)Addr68k_from_StkOffset(bf68k->ivar);
+           iptr68k <= (Bframe *)(((DLword *)bf68k) - 2); iptr68k++) /* inc 2DLword */
       {
-	if (bf68k->ivar & 1) error("IVAR is ODD in a BF");
-	else for (iptr68k=(Bframe*)Addr68k_from_StkOffset(bf68k->ivar);
-    	          iptr68k <=(Bframe*)(((DLword*)bf68k)-2);
-    	          iptr68k++ ) /* inc 2DLword */
-    	  {
-	    /* Make sure none of the "ivar" slots have stack-type */
-	    /* bits set. */
-    	    if(iptr68k->flags!=STK_NOTFLG)
-    		warn("CheckBF:Stack-bits set in IVAR");
-    	  }
+        /* Make sure none of the "ivar" slots have stack-type */
+        /* bits set. */
+        if (iptr68k->flags != STK_NOTFLG) warn("CheckBF:Stack-bits set in IVAR");
       }
+  }
 
-  } /* end check_BF */
-
-
-
+} /* end check_BF */
 
 /************************************************************************/
 /*									*/
@@ -1244,17 +1039,15 @@ void check_BF(Bframe *bf68k)
 /*									*/
 /************************************************************************/
 
-int check_stack_rooms(FX *fx68k)
-{
-    int size;
-    DLword *freeptr68k,*endstk68k;
+int check_stack_rooms(FX *fx68k) {
+  int size;
+  DLword *freeptr68k, *endstk68k;
 
-    CHECK_FX(fx68k);
-    freeptr68k=Addr68k_from_StkOffset(fx68k->nextblock);
-    if(!FSBP(freeptr68k))
-    error("check_stack_rooms:  nextblock doesn't point to an FSB");
-    /*endstk68k=freeptr68k + FSB_size(freeptr68k);
-    size=((UNSIGNED)endstk68k - (UNSIGNED)CurrentStackPTR) >> 1;*/
-    return(FSB_size(freeptr68k));
+  CHECK_FX(fx68k);
+  freeptr68k = Addr68k_from_StkOffset(fx68k->nextblock);
+  if (!FSBP(freeptr68k)) error("check_stack_rooms:  nextblock doesn't point to an FSB");
+  /*endstk68k=freeptr68k + FSB_size(freeptr68k);
+  size=((UNSIGNED)endstk68k - (UNSIGNED)CurrentStackPTR) >> 1;*/
+  return (FSB_size(freeptr68k));
 
-  } /* end check_stack_rooms */
+} /* end check_stack_rooms */

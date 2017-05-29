@@ -1,9 +1,6 @@
-/* $Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -19,8 +16,6 @@ static char *id = "$Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyr
 
 #include "version.h"
 
-
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "emlglob.h"
@@ -28,57 +23,47 @@ static char *id = "$Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "adr68k.h"
 
-
 /***********************************************************************/
 /*
-		File Name :	findkey.c
+                File Name :	findkey.c
 
-		Desc	:
+                Desc	:
 
-				Date :		Mar. 29 88
-				Edited by :	Bob Krivacic
-		Including :	N_OP_findkey
+                                Date :		Mar. 29 88
+                                Edited by :	Bob Krivacic
+                Including :	N_OP_findkey
 
 
 */
 /**********************************************************************/
 
-
-LispPTR N_OP_findkey(register LispPTR tos, register int byte)
-{
-    LispPTR *ptr ;
-    DLword *find_end ;
-   DLword arg_nth ;
+LispPTR N_OP_findkey(register LispPTR tos, register int byte) {
+  LispPTR *ptr;
+  DLword *find_end;
+  DLword arg_nth;
 
 #ifdef TRACE
-    printPC();
-    printf("TRACE : N_OP_findkey \n");
+  printPC();
+  printf("TRACE : N_OP_findkey \n");
 #endif
 
-    if(CURRENTFX->alink & 1)
-      { /* slow case */
-	find_end = (DLword *)Addr68k_from_LADDR(STK_OFFSET | (CURRENTFX->blink-4)) ;
-      }
-    else
-      { /*  Fast cae */
-	find_end = ((DLword *)CURRENTFX) -2-4;
-      }
+  if (CURRENTFX->alink & 1) { /* slow case */
+    find_end = (DLword *)Addr68k_from_LADDR(STK_OFFSET | (CURRENTFX->blink - 4));
+  } else { /*  Fast cae */
+    find_end = ((DLword *)CURRENTFX) - 2 - 4;
+  }
 
-    arg_nth =byte + 1 ;
+  arg_nth = byte + 1;
 
-    for ( ptr =(LispPTR *) (IVar + ((byte * 2) - 2));
-	  (unsigned)find_end >= (unsigned) ptr ; ptr += 2, arg_nth +=2)
-      {
-	if (*ptr == tos)
-	  { /* KEY founded */
-	    return(S_POSITIVE | arg_nth);
-	  }
-      } /* for end */
+  for (ptr = (LispPTR *)(IVar + ((byte * 2) - 2)); (unsigned)find_end >= (unsigned)ptr;
+       ptr += 2, arg_nth += 2) {
+    if (*ptr == tos) { /* KEY founded */
+      return (S_POSITIVE | arg_nth);
+    }
+  } /* for end */
 
-/* No matched */
+  /* No matched */
 
-    return(NIL_PTR);
+  return (NIL_PTR);
 
-  }/* end N_OP_findkey() */
-
-
+} /* end N_OP_findkey() */

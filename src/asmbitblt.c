@@ -1,4 +1,5 @@
-/* $Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ (C) Copyright Venue, All Rights
+ * Reserved  */
 static char *id = "$Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
@@ -12,10 +13,6 @@ static char *id = "$Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ Cop
 /*									*/
 /*									*/
 /************************************************************************/
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -31,9 +28,6 @@ static char *id = "$Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ Cop
 
 #include "version.h"
 
-
-
-
 #include "lispemul.h"
 #include "lispglobal.h"
 #include "lispmap.h"
@@ -46,21 +40,15 @@ static char *id = "$Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ Cop
 #include "cell.h"
 #include "gc.h"
 
-
 #include "bb.h"
 #include "bitblt.h"
 #include "pilotbbt.h"
 
+void bitblt(DLword *srcbase, DLword *dstbase, int sx, int dx, int w, int h, int srcbpl, int dstbpl,
+            int backwardflg, int src_comp, int op, int gray, int num_gray, int curr_gray_line)
 
-void
-bitblt(DLword *srcbase, DLword *dstbase, int sx, int dx, int w, int h, 
-			  int srcbpl, int dstbpl, int backwardflg, int src_comp,
-			  int op, int gray, int num_gray, int curr_gray_line)
+    DLword *srcbase,
+    dstbase;
+int sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray, num_gray, curr_gray_line;
 
-  DLword * srcbase, dstbase;
-  int sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray, num_gray, curr_gray_line;
-  
-  { 
-	new_bitblt_code;
-  }
-
+{ new_bitblt_code; }

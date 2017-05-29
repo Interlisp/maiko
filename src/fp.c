@@ -1,9 +1,6 @@
 /* $Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright (C) Venue";
 
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -16,9 +13,7 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
-
 
 /************************************************************************/
 /*									*/
@@ -38,16 +33,14 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 #include "medleyfp.h"
 
 /************************************************************
-	N_OP_fplus2       -- op 350
-	N_OP_fdifference  -- op 351
-	N_OP_ftimes2      -- op 352
-	N_OP_fquotient    -- op 353
-	N_OP_fgreaterp    -- op 362
+        N_OP_fplus2       -- op 350
+        N_OP_fdifference  -- op 351
+        N_OP_ftimes2      -- op 352
+        N_OP_fquotient    -- op 353
+        N_OP_fgreaterp    -- op 362
 ***********************************************************/
 
 DLword *createcell68k(unsigned int type);
-
-
 
 /************************************************************************/
 /*									*/
@@ -57,27 +50,24 @@ DLword *createcell68k(unsigned int type);
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2)
-{
-    REGISTER float arg1;
-    REGISTER float arg2;
-    REGISTER float result;
-    register DLword *wordp;
+LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
+  REGISTER float arg1;
+  REGISTER float arg2;
+  REGISTER float result;
+  register DLword *wordp;
 
-    N_MakeFloat(parg1, arg1, parg2);
-    N_MakeFloat(parg2, arg2, parg2);
-    FPCLEAR;
+  N_MakeFloat(parg1, arg1, parg2);
+  N_MakeFloat(parg2, arg2, parg2);
+  FPCLEAR;
 #ifdef I386
-    I386Round;
+  I386Round;
 #endif
-    result = arg1 + arg2;
-    if (FPTEST(result)) ERROR_EXIT(parg2);
-    wordp = createcell68k(TYPE_FLOATP);
-    *((float *)wordp) = result;
-    return(LADDR_from_68k(wordp));
-  }  /* end N_OP_fplus2()  */
-
-
+  result = arg1 + arg2;
+  if (FPTEST(result)) ERROR_EXIT(parg2);
+  wordp = createcell68k(TYPE_FLOATP);
+  *((float *)wordp) = result;
+  return (LADDR_from_68k(wordp));
+} /* end N_OP_fplus2()  */
 
 /************************************************************************/
 /*									*/
@@ -87,27 +77,23 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2)
-{
-    REGISTER float arg1, arg2;
-    REGISTER float result;
-    register DLword *wordp;
+LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
+  REGISTER float arg1, arg2;
+  REGISTER float result;
+  register DLword *wordp;
 
-    N_MakeFloat(parg1, arg1, parg2);
-    N_MakeFloat(parg2, arg2, parg2);
-    FPCLEAR;
+  N_MakeFloat(parg1, arg1, parg2);
+  N_MakeFloat(parg2, arg2, parg2);
+  FPCLEAR;
 #ifdef I386
-    I386Round;
+  I386Round;
 #endif
-    result = arg1 - arg2;
-    if (FPTEST(result)) ERROR_EXIT(parg2);
-    wordp = createcell68k(TYPE_FLOATP);
-    *((float *)wordp) = result;
-    return(LADDR_from_68k(wordp));
-  }  /* end N_OP_fdifference()  */
-
-
-
+  result = arg1 - arg2;
+  if (FPTEST(result)) ERROR_EXIT(parg2);
+  wordp = createcell68k(TYPE_FLOATP);
+  *((float *)wordp) = result;
+  return (LADDR_from_68k(wordp));
+} /* end N_OP_fdifference()  */
 
 /************************************************************************/
 /*									*/
@@ -117,27 +103,23 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2)
-{
-    REGISTER float arg1, arg2;
-    REGISTER float result;
-    register DLword *wordp;
+LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
+  REGISTER float arg1, arg2;
+  REGISTER float result;
+  register DLword *wordp;
 
-    N_MakeFloat(parg1, arg1, parg2);
-    N_MakeFloat(parg2, arg2, parg2);
-    FPCLEAR;
+  N_MakeFloat(parg1, arg1, parg2);
+  N_MakeFloat(parg2, arg2, parg2);
+  FPCLEAR;
 #ifdef I386
-    I386Round;
+  I386Round;
 #endif
-    result = arg1 * arg2;
-    if (FPTEST(result)) ERROR_EXIT(parg2);
-    wordp = createcell68k(TYPE_FLOATP);
-    *((float *)wordp) = result;
-    return(LADDR_from_68k(wordp));
-  }  /* end N_OP_ftimes2()  */
-
-
-
+  result = arg1 * arg2;
+  if (FPTEST(result)) ERROR_EXIT(parg2);
+  wordp = createcell68k(TYPE_FLOATP);
+  *((float *)wordp) = result;
+  return (LADDR_from_68k(wordp));
+} /* end N_OP_ftimes2()  */
 
 /************************************************************************/
 /*									*/
@@ -147,27 +129,24 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2)
-{
-    REGISTER float arg1, arg2;
-    REGISTER float result;
-    register DLword *wordp;
+LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
+  REGISTER float arg1, arg2;
+  REGISTER float result;
+  register DLword *wordp;
 
-    N_MakeFloat(parg1, arg1, parg2);
-    N_MakeFloat(parg2, arg2, parg2);
-    FPCLEAR;
+  N_MakeFloat(parg1, arg1, parg2);
+  N_MakeFloat(parg2, arg2, parg2);
+  FPCLEAR;
 #ifdef I386
-    I386Round;
+  I386Round;
 #endif
-    result = arg1 / arg2;
+  result = arg1 / arg2;
 
-    if (FPTEST(result)) ERROR_EXIT(parg2);
-    wordp = createcell68k(TYPE_FLOATP);
-    *((float *)wordp) = result;
-    return(LADDR_from_68k(wordp));
-  }  /* end N_OP_fquotient()  */
-
-
+  if (FPTEST(result)) ERROR_EXIT(parg2);
+  wordp = createcell68k(TYPE_FLOATP);
+  *((float *)wordp) = result;
+  return (LADDR_from_68k(wordp));
+} /* end N_OP_fquotient()  */
 
 /************************************************************************/
 /*									*/
@@ -177,16 +156,15 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2)
-{
-    REGISTER float arg1, arg2;
-    register DLword *wordp;
-    register LispPTR lptr;
+LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
+  REGISTER float arg1, arg2;
+  register DLword *wordp;
+  register LispPTR lptr;
 
-    N_MakeFloat(parg1, arg1, parg2);
-    N_MakeFloat(parg2, arg2, parg2);
-    if (arg1 > arg2) return(ATOM_T);
-    else return(NIL_PTR);
-  }  /* end N_OP_fgreaterp()  */
-
-
+  N_MakeFloat(parg1, arg1, parg2);
+  N_MakeFloat(parg2, arg2, parg2);
+  if (arg1 > arg2)
+    return (ATOM_T);
+  else
+    return (NIL_PTR);
+} /* end N_OP_fgreaterp()  */

@@ -1,11 +1,6 @@
-/* $Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -21,13 +16,9 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-
-	
-#include	<stdio.h>
-#include	<errno.h>
-#include	"osmsg.h"
-
-
+#include <stdio.h>
+#include <errno.h>
+#include "osmsg.h"
 
 /************************************************************************/
 /*									*/
@@ -39,7 +30,7 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 
 extern int errno;
 #if defined(MACOSX) || defined(FREEBSD)
-extern const char * const sys_errlist[];
+extern const char *const sys_errlist[];
 extern const int sys_nerr;
 #else
 int sys_nerr;
@@ -48,19 +39,14 @@ extern char *sys_errlist[];
 #endif /* LINUX */
 #endif
 
-void perrorn(char *s, int n)
-{
-  if ( s != NULL && *s != '\0' ) {
-    fprintf(stderr, "%s: ",s);
-  }
+void perrorn(char *s, int n) {
+  if (s != NULL && *s != '\0') { fprintf(stderr, "%s: ", s); }
   if (n > 0 && n < sys_nerr) {
     fprintf(stderr, "%s\n", sys_errlist[n]);
   } else {
     fprintf(stderr, "???\n");
   }
 }
-
-
 
 /************************************************************************/
 /*									*/
@@ -71,15 +57,13 @@ void perrorn(char *s, int n)
 /*									*/
 /************************************************************************/
 
-void err_mess(char *from, int no)
-{
-    int	save_errno=errno;	/* Save errno around OSMESSAGE_PRINT */
+void err_mess(char *from, int no) {
+  int save_errno = errno; /* Save errno around OSMESSAGE_PRINT */
 
+  OSMESSAGE_PRINT({
+    fprintf(stderr, "System call error: %s errno=%d ", from, no);
+    perror("");
+  });
 
-    OSMESSAGE_PRINT({fprintf(stderr,
-			     "System call error: %s errno=%d ",
-			     from, no); perror("");});
-
-    errno=save_errno;
-
-  }
+  errno = save_errno;
+}

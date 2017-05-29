@@ -1,8 +1,6 @@
-/* $Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -16,9 +14,7 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
-
 
 /*************************************************************************/
 /*                                                                       */
@@ -52,7 +48,6 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "address.h"
@@ -68,19 +63,16 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #include <stdio.h>
 
 /*** not currently used -FS
-	#define min(a,b)		((a > b)?b:a)
-	#define Trailer(ldatum,datum68)	(ldatum+2*(datum68->arlen - ARRAYBLOCKTRAILERCELLS))
-	#define BucketIndex(n)		min(integerlength(n),MAXBUCKETINDEX)
-	#define FreeBlockChainN(n)	((POINTERMASK & *FreeBlockBuckets_word)+2*BucketIndex(n))
+        #define min(a,b)		((a > b)?b:a)
+        #define Trailer(ldatum,datum68)	(ldatum+2*(datum68->arlen - ARRAYBLOCKTRAILERCELLS))
+        #define BucketIndex(n)		min(integerlength(n),MAXBUCKETINDEX)
+        #define FreeBlockChainN(n)	((POINTERMASK & *FreeBlockBuckets_word)+2*BucketIndex(n))
  ***/
 
-#define Rehash_factor(hash,tablelen)   \
-           (((hash) % ((tablelen) - 2)) + 1)
-#define Symbol_hash_reprobe(hash,rehashfactor,tablelen) \
-               (((hash) + (rehashfactor)) % (tablelen))
-#define Entry_hash(strlen,sxhash) \
-           (((((((strlen)^(sxhash))^((sxhash) >> 8))  \
-	       ^((sxhash) >> 16))^((sxhash) >> 19)) % 254) + 2)
+#define Rehash_factor(hash, tablelen) (((hash) % ((tablelen)-2)) + 1)
+#define Symbol_hash_reprobe(hash, rehashfactor, tablelen) (((hash) + (rehashfactor)) % (tablelen))
+#define Entry_hash(strlen, sxhash) \
+  (((((((strlen) ^ (sxhash)) ^ ((sxhash) >> 8)) ^ ((sxhash) >> 16)) ^ ((sxhash) >> 19)) % 254) + 2)
 
 /************************************************************************/
 /*									*/
@@ -90,22 +82,16 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-struct hashtable
-  {
-    LispPTR      table;
-    LispPTR      hash;
-    LispPTR      size;
-    LispPTR      free;
-    LispPTR      deleted;
-  };
-
-
-
+struct hashtable {
+  LispPTR table;
+  LispPTR hash;
+  LispPTR size;
+  LispPTR free;
+  LispPTR deleted;
+};
 
 /* The end of macros & structure for medley version */
 
-
-
 /************************************************************************/
 /*									*/
 /*									*/
@@ -114,61 +100,50 @@ struct hashtable
 /*									*/
 /************************************************************************/
 
-LispPTR aref1(LispPTR array, int index)
-{
-    register LispPTR retval;
-    register LispPTR base;
-    register short   typenumber;
-    register struct arrayheader  *actarray;
+LispPTR aref1(LispPTR array, int index) {
+  register LispPTR retval;
+  register LispPTR base;
+  register short typenumber;
+  register struct arrayheader *actarray;
 
-    actarray = (struct arrayheader *)Addr68k_from_LADDR(array);
-    if (index >= actarray->totalsize)
-      {
-	printf("Invalid index in GC's AREF1:  0x%x\n", index);
-	printf(" Array size limit:  0x%x\n", actarray->totalsize);
-	printf(" Array ptr: 0x%x\n", (UNSIGNED)array);
-	printf(" Array 68K ptr: 0x%x\n", (UNSIGNED) actarray);
-	printf("base:     0x%x\n", actarray->base);
-	printf("offset:   0x%x\n", actarray->offset);
-	printf("type #:   0x%x\n", actarray->typenumber);
-	printf("fill ptr: 0x%x\n", actarray->fillpointer);
-	error("index out of range in GC's AREF1.");
-      }
-    index += actarray->offset;
-    typenumber = actarray->typenumber;
-    base = actarray->base;
-    switch(typenumber)
-      {
-	case  3: /* unsigned 8bits */
-		/* the following code confuses the Apollo compiler;	*/
-		/* its equivalent doesn't				*/
-#ifndef APOLLO
-		 retval = (GETBYTE(((char *)Addr68k_from_LADDR(base))
-				 + index)) & 0x0ff;
-#else
-		{
-		  register char *eightbitbase =
-			(char *)Addr68k_from_LADDR(base);
-		  retval = GETBYTE(eightbitbase + index) & 0xff;
-		}
-#endif
-	        retval |= S_POSITIVE;
-	        break;
-	 case 4: /* unsigned 16bits */
-		retval = (GETWORD(((DLword *)Addr68k_from_LADDR(base))
-			 + index)) & 0x0ffff;
-		retval |= S_POSITIVE;
-		break;
-	 case 38:
-		retval = (*(((LispPTR *)Addr68k_from_LADDR(base))
-			 + index));
-		break;
-	 default:  error("Not Implemented in gc's aref1 (other types)");
-      };
-    return(retval);
+  actarray = (struct arrayheader *)Addr68k_from_LADDR(array);
+  if (index >= actarray->totalsize) {
+    printf("Invalid index in GC's AREF1:  0x%x\n", index);
+    printf(" Array size limit:  0x%x\n", actarray->totalsize);
+    printf(" Array ptr: 0x%x\n", (UNSIGNED)array);
+    printf(" Array 68K ptr: 0x%x\n", (UNSIGNED)actarray);
+    printf("base:     0x%x\n", actarray->base);
+    printf("offset:   0x%x\n", actarray->offset);
+    printf("type #:   0x%x\n", actarray->typenumber);
+    printf("fill ptr: 0x%x\n", actarray->fillpointer);
+    error("index out of range in GC's AREF1.");
   }
-
-
+  index += actarray->offset;
+  typenumber = actarray->typenumber;
+  base = actarray->base;
+  switch (typenumber) {
+    case 3: /* unsigned 8bits */
+/* the following code confuses the Apollo compiler;	*/
+/* its equivalent doesn't				*/
+#ifndef APOLLO
+      retval = (GETBYTE(((char *)Addr68k_from_LADDR(base)) + index)) & 0x0ff;
+#else
+    {
+      register char *eightbitbase = (char *)Addr68k_from_LADDR(base);
+      retval = GETBYTE(eightbitbase + index) & 0xff;
+    }
+#endif
+      retval |= S_POSITIVE;
+      break;
+    case 4: /* unsigned 16bits */
+      retval = (GETWORD(((DLword *)Addr68k_from_LADDR(base)) + index)) & 0x0ffff;
+      retval |= S_POSITIVE;
+      break;
+    case 38: retval = (*(((LispPTR *)Addr68k_from_LADDR(base)) + index)); break;
+    default: error("Not Implemented in gc's aref1 (other types)");
+  };
+  return (retval);
+}
 
 /************************************************************************/
 /*									*/
@@ -178,110 +153,101 @@ LispPTR aref1(LispPTR array, int index)
 /*									*/
 /************************************************************************/
 
-LispPTR find_symbol(char *char_base, DLword offset, DLword length, LispPTR hashtbl, DLword fatp, DLword lispp)
-                  
-                
-                
-                  
-              		/* T => the "chars" coming in are 16-bit */
-               		/* T => the incoming chars are in LISP space */
-  {
-    DLword hashval, ehashval, h2, ehash, indexvar;
-    int arraylen;
-    struct hashtable *hashtbladdr;
+LispPTR find_symbol(char *char_base, DLword offset, DLword length, LispPTR hashtbl, DLword fatp,
+                    DLword lispp)
+
+/* T => the "chars" coming in are 16-bit */
+/* T => the incoming chars are in LISP space */
+{
+  DLword hashval, ehashval, h2, ehash, indexvar;
+  int arraylen;
+  struct hashtable *hashtbladdr;
 #ifdef BIGATOMS
-    LispPTR vecs, hashes;
+  LispPTR vecs, hashes;
 #endif /* BIGATOMS */
 
-    LispPTR vec,hash;
-    struct arrayheader *vec68k;
-    int fatpnamep;
+  LispPTR vec, hash;
+  struct arrayheader *vec68k;
+  int fatpnamep;
 
-    if (!hashtbl) return(0xffffffff);
+  if (!hashtbl) return (0xffffffff);
 
-    if (lispp) hashval = compute_lisp_hash(char_base, offset, length, fatp);
-    else hashval = compute_hash(char_base, offset, length);
+  if (lispp)
+    hashval = compute_lisp_hash(char_base, offset, length, fatp);
+  else
+    hashval = compute_hash(char_base, offset, length);
 
-    ehashval = Entry_hash(length, hashval);
-    hashtbladdr = (struct hashtable *)Addr68k_from_LADDR(hashtbl);
+  ehashval = Entry_hash(length, hashval);
+  hashtbladdr = (struct hashtable *)Addr68k_from_LADDR(hashtbl);
 
-    /* Move our string ptr up by offset, allowing for fatness */
-    if (fatp) char_base += (offset << 1); else char_base += offset;
-
+  /* Move our string ptr up by offset, allowing for fatness */
+  if (fatp)
+    char_base += (offset << 1);
+  else
+    char_base += offset;
 
 #ifdef BIGATOMS
-    vecs = hashtbladdr->table;
-    hashes = hashtbladdr->hash;
+  vecs = hashtbladdr->table;
+  hashes = hashtbladdr->hash;
 
 loop_thru_hashtables:
 
-    vec = car(vecs);
-    vecs = cdr(vecs);
-    hash = car(hashes);
-    hashes = cdr(hashes);
-    vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
-    arraylen = vec68k->totalsize;
-    if(arraylen==0) return(0xffffffff);/*kludge TAKE*/
-    h2 = Rehash_factor(hashval, arraylen);
-    indexvar = (hashval % arraylen);
+  vec = car(vecs);
+  vecs = cdr(vecs);
+  hash = car(hashes);
+  hashes = cdr(hashes);
+  vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
+  arraylen = vec68k->totalsize;
+  if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
+  h2 = Rehash_factor(hashval, arraylen);
+  indexvar = (hashval % arraylen);
 #else
-    vec = hashtbladdr->table;
-    hash = hashtbladdr->hash;
-    vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
-    arraylen = vec68k->totalsize;
-    if(arraylen==0) return(0xffffffff);/*kludge TAKE*/
-    h2 = Rehash_factor(hashval, arraylen);
-    indexvar = (hashval % arraylen);
+  vec = hashtbladdr->table;
+  hash = hashtbladdr->hash;
+  vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
+  arraylen = vec68k->totalsize;
+  if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
+  h2 = Rehash_factor(hashval, arraylen);
+  indexvar = (hashval % arraylen);
 #endif /* BIGATOMS */
-
 
 retry:
-    /* the aref1 returns a smallp, which is always <256, so trim it */
-    while (ehashval != (ehash = 0xFF & aref1(hash, indexvar)))
-    {
-      if(ehash==NIL) 
-	{ /* Ran out of entries in this table; try next or fail */
+  /* the aref1 returns a smallp, which is always <256, so trim it */
+  while (ehashval != (ehash = 0xFF & aref1(hash, indexvar))) {
+    if (ehash == NIL) { /* Ran out of entries in this table; try next or fail */
 #ifdef BIGATOMS
-	  if (hashes == NIL) return(0xffffffff); /* Last table.  Fail. */
-	  goto loop_thru_hashtables;
+      if (hashes == NIL) return (0xffffffff); /* Last table.  Fail. */
+      goto loop_thru_hashtables;
 #else
-	  return(0xffffffff);
+      return (0xffffffff);
 #endif /* BIGATOMS */
-
-	}
-      indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
     }
- /*   if ((indexvar&0xffff) != NIL) */
-      {
-	LispPTR index;
-	PNCell *pnptr;
-	char *pname_base;
-
-	index = aref1(vec, indexvar);
-	if ((index & SEGMASK) == S_POSITIVE) index &= 0xFFFF;
-
-	pnptr = (PNCell *)GetPnameCell(index);
-	fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
-	pname_base= (char *)Addr68k_from_LADDR(pnptr->pnamebase);
-	if((length == GETBYTE(pname_base)) &&
-	   (T == ((lispp) ?
-		 compare_lisp_chars((pname_base+1+fatpnamep), char_base,
-				    length, fatpnamep, fatp) :
-		 compare_chars((pname_base+1+fatpnamep), char_base, length))) )
-	  {
-	    return(index);
-	  }
-	else
-	  {
-	    indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
-	    goto retry;
-	  }
-      }
- /*   else return(0xffffffff); */ /* can't find */
+    indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
   }
+  /*   if ((indexvar&0xffff) != NIL) */
+  {
+    LispPTR index;
+    PNCell *pnptr;
+    char *pname_base;
 
+    index = aref1(vec, indexvar);
+    if ((index & SEGMASK) == S_POSITIVE) index &= 0xFFFF;
 
-
+    pnptr = (PNCell *)GetPnameCell(index);
+    fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
+    pname_base = (char *)Addr68k_from_LADDR(pnptr->pnamebase);
+    if ((length == GETBYTE(pname_base)) &&
+        (T == ((lispp) ? compare_lisp_chars((pname_base + 1 + fatpnamep), char_base, length,
+                                            fatpnamep, fatp)
+                       : compare_chars((pname_base + 1 + fatpnamep), char_base, length)))) {
+      return (index);
+    } else {
+      indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
+      goto retry;
+    }
+  }
+  /*   else return(0xffffffff); */ /* can't find */
+}
 
 /************************************************************************/
 /*									*/
@@ -294,54 +260,50 @@ retry:
 /*									*/
 /************************************************************************/
 
-LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword packlen, int externalp)
-{
-    int packindex;
-    PACKAGE *packaddr;
-    LispPTR hashtbladdr;
-    LispPTR index;
-    extern LispPTR find_package_from_name(char *packname, int len);
+LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword packlen,
+                         int externalp) {
+  int packindex;
+  PACKAGE *packaddr;
+  LispPTR hashtbladdr;
+  LispPTR index;
+  extern LispPTR find_package_from_name(char *packname, int len);
 
-    /* For convenience, recognize the common package nicknames: */
+  /* For convenience, recognize the common package nicknames: */
 
-    if (0 == strncmp(packname, "XCL", packlen))
-      packindex = find_package_from_name("XEROX-COMMON-LISP",17);
-    else if (0 == strncmp(packname, "SI", packlen))
-      packindex = find_package_from_name("SYSTEM",6);
-    else if (0 == strncmp(packname, "CL", packlen))
-      packindex = find_package_from_name("LISP",4);
-    else if (0 == strncmp(packname, "XCLC", packlen))
-      packindex = find_package_from_name("COMPILER",8);
+  if (0 == strncmp(packname, "XCL", packlen))
+    packindex = find_package_from_name("XEROX-COMMON-LISP", 17);
+  else if (0 == strncmp(packname, "SI", packlen))
+    packindex = find_package_from_name("SYSTEM", 6);
+  else if (0 == strncmp(packname, "CL", packlen))
+    packindex = find_package_from_name("LISP", 4);
+  else if (0 == strncmp(packname, "XCLC", packlen))
+    packindex = find_package_from_name("COMPILER", 8);
 
-/**** else if (0 == strncmp(packname, "KEYWORD", packlen))
-    packindex = 7;***/
+  /**** else if (0 == strncmp(packname, "KEYWORD", packlen))
+      packindex = 7;***/
 
-    else packindex=find_package_from_name(packname, packlen);
+  else
+    packindex = find_package_from_name(packname, packlen);
 
-    if (packindex <0)
-      {
-	printf("getting package index is failed \n");
-	return(0xffffffff);
-      }
+  if (packindex < 0) {
+    printf("getting package index is failed \n");
+    return (0xffffffff);
+  }
 
-/* if (packindex != 7)  Not necessary (Take)*/
-    packaddr = (PACKAGE *)Addr68k_from_LADDR(
-			  aref1(*Package_from_Index_word, packindex));
-/* else packaddr = (PACKAGE *)Addr68k_from_LADDR(
-			*Keyword_Package_word);	*/
-/* hashtbladdr =	((externalp == T)?(packaddr->EXTERNAL_SYMBOLS):
-			 (packaddr->INTERNAL_SYMBOLS));
- return( find_symbol(char_base, 0, charlen, hashtbladdr, 0, 0) );*/
+  /* if (packindex != 7)  Not necessary (Take)*/
+  packaddr = (PACKAGE *)Addr68k_from_LADDR(aref1(*Package_from_Index_word, packindex));
+  /* else packaddr = (PACKAGE *)Addr68k_from_LADDR(
+                          *Keyword_Package_word);	*/
+  /* hashtbladdr =	((externalp == T)?(packaddr->EXTERNAL_SYMBOLS):
+                           (packaddr->INTERNAL_SYMBOLS));
+   return( find_symbol(char_base, 0, charlen, hashtbladdr, 0, 0) );*/
 
-    if ((index=find_symbol(char_base, 0, charlen,packaddr->EXTERNAL_SYMBOLS, 0, 0)) !=
-				0xffffffff)
-      return(index);
-    else
-      return(find_symbol(char_base, 0, charlen,packaddr->INTERNAL_SYMBOLS, 0, 0));
-
+  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) != 0xffffffff)
+    return (index);
+  else
+    return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
 }
 
-
 /************************************************************************/
 /*									*/
 /*									*/
@@ -350,23 +312,22 @@ LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword
 /*									*/
 /************************************************************************/
 
-LispPTR with_symbol(LispPTR char_base, LispPTR offset, LispPTR charlen, LispPTR fatp, LispPTR hashtbl, LispPTR result)
-{
-    char * charbase68k = (char *) Addr68k_from_LADDR(char_base);
-    LispPTR *resultptr = (LispPTR *) Addr68k_from_LADDR(result);
-    DLword chars = charlen & 0xFFFF;	/* charlen must be a SMALLP! */
-    DLword offst = offset & 0xFFFF;
-    int symbol;				/* Where the symbol goes pro tem */
-    
-    symbol = find_symbol(charbase68k, offst, chars, hashtbl, (DLword)fatp, (DLword)1);
+LispPTR with_symbol(LispPTR char_base, LispPTR offset, LispPTR charlen, LispPTR fatp,
+                    LispPTR hashtbl, LispPTR result) {
+  char *charbase68k = (char *)Addr68k_from_LADDR(char_base);
+  LispPTR *resultptr = (LispPTR *)Addr68k_from_LADDR(result);
+  DLword chars = charlen & 0xFFFF; /* charlen must be a SMALLP! */
+  DLword offst = offset & 0xFFFF;
+  int symbol; /* Where the symbol goes pro tem */
 
-    if (symbol == -1)
-      { /* Not found.  Signal that with -1 in result fixp */
-	*resultptr = -1;
-	return(NIL);
-      }
+  symbol = find_symbol(charbase68k, offst, chars, hashtbl, (DLword)fatp, (DLword)1);
 
-    *resultptr = 3;
-    return(symbol);
+  if (symbol == -1) { /* Not found.  Signal that with -1 in result fixp */
+    *resultptr = -1;
+    return (NIL);
+  }
 
-  } /* End of with_symbol */
+  *resultptr = 3;
+  return (symbol);
+
+} /* End of with_symbol */

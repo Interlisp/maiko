@@ -1,8 +1,6 @@
-/* $Id: lpread.c,v 1.2 1999/01/03 02:07:19 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: lpread.c,v 1.2 1999/01/03 02:07:19 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: lpread.c,v 1.2 1999/01/03 02:07:19 sybalsky Exp $ Copyright (C) Venue";
-
-
-
 
 /************************************************************************/
 /*                                                                      */
@@ -18,8 +16,6 @@ static char *id = "$Id: lpread.c,v 1.2 1999/01/03 02:07:19 sybalsky Exp $ Copyri
 /************************************************************************/
 
 #include "version.h"
-
-
 
 /*
   ============================================================================
@@ -60,9 +56,7 @@ extern REAL Infinite;
  */
 
 #ifdef OS4
-readlispinput(lp, lisprhs, lisprelns,
-					lispcend, lispmat, lispints, lisplowbo, lispupbo)
-lprec *lp;
+readlispinput(lp, lisprhs, lisprelns, lispcend, lispmat, lispints, lisplowbo, lispupbo) lprec *lp;
 float *lisprhs;
 short *lisprelns;
 int *lispcend;
@@ -71,67 +65,47 @@ short *lispints;
 float *lisplowbo;
 float *lispupbo;
 #else
-void readlispinput(lprec *lp,
-		   float  *lisprhs,
-		   short  *lisprelns,
-		   int    *lispcend,
-		   lispmr *lispmat,
-		   short  *lispints,
-		   float  *lisplowbo,
-		   float  *lispupbo)
+void readlispinput(lprec *lp, float *lisprhs, short *lisprelns, int *lispcend, lispmr *lispmat,
+                   short *lispints, float *lisplowbo, float *lispupbo)
 #endif /* OS4 */
 {
-  int    i, j, k, index, nn_ind;
-  int   x;
-  
+  int i, j, k, index, nn_ind;
+  int x;
+
   /* initialize lower and upper bound arrays */
-  for (i = 0; i <= Sum; i++)
-    {
-      lp->orig_lowbo[i] = lisplowbo[i];
+  for (i = 0; i <= Sum; i++) {
+    lp->orig_lowbo[i] = lisplowbo[i];
 
-      if(lispupbo[i] > 1.0e20) lp->orig_upbo[i] = Infinite;
-	  else lp->orig_upbo[i] = lispupbo[i];
-    }
+    if (lispupbo[i] > 1.0e20)
+      lp->orig_upbo[i] = Infinite;
+    else
+      lp->orig_upbo[i] = lispupbo[i];
+  }
 
-  for (i = Rows;i >= 0;i--)
-    {
-      lp->orig_rh[i] = lisprhs[i];
-    }
-  
+  for (i = Rows; i >= 0; i--) { lp->orig_rh[i] = lisprhs[i]; }
 
-
-
-  memcpy(lp->col_end, lispcend, (Columns+1)*sizeof(int));
+  memcpy(lp->col_end, lispcend, (Columns + 1) * sizeof(int));
 #ifdef BYTESWAP
-  for (i=0; i<Sum+1; i++) lp->must_be_int[i] = lispints[i^1];
+  for (i = 0; i < Sum + 1; i++) lp->must_be_int[i] = lispints[i ^ 1];
 #else
-  memcpy(lp->must_be_int, lispints, (Sum+1)*sizeof(short));
+  memcpy(lp->must_be_int, lispints, (Sum + 1) * sizeof(short));
 #endif /* BYTESWAP */
 
+  for (i = 0; i < Non_zeros; i++) {
+    lp->mat[i].row_nr = lispmat[i].rownr;
+    lp->mat[i].value = lispmat[i].value;
+  }
 
-  for (i=0; i< Non_zeros; i++)
-	{
-	  lp->mat[i].row_nr = lispmat[i].rownr;
-	  lp->mat[i].value = lispmat[i].value;
-    }
+  set_maxim(lp); /* We always maximize. */
 
-  set_maxim(lp);	/* We always maximize. */
-
-  for (i = Rows;i > 0;i--)
-    {
+  for (i = Rows; i > 0; i--) {
 #ifdef BYTESWAP
-	  set_constr_type(lp, i, lisprelns[i^1]);
+    set_constr_type(lp, i, lisprelns[i ^ 1]);
 #else
-	  set_constr_type(lp, i, lisprelns[i]);
+    set_constr_type(lp, i, lisprelns[i]);
 #endif /* BYTESWAP */
-    }
+  }
 
 } /* readlispinput */
 
-
 /* ===================== END OF read.c ===================================== */
-
-
-
-
-

@@ -1,7 +1,6 @@
-/* $Id: dspif.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: dspif.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
 static char *id = "$Id: dspif.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright (C) Venue";
 /* This is the display interface  */
-
 
 /************************************************************************/
 /*									*/
@@ -17,10 +16,7 @@ static char *id = "$Id: dspif.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyrig
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
-
-
 
 #include <stdio.h>
 #include "lispemul.h"
@@ -36,67 +32,55 @@ DspInterface colordsp = &_coldsp;
 extern int LispDisplayRequestedWidth;
 extern int LispDisplayRequestedHeight;
 
-extern DspInterface X_init( DspInterface dsp, 
-		     char *lispbitmap, 
-		     int width_hint, 
-		     int height_hint, 
-		     int depth_hint );
+extern DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
+                           int depth_hint);
 #endif /* XWINDOW */
 
 #ifdef DOS
 extern int dosdisplaymode;
 #endif /* DOS */
 
-void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, int depth_hint)
-{
+void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
+                       int depth_hint) {
 #ifdef DOS
 
   TPRINT(("Enter make_dsp_instance, dosdisplaymode is: %d\n", dosdisplaymode));
 
   if (depth_hint == 0) depth_hint = 1;
 
-  switch(dosdisplaymode) {
-  case 1:
-    VGA_init( dsp ,0, 0, 0, depth_hint );
-    break;
-  case 0x102:
-  case 0x104:
-    VESA_init( dsp ,0, 0, 0, depth_hint );
-    break;
-  default:
-    if (VESA_p()) {
-      VESA_init( dsp ,0, 0, 0, depth_hint );
-    } else if (VGA_p()){    
-      VGA_init( dsp ,0, 0, 0, depth_hint );
-    } else {			/* Can't set *ANY* video mode! */
-      (void)fprintf(stderr, "No portable graphics mode supported by this host.\n");
-      (void)fprintf(stderr, "\n-Expected VESA or VGA.\n");
-      exit(1);
-    }
-    break;
+  switch (dosdisplaymode) {
+    case 1: VGA_init(dsp, 0, 0, 0, depth_hint); break;
+    case 0x102:
+    case 0x104: VESA_init(dsp, 0, 0, 0, depth_hint); break;
+    default:
+      if (VESA_p()) {
+        VESA_init(dsp, 0, 0, 0, depth_hint);
+      } else if (VGA_p()) {
+        VGA_init(dsp, 0, 0, 0, depth_hint);
+      } else { /* Can't set *ANY* video mode! */
+        (void)fprintf(stderr, "No portable graphics mode supported by this host.\n");
+        (void)fprintf(stderr, "\n-Expected VESA or VGA.\n");
+        exit(1);
+      }
+      break;
   }
 
 #elif XWINDOW
   /* lispbitmap is 0 when we call X_init the first time. */
-  if ( X_init( dsp, 0, LispDisplayRequestedWidth, 
-	       LispDisplayRequestedHeight, depth_hint ) == NULL) {
+  if (X_init(dsp, 0, LispDisplayRequestedWidth, LispDisplayRequestedHeight, depth_hint) == NULL) {
     fprintf(stderr, "Can't open display.");
     exit(-1);
   }
-#endif	/* DOS | XWINDOW */
-}	/* Now we know the Maxi-MooM capabillities of the hardware. */
+#endif /* DOS | XWINDOW */
+} /* Now we know the Maxi-MooM capabillities of the hardware. */
 
 #ifdef DOS
-VESA_p()
-{
+VESA_p() {
   /* Magic. Do a vesa call to determine the current mode. */
-  return(VESA_call( 3 , 0 ));
+  return (VESA_call(3, 0));
 }
 
-VGA_p()
-{
-  return( TRUE );
-}
+VGA_p() { return (TRUE); }
 #endif /* DOS */
 
 /*********************************************************************/
@@ -106,39 +90,31 @@ VGA_p()
 /* Utility function that just returns T                              */
 /*                                                                   */
 /*********************************************************************/
-unsigned long
-GenericReturnT(void)
-{
-  return(T);
-}
+unsigned long GenericReturnT(void) { return (T); }
 
-void GenericPanic(DspInterface dsp)
-{
+void GenericPanic(DspInterface dsp) {
   TPRINT(("Enter GenericPanic\n"));
-  fprintf( stderr, "Panic! Call to uninitialized display slot!" );
+  fprintf(stderr, "Panic! Call to uninitialized display slot!");
   exit(0);
 }
 
-
-LispPTR SwitchDisplay(LispPTR display)
-{
-  DspInterface tmp;		/* Switch-a-roo! */
+LispPTR SwitchDisplay(LispPTR display) {
+  DspInterface tmp; /* Switch-a-roo! */
 
   TPRINT(("Enter SwitchDisplay\n"));
   tmp = currentdsp;
   currentdsp = colordsp;
   colordsp = tmp;
   TPRINT(("Exit SwitchDisplay\n"));
-  return( display );
+  return (display);
 }
 
-void describedsp(DspInterface dsp)
-{
-  if ( dsp == 0 ){
+void describedsp(DspInterface dsp) {
+  if (dsp == 0) {
     printf("describedsp: Not a dsp!\n");
     return;
   }
-  if ( dsp == &_curdsp )
+  if (dsp == &_curdsp)
     printf("dsp is B/W display\n");
   else
     printf("dsp is COLOR display\n");

@@ -1,6 +1,6 @@
-/* $Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ Copyright (C) Venue";
-
 
 /************************************************************************/
 /*									*/
@@ -26,12 +26,12 @@ static char *id = "$Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ Copy
 
 /********************************************************/
 /*
-	subr_k_trace()
+        subr_k_trace()
 
-		subr----0130 for katana trace
-		first argument is base address of
-		error message in Lisp.
-		second argument is length of message.
+                subr----0130 for katana trace
+                first argument is base address of
+                error message in Lisp.
+                second argument is length of message.
 */
 /********************************************************/
 
@@ -40,16 +40,13 @@ static char *id = "$Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ Copy
 #include "adr68k.h"
 #include "lspglob.h"
 
-LispPTR subr_k_trace(LispPTR *args)
-{
-	int	len;
-	char	*base;
+LispPTR subr_k_trace(LispPTR *args) {
+  int len;
+  char *base;
 
-	len = 0xFFFF & args[1];
-	base = (char *)Addr68k_from_LADDR(args[0]);
-	while(len-- > 0)
-		putc(*base++ , stderr);
-	putc('\n', stderr);
-	return (NIL);
+  len = 0xFFFF & args[1];
+  base = (char *)Addr68k_from_LADDR(args[0]);
+  while (len-- > 0) putc(*base++, stderr);
+  putc('\n', stderr);
+  return (NIL);
 }
-

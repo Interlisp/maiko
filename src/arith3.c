@@ -1,9 +1,6 @@
-/* $Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyright (C) Venue";
-
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -17,10 +14,7 @@ static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
-
 #include "version.h"
-
-
 
 /************************************************************************/
 /*									*/
@@ -33,7 +27,6 @@ static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"
@@ -42,9 +35,6 @@ static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 #include "adr68k.h"
 #include "cell.h"
 #include "arith.h"
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -55,17 +45,13 @@ static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_makenumber(int tosm1, int tos)
-{
+LispPTR N_OP_makenumber(int tosm1, int tos) {
   register int result;
 
-  if(((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) !=  S_POSITIVE))
-	ERROR_EXIT(tos);
+  if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) ERROR_EXIT(tos);
   result = ((tosm1 & 0xffff) << 16) | (tos & 0xffff);
   N_ARITH_SWITCH(result);
 } /* end OP_makenumber */
-
-
 
 /************************************************************************/
 /*									*/
@@ -76,21 +62,18 @@ LispPTR N_OP_makenumber(int tosm1, int tos)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_boxiplus(register int a, int tos)
-{
-  register int    arg2;
+LispPTR N_OP_boxiplus(register int a, int tos) {
+  register int arg2;
 
-  if( GetTypeNumber(a) == TYPE_FIXP )
-   {
-	N_GETNUMBER(tos, arg2, bad);
-	*((LispPTR *)Addr68k_from_LADDR(a)) += arg2;
-	return(a);
-   }
-bad:	ERROR_EXIT(tos);
+  if (GetTypeNumber(a) == TYPE_FIXP) {
+    N_GETNUMBER(tos, arg2, bad);
+    *((LispPTR *)Addr68k_from_LADDR(a)) += arg2;
+    return (a);
+  }
+bad:
+  ERROR_EXIT(tos);
 
 } /* OP_boxiplus */
-
-
 
 /************************************************************************/
 /*									*/
@@ -102,18 +85,15 @@ bad:	ERROR_EXIT(tos);
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_boxidiff(register int a, int tos)
-{
-  register int    arg2;
+LispPTR N_OP_boxidiff(register int a, int tos) {
+  register int arg2;
 
-  if( GetTypeNumber(a) == TYPE_FIXP )
-   {
-	N_GETNUMBER(tos, arg2, bad);
-	*((LispPTR *)Addr68k_from_LADDR(a)) -=  arg2;
-	return(a);
-   }
-  bad: ERROR_EXIT(tos);
+  if (GetTypeNumber(a) == TYPE_FIXP) {
+    N_GETNUMBER(tos, arg2, bad);
+    *((LispPTR *)Addr68k_from_LADDR(a)) -= arg2;
+    return (a);
+  }
+bad:
+  ERROR_EXIT(tos);
 
 } /* end OP_boxidiff */
-
-

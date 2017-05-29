@@ -1,6 +1,6 @@
-/* $Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
+/* $Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
+ */
 static char *id = "$Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ Copyright (C) Venue";
-
 
 /************************************************************************/
 /*									*/
@@ -16,7 +16,6 @@ static char *id = "$Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ Copyr
 
 #include "version.h"
 
-
 #include "lpdefs.h"
 #include "lpglobl.h"
 #ifdef OS4
@@ -29,8 +28,8 @@ static char *id = "$Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ Copyr
 /* this is the ansi version ... */
 
 #ifdef OS4
-print_solution(stream, sol)
-FILE *stream; double *sol;
+print_solution(stream, sol) FILE *stream;
+double *sol;
 #else
 void print_solution(FILE *stream, double *sol)
 #endif
@@ -44,14 +43,12 @@ void print_solution(FILE *stream, double *sol)
     if (0 != sol[i]) fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
 
   /* print dual variables */
-  if(Verbose || Print_duals)
-    {
-      fprintf(stream, "\nValues of the dual variables:\n");
-      for (i = 1; i <= Rows; i++)
-	if (0 != sol[i]) fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
-    }
+  if (Verbose || Print_duals) {
+    fprintf(stream, "\nValues of the dual variables:\n");
+    for (i = 1; i <= Rows; i++)
+      if (0 != sol[i]) fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
+  }
 } /* print_solution */
-
 
 #ifdef OS4
 print_indent()
@@ -62,73 +59,60 @@ void print_indent(void)
   int i;
 
   fprintf(stderr, "%2d", Level);
-  for(i = Level; i > 0; i--)
-    fprintf(stderr, "--");
+  for (i = Level; i > 0; i--) fprintf(stderr, "--");
   fprintf(stderr, "> ");
 } /* print_indent */
 
-
 #ifdef OS4
-debug_print_solution(sol)
-double *sol;
+debug_print_solution(sol) double *sol;
 #else
 void debug_print_solution(double *sol)
 #endif
 {
   int i;
 
-  if(Debug)
-    for (i = 0; i <= Sum; i++)
-      {
-	print_indent();
-	if (sol[i] != 0) fprintf(stderr, "%-10s%16.5g\n", Names[i], sol[i]);
-      }
+  if (Debug)
+    for (i = 0; i <= Sum; i++) {
+      print_indent();
+      if (sol[i] != 0) fprintf(stderr, "%-10s%16.5g\n", Names[i], sol[i]);
+    }
 } /* debug_print_solution */
 
-
 #ifdef OS4
-debug_print_bounds(upbo, lowbo)
-double *upbo, *lowbo;
+debug_print_bounds(upbo, lowbo) double *upbo, *lowbo;
 #else
 void debug_print_bounds(double *upbo, double *lowbo)
 #endif
 {
   int i;
 
-  if(Debug)
-    for(i = Rows + 1; i <= Sum; i++)
-      {
-	if(lowbo[i] != 0)
-	  {
-	    print_indent();
-	    fprintf(stderr, "%s > %10.3g\n", Names[i], lowbo[i]);
-	  }
-	if(upbo[i] != INFINITE)
-	  {
-	    print_indent();
-	    fprintf(stderr, "%s < %10.3g\n", Names[i], upbo[i]);
-	  }
+  if (Debug)
+    for (i = Rows + 1; i <= Sum; i++) {
+      if (lowbo[i] != 0) {
+        print_indent();
+        fprintf(stderr, "%s > %10.3g\n", Names[i], lowbo[i]);
       }
+      if (upbo[i] != INFINITE) {
+        print_indent();
+        fprintf(stderr, "%s < %10.3g\n", Names[i], upbo[i]);
+      }
+    }
 } /* debug_print_bounds */
 
-
 #ifdef OS4
-debug_print(format)
-char *format;
+debug_print(format) char *format;
 { return 0; }
 #else
-void debug_print(char *format, ...)
-{
+void debug_print(char *format, ...) {
   va_list ap;
 
-  if(Debug)
-    {
-      va_start(ap, format);
-      print_indent();
-      vfprintf(stderr, format, ap);
-      fputc('\n', stderr);
-      va_end(ap);
-    }
+  if (Debug) {
+    va_start(ap, format);
+    print_indent();
+    vfprintf(stderr, format, ap);
+    fputc('\n', stderr);
+    va_end(ap);
+  }
 } /* debug_print */
 
 #endif

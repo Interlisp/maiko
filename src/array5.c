@@ -1,10 +1,6 @@
 /* This is G-file @(#) array5.c Version 2.7 (10/12/88). copyright Xerox & Fuji Xerox  */
 static char *id = "@(#) array5.c	2.7 10/12/88";
 
-
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-95 Venue. All Rights Reserved.		*/
@@ -18,9 +14,6 @@ static char *id = "@(#) array5.c	2.7 10/12/88";
 /************************************************************************/
 
 #include "version.h"
-
-
-
 
 /************************************************************************/
 /*									*/
@@ -40,8 +33,6 @@ static char *id = "@(#) array5.c	2.7 10/12/88";
 #include "arith.h"
 #include "my.h"
 
-
-
 /************************************************************************/
 /*									*/
 /*			N _ O P _ a r e f 2				*/
@@ -50,40 +41,37 @@ static char *id = "@(#) array5.c	2.7 10/12/88";
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1)
-{
+LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 #define REG
-     LispPTR baseL;
-     int type;
-     int arindex, temp;
-     LispArray *arrayblk;
-    int j;
-	/*	for CREATECELL  */
-    DLword	*createcell68k(unsigned int type);
+  LispPTR baseL;
+  int type;
+  int arindex, temp;
+  LispArray *arrayblk;
+  int j;
+  /*	for CREATECELL  */
+  DLword *createcell68k(unsigned int type);
 
-      /*  verify array  */
-      if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
-      arrayblk = (LispArray *)Addr68k_from_LADDR(arrayarg);
-      baseL = arrayblk->base;
+  /*  verify array  */
+  if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
+  arrayblk = (LispArray *)Addr68k_from_LADDR(arrayarg);
+  baseL = arrayblk->base;
 
-     /*  test and setup index  */
-      N_GetPos(inx1, temp, inx1);
-      if (temp >= (j = arrayblk->Dim1)) ERROR_EXIT(inx1);
-      N_GetPos(inx0, arindex, inx1);
-      if (arindex >= arrayblk->Dim0) ERROR_EXIT(inx1);
-      arindex *= j;
-      arindex += temp;
+  /*  test and setup index  */
+  N_GetPos(inx1, temp, inx1);
+  if (temp >= (j = arrayblk->Dim1)) ERROR_EXIT(inx1);
+  N_GetPos(inx0, arindex, inx1);
+  if (arindex >= arrayblk->Dim0) ERROR_EXIT(inx1);
+  arindex *= j;
+  arindex += temp;
 
-      /*  setup typenumber  */
-      type = 0xFF & arrayblk->typenumber;
+  /*  setup typenumber  */
+  type = 0xFF & arrayblk->typenumber;
 
-      /*  disp on type  */
+/*  disp on type  */
 #ifdef OS4
-      aref_switch(type, inx1, baseL, arindex);
+  aref_switch(type, inx1, baseL, arindex);
 #else
-      return ( aref_switch(type, inx1, baseL, arindex) );
+  return (aref_switch(type, inx1, baseL, arindex));
 #endif
 
 } /*  end N_OP_aref2()  */
-
-
