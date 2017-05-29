@@ -211,10 +211,10 @@ char **argv;
     print_Xusage(argv[0]);
   }
 
+  sysout_name[0] = '\0';
   if (*argc == 2) /* There was probably a sysoutarg */
   {
-    sysout_name[0] = '\0';
-    (void)strcat(sysout_name, argv[1]);
+    (void)strcpy(sysout_name, argv[1]);
   } else if ((envname = (char *)getenv("LDESRCESYSOUT")) != NULL) {
     strcpy(sysout_name, envname);
   } else if ((envname = (char *)getenv("LDESOURCESYSOUT")) != NULL)
@@ -277,7 +277,7 @@ char **argv;
     /* Get Sysout */
     (void)strncpy(sysout_name, value.addr, (int)value.size);
   }
-  if (sysout_name == NULL) {
+  if (sysout_name[0] == '\0') {
     fprintf(stderr, "Coudn't find a sysout to run;\n");
     print_Xusage(argv[0]);
   }
