@@ -305,10 +305,10 @@ int FindUnixPipes(void) {
 
   DBPRINT(("Entering FindUnixPipes\n"));
   UnixPipeIn = UnixPipeOut = StartTime = UnixPID = -1;
-  if (envtmp = getenv("LDEPIPEIN")) UnixPipeIn = atoi(envtmp);
-  if (envtmp = getenv("LDEPIPEOUT")) UnixPipeOut = atoi(envtmp);
-  if (envtmp = getenv("LDESTARTTIME")) StartTime = atoi(envtmp);
-  if (envtmp = getenv("LDEUNIXPID")) UnixPID = atoi(envtmp);
+  if ((envtmp = getenv("LDEPIPEIN"))) UnixPipeIn = atoi(envtmp);
+  if ((envtmp = getenv("LDEPIPEOUT"))) UnixPipeOut = atoi(envtmp);
+  if ((envtmp = getenv("LDESTARTTIME"))) StartTime = atoi(envtmp);
+  if ((envtmp = getenv("LDEUNIXPID"))) UnixPID = atoi(envtmp);
 
 /* This is a good place to initialize stuff like the UJ table */
 #ifdef SYSVONLY
