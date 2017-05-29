@@ -159,7 +159,8 @@ unsigned short sxhash_bitvec(OneDArray *obj) {
     if (len < 16) hash = hash >> (16 - len);
   } else {
     bitoffset = offset & 15;
-    hash = (GETWORD(base++) << (bitoffset)) | (GETWORD(base) >> (16 - bitoffset));
+    hash = (GETWORD(base++) << (bitoffset));
+    hash |= (GETWORD(base) >> (16 - bitoffset));
     if ((len - offset) < 16) hash = hash >> (16 - (len - offset));
   }
   return (hash);
