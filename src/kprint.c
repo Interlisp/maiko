@@ -52,7 +52,7 @@ void prindatum(LispPTR x) {
   LispPTR typename;
 
   if (Printdepth >= PrintMaxLevel) {
-    if (Printdepth = PrintMaxLevel) {
+    if (Printdepth == PrintMaxLevel) {
       if (GetTypeNumber(x) == TYPE_LISTP) {
         printf("(-)");
       } else
