@@ -1139,7 +1139,7 @@ void int_init() {
   int_timer_init(); /* periodic interrupt timer */
   int_io_init();    /* SIGIO and SIGPOLL async I/O handlers */
   int_file_init();  /* file-io TIMEOUT support */
-                    /* int_panic_init();    /* catch for all other dangerous interrupts */
+  int_panic_init(); /* catch for all other dangerous interrupts */
 
 #ifdef FLTINT
   int_fp_init(); /* Floating-point exception handler */
