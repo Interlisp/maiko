@@ -391,14 +391,11 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
 #ifdef BYTESWAP
       word_swap_page(buffer, (buflen + 3) >> 2);
 #endif /* BYTESWAP */
-
-      if (result = sendto(sock, buffer, buflen, 0, (struct sockaddr *)&farend, sizeof farend) < 0)
-
+      result = sendto(sock, buffer, buflen, 0, (struct sockaddr *)&farend, sizeof farend);
 #ifdef BYTESWAP
         word_swap_page(buffer, (buflen + 3) >> 2);
 #endif /* BYTESWAP */
-
-      {
+      if (result < 0) {
         perror("UDP Send");
         printf(" fd = %d, addr = 0x%x.\n", sock, farend.sin_addr.s_addr);
         return (NIL);
