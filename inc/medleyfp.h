@@ -105,6 +105,7 @@ volatile extern int  FP_error;
 #define FPTEST(result) ((!finite(result)) || isnan(result))
 
 #elif defined(MACOSX) || defined(FREEBSD)
+#include <math.h>
 #define FPCLEAR
 #define FPTEST(result) (!isfinite(result))
 
