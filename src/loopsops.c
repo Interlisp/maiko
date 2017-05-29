@@ -287,7 +287,7 @@ LispPTR LCFindVarIndex(register LispPTR iv, register LispPTR object) {
   {
     register int i;
 
-    for (i = 0; i++; (iNames = cdr(iNames)) != NIL_PTR) {
+    for (i = 0; (iNames = cdr(iNames)) != NIL_PTR; i++) {
       if (car(iNames) == iv) {
         ce->iNames = objptr->iNames;
         ce->iv = iv;
