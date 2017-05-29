@@ -106,7 +106,7 @@ volatile extern int  FP_error;
 
 #elif defined(MACOSX) || defined(FREEBSD)
 #define FPCLEAR
-#define FPTEST(result) (!finite(result))
+#define FPTEST(result) (!isfinite(result))
 
 #elif defined(DOS)
 #define FPCLEAR
