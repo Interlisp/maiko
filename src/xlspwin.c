@@ -73,15 +73,15 @@ extern int LispWindowRequestedX, LispWindowRequestedY, LispWindowRequestedWidht,
 
 void Create_LispWindow(dsp) DspInterface dsp;
 {
-  XSizeHints szhint;
-  XWMHints Lisp_WMhints;
-  XClassHint xclasshint;
-  XTextProperty IconText, WindowNameText;
-  XSetWindowAttributes Lisp_SetWinAttributes;
+  XSizeHints szhint = {0};
+  XWMHints Lisp_WMhints = {0};
+  XClassHint xclasshint = {0};
+  XTextProperty IconText = {0}, WindowNameText = {0};
+  XSetWindowAttributes Lisp_SetWinAttributes = {0};
 
   Screen *screen;
 
-  Window lspwinRoot;
+  Window lspwinRoot = {0};
   int lspwinX, lspwinY, Col2, Row2, Col3, Row3, GravSize;
   unsigned int lspwinHeight, lspwinWidth, lspwinBorder, lspwinDepth;
   char *WT, *IT;
@@ -130,7 +130,7 @@ void Create_LispWindow(dsp) DspInterface dsp;
   szhint.min_width = OUTER_SB_WIDTH(dsp);
   szhint.min_height = OUTER_SB_WIDTH(dsp);
   szhint.win_gravity = dsp->BitGravity;
-  szhint.flags = PMaxSize | PWinGravity | PSize | PPosition;
+  szhint.flags = PMaxSize | PWinGravity | PSize;
 
   Lisp_WMhints.icon_pixmap = make_Xicon(dsp);
   Lisp_WMhints.input = True;
