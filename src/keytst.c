@@ -56,10 +56,10 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 #define FAILURE4 -4
 #define FAILURE99 -99
 
-unsigned long make_verification(long unsigned int x, long unsigned int y);
+unsigned long make_verification(unsigned long x, unsigned long y);
 unsigned long date_integer16(char *date);
 unsigned long idate(char *str);
-unsigned long modify(long unsigned int hostid);
+unsigned long modify(unsigned long hostid);
 
 /* =====================================================================
         KEYTESTER checks the input key string.

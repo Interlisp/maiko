@@ -1,6 +1,6 @@
 /* $Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copyright (C) Venue";
+static const char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/
@@ -35,7 +35,6 @@ static char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copy
 #define floadbyte(number, pos) ((number >> pos) & 0xFFFF)
 #define hash_unhash(number, hashkey) \
   (number ^ (GOLDEN_RATIO_HACK * (floadbyte(hashkey, 16) + floadbyte(hashkey, 0))))
-#define KEYNUMBERS 3
 
 /*   meaning of symbolic constants used:
 
@@ -47,10 +46,10 @@ static char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp $ Copy
 #define FAILURE2 -2
 #define FAILURE3 -3
 
-unsigned long make_verification(long unsigned int x, long unsigned int y);
+unsigned long make_verification(unsigned long x, unsigned long y);
 unsigned long date_integer16(char *date);
 unsigned long idate(char *str);
-unsigned long modify(long unsigned int hostid);
+unsigned long modify(unsigned long hostid);
 
 /************************************************************************/
 /*									*/
@@ -60,9 +59,11 @@ unsigned long modify(long unsigned int hostid);
 /*									*/
 /************************************************************************/
 
-void writeresults(FILE *fp, char *host, char *expdate, int key1, int key2, int key3, char *info) {
+void writeresults(FILE *fp, char *host, char *expdate,
+		  unsigned long key1, unsigned long key2, unsigned long key3,
+		  char *info) {
   fprintf(fp, "Host ID: %-14s Expiration: %-9s", host, expdate);
-  fprintf(fp, " Key: %8x %8x %8x", key1, key2, key3);
+  fprintf(fp, " Key: %8lx %8lx %8lx", key1, key2, key3);
   fprintf(fp, " Doc: %s\n", info);
 }
 
@@ -78,15 +79,12 @@ int main(int argc, char **argv) {
   int logfile = 0; /* set to 1 if logfile on command line */
   FILE *fp;        /* file pointer for the logfile */
   unsigned long hostid;
-  long keyarray[KEYNUMBERS];
-  char *hexdigits = {"-0123456789abcdefABCDEF"};
-  char s[50], hstr[50], expdate[30], saveexpdate[30], cc;
+  unsigned long keys[3];
+  char s[50], expdate[30], saveexpdate[30];
   char infostring[500];
-  char *sptr, *ptr, *digitstring;
-  char *hptr = {" "};
-  char **hhptr = &hptr;
-  int base = 10;
-  int i, j, c;
+  char *sptr;
+  char *eptr;
+  int i, c;
   int commandlineargs;
 
   commandlineargs = (argc > 2);
@@ -107,66 +105,47 @@ int main(int argc, char **argv) {
   if (commandlineargs) {
     /* assume that the second argument is hex-hostid */
     sptr = *++argv;
-    hostid = strtol(sptr, hhptr, 16);
-
+    hostid = strtoul(sptr, &eptr, 16);
   } else {
-    printf("\n\nEnter Host ID (starts with 0x if the number is hexidecimal): ");
-    gets(s);
-    sptr = strtok(s, " ");
-
-    /* decide the base */
-    if (((ptr = strchr(sptr, '0')) != NULL) && (*(ptr + 1) == 'x' || *(ptr + 1) == 'X')) base = 16;
-
-#ifdef INDIGO
-    hostid = strtoul(sptr, hhptr, base);
-#elif defined(OS5)
-    hostid = strtoul(sptr, hhptr, base);
-#else
-    hostid = strtol(sptr, hhptr, base);
-#endif
+    printf("Enter Host ID (starts with 0x if the number is hexadecimal): ");
+    sptr = fgets(s, sizeof(s), stdin);
+    hostid = strtoul(s, &eptr, 0);
 
     /* look for syntax error */
-    if (**hhptr != '\0') {
-      printf("\nInvalid Host ID \n");
+    if (*eptr != '\n') {
+      printf("\nInvalid Host ID\n");
       exit(FAILURE1);
-    };
-
-    /* make sure Host ID  is less than 32 bits */
-    if (base == 16) {
-      sprintf(hstr, "%x", hostid);
-      for (i = 0; (cc = *(sptr + i)) != '\0'; ++i)
-        if (isupper(cc)) *(sptr + i) = tolower(cc);
-      for (i = 0; (cc = *(hstr + i)) != '\0'; ++i)
-        if (isupper(cc)) *(hstr + i) = tolower(cc);
-      digitstring = "123456789abcdef";
     } else {
-      sprintf(hstr, "%u", hostid);
-      digitstring = "123456789";
-    };
+      /* trim off the trailing newline */
+      *eptr = '\0';
+    }
 
-    ptr = strpbrk(sptr, digitstring);
-    if ((ptr == NULL && *sptr != '0' && *hstr != '0') || (ptr != NULL && strcmp(ptr, hstr) != 0)) {
-      printf("\nInvalid Host ID \n");
+    /* make sure Host ID is less than 32 bits */
+    /* XXX: why?, is 32-bits not OK -- compare to original code */
+    if ((hostid & 0x7FFFFFFF) != hostid) {
+      printf("\nInvalid Host ID\n");
       exit(FAILURE1);
     }
-  };
+  }
+
   hostid = modify(hostid);
 
   /* == prompt for the expiration date and validate it == */
 
   if (!commandlineargs) {
     /* assume that info is not needed when we use argc,argv */
-    printf("\n\nEnter information string (one line only, below)\n:");
-    gets(infostring);
+    printf("Enter information string (one line only, below)\n:");
+    fgets(infostring, sizeof(infostring), stdin);
+    infostring[strlen(infostring) - 1] = '\0';
   }
   /* == prompt for the expiration date and validate it == */
 
   if (commandlineargs) {
     strcpy(expdate, *++argv);
-
   } else {
     printf("Enter Software Expiration Date (dd-mmm-yy or never): ");
-    gets(expdate);
+    fgets(expdate, sizeof(expdate), stdin);
+    expdate[strlen(expdate) - 1] = '\0';
   }
   strcpy(saveexpdate, expdate);
   /* check for 'never' entry */
@@ -189,14 +168,14 @@ int main(int argc, char **argv) {
   };
 
   /* == generate 3 keys == */
-  keyarray[0] = hash_unhash(hostid, hostid);
-  keyarray[1] = hash_unhash(((date_integer16(expdate) << 16) | 0), hostid);
-  keyarray[2] = make_verification(keyarray[0], keyarray[1]);
+  keys[0] = hash_unhash(hostid, hostid);
+  keys[1] = hash_unhash(((date_integer16(expdate) << 16) | 0), hostid);
+  keys[2] = make_verification(keys[0], keys[1]);
 
   /* == report the results == */
 
   if (commandlineargs) {
-    printf("%8x %8x %8x\n", *keyarray, *(keyarray + 1), *(keyarray + 2));
+    printf("%8lx %8lx %8lx\n", keys[0], keys[1], keys[2]);
     exit(1);
   } else {
     /* if logfile is open, append the results to the end of the file */
@@ -205,12 +184,11 @@ int main(int argc, char **argv) {
         fprintf(fp, "\n%s", *++argv);
         printf("\n%s", *argv);
       }
-      writeresults(fp, sptr, saveexpdate, *keyarray, *(keyarray + 1), *(keyarray + 2), infostring);
+      writeresults(fp, sptr, saveexpdate, keys[0], keys[1], keys[2], infostring);
       fclose(fp);
     };
-    writeresults(stdout, sptr, saveexpdate, *keyarray, *(keyarray + 1), *(keyarray + 2),
-                 infostring);
     /* display the results on the terminal */
+    writeresults(stdout, sptr, saveexpdate, keys[0], keys[1], keys[2], infostring);
   };
   exit(0);
 }
