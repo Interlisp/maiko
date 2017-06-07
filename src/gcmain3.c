@@ -404,8 +404,7 @@ LispPTR gcscanstack(void) {
   if (0 != (3 & (UNSIGNED)bascframe)) {
     char debugStr[100];
     sprintf(debugStr,
-            "Frame ptr (0x%x) not to word bound "
-            "at start of gcscanstack.",
+            "Frame ptr (%p) not to word bound at start of gcscanstack.",
             bascframe);
     error(debugStr);
   }
@@ -484,8 +483,8 @@ LispPTR gcscanstack(void) {
             if (0 != (3 & (UNSIGNED)bascframe)) {
               char debugStr[100];
               sprintf(debugStr,
-                      "Frame ptr (0x%x) not to word bound "
-                      "in gcscanstack() STK_FX case; old frame = 0x%x.",
+                      "Frame ptr (%p) not to word bound "
+                      "in gcscanstack() STK_FX case; old frame = %p.",
                       bascframe, obascframe);
               error(debugStr);
             }
@@ -505,8 +504,8 @@ LispPTR gcscanstack(void) {
               if (0 != (3 & (UNSIGNED)bascframe)) {
                 char debugStr[100];
                 sprintf(debugStr,
-                        "Frame ptr (0x%x) not to word bound "
-                        "in gcscanstack() scantemps; old frame = 0x%x.",
+                        "Frame ptr (%p) not to word bound "
+                        "in gcscanstack() scantemps; old frame = %p.",
                         bascframe, obascframe);
                 error(debugStr);
               }
@@ -522,8 +521,8 @@ LispPTR gcscanstack(void) {
             if (0 != (3 & (UNSIGNED)bascframe)) {
               char debugStr[100];
               sprintf(debugStr,
-                      "Frame ptr (0x%x) not to word bound "
-                      "in gcscanstack(), end scantemps; old frame = 0x%x.",
+                      "Frame ptr (%p) not to word bound "
+                      "in gcscanstack(), end scantemps; old frame = %p.",
                       bascframe, obascframe);
               error(debugStr);
             }
@@ -542,8 +541,8 @@ LispPTR gcscanstack(void) {
           if (0 != (3 & (UNSIGNED)bascframe)) {
             char debugStr[100];
             sprintf(debugStr,
-                    "Frame ptr (0x%x) not to word bound "
-                    "in gcscanstack() STK_GUARD; old frame = 0x%x.",
+                    "Frame ptr (%p) not to word bound "
+                    "in gcscanstack() STK_GUARD; old frame = %p.",
                     bascframe, obascframe);
             error(debugStr);
           }
@@ -557,8 +556,8 @@ LispPTR gcscanstack(void) {
         if (0 != (3 & (UNSIGNED)bascframe)) {
           char debugStr[100];
           sprintf(debugStr,
-                  "Frame ptr (0x%x) not to word bound "
-                  "in gcscanstack() STK_FSB; old frame = 0x%x.",
+                  "Frame ptr (%p) not to word bound "
+                  "in gcscanstack() STK_FSB; old frame = %p.",
                   bascframe, obascframe);
           error(debugStr);
         }
