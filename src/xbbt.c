@@ -37,8 +37,7 @@ extern DspInterface currentdsp;
 /*	dummy is the placeholder for the bitmap to be blitted		*/
 /*									*/
 /************************************************************************/
-unsigned long clipping_Xbitblt(dsp, dummy, x, y, w, h) DspInterface dsp;
-int dummy, x, y, w, h;
+unsigned long clipping_Xbitblt(DspInterface dsp, int dummy, int x, int y, int w, int h)
 {
   int temp_x, temp_y, LowerRightX, LowerRightY;
 
