@@ -32,6 +32,7 @@ static char *id = "$Id: return.c,v 1.4 2001/12/24 01:09:05 sybalsky Exp $ Copyri
 
 */
 /***********************************************************/
+#include <stdio.h>
 
 #include "lispemul.h"
 #include "address.h"
