@@ -401,7 +401,7 @@ LispPTR gcscanstack(void) {
   scanend68K = (UNSIGNED)Addr68k_from_LADDR(scanend);
   bascframe = (Bframe *)Addr68k_from_LADDR(scanptr);
 
-  if (0 != 3 & (UNSIGNED)bascframe) {
+  if (0 != (3 & (UNSIGNED)bascframe)) {
     char debugStr[100];
     sprintf(debugStr,
             "Frame ptr (0x%x) not to word bound "
@@ -481,7 +481,7 @@ LispPTR gcscanstack(void) {
             bascframe =
                 (Bframe *)ADD_OFFSET(bascframe, FRAMESIZE + PADDING + (((fnheader->pv) + 1) << 2));
 
-            if (0 != 3 & (UNSIGNED)bascframe) {
+            if (0 != (3 & (UNSIGNED)bascframe)) {
               char debugStr[100];
               sprintf(debugStr,
                       "Frame ptr (0x%x) not to word bound "
@@ -502,7 +502,7 @@ LispPTR gcscanstack(void) {
             if (ntend != 0) {
               obascframe = bascframe;
               bascframe = (Bframe *)Addr68k_from_StkOffset(ntend);
-              if (0 != 3 & (UNSIGNED)bascframe) {
+              if (0 != (3 & (UNSIGNED)bascframe)) {
                 char debugStr[100];
                 sprintf(debugStr,
                         "Frame ptr (0x%x) not to word bound "
@@ -519,7 +519,7 @@ LispPTR gcscanstack(void) {
             obascframe = bascframe;
             bascframe = (Bframe *)next;
 
-            if (0 != 3 & (UNSIGNED)bascframe) {
+            if (0 != (3 & (UNSIGNED)bascframe)) {
               char debugStr[100];
               sprintf(debugStr,
                       "Frame ptr (0x%x) not to word bound "
@@ -539,7 +539,7 @@ LispPTR gcscanstack(void) {
           obascframe = bascframe;
           bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
 
-          if (0 != 3 & (UNSIGNED)bascframe) {
+          if (0 != (3 & (UNSIGNED)bascframe)) {
             char debugStr[100];
             sprintf(debugStr,
                     "Frame ptr (0x%x) not to word bound "
@@ -554,7 +554,7 @@ LispPTR gcscanstack(void) {
         obascframe = bascframe;
         bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
 
-        if (0 != 3 & (UNSIGNED)bascframe) {
+        if (0 != (3 & (UNSIGNED)bascframe)) {
           char debugStr[100];
           sprintf(debugStr,
                   "Frame ptr (0x%x) not to word bound "
