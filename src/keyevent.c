@@ -573,13 +573,6 @@ typedef struct {
   LispPTR CUDATA;
 } CURSOR;
 
-#define DLWORD_PERLINE (displaywidth / 16)
-#define HARD_CURSORWIDTH 16
-#define HARD_CURSORHEIGHT 16
-#define COLOR_BITSPER_PIXEL 8
-/* For MonoOrColor */
-#define MONO_SCREEN 0
-#define COLOR_SCREEN 1
 #define CursorClippingX(posx, width)                     \
   {                                                      \
     if (displaywidth < (posx + HARD_CURSORWIDTH)) {      \
