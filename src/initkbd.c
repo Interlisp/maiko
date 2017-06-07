@@ -351,44 +351,28 @@ u_char *XGenericKeyMap; /* filled in with malloc if needed */
 u_char DOSLispKeyMap_101[0x80] = {
     /*         0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
 
-    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,
-    4,           53,   22,   8,    10,   59,   15,   34,
-    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,
-    25,          11,   58,   29,   44,   36,   21,   20,
-    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,
-    28,          45,   41,   105,  40,   24,   37,   7,
-    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,
-    31,          57,   56,   97,   99,   100,  67,   68,
-    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   81,
-    82,          83,   96,   84,   85,   87,   102,  94,
-    /* 5*/ 69,   70,   98,   13,   0xff, 0xff, 0xff, 107,
-    108,         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,
-    131,         132,  92,   61,   0xff, 0xff, 0xff, 0xff,
-    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff,        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,    4,    53,   22,   8,    10,   59,   15,   34,
+    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,   25,   11,   58,   29,   44,   36,   21,   20,
+    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,   28,   45,   41,   105,  40,   24,   37,   7,
+    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,   31,   57,   56,   97,   99,   100,  67,   68,
+    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   81,   82,   83,   96,   84,   85,   87,   102,  94,
+    /* 5*/ 69,   70,   98,   13,   0xff, 0xff, 0xff, 107,  108,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,  131,  132,  92,   61,   0xff, 0xff, 0xff, 0xff,
+    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 #endif /* NEVER */
 
 /* For the IBM-101 kbd FF marks exceptions */
 u_char DOSLispKeyMap_101[0x80] = {
     /*         0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
 
-    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,
-    4,           53,   22,   8,    10,   59,   15,   34,
-    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,
-    25,          11,   58,   29,   44,   36,   21,   20,
-    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,
-    28,          45,   41,   105,  40,   24,   37,   7,
-    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,
-    31,          57,   56,   97,   99,   100,  67,   68,
-    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   62,
-    130,         63,   96,   129,  85,   132,  102,  90,
-    /* 5*/ 131,  91,   89,   46,   0xff, 0xff, 0xff, 107,
-    108,         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,
-    131,         132,  92,   61,   0xff, 0xff, 0xff, 0xff,
-    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    0xff,        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,    4,    53,   22,   8,    10,   59,   15,   34,
+    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,   25,   11,   58,   29,   44,   36,   21,   20,
+    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,   28,   45,   41,   105,  40,   24,   37,   7,
+    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,   31,   57,   56,   97,   99,   100,  67,   68,
+    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   62,   130,  63,   96,   129,  85,   132,  102,  90,
+    /* 5*/ 131,  91,   89,   46,   0xff, 0xff, 0xff, 107,  108,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,  131,  132,  92,   61,   0xff, 0xff, 0xff, 0xff,
+    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 
 void set_kbd_iopointers();
 void keyboardtype(int fd);
@@ -574,15 +558,14 @@ u_char *make_X_keymap() {
 
 #ifdef WHAT_THE_DICKENS_HAPPENED_HERE
   XDisplayKeycodes(ConnectionNumber(currentdsp->display_id), &minkey, &maxkey);
-#else /* WHAT_THE_DICKENS_HAPPENED_HERE */
+#else  /* WHAT_THE_DICKENS_HAPPENED_HERE */
   XDisplayKeycodes(currentdsp->display_id, &minkey, &maxkey);
 #endif /* WHAT_THE_DICKENS_HAPPENED_HERE */
 
   codecount = maxkey + 1 - minkey;
 
 #ifdef WHAT_THE_DICKENS_HAPPENED_HERE
-  mapping = XGetKeyboardMapping(ConnectionNumber(currentdsp->display_id), minkey, codecount,
-                                &symspercode);
+  mapping = XGetKeyboardMapping(ConnectionNumber(currentdsp->display_id), minkey, codecount, &symspercode);
 #else  /* WHAT_THE_DICKENS_HAPPENED_HERE */
   mapping = XGetKeyboardMapping(currentdsp->display_id, minkey, codecount, &symspercode);
 #endif /* WHAT_THE_DICKENS_HAPPENED_HERE */
@@ -611,8 +594,8 @@ u_char *make_X_keymap() {
 #ifdef DEBUG
   for (i = 0; i < 256; i += 8) {
     printf("\n\n\tKeyboard mapping table\n\n");
-    printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", table[i], table[i + 1], table[i + 2], table[i + 3],
-           table[i + 4], table[i + 5], table[i + 6], table[i + 7]);
+    printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", table[i], table[i + 1], table[i + 2], table[i + 3], table[i + 4],
+           table[i + 5], table[i + 6], table[i + 7]);
   }
 #endif /* DEBUG */
 
