@@ -101,7 +101,7 @@ struct hashtable {
 /************************************************************************/
 
 LispPTR aref1(LispPTR array, int index) {
-  register LispPTR retval;
+  register LispPTR retval = 0;
   register LispPTR base;
   register short typenumber;
   register struct arrayheader *actarray;
@@ -110,8 +110,8 @@ LispPTR aref1(LispPTR array, int index) {
   if (index >= actarray->totalsize) {
     printf("Invalid index in GC's AREF1:  0x%x\n", index);
     printf(" Array size limit:  0x%x\n", actarray->totalsize);
-    printf(" Array ptr: 0x%x\n", (UNSIGNED)array);
-    printf(" Array 68K ptr: 0x%x\n", (UNSIGNED)actarray);
+    printf(" Array ptr: 0x%lx\n", (UNSIGNED)array);
+    printf(" Array 68K ptr: %p\n", actarray);
     printf("base:     0x%x\n", actarray->base);
     printf("offset:   0x%x\n", actarray->offset);
     printf("type #:   0x%x\n", actarray->typenumber);
