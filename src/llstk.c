@@ -630,7 +630,7 @@ void stack_check(StackWord *start68k) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
       }
     }
   } /* while end */
@@ -707,7 +707,7 @@ void walk_stack(StackWord *start68k) {
   printf("  End of stack = 0x%x.\n\n", (DLword *)endstack68k - Stackspace);
 
   if (STKWORD(endstack68k)->flags != STK_GUARD)
-    printf("?? endstack is not GUARD BLK\nendstack = 0x%x, flags = %d\n\n", endstack68k,
+    printf("?? endstack is not GUARD BLK\nendstack = %p, flags = %d\n\n", endstack68k,
            STKWORD(endstack68k)->flags);
 
   while (scanptr68k < endstack68k) {
@@ -800,7 +800,7 @@ void walk_stack(StackWord *start68k) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
       }
     }
   } /* while end */
@@ -927,7 +927,7 @@ void quick_stack_check(void) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=0x%x endstack68k=0x%x", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
       }
     }
   } /* while end */

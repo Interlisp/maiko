@@ -49,13 +49,14 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 #define Oddp(num) (((num % 2) != 0) ? 1 : 0)
 #define Evenp(num, prim) (((num % prim) == 0) ? 1 : 0)
 #define Increment_Allocation_Count(n) \
-  if (*Reclaim_cnt_word != NIL)       \
+  if (*Reclaim_cnt_word != NIL) {     \
     if (*Reclaim_cnt_word > n)        \
       (*Reclaim_cnt_word) -= n;       \
     else {                            \
       *Reclaim_cnt_word = NIL;        \
       doreclaim();                    \
-    };
+    }                                 \
+  }
 
 DLword gc_handleoverflow(DLword arg) {
   struct htoverflow *cell;

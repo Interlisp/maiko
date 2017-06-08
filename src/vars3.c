@@ -45,7 +45,7 @@ struct cadr_cell cadr(LispPTR cell_adr)
   struct cadr_cell cadr1; /* return value */
   short offset;
 
-  if (Listp(cell_adr) == NIL)
+  if (Listp(cell_adr) == NIL) {
     if (cell_adr == NIL) {
       cadr1.car_cell = 0;
       cadr1.cdr_cell = 0;
@@ -55,7 +55,7 @@ struct cadr_cell cadr(LispPTR cell_adr)
       cadr1.cdr_cell = cdr(cell_adr);
       return (cadr1);
     }
-
+  }
   pcons = (ConsCell *)Addr68k_from_LADDR(cell_adr);
   while (pcons->cdr_code == CDR_INDIRECT) {
     /* CDR indirect */

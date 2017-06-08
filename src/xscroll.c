@@ -29,10 +29,9 @@ static char *id = "$Id: xscroll.c,v 1.2 1999/01/03 02:07:48 sybalsky Exp $ Copyr
 int ScrollPitch = SCROLL_PITCH;
 
 /* Move the DisplayWindow and the ScrollButtons to a new */
-/* position. newX, newY refers to the uppre left corner */
+/* position. newX, newY refers to the upper left corner */
 /* of the LispDisplay */
-void Scroll(dsp, newX, newY) DspInterface dsp;
-int newX, newY;
+void Scroll(DspInterface dsp, int newX, int newY)
 {
   /* Limit the newX and newY values. */
   dsp->Vissible.x = bound(0, newX, dsp->Display.width - dsp->Vissible.width);
@@ -48,20 +47,20 @@ int newX, newY;
                           dsp->Vissible.height);
 } /* end Scroll */
 
-void JumpScrollVer(dsp, y) DspInterface dsp;
+void JumpScrollVer(DspInterface dsp, int y)
 { Scroll(dsp, dsp->Vissible.x, (int)((dsp->Display.width * y) / dsp->Vissible.height)); }
 
-void JumpScrollHor(dsp, x) DspInterface dsp;
+void JumpScrollHor(DspInterface dsp, int x)
 { Scroll(dsp, (int)((dsp->Display.width * x) / dsp->Vissible.width), dsp->Vissible.y); }
 
-void ScrollLeft(dsp) DspInterface dsp;
+void ScrollLeft(DspInterface dsp)
 { Scroll(dsp, dsp->Vissible.x - ScrollPitch, dsp->Vissible.y); }
 
-void ScrollRight(dsp) DspInterface dsp;
+void ScrollRight(DspInterface dsp)
 { Scroll(dsp, dsp->Vissible.x + ScrollPitch, dsp->Vissible.y); }
 
-void ScrollUp(dsp) DspInterface dsp;
+void ScrollUp(DspInterface dsp)
 { Scroll(dsp, dsp->Vissible.x, dsp->Vissible.y - ScrollPitch); }
 
-void ScrollDown(dsp) DspInterface dsp;
+void ScrollDown(DspInterface dsp)
 { Scroll(dsp, dsp->Vissible.x, dsp->Vissible.y + ScrollPitch); }

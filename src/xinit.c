@@ -72,11 +72,11 @@ int Byte_Order, Bitmap_Bit_Order, Bitmap_Pad, Default_Depth, Display_Height, Dis
 
 int LispWindowRequestedX = 0;
 int LispWindowRequestedY = 0;
-int LispWindowRequestedWidth = DEF_WIN_WIDTH;
-int LispWindowRequestedHeight = DEF_WIN_HEIGHT;
+unsigned LispWindowRequestedWidth = DEF_WIN_WIDTH;
+unsigned LispWindowRequestedHeight = DEF_WIN_HEIGHT;
 
-int LispDisplayRequestedX, LispDisplayRequestedY, LispDisplayRequestedWidth,
-    LispDisplayRequestedHeight;
+int LispDisplayRequestedX, LispDisplayRequestedY;
+unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 Colormap Colors;
 

@@ -123,15 +123,15 @@ void describedsp(DspInterface dsp) {
   printf("width= %d\n", dsp->Display.width);
   printf("height= %d\n", dsp->Display.height);
   printf("bitsperpixel= %d\n", dsp->bitsperpixel);
-  printf("colors= %d\n", dsp->colors);
-  printf("graphicsmode= %d\n", dsp->graphicsmode);
-  printf("numberofbanks= %d\n", dsp->numberofbanks);
+  printf("colors= %lu\n", dsp->colors);
+  printf("graphicsmode= %lu\n", dsp->graphicsmode);
+  printf("numberofbanks= %lu\n", dsp->numberofbanks);
 #ifdef DOS
   printf("BytesPerLine= %d\n", dsp->BytesPerLine);
   printf("DisplayStartAddr= %d\n", dsp->DisplayStartAddr);
 #endif /* DOS */
-  printf("bitblt_to_screen= %d\n", dsp->bitblt_to_screen);
-  printf("cleardisplay= %d\n", dsp->cleardisplay);
+  printf("bitblt_to_screen= %p\n", dsp->bitblt_to_screen);
+  printf("cleardisplay= %p\n", dsp->cleardisplay);
 #ifdef DOS
   printf("mouse_vissible= %d\n", dsp->mouse_vissible);
   printf("mouse_invissible= %d\n", dsp->mouse_invissible);

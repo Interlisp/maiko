@@ -45,7 +45,7 @@ static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright
 /*	But currently this function is not used(may be used in Future.)  */
 /*	This function may have a problem. It is to manipulate "clock"    */
 /*	for keeping the GC's time period.				 */
-/*   disablegc1(noerror)
+/*   disablegc1(noerror)						 */
 /*      This function is the rescue function,when the HTcoll table is    */
 /*      overflow and so on.After this function's process is over, the    */
 /*      keyhandler will sense the interrupt table state and call the     */

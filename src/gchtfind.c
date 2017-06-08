@@ -417,6 +417,7 @@ nolink: /* no match */
   GETGC((GCENTRY *)link + 1) = GETGC((GCENTRY *)entry) - 1;
   GETGC((GCENTRY *)entry) = (link - HTcoll) + 1;
   NewEntry(link, hiptr, casep, ptr);
+  /* NewEntry will return */
 }
 
 /************************************************************************/

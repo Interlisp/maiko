@@ -95,6 +95,7 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
 {
 #ifndef DOS
   int sock, len, buflen, res;
+  unsigned ures;
   char namestring[100];
   char servstring[50];
   struct sockaddr_in addr;
@@ -149,8 +150,7 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
 
       return (GetSmallp(result));
       break;
-
-    case TCPconnect: /* args: hostname, socket# */
+    case TCPconnect: /* args: hostname or (fixp)address, socket# */
       memset(&farend, 0, sizeof farend);
       N_GETNUMBER(nameConn, res, string_host);
       farend.sin_addr.s_addr = htons(res);
@@ -326,9 +326,9 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
     case INETpeername: /* socket#, buffer for name string */
       sock = LispNumToCInt(nameConn);
       buffer = (char *)Addr68k_from_LADDR(proto);
-      res = sizeof(addr);
-      getpeername(sock, (struct sockaddr *)&addr, &res);
-      host = gethostbyaddr((const char *)&addr, res, AF_INET);
+      ures = sizeof(addr);
+      getpeername(sock, (struct sockaddr *)&addr, &ures);
+      host = gethostbyaddr((const char *)&addr, ures, AF_INET);
       strcpy(buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
       break;
@@ -336,9 +336,9 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
     case INETgetname: /* host addr, buffer for name string */
       sock = LispNumToCInt(nameConn);
       buffer = (char *)Addr68k_from_LADDR(proto);
-      res = sizeof(addr);
+      ures = sizeof(addr);
       addr.sin_addr.s_addr = sock;
-      host = gethostbyaddr((const char *)&addr, res, 0);
+      host = gethostbyaddr((const char *)&addr, ures, 0);
       if (!host) return (GetSmallp(0));
       strcpy(buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
@@ -407,8 +407,8 @@ LispPTR nameConn, proto, length, bufaddr, maxlen;
       sock = LispNumToCInt(nameConn);
       buffer = (char *)Addr68k_from_LADDR(proto);
       buflen = LispNumToCInt(length);
-      res = sizeof farend;
-      if ((result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &res)) < 0) {
+      ures = sizeof farend;
+      if ((result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &ures)) < 0) {
         perror("UDP Recv");
         return (NIL);
       }

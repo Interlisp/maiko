@@ -35,10 +35,10 @@ static char *id = "$Id: keylib.c,v 1.4 2001/12/24 01:09:03 sybalsky Exp $ Copyri
 
 #define FAILURE2 -2
 
-unsigned long make_verification(long unsigned int x, long unsigned int y);
+unsigned long make_verification(unsigned long x, unsigned long y);
 unsigned long date_integer16(const char *date);
 unsigned long idate(const char *str);
-unsigned long modify(long unsigned int hostid);
+unsigned long modify(unsigned long hostid);
 
 /* ===========================================================================
         MAKE_VERIFICATION forms a new 32-bit integer by messaging the two input
@@ -59,7 +59,7 @@ unsigned long make_verification(long unsigned int x, long unsigned int y) {
         (((ULONG_MAX % y) + 1 ) % y) is equivalent to (expt 2 32) % y
  =============================================================================*/
 
-int imod64bit(long unsigned int x1, long unsigned int x0, long unsigned int y) {
+int imod64bit(unsigned long x1, unsigned long x0, unsigned long y) {
   /* JDS 990601 ansi    return (((x0 % y) + ((x1 % y) * (((ULONG_MAX % y) + 1 ) % y)  )) % y); */
   return (((x0 % y) + ((x1 % y) * ((y + 1) % y))) % y);
 }
@@ -169,7 +169,7 @@ unsigned long idate(const char *str) {
         in 32-bit hostid, depending on the value of (hostid % 16).
   =============================================================*/
 
-unsigned long modify(long unsigned int hostid) {
+unsigned long modify(unsigned long hostid) {
   unsigned long dividor;
 
 #ifdef xBIGVM

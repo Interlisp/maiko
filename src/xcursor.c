@@ -248,10 +248,10 @@ Cursor *return_cursor;
 
   XLOCK;
   screen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
-  Cursor_src = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, image, 16, 16, 1, 0,
-                                           1); /* Has to have a depth of 1! */
-  Cursor_msk = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, image, 16, 16, 1, 0,
-                                           1); /* Has to have a depth of 1! */
+  Cursor_src = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,
+					   16, 16, 1, 0, 1); /* Has to have a depth of 1! */
+  Cursor_msk = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,
+					   16, 16, 1, 0, 1); /* Has to have a depth of 1! */
   *return_cursor = XCreatePixmapCursor(dsp->display_id, Cursor_src, Cursor_msk, &cursor_fore_xcsd,
                                        &cursor_back_xcsd, hotspot_x, hotspot_y);
 

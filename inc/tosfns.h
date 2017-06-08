@@ -535,7 +535,7 @@ op_fn_common:								\
   LispPTR closure_env = (LispPTR) 0xffffffff;				\
  {register int NEXTBLOCK = NIL;						\
   defcell = fn_defcell;							\
-  if( (defcell->ccodep == 0)  )						\
+  if(defcell->ccodep == 0) {						\
     if(GetTypeNumber(defcell->defpointer)==TYPE_COMPILED_CLOSURE)	\
 	 { /* setup closure */						\
 		closure=(CClosure *)Addr68k_from_LADDR(defcell->defpointer);\
@@ -550,6 +550,7 @@ op_fn_common:								\
 	defcell = (DefCell *)GetDEFCELL68k(ATOM_INTERPRETER);		\
 	needpush = 1;							\
 	 } /*else end */						\
+  }                                                                     \
   LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(defcell->defpointer);	\
   BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC 				\
 			- (UNSIGNED)FuncObj) + fn_opcode_size;	\

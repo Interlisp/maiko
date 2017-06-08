@@ -42,11 +42,11 @@ static char *id = "$Id: xrdopt.c,v 1.6 2001/12/26 22:17:07 sybalsky Exp $ Copyri
 
 XrmDatabase commandlineDB, applicationDB, serverDB, homeDB, rDB;
 int opTableEntries = 33;
-extern int LispWindowRequestedX, LispWindowRequestedY, LispWindowRequestedWidth,
-    LispWindowRequestedHeight;
+extern int LispWindowRequestedX, LispWindowRequestedY;
+extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 
-extern int LispDisplayRequestedX, LispDisplayRequestedY, LispDisplayRequestedWidth,
-    LispDisplayRequestedHeight;
+extern int LispDisplayRequestedX, LispDisplayRequestedY;
+extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 extern int xsync;
 
