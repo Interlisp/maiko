@@ -60,8 +60,8 @@ XEvent report;
 Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
     ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
 
-extern int LispWindowRequestedX, LispWindowRequestedY, LispWindowRequestedWidht,
-    LispWindowRequestedHeight;
+extern int LispWindowRequestedX, LispWindowRequestedY;
+extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 
 /************************************************************************/
 /*									*/
