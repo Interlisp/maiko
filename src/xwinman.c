@@ -29,6 +29,7 @@ static char *id = "$Id: xwinman.c,v 1.3 2001/12/26 22:17:07 sybalsky Exp $ Copyr
 #include "lispemul.h"
 #include "devif.h"
 #include "xdefs.h"
+#include "xscroll.h"
 
 int Mouse_Included = FALSE;
 
@@ -60,10 +61,7 @@ int bound(a, b, c) int a, b, c;
     return (b);
 }
 
-void Set_BitGravity(event, dsp, window, grav) XButtonEvent *event;
-DspInterface dsp;
-Window window;
-int grav;
+void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)
 {
   XSetWindowAttributes Lisp_SetWinAttributes;
   Window OldWindow;
@@ -87,8 +85,7 @@ int grav;
   XUNLOCK;
 } /* end Set_BitGravity */
 
-void lisp_Xconfigure(dsp, x, y, lspWinWidth, lspWinHeight) DspInterface dsp;
-int x, y, lspWinWidth, lspWinHeight;
+void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWinHeight)
 {
   int GravSize, Col2, Row2, Col3, Row3;
 
@@ -142,7 +139,7 @@ int x, y, lspWinWidth, lspWinHeight;
   XUNLOCK;
 } /* end lisp_Xconfigure */
 
-void enable_Xkeyboard(dsp) DspInterface dsp;
+void enable_Xkeyboard(DspInterface dsp)
 {
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
@@ -150,7 +147,7 @@ void enable_Xkeyboard(dsp) DspInterface dsp;
   XUNLOCK;
 }
 
-void disable_Xkeyboard(dsp) DspInterface dsp;
+void disable_Xkeyboard(DspInterface dsp)
 {
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->DisableEventMask);
@@ -158,7 +155,7 @@ void disable_Xkeyboard(dsp) DspInterface dsp;
   XUNLOCK;
 }
 
-void beep_Xkeyboard(dsp) DspInterface dsp;
+void beep_Xkeyboard(DspInterface dsp)
 {
 #ifdef TRACE
   printf("TRACE: beep_Xkeyboard()\n");
@@ -181,7 +178,7 @@ void beep_Xkeyboard(dsp) DspInterface dsp;
 
 extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
-void getXsignaldata(dsp) DspInterface dsp;
+void getXsignaldata(DspInterface dsp)
 {
   XEvent report;
 
@@ -261,14 +258,14 @@ void getXsignaldata(dsp) DspInterface dsp;
           switch (report.xbutton.button) {
             case Button1:
               DefineCursor(dsp->display_id, dsp->HorScrollBar, &ScrollLeftCursor);
-              ScrollLeft(dsp, report);
+              ScrollLeft(dsp);
               break;
             case Button2:
               DefineCursor(dsp->display_id, dsp->HorScrollBar, &HorizThumbCursor);
               break;
             case Button3:
               DefineCursor(dsp->display_id, dsp->HorScrollBar, &ScrollRightCursor);
-              ScrollRight(dsp, report);
+              ScrollRight(dsp);
               break;
             default: break;
           } /* end switch */
