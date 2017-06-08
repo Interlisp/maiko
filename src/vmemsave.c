@@ -586,7 +586,7 @@ void lisp_finish() {
                      /* following 5 lines don't work well. */
     d[0] = 'E';
     d[3] = 1;
-    /* These only happen if the fork really succeeded:
+    /* These only happen if the fork really succeeded: */
     /* if (UnixPipeOut >= 0) write(UnixPipeOut, d, 4); */
     /* if (UnixPipeIn >= 0 read(UnixPipeIn, d, 4);*/ /* Make sure it's finished */
     /* if (UnixPID >= 0) kill(UnixPID, SIGKILL);*/   /* Then kill fork_Unix itself */
