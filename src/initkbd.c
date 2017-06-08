@@ -798,7 +798,7 @@ void keyboardtype(fd) int fd;
       char errmsg[200];
       sprintf(errmsg, "Unsupported keyboard type: %d", type);
       printf("%s\n", errmsg);
-      printf("Configuring keyboard for type-3\n", errmsg);
+      printf("Configuring keyboard for type-3\n");
       SUNLispKeyMap = SUNLispKeyMap_for3;
       InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE;
       break;
