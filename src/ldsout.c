@@ -247,8 +247,9 @@ int sys_size; /* sysout size in megabytes */
 
   machinetype = ifpage.machinetype;
 
-  if ((stat_buf.st_size & 0x1ff) != 0)
-    printf("CAUTION::sysout & 0x1ff = 0x%x\n", stat_buf.st_size & BYTESPER_PAGE);
+  if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
+    printf("CAUTION::not an integral number of pages.  sysout & 0x1ff = 0x%x\n",
+	   (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
 
   if (ifpage.nactivepages != (sysout_size / 2)) {
     printf("sysout_loader:IFPAGE says sysout size is %d\n", ifpage.nactivepages);
@@ -335,7 +336,7 @@ int sys_size; /* sysout size in megabytes */
       lispworld_offset = GETFPTOVP(fptovp, i) * BYTESPER_PAGE;
       if (read(sysout, lispworld_scratch + lispworld_offset, BYTESPER_PAGE) == -1) {
         printf("sysout_loader: can't read sysout file at %d\n", i);
-        printf("               offset was 0x%x (0x%x pages).\n", lispworld_offset,
+        printf("               offset was 0x%lx (0x%x pages).\n", lispworld_offset,
                GETFPTOVP(fptovp, i));
         perror("read() error was");
         {
