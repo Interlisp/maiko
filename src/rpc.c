@@ -73,7 +73,8 @@ LispPTR rpc(args) LispPTR *args;
   register int s, msec_until_timeout, msec_between_tries, out_length;
   register int received, mask;
   register int port;
-  int dontblock, dest, fromlen, read_descriptors;
+  int dontblock, dest, read_descriptors;
+  unsigned fromlen;
 
   struct timeval pertry_timeout, total_timeout, time_waited;
 
