@@ -276,7 +276,7 @@ int code_block_size(long unsigned int codeblock68k) {
       sprintf(errtext,
               "Unrecognized bytecode (0%o) at offset 0%o in code block x%x,x%x; continue to use "
               "UFN length",
-              opnum, codeptr - (InstPtr)fnbase, (codeblock68k >> 16) & 0xFF, codeblock68k & 0xFFFF);
+              opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF), (int)(codeblock68k & 0xFFFF));
       error(errtext);
       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
     }
