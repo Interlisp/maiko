@@ -300,8 +300,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void getsignaldata(sig, code, scp) int sig, code;
-struct sigcontext *scp;
+void getsignaldata(int sig, int code, struct sigcontext *scp)
 {
 #ifndef DOS
 #ifndef XWINDOW
@@ -418,7 +417,7 @@ void kb_trans(u_short keycode, u_short upflg);
 #if (!defined(XWINDOW) && !defined(DOS))
 extern int for_makeinit;
 
-int kb_event(event) register struct inputevent *event;
+int kb_event(struct inputevent *event);
 {
   register u_int upflg;
   int kn;
@@ -542,8 +541,7 @@ int kb_event(event) register struct inputevent *event;
 /*									*/
 /************************************************************************/
 
-void kb_trans(keycode, upflg) u_short keycode;
-u_short upflg;
+void kb_trans(u_short keycode, u_short upflg)
 {
   extern IFPAGE *InterfacePage;
   if (keycode < 64) /* DLKBDAD0 ~ 3	*/
@@ -673,7 +671,7 @@ void taking_mouse_down() {
  To avoid duplicate caluculation */
 #ifndef COLOR
 /* FOR MONO ONLY */
-void copy_cursor(newx, newy) int newx, newy;
+void copy_cursor(int newx, int newy)
 {
   register DLword *srcbase, *dstbase;
   register int offsetx, offsety;
@@ -698,7 +696,7 @@ void copy_cursor(newx, newy) int newx, newy;
 }
 
 /* store bitmap image inside rect. which specified by x,y */
-void cursor_hidden_bitmap(x, y) int x, y;
+void cursor_hidden_bitmap(int x, int y)
 {
   register DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
@@ -719,7 +717,7 @@ void cursor_hidden_bitmap(x, y) int x, y;
 #else
 /* For COLOR & MONO */
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
-void copy_cursor(newx, newy) int newx, newy;
+void copy_cursor(int newx, int newy)
 {
   register DLword *srcbase, *dstbase;
   register int offsetx, offsety;
@@ -760,7 +758,7 @@ void copy_cursor(newx, newy) int newx, newy;
 }
 
 /* I'll make it MACRO */
-void taking_mouse_up(newx, newy) int newx, newy;
+void taking_mouse_up(int newx, int newy)
 {
 #ifdef DOS
   (currentdsp->mouse_vissible)(newx, newy);
@@ -778,7 +776,7 @@ void taking_mouse_up(newx, newy) int newx, newy;
 }
 
 /* store bitmap image inside rect. which specified by x,y */
-void cursor_hidden_bitmap(x, y) int x, y;
+void cursor_hidden_bitmap(int x, int y)
 {
   register DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
