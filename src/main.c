@@ -263,7 +263,7 @@ extern int maxpages;
 extern int *Lisp_errno;
 extern int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
 
-char keystring[128];
+char keystring[128] = {""};
 
 #define FALSE 0
 #define TRUE !FALSE
@@ -287,7 +287,7 @@ extern void dispatch();
 int dosdisplaymode = 0;
 int twobuttonflag = FALSE;
 int eurokbd = TRUE; /* Assume eurokbd by default. */
-char *helpstring =
+const char *helpstring =
     "\n\
 medley [sysout-name] [<options>] ...\n\
 Where <options> are:\n\
@@ -305,7 +305,7 @@ Where <options> are:\n\
  -info        Print general info about the system\n\
  -help        Print this message\n";
 #elif XWINDOW
-char *helpstring =
+const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
  medley [<sysout-name>] [<options>]\n\
@@ -317,7 +317,7 @@ char *helpstring =
  -g[eometry] <geom>]      The Medley screen geometry\n\
  -sc[reen] <w>x<h>]       The Medley screen geometry\n";
 #else  /* not DOS, not XWINDOW */
-char *helpstring =
+const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
  lde[ether] [sysout-name] [-k access-key] [<options>]\n\
@@ -382,7 +382,7 @@ char **argv;
   }
 
   if (argv[i] && ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-HELP") == 0))) {
-    fprintf(stderr, helpstring);
+    fprintf(stderr, "%s", helpstring);
     exit(0);
   }
 
@@ -400,7 +400,7 @@ char **argv;
 #endif /* DOS */
            || access(sysout_name, R_OK)) {
     fprintf(stderr, "Couldn't find a sysout to run;\n");
-    fprintf(stderr, helpstring);
+    fprintf(stderr, "%s", helpstring);
     exit(1);
   }
   /* OK, sysout name is now in sysout_name, and i is moved past a supplied name */
@@ -514,8 +514,7 @@ char **argv;
   }
 #endif /* DOS */
 
-  if (keystring) /* key given, so safe to copy */
-    strcpy(keytyped, keystring);
+  strcpy(keytyped, keystring);
 
   if (keytester(keystring)) { /* keytester destroys keystring */
     fprintf(stderr, "Sorry, invalid or expired access key.\n");
