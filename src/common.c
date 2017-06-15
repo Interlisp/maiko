@@ -80,16 +80,18 @@ LispPTR Uraid_mess = NIL;
 int error(char *cp) {
   char *ptr;
   if (device_before_raid() < 0) {
-    printf("Can't Enter URAID.\n");
+    fprintf(stderr, "Can't Enter URAID.\n");
     exit(-1);
   }
   /* comm read */
   URaid_errmess = cp;
-  printf("\n*Error* %s\n", cp);
+  fprintf(stderr, "\n*Error* %s\n", cp);
   fflush(stdin);
-  printf("Enter the URaid\n");
+  fprintf(stderr, "Enter the URaid\n");
   print(Uraid_mess);
   putchar('\n');
+  /* XXX: make sure output is flushed so we can see where we are */
+  fflush(stdout); fflush(stderr);
   URaid_currentFX = URMAXFXNUM + 1;
   memset(URaid_FXarray, 0, URMAXFXNUM * 4);
 #ifndef DOS
@@ -114,6 +116,8 @@ uraidloop:
     URaid_argnum = sscanf(URaid_inputstring, "%1s%s%s", &URaid_comm, URaid_arg1, URaid_arg2);
 
     if (uraid_commands() == NIL) break;
+    /* XXX: make sure output is flushed so we can see where we are */
+    fflush(stdout); fflush(stderr);
   } /* for end */
 
   /**TopOfStack = NIL;if error is called from subr TOS will be set NIL**/
