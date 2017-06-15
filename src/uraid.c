@@ -464,6 +464,8 @@ LispPTR uraid_commands() {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
+      } else {
+	printf("Atom: %s index %d\n", URaid_arg1, index);
       }
       print(*((LispPTR *)GetVALCELL68k(index)));
       break;
@@ -475,6 +477,8 @@ LispPTR uraid_commands() {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
+      } else {
+	printf("Atom: %s index %d\n", URaid_arg1, index);
       }
       defcell68k = (DefCell *)GetDEFCELL68k(index);
       if (defcell68k->ccodep) {
