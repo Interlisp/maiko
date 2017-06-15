@@ -38,8 +38,12 @@
 
 	/* For debugging print statements */
 
+#if defined(DEBUG) || defined(TRACE) || defined(OPTRACE) || defined(FNTRACE) || defined(FNSTKCHECK)
+extern int flushing;
+#endif
+
 #ifdef DEBUG
-#define DBPRINT(X)   printf X; fflush(stdout)
+#define DBPRINT(X)   printf X ; if (flushing) fflush(stdout);
 #define DEBUGGER(X)  X;
 #else
 #define DBPRINT(X)
@@ -50,7 +54,7 @@
 	/* For trace print statements */
 
 #ifdef TRACE
-#define TPRINT(X)   printf X; fflush(stdout);
+#define TPRINT(X)   printf X; if (flushing) fflush(stdout);
 #define TRACER(X)  X;
 #else /* TRACE */
 
@@ -63,7 +67,7 @@
 	/* For tracing individual opcode executions */
 
 #ifdef OPTRACE
-#define OPTPRINT(X)   printf X; fflush(stdout);
+#define OPTPRINT(X)   printf X; if (flushing) fflush(stdout);
 #define OPTRACER(X)  X;
 #else
 #define OPTPRINT(X)
@@ -74,7 +78,7 @@
 	/* For tracing function calls */
 
 #ifdef FNTRACE
-#define FNTPRINT(X)   printf X; fflush(stdout);
+#define FNTPRINT(X)   printf X; if (flushing) fflush(stdout);
 #define FNTRACER(X)  X;
 #else
 #define FNTPRINT(X)
@@ -85,7 +89,7 @@
 	/* For function-call & return stack checking */
 
 #ifdef FNSTKCHECK
-#define FNCHKPRINT(X)   printf X; fflush(stdout);
+#define FNCHKPRINT(X)   printf X ; if (flushing) fflush(stdout);
 #define FNCHECKER(X)  X;
 #else
 #define FNCHKPRINT(X)

@@ -273,6 +273,8 @@ int Lisp_Xinitialized = FALSE;
 char sysout_name[1024]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */
 
+int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
+
 #if defined(DOS) || defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
