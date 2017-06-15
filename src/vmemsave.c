@@ -252,7 +252,7 @@ int size;
     ;
 
   if (GETWORD(fptr) != FPTOVP_ENTRY) {
-    DBPRINT((stderr, "Couldn't find FPTOVP_ENTRY; not munging\n"));
+    DBPRINT(("Couldn't find FPTOVP_ENTRY; not munging\n"));
     return;
   }
   oldloc = fptr - fptovp;
@@ -293,7 +293,7 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
     if (dupcount) {
       qsort(fptovp, size, sizeof(DLword), twowords);
       oldloc = newloc;
-      DBPRINT((stderr, "%d duplicates found\n", dupcount));
+      DBPRINT(("%d duplicates found\n", dupcount));
       goto ONE_MORE_TIME;
     }
   }
