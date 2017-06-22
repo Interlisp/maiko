@@ -19,6 +19,7 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>
@@ -62,7 +63,7 @@ int Storage_expanded; /*  T or NIL */
 #define valloc malloc
 #else
 char *valloc();
-#endif /* SYSVONLY || OSF1 */
+#endif /* SYSVONLY || OSF1 || MACOSX */
 
 /************************************************************************/
 /*									*/
@@ -77,8 +78,8 @@ static char *metersyms = "-\\|/";
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
-int sysout_loader(sysout_file_name, sys_size) char *sysout_file_name;
-int sys_size; /* sysout size in megabytes */
+/* sys_size is sysout size in megabytes */
+int sysout_loader(char * sysout_file_name, int sys_size)
 {
   int sysout; /* SysoutFile descriptor */
 
