@@ -34,33 +34,33 @@ int ScrollPitch = SCROLL_PITCH;
 void Scroll(DspInterface dsp, int newX, int newY)
 {
   /* Limit the newX and newY values. */
-  dsp->Vissible.x = bound(0, newX, dsp->Display.width - dsp->Vissible.width);
-  dsp->Vissible.y = bound(0, newY, dsp->Display.height - dsp->Vissible.height);
+  dsp->Visible.x = bound(0, newX, dsp->Display.width - dsp->Visible.width);
+  dsp->Visible.y = bound(0, newY, dsp->Display.height - dsp->Visible.height);
 
-  newX = (int)((dsp->Vissible.x * dsp->Vissible.width) / dsp->Display.width);
-  newY = (int)((dsp->Vissible.y * dsp->Vissible.height) / dsp->Display.height);
+  newX = (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width);
+  newY = (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height);
 
   XMoveWindow(dsp->display_id, dsp->HorScrollButton, newX, -dsp->InternalBorderWidth);
   XMoveWindow(dsp->display_id, dsp->VerScrollButton, -dsp->InternalBorderWidth, newY);
 
-  (dsp->bitblt_to_screen)(dsp, 0, dsp->Vissible.x, dsp->Vissible.y, dsp->Vissible.width,
-                          dsp->Vissible.height);
+  (dsp->bitblt_to_screen)(dsp, 0, dsp->Visible.x, dsp->Visible.y, dsp->Visible.width,
+                          dsp->Visible.height);
 } /* end Scroll */
 
 void JumpScrollVer(DspInterface dsp, int y)
-{ Scroll(dsp, dsp->Vissible.x, (int)((dsp->Display.width * y) / dsp->Vissible.height)); }
+{ Scroll(dsp, dsp->Visible.x, (int)((dsp->Display.width * y) / dsp->Visible.height)); }
 
 void JumpScrollHor(DspInterface dsp, int x)
-{ Scroll(dsp, (int)((dsp->Display.width * x) / dsp->Vissible.width), dsp->Vissible.y); }
+{ Scroll(dsp, (int)((dsp->Display.width * x) / dsp->Visible.width), dsp->Visible.y); }
 
 void ScrollLeft(DspInterface dsp)
-{ Scroll(dsp, dsp->Vissible.x - ScrollPitch, dsp->Vissible.y); }
+{ Scroll(dsp, dsp->Visible.x - ScrollPitch, dsp->Visible.y); }
 
 void ScrollRight(DspInterface dsp)
-{ Scroll(dsp, dsp->Vissible.x + ScrollPitch, dsp->Vissible.y); }
+{ Scroll(dsp, dsp->Visible.x + ScrollPitch, dsp->Visible.y); }
 
 void ScrollUp(DspInterface dsp)
-{ Scroll(dsp, dsp->Vissible.x, dsp->Vissible.y - ScrollPitch); }
+{ Scroll(dsp, dsp->Visible.x, dsp->Visible.y - ScrollPitch); }
 
 void ScrollDown(DspInterface dsp)
-{ Scroll(dsp, dsp->Vissible.x, dsp->Vissible.y + ScrollPitch); }
+{ Scroll(dsp, dsp->Visible.x, dsp->Visible.y + ScrollPitch); }

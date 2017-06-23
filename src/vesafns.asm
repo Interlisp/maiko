@@ -74,8 +74,8 @@ DATA SEGMENT USE32
 	bitblit_from_screen	DD	?
 	scroll_region		DD	?
 
-	mouse_invissible	DD	?
-	mouse_vissible		DD	?
+	mouse_invisible	DD	?
+	mouse_visible		DD	?
 
 	Disp			MRegion	<>
 	bitsperpixel		DD	?
@@ -246,8 +246,8 @@ Dosclearbanks ENDP
 ;; **************************************************
 dsp		=	 8
 iop		=	 12
-PUBLIC DOSCursorVissible
-DOSCursorVissible	PROC NEAR
+PUBLIC DOSCursorVisible
+DOSCursorVisible	PROC NEAR
 	enter	32,0
 
 	push edx
@@ -290,7 +290,7 @@ bltcur:	lodsw			; cursorbitmap to ax
 	pop edx
 
 	RET2C	0
-DOSCursorVissible ENDP
+DOSCursorVisible ENDP
 
 
 ;; **************************************************

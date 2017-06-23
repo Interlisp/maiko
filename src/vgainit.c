@@ -56,8 +56,8 @@ void VGA_setmax(DspInterface dsp)
   /* These are needed in the interrupt processing. Lock'em to prevent pagefaults. */
   _dpmi_lockregion(dsp, sizeof(*dsp));
   _dpmi_lockregion(dsp->bitblt_to_screen, 0x2000);
-  _dpmi_lockregion(dsp->mouse_invissible, 0x2000);
-  _dpmi_lockregion(dsp->mouse_vissible, 0x2000);
+  _dpmi_lockregion(dsp->mouse_invisible, 0x2000);
+  _dpmi_lockregion(dsp->mouse_visible, 0x2000);
   _dpmi_lockregion((void *)&docopy, 0x2000);
 }
 
@@ -71,8 +71,8 @@ void VGA_exit(DspInterface dsp)
   /* These are needed in the interrupt processing. Lock'em to prevent pagefaults. */
   _dpmi_unlockregion(dsp, sizeof(*dsp));
   _dpmi_unlockregion(dsp->bitblt_to_screen, 0x2000);
-  _dpmi_unlockregion(dsp->mouse_invissible, 0x2000);
-  _dpmi_unlockregion(dsp->mouse_vissible, 0x2000);
+  _dpmi_unlockregion(dsp->mouse_invisible, 0x2000);
+  _dpmi_unlockregion(dsp->mouse_visible, 0x2000);
   _dpmi_unlockregion((void *)&docopy, 0x2000);
 
   _setvideomode(_DEFAULTMODE);
@@ -145,8 +145,8 @@ VGA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, in
   dsp->BytesPerLine = 80;
   dsp->LinesPerBank = 512;
 
-  dsp->mouse_invissible = (PFV)&dostaking_mouse_down;
-  dsp->mouse_vissible = (PFV)&dostaking_mouse_up;
+  dsp->mouse_invisible = (PFV)&dostaking_mouse_down;
+  dsp->mouse_visible = (PFV)&dostaking_mouse_up;
 
   dsp->device.locked = FALSE;
   dsp->device.active = FALSE;

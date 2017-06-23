@@ -369,7 +369,7 @@ LispPTR vmem_save(char *sysout_file_name)
   /*  For DOS, must also take the mouse cursor away (it's  */
   /*  written into the display-region bitmap).	     */
   currentdsp->device.locked++;
-  (currentdsp->mouse_invissible)(currentdsp, IOPage68K);
+  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
 #endif /* SUNDISPLAY || DOS */
 
   /* set FPTOVP */
@@ -553,7 +553,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
 #elif DOS
   /* Must also put the mouse back. */
-  (currentdsp->mouse_vissible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
+  (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
   currentdsp->device.locked--;
 
 #endif /* SUNDISPLAY */

@@ -133,8 +133,8 @@ void describedsp(DspInterface dsp) {
   printf("bitblt_to_screen= %p\n", dsp->bitblt_to_screen);
   printf("cleardisplay= %p\n", dsp->cleardisplay);
 #ifdef DOS
-  printf("mouse_vissible= %d\n", dsp->mouse_vissible);
-  printf("mouse_invissible= %d\n", dsp->mouse_invissible);
+  printf("mouse_visible= %d\n", dsp->mouse_visible);
+  printf("mouse_invisible= %d\n", dsp->mouse_invisible);
   printf("\n");
 #endif /* DOS */
   fflush(stdout);

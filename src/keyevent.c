@@ -607,7 +607,7 @@ void taking_mouse_down() {
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
 #ifdef DOS
-  (currentdsp->mouse_invissible)(currentdsp, IOPage68K);
+  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
 #else
   if (!DisplayInitialized) return;
 
@@ -761,7 +761,7 @@ void copy_cursor(int newx, int newy)
 void taking_mouse_up(int newx, int newy)
 {
 #ifdef DOS
-  (currentdsp->mouse_vissible)(newx, newy);
+  (currentdsp->mouse_visible)(newx, newy);
 #else
   if (!DisplayInitialized) return;
   /* save hidden bitmap */

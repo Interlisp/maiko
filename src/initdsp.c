@@ -679,9 +679,9 @@ void flush_display_buffer() {
 #endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
-  (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Vissible.x,
-                                 currentdsp->Vissible.y, currentdsp->Vissible.width,
-                                 currentdsp->Vissible.height);
+  (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
+                                 currentdsp->Visible.y, currentdsp->Visible.width,
+                                 currentdsp->Visible.height);
 #elif DOS
   TPRINT(("Enter flush_display_buffer\n"));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, 0, 0, currentdsp->Display.width,

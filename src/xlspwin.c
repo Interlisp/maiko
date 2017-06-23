@@ -90,17 +90,17 @@ void Create_LispWindow(DspInterface dsp)
   IT = Icon_Title;
 
   GravSize = (int)(dsp->ScrollBarWidth / 2) - (dsp->InternalBorderWidth);
-  Col2 = dsp->Vissible.width;
-  Row2 = dsp->Vissible.height;
-  Col3 = dsp->Vissible.width + (int)(OUTER_SB_WIDTH(dsp) / 2);
-  Row3 = dsp->Vissible.height + (int)(OUTER_SB_WIDTH(dsp) / 2);
+  Col2 = dsp->Visible.width;
+  Row2 = dsp->Visible.height;
+  Col3 = dsp->Visible.width + (int)(OUTER_SB_WIDTH(dsp) / 2);
+  Row3 = dsp->Visible.height + (int)(OUTER_SB_WIDTH(dsp) / 2);
 
   screen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
   dsp->LispWindow = XCreateSimpleWindow(
       dsp->display_id, RootWindowOfScreen(screen), LispWindowRequestedX, /* Default upper left */
       LispWindowRequestedY,                                              /* Default upper left */
-      dsp->Vissible.width + OUTER_SB_WIDTH(dsp),                         /* Default width */
-      dsp->Vissible.height + OUTER_SB_WIDTH(dsp),                        /* Default height */
+      dsp->Visible.width + OUTER_SB_WIDTH(dsp),                         /* Default width */
+      dsp->Visible.height + OUTER_SB_WIDTH(dsp),                        /* Default height */
       0,                                                                 /* Default border */
       BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
 
@@ -149,7 +149,7 @@ void Create_LispWindow(DspInterface dsp)
   init_Xcursor(dsp->display_id, dsp->LispWindow);
 
   dsp->DisplayWindow = XCreateSimpleWindow(dsp->display_id, dsp->LispWindow, 0, 0,
-                                           dsp->Vissible.width, dsp->Vissible.height, 0,
+                                           dsp->Visible.width, dsp->Visible.height, 0,
                                            BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
   XChangeWindowAttributes(dsp->display_id, dsp->DisplayWindow,
                           CWBitGravity | CWOverrideRedirect | CWBackingStore,
@@ -199,14 +199,14 @@ void Create_LispWindow(DspInterface dsp)
   dsp->VerScrollBar = XCreateSimpleWindow(dsp->display_id, dsp->LispWindow, Col2,
                                           0 - dsp->InternalBorderWidth, /* y */
                                           dsp->ScrollBarWidth,          /* width */
-                                          dsp->Vissible.height, dsp->InternalBorderWidth,
+                                          dsp->Visible.height, dsp->InternalBorderWidth,
                                           BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
   DefineCursor(dsp->display_id, dsp->VerScrollBar, &VertScrollCursor);
   XMapWindow(dsp->display_id, dsp->VerScrollBar);
 
   dsp->HorScrollBar = XCreateSimpleWindow(dsp->display_id, dsp->LispWindow,
                                           0 - dsp->InternalBorderWidth, Row2, /* y */
-                                          dsp->Vissible.width,                /* width */
+                                          dsp->Visible.width,                /* width */
                                           dsp->ScrollBarWidth, dsp->InternalBorderWidth,
                                           BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
   DefineCursor(dsp->display_id, dsp->HorScrollBar, &HorizScrollCursor);
@@ -216,9 +216,9 @@ void Create_LispWindow(DspInterface dsp)
 
   dsp->VerScrollButton = XCreateSimpleWindow(
       dsp->display_id, dsp->VerScrollBar, 0 - dsp->InternalBorderWidth,      /* x */
-      (int)((dsp->Vissible.y * dsp->Vissible.height) / dsp->Display.height), /* y */
+      (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height), /* y */
       dsp->ScrollBarWidth,                                                   /* width */
-      (int)((dsp->Vissible.height * dsp->Vissible.height) / dsp->Display.height) + 1,
+      (int)((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1,
       dsp->InternalBorderWidth, BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
   XChangeWindowAttributes(dsp->display_id, dsp->VerScrollButton, CWOverrideRedirect,
                           &Lisp_SetWinAttributes);
@@ -228,9 +228,9 @@ void Create_LispWindow(DspInterface dsp)
 
   dsp->HorScrollButton = XCreateSimpleWindow(
       dsp->display_id, dsp->HorScrollBar,
-      (int)((dsp->Vissible.x * dsp->Vissible.width) / dsp->Display.width),
+      (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width),
       0 - dsp->InternalBorderWidth, /* y */
-      (int)((dsp->Vissible.width * dsp->Vissible.width) / dsp->Display.width) + 1,
+      (int)((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1,
       dsp->ScrollBarWidth, dsp->InternalBorderWidth, BlackPixelOfScreen(screen),
       WhitePixelOfScreen(screen));
   XChangeWindowAttributes(dsp->display_id, dsp->HorScrollButton, CWOverrideRedirect,
@@ -285,7 +285,7 @@ void lisp_Xvideocolor(int flag)
 {
   XLOCK;
   XCopyArea(currentdsp->display_id, currentdsp->DisplayWindow, currentdsp->DisplayWindow,
-            currentdsp->Copy_GC, 0, 0, currentdsp->Vissible.width, currentdsp->Vissible.height, 0,
+            currentdsp->Copy_GC, 0, 0, currentdsp->Visible.width, currentdsp->Visible.height, 0,
             0);
 
   /* Cursor */
@@ -307,11 +307,11 @@ void set_Xmouseposition(int x, int y)
 
   TPRINT(("set_Xmouseposition(%d,%d)\n", x, y));
 
-  dest_x = (x & 0xFFFF) + Current_Hot_X - currentdsp->Vissible.x;
-  dest_y = (y & 0xFFFF) + Current_Hot_Y - currentdsp->Vissible.y;
+  dest_x = (x & 0xFFFF) + Current_Hot_X - currentdsp->Visible.x;
+  dest_y = (y & 0xFFFF) + Current_Hot_Y - currentdsp->Visible.y;
 
-  if ((dest_x >= 0) && (dest_x <= currentdsp->Vissible.width) && (dest_y >= 0) &&
-      (dest_y <= currentdsp->Vissible.height)) {
+  if ((dest_x >= 0) && (dest_x <= currentdsp->Visible.width) && (dest_y >= 0) &&
+      (dest_y <= currentdsp->Visible.height)) {
     XLOCK;
     XWarpPointer(currentdsp->display_id, (Window)NULL, currentdsp->DisplayWindow, 0, 0, 0, 0,
                  dest_x, dest_y);

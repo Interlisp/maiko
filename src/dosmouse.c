@@ -212,9 +212,9 @@ void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp)
 /*            d o s _ c u r s o r _ i n v i s s i b l e        */
 /* Since we only blit the cursor to the VESA/VGA displaybuffer */
 /* and not to the emulator displaybuffer we can make the cursor*/
-/* invissible just by updateing the area under the cursor!     */
+/* invisible just by updateing the area under the cursor!     */
 /***************************************************************/
-void dos_cursor_invissible(DspInterface dsp, IOPAGE *iop)
+void dos_cursor_invisible(DspInterface dsp, IOPAGE *iop)
 
 { (dsp->bitblt_to_screen)(dsp, DisplayRegion68k, iop->dlcursorx, iop->dlcursory, 16, 16); }
 
@@ -254,10 +254,10 @@ set_DOSmouseposition(DspInterface dsp, int x, int y)
 
   /*  *(currentmouse->timestamp) = MiscStats->secondstmp; */
 
-  (currentdsp->mouse_invissible)(currentdsp, IOPage68K);
+  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
   currentmouse->Cursor.New.x = IOPage68K->dlcursorx = x;
   currentmouse->Cursor.New.y = IOPage68K->dlcursory = y;
-  (currentdsp->mouse_vissible)(x, y);
+  (currentdsp->mouse_visible)(x, y);
 
   dsp->device.locked--;
   currentmouse->device.active--;

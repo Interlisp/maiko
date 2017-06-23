@@ -216,13 +216,13 @@ typedef struct
     unsigned long (* bitblt_from_screen)();
     unsigned long (* scroll_region)(); /* ie. bbt from screen to screen */
 
-    void (* mouse_invissible)();	/* MOUSE_INVISSIBLE
+    void (* mouse_invisible)();	/* MOUSE_INVISSIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
-				   This method makes the mouse invissible on the screen. Note that
+				   This method makes the mouse invisible on the screen. Note that
 				   the dsp supplys the method and the iop supplys the data. */
-  void	(* mouse_vissible)();	/* MOUSE_VISSIBLE
+  void	(* mouse_visible)();	/* MOUSE_VISSIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
-				   This method makes the mouse vissible on the screen. Note that
+				   This method makes the mouse visible on the screen. Note that
 				   the dsp supplys the method and the iop supplys the data. */
     MRegion Display;		/* Dimensions of the physical display. */
     unsigned short bitsperpixel;
@@ -258,7 +258,7 @@ typedef struct
     Window SWGrav;
     Window NWGrav;
     GC	 Copy_GC;
-    MRegion Vissible;
+    MRegion Visible;
     unsigned int InternalBorderWidth;
     unsigned int ScrollBarWidth;
     Pixmap ScrollBarPixmap;

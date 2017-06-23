@@ -51,8 +51,8 @@ extern int DisplayRasterWidth;
 
 
 #ifdef DOS
-#define HideCursor { (currentdsp->mouse_invissible)(currentdsp, IOPage68K); }
-#define ShowCursor { (currentdsp->mouse_vissible)(IOPage68K->dlmousex, \
+#define HideCursor { (currentdsp->mouse_invisible)(currentdsp, IOPage68K); }
+#define ShowCursor { (currentdsp->mouse_visible)(IOPage68K->dlmousex, \
 												  IOPage68K->dlmousey); }
 
 #elif OLD_CURSOR

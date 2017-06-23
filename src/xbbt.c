@@ -41,36 +41,36 @@ unsigned long clipping_Xbitblt(DspInterface dsp, int dummy, int x, int y, int w,
 {
   int temp_x, temp_y, LowerRightX, LowerRightY;
 
-  LowerRightX = dsp->Vissible.x + dsp->Vissible.width;
-  LowerRightY = dsp->Vissible.y + dsp->Vissible.height;
+  LowerRightX = dsp->Visible.x + dsp->Visible.width;
+  LowerRightY = dsp->Visible.y + dsp->Visible.height;
 
   temp_x = x + w - 1;
   temp_y = y + h - 1;
 
-  if ((temp_x < dsp->Vissible.x) || (x > LowerRightX) || (temp_y < dsp->Vissible.y) ||
+  if ((temp_x < dsp->Visible.x) || (x > LowerRightX) || (temp_y < dsp->Visible.y) ||
       (y > LowerRightY))
     return (0);
 
-  if ((x >= dsp->Vissible.x) && (temp_x <= LowerRightX) && (y >= dsp->Vissible.y) &&
+  if ((x >= dsp->Visible.x) && (temp_x <= LowerRightX) && (y >= dsp->Visible.y) &&
       (temp_y <= LowerRightY)) {
     XLOCK;
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
-              x - dsp->Vissible.x, y - dsp->Vissible.y, w, h);
+              x - dsp->Visible.x, y - dsp->Visible.y, w, h);
     XFlush(dsp->display_id);
     XUNLOCK;
     return (0);
   }
 
-  if (x < dsp->Vissible.x) {
-    w -= dsp->Vissible.x - x;
-    x = dsp->Vissible.x;
+  if (x < dsp->Visible.x) {
+    w -= dsp->Visible.x - x;
+    x = dsp->Visible.x;
   }
 
   if (temp_x > LowerRightX) w -= temp_x - LowerRightX;
 
-  if (y < dsp->Vissible.y) {
-    h -= dsp->Vissible.y - y;
-    y = dsp->Vissible.y;
+  if (y < dsp->Visible.y) {
+    h -= dsp->Visible.y - y;
+    y = dsp->Visible.y;
   }
 
   if (temp_y > LowerRightY) h -= temp_y - LowerRightY;
@@ -78,7 +78,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, int dummy, int x, int y, int w,
   if ((w > 0) && (h > 0)) {
     XLOCK;
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
-              x - dsp->Vissible.x, y - dsp->Vissible.y, w, h);
+              x - dsp->Visible.x, y - dsp->Visible.y, w, h);
     XFlush(dsp->display_id);
     XUNLOCK;
   }

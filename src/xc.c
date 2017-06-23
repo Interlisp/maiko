@@ -1345,7 +1345,7 @@ check_interrupt:
           currentdsp->device.locked++;
 
           /* Remove the mouse from the old place on the screen */
-          (currentdsp->mouse_invissible)(currentdsp, IOPage68K);
+          (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
 
           /* Find the new delta */
           regs.w.eax = 0x000B; /* Function 0xB = get delta mickeys */
@@ -1367,7 +1367,7 @@ check_interrupt:
           IOPage68K->dlmousey = IOPage68K->dlcursory = currentmouse->Cursor.New.y;
 
           /* Paint the mouse back up on the screen on the new place */
-          (currentdsp->mouse_vissible)(currentmouse->Cursor.New.x, currentmouse->Cursor.New.y);
+          (currentdsp->mouse_visible)(currentmouse->Cursor.New.x, currentmouse->Cursor.New.y);
           currentmouse->Cursor.Moved = FALSE;
           currentdsp->device.locked--;
         }

@@ -89,52 +89,52 @@ void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWin
 {
   int GravSize, Col2, Row2, Col3, Row3;
 
-  /* The Vissible width and height changes when */
+  /* The Visible width and height changes when */
   /* we configure the window. Make them */
   /* stay within bounds. */
-  dsp->Vissible.width =
+  dsp->Visible.width =
       bound(OUTER_SB_WIDTH(dsp) + 2, lspWinWidth, dsp->Display.width + OUTER_SB_WIDTH(dsp)) -
       OUTER_SB_WIDTH(dsp);
-  dsp->Vissible.height =
+  dsp->Visible.height =
       bound(OUTER_SB_WIDTH(dsp) + 2, lspWinHeight, dsp->Display.height + OUTER_SB_WIDTH(dsp)) -
       OUTER_SB_WIDTH(dsp);
 
   GravSize = (int)(dsp->ScrollBarWidth / 2) - (dsp->InternalBorderWidth);
-  Col2 = dsp->Vissible.width;
-  Row2 = dsp->Vissible.height;
-  Col3 = dsp->Vissible.width + (int)(OUTER_SB_WIDTH(dsp) / 2);
-  Row3 = dsp->Vissible.height + (int)(OUTER_SB_WIDTH(dsp) / 2);
+  Col2 = dsp->Visible.width;
+  Row2 = dsp->Visible.height;
+  Col3 = dsp->Visible.width + (int)(OUTER_SB_WIDTH(dsp) / 2);
+  Row3 = dsp->Visible.height + (int)(OUTER_SB_WIDTH(dsp) / 2);
 
   XLOCK;
-  XMoveResizeWindow(dsp->display_id, dsp->DisplayWindow, 0, 0, dsp->Vissible.width,
-                    dsp->Vissible.height);
+  XMoveResizeWindow(dsp->display_id, dsp->DisplayWindow, 0, 0, dsp->Visible.width,
+                    dsp->Visible.height);
   /* Scroll bars */
   XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - dsp->InternalBorderWidth, /* y */
                     dsp->ScrollBarWidth,   /* width */
-                    dsp->Vissible.height); /* height */
+                    dsp->Visible.height); /* height */
   XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - dsp->InternalBorderWidth, Row2, /* y */
-                    dsp->Vissible.width,  /* width */
+                    dsp->Visible.width,  /* width */
                     dsp->ScrollBarWidth); /* height */
 
   /* Scroll buttons */
   XMoveResizeWindow(
       dsp->display_id, dsp->HorScrollButton,
-      (int)((dsp->Vissible.x * dsp->Vissible.width) / dsp->Display.width),         /* x */
+      (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width),         /* x */
       0 - dsp->InternalBorderWidth,                                                /* y */
-      (int)((dsp->Vissible.width * dsp->Vissible.width) / dsp->Display.width) + 1, /* width */
+      (int)((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
       dsp->ScrollBarWidth);                                                        /* height */
   XMoveResizeWindow(
       dsp->display_id, dsp->VerScrollButton, 0 - dsp->InternalBorderWidth,             /* x */
-      (int)((dsp->Vissible.y * dsp->Vissible.height) / dsp->Display.height),           /* y */
+      (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height),           /* y */
       dsp->ScrollBarWidth,                                                             /* width */
-      (int)((dsp->Vissible.height * dsp->Vissible.height) / dsp->Display.height) + 1); /* height */
+      (int)((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
 
   /* Gravity windows */
   XMoveResizeWindow(dsp->display_id, dsp->NWGrav, Col2, Row2, GravSize, GravSize);
   XMoveResizeWindow(dsp->display_id, dsp->NEGrav, Col3, Row2, GravSize, GravSize);
   XMoveResizeWindow(dsp->display_id, dsp->SEGrav, Col3, Row3, GravSize, GravSize);
   XMoveResizeWindow(dsp->display_id, dsp->SWGrav, Col2, Row3, GravSize, GravSize);
-  Scroll(dsp, dsp->Vissible.x, dsp->Vissible.y);
+  Scroll(dsp, dsp->Visible.x, dsp->Visible.y);
   XFlush(dsp->display_id);
   XUNLOCK;
 } /* end lisp_Xconfigure */
@@ -189,9 +189,9 @@ void getXsignaldata(DspInterface dsp)
         case MotionNotify:
           *CLastUserActionCell68k = MiscStats->secondstmp;
           *EmCursorX68K = (*((DLword *)EmMouseX68K)) =
-              (short)((report.xmotion.x + dsp->Vissible.x) & 0xFFFF) - Current_Hot_X;
+              (short)((report.xmotion.x + dsp->Visible.x) & 0xFFFF) - Current_Hot_X;
           *EmCursorY68K = (*((DLword *)EmMouseY68K)) =
-              (short)((report.xmotion.y + dsp->Vissible.y) & 0xFFFF) - Current_Hot_Y;
+              (short)((report.xmotion.y + dsp->Visible.y) & 0xFFFF) - Current_Hot_Y;
           DoRing();
           if ((KBDEventFlg) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
           break;
@@ -229,8 +229,8 @@ void getXsignaldata(DspInterface dsp)
         case LeaveNotify: Mouse_Included = FALSE; break;
         case Expose:
           XLOCK;
-          (dsp->bitblt_to_screen)(dsp, 0, report.xexpose.x + dsp->Vissible.x,
-                                  report.xexpose.y + dsp->Vissible.y, report.xexpose.width,
+          (dsp->bitblt_to_screen)(dsp, 0, report.xexpose.x + dsp->Visible.x,
+                                  report.xexpose.y + dsp->Visible.y, report.xexpose.width,
                                   report.xexpose.height);
           XUNLOCK;
           break;

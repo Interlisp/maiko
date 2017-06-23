@@ -81,8 +81,8 @@ extern unsigned long Dosbbt1();
 extern unsigned long Dosbbt2();
 extern unsigned long Dosbbt3();
 extern void Dosclearbanks();
-extern long DOSCursorVissible();
-extern long dos_cursor_invissible();
+extern long DOSCursorVisible();
+extern long dos_cursor_invisible();
 extern int dostaking_mouse_down();
 extern int dostaking_mouse_up();
 
@@ -301,8 +301,8 @@ void VESA_enter(DspInterface dsp)
   /* These are needed in the interrupt processing. Lock'em to prevent pagefaults. */
   _dpmi_lockregion(dsp, sizeof(*dsp));
   _dpmi_lockregion(dsp->bitblt_to_screen, 0x2000);
-  _dpmi_lockregion(dsp->mouse_invissible, 0x2000);
-  _dpmi_lockregion(dsp->mouse_vissible, 0x2000);
+  _dpmi_lockregion(dsp->mouse_invisible, 0x2000);
+  _dpmi_lockregion(dsp->mouse_visible, 0x2000);
   _dpmi_lockregion((void *)&docopy, 0x2000);
 
   TPRINT(("Exit VESA_enter\n"));
@@ -317,8 +317,8 @@ void VESA_exit(DspInterface dsp)
   _dpmi_unlockregion(DisplayRegion68k, 1600 * 1208 / 8);
 
   _dpmi_unlockregion(dsp->bitblt_to_screen, 0x2000);
-  _dpmi_unlockregion(dsp->mouse_invissible, 0x2000);
-  _dpmi_unlockregion(dsp->mouse_vissible, 0x2000);
+  _dpmi_unlockregion(dsp->mouse_invisible, 0x2000);
+  _dpmi_unlockregion(dsp->mouse_visible, 0x2000);
   _dpmi_unlockregion((void *)&docopy, 0x2000);
   _dpmi_unlockregion(dsp, sizeof(*dsp));
 
@@ -451,8 +451,8 @@ void VESA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hi
   dsp->bitblt_from_screen = (PFUL)&GenericPanic;
   dsp->scroll_region = (PFUL)&GenericPanic;
 
-  dsp->mouse_invissible = (PFV)&dostaking_mouse_down;
-  dsp->mouse_vissible = (PFV)&dostaking_mouse_up;
+  dsp->mouse_invisible = (PFV)&dostaking_mouse_down;
+  dsp->mouse_visible = (PFV)&dostaking_mouse_up;
 
   TPRINT(("Exit VESA_init\n"));
 }

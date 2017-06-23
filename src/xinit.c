@@ -183,8 +183,8 @@ void Xevent_before_raid(DspInterface dsp)
 void Xevent_after_raid(DspInterface dsp)
 {
   init_Xevent(dsp);
-  (dsp->bitblt_to_screen)(dsp, 0, dsp->Vissible.x, dsp->Vissible.y, dsp->Vissible.width,
-                          dsp->Vissible.height);
+  (dsp->bitblt_to_screen)(dsp, 0, dsp->Visible.x, dsp->Visible.y, dsp->Visible.width,
+                          dsp->Visible.height);
   XLOCK;
   XFlush(dsp->display_id);
   XUNLOCK;
@@ -274,8 +274,8 @@ DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int heig
   dsp->ScrollBarWidth = SCROLL_WIDTH;
   dsp->InternalBorderWidth = DEF_BDRWIDE;
 
-  dsp->Vissible.x = LispDisplayRequestedX;
-  dsp->Vissible.y = LispDisplayRequestedY;
+  dsp->Visible.x = LispDisplayRequestedX;
+  dsp->Visible.y = LispDisplayRequestedY;
 
   /* Set the width and height of the display.  */
   if (height_hint == 0) {
@@ -312,11 +312,11 @@ DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int heig
   dsp->cleardisplay = (PFV)GenericReturnT;
   dsp->set_color_map_entry = (PFUL)GenericReturnT;
 
-  /* Set the geometry of the Vissible (Lisp) window. */
-  dsp->Vissible.width =
+  /* Set the geometry of the Visible (Lisp) window. */
+  dsp->Visible.width =
       bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedWidth,
             min(dsp->Display.width, (WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
-  dsp->Vissible.height =
+  dsp->Visible.height =
       bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedHeight,
             min(dsp->Display.height, (HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
 

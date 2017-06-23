@@ -129,7 +129,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 #ifdef SUNDISPLAY
   if (displayflg) HideCursor;
 #elif DOS
-  if (displayflg) (currentdsp->mouse_invissible)(currentdsp, IOPage68K);
+  if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
   ;
 #endif /* SUNDISPLAY / DOS */
 
@@ -146,7 +146,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
   if (displayflg) ShowCursor;
 #elif DOS
       flush_display_lineregion(dx, dstbase, w, h);
-  if (displayflg) (currentdsp->mouse_vissible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
+  if (displayflg) (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
 #endif /* SUNDISPLAY / DOS */
 
 #ifdef XWINDOW
