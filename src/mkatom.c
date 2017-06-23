@@ -163,9 +163,7 @@ LispPTR compare_chars(register char *char1, register char *char2, register DLwor
 
 } /* end compare_chars */
 #ifdef BYTESWAP
-int bytecmp(char1, char2, len) char *char1;
-char *char2;
-int len;
+int bytecmp(char *char1, char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {

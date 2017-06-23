@@ -26,7 +26,7 @@ int TTY_Fd;
 extern int LispReadFds;
 struct sgttyb TTY_Mode;
 
-tty_init() {
+void tty_init() {
 #ifdef TRACE
   printf("TRACE: tty_init()\n");
 #endif
@@ -39,7 +39,7 @@ tty_init() {
   DLTTYOut = (DLTTY_OUT_CSB *)Addr68k_from_LADDR(IOPAGE_OFFSET + 34);
 } /* tty_init end */
 
-tty_open() {
+void tty_open() {
   int stat;
 
 #ifdef TRACE
@@ -63,7 +63,7 @@ tty_open() {
   }
 } /* tty_open end */
 
-tty_close() {
+void tty_close() {
   int stat;
 
 #ifdef TRACE
@@ -80,7 +80,7 @@ tty_close() {
   }
 } /* tty_close end */
 
-TTY_get() {
+void TTY_get() {
   char indata[256];
   int count;
 
@@ -100,7 +100,7 @@ TTY_get() {
   }
 } /* TTY_get end */
 
-tty_put() {
+void tty_put() {
   int count;
   char c;
 
@@ -114,7 +114,7 @@ tty_put() {
   }
 } /* tty_put end */
 
-tty_breakon() {
+void tty_breakon() {
   int stat;
 
 #ifdef TRACE
@@ -124,7 +124,7 @@ tty_breakon() {
   if (TTY_Fd >= 0) { stat = ioctl(TTY_Fd, TIOCSBRK, 0); }
 } /* tty_breakon end */
 
-tty_breakoff() {
+void tty_breakoff() {
   int stat;
 
 #ifdef TRACE
@@ -134,7 +134,7 @@ tty_breakoff() {
   if (TTY_Fd >= 0) { stat = ioctl(TTY_Fd, TIOCCBRK, 0); }
 } /* tty_breakoff end */
 
-TTY_cmd() {
+void TTY_cmd() {
 #ifdef TRACE
   printf("TRACE: tty_cmd()\n");
 #endif
@@ -159,7 +159,7 @@ TTY_cmd() {
   }
 } /* TTY_cmd end */
 
-tty_setparam() {
+void tty_setparam() {
 #ifdef TRACE
   printf("TRACE: tty_setpram()\n");
 #endif
@@ -168,7 +168,7 @@ tty_setparam() {
 
 } /* tty_setpram end */
 
-tty_setbaudrate() {
+void tty_setbaudrate() {
   char baudrate;
   int stat;
 
@@ -187,9 +187,9 @@ tty_setbaudrate() {
   }
 } /* tty_setbaudrate end */
 
-tty_baudtosymbol(aBaud) short aBaud;
+int tty_baudtosymbol(short aBaud)
 {
-#ifdef TRASE
+#ifdef TRACE
   printf("TRASE: tty_baudtosymbol(%x)\n", aBaud);
 #endif
 
@@ -209,7 +209,7 @@ tty_baudtosymbol(aBaud) short aBaud;
 
 } /* tty_baudtosymbol */
 
-tty_debug(name) char *name;
+void tty_debug(char *name)
 {
   int stat;
   struct sgttyb mode;

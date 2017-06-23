@@ -164,7 +164,7 @@ int ejlisp_kouho_next;
 #define WNN_BUNSETSU_KANJI 15
 #define WNN_BUNSETSU_YOMI 16
 
-ejlisp(args) int args[];
+ejlisp(int args[])
 {
   int result;
   int i, j, length;
@@ -451,10 +451,7 @@ ejlisp(args) int args[];
   return (GetSmallp(result));
 }
 
-ejlisp_add_userdic(dic_no, kanji, yomi, hinshi) int dic_no;
-unsigned short *kanji;
-unsigned short *yomi;
-int hinshi;
+int ejlisp_add_userdic(int dic_no, unsigned short *kanji, unsigned short *yomi, int hinshi)
 {
   int result;
 #ifdef DEBUG
@@ -477,8 +474,7 @@ int hinshi;
   return (wnn_errorno);
 }
 
-ejlisp_bunsetsu_kanji(bunsetsu_no, bunsetsu_no2, kanji_len) int bunsetsu_no, bunsetsu_no2;
-int *kanji_len;
+int ejlisp_bunsetsu_kanji(int bunsetsu_no, int bunsetsu_no2, int *kanji_len)
 {
 #ifdef DEBUG
   printf("ejlisp_bunsetsu_kanji start\n");
@@ -500,8 +496,7 @@ int *kanji_len;
   return (wnn_errorno);
 }
 
-ejlisp_bunsetsu_yomi(bunsetsu_no, bunsetsu_no2, yomi_len) int bunsetsu_no, bunsetsu_no2;
-int *yomi_len;
+int ejlisp_bunsetsu_yomi(int bunsetsu_no, int bunsetsu_no2, int *yomi_len)
 {
 #ifdef DEBUG
   printf("ejlisp_bunsetsu_yomi start\n");
@@ -523,7 +518,7 @@ int *yomi_len;
   return (wnn_errorno);
 }
 
-ejlisp_close() {
+int ejlisp_close() {
 #ifdef DEBUG
   printf("ejlisp_close start\n");
 #endif
@@ -543,9 +538,7 @@ ejlisp_close() {
   return (wnn_errorno);
 }
 
-ejlisp_conv(yomi, kanji, kanji_len, bunsetsu_suu) unsigned short *yomi;
-unsigned short *kanji;
-int *kanji_len, *bunsetsu_suu;
+int ejlisp_conv(unsigned short *yomi, unsigned short *kanji, int *kanji_len, int *bunsetsu_suu)
 {
 #ifdef DEBUG
   printf("ejlisp_conv start\n");
@@ -569,7 +562,7 @@ int *kanji_len, *bunsetsu_suu;
   return (wnn_errorno);
 }
 
-ejlisp_conv_end() {
+int ejlisp_conv_end() {
 #ifdef DEBUG
   printf("ejlisp_conv_end start\n");
 #endif
@@ -589,7 +582,7 @@ ejlisp_conv_end() {
   return (wnn_errorno);
 }
 
-ejlisp_del_userdic(dic_no, entry) {
+int ejlisp_del_userdic(int dic_no, int entry) {
 #ifdef DEBUG
   printf("ejlisp_del_userdic start\n");
   printf("dic_no = %d,entry = %d\n", dic_no, entry);
@@ -610,9 +603,8 @@ ejlisp_del_userdic(dic_no, entry) {
   return (wnn_errorno);
 }
 
-ejlisp_get_kouho(pos, kouho_arrey,
-                 kouho_num) unsigned short kouho_arrey[TABLE_MAX][CHAR_MAXLEN + 1];
-int pos, *kouho_num;
+int ejlisp_get_kouho(int pos, unsigned short kouho_arrey[TABLE_MAX][CHAR_MAXLEN + 1],
+                 int *kouho_num)
 {
   int i, j;
 
@@ -664,10 +656,7 @@ int pos, *kouho_num;
   return (wnn_errorno);
 }
 
-ejlisp_get_userdic(kouho_arrey, kouho_len_arrey,
-                   kouho_entry_arrey) unsigned short kouho_arrey[TABLE_MAX][CHAR_MAXLEN + 1];
-int kouho_len_arrey[TABLE_MAX];
-int kouho_entry_arrey[TABLE_MAX];
+int ejlisp_get_userdic(unsigned short kouho_arrey[TABLE_MAX][CHAR_MAXLEN + 1], int kouho_len_arrey[TABLE_MAX], int kouho_entry_arrey[TABLE_MAX])
 {
   int i;
 
@@ -692,10 +681,7 @@ int kouho_entry_arrey[TABLE_MAX];
   return (0);
 }
 
-ejlisp_get_userdic_name(dic_name_array, dic_name_len_array,
-                        dic_no_array) unsigned short dic_name_array[TABLE_MAX][CHAR_MAXLEN + 1];
-int dic_name_len_array[TABLE_MAX];
-int dic_no_array[TABLE_MAX];
+int ejlisp_get_userdic_name(unsigned short dic_name_array[TABLE_MAX][CHAR_MAXLEN + 1], int dic_name_len_array[TABLE_MAX], int dic_no_array[TABLE_MAX])
 {
   WNN_DIC_INFO *dip;
   int i, j;
@@ -736,9 +722,7 @@ int dic_no_array[TABLE_MAX];
   return (wnn_errorno);
 }
 
-ejlisp_get_yomi(bunsetsu_no, yomi, yomi_len) int bunsetsu_no;
-char *yomi;
-int *yomi_len;
+int ejlisp_get_yomi(int bunsetsu_no, char *yomi, int *yomi_len)
 {
 #ifdef DEBUG
   printf("ejlisp_get_yomi start\n");
@@ -760,8 +744,7 @@ int *yomi_len;
   return (wnn_errorno);
 }
 
-ejlisp_open(wnn_env, kouho_max, server_name) char *wnn_env, *server_name;
-int kouho_max;
+int ejlisp_open(char *wnn_env, int kouho_max, char *server_name)
 {
   char username[L_cuserid];
   char *env_name;
@@ -795,10 +778,7 @@ int kouho_max;
   return (wnn_errorno);
 }
 
-ejlisp_reconv(bunsetsu_no, bunsetsu_len, kanji, kanji_len, bunsetsu_suu) int bunsetsu_no,
-    bunsetsu_len;
-unsigned short kanji[];
-int *kanji_len, *bunsetsu_suu;
+int ejlisp_reconv(int bunsetsu_no, int bunsetsu_len, unsigned short kanji[], int *kanji_len, int *bunsetsu_suu)
 {
 #ifdef DEBUG
   printf("ejlisp_reconv start\n");
@@ -823,8 +803,7 @@ int *kanji_len, *bunsetsu_suu;
   return (wnn_errorno);
 }
 
-ejlisp_search_userdic(dic_no, yomi) int dic_no;
-unsigned short *yomi;
+int ejlisp_search_userdic(int dic_no, unsigned short *yomi)
 {
 #ifdef DEBUG
   printf("ejlisp_search_userdic start\n");
@@ -846,7 +825,7 @@ unsigned short *yomi;
   return (wnn_errorno);
 }
 
-ejlisp_select_bunsetsu(bunsetsu_no, bunsetsu_len) int bunsetsu_no, *bunsetsu_len;
+int ejlisp_select_bunsetsu(int bunsetsu_no, int *bunsetsu_len)
 {
 #ifdef DEBUG
   printf("ejlisp_select_bunsetsu start\n");
@@ -873,8 +852,7 @@ ejlisp_select_bunsetsu(bunsetsu_no, bunsetsu_len) int bunsetsu_no, *bunsetsu_len
   return (wnn_errorno);
 }
 
-ejlisp_select_kouho(kouho_no, kanji) int kouho_no;
-unsigned short *kanji;
+int ejlisp_select_kouho(int kouho_no, unsigned short *kanji)
 {
   int no, i, c;
 

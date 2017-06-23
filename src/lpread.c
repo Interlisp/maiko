@@ -55,19 +55,8 @@ extern REAL Infinite;
  * and free the intermediate structure
  */
 
-#ifdef OS4
-readlispinput(lp, lisprhs, lisprelns, lispcend, lispmat, lispints, lisplowbo, lispupbo) lprec *lp;
-float *lisprhs;
-short *lisprelns;
-int *lispcend;
-lispmr *lispmat;
-short *lispints;
-float *lisplowbo;
-float *lispupbo;
-#else
 void readlispinput(lprec *lp, float *lisprhs, short *lisprelns, int *lispcend, lispmr *lispmat,
                    short *lispints, float *lisplowbo, float *lispupbo)
-#endif /* OS4 */
 {
   int i, j, k, index, nn_ind;
   int x;

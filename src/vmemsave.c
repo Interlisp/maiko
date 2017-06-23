@@ -117,7 +117,7 @@ extern int please_fork;
 /*									*/
 /************************************************************************/
 
-int lispstringP(Lisp) LispPTR Lisp;
+int lispstringP(LispPTR Lisp)
 {
   switch (((OneDArray *)(Addr68k_from_LADDR(Lisp)))->typenumber) {
     case THIN_CHAR_TYPENUMBER:
@@ -165,7 +165,7 @@ LispPTR vmem_save(register char *sysout_file_name);
 /*									*/
 /************************************************************************/
 
-LispPTR vmem_save0(args) register LispPTR *args;
+LispPTR vmem_save0(LispPTR *args)
 {
   register char *def;
   char pathname[MAXPATHLEN], sysout[MAXPATHLEN], host[MAXNAMLEN];
@@ -235,15 +235,12 @@ LispPTR vmem_save0(args) register LispPTR *args;
 /*									*/
 /************************************************************************/
 
-int twowords(i, j) /* the difference between two  DLwords. */
-    DLword *i,
-    *j;
+int twowords(DLword *i, DLword *j) /* the difference between two  DLwords. */
 { return (*i - *j); }
 
 #define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
 
-void sort_fptovp(fptovp, size) DLword *fptovp;
-int size;
+void sort_fptovp(DLword *fptovp, int size)
 {
   int oldloc, newloc, oldsize, i;
   DLword *fptr;
@@ -332,7 +329,7 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
 /* diagnostic flag value to limit the size of write() s */
 int maxpages = 65536;
 
-LispPTR vmem_save(sysout_file_name) register char *sysout_file_name;
+LispPTR vmem_save(char *sysout_file_name)
 {
   int sysout; /* SysoutFile descriptor */
 #ifdef BIGVM

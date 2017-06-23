@@ -65,8 +65,7 @@ extern int displaywidth, displayheight, FrameBufferFd;
 */
 /*******************************************************************/
 #ifdef COLOR
-cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
-    LispPTR color_bitmapbase;               /* COLOR BITMAP ADDRESS */
+LispPTR cgfour_init_color_display(LispPTR color_bitmapbase) /* SUBR 0210 */ /* COLOR BITMAP ADDRESS */
 {
   struct pixrect *ColorFb;
   struct pixrect *color_source;
@@ -115,8 +114,7 @@ cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
 
 #else  /* COLOR */
 
-LispPTR cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
-    LispPTR color_bitmapbase;                       /* COLOR BITMAP ADDRESS */
+LispPTR cgfour_init_color_display(LispPTR color_bitmapbase) /* SUBR 0210 */ /* COLOR BITMAP ADDRESS */
 {
   printf("Color is not supported.\n");
   return (NIL);
@@ -132,7 +130,7 @@ LispPTR cgfour_init_color_display(color_bitmapbase) /* SUBR 0210 */
 */
 /*******************************************************************/
 #ifdef COLOR
-LispPTR cgfour_change_screen_mode(which_screen) LispPTR which_screen;
+LispPTR cgfour_change_screen_mode(LispPTR which_screen)
 { /* subr 0211 */
   struct pixrect *ColorFb;
   extern ScreenLocked;
@@ -207,7 +205,7 @@ LispPTR cgfour_change_screen_mode(which_screen) LispPTR which_screen;
 }
 #else  /* COLOR */
 
-LispPTR cgfour_change_screen_mode(which_screen) LispPTR which_screen;
+LispPTR cgfour_change_screen_mode(LispPTR which_screen)
 {
   printf("Color is not supported.\n");
   return (NIL);
@@ -229,7 +227,7 @@ unsigned char GRN_colormap;
 unsigned char BLU_colormap;
 
 #ifdef COLOR
-LispPTR cgfour_set_colormap(args) LispPTR args[];
+LispPTR cgfour_set_colormap(LispPTR args[])
 {
   int index;
   struct pixrect *ColorFb;
@@ -249,7 +247,7 @@ LispPTR cgfour_set_colormap(args) LispPTR args[];
 }
 #else  /* COLOR */
 
-LispPTR cgfour_set_colormap(args) LispPTR args[];
+LispPTR cgfour_set_colormap(LispPTR args[])
 {
   printf("Color is not supported.\n");
   return (NIL);

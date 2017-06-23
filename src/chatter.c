@@ -100,7 +100,7 @@ int chatter_fd;
     *base = C;                                        \
   }
 
-chatter(args) int args[];
+chatter(LispPTR *args)
 {
   int result;
   int length;
@@ -147,7 +147,7 @@ chatter(args) int args[];
     return (NIL);
 }
 
-chatter_open(dev) char dev[];
+chatter_open(char *dev)
 {
   struct termios termdata;
 
@@ -191,8 +191,7 @@ chatter_close() {
   return (0);
 }
 
-chatter_write_string(data, len) char data[];
-int len;
+chatter_write_string(char *data, int len)
 {
   if (write(chatter_fd, data, len) < 0) {
     perror("WRITE ERROR");
@@ -201,7 +200,7 @@ int len;
   return (0);
 }
 
-chatter_write_code(code) unsigned char code;
+chatter_write_code(unsigned char code)
 {
   if (write(chatter_fd, &code, 1) < 0) {
     perror("WRITE ERROR");
@@ -210,8 +209,7 @@ chatter_write_code(code) unsigned char code;
   return (0);
 }
 
-chatter_read(data, len) unsigned char *data;
-int len;
+chatter_read(unsigned char *data, int len)
 {
   if (read(chatter_fd, data, len) < 0) {
     perror("READ ERROR");

@@ -54,7 +54,7 @@ static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Cop
 */
 /************************************************************/
 
-raw_rs232c_open(portname) LispPTR portname;
+LispPTR raw_rs232c_open(LispPTR portname)
 {
   ONED_ARRAY *head;
 
@@ -74,8 +74,7 @@ raw_rs232c_open(portname) LispPTR portname;
 
 } /* raw_rs232c_open */
 
-raw_rs232c_setparams(fd, data) LispPTR fd;
-LispPTR data;
+LispPTR raw_rs232c_setparams(LispPTR fd, LispPTR data)
 {
   RawRSParam *ndata;
   struct termios termdata;
@@ -238,7 +237,7 @@ LispPTR data;
 
 } /* raw_rs232c_setparams */
 
-raw_rs232c_close(fd) LispPTR fd;
+LispPTR raw_rs232c_close(LispPTR fd)
 {
   if (close(0xffff & fd) < 0) {
     perror("RS close : ");
@@ -247,9 +246,7 @@ raw_rs232c_close(fd) LispPTR fd;
     return (ATOM_T);
 }
 
-raw_rs232c_write(fd, baseptr, len) LispPTR fd;
-LispPTR baseptr;
-LispPTR len;
+LispPTR raw_rs232c_write(LispPTR fd, LispPTR baseptr, LispPTR len)
 {
   unsigned char *ptr;
 
@@ -264,10 +261,7 @@ LispPTR len;
 
 /* Assume numbers are SMALLPOSP */
 struct timeval RS_TimeOut = {0, 0};
-raw_rs232c_read(fd, buff, nbytes) LispPTR fd;
-LispPTR buff;
-LispPTR nbytes;
-
+LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
 {
   unsigned char *buffptr;
   int length;
@@ -294,8 +288,7 @@ LispPTR nbytes;
 
 } /* raw_rs232c_read  */
 
-raw_rs232c_setint(fd, onoff) LispPTR fd;
-LispPTR onoff;
+LispPTR raw_rs232c_setint(LispPTR fd, LispPTR onoff)
 {
   extern u_int LispReadFds;
   extern u_int LispIOFds;

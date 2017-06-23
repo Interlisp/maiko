@@ -54,7 +54,7 @@ extern int Inited_Video;
 
 int Inited_TrueColor = NIL;
 
-int TrueColor_Op(args) LispPTR *args;
+int TrueColor_Op(LispPTR *args)
 {
   int op, ret_value = NIL;
   /*
@@ -142,7 +142,7 @@ extern int DisplayType;
 Pixrect *OverlayCursor, *OverlaySave;
 DLword *OverlayRegion68k;
 
-int TrueColor_Initialize(overlay_bmbase) LispPTR overlay_bmbase;
+int TrueColor_Initialize(LispPTR overlay_bmbase)
 {
   unsigned int pict, *ret_value;
   Pixrect *source;
@@ -202,7 +202,7 @@ int TrueColor_Initialize(overlay_bmbase) LispPTR overlay_bmbase;
 
 DLword *VideoEnableRegion68k;
 
-int TrueColor_VideoInitialize(videoenable_bmbase) LispPTR videoenable_bmbase;
+int TrueColor_VideoInitialize(LispPTR videoenable_bmbase)
 {
   Pixrect *source;
   int mmapstat, size;
@@ -237,7 +237,7 @@ int TrueColor_VideoInitialize(videoenable_bmbase) LispPTR videoenable_bmbase;
 
 } /* TrueColor_VideoInitialize */
 
-int Overlay_Region(left, top, width, height, flg) int left, top, width, height, flg;
+int Overlay_Region(int left, int top, int width, int height, int flg)
 {
   ScreenLocked = T;
   overlay_mouse_down();
@@ -264,7 +264,7 @@ int Overlay_Region(left, top, width, height, flg) int left, top, width, height, 
 
 extern Pixrect *OverlaySave, *OverlayCursor;
 
-overlay_mouse_up(newx, newy) int newx, newy;
+void overlay_mouse_up(int newx, int newy)
 {
   pr_set_plane_group(TrueColorFb, PIXPG_OVERLAY_ENABLE);
   pr_rop(TrueColorFb, newx, newy, 16, 16, PIX_SRC, OverlaySave, 0, 0);
@@ -275,14 +275,14 @@ overlay_mouse_up(newx, newy) int newx, newy;
 
 extern int LastCursorX, LastCursorY;
 
-overlay_mouse_down() {
+void overlay_mouse_down() {
   pr_set_plane_group(TrueColorFb, PIXPG_OVERLAY_ENABLE);
   pr_rop(OverlaySave, 0, 0, 16, 16, PIX_SRC, TrueColorFb, LastCursorX, LastCursorY);
   pr_set_plane_group(TrueColorFb, PIXPG_24BIT_COLOR);
 
 } /* end overlay_mouse_down */
 
-truecolor_before_exit() {
+void truecolor_before_exit() {
   if (Inited_TrueColor) {
     { /* fill region */
       int h, w;
@@ -326,7 +326,7 @@ extern int Video_OnOff_Flg;
 static int video_onoff;
 #endif /* VIDEO */
 
-truecolor_before_raid() {
+void truecolor_before_raid() {
   int size;
 
   if (Inited_TrueColor) {
@@ -372,7 +372,7 @@ truecolor_before_raid() {
 
 } /* end truecolor_before_raid */
 
-truecolor_after_raid() {
+void truecolor_after_raid() {
   int size, mmapstat;
 
   if (Inited_TrueColor) {

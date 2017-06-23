@@ -19,8 +19,7 @@ static char *id = "$Id: timeoday.c,v 1.2 1999/01/03 02:07:37 sybalsky Exp $ Copy
 #include <sys/time.h>
 #include <sys/resource.h>
 
-gettimeofday(time, ptr) struct timeval *time;
-int ptr;
+void gettimeofday(struct timeval *time, int ptr)
 {
   struct rusage stats;
   getrusage(RUSAGE_SELF, &stats);

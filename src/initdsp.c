@@ -279,7 +279,7 @@ void clear_display() {
 /*  ================================================================  */
 /*  Now takes 68k address, function renamed for safety  */
 
-void init_display2(display_addr, display_max) INT display_addr, display_max;
+void init_display2(INT display_addr, INT display_max)
 {
   int mmapstat;
   int fbgattr_result;
@@ -706,7 +706,7 @@ void flush_display_buffer() {
 #define BITEPER_DLBYTE 8
 #define DLBYTE_PERLINE (displaywidth / 8)
 
-void flush_display_region(x, y, w, h) int x, y, w, h;
+void flush_display_region(int x, int y, int w, int h)
 {
 #ifdef SUNDISPLAY
 #ifdef DISPLAYBUFFER
@@ -723,7 +723,7 @@ void flush_display_region(x, y, w, h) int x, y, w, h;
 #endif /* DOS */
 }
 #ifdef BYTESWAP
-void byte_swapped_displayregion(x, y, w, h) int x, y, w, h;
+void byte_swapped_displayregion(int x, int y, int w, int h)
 {
   extern unsigned char reversedbits[];
   register unsigned int *longptr, *lineptr;
@@ -756,7 +756,7 @@ void byte_swapped_displayregion(x, y, w, h) int x, y, w, h;
 /*									*/
 /************************************************************************/
 
-void flush_display_lineregion(x, ybase, w, h) UNSIGNED x, ybase, w, h;
+void flush_display_lineregion(UNSIGNED x, UNSIGNED ybase, UNSIGNED w, UNSIGNED h)
 #ifdef I386
 { /*flush_display_buffer(); */
   int y;
@@ -805,7 +805,7 @@ void flush_display_lineregion(x, ybase, w, h) UNSIGNED x, ybase, w, h;
 
 #define BITSPERWORD 16
 
-void flush_display_ptrregion(ybase, bitoffset, w, h) UNSIGNED bitoffset, ybase, w, h;
+void flush_display_ptrregion(UNSIGNED ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h)
 #ifdef I386
 { flush_display_buffer(); }
 #else

@@ -79,7 +79,7 @@ int DebugDSP = T;
 
 /*  ================================================================  */
 
-init_display2(display_addr, display_max) int display_addr, display_max;
+void init_display2(int display_addr, int display_max)
 {
   int mmapstat;
   int ioctlresult;
@@ -299,7 +299,7 @@ paint_display() {
 
 #define BYTESPER_PAGE 512
 
-read_datum(lispworld) char *lispworld;
+read_datum(char *lispworld)
 {
   int srcefile; /* fd */
   int i, j, sysout_size;

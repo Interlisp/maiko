@@ -28,7 +28,7 @@ typedef struct {
   colormap_t colormap;
 } RASTERFILE_INFO;
 
-unsigned int open_rasterfile(filename) char *filename;
+unsigned int open_rasterfile(char *filename)
 {
   FILE *file;
   RASTERFILE_INFO *fileinfo;
@@ -55,7 +55,7 @@ unsigned int open_rasterfile(filename) char *filename;
 
 } /* end open_rasterfile */
 
-unsigned int create_rasterfile(filename) char *filename;
+unsigned int create_rasterfile(char *filename)
 {
   RASTERFILE_INFO *fileinfo;
 
@@ -70,13 +70,13 @@ unsigned int create_rasterfile(filename) char *filename;
 
 } /* end create_rasterfile */
 
-close_rasterfile(fileinfo) RASTERFILE_INFO *fileinfo;
+close_rasterfile(RASTERFILE_INFO *fileinfo)
 {
   fclose(fileinfo->file);
   free((char *)fileinfo);
 } /* end close_rasterfile */
 
-unsigned int read_rasterfile(fileinfo) RASTERFILE_INFO *fileinfo;
+unsigned int read_rasterfile(RASTERFILE_INFO *fileinfo)
 {
   Pixrect *pict;
   pict = pr_load_std_image(fileinfo->file, &(fileinfo->rh), &(fileinfo->colormap));
@@ -84,8 +84,7 @@ unsigned int read_rasterfile(fileinfo) RASTERFILE_INFO *fileinfo;
 
 } /* end read_rasterfile */
 
-int write_rasterfile(fileinfo, pix) RASTERFILE_INFO *fileinfo;
-Pixrect *pix;
+int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix)
 {
   int status;
 
@@ -106,8 +105,7 @@ Pixrect *pix;
   return (FALSE);
 } /* end write_rasterfile */
 
-int init_rasterfile_header(fileinfo, pix) RASTERFILE_INFO *fileinfo;
-Pixrect *pix;
+int init_rasterfile_header(RASTERFILE_INFO *fileinfo, Pixrect *pix)
 {
   Pixrect *ret_pix;
   int status;
@@ -133,8 +131,7 @@ Pixrect *pix;
   return (TRUE);
 } /* end init_rasterfile_header */
 
-int position_rasterfile(fileinfo, n) RASTERFILE_INFO *fileinfo;
-int n;
+int position_rasterfile(RASTERFILE_INFO *fileinfo, int n)
 {
   long position;
   int status;

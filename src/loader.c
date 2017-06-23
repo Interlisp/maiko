@@ -46,7 +46,7 @@ char *malloc();
     C[length] = '\0';                                                   \
   }
 
-int dynamic_load_code(args) LispPTR *args;
+int dynamic_load_code(LispPTR *args)
 /*	args[0]:	LispPTR to file name.
         args[1]:	native addr of where to load the code
 
@@ -65,8 +65,7 @@ return_error:
   return (NIL_PTR);
 }
 
-load_native_object(load_address, dynamic_file) unsigned load_address;
-char *dynamic_file;
+load_native_object(unsigned load_address, char *dynamic_file)
 {
   int load_length, entry_point;
   typedef char *charstrptr;
@@ -99,7 +98,7 @@ char *dynamic_file;
 
 /* ****  system call subr, living in sb_OLD_COMPILE_LOAD_NATIVE slot *** */
 
-int do_system_call(arg) LispPTR arg;
+int do_system_call(LispPTR arg)
 {
   char cmd_str[512];
   register int result;
@@ -118,11 +117,8 @@ int do_system_call(arg) LispPTR arg;
 
 /* ****** stuff below is old & should be removed when the subr is *** */
 
-int dynamic_load(host_file, dynamic_file, load_address, needs_compile, needs_link,
-                 do_load) char *host_file,
-    *dynamic_file;
-unsigned load_address, needs_compile, needs_link, do_load;
-
+int dynamic_load(char *host_file, char *dynamic_file, unsigned load_address, unsigned needs_compile, unsigned needs_link,
+                 unsigned do_load)
 {
   int result = 0;
   char fnamec[80], fnameo[80], fnameil[80], cc_str[255], ld_str[255];
@@ -161,7 +157,7 @@ unsigned load_address, needs_compile, needs_link, do_load;
 
 } /*dynamic_load */
 
-exec_command(cmd_str) char *cmd_str;
+int exec_command(char *cmd_str)
 {
   typedef char *charstrptr;
   typedef charstrptr charstrlist[21];
@@ -176,8 +172,7 @@ exec_command(cmd_str) char *cmd_str;
 
 } /*exec_command */
 
-load_object(load_address, dynamic_file) unsigned load_address;
-char *dynamic_file;
+int load_object(unsigned load_address, char *dynamic_file)
 {
   int load_length, entry_point;
   typedef char *charstrptr;

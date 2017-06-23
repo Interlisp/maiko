@@ -228,13 +228,8 @@ int lpmain(LispPTR lispresults) {
 
 } /* main */
 
-#ifdef OS4
-int lpsetup(rows, cols, nonnuls, rhs, relns, cend, mat, ints, lowbo, upbo, objbound) int rows, cols,
-    nonnuls, rhs, relns, cend, mat, ints, lowbo, upbo, objbound;
-#else
 int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int mat, int ints,
             int lowbo, int upbo, int objbound)
-#endif /* OS4 */
 {
   double obj_bound = -Infinite;
   int failure, i, autoscale;

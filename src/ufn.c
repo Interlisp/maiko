@@ -59,7 +59,7 @@ static char *id = "$Id: ufn.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 */
 /******************************************************************/
 
-ufn(bytecode) DLword bytecode;
+void ufn(DLword bytecode)
 {
   register DefCell *defcell68k; /* Definition Cell PTR */
   register int pv_num;          /* scratch for pv */

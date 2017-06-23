@@ -281,7 +281,7 @@ extern int PrintMaxLevel; /* for print level */
 /***********************************************************************/
 
 LispPTR make_atom();
-LispPTR parse_atomstring(string) char *string;
+LispPTR parse_atomstring(char *string)
 {
   char *start, *packageptr, *nameptr;
   int flag = 0;
@@ -339,9 +339,7 @@ void uraid_commclear() {
   URaid_argnum = 0;
 }
 
-void copy_region(src, dst, width, h) register short *src, *dst;
-int width;
-register int h;
+void copy_region(short *src, short *dst, int width, int h)
 {
   register int w;
 
@@ -994,8 +992,7 @@ int device_before_raid() {
 }
 
 /**
-char *alloc_hideDISP(size)
-int size;
+char *alloc_hideDISP(int size)
 {
  char *retaddr;
  switch(*STORAGEFULLSTATE_word & 0xffff)
@@ -1131,7 +1128,7 @@ int device_after_raid() {
 /***********************************************************************/
 #ifndef COLOR
 
-int re_init_display(lisp_display_addr, display_max) int lisp_display_addr, display_max;
+int re_init_display(int lisp_display_addr, int display_max)
 {
   int mmapstat, size;
   struct pixrect *ColorFb;
@@ -1241,7 +1238,7 @@ int re_init_display(lisp_display_addr, display_max) int lisp_display_addr, displ
 
 #else /* COLOR */
 
-re_init_display(lisp_display_addr, display_max) int lisp_display_addr, display_max;
+int re_init_display(int lisp_display_addr, int display_max)
 {
   int mmapstat, size;
   struct pixrect *ColorFb;

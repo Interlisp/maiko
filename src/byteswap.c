@@ -37,9 +37,7 @@ static char *id = "$Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ Copy
 
 /****************************************************************/
 /*                                                              */
-/*                 Byte-swap a single 2-byte word               */
-/*       (Name used for general-purpose byte swaps, rather      */
-/*           than for fixing up byte-swapped machines)          */
+/*                 swap halves of a single 4-byte word          */
 /*                                                              */
 /****************************************************************/
 unsigned int swapx(unsigned int word) {
@@ -51,7 +49,7 @@ unsigned int swapx(unsigned int word) {
 /*                 Byte-swap a single 2-byte word               */
 /*                                                              */
 /****************************************************************/
-unsigned short byte_swap_word(short unsigned int word) {
+unsigned short byte_swap_word(unsigned short word) {
   return (((word >> 8) & 0xff) + ((word & 0xff) << 8));
 }
 
@@ -78,7 +76,7 @@ unsigned int word_swap_longword(word)
 /*            This does NOT swap words in a long-word!          */
 /*                                                              */
 /****************************************************************/
-void byte_swap_page(short unsigned int *page, int wordcount) {
+void byte_swap_page(unsigned short *page, int wordcount) {
   int i;
   for (i = 0; i < wordcount; i++) { *(page + i) = byte_swap_word(*(page + i)); }
 }

@@ -377,7 +377,7 @@ u_char DOSLispKeyMap_101[0x80] = {
 void set_kbd_iopointers();
 void keyboardtype(int fd);
 
-void init_keyboard(flg) int flg; /* if 0 init else re-init */
+void init_keyboard(int flg) /* if 0 init else re-init */
 {
   int keytrans;
 
@@ -485,7 +485,7 @@ void set_kbd_iopointers() {
 /*  ----------------------------------------------------------------*/
 
 #ifdef SUNDISPLAY
-void seteventmask(eventmask) struct inputmask *eventmask;
+void seteventmask(struct inputmask *eventmask)
 {
   input_imnull(eventmask);
   eventmask->im_flags |= IM_ASCII | IM_NEGASCII | IM_NEGEVENT;
@@ -602,9 +602,7 @@ u_char *make_X_keymap() {
   return (table);
 }
 
-int find_unused_key(map, minkey, len, syms, sym, table) KeySym *map;
-int minkey, len, syms, sym;
-u_char *table;
+int find_unused_key(KeySym *map, int minkey, int len, int syms, int sym, u_char *table)
 {
   int i;
 
@@ -642,7 +640,7 @@ u_char *table;
 /*									*/
 /************************************************************************/
 
-void keyboardtype(fd) int fd;
+void keyboardtype(int fd)
 {
   int type;
   int i;

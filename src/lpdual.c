@@ -24,11 +24,7 @@ static char *id = "$Id: lpdual.c,v 1.2 1999/01/03 02:07:17 sybalsky Exp $ Copyri
 #pragma global assoc
 #endif
 
-#ifdef OS4
-rowdual(rownr) int *rownr;
-#else
 void rowdual(int *rownr)
-#endif
 {
   int i;
   double f, g, minrhs;
@@ -62,13 +58,7 @@ void rowdual(int *rownr)
   }
 } /* rowdual */
 
-#ifdef OS4
-short coldual(numeta, rownr, colnr, minit, prow, drow) int *numeta, *rownr, *colnr;
-short *minit;
-double *prow, *drow;
-#else
 short coldual(int *numeta, int *rownr, int *colnr, short *minit, double *prow, double *drow)
-#endif
 {
   int i, j, r, varnr;
   double theta, quot, pivot, d, f, g;

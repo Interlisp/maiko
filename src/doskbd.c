@@ -246,7 +246,7 @@ extern u_char DOSLispKeyMap_101[];
 /*      normal DOS handler.                                             */
 /************************************************************************/
 
-ExitDosKbd(kbd) KbdInterface kbd;
+void ExitDosKbd(KbdInterface kbd)
 {
   if (kbd->device.active == TRUE) {
     kbd->device.active = FALSE;
@@ -278,7 +278,7 @@ ExitDosKbd(kbd) KbdInterface kbd;
 /*                                                                      */
 /************************************************************************/
 
-EnterDosKbd(kbd) KbdInterface kbd;
+void EnterDosKbd(KbdInterface kbd)
 {
   int i;
 

@@ -68,7 +68,7 @@ extern int LispWindowFd, LispReadFds;
 
 extern int errno;
 
-void KB_enable(args) LispPTR *args; /* args[0] :	ON/OFF flag
+void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
                                      *		T -- ON
                                      *		NIL -- OFF
                                      */
@@ -115,7 +115,7 @@ extern int LispKbdFd;
 int bell_status_word;
 #endif /* DOS */
 
-void KB_beep(args) LispPTR *args; /* args[0] :	ON/OFF flag
+void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
                                    *		T -- ON
                                    *		NIL -- OFF
                                    * args[1] :	frequency
@@ -169,7 +169,7 @@ void KB_beep(args) LispPTR *args; /* args[0] :	ON/OFF flag
  *
  ****************************************************/
 
-void KB_setmp(args) LispPTR *args; /* args[0] :	MPCODE	*/
+void KB_setmp(LispPTR *args) /* args[0] :	MPCODE	*/
 {
 #ifdef DEBUG
   printf("MP: %d\n", args[0] & 0xffff);
@@ -188,7 +188,7 @@ void KB_setmp(args) LispPTR *args; /* args[0] :	MPCODE	*/
  *
  ****************************************************/
 
-void KB_setled(args) LispPTR *args;
+void KB_setled(LispPTR *args)
 {
 #ifdef DOS
   outp(PORT_A, (unsigned char)0xED);

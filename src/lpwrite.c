@@ -18,21 +18,11 @@ static char *id = "$Id: lpwrite.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ Copyr
 
 #include "lpdefs.h"
 #include "lpglobl.h"
-#ifdef OS4
-#include <sys/types.h>
-#include <varargs.h>
-#else
 #include <stdarg.h>
-#endif
 
 /* this is the ansi version ... */
 
-#ifdef OS4
-print_solution(stream, sol) FILE *stream;
-double *sol;
-#else
 void print_solution(FILE *stream, double *sol)
-#endif
 {
   int i;
 
@@ -50,11 +40,7 @@ void print_solution(FILE *stream, double *sol)
   }
 } /* print_solution */
 
-#ifdef OS4
-print_indent()
-#else
 void print_indent(void)
-#endif
 {
   int i;
 
@@ -63,11 +49,7 @@ void print_indent(void)
   fprintf(stderr, "> ");
 } /* print_indent */
 
-#ifdef OS4
-debug_print_solution(sol) double *sol;
-#else
 void debug_print_solution(double *sol)
-#endif
 {
   int i;
 
@@ -78,11 +60,7 @@ void debug_print_solution(double *sol)
     }
 } /* debug_print_solution */
 
-#ifdef OS4
-debug_print_bounds(upbo, lowbo) double *upbo, *lowbo;
-#else
 void debug_print_bounds(double *upbo, double *lowbo)
-#endif
 {
   int i;
 
@@ -99,10 +77,6 @@ void debug_print_bounds(double *upbo, double *lowbo)
     }
 } /* debug_print_bounds */
 
-#ifdef OS4
-debug_print(format) char *format;
-{ return 0; }
-#else
 void debug_print(char *format, ...) {
   va_list ap;
 
@@ -114,5 +88,3 @@ void debug_print(char *format, ...) {
     va_end(ap);
   }
 } /* debug_print */
-
-#endif

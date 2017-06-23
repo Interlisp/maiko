@@ -151,7 +151,7 @@ LispPTR LCinit(void) {
    so the loop is unnecessary.  */
 /* * * NOT USED * * */
 #ifdef NEVER
-int LCTypeOf(thing, typename) register LispPTR thing, typename;
+int LCTypeOf(LispPTR thing, LispPTR typename)
 {
   register struct dtd *dtd68k;
 #ifdef BIGVM

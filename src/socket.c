@@ -41,8 +41,7 @@ void bcopy();
  * descriptor (network socket) or 0 if connection fails.
  */
 
-int connect_to_server(host, display) char *host;
-int display;
+int connect_to_server(char *host, int display)
 {
   struct sockaddr_in inaddr; /* INET socket address. */
   struct sockaddr *addr;     /* address to connect to */

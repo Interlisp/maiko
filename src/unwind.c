@@ -108,10 +108,7 @@ UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int
 /******************************************************************/
 #define SMALLP(x) (((unsigned int)x >> 16) == (S_POSITIVE >> 16))
 
-LispPTR find_the_blip(blip, throwp, unwinder) register LispPTR blip;
-register LispPTR throwp;
-FX *unwinder;
-
+LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
 {
   register LispPTR target;
   register FX *target_addr;
@@ -145,8 +142,7 @@ cons_result:
   return (cons(StkOffset_from_68K(target), pc));
 }
 
-LispPTR variable_name_in_frame(fx_addr, code) FX *fx_addr;
-register LispPTR code;
+LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
 {
   register DLword *name_ptr;
   register DLword *name_bind_ptr;
@@ -172,8 +168,7 @@ register LispPTR code;
 */
 /******************************************************************/
 
-LispPTR pvar_value_in_frame(frame_addr, atom_index) register FX *frame_addr;
-register LispPTR atom_index;
+LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
 
 {
   register DLword *name_ptr;

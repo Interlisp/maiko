@@ -159,7 +159,7 @@ static struct nit_ioc nioc;
 /*									*/
 /************************************************************************/
 
-LispPTR ether_suspend(args) LispPTR args[];
+LispPTR ether_suspend(LispPTR args[])
 {
 #ifndef NOETHER
 #ifdef PKTFILTER
@@ -210,7 +210,7 @@ LispPTR ether_suspend(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-LispPTR ether_resume(args) LispPTR args[];
+LispPTR ether_resume(LispPTR args[])
 {
 #ifndef NOETHER
   struct strioctl si;
@@ -257,7 +257,7 @@ LispPTR ether_resume(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-LispPTR ether_ctrlr(args) LispPTR args[];
+LispPTR ether_ctrlr(LispPTR args[])
 {
   if (ether_fd < 0) return (NIL);
   return (ATOM_T);
@@ -267,7 +267,7 @@ LispPTR ether_ctrlr(args) LispPTR args[];
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-LispPTR ether_reset(args) LispPTR args[];
+LispPTR ether_reset(LispPTR args[])
 {
   int i;
   char hostnumber[6];
@@ -298,7 +298,7 @@ LispPTR ether_reset(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-LispPTR ether_get(args) LispPTR args[];
+LispPTR ether_get(LispPTR args[])
 {
   LispPTR MaxByteCount;
   LispPTR result = NIL;
@@ -336,7 +336,7 @@ LispPTR ether_get(args) LispPTR args[];
  **********************************************************************/
 #define OFFSET sizeof(sa.sa_data)
 
-LispPTR ether_send(args) LispPTR args[];
+LispPTR ether_send(LispPTR args[])
 {
 #ifndef NOETHER
   /*
@@ -401,7 +401,7 @@ LispPTR ether_send(args) LispPTR args[];
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
 
-LispPTR ether_setfilter(args) LispPTR args[];
+LispPTR ether_setfilter(LispPTR args[])
 { return (NIL); } /* ether_setfilter */
 
 /**********************************************************************
@@ -638,7 +638,7 @@ LispPTR get_packet() {
  *	This is believed obsolete with packet filtering enabled
  **********************************************************************/
 
-int check_filter(buffer) u_char *buffer;
+int check_filter(u_char *buffer)
 {
   /* broadcast packets */
   if (ether_addr_equal(buffer, broadcast)) switch (((short *)buffer)[6]) {
@@ -661,10 +661,7 @@ int check_filter(buffer) u_char *buffer;
  *	Also believed obsolete
  **********************************************************************/
 
-int ether_addr_equal(add1, add2)
-
-    u_char add1[],
-    add2[];
+int ether_addr_equal(u_char add1[], u_char add2[])
 {
   register int i;
   for (i = 0; i < 6; i++)
@@ -1045,7 +1042,7 @@ void init_ether() {
 /*									*/
 /************************************************************************/
 
-LispPTR check_sum(args) register LispPTR *args;
+LispPTR check_sum(register LispPTR *args)
 {
   register LispPTR checksum;
   register DLword *address;

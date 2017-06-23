@@ -199,7 +199,7 @@ exit_host_filesystem() {
  * can open the file with the specified mode or not.
  */
 
-LispPTR UFS_getfilename(args) register LispPTR *args;
+LispPTR UFS_getfilename(LispPTR *args)
 {
   register char *base;
   register int len, rval;
@@ -286,7 +286,7 @@ LispPTR UFS_getfilename(args) register LispPTR *args;
  * a specified file.
  */
 
-LispPTR UFS_deletefile(args) register LispPTR *args;
+LispPTR UFS_deletefile(LispPTR *args)
 {
   char file[MAXPATHLEN], fbuf[MAXPATHLEN];
   register int len, rval;
@@ -341,7 +341,7 @@ LispPTR UFS_deletefile(args) register LispPTR *args;
  * a specified file.
  */
 
-LispPTR UFS_renamefile(args) register LispPTR *args;
+LispPTR UFS_renamefile(LispPTR *args)
 {
   char fbuf[MAXPATHLEN], src[MAXPATHLEN], dst[MAXPATHLEN];
   int rval, len;
@@ -411,7 +411,7 @@ LispPTR UFS_renamefile(args) register LispPTR *args;
  * the directory name representation.
  */
 
-LispPTR UFS_directorynamep(args) register LispPTR *args;
+LispPTR UFS_directorynamep(LispPTR *args)
 {
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
@@ -494,16 +494,10 @@ LispPTR UFS_directorynamep(args) register LispPTR *args;
  *
  */
 #ifdef DOS
-int unixpathname(src, dst, versionp, genp, drive, extlenptr, rawname) char *drive;
-int *extlenptr;
-char *rawname;
+int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
 #else
-int unixpathname(src, dst, versionp, genp)
+int unixpathname(char *src, char *dst, int versionp, int genp)
 #endif /* DOS */
-register char *src;
-register char *dst;
-register int versionp;
-register int genp;
 {
   register char *cp, *dp, *np, *rp;
   register int newdirflg;
@@ -907,10 +901,7 @@ register int genp;
  *
  */
 
-int lisppathname(fullname, lispname, dirp, versionp) register char *fullname;
-register char *lispname;
-register int dirp;
-register int versionp;
+int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
 {
   register char *cp, *dp, *lnamep, *cnamep;
   char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN], drive;
@@ -1165,7 +1156,7 @@ register int versionp;
  * Lisp sense or not.
  */
 
-int quote_fname(file) register char *file;
+int quote_fname(char *file)
 {
   register char *cp, *dp;
   register int extensionp;
@@ -1250,7 +1241,7 @@ int quote_fname(file) register char *file;
  * and being converted to {UNIX} name.
  */
 
-int quote_fname_ufs(file) register char *file;
+int quote_fname_ufs(char *file)
 {
   register char *cp, *dp;
   register int extensionp;
@@ -1326,7 +1317,7 @@ int quote_fname_ufs(file) register char *file;
  * name.  Both {DSK} and {UNIX} uses this routine.
  */
 
-int quote_dname(dir) register char *dir;
+int quote_dname(char *dir)
 {
   register char *cp, *dp;
   char fbuf[MAXNAMLEN + 1];

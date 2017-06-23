@@ -99,7 +99,7 @@ extern DLword *Lisp_world;
 /*									*/
 /************************************************************************/
 
-Open_Socket(args) LispPTR *args;
+LispPTR Open_Socket(LispPTR *args)
 {
 #ifdef TRACE
   printf("TRACE: Open_Socket()\n");
@@ -139,7 +139,7 @@ Open_Socket(args) LispPTR *args;
 /*									*/
 /************************************************************************/
 
-Close_Socket() {
+LispPTR Close_Socket() {
   int stat;
 
 #ifdef TRACE
@@ -174,7 +174,7 @@ typedef struct {  /* Format for an X-server packet */
 #define PACKET_DEFOFFSET 46
 #define PACKET_MAXSIZE 638
 
-Read_Socket(args) LispPTR *args;
+LispPTR Read_Socket(LispPTR *args)
 {
   PACKET *packet;
   char *buffer;
@@ -216,7 +216,7 @@ Read_Socket(args) LispPTR *args;
 /*									*/
 /************************************************************************/
 
-Write_Socket(args) LispPTR *args;
+LispPTR Write_Socket(LispPTR *args)
 {
   PACKET *packet;
   char *buffer;
@@ -264,7 +264,7 @@ Write_Socket(args) LispPTR *args;
 /************************************************************************/
 extern int KBDEventFlg;
 
-Kbd_Transition(args) LispPTR *args;
+void Kbd_Transition(LispPTR *args)
 /* args[0] is key-number */
 /* args[1] is up-flg     */
 {

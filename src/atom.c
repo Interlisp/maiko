@@ -34,8 +34,7 @@ static char *id = "$Id: atom.c,v 1.3 1999/05/31 23:35:23 sybalsky Exp $ Copyrigh
 #include "emlglob.h"
 
 #ifndef BIGATOMS
-N_OP_atomcellN(tos, n) register int tos;
-int n;
+N_OP_atomcellN(int tos, int n)
 {
   if ((tos & 0xffff0000) != 0) ERROR_EXIT(tos);
 

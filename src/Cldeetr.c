@@ -51,8 +51,7 @@ int ether_fd = -1;                                /* file descriptor for ether s
 unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */
 char filetorun[30] = "ldecolor";
 
-main(argc, argv, envp) int argc;
-char **argv, **envp;
+int main(int argc, char *argv[])
 {
   char Earg[30], Ename[30], **newargv;
   int i;

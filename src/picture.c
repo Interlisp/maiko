@@ -13,6 +13,9 @@ static char *id = "$Id: picture.c,v 1.2 1999/01/03 02:07:30 sybalsky Exp $ Copyr
 /*	parties without the specific permission of Venue.		*/
 /*									*/
 /************************************************************************/
+/* 2017-06-22, NBriggs -- changed return (T) to return (ATOM_T) for functions
+ * that should be returning a LispPTR result
+ */
 
 #include "version.h"
 
@@ -122,38 +125,7 @@ extern DLword REPLACE_atom, INVERT_atom, PAINT_atom, ERASE_atom;
 extern int Video_OnOff_Flg;
 #endif /* VIDEO */
 
-LispPTR Picture_Op(args) LispPTR *args;
-{
-  int op;
-  LispPTR ret_value;
-
-  op = (DLword)args[0];
-
-  switch (op) {
-    case PICT_CREATE: ret_value = (LispPTR)Picture_Create(args); break;
-    case PICT_FREE: ret_value = Picture_Free(args); break;
-    case PICT_GETVALUE: ret_value = Picture_GetValue(args); break;
-    case PICT_SETVALUE: ret_value = Picture_SetValue(args); break;
-    case PICT_GET: ret_value = Picture_Get(args); break;
-    case PICT_PUT: ret_value = Picture_Put(args); break;
-    case PICT_BITBLT: ret_value = Picture_Bitblt(args); break;
-    case PICT_BLTSHADE: ret_value = Picture_Bltshade(args); break;
-    case VIDEOFILE_OPEN: ret_value = VideoFile_Open(args); break;
-    case VIDEOFILE_CLOSE: ret_value = VideoFile_Close(args); break;
-    case VIDEOFILE_READ: ret_value = VideoFile_Read(args); break;
-    case VIDEOFILE_WRITE: ret_value = VideoFile_Write(args); break;
-    case VIDEOFILE_POSITION:
-      ret_value = VideoFile_Position(args);
-      break;
-    defaults:
-      ret_value = NIL;
-      break;
-  } /* end switch( op ) */
-
-  return (ret_value);
-}
-
-int Picture_Create(args) LispPTR *args;
+LispPTR Picture_Create(LispPTR *args)
 {
   int width, height, bitsperpixel;
   Pixrect *storage;
@@ -164,7 +136,7 @@ int Picture_Create(args) LispPTR *args;
   bitsperpixel = (DLword)args[3];
 
   if ((bitsperpixel != 1) && (bitsperpixel != 8) && (bitsperpixel != 24)) {
-    return (NULL);
+    return (NIL);
   } /* end if( bitsperpixel ) */
 
   if (bitsperpixel == 24) bitsperpixel = 32;
@@ -186,7 +158,7 @@ int Picture_Create(args) LispPTR *args;
 
 extern Pixrect *TrueColorFb;
 
-int Picture_Free(args) LispPTR *args;
+LispPTR Picture_Free(LispPTR *args)
 {
   LispPicture *n_picture;
   Pixrect *pict;
@@ -200,10 +172,10 @@ int Picture_Free(args) LispPTR *args;
     n_picture->storage = NULL;
   } /* end if( pict ) */
 
-  return (T);
+  return (ATOM_T);
 } /* end Picture_Free */
 
-int Picture_GetValue(args) LispPTR *args;
+LispPTR Picture_GetValue(LispPTR *args)
 {
   LispPTR picture;
   int x, y, value;
@@ -224,7 +196,7 @@ int Picture_GetValue(args) LispPTR *args;
 
 } /* end Picture_GetValue */
 
-int Picture_SetValue(args) LispPTR *args;
+LispPTR Picture_SetValue(LispPTR *args)
 {
   int x, y, value;
   LispPicture *n_picture;
@@ -237,7 +209,7 @@ int Picture_SetValue(args) LispPTR *args;
 
   pict = (Pixrect *)n_picture->storage;
   pr_put(pict, x, y, value);
-  return (T);
+  return (ATOM_T);
 
 bad_arg:
   return (NIL);
@@ -247,7 +219,7 @@ bad_arg:
 #define MAX_NAME_LEN 512
 static char file_name[MAX_NAME_LEN];
 
-int Picture_Get(args) LispPTR *args;
+LispPTR Picture_Get(LispPTR *args)
 {
   LispPicture *n_picture;
   int length;
@@ -260,13 +232,13 @@ int Picture_Get(args) LispPTR *args;
     n_picture->height = (DLword)(((Pixrect *)n_picture->storage)->pr_height);
     n_picture->bitsperpixel = (DLword)(((Pixrect *)n_picture->storage)->pr_depth);
     if (n_picture->bitsperpixel == 32) n_picture->bitsperpixel = 24;
-    return (T);
+    return (ATOM_T);
   } else {
     return (NIL);
   } /* end if */
 } /* end Picture_Get */
 
-int Picture_Put(args) LispPTR *args;
+LispPTR Picture_Put(LispPTR *args)
 {
   LispPicture *n_picture;
   char *name;
@@ -277,10 +249,10 @@ int Picture_Put(args) LispPTR *args;
 
   Pixrect_to_File((Pixrect *)n_picture->storage, file_name);
 
-  return (T);
+  return (ATOM_T);
 } /*end Picture_Put */
 
-Picture_Bitblt(args) LispPTR *args;
+LispPTR Picture_Bitblt(LispPTR *args)
 {
   LispPicture *src, *dst;
   int src_left, src_bottom, dst_left, dst_bottom, top, bottom, left, right, width, height, stodx,
@@ -392,7 +364,7 @@ bad_arg:
 
 } /* end Picture_Bitblt */
 
-Picture_Bltshade(args) LispPTR *args;
+LispPTR Picture_Bltshade(LispPTR *args)
 {
   LispPicture *dst;
   unsigned int texture;
@@ -491,7 +463,7 @@ bad_arg:
 #define OPEN_FOR_READ 0
 #define OPEN_FOR_WRITE 1
 
-VideoFile_Open(args) LispPTR *args;
+LispPTR VideoFile_Open(LispPTR *args)
 {
   unsigned int *cell, videofile;
   int length, access;
@@ -510,19 +482,19 @@ VideoFile_Open(args) LispPTR *args;
   return (LADDR_from_68k(cell));
 } /* end VideoFile_Open */
 
-int VideoFile_Close(args) LispPTR *args;
+LispPTR VideoFile_Close(LispPTR *args)
 {
   unsigned int videofile;
 
   N_GETNUMBER(args[1], videofile, bad_arg);
 
   close_rasterfile(videofile);
-  return (T);
+  return (ATOM_T);
 bad_arg:
   return (NIL);
 } /* end VideoFile_Close */
 
-int VideoFile_Read(args) LispPTR *args;
+LispPTR VideoFile_Read(LispPTR *args)
 {
   LispPicture *n_picture;
   unsigned int *cell, pix, videofile;
@@ -536,14 +508,14 @@ int VideoFile_Read(args) LispPTR *args;
     n_picture->bitsperpixel = (DLword)(((Pixrect *)n_picture->storage)->pr_depth);
     if (n_picture->bitsperpixel == 32) n_picture->bitsperpixel = 24;
 
-    return (T); /* normal return */
+    return (ATOM_T); /* normal return */
   }             /* end if */
 
 bad_arg:
   return (NIL);
 } /* end VideoFile_Read */
 
-int VideoFile_Write(args) LispPTR *args;
+LispPTR VideoFile_Write(LispPTR *args)
 {
   unsigned int videofile;
   LispPicture *n_pict;
@@ -553,13 +525,13 @@ int VideoFile_Write(args) LispPTR *args;
   n_pict = (LispPicture *)Addr68k_from_LADDR(args[2]);
 
   if ((status = write_rasterfile(videofile, (Pixrect *)n_pict->storage))) {
-    return (T);
+    return (ATOM_T);
   } /* end if( status ) */
 bad_arg:
   return (NIL);
 } /* end VideoFile_Write */
 
-int VideoFile_Position(args) LispPTR *args;
+LispPTR VideoFile_Position(LispPTR *args)
 {
   unsigned int videofile;
   int n, status;
@@ -572,3 +544,32 @@ bad_arg:
   return (NIL);
 
 } /* end VideoFile_Position */
+
+LispPTR Picture_Op(LispPTR *args)
+{
+  int op;
+  LispPTR ret_value;
+
+  op = (DLword)args[0];
+
+  switch (op) {
+    case PICT_CREATE: ret_value = (LispPTR)Picture_Create(args); break;
+    case PICT_FREE: ret_value = Picture_Free(args); break;
+    case PICT_GETVALUE: ret_value = Picture_GetValue(args); break;
+    case PICT_SETVALUE: ret_value = Picture_SetValue(args); break;
+    case PICT_GET: ret_value = Picture_Get(args); break;
+    case PICT_PUT: ret_value = Picture_Put(args); break;
+    case PICT_BITBLT: ret_value = Picture_Bitblt(args); break;
+    case PICT_BLTSHADE: ret_value = Picture_Bltshade(args); break;
+    case VIDEOFILE_OPEN: ret_value = VideoFile_Open(args); break;
+    case VIDEOFILE_CLOSE: ret_value = VideoFile_Close(args); break;
+    case VIDEOFILE_READ: ret_value = VideoFile_Read(args); break;
+    case VIDEOFILE_WRITE: ret_value = VideoFile_Write(args); break;
+    case VIDEOFILE_POSITION: ret_value = VideoFile_Position(args); break;
+    defaults:
+      ret_value = NIL;
+      break;
+  } /* end switch( op ) */
+
+  return (ret_value);
+}

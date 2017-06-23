@@ -98,7 +98,7 @@ static void ocr_proc_post_read();
  * notify the completion of the initial request.
  */
 
-void ocr_proc(ppid) pid_t ppid;
+void ocr_proc(pid_t ppid)
 {
   int len, postponed = 0;
   u_char pkt[PKTLEN];
@@ -159,8 +159,7 @@ static void ocr_proc_exit() {
  * Handle the work requested from the primary emulator process
  */
 
-static int ocr_handle_comm(pkt, epkt, reasonp) u_char pkt[], epkt[];
-int *reasonp;
+static int ocr_handle_comm(u_char pkt[], u_char epkt[], int *reasonp)
 {
   int len;
 
@@ -256,8 +255,7 @@ int *reasonp;
  * Handle postponed time consuming work.
  */
 
-static void ocr_do_postponed_work(reason, ppid) int reason;
-pid_t ppid;
+static void ocr_do_postponed_work(int reason, pid_t ppid)
 {
   u_char pkt[PKTLEN];
 
@@ -307,7 +305,7 @@ pid_t ppid;
  * Notify primary emulator process that time consuming work has been done.
  */
 
-static void notify_ready(ppid) pid_t ppid;
+static void notify_ready(pid_t ppid)
 { kill(ppid, SIGUSR1); }
 
 /*
@@ -365,7 +363,7 @@ static void ocr_init_signal() {
  * Scan image
  */
 
-static int ocr_proc_scan(spp) struct ocr_scan_para *spp;
+static int ocr_proc_scan(struct ocr_scan_para *spp)
 {
   struct scan_params sp;
 
@@ -471,8 +469,7 @@ static int ocr_proc_scan(spp) struct ocr_scan_para *spp;
  * image being uploaded into the ocr_image_infor structure.
  */
 
-static int ocr_proc_iminfo(upp, infop) struct ocr_up_para *upp;
-struct ocr_image_info *infop;
+static int ocr_proc_iminfo(struct ocr_up_para *upp, struct ocr_image_info *infop)
 {
   struct img_params upara;
   struct ocr_stat st;
@@ -538,8 +535,7 @@ struct ocr_image_info *infop;
  * Set Read Parameters
  */
 
-static int ocr_proc_set_rpara(rpp, len) register struct ocr_read_para *rpp;
-int len;
+static int ocr_proc_set_rpara(register struct ocr_read_para *rpp, int len)
 {
   register int cnt = len;
   struct read_params rpara;
@@ -634,8 +630,7 @@ static int ocr_proc_read() {
  * compatible with ocr_bulk_read in 'ocr.c'.
  */
 
-static void ocr_proc_img_upload(iminfop, ppid) struct ocr_image_info *iminfop;
-pid_t ppid;
+static void ocr_proc_img_upload(struct ocr_image_info *iminfop, pid_t ppid)
 {
   register int len, resid, firsttime = 1;
   int cnt;
@@ -678,7 +673,7 @@ pid_t ppid;
  * compatible with ocr_bulk_read in 'ocr.c'.
  */
 
-static void ocr_proc_post_read(ppid) pid_t ppid;
+static void ocr_proc_post_read(pid_t ppid)
 {
   static u_char rbuf[65536];
   static u_char fbuf[65536];
@@ -747,8 +742,7 @@ fail : {
  * Reformat the read data to make a life of Lisp tremendously easy
  */
 
-static int ocr_conv_read_data(sp, dp, len) register u_char *sp, *dp;
-register int len;
+static int ocr_conv_read_data(register u_char *sp, u_char *dp, register int len)
 {
   bcopy(sp, dp, len);
   return (len);
@@ -788,10 +782,7 @@ register int len;
 
 
 static int
-ocr_conv_read_data(sp, dp, len, statep)
-register u_char		*sp, *dp;
-register int		len;
-struct parse_state	*statep;
+ocr_conv_read_data(u_char *sp, u_char *dp, int len, struct parse_state *statep)
 {
         /+
          * for now...

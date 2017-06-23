@@ -34,7 +34,7 @@ extern void docopy();
 
 extern void GenericPanic();
 
-void VGA_setmax(dsp) DspInterface dsp;
+void VGA_setmax(DspInterface dsp)
 {
   struct videoconfig vc;
 
@@ -61,7 +61,7 @@ void VGA_setmax(dsp) DspInterface dsp;
   _dpmi_lockregion((void *)&docopy, 0x2000);
 }
 
-void VGA_exit(dsp) DspInterface dsp;
+void VGA_exit(DspInterface dsp)
 {
   /* Unlock the following to avoid waste of mainmem. */
   _dpmi_unlockregion(&currentdsp, sizeof(currentdsp));
@@ -79,52 +79,41 @@ void VGA_exit(dsp) DspInterface dsp;
   _clearscreen(_GCLEARSCREEN);
 }
 
-unsigned long VGA_not_color(dsp) DspInterface dsp;
+unsigned long VGA_not_color(DspInterface dsp)
 {
   printf("Colormode not set!\n");
   fflush(stdout);
   return (0);
 }
 
-unsigned long VGA_colornum(dsp) DspInterface dsp;
+unsigned long VGA_colornum(DspInterface dsp)
 { /* Return the number of available colors */
   return (1 << dsp->bitsperpixel);
 }
 
-unsigned long VGA_possiblecolors(dsp) DspInterface dsp;
+unsigned long VGA_possiblecolors(DspInterface dsp)
 { return (dsp->colors); }
 
-void VGA_mono_drawline(dsp, startX, startY, width, height, function, color, thickness, butt, clipX,
-                       clipY, clipWidth, clipHeight, dashing) DspInterface dsp;
-unsigned long startX, startY, width, height;
-int function;
-unsigned long color, thickness;
-int butt;
-unsigned long clipX, clipY, clipWidth, clipHeight;
-LispPTR *dashing;
-
+void VGA_mono_drawline(DspInterface dsp, unsigned long startX, unsiged long startY, unsigned long width, unsigned long height,
+		       int function, unsigned long color, unsigned long thickness, int butt,
+		       unsigned long clipX, unsigned long clipY, unsigned long clipWidth, unsigned long clipHeight,
+		       LispPTR *dashing)
 {
   _moveto_w(startX, startY);
   _lineto_w(width, height);
 }
 
-void VGA_color_drawline(dsp, startX, startY, width, height, function, color, thickness, butt, clipX,
-                        clipY, clipWidth, clipHeight, dashing) DspInterface dsp;
-unsigned long startX, startY, width, height;
-int function;
-unsigned long color, thickness;
-int butt;
-unsigned long clipX, clipY, clipWidth, clipHeight;
-LispPTR *dashing;
+void VGA_color_drawline(DspInterface dsp, unsigned long startX, unsiged long startY, unsigned long width, unsigned long height,
+		       int function, unsigned long color, unsigned long thickness, int butt,
+		       unsigned long clipX, unsigned long clipY, unsigned long clipWidth, unsigned long clipHeight,
+		       LispPTR *dashing)
 
 {}
 
-void VGA_cleardisplay(dsp) DspInterface dsp;
+void VGA_cleardisplay(DspInterface dsp)
 { _clearscreen(_GCLEARSCREEN); }
 
-VGA_init(dsp, lispbitmap, width_hint, height_hint, depth_hint) DspInterface dsp;
-char *lispbitmap;
-int width_hint, height_hint, depth_hint;
+VGA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, int depth_hint)
 {
   struct videoconfig vc;
 

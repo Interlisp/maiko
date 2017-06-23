@@ -128,7 +128,7 @@ LispPTR COLORSCREEN_index; /* if it's 0xffffffff, not yet initialized */
 /*									*/
 /************************************************************************/
 
-C_slowbltchar(args) register LispPTR *args;
+C_slowbltchar(LispPTR *args)
 {
   Stream *n_dstream;
   DISPLAYDATA *n_dd;
@@ -300,15 +300,8 @@ C_slowbltchar(args) register LispPTR *args;
 
 u_int ColorizedFont8CACHE[MAXFONTHEIGHT / BITSPERNIBBLE * MAXFONTWIDTH / BITSPERNIBBLE];
 
-ColorizeFont8(sBM, sXOffset, sYOffset, dBM, dXOffset, dYOffset, width, height, col0, col1,
-              sourcetype, operation) register BITMAP *sBM;
-register DLword sXOffset, sYOffset, width, height;
-register BITMAP *dBM;
-DLword dYOffset, dXOffset;
-u_char col0, col1;
-LispPTR sourcetype;
-LispPTR operation;
-
+ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
+              LispPTR sourcetype, LispPTR operation)
 {
   register DLword *nbase;
   register u_char *dbase;
@@ -337,15 +330,8 @@ LispPTR operation;
 /*									*/
 /************************************************************************/
 
-ColorizeFont8_BIGBM(sBM, sXOffset, sYOffset, dBM, dXOffset, dYOffset, width, height, col0, col1,
-                    sourcetype, operation) register BITMAP *sBM;
-register DLword sXOffset, sYOffset, width, height;
-register BIGBM *dBM;
-DLword dXOffset, dYOffset;
-u_char col0, col1;
-LispPTR sourcetype;
-LispPTR operation;
-
+ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
+              LispPTR sourcetype, LispPTR operation)
 {
   register DLword *nbase;
   register u_char *dbase;
@@ -421,9 +407,7 @@ loop:
 /*									*/
 /************************************************************************/
 
-newColorizeFont8(pbt, backcolor, forecolor, srctype, ope) PILOTBBT *pbt;
-u_char backcolor, forecolor;
-LispPTR srctype, ope;
+newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype, LispPTR ope)
 {
   register DLword *nbase;
   register u_char *dbase;
@@ -446,7 +430,7 @@ LispPTR srctype, ope;
 /*									*/
 /************************************************************************/
 
-Uncolorize_Bitmap(args) LispPTR args[];
+Uncolorize_Bitmap(LispPTR args[])
 {
   BITMAP *s_bitmap, *d_bitmap;
   register DLword *OnOff;
@@ -524,7 +508,7 @@ Uncolorize_Bitmap(args) LispPTR args[];
 
 extern DLword INPUT_atom, REPLACE_atom;
 
-Colorize_Bitmap(args) LispPTR args[];
+Colorize_Bitmap(LispPTR args[])
 {
   BITMAP *s_bitmap, *d_bitmap;
   int s_left, s_bottom, d_left, d_bottom, width, height, color0, color1, d_nbits;
@@ -601,7 +585,7 @@ bad_arg:
     }                                        \
   }
 
-Draw_8BppColorLine(args) register LispPTR *args;
+Draw_8BppColorLine(LispPTR *args)
 {
   extern DLword REPLACE_atom, INVERT_atom, PAINT_atom, ERASE_atom;
 

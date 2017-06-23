@@ -135,7 +135,7 @@ static LispPTR ocr_get_read_result();
  * unwind protected contour to reset OCR.
  */
 
-int ocr_comm(args) LispPTR *args;
+int ocr_comm(LispPTR *args)
 {
   int com;
   LispPTR val;

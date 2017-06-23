@@ -70,8 +70,7 @@ extern int MonoOrColor;
 /**                                                                         **/
 /*****************************************************************************/
 
-LispPTR N_OP_pilotbitblt(pilot_bt_tbl, tos) LispPTR pilot_bt_tbl;
-int tos;
+LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
@@ -174,9 +173,7 @@ int tos;
 
 #ifndef COLOR
 /* for MONO only */
-int cursorin(addrhi, addrlo, w, h, backward) DLword addrhi; /* Lisp addr hi-word    */
-DLword addrlo;                                              /* Lisp addr lo-word    */
-register int w, h;
+int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 {
   register int x, y;
   if (addrhi == DISPLAY_HI) {
@@ -198,9 +195,7 @@ register int w, h;
 #else
 
 /* for COLOR & MONO */
-int cursorin(addrhi, addrlo, w, h, backward) DLword addrhi; /* Lisp addr hi-word    */
-DLword addrlo;                                              /* Lisp addr lo-word    */
-register int w, h;
+int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 {
   register int x, y;
   register DLword *base68k;

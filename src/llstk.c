@@ -481,7 +481,7 @@ extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
 extern struct cursor CurrentCursor;
-void flip_cursorbar(n) int n;
+void flip_cursorbar(int n)
 {
   GETWORD(EmCursorBitMap68K + n) = ~(GETWORD(EmCursorBitMap68K + n));
 #ifdef SUNDISPLAY

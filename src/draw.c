@@ -58,7 +58,7 @@ extern int MonoOrColor;
 #endif /* COLOR */
 
 #ifdef DISPLAYBUFFER
-LispPTR n_new_cursorin_CG6(dx, dy, w, h) register int dx, dy, w, h;
+LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h)
 {
   if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL))
     return (T);
@@ -127,13 +127,7 @@ plot:
 #define DISPLAYBUFFER
 #endif /* XWINDOW */
 
-int N_OP_drawline(ptr, curbit, xsize, width, ysize, op, delta, numx, numy) register int curbit,
-    xsize;
-int width;
-register int ysize;
-int op;
-register int delta, numx, numy;
-LispPTR ptr;
+int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int op, int delta, int numx, int numy)
 {
   register DLword *dataptr;
   ScreenLocked = T;

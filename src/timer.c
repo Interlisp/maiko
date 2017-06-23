@@ -233,7 +233,7 @@ void update_miscstats() {
 
 DLword *createcell68k();
 
-LispPTR subr_gettime(args) LispPTR args[];
+LispPTR subr_gettime(LispPTR args[])
 {
   int result;
   result = gettime(args[0] & 0xffff);
@@ -263,7 +263,7 @@ LispPTR subr_gettime(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-int gettime(casep) int casep;
+int gettime(int casep)
 {
 #ifndef USETIMEFN
   struct timeval timev;
@@ -342,7 +342,7 @@ int gettime(casep) int casep;
 /*									*/
 /************************************************************************/
 
-void subr_settime(args) LispPTR args[];
+void subr_settime(LispPTR args[])
 {
 #ifdef DOS
   struct dostime_t dostime;
@@ -383,7 +383,7 @@ void subr_settime(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-void subr_copytimestats(args) LispPTR args[];
+void subr_copytimestats(LispPTR args[])
 {
   MISCSTATS *source;
   MISCSTATS *dest;
@@ -403,7 +403,7 @@ void subr_copytimestats(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_rclk(tos) register LispPTR tos;
+LispPTR N_OP_rclk(LispPTR tos)
 {
   unsigned int usec;
 #ifdef DOS
@@ -508,14 +508,10 @@ static struct sigvec timerv;
 #endif /* SYSVSIGNALS */
 
 #if (defined(OS4) || defined(SYSVONLY)) || defined(MACOSX) || defined(FREEBSD)
-void int_timer_service(sig, code, scp)
+void int_timer_service(int sig, int code, struct sigcontext *scp)
 #else
-int int_timer_service(sig, code, scp)
+int int_timer_service(int sig, int code, struct sigcontext *scp)
 #endif /* OS4 | SYSVONLY | MACOSX | FREEBSD */
-
-    int sig,
-    code;
-struct sigcontext *scp;
 {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
@@ -621,7 +617,7 @@ void int_timer_init()
 /*									*/
 /************************************************************************/
 
-void int_io_open(fd) int fd;
+void int_io_open(int fd)
 {
 #ifdef DOS
 /* would turn on DOS kbd signal handler here */
@@ -637,7 +633,7 @@ void int_io_open(fd) int fd;
 #endif
 }
 
-void int_io_close(fd) int fd;
+void int_io_close(int fd)
 {
 #ifdef DOS
 /* Turn off signaller here */
@@ -837,8 +833,7 @@ void int_timer_on() {
 /* The global used to signal floating-point errors */
 int FP_error = 0;
 
-void int_fp_service(sig, code, scp) int sig, code;
-struct sigcontext *scp;
+void int_fp_service(int sig, int code, struct sigcontext *scp)
 {
   switch (code) {
 #ifdef AIXPS2
@@ -880,7 +875,7 @@ struct sigcontext *scp;
 #endif /* SYSVSIGNALS */
 }
 
-int_fp_init() { /* first set up the signal handler */
+void int_fp_init() { /* first set up the signal handler */
 #ifndef ISC
 #ifdef AIXPS2
   if (sigset(SIGFPE, int_fp_service))
@@ -983,8 +978,10 @@ void int_file_init() {
 /*                                                                      */
 /************************************************************************/
 
-void panicuraid(sig, code, scp, addr) int sig, code;
-struct sigcontext *scp;
+/* 2017-06-22 NBriggs -- it's not clear that this definition has the correct
+   parameters for any known signal handler
+ */
+void panicuraid(int sig, int code, struct sigcontext *scp, void *addr)
 {
   static char errormsg[200];
   static char *stdmsg =
@@ -1185,7 +1182,7 @@ void DOStimer() {
   /* (pts to 'ret' if no prev installed)*/
 }
 
-void alarm(sec) unsigned long sec;
+void alarm(unsigned long sec)
 {
   /* tick_count = sec * 18;
   _dos_setvect(0x1c, DOStimer); */

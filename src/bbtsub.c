@@ -1817,9 +1817,7 @@ typedef struct {
 
 /** changecharset_display,sfffixy are not tested *****I don't use TAKE **/
 
-LispPTR sfffixy(displaydata68k, csinfo68k, pbt68k) DISPLAYDATA *displaydata68k;
-CHARSETINFO *csinfo68k;
-PILOTBBT *pbt68k;
+LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILOTBBT *pbt68k)
 
 {
   int y;
@@ -2028,7 +2026,7 @@ typedef struct tbta {
 /***************************/
 /*   Non-PIXRECT version   */
 /***************************/
-void tedit_bltchar(args) register TBLTARG *args;
+void tedit_bltchar(register TBLTARG *args)
 {
 #define backwardflg 0
 #define displayflg 0
@@ -2086,7 +2084,7 @@ void tedit_bltchar(args) register TBLTARG *args;
 /*   PIXRECT version  */
 /**********************/
 
-void tedit_bltchar(args) register TBLTARG *args;
+void tedit_bltchar(register TBLTARG *args)
 {
   register DISPLAYDATA *displaydata68k;
   register int left, right;
@@ -2155,9 +2153,8 @@ void tedit_bltchar(args) register TBLTARG *args;
 #endif
 
 #ifndef COLOR
-int old_cursorin(addrhi, addrlo, x, w, h, y, backward) DLword addrhi; /* Lisp addr hi-word    */
-DLword addrlo;                                                        /* Lisp addr lo-word    */
-register int x, w, h, y;
+/* Lisp addr hi-word, lo-word, ... */
+int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
 {
 #ifdef INIT
   init_kbd_startup;
@@ -2179,9 +2176,8 @@ register int x, w, h, y;
 
 #else
 /* For MONO and COLOR */
-old_cursorin(addrhi, addrlo, x, w, h, y, backward) DLword addrhi; /* Lisp addr hi-word    */
-DLword addrlo;                                                    /* Lisp addr lo-word    */
-register int x, w, h, y;
+/* Lisp addr hi-word, lo-word, ... */
+int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
 {
   register DLword *base68k;
   extern int MonoOrColor;

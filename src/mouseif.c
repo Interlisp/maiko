@@ -66,7 +66,7 @@ int probemouse() {
   }
 }
 
-make_mouse_instance(mouse) MouseInterface mouse;
+void make_mouse_instance(MouseInterface mouse)
 {
 #ifdef DOS
 

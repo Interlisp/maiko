@@ -264,7 +264,7 @@ LispPTR mess_readp() {
 /*									*/
 /************************************************************************/
 
-LispPTR mess_read(args) LispPTR *args;
+LispPTR mess_read(LispPTR *args)
 /* args[0]		buffer	*/
 {
 #if defined(DOS) || defined(XWINDOW)

@@ -61,8 +61,7 @@ extern LispPTR *LASTUSERACTION68k;
 void ButtonTimer();
 void MouseButtonSignal();
 
-void EnterDosMouse(mouse, dsp) MouseInterface mouse;
-DspInterface dsp;
+void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
 {
   union REGS regs;
 
@@ -150,7 +149,7 @@ DspInterface dsp;
   mouse->device.active = TRUE;
 }
 
-void ExitDosMouse(mouse) MouseInterface mouse;
+void ExitDosMouse(MouseInterface mouse)
 {
   if (mouse->device.active) {
     /* Unlock myself */
@@ -188,8 +187,7 @@ void ExitDosMouse(mouse) MouseInterface mouse;
   }
 }
 
-void DosMouseAfterRaid(mouse, dsp) MouseInterface mouse;
-DspInterface dsp;
+void DosMouseAfterRaid(MouseInterface mouse, DspInterface dsp)
 {
   union REGS regs;
 
@@ -207,8 +205,7 @@ DspInterface dsp;
   mouse->device.active = TRUE;
 }
 
-void DosMouseBeforeRaid(mouse, dsp) MouseInterface mouse;
-DspInterface dsp;
+void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp)
 { mouse->device.active = FALSE; }
 
 /***************************************************************/
@@ -217,8 +214,7 @@ DspInterface dsp;
 /* and not to the emulator displaybuffer we can make the cursor*/
 /* invissible just by updateing the area under the cursor!     */
 /***************************************************************/
-void dos_cursor_invissible(dsp, iop) DspInterface dsp;
-IOPAGE *iop;
+void dos_cursor_invissible(DspInterface dsp, IOPAGE *iop)
 
 { (dsp->bitblt_to_screen)(dsp, DisplayRegion68k, iop->dlcursorx, iop->dlcursory, 16, 16); }
 
@@ -236,8 +232,7 @@ IOPAGE *iop;
 /*                                                             */
 /***************************************************************/
 
-set_DOSmouseposition(dsp, x, y) DspInterface dsp;
-int x, y;
+set_DOSmouseposition(DspInterface dsp, int x, int y)
 
 {
   union REGS regs;
@@ -268,7 +263,7 @@ int x, y;
   currentmouse->device.active--;
 }
 
-void docopy(newx, newy) int newx, newy;
+void docopy(int newx, int newy)
 {
   register DLword *srcbase, *dstbase;
   static int sx, dx, w = 16, h = 16, srcbpl, dstbpl, backwardflg = 0;
@@ -291,7 +286,7 @@ void docopy(newx, newy) int newx, newy;
 #endif /* NEWBITBLT */
 }
 
-dostaking_mouse_up(newx, newy) int newx, newy;
+dostaking_mouse_up(int newx, int newy)
 {
   /* save hidden bitmap */
 
@@ -342,8 +337,7 @@ dostaking_mouse_up(newx, newy) int newx, newy;
                                  currentmouse->Cursor.Last.y, w, h);
 }
 
-dostaking_mouse_down(dsp, iop) DspInterface dsp;
-IOPAGE *iop;
+dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
 {
   register DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
@@ -381,7 +375,7 @@ IOPAGE *iop;
 /*                                                                      */
 /************************************************************************/
 
-void MouseButtonSignal(mouse) MouseInterface mouse;
+void MouseButtonSignal(MouseInterface mouse)
 {
   DLword w, r;
   KBEVENT *kbevent;

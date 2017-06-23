@@ -83,7 +83,7 @@ extern int Dummy_errno;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_openfile(args) register LispPTR *args;
+LispPTR CHAR_openfile(LispPTR *args)
 /* args[0]            fullname */
 /* args[1]            access */
 /* args[2]            errno */
@@ -155,7 +155,7 @@ LispPTR CHAR_openfile(args) register LispPTR *args;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_closefile(args) register LispPTR *args;
+LispPTR CHAR_closefile(LispPTR *args)
 /* args[0]            id      */
 /* args[1]            errno   */
 {
@@ -202,7 +202,7 @@ LispPTR CHAR_closefile(args) register LispPTR *args;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_ioctl(args) LispPTR *args;
+LispPTR CHAR_ioctl(LispPTR *args)
 {
 #ifndef DOS
   int id, request, data;
@@ -235,8 +235,7 @@ LispPTR CHAR_ioctl(args) LispPTR *args;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bin(id, errn) register int id;
-register LispPTR errn;
+LispPTR CHAR_bin(int id, LispPTR errn)
 {
 #ifndef DOS
   register int rval, size;
@@ -268,8 +267,7 @@ register LispPTR errn;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bout(id, ch, errn) register int id;
-register LispPTR ch, errn;
+LispPTR CHAR_bout(int id, LispPTR ch, LispPTR errn)
 {
 #ifndef DOS
   register int rval;
@@ -315,7 +313,7 @@ register LispPTR ch, errn;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bins(args) register LispPTR *args;
+LispPTR CHAR_bins(LispPTR *args)
 {
 #ifndef DOS
   register int id, rval;
@@ -366,7 +364,7 @@ LispPTR CHAR_bins(args) register LispPTR *args;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bouts(args) register LispPTR *args;
+LispPTR CHAR_bouts(LispPTR *args)
 {
 #ifndef DOS
   register int id, rval;

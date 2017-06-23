@@ -191,8 +191,7 @@ extern int Dummy_errno;
  * number of characters.
  */
 
-int match_pattern(tp, pp) register char *tp;
-register char *pp;
+int match_pattern(char *tp, char *pp)
 {
   register char *tsp, *psp;
   register int inastr;
@@ -244,7 +243,7 @@ register char *pp;
 
 #ifdef DOS
 
-int make_old_version(old, file) char *old, *file;
+int make_old_version(char *old, char *file)
 {
   int len = (int)strlen(file) - 1;
   if (file[len] == DIRCHAR) return 0;
@@ -366,7 +365,7 @@ unsigned MAXFINFO;
  */
 
 #ifdef FSDEBUG
-void print_finfo(fp) FINFO *fp;
+void print_finfo(FINFO *fp)
 {
   FINFO *sp;
   sp = fp;
@@ -493,10 +492,7 @@ int get_finfo_id() {
  */
 
 #ifdef DOS
-int enum_dsk_prop(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -656,10 +652,7 @@ FINFO **finfo_buf;
   return (n);
 }
 #else  /* DOS */
-int enum_dsk_prop(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -778,10 +771,7 @@ FINFO **finfo_buf;
  * Similar to enum_dsk_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_dsk(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -925,10 +915,7 @@ FINFO **finfo_buf;
 
 #else  /* DOS */
 
-int enum_dsk(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1036,10 +1023,7 @@ FINFO **finfo_buf;
  * of FINFO structures.
  */
 #ifdef DOS
-int enum_ufs_prop(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1125,10 +1109,7 @@ FINFO **finfo_buf;
   return (n);
 }
 #else  /* DOS */
-int enum_ufs_prop(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1241,10 +1222,7 @@ FINFO **finfo_buf;
  * Similar to enum_ufs_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_ufs(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1314,10 +1292,7 @@ FINFO **finfo_buf;
   return (n);
 }
 #else  /* DOS */
-int enum_ufs(dir, name, ver, finfo_buf) char *dir;
-char *name;
-char *ver;
-FINFO **finfo_buf;
+int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1412,7 +1387,7 @@ FINFO **finfo_buf;
  * This routine is only used by DSK codes.
  */
 
-int trim_finfo(fp) FINFO **fp;
+int trim_finfo(FINFO **fp)
 {
 #ifndef DOS
   register FINFO *tp, *sp, *mp, *cp, *pp;
@@ -1541,8 +1516,7 @@ int trim_finfo(fp) FINFO **fp;
  * of.
  */
 
-int trim_finfo_highest(fp, highestp) FINFO **fp;
-int highestp;
+int trim_finfo_highest(FINFO **fp, int highestp)
 {
   register FINFO *tp, *sp, *mp, *cp, *pp;
   register int num, pnum;
@@ -1680,8 +1654,7 @@ int highestp;
  * are got rid of.
  */
 
-int trim_finfo_version(fp, rver) FINFO **fp;
-int rver;
+int trim_finfo_version(FINFO **fp, int rver)
 {
   register FINFO *tp, *sp, *mp, *cp, *pp, *vp;
   register int num, pnum;
@@ -1872,8 +1845,7 @@ int rver;
  * Caller have to free the area after sorting done.
  */
 
-FINFO **prepare_sort_buf(fp, n) register FINFO *fp;
-register int n;
+FINFO **prepare_sort_buf(register FINFO *fp, register int n)
 {
   register FINFO **bp;
   register FINFO **bufp;
@@ -1906,8 +1878,7 @@ register int n;
  * Note that the result is in the reversed order.
  */
 
-int dsk_filecmp(fp1, fp2) FINFO **fp1;
-FINFO **fp2;
+int dsk_filecmp(FINFO **fp1, FINFO **fp2)
 {
   register int res, v1, v2;
 
@@ -1938,8 +1909,7 @@ FINFO **fp2;
  * Note that the result is in the reversed order.
  */
 
-int unix_filecmp(f1, f2) register FINFO **f1;
-register FINFO **f2;
+int unix_filecmp(register FINFO **f1, register FINFO **f2)
 { return (strcmp((*f1)->lname, (*f2)->lname)); }
 
 /*
@@ -1961,9 +1931,7 @@ register FINFO **f2;
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-int file_sort(fpp, n, sortfn) register FINFO **fpp;
-register int n;
-register int (*sortfn)();
+int file_sort(register FINFO **fpp, register int n, register int (*sortfn)())
 {
   register FINFO **fp;
   register FINFO **sort_bufp;
@@ -2097,7 +2065,7 @@ typedef struct ufsgfs {
  * Enumerates files matching pattern.
  */
 
-LispPTR COM_gen_files(args) register LispPTR *args;
+LispPTR COM_gen_files(register LispPTR *args)
 {
   char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
   char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN], drive[1];
@@ -2254,7 +2222,7 @@ LispPTR COM_gen_files(args) register LispPTR *args;
  * name.
  */
 
-LispPTR COM_next_file(args) register LispPTR *args;
+LispPTR COM_next_file(register LispPTR *args)
 {
   register LispPTR laddr;
   register FPROP *pp;
@@ -2325,7 +2293,7 @@ LispPTR COM_next_file(args) register LispPTR *args;
  * Abandon all cached information corresponding to the generator.
  */
 
-LispPTR COM_finish_finfo(args) register LispPTR *args;
+LispPTR COM_finish_finfo(register LispPTR *args)
 {
   register DFINFO *dfp;
   register FINFO *fp;

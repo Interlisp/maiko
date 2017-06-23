@@ -1310,7 +1310,7 @@ void dtd_chain(DLword type) {
 
 #ifdef DTDDEBUG
 
-void check_dtd_chain(type) DLword type;
+void check_dtd_chain(DLword type)
 {
   register LispPTR next, onext;
   LispPTR before;

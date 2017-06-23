@@ -98,7 +98,7 @@ int truncation = 1500;
 /*
  * setup_dlpi_dev - set up the data link provider interface.
  */
-int setup_dlpi_dev(device) char *device;
+int setup_dlpi_dev(char *device)
 {
   char *p;
   u_int chunksz;
@@ -298,7 +298,7 @@ int setup_dlpi_dev(device) char *device;
 /*
  * flush_dlpi - flush data from the dlpi.
  */
-void flush_dlpi(fd) int fd;
+void flush_dlpi(int fd)
 {
   if (ioctl(fd, I_FLUSH, (char *)FLUSHR) < 0) {
     perror("ioctl: I_FLUSH");
@@ -309,7 +309,7 @@ void flush_dlpi(fd) int fd;
 /*
  * dlpi_devtype - determine the type of device we're looking at.
  */
-int dlpi_devtype(fd) int fd;
+int dlpi_devtype(int fd)
 {
   long buf[DLPI_MAXDLBUF];
   union DL_primitives *dlp;
@@ -338,7 +338,7 @@ int dlpi_devtype(fd) int fd;
 /*
  * dlinforeq - request information about the data link provider.
  */
-static void dlinforeq(fd) int fd;
+static void dlinforeq(int fd)
 {
   dl_info_req_t info_req;
   struct strbuf ctl;
@@ -361,8 +361,7 @@ static void dlinforeq(fd) int fd;
 /*
  * dlattachreq - send a request to attach.
  */
-static void dlattachreq(fd, ppa) u_long ppa;
-int fd;
+static void dlattachreq(int fd, u_long ppa)
 {
   dl_attach_req_t attach_req;
   struct strbuf ctl;
@@ -387,8 +386,7 @@ int fd;
 /*
  * dlpromisconreq - send a request to turn promiscuous mode on.
  */
-static void dlpromisconreq(fd, level) u_long level;
-int fd;
+static void dlpromisconreq(int fd, u_long level)
 {
   dl_promiscon_req_t promiscon_req;
   struct strbuf ctl;
@@ -413,9 +411,7 @@ int fd;
 /*
  * dlbindreq - send a request to bind.
  */
-static void dlbindreq(fd, sap, max_conind, service_mode, conn_mgmt, xidtest) u_long sap, max_conind,
-    service_mode, conn_mgmt, xidtest;
-int fd;
+static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt, u_long xidtest)
 {
   dl_bind_req_t bind_req;
   struct strbuf ctl;
@@ -448,8 +444,7 @@ int fd;
 /*
  * dlokack - general acknowledgement reception.
  */
-static int dlokack(fd, bufp) char *bufp;
-int fd;
+static int dlokack(int fd, char *bufp)
 {
   union DL_primitives *dlp;
   struct strbuf ctl;
@@ -477,8 +472,7 @@ int fd;
 /*
  * dlinfoack - receive an ack to a dlinforeq.
  */
-static int dlinfoack(fd, bufp) char *bufp;
-int fd;
+static int dlinfoack(int fd, char *bufp)
 {
   union DL_primitives *dlp;
   struct strbuf ctl;
@@ -506,8 +500,7 @@ int fd;
 /*
  * dlbindack - receive an ack to a dlbindreq.
  */
-static int dlbindack(fd, bufp) char *bufp;
-int fd;
+static int dlbindack(int fd, char *bufp)
 {
   union DL_primitives *dlp;
   struct strbuf ctl;
@@ -533,8 +526,7 @@ int fd;
 /*
  * expecting - see if we got what we wanted.
  */
-static int expecting(prim, dlp) union DL_primitives *dlp;
-int prim;
+static int expecting(int prim, union DL_primitives *dlp)
 {
   if (dlp->dl_primitive != (u_long)prim) return (-1);
 
@@ -544,10 +536,7 @@ int prim;
 /*
  * strgetmsg - get a message from a stream, with timeout.
  */
-static int strgetmsg(fd, ctlp, datap, flagsp, caller) struct strbuf *ctlp, *datap;
-char *caller;
-int *flagsp;
-int fd;
+static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller)
 {
   int rc;
   void sigalrm();
@@ -602,7 +591,7 @@ static void sigalrm() { (void)fprintf(stderr, "dlpi: timeout\n"); }
 /*
  * savestr - save string in dynamic memory.
  */
-char *savestr(s) char *s;
+char *savestr(char *s)
 {
   char *t;
   char *malloc();
@@ -617,12 +606,7 @@ char *savestr(s) char *s;
   return (t);
 }
 
-dlunitdatareq(fd, addrp, addrlen, minpri, maxpri, datap, datalen) int fd;
-u_char *addrp;
-int addrlen;
-u_long minpri, maxpri;
-u_char *datap;
-int datalen;
+int dlunitdatareq(int fd, u_char *addrp, int addrlen, u_long minpri, u_long maxpri, u_char *datap, int datalen)
 {
   long buf[DLPI_MAXDLBUF];
   union DL_primitives *dlp;

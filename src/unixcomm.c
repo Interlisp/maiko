@@ -219,7 +219,7 @@ char *build_socket_pathname(int desc) {
 
 #else
 
-char *build_upward_socket_pathname(desc) int desc;
+char *build_upward_socket_pathname(int desc)
 {
   static char UpPathName[50];
 
@@ -227,7 +227,7 @@ char *build_upward_socket_pathname(desc) int desc;
   return (UpPathName);
 }
 
-char *build_downward_socket_pathname(desc) int desc;
+char *build_downward_socket_pathname(int desc)
 {
   static char DownPathName[50];
 
@@ -583,8 +583,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         unlink(PipeName);
 #endif /* ISC */
 
-/* unlink(UpPipeName);
-unlink(DownPipeName); */
+	/* unlink(UpPipeName); */
+	/* unlink(DownPipeName); */
 #ifdef ISC
         return (GetSmallp(sockFD));
 #else

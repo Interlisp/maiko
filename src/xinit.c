@@ -92,7 +92,7 @@ extern PFUL clipping_Xbitblt();
 /*	Turn on the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void init_Xevent(dsp) DspInterface dsp;
+void init_Xevent(DspInterface dsp)
 {
   int GravMask, BarMask, LispMask, DisplayMask;
 
@@ -129,7 +129,7 @@ void init_Xevent(dsp) DspInterface dsp;
 /*	Turn off the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void lisp_Xexit(dsp) DspInterface dsp;
+void lisp_Xexit(DspInterface dsp)
 {
 #ifdef SYSVONLY
 #ifndef LINUX
@@ -154,7 +154,7 @@ void lisp_Xexit(dsp) DspInterface dsp;
 /*	the X windows we use for Medley's display.			*/
 /*									*/
 /************************************************************************/
-void Xevent_before_raid(dsp) DspInterface dsp;
+void Xevent_before_raid(DspInterface dsp)
 {
   TPRINT(("TRACE: Xevent_before_raid()\n"));
 
@@ -180,7 +180,7 @@ void Xevent_before_raid(dsp) DspInterface dsp;
 /*	from the X server in the windows we use for the display.	*/
 /*									*/
 /************************************************************************/
-void Xevent_after_raid(dsp) DspInterface dsp;
+void Xevent_after_raid(DspInterface dsp)
 {
   init_Xevent(dsp);
   (dsp->bitblt_to_screen)(dsp, 0, dsp->Vissible.x, dsp->Vissible.y, dsp->Vissible.width,
@@ -201,7 +201,7 @@ void Xevent_after_raid(dsp) DspInterface dsp;
 /*									*/
 /*									*/
 /************************************************************************/
-void Open_Display(dsp) DspInterface dsp;
+void Open_Display(DspInterface dsp)
 {
   LispReadFds |= (1 << ConnectionNumber(dsp->display_id));
 #ifndef ISC
@@ -255,7 +255,8 @@ void Open_Display(dsp) DspInterface dsp;
 /*********************************************************************/
 
 DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
-                    int depth_hint) {
+                    int depth_hint)
+{
   Screen *Xscreen;
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */

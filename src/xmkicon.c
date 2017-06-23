@@ -43,7 +43,7 @@ extern char iconpixmapfile[1024];
 /*									*/
 /************************************************************************/
 
-Pixmap make_Xicon(dsp) DspInterface dsp;
+Pixmap make_Xicon(DspInterface dsp)
 {
   unsigned int width, height;
   int value, x_hot, y_hot;

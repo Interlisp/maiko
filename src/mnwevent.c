@@ -69,8 +69,7 @@ LispPTR *MNWBUFFERING68k = 0;
 /* at the head of the chain. (This is bubblesort)                       */
 /*                                                                      */
 /************************************************************************/
-WindowInterface Find_window(dspif, Xwindow) DspInterface dspif;
-Window Xwindow;
+WindowInterface Find_window(DspInterface dspif, Window Xwindow)
 {
   WindowInterface curr, prev;
 
@@ -143,10 +142,7 @@ SignalMNWEvent() {
   }
 }
 
-void HandleMotion(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XMotionEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleMotion(Widget widget, WindowInterface wif, XMotionEvent *xevent, Boolean *continue_to_dispatch)
 {
   MNWPointerMotionEvent *mevent;
 
@@ -163,20 +159,14 @@ Boolean *continue_to_dispatch;
   }
 }
 
-void HandleButton(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XButtonEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleButton(Widget widget, WindowInterface wif, XButtonEvent *xevent, Boolean *continue_to_dispatch)
 {
   MNWButtonEvent *mevent;
 
   lisp_Xbutton(xevent, 0);
 }
 
-void HandleKey(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XKeyEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleKey(Widget widget, WindowInterface wif, XKeyEvent *xevent, Boolean *continue_to_dispatch)
 {
   lisp_Xkeyboard(xevent, 0);
 
@@ -195,10 +185,7 @@ Boolean *continue_to_dispatch;
 #endif /* NEVER */
 }
 
-void HandleCrossing(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XCrossingEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleCrossing(Widget widget, WindowInterface wif, XCrossingEvent *xevent, Boolean *continue_to_dispatch)
 {
   switch (xevent->type) {
     case EnterNotify:
@@ -212,10 +199,7 @@ Boolean *continue_to_dispatch;
   }
 }
 
-void HandleBackgroundCrossing(widget, dspif, xevent, continue_to_dispatch) Widget widget;
-DspInterface dspif;
-XCrossingEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleBackgroundCrossing(Widget widget, DspInterface dspif, XCrossingEvent *xevent, Boolean *continue_to_dispatch)
 {
   switch (xevent->type) {
     case EnterNotify: DoMNWRing(MNWMouseIn, dspif->screen, 0, 0, 0, 0, 0); break;
@@ -226,10 +210,7 @@ Boolean *continue_to_dispatch;
   }
 }
 
-void HandleFocus(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XFocusChangeEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleFocus(Widget widget, WindowInterface wif, XFocusChangeEvent *xevent, Boolean *continue_to_dispatch)
 {
   MNWFocusEvent *mevent;
   /*
@@ -243,10 +224,7 @@ Boolean *continue_to_dispatch;
   */
 }
 
-void HandleStructure(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XAnyEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Boolean *continue_to_dispatch)
 {
   LispPTR screen, MWindow;
   Window window;
@@ -326,10 +304,7 @@ Boolean *continue_to_dispatch;
   }
 }
 
-void HandleBackgroundButton(widget, wif, xevent, continue_to_dispatch) Widget widget;
-LispPTR wif;
-XButtonEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleBackgroundButton(Widget widget, LispPTR wif, XButtonEvent *xevent, Boolean *continue_to_dispatch)
 {
   MNWButtonEvent *mevent;
 
@@ -361,28 +336,20 @@ Boolean *continue_to_dispatch;
 }
 
 /* Handle expose events on the frame widget -- print the title */
-void HandleTitle(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XExposeEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleTitle(Widget widget, WindowInterface wif, XExposeEvent *xevent, Boolean *continue_to_dispatch)
 {
   if (xevent->y <= 12)
     showtitle(wif->MedleyWindow, ((MedleyWindow)Cptr(wif->MedleyWindow))->WTITLE);
 }
 
 /* Handle expose events on the frame widget -- print the title */
-void HandleExpose(widget, wif, xevent, continue_to_dispatch) Widget widget;
-WindowInterface wif;
-XExposeEvent *xevent;
-Boolean *continue_to_dispatch;
+void HandleExpose(Widget widget, WindowInterface wif, XExposeEvent *xevent, Boolean *continue_to_dispatch)
 {
   XCopyPlane(wif->dspif->handle, wif->backing, XtWindow(wif->windowwidget), wif->ReplaceGC,
              xevent->x, xevent->y, xevent->width, xevent->height, xevent->x, xevent->y, 1);
 }
 
-void SignalVJmpScroll(widget, wif, percent_ptr) Widget widget;
-WindowInterface wif;
-XtPointer percent_ptr; /* This is a *float */
+void SignalVJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr /* This is a *float */)
 {
   MNWJumpScrollReqEvent *event;
 
@@ -396,9 +363,7 @@ XtPointer percent_ptr; /* This is a *float */
   }
 }
 
-void SignalHJmpScroll(widget, wif, percent_ptr) Widget widget;
-WindowInterface wif;
-XtPointer percent_ptr; /* This is a *float */
+void SignalHJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr)
 {
   MNWJumpScrollReqEvent *event;
 
@@ -412,9 +377,7 @@ XtPointer percent_ptr; /* This is a *float */
   }
 }
 
-void SignalVScroll(widget, wif, position) Widget widget;
-WindowInterface wif;
-int position;
+void SignalVScroll(Widget widget, WindowInterface wif, int position)
 {
   MNWScrollReqEvent *event;
 
@@ -428,9 +391,7 @@ int position;
   }
 }
 
-void SignalHScroll(widget, wif, position) Widget widget;
-WindowInterface wif;
-int position;
+void SignalHScroll(Widget widget, WindowInterface wif, int position)
 {
   MNWScrollReqEvent *event;
 
@@ -451,7 +412,7 @@ int position;
 /*									*/
 /*									*/
 /************************************************************************/
-getMNWsignaldata(fd) int fd;
+void getMNWsignaldata(int fd)
 {
   Display *display;
   DspInterfaceRec *dspif;
@@ -567,9 +528,7 @@ getMNWsignaldata(fd) int fd;
 /*									*/
 /************************************************************************/
 
-DoMNWRing(type, screen, window, l, b, wid, h) int type;
-LispPTR screen, window;
-int l, b, wid, h;
+void DoMNWRing(int type, LispPTR screen, LispPTR window, int l, int b, int wid, int h)
 {
   DLword w, r;
   MNWEvent *event;

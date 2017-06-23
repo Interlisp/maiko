@@ -92,12 +92,17 @@ typedef int clockid_t;
 #include <sgtty.h>
 #endif
 
+/* The following globals are used to communicate between Unix
+   subprocesses and LISP */
+
+long StartTime; /* Time, for creating pipe filenames */
+
+char shcom[512]; /* Here because I'm suspicious of */
+                 /* large allocations on the stack */
+
+
 static __inline__ int
-#ifdef OS4
-SAFEREAD(f, b, c)
-#else
 SAFEREAD(int f, char *b, int c)
-#endif
 {
   int res;
 loop:
@@ -109,13 +114,139 @@ loop:
   return (res);
 }
 
-/* The following globals are used to communicate between Unix
-   subprocesses and LISP */
+/************************************************************************/
+/*									*/
+/*			F o r k U n i x S h e l l			*/
+/*									*/
+/*	Fork a PTY connection to a C-shell process.			*/
+/*	Returns PID of process, or -1 if something failed		*/
+/*									*/
+/*									*/
+/************************************************************************/
 
-long StartTime; /* Time, for creating pipe filenames */
+/* Creates a PTY connection to a csh */
 
-char shcom[512]; /* Here because I'm suspicious of */
-                 /* large allocations on the stack */
+#ifdef FULLSLAVENAME
+ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
+#else
+ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
+#endif
+{
+#ifdef FULLSLAVENAME
+  char buf[1];
+#else
+  char PtySlave[20], buf[1];
+#endif
+  int res, PID, MasterFD, SlaveFD;
+#ifdef USETERMIOS
+  struct termios tio;
+#else
+  struct sgttyb tio;
+#endif /* USETERMIOS */
+
+  PID = fork();
+
+  if (PID == 0) {
+    char envstring[64];
+    char *argvec[4];
+
+#ifndef SYSVONLY
+    /* Divorce ourselves from /dev/tty */
+    res = open("/dev/tty", O_RDWR);
+    if (res >= 0) {
+      (void)ioctl(res, TIOCNOTTY, (char *)0);
+      (void)close(res);
+    } else {
+      perror("Slave TTY");
+      exit(0);
+    }
+#else
+    if (0 > setsid()) /* create us a new session for tty purposes */
+      perror("setsid");
+#endif
+
+/* Open the slave side */
+#ifndef FULLSLAVENAME
+    sprintf(PtySlave, "/dev/tty%c%c", ltr, numb);
+#endif
+    SlaveFD = open(PtySlave, O_RDWR);
+    if (SlaveFD == -1) {
+      perror("Slave Open");
+      perror(PtySlave);
+      exit(0);
+    }
+
+#ifdef OS5
+    ioctl(SlaveFD, I_PUSH, "ptem");
+    ioctl(SlaveFD, I_PUSH, "ldterm");
+#endif /* OS5 */
+
+#ifndef USETERMIOS
+    /* This is the old way we set up terminal (OS 3), using an
+       obsolete ioctl and wrong flags for a display. */
+    ioctl(SlaveFD, TIOCGETP, (char *)&tio);
+    tio.sg_flags |= CRMOD;
+    tio.sg_flags |= ECHO;
+    ioctl(SlaveFD, TIOCSETP, (char *)&tio);
+#else
+/* Set up as basic display terminal: canonical erase,
+   kill processing, echo, backspace to erase, echo ctrl
+   chars as ^x, kill line by backspacing */
+
+#if defined(MACOSX) || defined(FREEBSD)
+    tcgetattr(SlaveFD, &tio);
+#else
+    ioctl(SlaveFD, TCGETS, (char *)&tio);
+#endif
+#ifdef INDIGO
+    tio.c_lflag |= ICANON | ECHO | ECHOE;
+#else
+    tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
+#endif /* INDIGO */
+#if defined(MACOSX) || defined(FREEBSD)
+    tcsetattr(SlaveFD, TCSANOW, &tio);
+#else
+    ioctl(SlaveFD, TCSETS, (char *)&tio);
+#endif
+#endif /* USETERMIOS */
+
+    (void)dup2(SlaveFD, 0);
+    (void)dup2(SlaveFD, 1);
+    (void)dup2(SlaveFD, 2);
+    (void)close(SlaveFD);
+
+    /* set the LDESHELL variable so the underlying .cshrc can see it and
+       configure the shell appropriately, though this may not be so important any more */
+    putenv("LDESHELL=YES");
+
+    if ((termtype[0] != 0) && (strlen(termtype) < 59)) { /* set the TERM environment var */
+      sprintf(envstring, "TERM=%s", termtype);
+      putenv(envstring);
+    }
+    /* Start up csh */
+    argvec[0] = "csh";
+    if (shellarg[0] != 0) { /* setup to run command */
+      argvec[1] = "-c";     /* read commands from next arg */
+      argvec[2] = shellarg;
+      argvec[3] = (char *)0;
+    } else
+      argvec[1] = (char *)0;
+
+    execv("/bin/csh", argvec);
+
+    /* Should never get here */
+    perror("execv");
+    exit(0);
+  } else { /* not the forked process. */
+    if (shellarg != shcom) free(shellarg);
+  }
+
+  /* Set the process group so all the kids get the bullet too
+  if (setpgrp(PID, PID) != 0)
+    perror("setpgrp"); */
+
+  return (PID);
+}
 
 /* fork_Unix is the secondary process spawned right after LISP is
    started, to avoid having TWO 8 mbyte images sitting around. It listens
@@ -541,144 +672,3 @@ fork_Unix() {
   }
 }
 
-/************************************************************************/
-/*									*/
-/*			F o r k U n i x S h e l l			*/
-/*									*/
-/*	Fork a PTY connection to a C-shell process.			*/
-/*	Returns PID of process, or -1 if something failed		*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-/* Creates a PTY connection to a csh */
-
-#ifdef FULLSLAVENAME
-ForkUnixShell(slot, PtySlave, termtype, shellarg)
-#else
-ForkUnixShell(slot, ltr, numb, termtype, shellarg)
-#endif
-    int slot;
-#ifdef FULLSLAVENAME
-char *PtySlave;
-#else
-char ltr, numb;
-#endif
-char *termtype, *shellarg;
-
-{
-#ifdef FULLSLAVENAME
-  char buf[1];
-#else
-  char PtySlave[20], buf[1];
-#endif
-  int res, PID, MasterFD, SlaveFD;
-#ifdef USETERMIOS
-  struct termios tio;
-#else
-  struct sgttyb tio;
-#endif /* USETERMIOS */
-
-  PID = fork();
-
-  if (PID == 0) {
-    char envstring[64];
-    char *argvec[4];
-
-#ifndef SYSVONLY
-    /* Divorce ourselves from /dev/tty */
-    res = open("/dev/tty", O_RDWR);
-    if (res >= 0) {
-      (void)ioctl(res, TIOCNOTTY, (char *)0);
-      (void)close(res);
-    } else {
-      perror("Slave TTY");
-      exit(0);
-    }
-#else
-    if (0 > setsid()) /* create us a new session for tty purposes */
-      perror("setsid");
-#endif
-
-/* Open the slave side */
-#ifndef FULLSLAVENAME
-    sprintf(PtySlave, "/dev/tty%c%c", ltr, numb);
-#endif
-    SlaveFD = open(PtySlave, O_RDWR);
-    if (SlaveFD == -1) {
-      perror("Slave Open");
-      perror(PtySlave);
-      exit(0);
-    }
-
-#ifdef OS5
-    ioctl(SlaveFD, I_PUSH, "ptem");
-    ioctl(SlaveFD, I_PUSH, "ldterm");
-#endif /* OS5 */
-
-#ifndef USETERMIOS
-    /* This is the old way we set up terminal (OS 3), using an
-       obsolete ioctl and wrong flags for a display. */
-    ioctl(SlaveFD, TIOCGETP, (char *)&tio);
-    tio.sg_flags |= CRMOD;
-    tio.sg_flags |= ECHO;
-    ioctl(SlaveFD, TIOCSETP, (char *)&tio);
-#else
-/* Set up as basic display terminal: canonical erase,
-   kill processing, echo, backspace to erase, echo ctrl
-   chars as ^x, kill line by backspacing */
-
-#if defined(MACOSX) || defined(FREEBSD)
-    tcgetattr(SlaveFD, &tio);
-#else
-    ioctl(SlaveFD, TCGETS, (char *)&tio);
-#endif
-#ifdef INDIGO
-    tio.c_lflag |= ICANON | ECHO | ECHOE;
-#else
-    tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
-#endif /* INDIGO */
-#if defined(MACOSX) || defined(FREEBSD)
-    tcsetattr(SlaveFD, TCSANOW, &tio);
-#else
-    ioctl(SlaveFD, TCSETS, (char *)&tio);
-#endif
-#endif /* USETERMIOS */
-
-    (void)dup2(SlaveFD, 0);
-    (void)dup2(SlaveFD, 1);
-    (void)dup2(SlaveFD, 2);
-    (void)close(SlaveFD);
-
-    /* set the LDESHELL variable so the underlying .cshrc can see it and
-       configure the shell appropriately, though this may not be so important any more */
-    putenv("LDESHELL=YES");
-
-    if ((termtype[0] != 0) && (strlen(termtype) < 59)) { /* set the TERM environment var */
-      sprintf(envstring, "TERM=%s", termtype);
-      putenv(envstring);
-    }
-    /* Start up csh */
-    argvec[0] = "csh";
-    if (shellarg[0] != 0) { /* setup to run command */
-      argvec[1] = "-c";     /* read commands from next arg */
-      argvec[2] = shellarg;
-      argvec[3] = (char *)0;
-    } else
-      argvec[1] = (char *)0;
-
-    execv("/bin/csh", argvec);
-
-    /* Should never get here */
-    perror("execv");
-    exit(0);
-  } else { /* not the forked process. */
-    if (shellarg != shcom) free(shellarg);
-  }
-
-  /* Set the process group so all the kids get the bullet too
-  if (setpgrp(PID, PID) != 0)
-    perror("setpgrp"); */
-
-  return (PID);
-}

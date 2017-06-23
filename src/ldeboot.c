@@ -67,8 +67,7 @@ char filetorun[30];
 /*									*/
 /************************************************************************/
 
-main(argc, argv) int argc;
-char **argv;
+main(int argc, char *argv[])
 {
   char Earg[30], Ename[30], **newargv;
   int i;

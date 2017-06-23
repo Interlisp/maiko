@@ -42,6 +42,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #endif               /* USE_DLPI */
 #endif               /* NOETHER */
 #include <stdio.h>
+
 #ifndef SYSVONLY
 #ifndef DOS
 #include <strings.h>
@@ -71,6 +72,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 
 #if defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
+#include <unistd.h>
 #endif
 
 #include <errno.h>
@@ -337,8 +339,7 @@ void print_info_lines();
 /*									*/
 /************************************************************************/
 
-int main(argc, argv) int argc;
-char **argv;
+int main(int argc, char *argv[])
 {
   int i;
   char *envname;
@@ -690,8 +691,7 @@ void start_lisp() {
 /*									*/
 /************************************************************************/
 
-int makepathname(src, dst) register char *src;
-register char *dst;
+int makepathname(char *src, char *dst)
 {
   register int len;
   register char *base, *cp;

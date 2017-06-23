@@ -51,7 +51,7 @@ extern u_char *SUNLispKeyMap;
 #define MOUSE_RIGHT 14
 
 /* bound: return b if it is between a and c otherwise it returns a or c */
-int bound(a, b, c) int a, b, c;
+int bound(int a, int b, int c)
 {
   if (b <= a)
     return (a);

@@ -24,12 +24,7 @@ static char *id = "$Id: lptran.c,v 1.2 1999/01/03 02:07:20 sybalsky Exp $ Copyri
 #pragma global assoc
 #endif
 
-#ifdef OS4
-ftran(start, end, pcol) int start, end;
-double *pcol;
-#else
 void ftran(int start, int end, double *pcol)
-#endif
 {
   int i, j;
   int k, r;
@@ -59,12 +54,7 @@ void ftran(int start, int end, double *pcol)
     if (abs(pcol[i]) < EPSEL) pcol[i] = 0;
 } /* ftran */
 
-#ifdef OS4
-btran(numc, row) int numc;
-double *row;
-#else
 void btran(int numc, double *row)
-#endif
 {
   int i, j, k;
   double f;

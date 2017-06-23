@@ -61,8 +61,7 @@ extern int LispWindowFd;
 extern int ScreenLocked;
 
 /***	N_OP_misc7  -- pseudocolor or fbitmapbit   ***/
-LispPTR N_OP_misc7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, alpha) int alpha;
-register LispPTR arg1, arg2, arg3, arg4, arg5, arg6, arg7;
+LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispPTR arg5, LispPTR arg6, LispPTR arg7, int alpha)
 {
   DLword *base;
   int x, y, operation, heightminus1, rasterwidth, oldbit;

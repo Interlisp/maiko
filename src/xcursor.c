@@ -104,7 +104,7 @@ void Init_XCursor() {
 /*									*/
 /************************************************************************/
 
-void Set_XCursor(x, y) int x, y;
+void Set_XCursor(int x, int y)
 {
   /* compare cursor in IOPage memory with cursors we've seen before */
   register struct MXCURSOR *clp, *clbp;
@@ -160,7 +160,7 @@ void Set_XCursor(x, y) int x, y;
 /*									*/
 /************************************************************************/
 
-void init_Xcursor(display, window) Display *display;
+void init_Xcursor(Display *display, int window)
 {
   TPRINT(("TRACE: init_Xcursor()\n"));
 
@@ -226,10 +226,7 @@ void init_Xcursor(display, window) Display *display;
 /*									*/
 /************************************************************************/
 
-void set_Xcursor(dsp, bitmap, hotspot_x, hotspot_y, return_cursor, from_lisp) DspInterface dsp;
-unsigned char *bitmap;
-int hotspot_x, hotspot_y, from_lisp;
-Cursor *return_cursor;
+void set_Xcursor(DspInterface dsp, unsigned char *bitmap, int hotspot_x, int hotspot_y, Cursor *return_cursor, int from_lisp)
 {
   extern unsigned char reversedbits[];
   unsigned char image[32];

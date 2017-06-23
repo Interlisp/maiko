@@ -135,7 +135,7 @@ static struct nit_ioc nioc;
 /*									*/
 /************************************************************************/
 
-ether_suspend(args) LispPTR args[];
+LispPTR ether_suspend(LispPTR args[])
 {
 #ifndef NOETHER
 #ifdef OS4
@@ -170,7 +170,7 @@ ether_suspend(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-ether_resume(args) LispPTR args[];
+LispPTR ether_resume(LispPTR args[])
 {
   if (ether_fd == -1) return (NIL);
 #ifndef NOETHER
@@ -200,7 +200,7 @@ ether_resume(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-ether_ctrlr(args) LispPTR args[];
+LispPTR ether_ctrlr(LispPTR args[])
 {
   if (ether_fd < 0) return (NIL);
   return (ATOM_T);
@@ -210,7 +210,7 @@ ether_ctrlr(args) LispPTR args[];
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-ether_reset(args) LispPTR args[];
+LispPTR ether_reset(LispPTR args[])
 {
   int i;
   char hostnumber[6];
@@ -241,7 +241,7 @@ ether_reset(args) LispPTR args[];
 /*									*/
 /************************************************************************/
 
-ether_get(args) LispPTR args[];
+LispPTR ether_get(LispPTR args[])
 {
   LispPTR MaxByteCount;
   LispPTR result = NIL;
@@ -271,7 +271,7 @@ ether_get(args) LispPTR args[];
  **********************************************************************/
 #define OFFSET sizeof(sa.sa_data)
 
-ether_send(args) LispPTR args[];
+LispPTR ether_send(LispPTR args[])
 {
 #ifndef NOETHER
   /*
@@ -327,7 +327,7 @@ ether_send(args) LispPTR args[];
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
 
-ether_setfilter(args) LispPTR args[];
+LispPTR ether_setfilter(LispPTR args[])
 { return (NIL); } /* ether_setfilter */
 
 /**********************************************************************
@@ -361,7 +361,7 @@ static struct timeval EtherTimeout = {0, 0};
 static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
 #endif
 
-check_ether() {
+LispPTR check_ether() {
 /*
  *	If receiver active then check if any packets are
  *	available from the ethernet.  If so, read the packet
@@ -476,7 +476,7 @@ check_ether() {
 /*									*/
 /************************************************************************/
 
-get_packet() {
+LispPTR get_packet() {
 #ifndef NOETHER
 #ifndef OS4
   static int rfds;
@@ -563,7 +563,7 @@ get_packet() {
  *	This is believed obsolete with packet filtering enabled
  **********************************************************************/
 
-check_filter(buffer) u_char *buffer;
+ int check_filter(u_char *buffer)
 {
   /* broadcast packets */
   if (ether_addr_equal(buffer, broadcast)) switch (((short *)buffer)[6]) {
@@ -586,10 +586,7 @@ check_filter(buffer) u_char *buffer;
  *	Also believed obsolete
  **********************************************************************/
 
-ether_addr_equal(add1, add2)
-
-    u_char add1[],
-    add2[];
+int ether_addr_equal(u_char add1[], u_char add2[])
 {
   register int i;
   for (i = 0; i < 6; i++)
@@ -601,7 +598,7 @@ ether_addr_equal(add1, add2)
  *	init_uid()
  *	sets effective user-id to real user-id
  **********************************************************************/
-init_uid() {
+void init_uid() {
 #ifndef NOETHER
   int rid;
   rid = getuid();
@@ -617,7 +614,7 @@ init_uid() {
 /*									*/
 /************************************************************************/
 
-init_ifpage_ether() {
+void init_ifpage_ether() {
   InterfacePage->nshost0 = (DLword)((ether_host[0] << 8) + ether_host[1]);
   InterfacePage->nshost1 = (DLword)((ether_host[2] << 8) + ether_host[3]);
   InterfacePage->nshost2 = (DLword)((ether_host[4] << 8) + ether_host[5]);
@@ -635,7 +632,7 @@ struct sockaddr_nit snit;
 /*	open nit socket, called from main before starting BCE.		*/
 /*      								*/
 /************************************************************************/
-init_ether() {
+void init_ether() {
 #ifndef NOETHER
 
   /* JRB - This code will have to be a bit different for SUN 4.0; the			probable
@@ -882,7 +879,7 @@ if (ether_fd >= 0) {
 /*									*/
 /************************************************************************/
 
-check_sum(args) register LispPTR *args;
+LispPTR check_sum(LispPTR *args)
 {
   register LispPTR checksum;
   register DLword *address;

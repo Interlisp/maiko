@@ -67,19 +67,19 @@ rs_restore_hup_handler() { sigvec(SIGHUP, &prev_hup_sv, (struct sigvec *)NULL); 
 /*
  * Fatal Error, enter URAID
  */
-rs_error(msg) char *msg;
+void rs_error(char *msg)
 { error(msg); }
 
 /*
  * Continuable Error
  */
-rs_cerror(msg) char *msg;
+void rs_cerror(char *msg)
 { printf(msg); }
 
 /*
  * Invoked at boot time
  */
-rs232c_init() {
+void rs232c_init() {
   RS232C_Dev = "/dev/ttyb"; /*Modify for target system */
   RS232C_Fd = -1;
 
@@ -106,7 +106,7 @@ rs232c_init() {
  * Default set up for the RS232C file descriptor
  * The value of the other parameters not listed below can be changed by user.
  */
-rs232_fd_init(fd) register int fd;
+int rs232_fd_init(int fd)
 {
   struct termios tio;
 
@@ -373,7 +373,7 @@ rs232c_getstatus() {
   }
 }
 
-rs_baud(baud) u_int baud;
+void rs_baud(u_int baud)
 {
   switch (baud) {
     case 0: return B50;
@@ -395,7 +395,7 @@ rs_baud(baud) u_int baud;
   }
 }
 
-rs_csize(csize) u_int csize;
+void rs_csize(u_int csize)
 {
   switch (csize) {
     case 0: return CS5;
@@ -406,7 +406,7 @@ rs_csize(csize) u_int csize;
   }
 }
 
-rs_sbit(sbit) u_int sbit;
+void rs_sbit(u_int sbit)
 {
   switch (sbit) {
     case 0: return 0;
@@ -415,7 +415,7 @@ rs_sbit(sbit) u_int sbit;
   }
 }
 
-rs232c_majorparam() {
+void rs232c_majorparam() {
   register int baud, csize, sbit;
 
   if (RS232C_Fd >= 0) {
@@ -530,7 +530,7 @@ rs232c_majorparam() {
   }
 }
 
-rs232c_minorparam() {
+void rs232c_minorparam() {
   int status;
 
   if (RS232C_Fd >= 0) {
@@ -559,7 +559,7 @@ rs232c_minorparam() {
  * Following functions named as check_XXX are used for debug.
  */
 
-check_params(fd) int fd;
+void check_params(int fd)
 {
   struct termios tos;
 
@@ -577,7 +577,7 @@ check_params(fd) int fd;
   check_cannon(&tos);
 }
 
-check_brate(cf) u_long cf;
+void check_brate(u_long cf)
 {
   int b;
   printf("Baud rate : ");
@@ -602,7 +602,7 @@ check_brate(cf) u_long cf;
   printf("%d bps.\n", b);
 }
 
-check_csize(cf) u_long cf;
+void check_csize(u_long cf)
 {
   int s;
   printf("Char size : ");
@@ -616,7 +616,7 @@ check_csize(cf) u_long cf;
   printf("%d chars.\n", s);
 }
 
-check_sbit(cf) u_long cf;
+void check_sbit(u_long cf)
 {
   int s;
   printf("Stop bit : ");
@@ -626,7 +626,7 @@ check_sbit(cf) u_long cf;
     printf("1 bit.\n");
 }
 
-check_parity(cf) u_long cf;
+void check_parity(u_long cf)
 {
   if (cf & PARENB) {
     printf("Parity Enabled : ");
@@ -639,7 +639,7 @@ check_parity(cf) u_long cf;
   }
 }
 
-check_cannon(tos) struct termios *tos;
+void check_cannon(struct termios *tos)
 {
   u_long lf;
 
@@ -653,7 +653,7 @@ check_cannon(tos) struct termios *tos;
   }
 }
 
-check_oflag(of) u_long of;
+void check_oflag(u_long of)
 {
   if ((OPOST & of) == OPOST) {
     printf("OPOST : O\n");
@@ -725,7 +725,7 @@ check_oflag(of) u_long of;
 /*
  * In dbx, "call rsc()".
  */
-rsc() {
+void rsc() {
   if (RS232C_Fd >= 0) check_params(RS232C_Fd);
 }
 

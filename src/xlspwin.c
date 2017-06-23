@@ -71,7 +71,7 @@ extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 /*									*/
 /************************************************************************/
 
-void Create_LispWindow(dsp) DspInterface dsp;
+void Create_LispWindow(DspInterface dsp)
 {
   XSizeHints szhint = {0};
   XWMHints Lisp_WMhints = {0};
@@ -281,7 +281,7 @@ void Create_LispWindow(dsp) DspInterface dsp;
   XUNLOCK;
 }
 
-void lisp_Xvideocolor(flag) int flag;
+void lisp_Xvideocolor(int flag)
 {
   XLOCK;
   XCopyArea(currentdsp->display_id, currentdsp->DisplayWindow, currentdsp->DisplayWindow,
@@ -301,7 +301,7 @@ void lisp_Xvideocolor(flag) int flag;
 
 extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
-void set_Xmouseposition(x, y) int x, y;
+void set_Xmouseposition(int x, int y)
 {
   int dest_x, dest_y;
 
