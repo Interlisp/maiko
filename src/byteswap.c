@@ -31,7 +31,7 @@ static char *id = "$Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ Copy
 #include "lsptypes.h"
 #include "stack.h"
 
-#ifdef ISC
+#if defined(ISC)
 #include "inlnPS2.h"
 #else
 
@@ -41,7 +41,7 @@ static char *id = "$Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ Copy
 /*                                                              */
 /****************************************************************/
 unsigned int swapx(unsigned int word) {
-  return (((word >> 16) & 0xffff) + ((word & 0xffff) << 16));
+  return (((word >> 16) & 0xffff) | ((word & 0xffff) << 16));
 }
 
 /****************************************************************/
@@ -50,7 +50,7 @@ unsigned int swapx(unsigned int word) {
 /*                                                              */
 /****************************************************************/
 unsigned short byte_swap_word(unsigned short word) {
-  return (((word >> 8) & 0xff) + ((word & 0xff) << 8));
+  return (((word >> 8) & 0xff) | ((word & 0xff) << 8));
 }
 
 /****************************************************************/
@@ -66,7 +66,7 @@ unsigned int word_swap_longword(word)
       return( ((word>>16)&0xffff)+((word&0xffff)<<16) );
   } ***/
 #ifndef I386
-#define word_swap_longword(word) (((word >> 16) & 0xffff) + ((word & 0xffff) << 16))
+#define word_swap_longword(word) (((word >> 16) & 0xffff) | ((word & 0xffff) << 16))
 #endif
 #endif /* AIXPS2 */
 
