@@ -80,15 +80,15 @@ architecture=`machinetype`
 osversion=`osversion`
 echo "making so far for ${osversion} on ${architecture}."
 case "$display" in
-	init)	set display = single
-		set releasename = init.${architecture}
-		set ldename = ldeinit
+	init)	display=single
+		releasename=init.${architecture}
+		ldename=ldeinit
 		;;
-	single)	set releasename = ${osversion}.${architecture}
-		set ldename = ldesingle
+	single)	releasename=${osversion}.${architecture}
+		ldename=ldesingle
 		;;
-	multi)	set releasename = ${osversion}.${architecture}-${display}
-		set ldename = ldemulti
+	multi)	releasename=${osversion}.${architecture}-${display}
+		ldename=ldemulti
 		;;
 	x)	releasename=${osversion}.${architecture}-${display}
 		ldename=ldex
@@ -97,7 +97,7 @@ case "$display" in
 		exit
 		;;
 esac
-
+echo making with display $display releasename $releasename ldename $ldename
 releaseflg=0
 
 if test "$1" = "release" 
@@ -117,9 +117,9 @@ fi
 installdir=${RELDIR}install.${osversion}.${architecture}/
 
 #if($display == single ) then
-#	set releasename = ${osversion}.${architecture}
+#       releasename = ${osversion}.${architecture}
 #else
-#	set releasename = ${osversion}.${architecture}-${display}
+#	releasename = ${osversion}.${architecture}-${display}
 #endif
 
 echo start making lde for ${releasename}.
