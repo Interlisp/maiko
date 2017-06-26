@@ -8,5 +8,6 @@ darwin.386-x/**
 darwin.386/**
 freebsd.386-x/**
 freebsd.386/**
+init.386/**
 # core files
 *.core
