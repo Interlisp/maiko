@@ -362,7 +362,7 @@ void subr_settime(LispPTR args[])
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
 
-#elif defined(SYSVONLY)
+#elif defined(SYSVONLY) && !defined(MACOSX)
   time_t newTime = (time_t)(*((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF);
   stime(&newTime);
 #else
