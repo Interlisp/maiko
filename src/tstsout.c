@@ -20,6 +20,7 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 #include "version.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>

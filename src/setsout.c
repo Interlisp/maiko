@@ -27,6 +27,7 @@ static char *id = "$Id: setsout.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 /************************************************************************/
 
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>

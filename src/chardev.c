@@ -46,6 +46,7 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include <string.h>
 #endif /* DOS */
 
+#include <unistd.h>
 #include <setjmp.h>
 #include <signal.h>
 #include <errno.h>

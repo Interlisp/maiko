@@ -38,6 +38,7 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 #include <errno.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #ifdef XWINDOW
 #ifndef SYSVONLY
