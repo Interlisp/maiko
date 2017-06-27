@@ -756,7 +756,7 @@ void byte_swapped_displayregion(int x, int y, int w, int h)
 /*									*/
 /************************************************************************/
 
-void flush_display_lineregion(UNSIGNED x, UNSIGNED ybase, UNSIGNED w, UNSIGNED h)
+void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
 #ifdef I386
 { /*flush_display_buffer(); */
   int y;
@@ -805,7 +805,7 @@ void flush_display_lineregion(UNSIGNED x, UNSIGNED ybase, UNSIGNED w, UNSIGNED h
 
 #define BITSPERWORD 16
 
-void flush_display_ptrregion(UNSIGNED ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h)
+void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h)
 #ifdef I386
 { flush_display_buffer(); }
 #else
