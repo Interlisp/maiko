@@ -296,7 +296,9 @@ of the packet received except:
 
 */
 
-fork_Unix() {
+long time(long); /* XXX where does time come from? */
+
+int fork_Unix() {
   int LispToUnix[2], /* Incoming pipe from LISP */
       UnixToLisp[2], /* Outgoing pipe to LISP */
       UnixPID, LispPipeIn, LispPipeOut, res, slot;
