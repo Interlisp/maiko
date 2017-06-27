@@ -400,41 +400,34 @@ typedef signed char s_char;
 /*							*/
 /********************************************************/
 #if defined(MACOSX) || defined(FREEBSD)
-/* MACOSX, mostly POSIX-compliant Unix */
+/* MacOS X, FreeBSD - mostly POSIX-compliant Unix */
 #define NOETHER 1
 #define XWINDOWS 1
 #define WAITINT 1
-/* JDS trial 12/22/01 #define USETIMEFN 1 */
 
 #undef REGISTER
 #define REGISTER
 
 typedef signed char s_char;
 
-#undef UNALIGNED_FETCH_OK
-
 #define MAXNAMLEN NAME_MAX
 
+#define SYSVONLY 1
+
 #endif /* MACOSX || FREEBSD */
-
-
-
-
 
 
 	/********************************************************/
 	/*							*/
 	/********************************************************/
 #ifdef I386
-#define USE_INLINE_AIRTH	1
+#define USE_INLINE_ARITH	1
 #endif /* I386 */
-
-
-
 
 	/********************************************************/
 	/*							*/
 	/********************************************************/
+
 #ifdef DOS
 typedef unsigned char u_char;
 typedef unsigned long u_int;
@@ -455,44 +448,37 @@ typedef unsigned short u_short;
 #define USHORT unsigned short
 #endif /* DOS */
 
-
-
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-
 
 #ifdef OS4
 #define __inline__
 #endif
 
-
-
 	/****************************************************************/
 	/* 	    End of architecture-specific flag settings		*/
 	/* 	    --Start of system-specific flags (e.g. SYSVONLY)-- 	*/
-	/*										*/
+	/*								*/
 	/****************************************************************/
 
 #ifdef SYSVONLY
-#if defined INDIGO
-#elif OS5
-#elif defined(LINUX) || defined(MACOSX)
+
+#if defined(INDIGO) || defined(OS5) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
 #else
 #define seteuid(x) setresuid(-1, (x), -1)
-#endif /* INDIGO does have seteuid */
+#endif /* INDIGO, OS5, MACOSX, FREEBSD, LINUX do have seteuid */
+
+#if !defined(LINUX) && !defined(MACOSX) && !defined(FREEBSD)
+/* these are in the POSIX standard */
 #define getwd(x) getcwd((x), MAXPATHLEN)
 #define getrusage(x, y) 
 #define getpagesize() 4096
-#if defined(LINUX) || defined(MACOSX)
-#undef getrusage
-#undef getpagesize
-#undef getwd
-#endif /* LINUX */
+#endif /* LINUX , MACOSX, FREEBSD  */
+
 #endif /* SYSVONLY */
 
-
 	/****************************************************************/
-	/* 	    End of architecture-specific flag settings		*/
+	/* 	    End of system-specific flag settings		*/
 	/****************************************************************/
 
