@@ -469,12 +469,11 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /*									*/
 /************************************************************************/
 
+#include <stdlib.h>
 extern DLword *createcell68k(unsigned int type);
 extern LispPTR *alloc_mdspage(register short int type);
 extern UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep);
-extern char *getenv(const char *);
 extern int error(char *);
-#include <stdlib.h>
 
 
 
