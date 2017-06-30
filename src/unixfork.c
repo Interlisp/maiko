@@ -92,6 +92,8 @@ typedef int clockid_t;
 #include <sgtty.h>
 #endif
 
+#include "unixfork.h"
+
 /* The following globals are used to communicate between Unix
    subprocesses and LISP */
 
@@ -127,9 +129,9 @@ loop:
 /* Creates a PTY connection to a csh */
 
 #ifdef FULLSLAVENAME
-ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
+int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
 #else
-ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
+int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
 #endif
 {
 #ifdef FULLSLAVENAME

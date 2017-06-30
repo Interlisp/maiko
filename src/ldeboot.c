@@ -40,6 +40,8 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "unixfork.h"
+
 #ifdef XWINDOW
 #ifndef SYSVONLY
 #include <strings.h>
@@ -49,7 +51,6 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 #include <X11/Xutil.h>
 #include "XVersion.h"
 #define LDEX "ldex"
-extern char *getenv();
 #endif /* XWINDOW */
 
 #define LDEMONO "ldesingle"
