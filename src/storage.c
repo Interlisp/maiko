@@ -32,6 +32,7 @@ static const char *id =
 #include "stack.h"
 #include "lspglob.h"
 #include "cell.h"
+#include "car-cdr.h"
 #include "lsptypes.h"
 #include "ifpage.h"
 #include "gc.h"

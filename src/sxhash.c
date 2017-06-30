@@ -27,6 +27,7 @@ static char *id = "$Id: sxhash.c,v 1.4 2001/12/24 01:09:06 sybalsky Exp $ Copyri
 #include "address.h"
 #include "stack.h"
 #include "cell.h"
+#include "car-cdr.h"
 #include "array.h"
 
 #include "arith.h"

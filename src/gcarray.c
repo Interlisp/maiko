@@ -55,6 +55,7 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "stack.h"
 #include "cell.h"
+#include "car-cdr.h"
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"

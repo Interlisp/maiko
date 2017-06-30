@@ -72,6 +72,7 @@ static char *id = "$Id: bbtsub.c,v 1.3 2001/12/24 01:08:59 sybalsky Exp $ Copyri
 #include "arith.h"
 #include "stack.h"
 #include "cell.h"
+#include "car-cdr.h"
 #include "gc.h"
 #include "iopage.h"
 extern IOPAGE *IOPage68K;

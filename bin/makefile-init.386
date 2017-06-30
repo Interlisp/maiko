@@ -23,7 +23,7 @@ DISPOPTFLAGS = -O0 -g
 FPFLAGS =
 DFLAGS = -DFSERROR -DNEW_STORAGE -DMACOSX -DOLD_CURSOR -DUSETERMIOS \
 	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
-	-DRELEASE=351 -DNOVERSION -DINIT
+	-DRELEASE=351 -DNOVERSION -DINIT -DTRACE -DOPTRACE
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lm
 LDELDFLAGS =  -L/usr/X11/lib -lX11 -lm
@@ -48,5 +48,5 @@ $(OBJECTDIR)xc.o:      $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
 	$(INCDIR)initatms.h  $(INCDIR)gc.h  \
 	$(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h
+	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h $(INCDIR)car-cdr.h
 	$(CC) $(DISPRFLAGS) -UOPDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o

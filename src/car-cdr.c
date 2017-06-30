@@ -44,6 +44,7 @@ static char *id = "$Id: car-cdr.c,v 1.3 1999/05/31 23:35:25 sybalsky Exp $ Copyr
 #include "adr68k.h"
 #include "gc.h"
 #include "cell.h"
+#include "car-cdr.h"
 
 /************************************************************************/
 /*									*/
@@ -191,7 +192,8 @@ LispPTR rplaca(register LispPTR x, register LispPTR y)
 */
 /**********************************************************************/
 #ifdef NEWCDRCODING
-ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart); /* below... */
+static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart); /* below... */
+static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell);
 #endif
 extern struct conspage *next_conspage(void); /* conspage.c */
 
@@ -206,7 +208,6 @@ LispPTR rplacd(LispPTR x, register LispPTR y)
   LispPTR rp_page;
   DLword cdr_code;
   register struct conspage *cons68k;
-  ConsCell *find_close_cell(struct conspage * page, LispPTR oldcell);
 
   if (Listp(x) == NIL) {
     if (x == NIL_PTR) {
@@ -477,42 +478,6 @@ LispPTR N_OP_rplacd(register LispPTR tosm1, register LispPTR tos) {
 
 /************************************************************************/
 /*									*/
-/*			f i n d _ c l o s e _ c e l l			*/
-/*									*/
-/*	Given the real address of a CONS page and an existing cell	*/
-/*	on that page, return another cell that is close enough to	*/
-/*	be used as the CDR of the existing cell (i.e., within 7		*/
-/*	cells.  If no such cell exists, return 0.			*/
-/*									*/
-/*	If a cell is found, it is taken off the free chain before	*/
-/*	being returned.							*/
-/*									*/
-/************************************************************************/
-
-ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell) {
-  unsigned oldoffset = oldcell & 0xFF;
-  unsigned offset = page->next_cell;
-  unsigned prior = 0;
-
-  while (offset) {
-    if ((offset > oldoffset) && (offset <= (oldoffset + 14))) {
-      if (prior)
-        ((freecons *)((DLword *)page + prior))->next_free =
-            ((freecons *)((DLword *)page + offset))->next_free;
-      else
-        page->next_cell = ((freecons *)((DLword *)page + offset))->next_free;
-      page->count -= 1;
-      return (ConsCell *)((DLword *)page + offset);
-    }
-
-    prior = offset;
-    offset = ((freecons *)((DLword *)page + offset))->next_free;
-  }
-  return ((ConsCell *)0); /* No cell close enough */
-}
-
-/************************************************************************/
-/*									*/
 /*	        f i n d _ c l o s e _ p r i o r _ c e l l		*/
 /*									*/
 /*	Given the real address of a CONS page and an existing cell	*/
@@ -559,15 +524,52 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
   return ((ConsCell *)0); /* No cell close enough */
 }
 
+#ifdef NEWCDRCODING
 /************************************************************************/
 /*									*/
+/*			f i n d _ c l o s e _ c e l l			*/
 /*									*/
+/*	Given the real address of a CONS page and an existing cell	*/
+/*	on that page, return another cell that is close enough to	*/
+/*	be used as the CDR of the existing cell (i.e., within 7		*/
+/*	cells.  If no such cell exists, return 0.			*/
+/*									*/
+/*	If a cell is found, it is taken off the free chain before	*/
+/*	being returned.							*/
+/*									*/
+/************************************************************************/
+
+static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell) {
+  unsigned oldoffset = oldcell & 0xFF;
+  unsigned offset = page->next_cell;
+  unsigned prior = 0;
+
+  while (offset) {
+    if ((offset > oldoffset) && (offset <= (oldoffset + 14))) {
+      if (prior)
+        ((freecons *)((DLword *)page + prior))->next_free =
+            ((freecons *)((DLword *)page + offset))->next_free;
+      else
+        page->next_cell = ((freecons *)((DLword *)page + offset))->next_free;
+      page->count -= 1;
+      return (ConsCell *)((DLword *)page + offset);
+    }
+
+    prior = offset;
+    offset = ((freecons *)((DLword *)page + offset))->next_free;
+  }
+  return ((ConsCell *)0); /* No cell close enough */
+}
+
+/************************************************************************/
+/*									*/
+/*		f i n d _ c d r p a i r _ i n _ p a g e			*/
 /*									*/
 /*									*/
 /*									*/
 /************************************************************************/
 
-ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, LispPTR cdrpart) {
+static ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, LispPTR cdrpart) {
   ConsCell *cell;
   unsigned offset, prior, priorprior, nprior, poffset, noffset;
 
@@ -634,13 +636,13 @@ ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, LispPTR cdr
 
 /************************************************************************/
 /*									*/
-/*									*/
+/*		f i n d _ c d r a b l e _ p a i r			*/
 /*									*/
 /*									*/
 /*									*/
 /************************************************************************/
 
-ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart) {
+static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart) {
   unsigned offset, prior, priorprior, pgno;
   struct conspage *pg;
   ConsCell *cell;
@@ -652,3 +654,5 @@ ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart) {
 
   return (find_cdrpair_in_page(next_conspage(), carpart, cdrpart));
 }
+
+#endif

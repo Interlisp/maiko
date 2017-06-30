@@ -28,6 +28,7 @@ static char *id = "$Id: loopsops.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copy
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "cell.h"
+#include "car-cdr.h"
 #include "lispmap.h"
 #include "lspglob.h"
 #include "adr68k.h"
