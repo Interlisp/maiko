@@ -110,7 +110,9 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "locfile.h"
 #include "osmsg.h"
 #include "dbprint.h"
+#include "conspage.h"
 #include "car-cdr.h"
+#include "dsk.h"
 
 #if defined(ULTRIX) || defined(MACOSX) || defined(FREEBSD)
 #include <sys/mount.h>
@@ -158,10 +160,40 @@ typedef struct current_varray {
 FileName VersionArray[VERSIONARRAYLENGTH];
 CurrentVArray VArrayInfo;
 
-FileName *GetHighestVersion();
-FileName *GetNextHighestVersion();
-FileName *GetLowestVersion();
-FileName *VersionlessP();
+static int locate_file(char *dir, char *name);
+static int make_directory(register char *dir);
+static int maintain_version(char *file, FileName *varray, int forcep);
+static int get_versionless(FileName *varray, char *file, char *dir);
+static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p);
+static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
+static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile);
+static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
+static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
+static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache);
+
+#ifdef DOS
+static void separate_drive(char *lfname, char *drive)
+{
+  register char *cp;
+
+  cp = lfname;
+
+  /* Check if there's a drive specified. */
+
+  if (*(cp + 1) == DRIVESEP) {
+    *drive = *cp; /* copy the drive letter, if there is one */
+    cp++;
+    cp++;       /* Move to the real `<`/ */
+    while (*cp) /* Move the rest to the left to cover. */
+    {
+      *(cp - 2) = *cp;
+      cp++;
+    }
+    *(cp - 2) = '\0';
+  } else
+    *drive = '\0'; /* no drive */
+}
+#endif /* DOS */
 
 /*
  * Name:	separate_host
@@ -2549,30 +2581,6 @@ NO:
   *ver = '\0';
 }
 
-#ifdef DOS
-void separate_drive(char *lfname, char *drive)
-{
-  register char *cp;
-
-  cp = lfname;
-
-  /* Check if there's a drive specified. */
-
-  if (*(cp + 1) == DRIVESEP) {
-    *drive = *cp; /* copy the drive letter, if there is one */
-    cp++;
-    cp++;       /* Move to the real `<`/ */
-    while (*cp) /* Move the rest to the left to cover. */
-    {
-      *(cp - 2) = *cp;
-      cp++;
-    }
-    *(cp - 2) = '\0';
-  } else
-    *drive = '\0'; /* no drive */
-}
-#endif /* DOS */
-
 /*
  * Name:	unpack_filename
  *
@@ -2736,7 +2744,7 @@ int true_name(register char *path)
  *
  */
 
-int locate_file(char *dir, char *name)
+static int locate_file(char *dir, char *name)
 {
 #ifdef DOS
   char path[MAXPATHLEN];
@@ -2837,7 +2845,7 @@ int locate_file(char *dir, char *name)
  *
  */
 
-int make_directory(register char *dir)
+static int make_directory(register char *dir)
 {
   register char *cp, *dp;
   register int maked, rval;
@@ -3092,7 +3100,7 @@ int make_directory(register char *dir)
 /*									*/
 /************************************************************************/
 
-int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache)
+static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache)
 {
 #ifdef DOS
 
@@ -3328,7 +3336,7 @@ int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *ca
  * to maintain the directory on which a file is being created.
  */
 
-int maintain_version(char *file, FileName *varray, int forcep)
+static int maintain_version(char *file, FileName *varray, int forcep)
 {
   char dir[MAXPATHLEN], fname[MAXNAMLEN], ver[VERSIONLEN];
   char old_file[MAXPATHLEN], vless[MAXPATHLEN];
@@ -3489,7 +3497,7 @@ int maintain_version(char *file, FileName *varray, int forcep)
  *
  */
 
-int get_versionless(FileName *varray, char *file, char *dir)
+static int get_versionless(FileName *varray, char *file, char *dir)
 {
 #ifdef DOS
   return (0);
@@ -3542,7 +3550,7 @@ int get_versionless(FileName *varray, char *file, char *dir)
  *
  */
 
-int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p)
+static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p)
 {
   register int rval, max_no, found;
   ino_t vless_ino;
@@ -3643,7 +3651,7 @@ int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_
  *
  */
 
-int get_old(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
@@ -3842,7 +3850,7 @@ int get_old(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
@@ -4039,7 +4047,7 @@ int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-int get_new(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
@@ -4333,7 +4341,7 @@ int get_new(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];

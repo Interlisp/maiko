@@ -87,6 +87,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include "lspglob.h"
 #include "timeout.h"
 #include "locfile.h"
+#include "dsk.h"
 
 extern int *Lisp_errno;
 extern int Dummy_errno;
