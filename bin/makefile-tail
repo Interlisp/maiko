@@ -235,7 +235,7 @@ $(OBJECTDIR)main.o : $(SRCDIR)main.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
-	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h $(INCDIR)unixfork.h
+	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h $(INCDIR)unixfork.h $(INCDIR)dir.h
 	$(CC) $(RFLAGS) $(SRCDIR)main.c $(INLINE) -o $(OBJECTDIR)main$(OEXT)
 
 $(OBJECTDIR)dbgtool.o :  $(SRCDIR)dbgtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -481,7 +481,7 @@ $(OBJECTDIR)findkey.o :  $(SRCDIR)findkey.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 $(OBJECTDIR)dsk.o :  $(SRCDIR)dsk.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)lispmap.h \
 	 $(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
 	 $(INCDIR)fp.h $(INCDIR)arith.h  $(INCDIR)stream.h  $(INCDIR)timeout.h \
-	 $(INCDIR)locfile.h $(INCDIR)osmsg.h $(INCDIR)dbprint.h $(INCDIR)car-cdr.h $(INCDIR)dsk.h
+	 $(INCDIR)locfile.h $(INCDIR)osmsg.h $(INCDIR)dbprint.h $(INCDIR)car-cdr.h $(INCDIR)dsk.h $(INCDIR)dir.h
 	$(CC) $(RFLAGS) $(SRCDIR)dsk.c $(INLINE) -o $(OBJECTDIR)dsk$(OEXT)
 
 $(OBJECTDIR)ufs.o :  $(SRCDIR)ufs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)lispmap.h  \
@@ -490,7 +490,7 @@ $(OBJECTDIR)ufs.o :  $(SRCDIR)ufs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INC
 	 $(INCDIR)stream.h $(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)dbprint.h $(INCDIR)dsk.h
 	$(CC) $(RFLAGS) $(SRCDIR)ufs.c $(INLINE) -o $(OBJECTDIR)ufs$(OEXT)
 
-$(OBJECTDIR)dir.o :  $(SRCDIR)dir.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+$(OBJECTDIR)dir.o :  $(SRCDIR)dir.c  $(INCDIR)dir.h $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h $(INCDIR)adr68k.h $(INCDIR)lsptypes.h  \
 	 $(INCDIR)arith.h $(INCDIR)lspglob.h $(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)dsk.h
 	$(CC) $(RFLAGS) $(SRCDIR)dir.c $(INLINE) -o $(OBJECTDIR)dir$(OEXT)
@@ -716,7 +716,7 @@ $(OBJECTDIR)subr.o :  $(SRCDIR)subr.c  $(REQUIRED-INCS) \
 	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
-	 $(INCDIR)arith.h $(INCDIR)profile.h $(INCDIR)dsk.h
+	 $(INCDIR)arith.h $(INCDIR)profile.h $(INCDIR)dsk.h $(INCDIR)dir.h
 	$(CC) $(RFLAGS) $(SRCDIR)subr.c $(INLINE) -o $(OBJECTDIR)subr$(OEXT)
 
 $(OBJECTDIR)miscn.o : $(SRCDIR)miscn.c  $(REQUIRED-INCS) \
@@ -789,7 +789,7 @@ $(OBJECTDIR)vars3.o :  $(SRCDIR)vars3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 
 $(OBJECTDIR)vmemsave.o :  $(SRCDIR)vmemsave.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h  $(INCDIR)lspglob.h \
-	 $(INCDIR)ifpage.h  $(INCDIR)dsk.h $(INCDIR)vmemsave.h 
+	 $(INCDIR)ifpage.h  $(INCDIR)dsk.h $(INCDIR)vmemsave.h $(INCDIR)dir.h
 	$(CC) $(RFLAGS) $(SRCDIR)vmemsave.c $(INLINE) -o $(OBJECTDIR)vmemsave$(OEXT)
 
 $(OBJECTDIR)array2.o : $(SRCDIR)array2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \

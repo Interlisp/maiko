@@ -88,6 +88,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include "timeout.h"
 #include "locfile.h"
 #include "dsk.h"
+#include "dir.h"
 
 extern int *Lisp_errno;
 extern int Dummy_errno;
@@ -192,7 +193,7 @@ extern int Dummy_errno;
  * number of characters.
  */
 
-int match_pattern(char *tp, char *pp)
+static int match_pattern(char *tp, char *pp)
 {
   register char *tsp, *psp;
   register int inastr;
@@ -448,7 +449,7 @@ int init_finfo() {
  * FINFOARRAYRSIZE.
  */
 
-int get_finfo_id() {
+static int get_finfo_id() {
   register int i;
   DFINFO *dfap;
 
@@ -493,7 +494,7 @@ int get_finfo_id() {
  */
 
 #ifdef DOS
-int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -653,7 +654,7 @@ int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -772,7 +773,7 @@ int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
  * Similar to enum_dsk_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -916,7 +917,7 @@ int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
 #else  /* DOS */
 
-int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1024,7 +1025,7 @@ int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
  * of FINFO structures.
  */
 #ifdef DOS
-int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1110,7 +1111,7 @@ int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1223,7 +1224,7 @@ int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
  * Similar to enum_ufs_prop, but file properties are not stored.
  */
 #ifdef DOS
-int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1293,7 +1294,7 @@ int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
   register struct direct *dp;
   register FINFO *prevp;
@@ -1388,7 +1389,7 @@ int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
  * This routine is only used by DSK codes.
  */
 
-int trim_finfo(FINFO **fp)
+static int trim_finfo(FINFO **fp)
 {
 #ifndef DOS
   register FINFO *tp, *sp, *mp, *cp, *pp;
@@ -1517,7 +1518,7 @@ int trim_finfo(FINFO **fp)
  * of.
  */
 
-int trim_finfo_highest(FINFO **fp, int highestp)
+static int trim_finfo_highest(FINFO **fp, int highestp)
 {
   register FINFO *tp, *sp, *mp, *cp, *pp;
   register int num, pnum;
@@ -1655,7 +1656,7 @@ int trim_finfo_highest(FINFO **fp, int highestp)
  * are got rid of.
  */
 
-int trim_finfo_version(FINFO **fp, int rver)
+static int trim_finfo_version(FINFO **fp, int rver)
 {
   register FINFO *tp, *sp, *mp, *cp, *pp, *vp;
   register int num, pnum;

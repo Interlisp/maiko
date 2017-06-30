@@ -23,6 +23,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include "lispemul.h"
 #include "dbprint.h"
 #include "unixfork.h"
+#include "dir.h"
 
 #include <sys/types.h>
 #ifndef DOS
