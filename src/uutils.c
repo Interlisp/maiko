@@ -48,6 +48,7 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 #include "lspglob.h"
 #include "osmsg.h"
 #include "keyboard.h"
+#include "uraid.h"
 
 #ifdef OS5
 #define gethostid() 0

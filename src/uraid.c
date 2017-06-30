@@ -87,6 +87,7 @@ extern int Win_security_p;
 
 #include "display.h"
 #include "bitblt.h"
+#include "uraid.h"
 
 #ifdef DOS
 #define vfork() printf("No forking around here.\n")
@@ -858,7 +859,7 @@ int device_before_raid() {
   int size;
   int munmapstat;
   struct pixrect *fb;
-  extern char *alloc_hideDISP();
+  /*  extern char *alloc_hideDISP(); */
 #ifdef SUNDISPLAY
   union wait status;
 #endif /* SUNDISPLAY */
@@ -1052,6 +1053,8 @@ char *alloc_hideDISP(int size)
  */
 #define KB_ALLUP 0xffff
 
+static int re_init_display(int, int);
+
 int device_after_raid() {
   extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
   extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
@@ -1128,7 +1131,7 @@ int device_after_raid() {
 /***********************************************************************/
 #ifndef COLOR
 
-int re_init_display(int lisp_display_addr, int display_max)
+static int re_init_display(int lisp_display_addr, int display_max)
 {
   int mmapstat, size;
   struct pixrect *ColorFb;
@@ -1238,7 +1241,7 @@ int re_init_display(int lisp_display_addr, int display_max)
 
 #else /* COLOR */
 
-int re_init_display(int lisp_display_addr, int display_max)
+static int re_init_display(int lisp_display_addr, int display_max)
 {
   int mmapstat, size;
   struct pixrect *ColorFb;

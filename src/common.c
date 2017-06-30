@@ -28,6 +28,7 @@ static char *id = "$Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ Copyri
 #include "emlglob.h"
 #include "stack.h"
 #include "dbprint.h"
+#include "uraid.h"
 
 #ifndef NOPIXRECT
 #include <pixrect/pixrect_hs.h>
