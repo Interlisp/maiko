@@ -38,10 +38,11 @@ static char *id = "$Id: z2.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 #include "address.h"
 #include "adr68k.h"
 #include "cell.h"
+#include "car-cdr.h"
+#include "conspage.h"
 #include "stack.h"
 #include "gc.h"
 #include "my.h"
-#include "car-cdr.h"
 
 struct cadr_cell cadr(LispPTR cell_adr);
 

@@ -393,7 +393,7 @@ $(OBJECTDIR)common.o :  $(SRCDIR)common.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 $(OBJECTDIR)conspage.o :  $(SRCDIR)conspage.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h  $(INCDIR)lispmap.h \
-	 $(INCDIR)gc.h  $(INCDIR)lspglob.h
+	 $(INCDIR)gc.h  $(INCDIR)lspglob.h $(INCDIR)conspage.h
 	$(CC) $(RFLAGS) $(SRCDIR)conspage.c $(INLINE) -o $(OBJECTDIR)conspage$(OEXT)
 
 $(OBJECTDIR)mkcell.o :  $(SRCDIR)mkcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -412,7 +412,7 @@ $(OBJECTDIR)z2.o :  $(SRCDIR)z2.c  $(REQUIRED-INCS)  \
 	 $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
-	 $(INCDIR)gc.h  $(INCDIR)my.h $(INCDIR)car-cdr.h
+	 $(INCDIR)gc.h  $(INCDIR)my.h $(INCDIR)car-cdr.h $(INCDIR)conspage.h
 	$(CC) $(RFLAGS) $(SRCDIR)z2.c $(INLINE) -o $(OBJECTDIR)z2$(OEXT)
 
 $(OBJECTDIR)eqf.o :  $(SRCDIR)eqf.c  $(REQUIRED-INCS)  $(INCDIR)fp.h \
@@ -669,7 +669,7 @@ $(OBJECTDIR)misc7.o :  $(SRCDIR)misc7.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 $(OBJECTDIR)mvs.o :  $(SRCDIR)mvs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)stack.h $(INCDIR)opcodes.h $(INCDIR)car-cdr.h
+	 $(INCDIR)stack.h $(INCDIR)opcodes.h $(INCDIR)car-cdr.h $(INCDIR)conspage.h
 	$(CC) $(RFLAGS) $(SRCDIR)mvs.c $(INLINE) -o $(OBJECTDIR)mvs$(OEXT)
 
 $(OBJECTDIR)mkatom.o :  $(SRCDIR)mkatom.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -692,7 +692,7 @@ $(OBJECTDIR)return.o :  $(SRCDIR)return.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 $(OBJECTDIR)rplcons.o :  $(SRCDIR)rplcons.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)gc.h  $(INCDIR)cell.h
+	 $(INCDIR)gc.h  $(INCDIR)cell.h $(INCDIR)conspage.h
 	$(CC) $(RFLAGS) $(SRCDIR)rplcons.c $(INLINE) -o $(OBJECTDIR)rplcons$(OEXT)
 
 $(OBJECTDIR)rs232c.o :  $(SRCDIR)rs232c.c  $(REQUIRED-INCS) $(INCDIR)rs232c.h

@@ -36,6 +36,8 @@ static char *id = "$Id: rplcons.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 #include "adr68k.h"
 #include "gc.h"
 #include "cell.h"
+#include "conspage.h"
+#include "car-cdr.h"
 
 /***************************************************/
 

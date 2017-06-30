@@ -29,6 +29,7 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 #include "lispmap.h"
 #include "lspglob.h"
 #include "gc.h"
+#include "conspage.h"
 
 /************************************************************************/
 /*									*/
@@ -68,7 +69,7 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 /*									*/
 /************************************************************************/
 
-void init_conspage(register struct conspage *base, unsigned int link)
+static void init_conspage(register struct conspage *base, unsigned int link)
 /* Page Base */
 /* Prev Link page number DL->int*/
 {
@@ -190,7 +191,7 @@ ex:
 /*									*/
 /************************************************************************/
 
-ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
+static ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
   ConsCell *carcell, *cdrcell;
   unsigned int offset, prior, priorprior, ppriorprior, noffset, nprior, poffset;
 
@@ -249,7 +250,7 @@ ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
   return ((ConsCell *)0);
 }
 
-ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
+static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
   ConsCell *cell;
   struct conspage *pg;
   unsigned pgno = ListpDTD->dtd_nextpage;
@@ -263,7 +264,7 @@ ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
   return (cell);
 } /* end of find_cdrcodable_pair */
 
-ConsCell *find_free_cons_cell(void) {
+static ConsCell *find_free_cons_cell(void) {
   ConsCell *cell;
   struct conspage *pg, *priorpg;
   unsigned pgno = ListpDTD->dtd_nextpage;
