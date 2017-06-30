@@ -27,6 +27,7 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #ifdef ISC
 #include <sys/bsdtypes.h>
@@ -68,7 +69,7 @@ extern int Win_security_p;
 #ifdef OS5
 #include <stropts.h>
 #endif /* OS5 */
-#ifdef FREEBSD
+#if defined(FREEBSD) || defined(MACOSX)
 /* for memset */
 #include <string.h>
 #endif

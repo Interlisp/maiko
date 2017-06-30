@@ -34,12 +34,15 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 #include <sys/time.h>
 #endif
 #ifndef SYSVONLY
-#if defined(DOS) || defined(MACOSX) || defined(FREEBSD)
+#if defined(DOS)
 #include <string.h>
 #else
 #include <strings.h>
 #endif /* DOS */
 #endif /* SYSVONLY */
+#if defined(MACOSX) || defined(FREEBSD) /* we compile these with SYSVONLY but... */
+#include <string.h>
+#endif
 
 #include <stdio.h>
 #include "lispemul.h"
