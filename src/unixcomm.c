@@ -89,7 +89,7 @@ Unix Interface Communications
 #include "inlinePS2.h"
 #endif /* GCC386 */
 
-static __inline__ int SAFEREAD(int f, char *b, int c) {
+static __inline__ int SAFEREAD(int f, unsigned char *b, int c) {
   int res;
 loop:
   res = read(f, b, c);
@@ -213,7 +213,7 @@ void wait_for_comm_processes(void) {
 char *build_socket_pathname(int desc) {
   static char PathName[50];
 
-  sprintf(PathName, "/tmp/LPU%d-%d", StartTime, desc);
+  sprintf(PathName, "/tmp/LPU%ld-%d", StartTime, desc);
   return (PathName);
 }
 
@@ -223,7 +223,7 @@ char *build_upward_socket_pathname(int desc)
 {
   static char UpPathName[50];
 
-  sprintf(UpPathName, "/tmp/LPU%d-%d", StartTime, desc);
+  sprintf(UpPathName, "/tmp/LPU%ld-%d", StartTime, desc);
   return (UpPathName);
 }
 
@@ -231,7 +231,7 @@ char *build_downward_socket_pathname(int desc)
 {
   static char DownPathName[50];
 
-  sprintf(DownPathName, "/tmp/LPD%d-%d", StartTime, desc);
+  sprintf(DownPathName, "/tmp/LPD%ld-%d", StartTime, desc);
   return (DownPathName);
 }
 #endif /* ISC */
@@ -549,7 +549,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       if (d[3] == 1) {
 #ifndef ISC
       case0_lp:
-        TIMEOUT(PipeFD = accept(sockFD, (struct sockaddr *)0, (int *)0));
+        TIMEOUT(PipeFD = accept(sockFD, NULL, NULL));
         if (PipeFD < 0) {
           if (errno == EINTR) goto case0_lp;
           perror("Accept.");
@@ -1045,7 +1045,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       /* sockFD SHOULD be non-blocking;
          but I'll time this out just in case */
       case13_lp:
-        TIMEOUT(newFD = accept(sockFD, (struct sockaddr *)0, (int *)0));
+        TIMEOUT(newFD = accept(sockFD, NULL, NULL));
         if (newFD < 0)
           if (errno == EINTR)
             goto case13_lp;
