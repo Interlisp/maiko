@@ -236,8 +236,8 @@ LispPTR vmem_save0(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-int twowords(DLword *i, DLword *j) /* the difference between two  DLwords. */
-{ return (*i - *j); }
+int twowords(const void *i, const void *j) /* the difference between two  DLwords. */
+{ return (*(DLword *)i - *(DLword *)j); }
 
 #define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
 
