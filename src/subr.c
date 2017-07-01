@@ -51,6 +51,7 @@ static char *id = "$Id: subr.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrigh
 #include "ufs.h"
 #include "dir.h"
 #include "chardev.h"
+#include "dspsubrs.h"
 
 extern LispPTR *PENDINGINTERRUPT68k;
 
