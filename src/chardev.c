@@ -61,6 +61,7 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include "locfile.h"
 #include "osmsg.h"
 #include "dbprint.h"
+#include "chardev.h"
 
 #if defined(ISC) || defined(FREEBSD)
 #include <dirent.h>
