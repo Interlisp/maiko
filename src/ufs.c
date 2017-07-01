@@ -88,6 +88,7 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #include "locfile.h"
 #include "dbprint.h"
 #include "dsk.h"
+#include "ufs.h"
 
 int *Lisp_errno;
 int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */

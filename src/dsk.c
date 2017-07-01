@@ -113,6 +113,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "conspage.h"
 #include "car-cdr.h"
 #include "dsk.h"
+#include "ufs.h"
 #include "dir.h"
 
 #if defined(ULTRIX) || defined(MACOSX) || defined(FREEBSD)

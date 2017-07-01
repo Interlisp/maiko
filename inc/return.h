@@ -116,3 +116,4 @@
 		"End of stack isn't beyond current stk pointer."); 	\
   }
 
+void contextsw(register DLword fxnum, register DLword bytenum, register DLword flags);

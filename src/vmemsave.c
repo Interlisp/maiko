@@ -77,6 +77,7 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include "dbprint.h"
 #include "devif.h"
 #include "dsk.h"
+#include "ufs.h"
 #include "dir.h"
 
 #ifdef GCC386

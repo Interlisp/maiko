@@ -22,6 +22,7 @@ static char *id = "$Id: intcall.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copyr
 #include "lsptypes.h"
 #include "lispmap.h"
 #include "stack.h"
+#include "llstk.h"
 #include "return.h"
 #include "emlglob.h"
 #include "lspglob.h"
