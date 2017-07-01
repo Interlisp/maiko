@@ -54,6 +54,7 @@ static char *id = "$Id: gcfinal.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "adr68k.h"
 #include "lspglob.h"
 #include "stack.h"
+#include "llstk.h"
 #include "cell.h"
 #include "ifpage.h"
 #include "gc.h"

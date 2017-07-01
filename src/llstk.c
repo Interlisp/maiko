@@ -36,11 +36,12 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 #include "emlglob.h"
 #include "cell.h"
 #include "stack.h"
+#include "llstk.h"
 #include "return.h"
 
 extern int extended_frame;
 
-void blt(register DLword *dest68k, register DLword *source68k, int nw);
+static DLword *extendstack(void);
 
 /******************************************************************/
 /*
@@ -49,12 +50,10 @@ void blt(register DLword *dest68k, register DLword *source68k, int nw);
         Edited by :     Take(March 14, 1988)
 */
 /******************************************************************/
-LispPTR moveframe(register FX *oldfx68k) {
+static LispPTR moveframe(register FX *oldfx68k) {
   register int size;
   register DLword *next68k;
   register DLword *new68k;
-  DLword *freestackblock(DLword n, StackWord * start68k, int align);
-  DLword *extendstack(void);
   int nametbl_on_stk = NIL;
   int at_eos = NIL;
 
@@ -252,7 +251,7 @@ int do_stackoverflow(int incallp) {
 
 */
 /******************************************************************/
-DLword *extendstack(void) {
+static DLword *extendstack(void) {
   register LispPTR easp;
   register LispPTR scanptr;
 

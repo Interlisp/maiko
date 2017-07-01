@@ -37,6 +37,7 @@ static char *id = "$Id: hardrtn.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyr
 #include "emlglob.h"
 #include "cell.h"
 #include "stack.h"
+#include "llstk.h"
 #include "return.h"
 
 #define MAKE_FXCOPY(fx68k)                                                                   \

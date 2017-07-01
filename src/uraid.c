@@ -82,6 +82,7 @@ extern int Win_security_p;
 #include "emlglob.h"
 #include "cell.h"
 #include "stack.h"
+#include "llstk.h"
 #include "ifpage.h"
 #include "debug.h"
 #include "devconf.h"

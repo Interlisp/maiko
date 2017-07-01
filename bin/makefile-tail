@@ -521,7 +521,7 @@ $(OBJECTDIR)gcarray.o :  $(SRCDIR)gcarray.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 
 $(OBJECTDIR)gcfinal.o :  $(SRCDIR)gcfinal.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h  $(INCDIR)llstk.h\
 	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h \
 	 $(INCDIR)array.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcfinal.c $(INLINE) -o $(OBJECTDIR)gcfinal$(OEXT)
@@ -574,7 +574,7 @@ $(OBJECTDIR)gvar2.o :  $(SRCDIR)gvar2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 
 $(OBJECTDIR)hardrtn.o :  $(SRCDIR)hardrtn.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)cell.h $(INCDIR)stack.h  $(INCDIR)return.h \
+	 $(INCDIR)cell.h $(INCDIR)stack.h $(INCDIR)llstk.h  $(INCDIR)return.h \
 	 $(INCDIR)emlglob.h
 	$(CC) $(RFLAGS) $(SRCDIR)hardrtn.c $(INLINE) -o $(OBJECTDIR)hardrtn$(OEXT)
 
@@ -628,7 +628,7 @@ $(OBJECTDIR)lsthandl.o :  $(SRCDIR)lsthandl.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 	 $(INCDIR)cell.h $(INCDIR)car-cdr.h
 	$(CC) $(RFLAGS) $(SRCDIR)lsthandl.c $(INLINE) -o $(OBJECTDIR)lsthandl$(OEXT)
 
-$(OBJECTDIR)llstk.o :  $(SRCDIR)llstk.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+$(OBJECTDIR)llstk.o :  $(SRCDIR)llstk.c $(INCDIR)llstk.h $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)address.h  $(INCDIR)lsptypes.h  $(INCDIR)initatms.h \
 	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h  $(INCDIR)cell.h \
@@ -764,7 +764,7 @@ $(OBJECTDIR)unixcomm.o :  $(SRCDIR)unixcomm.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 $(OBJECTDIR)uraid.o :  $(SRCDIR)uraid.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
+	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h $(INCDIR)llstk.h \
 	 $(INCDIR)debug.h $(INCDIR)uraid.h
 	$(CC) $(RFLAGS) $(SRCDIR)uraid.c $(INLINE) -o $(OBJECTDIR)uraid$(OEXT)
 

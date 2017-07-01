@@ -50,6 +50,7 @@ static char *id = "$Id: xc.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 #include "address.h"
 #include "adr68k.h"
 #include "stack.h"
+#include "llstk.h"
 #include "dbprint.h"
 
 #include "lspglob.h"
