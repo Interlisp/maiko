@@ -23,6 +23,7 @@ static char *id = "$Id: keylib.c,v 1.4 2001/12/24 01:09:03 sybalsky Exp $ Copyri
    ============================================================================== */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -41,18 +42,6 @@ unsigned long idate(const char *str);
 unsigned long modify(unsigned long hostid);
 
 /* ===========================================================================
-        MAKE_VERIFICATION forms a new 32-bit integer by messaging the two input
-        long integers x and y.  The number was created from the lower bits toward
-        higher bits.
- =============================================================================*/
-
-unsigned long make_verification(long unsigned int x, long unsigned int y) {
-  return (imod64bit(x, y, 4) | (imod64bit(x, y, 6) << 3) | (imod64bit(x, y, 13) << 6) |
-          (imod64bit(x, y, 25) << 10) | (imod64bit(x, y, 30) << 15) | (imod64bit(x, y, 63) << 20) |
-          (imod64bit(x, y, 5) << 26) | (imod64bit(x, y, 7) << 29));
-}
-
-/* ===========================================================================
         IMOD64BIT computs (IMOD X Y).
         X is a 64-bit integer; x1 is the higher 32-bit while x0 is the lower 32-bit.
         Y is  less than 65535.
@@ -62,6 +51,18 @@ unsigned long make_verification(long unsigned int x, long unsigned int y) {
 int imod64bit(unsigned long x1, unsigned long x0, unsigned long y) {
   /* JDS 990601 ansi    return (((x0 % y) + ((x1 % y) * (((ULONG_MAX % y) + 1 ) % y)  )) % y); */
   return (((x0 % y) + ((x1 % y) * ((y + 1) % y))) % y);
+}
+
+/* ===========================================================================
+        MAKE_VERIFICATION forms a new 32-bit integer by messaging the two input
+        long integers x and y.  The number was created from the lower bits toward
+        higher bits.
+ =============================================================================*/
+
+unsigned long make_verification(long unsigned int x, long unsigned int y) {
+  return (imod64bit(x, y, 4) | (imod64bit(x, y, 6) << 3) | (imod64bit(x, y, 13) << 6) |
+          (imod64bit(x, y, 25) << 10) | (imod64bit(x, y, 30) << 15) | (imod64bit(x, y, 63) << 20) |
+          (imod64bit(x, y, 5) << 26) | (imod64bit(x, y, 7) << 29));
 }
 
 /* ============================================================
