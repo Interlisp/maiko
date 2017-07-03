@@ -36,13 +36,15 @@ static const char *id =
 #include "lsptypes.h"
 #include "ifpage.h"
 #include "gc.h"
+#include "storage.h"
 
 #define MINARRAYBLOCKSIZE 4
 #define GUARDVMEMFULL 500
 #define IFPVALID_KEY 5603
 
-void advance_array_seg(register unsigned int nxtpage);
-void set_storage_state(void);
+static void advance_array_seg(register unsigned int nxtpage);
+static void advance_storagestate(DLword flg);
+static void set_storage_state(void);
 
 /*****************************************************************/
 /*
@@ -58,7 +60,6 @@ void set_storage_state(void);
 void checkfor_storagefull(register unsigned int npages) {
   register int pagesleft;
   register INTSTAT *int_state;
-  void advance_storagestate(DLword flg);
 
 #ifdef BIGVM
   pagesleft = (*Next_MDSpage_word) - (*Next_Array_word) - PAGESPER_MDSUNIT;
@@ -150,7 +151,7 @@ void checkfor_storagefull(register unsigned int npages) {
 */
 /*****************************************************************/
 
-void advance_array_seg(register unsigned int nxtpage)
+static void advance_array_seg(register unsigned int nxtpage)
 /* rare page num */
 {
   unsigned int ncellsleft;
@@ -203,7 +204,7 @@ void advance_array_seg(register unsigned int nxtpage)
 /*****************************************************************/
 
 /* DLword */
-void advance_storagestate(DLword flg) {
+static void advance_storagestate(DLword flg) {
   LispPTR dremove(LispPTR x, LispPTR l);
 #ifdef DEBUG
   printf("STORAGEFULLSTATE is now set to %d \n", flg);
@@ -223,7 +224,7 @@ void advance_storagestate(DLword flg) {
 
 */
 /*****************************************************************/
-void set_storage_state(void) {
+static void set_storage_state(void) {
   LispPTR cons(LispPTR cons_car, LispPTR cons_cdr);
 
   if ((*MACHINETYPE_word & 0xffff) == KATANA) {

@@ -96,6 +96,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include "profile.h"
 
 #include "timeout.h"
+#include "storage.h"
 
 DLword *Lisp_world; /* lispworld */
 
