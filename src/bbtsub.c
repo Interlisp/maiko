@@ -89,9 +89,11 @@ extern IOPAGE *IOPage68K;
 #include "bb.h"
 #include "bitblt.h"
 #include "pilotbbt.h"
+#include "bbtsub.h"
 #include "dspdata.h"
 #include "display.h"
 #include "dbprint.h"
+
 
 #if (defined(DOS) || defined(XWINDOW))
 #include "devif.h"
@@ -122,21 +124,122 @@ extern int MonoOrColor;
 
 #define BITSPERWORD (16) /* temp definition      */
 
-/***** Don't use PixRect code on 386i for now *****/
-/***** -or on any machine that doesn't support it (HP, e.g.) *****/
+#ifndef BYTESWAP
+#ifdef BIGVM
+typedef struct {
+  unsigned nil1 : 4;
+  unsigned pilotbbt : 28;
+  unsigned nil2 : 4;
+  unsigned displaydata : 28;
+  unsigned nil3 : 16;
+  unsigned char8code : 16;
+  unsigned nil4 : 16;
+  unsigned curx : 16;
+  unsigned nil5 : 16;
+  unsigned left : 16;
+  unsigned nil6 : 16;
+  unsigned right : 16;
+} BLTC;
+#else
+typedef struct {
+  unsigned nil1 : 8;
+  unsigned pilotbbt : 24;
+  unsigned nil2 : 8;
+  unsigned displaydata : 24;
+  unsigned nil3 : 16;
+  unsigned char8code : 16;
+  unsigned nil4 : 16;
+  unsigned curx : 16;
+  unsigned nil5 : 16;
+  unsigned left : 16;
+  unsigned nil6 : 16;
+  unsigned right : 16;
+} BLTC;
+#endif /* BIGVM */
+#else
+#ifdef BIGVM
+typedef struct {
+  unsigned pilotbbt : 28;
+  unsigned nil1 : 4;
+  unsigned displaydata : 28;
+  unsigned nil2 : 4;
+  unsigned char8code : 16;
+  unsigned nil3 : 16;
+  unsigned curx : 16;
+  unsigned nil4 : 16;
+  unsigned left : 16;
+  unsigned nil5 : 16;
+  unsigned right : 16;
+  unsigned nil6 : 16;
+} BLTC;
+#else
+typedef struct {
+  unsigned pilotbbt : 24;
+  unsigned nil1 : 8;
+  unsigned displaydata : 24;
+  unsigned nil2 : 8;
+  unsigned char8code : 16;
+  unsigned nil3 : 16;
+  unsigned curx : 16;
+  unsigned nil4 : 16;
+  unsigned left : 16;
+  unsigned nil5 : 16;
+  unsigned right : 16;
+  unsigned nil6 : 16;
+} BLTC;
+#endif /* BIGVM */
+#endif /* BYTESWAP */
 
-/********************************************************/
-/*                                                      */
-/*      prropstyle is DEFINED when we want to use       */
-/*      pixrect versions of the operations in this      */
-/*      file, and UNDEFINED, when we want to use        */
-/*      Don Charnley's bitblt code to do them.          */
-/*                                                      */
-/********************************************************/
+/****************************************/
+/*                                      */
+/*      Arguments to NEWBLTCHAR                 */
+/*                                      */
+/****************************************/
+#ifndef BYTESWAP
+typedef struct {
+  DLword nil;             /* Unused word */
+  unsigned charset : 8;   /* High 8 bits of character code */
+  unsigned char8code : 8; /* Low 8 bits of character code  */
+  LispPTR displaystream;  /* The display stream to print on */
+  LispPTR displaydata;    /* The image data (margins, etc)  */
+} BLTARG;
+#else
+typedef struct {
+  unsigned char8code : 8; /* Low 8 bits of character code  */
+  unsigned charset : 8;   /* High 8 bits of character code */
+  DLword nil;             /* Unused word */
+  LispPTR displaystream;  /* The display stream to print on */
+  LispPTR displaydata;    /* The image data (margins, etc)  */
+} BLTARG;
+#endif /* BYTESWAP */
 
-#if (!(defined(NOPIXRECT)) && !(defined(NEWBITBLT)) && !(defined(I386)))
-#define prropstyle 1
-#endif /* NOPIXRECT */
+#ifndef BYTESWAP
+typedef struct tbta {
+  DLword nil;
+  unsigned charset : 8;
+  unsigned char8code : 8;
+  LispPTR displaystream;
+  unsigned int nil2 : 16;
+  unsigned int current_x : 16; /* this is always positive */
+  LispPTR displaydata;
+  LispPTR ddpilotbitblt;
+  unsigned int nil3 : 16;
+  unsigned int clipright : 16; /* this is always positive */
+} TBLTARG;
+#else
+typedef struct tbta {
+  unsigned char8code : 8;
+  unsigned charset : 8;
+  DLword nil;
+  LispPTR displaystream;
+  unsigned int current_x : 16; /* this is always positive */
+  unsigned int nil2 : 16;
+  LispPTR displaydata;
+  LispPTR ddpilotbitblt;
+  unsigned int clipright : 16; /* this is always positive */
+  unsigned int nil3 : 16;
+} TBLTARG;
+#endif /* BYTESWAP */
 
 extern int LispWindowFd;
 extern int ScreenLocked; /* for mouse tracking */
@@ -210,8 +313,6 @@ extern DLword PAINT_atom;
 extern DLword REPLACE_atom;
 
 extern int kbd_for_makeinit; /*** FOR INIT ***/
-
-void ccfuncall(unsigned int, int, int);
 
 /************************************************************************/
 /*                                                                      */
@@ -1049,71 +1150,6 @@ bad_arg:
 (\PILOTBITBLT LOCAL1 0)
 *********/
 
-#ifndef BYTESWAP
-#ifdef BIGVM
-typedef struct {
-  unsigned nil1 : 4;
-  unsigned pilotbbt : 28;
-  unsigned nil2 : 4;
-  unsigned displaydata : 28;
-  unsigned nil3 : 16;
-  unsigned char8code : 16;
-  unsigned nil4 : 16;
-  unsigned curx : 16;
-  unsigned nil5 : 16;
-  unsigned left : 16;
-  unsigned nil6 : 16;
-  unsigned right : 16;
-} BLTC;
-#else
-typedef struct {
-  unsigned nil1 : 8;
-  unsigned pilotbbt : 24;
-  unsigned nil2 : 8;
-  unsigned displaydata : 24;
-  unsigned nil3 : 16;
-  unsigned char8code : 16;
-  unsigned nil4 : 16;
-  unsigned curx : 16;
-  unsigned nil5 : 16;
-  unsigned left : 16;
-  unsigned nil6 : 16;
-  unsigned right : 16;
-} BLTC;
-#endif /* BIGVM */
-#else
-#ifdef BIGVM
-typedef struct {
-  unsigned pilotbbt : 28;
-  unsigned nil1 : 4;
-  unsigned displaydata : 28;
-  unsigned nil2 : 4;
-  unsigned char8code : 16;
-  unsigned nil3 : 16;
-  unsigned curx : 16;
-  unsigned nil4 : 16;
-  unsigned left : 16;
-  unsigned nil5 : 16;
-  unsigned right : 16;
-  unsigned nil6 : 16;
-} BLTC;
-#else
-typedef struct {
-  unsigned pilotbbt : 24;
-  unsigned nil1 : 8;
-  unsigned displaydata : 24;
-  unsigned nil2 : 8;
-  unsigned char8code : 16;
-  unsigned nil3 : 16;
-  unsigned curx : 16;
-  unsigned nil4 : 16;
-  unsigned left : 16;
-  unsigned nil5 : 16;
-  unsigned right : 16;
-  unsigned nil6 : 16;
-} BLTC;
-#endif /* BIGVM */
-#endif /* BYTESWAP */
 
 /************************************************************************/
 /*                                                                      */
@@ -1123,13 +1159,12 @@ typedef struct {
 /*                                                                      */
 /*                                                                      */
 /************************************************************************/
-
 #ifndef prropstyle
 /********************************************************/
 /*             Non-PIXRECT version of the code          */
 /********************************************************/
 
-void bltchar(register BLTC *args)
+void bltchar(LispPTR *args)
 /*      args[0] :       PILOTBBT
  *      args[1] :       DISPLAYDATA
  *      args[2] :       CHAR8CODE
@@ -1148,8 +1183,8 @@ void bltchar(register BLTC *args)
   DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
 
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(args->pilotbbt);
-  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
+  pbt = (PILOTBBT *)Addr68k_from_LADDR(((BLTC *)args)->pilotbbt);
+  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTC *)args)->displaydata);
 
   srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
@@ -1158,19 +1193,19 @@ void bltchar(register BLTC *args)
   srcbpl = abs(pbt->pbtsourcebpl);
   dstbpl = abs(pbt->pbtdestbpl);
   h = pbt->pbtheight;
-  w = args->right - args->left;
+  w = ((BLTC *)args)->right - ((BLTC *)args)->left;
   if ((h <= 0) || (w <= 0)) return;
 
-  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + args->char8code));
-  sx = base + args->left - args->curx;
-  dx = args->left;
+  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + ((BLTC *)args)->char8code));
+  sx = base + ((BLTC *)args)->left - ((BLTC *)args)->curx;
+  dx = ((BLTC *)args)->left;
 
 #ifdef REALCURSOR
   /* if displayflg != 0 then source or destination is DisplayBitMap
    * Now we consider about only destination
    */
-  displayflg = cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (args->left >> 4)),
-                        (args->right - args->left), pbt->pbtheight, pbt->pbtbackward);
+  displayflg = cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (((BLTC *)args)->left >> 4)),
+                        (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight, pbt->pbtbackward);
 #endif /* REALCURSOR */
 
   op = pbt->pbtoperation;
@@ -1217,7 +1252,7 @@ void bltchar(register BLTC *args)
 #else
 /* prropstyle */
 
-LispPTR bltchar(register BLTC *args)
+LispPTR bltchar(LispPTR *args)
 /*      args[0] :       PILOTBBT
  *      args[1] :       DISPLAYDATA
  *      args[2] :       CHAR8CODE
@@ -1234,8 +1269,8 @@ LispPTR bltchar(register BLTC *args)
   unsigned int pix_op;
   DLword *dstbase;
 
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(args->pilotbbt);
-  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
+  pbt = (PILOTBBT *)Addr68k_from_LADDR(((BLTC *)args)->pilotbbt);
+  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTC *)args)->displaydata);
 
   (mpr_d(SrcePixRect))->md_image =
       (short *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
@@ -1263,14 +1298,14 @@ LispPTR bltchar(register BLTC *args)
   mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
   mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
 
-  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + args->char8code));
-  srcebit = base + args->left - args->curx;
+  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + ((BLTC *)args)->char8code));
+  srcebit = base + ((BLTC *)args)->left - ((BLTC *)args)->curx;
 
 #ifdef REALCURSOR
   /* if displayflg != 0 then source or destination is DisplayBitMap
    * Now we consider about only destination
    */
-  displayflg = old_cursorin(pbt->pbtdesthi, pbt->pbtdestlo, args->left, (args->right - args->left),
+  displayflg = old_cursorin(pbt->pbtdesthi, pbt->pbtdestlo, ((BLTC *)args)->left, (((BLTC *)args)->right - ((BLTC *)args)->left),
                             pbt->pbtheight, y, pbt->pbtbackward);
 #endif /* REALCURSOR */
 
@@ -1286,7 +1321,7 @@ LispPTR bltchar(register BLTC *args)
   if (displayflg) HideCursor;
 #endif /* REALCURSOR */
 
-  if (pr_rop(DestPixRect, args->left, 0, (args->right - args->left), pbt->pbtheight, pix_op,
+  if (pr_rop(DestPixRect, ((BLTC *)args)->left, 0, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight, pix_op,
              SrcePixRect, srcebit, 0) != 0)
     error("pilotbitblt: pr_rop failed\n");
 
@@ -1296,17 +1331,17 @@ LispPTR bltchar(register BLTC *args)
 #endif /* COLOR */
 
     if (in_display_segment(dstbase)) {
-      /*          DBPRINT(("bltchar pix:  x %x, y %d, w %d, h %d.\n", args->left, dstbase,
-       * (args->right - args->left),pbt->pbtheight));
+      /*          DBPRINT(("bltchar pix:  x %x, y %d, w %d, h %d.\n", ((BLTC *)args)->left, dstbase,
+       * (((BLTC *)args)->right - ((BLTC *)args)->left),pbt->pbtheight));
       */
-      flush_display_lineregion(args->left, dstbase, (args->right - args->left), pbt->pbtheight);
+      flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
     }
 #endif
 
 #ifdef XWINDOW
   XLOCK;
   if (in_display_segment(dstbase))
-    flush_display_lineregion(args->left, dstbase, (args->right - args->left), pbt->pbtheight);
+    flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
   XUNLOCK;
 #endif /* XWINDOW */
 
@@ -1406,28 +1441,6 @@ LispPTR *TOPWDS68k;          /* Top of window stack's DS */
 LispPTR BLTCHAR_index;       /* Atom # for \PUNTBLTCHAR punt fn */
 LispPTR TEDIT_BLTCHAR_index; /* if NIL ,TEDIT is not yet loaded */
 
-/****************************************/
-/*                                      */
-/*      Arguments to NEWBLTCHAR                 */
-/*                                      */
-/****************************************/
-#ifndef BYTESWAP
-typedef struct {
-  DLword nil;             /* Unused word */
-  unsigned charset : 8;   /* High 8 bits of character code */
-  unsigned char8code : 8; /* Low 8 bits of character code  */
-  LispPTR displaystream;  /* The display stream to print on */
-  LispPTR displaydata;    /* The image data (margins, etc)  */
-} BLTARG;
-#else
-typedef struct {
-  unsigned char8code : 8; /* Low 8 bits of character code  */
-  unsigned charset : 8;   /* High 8 bits of character code */
-  DLword nil;             /* Unused word */
-  LispPTR displaystream;  /* The display stream to print on */
-  LispPTR displaydata;    /* The image data (margins, etc)  */
-} BLTARG;
-#endif /* BYTESWAP */
 
 #ifndef prropstyle
 
@@ -1438,7 +1451,7 @@ typedef struct {
 /*                                                                      */
 /************************************************************************/
 
-void newbltchar(register BLTARG *args) {
+void newbltchar(LispPTR *args) {
   register DISPLAYDATA *displaydata68k;
   int right, left, curx;
   PILOTBBT *pbt;
@@ -1450,10 +1463,10 @@ void newbltchar(register BLTARG *args) {
   DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
 
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
+  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTARG *)args)->displaydata);
 
-  if ((displaydata68k->ddcharset & 0xFFFF) != args->charset) {
-    /*if(changecharset_display(displaydata68k, args->charset) ==-1)*/
+  if ((displaydata68k->ddcharset & 0xFFFF) != ((BLTARG *)args)->charset) {
+    /*if(changecharset_display(displaydata68k, ((BLTARG *)args)->charset) ==-1)*/
     PUNT_TO_BLTCHAR;
   }
 
@@ -1466,15 +1479,15 @@ void newbltchar(register BLTARG *args) {
 
   right =
       curx +
-      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
+      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
 
   if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
-  if (args->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
+  if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
 
   {
     register int newpos;
     newpos = curx +
-             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + args->char8code));
+             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
 
     if ((0 <= newpos) && (newpos < 65536))
       (displaydata68k->ddxposition) = (LispPTR)(S_POSITIVE | newpos);
@@ -1508,7 +1521,7 @@ void newbltchar(register BLTARG *args) {
 
   srcbpl = abs(pbt->pbtsourcebpl);
   dstbpl = abs(pbt->pbtdestbpl);
-  base = GETWORD(Addr68k_from_LADDR(displaydata68k->ddoffsetscache + args->char8code));
+  base = GETWORD(Addr68k_from_LADDR(displaydata68k->ddoffsetscache + ((BLTARG *)args)->char8code));
   sx = base + left - curx;
   dx = left;
 
@@ -1562,18 +1575,18 @@ void newbltchar(register BLTARG *args) {
 /*                                                                      */
 /************************************************************************/
 
-LispPTR newbltchar(register BLTARG *args) {
+LispPTR newbltchar(LispPTR *args) {
   register DISPLAYDATA *displaydata68k;
 
   register int right, left, curx;
   register PILOTBBT *pbt;
   register int lmargin, rmargin, xoff;
   int displayflg; /* T if cursor needs to be taken down */
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
+  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTARG *)args)->displaydata);
 
-  if ((displaydata68k->ddcharset & 0xFFFF) != args->charset) {
+  if ((displaydata68k->ddcharset & 0xFFFF) != ((BLTARG *)args)->charset) {
     /* Currently, this has BUG, so I can't call it */
-    /*if(changecharset_display(displaydata68k,args->charset) ==-1)*/
+    /*if(changecharset_display(displaydata68k,((BLTARG *)args)->charset) ==-1)*/
     { PUNT_TO_BLTCHAR; }
   }
 
@@ -1586,14 +1599,14 @@ LispPTR newbltchar(register BLTARG *args) {
 
   right =
       curx +
-      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
+      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
 
   if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
-  if (args->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
+  if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
   {
     register int newpos;
     newpos = curx +
-             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + args->char8code));
+             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
 
     if ((0 <= newpos) && (newpos < 65536))
       (displaydata68k->ddxposition) = (LispPTR)(S_POSITIVE | newpos);
@@ -1634,7 +1647,7 @@ LispPTR newbltchar(register BLTARG *args) {
       mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
       mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
 
-      base = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), args->char8code);
+      base = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((BLTARG *)args)->char8code);
       sourcebit = base + left - curx;
 
       LOCKSCREEN;
@@ -1820,7 +1833,7 @@ typedef struct {
 
 /** changecharset_display,sfffixy are not tested *****I don't use TAKE **/
 
-LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILOTBBT *pbt68k)
+static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILOTBBT *pbt68k)
 
 {
   int y;
@@ -1858,7 +1871,8 @@ LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILOTBBT *p
 
 } /* sfffixy */
 
-LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword charset) {
+#if 0
+static LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword charset) {
   register PILOTBBT *pbt68k;
   register FONTDESC *fontd68k;
   LispPTR csinfo;
@@ -1898,15 +1912,13 @@ LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword chars
     return (T);
   }
 } /* changecharset_display */
-
+#endif
 /******************************************************************/
 
-void ccfuncall(
-    atom_index, argnum,
-    bytenum) register unsigned int atom_index; /* Atomindex for Function you want to invoke */
-register int argnum;                           /* Number of ARGS on TOS and STK */
-register int bytenum;                          /* Number of bytes of Caller's
-                                              OPCODE(including multi-byte) */
+void ccfuncall(register unsigned int atom_index, register int argnum, register int bytenum)
+ /* Atomindex for Function you want to invoke */
+ /* Number of ARGS on TOS and STK */
+ /* Number of bytes of Caller's OPCODE(including multi-byte) */
 {
   register struct definition_cell *defcell68k; /* Definition Cell PTR */
   register short pv_num;                       /* scratch for pv */
@@ -1997,39 +2009,12 @@ register int bytenum;                          /* Number of bytes of Caller's
 /*              \\TEDIT.BLTCHAR                                         */
 /*                                                              */
 /****************************************************************/
-#ifndef BYTESWAP
-typedef struct tbta {
-  DLword nil;
-  unsigned charset : 8;
-  unsigned char8code : 8;
-  LispPTR displaystream;
-  unsigned int nil2 : 16;
-  unsigned int current_x : 16; /* this is allways positive */
-  LispPTR displaydata;
-  LispPTR ddpilotbitblt;
-  unsigned int nil3 : 16;
-  unsigned int clipright : 16; /* this is allways positive */
-} TBLTARG;
-#else
-typedef struct tbta {
-  unsigned char8code : 8;
-  unsigned charset : 8;
-  DLword nil;
-  LispPTR displaystream;
-  unsigned int current_x : 16; /* this is allways positive */
-  unsigned int nil2 : 16;
-  LispPTR displaydata;
-  LispPTR ddpilotbitblt;
-  unsigned int clipright : 16; /* this is allways positive */
-  unsigned int nil3 : 16;
-} TBLTARG;
-#endif /* BYTESWAP */
 
 #ifndef prropstyle
 /***************************/
 /*   Non-PIXRECT version   */
 /***************************/
-void tedit_bltchar(register TBLTARG *args)
+void tedit_bltchar(LispPTR *args)
 {
 #define backwardflg 0
 #define displayflg 0
@@ -2043,15 +2028,15 @@ void tedit_bltchar(register TBLTARG *args)
   DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
 
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
-  if (displaydata68k->ddcharset != args->charset) {
-    /**if(changecharset_display(displaydata68k, args->charset)== -1)**/
+  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((TBLTARG *)args)->displaydata);
+  if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {
+    /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
     { PUNT_TO_TEDIT_BLTCHAR; }
   }
-  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
-  newx = args->current_x + imagewidth;
-  dx = args->current_x;
-  right = IMIN(newx, args->clipright);
+  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
+  newx = ((TBLTARG *)args)->current_x + imagewidth;
+  dx = ((TBLTARG *)args)->current_x;
+  right = IMIN(newx, ((TBLTARG *)args)->clipright);
 
   if (dx < right) {
     pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
@@ -2066,7 +2051,7 @@ void tedit_bltchar(register TBLTARG *args)
     src_comp = pbt->pbtsourcetype;
 
     /*dx=left;  I'll optimize  later*/
-    sx = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), args->char8code);
+    sx = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((TBLTARG *)args)->char8code);
     w = IMIN(imagewidth, (right - dx));
 #ifdef NEWBITBLT
     bitblt(srcbase, dstbase, sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray,
@@ -2087,7 +2072,7 @@ void tedit_bltchar(register TBLTARG *args)
 /*   PIXRECT version  */
 /**********************/
 
-void tedit_bltchar(register TBLTARG *args)
+void tedit_bltchar(LispPTR *args)
 {
   register DISPLAYDATA *displaydata68k;
   register int left, right;
@@ -2095,15 +2080,15 @@ void tedit_bltchar(register TBLTARG *args)
   register int imagewidth, newx;
   register displayflg;
 
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(args->displaydata);
-  if (displaydata68k->ddcharset != args->charset) {
-    /**if(changecharset_display(displaydata68k, args->charset)== -1)**/
+  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((TBLTARG *)args)->displaydata);
+  if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {
+    /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
     { PUNT_TO_TEDIT_BLTCHAR; }
   }
-  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + args->char8code));
-  newx = args->current_x + imagewidth;
-  left = IMAX(0, args->current_x);
-  right = IMIN(newx, args->clipright);
+  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
+  newx = ((TBLTARG *)args)->current_x + imagewidth;
+  left = IMAX(0, ((TBLTARG *)args)->current_x);
+  right = IMIN(newx, ((TBLTARG *)args)->clipright);
   LOCKSCREEN;
 
   if (left < right) {
@@ -2139,7 +2124,7 @@ void tedit_bltchar(register TBLTARG *args)
 
       pbt->pbtwidth = IMIN(imagewidth, (right - left));
       pbt->pbtsourcebit =
-          GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), args->char8code);
+          GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((TBLTARG *)args)->char8code);
 
       if (pr_rop(DestPixRect, left, 0, pbt->pbtwidth, pbt->pbtheight,
                  PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect,
@@ -2157,7 +2142,7 @@ void tedit_bltchar(register TBLTARG *args)
 
 #ifndef COLOR
 /* Lisp addr hi-word, lo-word, ... */
-int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
+static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
 {
 #ifdef INIT
   init_kbd_startup;
@@ -2180,7 +2165,7 @@ int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int b
 #else
 /* For MONO and COLOR */
 /* Lisp addr hi-word, lo-word, ... */
-int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
+static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
 {
   register DLword *base68k;
   extern int MonoOrColor;

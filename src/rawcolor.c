@@ -38,6 +38,7 @@ static char *id = "$Id: rawcolor.c,v 1.3 2001/12/26 22:17:04 sybalsky Exp $ Copy
 #include "debug.h"
 #include "arith.h"
 #include "bitblt.h"
+#include "bbtsub.h"
 #include "lldsp.h"
 
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))

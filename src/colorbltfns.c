@@ -37,6 +37,7 @@ static char *id = "$Id: colorbltfns.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ C
 #include "debug.h"
 #include "arith.h"
 #include "bitblt.h"
+#include "bbtsub.h"
 #include "lldisplay.h"
 
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))

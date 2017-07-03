@@ -31,6 +31,7 @@ static char *id = "$Id: misc7.c,v 1.2 1999/01/03 02:07:22 sybalsky Exp $ Copyrig
 #include "arith.h"
 #include "my.h"
 #include "bitblt.h"
+#include "bbtsub.h"
 #include "dbprint.h"
 /* osamu '90/02/08
  * add display.h, because in_display_secment() is changed as
