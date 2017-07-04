@@ -191,7 +191,7 @@ LispPTR LCFetchMethodOrHelp(register LispPTR object, register LispPTR selector) 
     LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
 
     for (;;) {
-      register i = 0;
+      register int i = 0;
       register LispPTR val;
       register LispPTR *selectorptr;
       register struct LCClass *classptr;
@@ -241,7 +241,7 @@ LispPTR LCFetchMethod(register LispPTR class, register LispPTR selector) {
     LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
 
     for (;;) {
-      register i = 0;
+      register int i = 0;
       register LispPTR val;
       register struct LCClass *classptr;
       register LispPTR *selectorptr;

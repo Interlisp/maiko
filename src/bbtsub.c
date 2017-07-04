@@ -942,7 +942,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
 
   texture = args[0];
   {
-    register temp;
+    register int temp;
     temp = GetTypeNumber(texture);
     if (((temp == TYPE_LITATOM) && (texture != NIL_PTR)) || (temp == TYPE_LISTP)) {
       PUNT_TO_BLTSHADEBITMAP;

@@ -41,7 +41,7 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 **************************************************************/
 #define WriteLongW(srcpattern, destptr, op1, op2)                                    \
   {                                                                                  \
-    register cnt;                                                                    \
+    register int cnt;                                                                \
     register u_char *des, *src;                                                      \
     for (cnt = 0, des = (u_char *)destptr, src = (u_char *)(&(srcpattern)); cnt < 4; \
          cnt++, des++, src++)                                                        \
@@ -152,7 +152,7 @@ void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, regi
 {
   static unsigned char beforecolor0 = 0;
   static unsigned char beforecolor1 = 0;
-  static color_array[COLOR8ARRAYSIZE];
+  static int color_array[COLOR8ARRAYSIZE];
 
   extern DLword REPLACE_atom;
   extern DLword INPUT_atom;
@@ -163,14 +163,14 @@ void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, regi
   DLword *baseword; /* Assume dest word always quad aligned */
 
   if (sourcetype == INVERT_atom) {
-    register tempcol;
+    register int tempcol;
     tempcol = color0;
     color0 = color1;
     color1 = tempcol;
   }
   if ((beforecolor0 != color0) || (beforecolor1 != color1)) {
     /* making color-mapped array */
-    register i;
+    register int i;
     register u_int longcol0, longcol1;
 
     beforecolor0 = color0;
