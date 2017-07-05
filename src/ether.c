@@ -102,14 +102,82 @@ int ETHEREventCount = 0;
 /* the receiving packetfilter structure */
 /* if this is changed, be sure to get the references to it in init_ether
         and check the length (the second entry in the structure) */
+/*
+ PACKET FILTERS
+     A packet filter consists of the filter command  list  length
+     (in  units of u_shorts), and the filter command list itself.
+     (The priority field  mentioned  above  is  ignored  in  this
+     implementation.)   Each  filter  command  list  specifies  a
+     sequence of actions that operate on  an  internal  stack  of
+     u_shorts ("shortwords").  Each shortword of the command list
+     specifies one of the actions ENF_PUSHLIT,  ENF_PUSHZERO,  or
+     ENF_PUSHWORD+n,  which  respectively push the next shortword
+     of the command list, zero, or shortword  n  of  the  subject
+     message  on  the stack, and a binary operator from the set {
+     ENF_EQ, ENF_NEQ, ENF_LT, ENF_LE,  ENF_GT,  ENF_GE,  ENF_AND,
+     ENF_OR,  ENF_XOR  }  which then operates on the top two ele-
+     ments of the stack and replaces them with its result.   When
+     both an action and operator are specified in the same short-
+     word, the action is performed followed by the operation.
+
+     The binary operator can also be  from  the  set  {  ENF_COR,
+     ENF_CAND,  ENF_CNOR, ENF_CNAND }.  These are "short-circuit"
+     operators, in that  they  terminate  the  execution  of  the
+     filter immediately if the condition they are checking for is
+     found, and continue otherwise.  All pop  two  elements  from
+     the  stack  and  compare them for equality; ENF_CAND returns
+     false if the result is false; ENF_COR returns  true  if  the
+     result  is  true;  ENF_CNAND  returns  true if the result is
+     false; ENF_CNOR returns false if the result is true.  Unlike
+     the other binary operators, these four do not leave a result
+     on the stack, even if they continue.
+
+     The short-circuit operators should be used when possible, to
+     reduce  the  amount  of time spent evaluating filters.  When
+     they are used, you should also  arrange  the  order  of  the
+     tests  so  that  the  filter will succeed or fail as soon as
+     possible; for example, checking the IP destination field  of
+     a  UDP  packet  is  more likely to indicate failure than the
+     packet type field.
+
+     The special  action  ENF_NOPUSH  and  the  special  operator
+     ENF_NOP  can be used to only perform the binary operation or
+     to only push a value on the stack.   Since  both  are  (con-
+     veniently)  defined  to  be  zero, indicating only an action
+     actually specifies the action followed by ENF_NOP, and indi-
+     cating  only an operation actually specifies ENF_NOPUSH fol-
+     lowed by the operation.
+
+     After executing the filter command list,  a  non-zero  value
+     (true)  left  on top of the stack (or an empty stack) causes
+     the incoming packet to be accepted and a zero value  (false)
+     causes  the  packet to be rejected.  (If the filter exits as
+     the result of a  short-circuit  operator,  the  top-of-stack
+     value  is  ignored.)  Specifying  an  undefined operation or
+     action in the command list or performing an  illegal  opera-
+     tion  or action (such as pushing a shortword offset past the
+     end of the packet or executing a binary operator with  fewer
+     than  two shortwords on the stack) causes a filter to reject
+     the packet.
+*/
+/* ethertype == IP => reject
+   ethertype == ARP => reject
+   (dest[0:1] == us &&
+   dest[2:3] == us &&
+   dest[4:5] == us)
+   ||
+   (dest[0:1] == broadcast &&
+   dest[2:3] == broadcast &&
+   dest[4:5] == broadcast)
+*/
 struct packetfilt goodpf = {0,
                             29,
-                            {ENF_PUSHWORD + 6,
-                             ENF_PUSHLIT + ENF_CNOR,
-                             PacketTypeIP, /* punt if PacketTypeIP */
+                            {ENF_PUSHWORD + 6,		/* Ethertype field */
+                             ENF_PUSHLIT + ENF_CNOR,	
+                             PacketTypeIP, /* punt if PacketTypeIP = 0x0800 */
                              ENF_PUSHWORD + 6,
                              ENF_PUSHLIT + ENF_CNOR,
-                             PacketTypeARP, /* or PacketTypeARP */
+                             PacketTypeARP, /* or PacketTypeARP = 0x0806 */
                              ENF_PUSHWORD,
                              ENF_PUSHLIT + ENF_EQ,
                              8, /* check our addr */
