@@ -81,9 +81,7 @@ void Create_LispWindow(DspInterface dsp)
 
   Screen *screen;
 
-  Window lspwinRoot = {0};
-  int lspwinX, lspwinY, Col2, Row2, Col3, Row3, GravSize;
-  unsigned int lspwinHeight, lspwinWidth, lspwinBorder, lspwinDepth;
+  int Col2, Row2, Col3, Row3, GravSize;
   char *WT, *IT;
 
   WT = Window_Title;
