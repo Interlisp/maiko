@@ -556,9 +556,12 @@ int sf(struct frameex1 *fx_addr68k) {
   }
 
   while (next68k > ptr) {
-    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptr++), GETWORD(ptr++));
+    ptrhi = ptr;
+    ptrlo = ptr + 1;
+    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
     putchar('\n');
     BT_morep;
+    ptr += 2;
   }
   return (0);
 }
@@ -713,12 +716,6 @@ void nt(LispPTR index)
 {
   struct fnhead *fnobj;
   DefCell *defcell68k;
-  LispPTR cell;
-  DLbyte *scratch;
-  int i;
-  LispPTR *localnt1;
-  int localntsize;
-  DLword fnobj_lisp;
 
   defcell68k = (DefCell *)GetDEFCELL68k(index);
   fnobj = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
@@ -734,7 +731,7 @@ void nt(LispPTR index)
   }
 
   printf("***DUMP Func Header << ");
-  printf("start at 0x%x lisp address(0x%x 68k)\n", LADDR_from_68k(fnobj), fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), fnobj);
   print(index);
   putchar('\n');
 
@@ -747,16 +744,16 @@ void ntheader(struct fnhead *fnobj) {
   LispPTR *fnobj_lisp;
 
   fnobj_lisp = (LispPTR *)LADDR_from_68k((DLword *)fnobj);
-  printf("0x%06x: 0x%08x  stkmin\n", fnobj_lisp, fnobj->stkmin);
-  printf("0x%06x: 0x%08x  na\n", fnobj_lisp + 1, fnobj->na);
-  printf("0x%06x: 0x%08x  pv\n", fnobj_lisp + 2, fnobj->pv);
-  printf("0x%06x: 0x%08x  startpc\n", fnobj_lisp + 3, fnobj->startpc);
-  printf("0x%06x: 0x%08x  argtype\n", fnobj_lisp + 4, fnobj->argtype);
-  printf("0x%06x: 0x%08x  framename ", fnobj_lisp + 5, fnobj->framename);
+  printf("%8p: 0x%08x  stkmin\n", fnobj_lisp, fnobj->stkmin);
+  printf("%8p: 0x%08x  na\n", fnobj_lisp + 1, fnobj->na);
+  printf("%8p: 0x%08x  pv\n", fnobj_lisp + 2, fnobj->pv);
+  printf("%8p: 0x%08x  startpc\n", fnobj_lisp + 3, fnobj->startpc);
+  printf("%8p: 0x%08x  argtype\n", fnobj_lisp + 4, fnobj->argtype);
+  printf("%8p: 0x%08x  framename ", fnobj_lisp + 5, fnobj->framename);
   print(fnobj->framename);
   putchar('\n');
-  printf("0x%06x: 0x%08x  ntsize\n", fnobj_lisp + 6, fnobj->ntsize);
-  printf("0x%06x: 0x%08x  nlocals", fnobj_lisp + 7, fnobj->nlocals);
+  printf("%8p: 0x%08x  ntsize\n", fnobj_lisp + 6, fnobj->ntsize);
+  printf("%8p: 0x%08x  nlocals", fnobj_lisp + 7, fnobj->nlocals);
   printf("  0x%08x  fvaroffset\n", fnobj->fvaroffset);
 
   nt1((LispPTR *)((DLword *)fnobj + FNOVERHEADWORDS), fnobj->ntsize, "Name Table");
