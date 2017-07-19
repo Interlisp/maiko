@@ -107,7 +107,9 @@ extern DLword *UFNTable ;
   
  /* Pointers in Cell or any object means DLword offset from Lisp_world.
  So, 24 bit Lisp pointers can points 32Mbyte area.
- But, ATOMSPACE may be treated as special index space for LITATOM. In another way, it means that the Pointers points ATOMSPACE has no allocated memory, and Thease are used as index for access one of ATOM's prop. */
+ But, ATOMSPACE may be treated as special index space for LITATOM.
+ In another way, it means that the Pointers points ATOMSPACE has no
+ allocated memory, and these are used as index for access one of ATOM's prop. */
   extern DLword *Lisp_world;  /* Lisp Start BASE  */
  
 
