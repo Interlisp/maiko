@@ -708,7 +708,7 @@
 /************************************************************************/
 
 #define variables						\
-int num_lines_remaining, temp;					\
+int num_lines_remaining;					\
 int dstnumL, src32lbit, srcLshift, dst32lbit;			\
 unsigned int srcRmask, dstold, dstdata, mask;			\
 UNSIGNED x32byta, x32nbyt, x32ia;					\
