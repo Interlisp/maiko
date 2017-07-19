@@ -348,8 +348,10 @@ void bitbltsub(LispPTR *argv) {
   int sourcetype, operation;
   int sty, dty, texture, wxoffset, wyoffset;
   int h, w;
-  int displayflg = 0, desthi;
-  int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
+#ifdef REALCURSOR
+  int displayflg = 0;
+#endif
+  int backwardflg = 0, sx, dx, srcbpl=2147483647, dstbpl, src_comp, op;
   register DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
   DLword grayword[4];
@@ -653,7 +655,7 @@ LispPTR BITBLTBITMAP_index;
 LispPTR bitblt_bitmap(LispPTR *args) {
   BITMAP *SourceBitmap, *DestBitmap;
   int sleft, sbottom, dleft, dbottom, width, height, clipleft, clipbottom;
-  LispPTR clipreg, clipvalue;
+  LispPTR clipreg;
   int stodx, stody, right, top, destbits, sourcebits, left, bottom;
   LispPTR sourcetype, operation, texture;
   DLword *srcbase, *dstbase;
@@ -933,7 +935,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   int dleft, dbottom, width, height, clipleft, clipbottom;
   LispPTR clipreg;
   int right, top, destbits, left, bottom, textureword;
-  LispPTR sourcetype, operation, texture;
+  LispPTR operation, texture;
   DLword *srcbase, *dstbase, *base;
   int dlx, dty, slx, sty, dstbpl, op, src_comp, displayflg = 0;
   int rasterwidth;
@@ -1832,7 +1834,7 @@ typedef struct {
 #define IMAX(x, y) (((x) > (y)) ? (x) : (y))
 
 /** changecharset_display,sfffixy are not tested *****I don't use TAKE **/
-
+#if 0
 static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILOTBBT *pbt68k)
 
 {
@@ -1871,7 +1873,6 @@ static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILO
 
 } /* sfffixy */
 
-#if 0
 static LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword charset) {
   register PILOTBBT *pbt68k;
   register FONTDESC *fontd68k;
