@@ -94,8 +94,6 @@ LispPTR CHAR_openfile(LispPTR *args)
   register int id;    /* return value  of open system call. */
   register int flags; /* open system call's argument */
   register int rval;
-  register int linkflag = 0;
-  register int *bufp;
   struct stat statbuf;
   char pathname[MAXPATHLEN];
 
@@ -164,7 +162,6 @@ LispPTR CHAR_closefile(LispPTR *args)
 #ifndef DOS
   register int id; /* FileID */
   register int rval;
-  char pathname[MAXPATHLEN];
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
   id = LispNumToCInt(args[0]);
   ERRSETJMP(NIL);
@@ -209,8 +206,6 @@ LispPTR CHAR_ioctl(LispPTR *args)
 #ifndef DOS
   int id, request, data;
   register int rval;
-  char *base;
-  struct stat sbuf;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
   id = LispNumToCInt(args[0]);
   request = LispNumToCInt(args[1]);
@@ -240,7 +235,7 @@ LispPTR CHAR_ioctl(LispPTR *args)
 LispPTR CHAR_bin(int id, LispPTR errn)
 {
 #ifndef DOS
-  register int rval, size;
+  register int rval;
   unsigned char ch[4];
   Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
   ERRSETJMP(NIL);
@@ -320,7 +315,7 @@ LispPTR CHAR_bins(LispPTR *args)
 #ifndef DOS
   register int id, rval;
   char *buffer;
-  int offset, nbytes;
+  int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
   ERRSETJMP(NIL);
   id = LispNumToCInt(args[0]);
@@ -371,7 +366,7 @@ LispPTR CHAR_bouts(LispPTR *args)
 #ifndef DOS
   register int id, rval;
   char *buffer;
-  int nbytes, offset;
+  int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
   ERRSETJMP(NIL);
   id = LispNumToCInt(args[0]);

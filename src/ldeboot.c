@@ -71,15 +71,10 @@ char filetorun[30];
 
 int main(int argc, char *argv[])
 {
-  char Earg[30], Ename[30], **newargv;
   int i;
 #ifdef USESUNSCREEN
-  struct fbtype my_screen;
-#endif /* USESUNSCREEN */
-
   int FrameBufferFd;
-
-#ifdef USESUNSCREEN
+  struct fbtype my_screen;
   struct fbinfo FB_info;
   struct fbgattr FBattr;
 #endif /* USESUNSCREEN */
@@ -109,7 +104,7 @@ int main(int argc, char *argv[])
   {
     char *Display_Name = (char *)NULL;
     Display *Xdisplay = (Display *)NULL;
-    int i, option;
+    int i;
     char *pos;
 
     for (i = 1; i < argc; i++) {

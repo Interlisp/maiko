@@ -266,7 +266,7 @@ static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
 
 static ConsCell *find_free_cons_cell(void) {
   ConsCell *cell;
-  struct conspage *pg, *priorpg;
+  struct conspage *pg;
   unsigned pgno = ListpDTD->dtd_nextpage;
 
   for (pg = (struct conspage *)Addr68k_from_LPAGE(pgno); pgno;
@@ -299,8 +299,7 @@ LispPTR N_OP_cons(register int cons_car, register int cons_cdr) {
   extern struct dtd *ListpDTD;
 
   register struct conspage *new_conspage;
-  register ConsCell *new_cell;
-  register ConsCell *temp_cell;
+  register ConsCell *new_cell, *temp_cell;
   register int new_page; /* hold the return  val of nextconspage ,DL->int */
 
   extern ConsCell *find_close_prior_cell(struct conspage * page, LispPTR oldcell);

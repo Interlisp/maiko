@@ -125,7 +125,7 @@ unsigned short sxhash_rotate(short unsigned int value) {
 #endif
 
 unsigned short sxhash_string(OneDArray *obj) {
-  unsigned i, len, offset;
+  unsigned len, offset;
   register unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
   if (len > 13) len = 13;
@@ -150,7 +150,7 @@ unsigned short sxhash_string(OneDArray *obj) {
 
 unsigned short sxhash_bitvec(OneDArray *obj) {
   unsigned short *base;
-  unsigned i, len, offset, bitoffset;
+  unsigned len, offset, bitoffset;
   unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
   offset = (unsigned)obj->offset;
@@ -203,7 +203,7 @@ LispPTR STRING_EQUAL_HASHBITS(SXHASHARG *args) {
 } /* STRING_EQUAL_HASHBITS */
 
 unsigned short stringequalhash(LispPTR obj) {
-  unsigned i, len, offset, fatp, ind;
+  unsigned len, offset, fatp, ind;
   register unsigned short hash = 0;
   PNCell *pnptr;
   DLword *base;
@@ -271,7 +271,7 @@ LispPTR STRING_HASHBITS(SXHASHARG *args) {
 } /* STRING_HASHBITS */
 
 unsigned short stringhash(LispPTR obj) {
-  unsigned i, len, offset, fatp, ind;
+  unsigned len, offset, fatp, ind;
   register unsigned short hash = 0;
   PNCell *pnptr;
   DLword *base;

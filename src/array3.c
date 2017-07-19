@@ -38,11 +38,8 @@ LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {
   register LispPTR baseL;
   register int type, index;
   register OneDArray *arrayblk;
-  LispPTR temp;
-  register int result;
 
   /*	for CREATECELL  */
-  register DLword *wordp;
   DLword *createcell68k(unsigned int type);
 
   /*  verify array  */

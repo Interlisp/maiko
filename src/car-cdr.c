@@ -495,7 +495,6 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
   unsigned offset = page->next_cell;
   unsigned prior = 0;
   unsigned noffset, poffset;
-  unsigned nprior = 0;
   ConsCell *cell;
 
   while (offset) {
@@ -570,7 +569,6 @@ static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell) {
 /************************************************************************/
 
 static ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, LispPTR cdrpart) {
-  ConsCell *cell;
   unsigned offset, prior, priorprior, nprior, poffset, noffset;
 
   prior = priorprior = nprior = 0;
@@ -643,7 +641,7 @@ static ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, Lisp
 /************************************************************************/
 
 static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart) {
-  unsigned offset, prior, priorprior, pgno;
+  unsigned pgno;
   struct conspage *pg;
   ConsCell *cell;
 

@@ -134,12 +134,10 @@ int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
 int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
 #endif
 {
-#ifdef FULLSLAVENAME
-  char buf[1];
-#else
-  char PtySlave[20], buf[1];
+#ifndef FULLSLAVENAME
+  char PtySlave[20];
 #endif
-  int res, PID, MasterFD, SlaveFD;
+  int res, PID, SlaveFD;
 #ifdef USETERMIOS
   struct termios tio;
 #else
@@ -558,7 +556,9 @@ int fork_Unix() {
         union wait status;
 #endif /* SYSVONLY */
 
+#ifdef OCR
         int slot;
+#endif
 
 #if defined(SYSVONLY) || defined(WAITINT)
         status = 0;
