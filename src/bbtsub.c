@@ -932,12 +932,12 @@ LispPTR BLTSHADEBITMAP_index;
 
 LispPTR bitshade_bitmap(LispPTR *args) {
   BITMAP *DestBitmap, *texture68k;
-  int dleft, dbottom, width, height, clipleft, clipbottom;
+  int dleft, dbottom, width, height;
   LispPTR clipreg;
-  int right, top, destbits, left, bottom, textureword;
+  int right, top, destbits, left, bottom;
   LispPTR operation, texture;
   DLword *srcbase, *dstbase, *base;
-  int dlx, dty, slx, sty, dstbpl, op, src_comp, displayflg = 0;
+  int dty, slx, dstbpl, op, src_comp, displayflg = 0;
   int rasterwidth;
   int num_gray, curr_gray_line;
   DLword grayword[4];
@@ -1926,7 +1926,6 @@ void ccfuncall(register unsigned int atom_index, register int argnum, register i
   register struct fnhead *tmp_fn;
   int rest; /* use for arignments */
   int closurep = NIL;
-  register CClosure *closure68k;
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
@@ -2206,5 +2205,4 @@ static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y
       return (NIL);
   } /* COLOR case end */
 }
-
 #endif /* COLOR */

@@ -67,7 +67,6 @@ LispPTR values(int arg_count, register LispPTR *args) {
   ByteCode *pc;
   int unbind_count = 0;
   struct fnhead *fnhead;
-  int byteswapped; /* T if on 386 & reswapped code block */
   short opcode;
 
   caller = (FX2 *)CURRENTFX;

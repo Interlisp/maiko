@@ -98,7 +98,6 @@ retry:
 DLword *createcell68k(unsigned int type) {
   register struct dtd *dtd68k;
   register DLword *ptr, *lastptr;
-  register ConsCell *newcell68k;
   register LispPTR newcell;
 #ifdef DTDDEBUG
   if (type == TYPE_LISTP) error("createcell : Can't create Listp cell with CREATECELL");
@@ -170,7 +169,6 @@ retry:
 LispPTR Create_n_Set_Cell(unsigned int type, LispPTR value) {
   register struct dtd *dtd68k;
   register DLword *ptr, *lastptr;
-  register ConsCell *newcell68k;
   register LispPTR newcell;
 
   dtd68k = (struct dtd *)GetDTD(type);

@@ -354,7 +354,6 @@ LispPTR lcfuncall(register unsigned int atom_index, register int argnum, registe
   register short pv_num;                       /* scratch for pv */
   register struct fnhead *tmp_fn;
   int rest; /* use for arignments */
-  int closurep = NIL;
   register CClosure *closure68k;
 
   if (atom_index == 0xffffffff) error("Loops punt to nonexistant fn");

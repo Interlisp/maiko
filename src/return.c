@@ -134,7 +134,6 @@ void contextsw(register DLword fxnum, register DLword bytenum, register DLword f
 
   Midpunt(fxnum); /* exchanging FX */
 
-RTNX:
   next68k = (DLword *)Addr68k_from_LADDR(STK_OFFSET | CURRENTFX->nextblock);
 
   if (GETWORD(next68k) != STK_FSB_WORD) error("contextsw(): MP9316");

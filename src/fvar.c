@@ -370,7 +370,6 @@ N_OP_fvar_
 LispPTR N_OP_fvar_(register LispPTR tos, register int n) {
   register DLword *ppvar;    /* pointer to argued Fvar slot in pvar area */
   register DLword *pfreeval; /* pointer to argued free value */
-  register int l1;           /* return value of fvlookup() */
 
   ppvar = PVar + n;
 
