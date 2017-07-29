@@ -160,7 +160,10 @@ int OP_miscn(int misc_index, int arg_count) {
     case miscn_CDROM: result = cdrom(args); break;
 #endif /* CDROM */
 
-    case /* miscn_CALL_C*/ 014: /* result = call_c_fn(args); */ break;
+    case /* miscn_CALL_C*/ 014:
+      /* result = call_c_fn(args); */
+      result = 0;
+    break;
 
     default: goto do_ufn; break;
 
