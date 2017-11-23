@@ -366,7 +366,6 @@ LispPTR N_OP_car(register LispPTR tos) {
 LispPTR N_OP_cdr(register LispPTR tos) {
   register ConsCell *datum68k;
   register DLword cdr_code;
-  register ConsCell *temp;
 
   datum68k = (ConsCell *)(Addr68k_from_LADDR(tos));
   cdr_code = datum68k->cdr_code;
