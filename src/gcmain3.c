@@ -501,7 +501,7 @@ LispPTR gcscanstack(void) {
 
             if (ntend != 0) {
               obascframe = bascframe;
-              bascframe = (Bframe *)ntend; // Addr68k_from_StkOffset(ntend);
+              bascframe = (Bframe *)ntend;
               if (0 != (3 & (UNSIGNED)bascframe)) {
                 char debugStr[100];
                 sprintf(debugStr,
