@@ -1122,7 +1122,7 @@ $(NATDIR)disp68K.il : $(SRCDIR)disp68K.il
 ################################################################################
 
 cleanup :
-	rm -f $(LIBFILES) $(EXTFILES) $(KEYOFF) $(OSARCHDIR)lde
+	rm -f $(LIBFILES) $(EXTFILES) $(KEYOFF) $(OBJECTDIR)tstsout.o $(OBJECTDIR)setsout.o $(OSARCHDIR)lde
 
 .c.o:
 	$(CC) $(RFLAGS) $*.c -o $@ $(INLINE)
