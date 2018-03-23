@@ -122,6 +122,16 @@ installdir=${RELDIR}install.${osversion}.${architecture}/
 #	releasename = ${osversion}.${architecture}-${display}
 #endif
 
+# ensure that the necessary directories exist
+
+if [ ! -d ../${osversion}.${architecture} ]; then
+    mkdir ../${osversion}.${architecture}
+fi
+
+if [ ! -d ../${releasename} ]; then
+    mkdir ../${releasename}
+fi
+
 echo start making lde for ${releasename}.
 
 # then finally do the make, including the right stuff
