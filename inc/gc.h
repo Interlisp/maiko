@@ -268,3 +268,4 @@ struct  htoverflow
 
 extern LispPTR htfind(LispPTR ptr, int casep);
 extern LispPTR rec_htfind(LispPTR ptr, int casep);
+extern LispPTR gcreccell(LispPTR cell);
