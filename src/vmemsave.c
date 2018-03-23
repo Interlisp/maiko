@@ -347,7 +347,6 @@ LispPTR vmem_save(char *sysout_file_name)
   char *cp;
   register int rval;
   DLword *bmptr;
-  int tot_pages = 0;
 #ifndef DOS
   extern int ScreenLocked;
   extern DLword *EmCursorX68K;
