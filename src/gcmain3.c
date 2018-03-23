@@ -60,7 +60,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #define MAXHTCNT 63
 #define PADDING 4
 #define FNOVERHEADWORDS 8
-#define ADD_OFFSET(ptr, dloffset) ((LispPTR *)((DLword *)(ptr) + (dloffset)))
+#define ADD_OFFSET(ptr, dloffset) ((LispPTR *)(((DLword *)(ptr)) + (dloffset)))
 
 #ifdef BIGVM
 #define BIND_BITS(value) ((unsigned int)(value) >> 28)
@@ -372,7 +372,8 @@ LispPTR gcmapunscan(void) {
           GETGC((GCENTRY *)link) = offset & (~STKREFBIT);
         }
       }
-      if ((offset = ((struct htcoll *)link)->next_free)) {
+      offset = ((struct htcoll *)link)->next_free;
+      if (offset) {
         prev = link;
         link = (GCENTRY *)(HTcoll + offset);
         goto scnlp;
@@ -500,7 +501,7 @@ LispPTR gcscanstack(void) {
 
             if (ntend != 0) {
               obascframe = bascframe;
-              bascframe = (Bframe *)Addr68k_from_StkOffset(ntend);
+              bascframe = (Bframe *)ntend; // Addr68k_from_StkOffset(ntend);
               if (0 != (3 & (UNSIGNED)bascframe)) {
                 char debugStr[100];
                 sprintf(debugStr,
