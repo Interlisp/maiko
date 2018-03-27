@@ -77,6 +77,10 @@ extern int ether_fd;
 #endif
 
 #ifdef LINUX
+#include <stropts.h>
+#include <sys/ioctl.h>
+#define _BSD_SOURCE
+#include <signal.h>
 #include <sys/times.h>
 #endif
 
@@ -421,7 +425,7 @@ LispPTR N_OP_rclk(LispPTR tos)
   struct timeval timev;
 
   gettimeofday(&timev, NULL);
-  usec = (timev.tv_sec * 1000000) + timev.tv_usec;
+  usec = (timev.tv_sec * 1000000UL) + timev.tv_usec;
 #endif /* USETIMEFN */
   *((unsigned int *)(Addr68k_from_LADDR(tos))) = usec;
   return (tos);

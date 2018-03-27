@@ -415,7 +415,7 @@ LispPTR N_OP_fvar_(register LispPTR tos, register int n) {
                              : (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
 #endif /* BIGVM */
 
-#define STK_HI_RET(x) ((int)(x) << 16) | 1 | ((unsigned int)(x) >> 16)
+#define STK_HI_RET(x) ((unsigned int)(x) << 16) | 1 | ((unsigned int)(x) >> 16)
 
 #endif /* BIGATOMS */
 

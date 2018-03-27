@@ -38,6 +38,9 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include <string.h>
 #include <i32.h>
 #endif /* DOS */
+#ifdef LINUX
+#include <time.h>
+#endif
 
 #ifndef NOETHER
 #ifndef USE_DLPI
@@ -796,7 +799,7 @@ void print_info_lines() {
 #elif (RELEASE == 351)
   printf("Emulator for Medley release 3.51\n");
 #endif /* RELEASE */
-#if defined(MACOSX) || defined(FREEBSD)
+#if defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
   printf("Creation date: %s", ctime((const time_t *)&MDate));
 #else
   printf("Creation date: %s", ctime(&MDate));

@@ -59,11 +59,15 @@ extern int errno;
 int Storage_expanded; /*  T or NIL */
 
 /* RISCOS, OSF1 and MACOSX don't have valloc, and malloc works OK there. */
+#if defined(LINUX)
+/* has valloc() */
+#else
 #if defined(SYSVONLY) || defined(OSF1) || defined(MACOSX)
 #define valloc malloc
 #else
 char *valloc();
 #endif /* SYSVONLY || OSF1 || MACOSX */
+#endif /* not LINUX */
 
 /************************************************************************/
 /*									*/
