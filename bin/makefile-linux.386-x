@@ -1,7 +1,7 @@
 # Options for Linux, Intel 386/486 and X-Window
 
-CC = gcc 
-
+#CC = gcc -m32 -std=gnu89 -fno-omit-frame-pointer -Wall -Wextra -fwrapv -fno-aggressive-loop-optimizations -fno-strict-aliasing
+CC = clang -m32 -std=gnu89
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
 	$(OBJECTDIR)dspif.o \
@@ -24,7 +24,7 @@ DISPOPTFLAGS = -O2 -g3
 FPFLAGS =
 DFLAGS = -DFSERROR -DNEW_STORAGE -DLINUX -DAIX -DOLD_CURSOR -DUSETERMIOS \
 	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
-	-DRELEASE=351 -D__USE_BSD 
+	-DRELEASE=351 -D__USE_BSD -DSYSVSIGNALS
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lcrypt
 LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm -lcrypt
