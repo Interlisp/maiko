@@ -472,10 +472,11 @@ int fork_Unix() {
               exit(0);
             }
             sprintf(PipeName, "/tmp/LPU%ld-%d", StartTime, slot);
+	    memset(&addr, 0, sizeof(struct sockaddr_un));
             addr.sun_family = AF_UNIX;
             strcpy(addr.sun_path, PipeName);
             status =
-                connect(sock, (struct sockaddr *)&addr, strlen(PipeName) + sizeof(addr.sun_family));
+                connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_un));
             if (status < 0) {
               perror("slave connect");
               printf("Name = %s.\n", PipeName);

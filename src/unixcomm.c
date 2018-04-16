@@ -402,44 +402,44 @@ return (-1);
 void WriteLispStringToPipe(LispPTR lispstr);
 
 /************************************************************************/
-/*									*/
-/*		      U n i x _ h a n d l e c o m m			*/
-/*									*/
-/*	LISP subr to talk to the forked "Unix process".			*/
-/*									*/
-/*	The first argument (Arg[0]) is the command number.		*/
-/*	Second argument (Arg[1]) is the Job # (except as indicated).	*/
-/*									*/
-/*	Commands are:							*/
-/*									*/
-/*		0 Fork Pipe, Arg1 is a string for system();		*/
-/*		     => Job # or NIL					*/
-/*		1 Write Byte, Arg2 is Byte;				*/
-/*		     => 1 (success), NIL (fail)				*/
-/*		2 Read Byte => Byte, NIL (no data), or T (EOF)		*/
-/*		3 Kill Job => Status or T				*/
-/*		4 Fork PTY to Shell (no args) => Job # or NIL		*/
-/*		5 Kill All (no args) => T				*/
-/*		6 Close (EOF)						*/
-/*		7 Job status => T or status				*/
-/*		8 => the largest supported command # (11 now)		*/
-/*		9 Read Buffer, Arg1 = vmempage (512 byte buffer)	*/
-/*		     => byte count (<= 512), NIL (no data), or T (EOF)	*/
-/*	       10 Set Window Size, Arg2 = rows, Arg3 = columns		*/
-/*	       11 Fork PTY to Shell (obsoletes command 4)		*/
-/*		     Arg1 = termtype, Arg2 = csh command string		*/
-/*		     => Job # or NIL					*/
-/*             12 Create Unix Socket                                    */
-/*                   Arg1 = pathname to bind socket to (string)         */
-/*                   => Socket # or NIL                                 */
-/*             13 Try to accept on unix socket                          */
-/*                   => Accepted socket #, NIL (fail) or T (try again)  */
-/*             14 Query job type                                        */
-/*                   => type number or NIL if not a job                 */
-/*             15 Write Buffer, Arg1 = Job #, Arg2 = vmempage,          */
-/*                  Arg3 = # of bytes to write from buffer              */
-/*                   => # of bytes written or NIL (failed)              */
-/*									*/
+/*                                                                      */
+/*  U n i x _ h a n d l e c o m m                                       */
+/*                                                                      */
+/*	LISP subr to talk to the forked "Unix process".                     */
+/*                                                                      */
+/*	The first argument (Arg[0]) is the command number.                  */
+/*	Second argument (Arg[1]) is the Job # (except as indicated).        */
+/*                                                                      */
+/*	Commands are:                                                       */
+/*                                                                      */
+/*		0 Fork Pipe, Arg1 is a string for system();                     */
+/*		     => Job # or NIL                                            */
+/*		1 Write Byte, Arg2 is Byte;                                     */
+/*		     => 1 (success), NIL (fail)                                 */
+/*		2 Read Byte => Byte, NIL (no data), or T (EOF)                  */
+/*		3 Kill Job => Status or T                                       */
+/*		4 Fork PTY to Shell (no args) => Job # or NIL                   */
+/*		5 Kill All (no args) => T                                       */
+/*		6 Close (EOF)                                                   */
+/*		7 Job status => T or status                                     */
+/*		8 => the largest supported command # (15 now)                   */
+/*		9 Read Buffer, Arg1 = vmempage (512 byte buffer)                */
+/*		     => byte count (<= 512), NIL (no data), or T (EOF)          */
+/*	   10 Set Window Size, Arg2 = rows, Arg3 = columns                  */
+/*	   11 Fork PTY to Shell (obsoletes command 4)                       */
+/*        Arg1 = termtype, Arg2 = csh command string                    */
+/*		     => Job # or NIL                                            */
+/*     12 Create Unix Socket                                            */
+/*        Arg1 = pathname to bind socket to (string)                    */
+/*           => Socket # or NIL                                         */
+/*     13 Try to accept on unix socket                                  */
+/*           => Accepted socket #, NIL (fail) or T (try again)          */
+/*     14 Query job type                                                */
+/*           => type number or NIL if not a job                         */
+/*     15 Write Buffer, Arg1 = Job #, Arg2 = vmempage,                  */
+/*           Arg3 = # of bytes to write from buffer                     */
+/*           => # of bytes written or NIL (failed)                      */
+/*                                                                      */
 /************************************************************************/
 
 LispPTR Unix_handlecomm(LispPTR *args) {
@@ -451,7 +451,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
   /* Get command */
   N_GETNUMBER(args[0], command, bad);
-  DBPRINT(("Unix_handlecomm: trying %d\n", command));
+  DBPRINT(("\nUnix_handlecomm: trying %d\n", command));
 
   switch (command) {
     case 0: /* Fork pipe process */
@@ -470,9 +470,10 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       /* then bind it to a canonical pathname */
       PipeName = build_socket_pathname(sockFD);
+      memset(&sock, 0, sizeof(sock));
       sock.sun_family = AF_UNIX;
       strcpy(sock.sun_path, PipeName);
-      if (bind(sockFD, (struct sockaddr *)&sock, strlen(PipeName) + sizeof(sock.sun_family)) < 0) {
+      if (bind(sockFD, (struct sockaddr *)&sock, sizeof(struct sockaddr_un)) < 0) {
         close(sockFD);
         perror("binding sockets");
         unlink(PipeName);
@@ -681,7 +682,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       N_GETNUMBER(args[1], slot, bad);
 
-      DBPRINT(("Killing process in slot %.\n", slot));
+      DBPRINT(("Killing process in slot %d.\n", slot));
 
       if (valid_slot(slot)) switch (UJ[slot].type) {
           case UJSHELL:
