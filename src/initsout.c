@@ -160,20 +160,30 @@ void init_ifpage(int sysout_size) {
 /* get user name and stuff into vmem; this is the VMEM buffer;
 This is a BCPL string -- it starts with a length count. C strings
 are null terminated instead */
+  InterfacePage->usernameaddr = 0;
 #ifndef DOS
   {
     struct passwd *pwd;
-    char *s = (char *)Addr68k_from_LADDR(0155001);
-    /* try getpwuid first; use cuserid if it fails */
-    if ((pwd = getpwuid(getuid())) == NULL)
-#if defined(MACOSX) || defined(FREEBSD)
-      ;
-#else
-      cuserid(s + 1);
+    char *s;
+    int len;
+    /* Get username from getpwuid */
+    /* The page/offset we are using is hardcoded in LLFAULT in functions */
+    /*  \MAIKO.NEWFAULTINIT and \MAIKO.ASSIGNBUFFERS */
+    if ((pwd = getpwuid(getuid())) != NULL) {
+      InterfacePage->usernameaddr = 0155001;
+      s = (char *)Addr68k_from_LADDR(InterfacePage->usernameaddr);
+      len = strlen(pwd->pw_name);
+      /* Lisp reserves 32 words for the BCPL String */
+      len = (len < 32 * BYTESPER_DLWORD) ? len : 32 * BYTESPER_DLWORD - 1;
+      *s = (char)len;
+      strncpy(s + 1, pwd->pw_name, len);
+#ifdef BYTESWAP
+      /* we must swap the area we have written into, starting at 0155000 */
+      /* rounding up to 4-byte words					 */
+      word_swap_page(Addr68k_from_LADDR(0155000), (len + 1 + 2 + 3) / 4);
 #endif
-    else
-      strcpy(s + 1, pwd->pw_name);
-    *s = (char)strlen(s + 1);
+    }
+
   }
 #endif /* DOS */
 
