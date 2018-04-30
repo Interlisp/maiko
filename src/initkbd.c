@@ -530,6 +530,26 @@ char *getenv(); /*  ---- external entry points --------*/
 /* For the JLE keyboard */
 #define KB_JLE 5
 
+
+#ifdef XWINDOW
+/*
+ * 
+ */
+
+int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int sym, u_char *table)
+{
+  int i;
+
+  for (i = 0; i < (codecount * symspercode); i++) {
+    if (sym == map[i]) {
+      int code = minkey + (i / symspercode);
+      if (table[code - 7] != 255) continue;
+      return (code);
+    }
+  }
+  return (0);
+}
+
 /************************************************************************/
 /*									*/
 /*			m a k e _ X _ k e y m a p			*/
@@ -541,7 +561,6 @@ char *getenv(); /*  ---- external entry points --------*/
 /*									*/
 /************************************************************************/
 
-#ifdef XWINDOW
 u_char *make_X_keymap() {
   u_char *table = (u_char *)malloc(256); /* the final result table */
   int lisp_codes_used[256];              /* Keep track of the Lisk key #s we've used */
@@ -557,22 +576,11 @@ u_char *make_X_keymap() {
     lisp_codes_used[i] = 0;
     table[i] = 255; /* The "no key assigned" code */
   }
+
   XLOCK;
-
-#ifdef WHAT_THE_DICKENS_HAPPENED_HERE
-  XDisplayKeycodes(ConnectionNumber(currentdsp->display_id), &minkey, &maxkey);
-#else  /* WHAT_THE_DICKENS_HAPPENED_HERE */
   XDisplayKeycodes(currentdsp->display_id, &minkey, &maxkey);
-#endif /* WHAT_THE_DICKENS_HAPPENED_HERE */
-
   codecount = maxkey + 1 - minkey;
-
-#ifdef WHAT_THE_DICKENS_HAPPENED_HERE
-  mapping = XGetKeyboardMapping(ConnectionNumber(currentdsp->display_id), minkey, codecount, &symspercode);
-#else  /* WHAT_THE_DICKENS_HAPPENED_HERE */
   mapping = XGetKeyboardMapping(currentdsp->display_id, minkey, codecount, &symspercode);
-#endif /* WHAT_THE_DICKENS_HAPPENED_HERE */
-
   XUNLOCK;
 
   for (; *key_sym_pairs != -1;) {
@@ -595,28 +603,14 @@ u_char *make_X_keymap() {
   }
 
 #ifdef DEBUG
+  printf("\n\n\tKeyboard mapping table\n\n");
   for (i = 0; i < 256; i += 8) {
-    printf("\n\n\tKeyboard mapping table\n\n");
-    printf("%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", table[i], table[i + 1], table[i + 2], table[i + 3], table[i + 4],
+    printf("%d:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, table[i], table[i + 1], table[i + 2], table[i + 3], table[i + 4],
            table[i + 5], table[i + 6], table[i + 7]);
   }
 #endif /* DEBUG */
 
   return (table);
-}
-
-int find_unused_key(KeySym *map, int minkey, int len, int syms, int sym, u_char *table)
-{
-  int i;
-
-  for (i = 0; i < (len * syms); i++) {
-    if (sym == map[i]) {
-      int code = minkey + (i / syms);
-      if (table[code - 7] != 255) continue;
-      return (code);
-    }
-  }
-  return (0);
 }
 
 #endif /* XWINDOW */

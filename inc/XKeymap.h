@@ -59,7 +59,10 @@
 /************************************************************************/
 
 #ifdef XWINDOW
-
+/*
+ * triples in this array are interpreted in initkbd.c as
+ *  reusable, (Lisp keyboard) code, (X keysym) symbol
+ */
 int generic_X_keymap[] = {
     0, 107, 0x1000ff10,            /* Un-named KEYSYM used on Sun kbd for F11 */
     0, 108, 0x1000ff11,            /* Un-named KEYSYM used on Sun kbd for F12 */
@@ -110,8 +113,7 @@ int generic_X_keymap[] = {
     0, 53, XK_8,
     0, 53, XK_asterisk,
     0, 22, XK_9,
-    0,
-    22, XK_parenleft,
+    0, 22, XK_parenleft,
     0, 8, XK_0,
     0, 8, XK_parenright,
     0, 10, XK_minus,
