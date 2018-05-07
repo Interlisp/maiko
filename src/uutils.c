@@ -225,92 +225,76 @@ LispPTR unix_username(LispPTR *args) {
 /*									*/
 /*									*/
 /************************************************************************/
-
+/*
+ * The code for "MACH" and "ARCH" are really not correct and it's not
+ * clear what use they are. RS/6000 systems use a PowerPC processor,
+ * and so did PowerBook Macintosh systems.
+ * "MACH" and "ARCH" both seem to be a mix of instruction set architecture and
+ * system types (rs/6000 used PowerPC, hp9000 had mc68000, PA-RISC,
+ * and later, IA-64 [Itanium]).
+ * The only usage seems to be checking "ARCH" == "dos" and for the existance
+ * of *any* result from the call, which indicates it's an emulated system.
+ */
 char *getenv(const char *);
 
 LispPTR unix_getparm(LispPTR *args) {
   char envname[20], result[128], *envvalue;
   if (lisp_string_to_c_string(args[0], envname, sizeof envname)) return NIL;
+
   if (strcmp(envname, "MACH") == 0) {
 #if defined(sparc)
     envvalue = "sparc";
-#else
-#if defined(I386)
+#elif defined(I386)
     envvalue = "i386";
-#else
-#ifdef RS6000
+#elif defined(RS6000)
     envvalue = "rs/6000";
-#else
-#ifdef HP9000
+#elif defined(HP9000)
     envvalue = "hp9000";
-#else
-#ifdef ISC
+#elif defined(ISC)
     envvalue = "i386";
-#else
-#ifdef INDIGO
+#elif defined(INDIGO)
     envvalue = "mips";
-#else
-#ifdef RISCOS
+#elif defined(RISCOS)
     envvalue = "mips";
-#else
-#ifdef DOS
+#elif defined(DOS)
     envvalue = "386";
+#elif defined(MACOSX)
+    envvalue = "i386";
 #else
     envvalue = "mc68020";
 #endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
+
   } else if (strcmp(envname, "ARCH") == 0) {
 #if defined(sparc)
     envvalue = "sun4";
-#else
-#if defined(I386)
+#elif defined(I386)
     envvalue = "sun386";
-#else
-#ifdef RS6000
+#elif defined(RS6000)
     envvalue = "rs/6000";
-#else
-#ifdef HP9000
+#elif defined(HP9000)
     envvalue = "hp9000";
-#else
-#ifdef ISC
+#elif defined(ISC)
     envvalue = "i386";
-#else
-#ifdef INDIGO
+#elif defined(INDIGO)
     envvalue = "mips";
-#else
-#ifdef RISCOS
+#elif defined(RISCOS)
     envvalue = "mips";
-#else
-#ifdef DOS
+#elif defined(DOS)
     envvalue = "dos";
+#elif defined(MACOSX)
+    envvalue = "i386";
 #else
     envvalue = "sun3";
 #endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
+
   } else if (strcmp(envname, "DISPLAY") == 0) {
 #if defined(XWINDOW)
     envvalue = "X";
-#else
-#if defined(DISPLAYBUFFER)
+#elif defined(DISPLAYBUFFER)
     envvalue = "BUFFERED";
 #else
     envvalue = "DIRECT";
-#endif /* DISPLAYBUFFER */
-
-#endif /* XWINDOW */
-
+#endif
   }
 #ifndef DOS
   else if (strcmp(envname, "HOSTNAME") == 0) {
