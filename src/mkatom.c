@@ -233,7 +233,7 @@ LispPTR compare_lisp_chars(register char *char1, register char *char2, register 
 int lispcmp(DLword *char1, unsigned char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
-    if (GETWORD(char1++) != GETBYTE(char2++)) return (0);
+      if (GETWORD(char1++) != (unsigned char)GETBYTE(char2++)) return (0);
   }
   return (1);
 }
