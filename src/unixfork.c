@@ -94,6 +94,11 @@ typedef int clockid_t;
 
 #include "unixfork.h"
 
+#ifdef DEBUG
+/* required by DBPRINT from dbprint.h */
+extern int flushing = 0;
+#endif
+
 /* The following globals are used to communicate between Unix
    subprocesses and LISP */
 
