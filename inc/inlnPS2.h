@@ -100,18 +100,18 @@ extern inline const unsigned short byte_swap_word (unsigned short word)
 
 
 
-extern inline const void word_swap_page(unsigned short * page, int count)
+extern inline void word_swap_page(unsigned short * page, int count)
   {
    asm volatile("\
 	pushl %edi					\n\
 	pushl %esi					\n\
 	pushl %ecx					\n\
 	cld");
-    asm volatile("
+    asm volatile("\
 	movl %0,%%esi	// word pointer.		\n\
 	movl %%esi,%%edi				\n\
 	movl %1,%%ecx	// count" : : "g" (page), "g" (count));
-    asm volatile("
+    asm volatile("\
 	lodsl						\n\
 	rolw	$8,%ax					\n\
 	roll	$16,%eax				\n\
@@ -122,7 +122,7 @@ extern inline const void word_swap_page(unsigned short * page, int count)
 	// epilogue.					\n\
 	popl %ecx					\n\
 	popl %esi					\n\
-	popl %edi
+	popl %edi					\
 	");
 
   }
@@ -342,7 +342,7 @@ diff_err:							\
 	N_OP_POPPED_CALL_2(N_OP_difference, GET_POPPED);	\
 	}
 
-extern inline const void fast_op_difference(LispPTR value)
+extern inline void fast_op_difference(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -371,7 +371,7 @@ idiff_err:							\
 	N_OP_POPPED_CALL_2(N_OP_idifference, GET_POPPED);	\
 	}
 
-extern inline const void fast_op_idifference(LispPTR value)
+extern inline void fast_op_idifference(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -401,18 +401,18 @@ idiffn_err:							\
 	N_OP_CALL_1d(N_OP_idifferencen, n);			\
 	}
 
-extern inline const void fast_op_idifferencen(LispPTR value)
+extern inline void fast_op_idifferencen(LispPTR value)
   {
     asm volatile("\
-	movl	%0,%%eax
-	roll	$15,%%eax
-	roll	$15,%%ebx
-	subb	$7,%%bl
-	jne	idiffn_err
-	subl	%%eax,%%ebx
-	jo	idiffn_err
-	rorl	$15,%%ebx
-	orl	$917504,%%ebx
+	movl	%0,%%eax	\n\
+	roll	$15,%%eax	\n\
+	roll	$15,%%ebx	\n\
+	subb	$7,%%bl		\n\
+	jne	idiffn_err	\n\
+	subl	%%eax,%%ebx	\n\
+	jo	idiffn_err	\n\
+	rorl	$15,%%ebx	\n\
+	orl	$917504,%%ebx	\n\
     " :  : "g" (value) : "ax" );
 
   }
@@ -429,7 +429,7 @@ plus_err:							\
 	asm volatile("rorl $15,%ebx");					\
 	N_OP_POPPED_CALL_2(N_OP_plus2, GET_POPPED);		\
 	}
-extern inline const void fast_op_plus(LispPTR value)
+extern inline void fast_op_plus(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -458,7 +458,7 @@ iplus_err:							\
 	asm volatile("rorl $15,%ebx");					\
 	N_OP_POPPED_CALL_2(N_OP_iplus2, GET_POPPED);		\
 	}
-extern inline const void fast_op_iplus(LispPTR value)
+extern inline void fast_op_iplus(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -489,7 +489,7 @@ iplusn_err:							\
 	N_OP_CALL_1d(N_OP_iplusn, n);				\
 	}
 
-extern inline const void fast_op_iplusn(LispPTR value)
+extern inline void fast_op_iplusn(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -516,7 +516,7 @@ greaterp_err:							\
 	N_OP_POPPED_CALL_2(N_OP_greaterp, GET_POPPED);		\
 	}
 
-extern inline const void fast_op_greaterp(LispPTR value)
+extern inline void fast_op_greaterp(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -545,7 +545,7 @@ igreaterp_err:							\
 	N_OP_POPPED_CALL_2(N_OP_igreaterp, GET_POPPED);		\
 	}
 
-extern inline const void fast_op_igreaterp(LispPTR value)
+extern inline void fast_op_igreaterp(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -636,7 +636,7 @@ logor_err:							\
 	N_OP_POPPED_CALL_2(N_OP_logor, GET_POPPED);		\
 	}
 
-extern inline const void fast_op_logor(LispPTR value)
+extern inline void fast_op_logor(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -663,7 +663,7 @@ logand_err:							\
 	N_OP_POPPED_CALL_2(N_OP_logand, GET_POPPED);		\
 	}
 
-extern inline const void fast_op_logand(LispPTR value)
+extern inline void fast_op_logand(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -690,7 +690,7 @@ logxor_err:							\
 	N_OP_POPPED_CALL_2(N_OP_logxor, GET_POPPED);		\
 	}
 
-extern inline const void fast_op_logxor(LispPTR value)
+extern inline void fast_op_logxor(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -717,7 +717,7 @@ addbase_err:							\
 	asm("rorl $15,%ebx");					\
 	N_OP_POPPED_CALL_2(N_OP_addbase, GET_POPPED);		\
 	}
-extern inline const void fast_op_addbase(LispPTR value)
+extern inline void fast_op_addbase(LispPTR value)
   {
     asm volatile("\
 	movl	%0,%%eax	\n\
@@ -952,7 +952,7 @@ lbl:									\
     asm volatile("							\n\
 	.align 4							\n\
 ." lpfx "swap:		/ Come here if we need to byte-swap the fn	\n\
-	call	byte_swap_
+	call	byte_swap_ 						\n\
 ." lpfx "120:");
 
 
