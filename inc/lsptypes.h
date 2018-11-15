@@ -576,7 +576,7 @@ typedef struct
 	/* 								*/
 	/****************************************************************/
 
-#define GETBYTE(base) (* (char *) (3^(UNSIGNED)(base)))
+#define GETBYTE(base) (* (unsigned char *) (3^(UNSIGNED)(base)))
   /* GETBASEWORD only works if base points to a 32-bit bounday */
 #define GETBASEWORD(base, offset) GETWORDBASEWORD((base),(offset))
 #define GETWORDBASEWORD(base, offset) (* (DLword *) (2^(UNSIGNED)((base)+(offset))))

@@ -41,8 +41,15 @@
 #define Get_Pointer_PCMAC2 Get_Pointer(PCMAC + 2)
 
 	/* For getting a signed byte */
+#ifndef BYTESWAP
+/* in the unswapped case, the type of the argument carries through to the result */
 #define Get_SBYTE_PCMAC0 GETBYTE((s_char *)PCMAC)
 #define Get_SBYTE_PCMAC1 GETBYTE((s_char *)PCMAC+1)
+#else
+/* cf. GETBYTE in lsptypes.h */
+#define Get_SBYTE_PCMAC0 (* (s_char *) (3^(UNSIGNED)(PCMAC)))
+#define Get_SBYTE_PCMAC1 (* (s_char *) (3^(UNSIGNED)(PCMAC+1)))
+#endif
 
 	/* for getting an atom number, e.g., for FNx or DTEST */
 #ifdef BIGATOMS
