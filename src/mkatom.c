@@ -196,8 +196,11 @@ LispPTR compare_lisp_chars(register char *char1, register char *char2, register 
 #ifdef BYTESWAP
     if (fat1) { /* both fat, so compare 'em a word at a time */
       int i;
-      for (i = 0; i < length; i++)
-        if (GETWORD(char1++) != GETWORD(char2++)) return (NIL);
+      for (i = 0; i < length; i++) {
+        if (GETWORD(char1) != GETWORD(char2)) return (NIL);
+        /* increment by size of fat character, i.e., DLword, 2 bytes */
+        char1+= sizeof(DLword); char2+=sizeof(DLword);
+      }
       return (T);
     } else { /* both thin, so compare 'em a byte at a time */
              /* (it's this way in case we're byte-swapped.)*/
