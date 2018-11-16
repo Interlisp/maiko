@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
-CC = clang -m32 -std=gnu89 -Wimplicit-function-declaration
+CC = clang -m32 -std=gnu89 -Wimplicit-function-declaration -funsigned-char
 OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
