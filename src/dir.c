@@ -34,7 +34,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 /*  #include <string.h> */
 #endif /* SYSVONLY */
 
-#if defined(LINUX) || defined(MACOSX) || defined(FREEBSD)
+#if defined(LINUX) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
 #include <string.h>
 #endif /* LINUX */
 
