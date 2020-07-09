@@ -91,7 +91,8 @@ int sysout_loader(char * sysout_file_name, int sys_size)
 
   char *fptovp_scratch; /* scratch area for FPTOVP */
 #ifdef BIGVM
-  unsigned int fptovp[0x40000]; /* FPTOVP */
+  /* 1 "cell" per page for 256MB in 512 byte pages */
+  unsigned int fptovp[0x80000]; /* FPTOVP */
 #else
   DLword fptovp[0x10000]; /* FPTOVP */
 #endif                /* BIGVM */
