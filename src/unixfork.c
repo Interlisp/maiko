@@ -301,7 +301,7 @@ of the packet received except:
 
 */
 
-long time(long); /* XXX where does time come from? */
+// long time(long); /* XXX where does time come from? */
 
 int fork_Unix() {
   int LispToUnix[2], /* Incoming pipe from LISP */
