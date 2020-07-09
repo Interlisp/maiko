@@ -701,7 +701,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
                    debugged.  So we time it out just be safe. */
                 if (UJ[slot].status != -1) break;
                 wait_for_comm_processes();
-                sleep(1);
+                usleep(10);
               }
             }
             break;
