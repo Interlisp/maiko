@@ -65,6 +65,10 @@ static char *RCSid =
 #include <sys/dlpi.h>
 #ifdef OS5
 #include <sys/bufmod.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stropts.h>
+#include <malloc.h>
 #endif
 #include <sys/socket.h>
 #include <sys/sockio.h>
@@ -594,7 +598,6 @@ static void sigalrm() { (void)fprintf(stderr, "dlpi: timeout\n"); }
 char *savestr(char *s)
 {
   char *t;
-  char *malloc();
 
   if ((t = malloc(strlen(s) + 1)) == NULL) {
     (void)fprintf(stderr, "%s: out of memory.\n", pname);
