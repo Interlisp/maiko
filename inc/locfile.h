@@ -703,6 +703,9 @@ extern	int	errno;
 #define DIRSEPSTR "/"
 #define DIRSEP '/'
 #define UNIXDIRSEP '/'
+/* system includes may already define MAXNAMLEN */
+#if !defined(MAXNAMLEN)
 #define MAXNAMLEN NAME_MAX
+#endif
 #endif
 
