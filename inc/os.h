@@ -62,7 +62,7 @@
 #define	U_INT32_DECLARED_IN_AUTH	1
 #endif
 
-#ifdef SUNOS4
+#ifdef OS4
 #ifndef USE_NIT
 #define USE_NIT	1
 #endif
@@ -79,7 +79,7 @@
 #define	U_INT32_DECLARED_IN_AUTH	1
 #endif
 
-#ifdef SUNOS5
+#ifdef OS5
 #ifndef SVR4
 #define SVR4		1
 #endif
