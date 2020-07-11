@@ -17,7 +17,7 @@
 #*									*/
 #************************************************************************/
 
-CC = gcc
+CC = gcc -std=gnu89 -funsigned-char
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
@@ -46,8 +46,8 @@ MAIN = main
 
 DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 
-MACHINEFLAGS = -DOS5 -DAIX -DUSE_DLPI -DNOPIXRECT \
-		-I$(OPENWINHOME)/include -DSYSVSIGNALS -DSYSVONLY \
+MACHINEFLAGS = -DOS5 -DUSE_DLPI -DNOPIXRECT \
+		-DSYSVSIGNALS  \
 		 -DOLD_CURSOR -DLOGINT -DFORKCOMM -DLOCK_X_UPDATES
 		 
 INLINEFLAGS =
@@ -60,8 +60,8 @@ DFLAGS = $(XFLAGS) \
 	 $(INLINEFLAGS) \
 	 -DRELEASE=351
 
-LDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11 -lc -lm -lsocket -lnsl
-LDELDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11  -lc -lm -lsocket -lnsl
+LDFLAGS = -lX11 -lc -lm -lsocket -lnsl
+LDELDFLAGS = -lX11  -lc -lm -lsocket -lnsl
 LDEETHERLDFLAGS = -lc -lm -lsocket -lnsl
 
 # SPARC Assemble optimize check
