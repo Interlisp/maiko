@@ -703,5 +703,6 @@ extern	int	errno;
 #define DIRSEPSTR "/"
 #define DIRSEP '/'
 #define UNIXDIRSEP '/'
+#define MAXNAMLEN NAME_MAX
 #endif
 

@@ -388,9 +388,6 @@ typedef signed char s_char;
 /* #define sv_handler sa_handler */
 /* #define sv_mask sa_mask */
 /* #define sv_flags sa_flags */
-
-#define MAXNAMLEN NAME_MAX
-
 #endif /* LINUX */
 
 
@@ -409,11 +406,6 @@ typedef signed char s_char;
 #define REGISTER
 
 typedef signed char s_char;
-
-#define MAXNAMLEN NAME_MAX
-
-#define SYSVONLY 1
-
 #endif /* MACOSX || FREEBSD */
 
 
