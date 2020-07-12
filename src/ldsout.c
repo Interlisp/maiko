@@ -58,16 +58,10 @@ extern int errno;
   is going to expand or not */
 int Storage_expanded; /*  T or NIL */
 
-/* RISCOS, OSF1 and MACOSX don't have valloc, and malloc works OK there. */
-#if defined(LINUX)
-/* has valloc() */
-#else
-#if defined(SYSVONLY) || defined(OSF1) || defined(MACOSX)
+/* RISCOS and OSF1 don't have valloc, and malloc works OK there. */
+#if defined(SYSVONLY) || defined(OSF1) || defined(RISCOS)
 #define valloc malloc
-#else
-char *valloc();
-#endif /* SYSVONLY || OSF1 || MACOSX */
-#endif /* not LINUX */
+#endif /* SYSVONLY || OSF1 || RISCOS */
 
 /************************************************************************/
 /*									*/
