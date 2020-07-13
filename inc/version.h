@@ -349,15 +349,11 @@ typedef signed char s_char;
 	/*							*/
 	/********************************************************/
 #ifdef OS5
-		/* Solaris, sort of SYSV-ish */
+		/* Solaris, sort of SYSV-ish, but not really */
 #undef HAS_GETHOSTID
-#define SYSVONLY 1
+#define BSD_COMP 1
 #define SYSVSIGNALS 1
-#define index           strchr
-#define rindex          strrchr
-#define bzero(b,n)      memset(b,0,n)
-#define bcmp(a,b,n)     memcmp(a,b,n)
-#define bcopy(a,b,n)    memcpy(b,a,n)
+#define WAITINT 1
 #define L_SET SEEK_SET
 #define NOFORN
 #define LOCK_X_UPDATES 1
