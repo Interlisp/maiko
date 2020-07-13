@@ -27,9 +27,9 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 #include <sys/stat.h>
 #include <errno.h>
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(OS5)
 #include <sys/fcntl.h>
-#endif /* SYSVONLY */
+#endif /* SYSVONLY || OS5 */
 
 #ifdef DOS
 #include <fcntl.h>
