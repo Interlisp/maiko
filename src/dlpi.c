@@ -82,7 +82,6 @@ static char *RCSid =
 #include <stdio.h>
 
 #include "nfswatch.h"
-#include "externs.h"
 
 static void dlbindreq();
 static void dlinforeq();
@@ -94,6 +93,7 @@ static int dlinfoack();
 static int dlbindack();
 static int expecting();
 static int strgetmsg();
+static char *savestr();
 static char *pname;
 
 extern unsigned char ether_host[6];
