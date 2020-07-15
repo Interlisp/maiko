@@ -356,6 +356,7 @@ typedef signed char s_char;
 #define WAITINT 1
 #define L_SET SEEK_SET
 #define NOFORN
+#define NOETHER
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */
 
