@@ -29,6 +29,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #ifndef DOS
 #include <sys/param.h>
 #include <sys/time.h>
+#include <unistd.h>
 #else /* DOS */
 #define MAXPATHLEN 128
 #define R_OK 04

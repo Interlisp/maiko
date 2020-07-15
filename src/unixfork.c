@@ -66,7 +66,7 @@ typedef int clockid_t;
 #include <unistd.h>
 #endif /* HPUX */
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(OS5)
 #include <fcntl.h>
 #include <unistd.h>
 #endif /* SYSVONLY */

@@ -48,7 +48,7 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #endif /* APOLLO */
 #endif /* AIX */
 
-#if defined(SYSVONLY) || defined(FREEBSD)
+#if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5)
 #include <dirent.h>
 #include <unistd.h>
 #endif /* SYSVONLY | FREEBSD */
@@ -96,14 +96,6 @@ int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. 
 /***********************************************/
 /*  file-system-specific defns                 */
 /***********************************************/
-#ifdef DOS
-#define DIRSEP '\\'
-#define DIRSEPSTR "\\"
-#else
-#define DIRSEP '/'
-#define DIRSEPSTR "/"
-#endif
-#define DRIVESEP ':'
 
 /* Used to limit DOS filenames to 8.3 format */
 
@@ -913,12 +905,15 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     strcpy(lispname, "<");
     return (1);
   }
+
+#ifdef DOS
   /* Split off the drive, if there is one. */
   if (fullname[1] == DRIVESEP) {
     *lispname++ = *fullname++;
     *lispname++ = *fullname++;
   }
-
+#endif
+  
   if (!dirp) {
     /*
      * The characters which are dealt with specialy (i.e. are quoted)

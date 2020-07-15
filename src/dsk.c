@@ -15,7 +15,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-#if defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
+#if defined(MACOSX) || defined(FREEBSD) || defined(LINUX) || defined(OS5)
 #include <string.h>
 #endif
 
@@ -29,7 +29,9 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #ifndef SYSVONLY
 #ifndef MACOSX
 #ifndef FREEBSD
+#ifndef OS5
 #include <sys/dir.h>
+#endif /* OS5 */
 #endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* SYSVONLY */
@@ -82,11 +84,12 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define L_SET SEEK_SET
 #endif /* ISC */
 
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
+#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
 #include <dirent.h>
 #include <unistd.h>
 #define direct dirent
 #define d_namlen d_reclen
+#define d_fileno d_ino
 #ifndef LINUX
 #define L_SET SEEK_SET
 #endif
@@ -2364,6 +2367,8 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   char drive[2];
 #ifdef ULTRIX
   struct fs_data sfsbuf;
+#elif defined(OS5)
+  struct statvfs sfsbuf;
 #else
 #ifndef AIXPS2
 #ifndef DOS
@@ -2464,8 +2469,11 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #elif INDIGO
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
   if (rval != 0) {
-#elif SYSVONLY
+#elif defined(SYSVONLY)
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
+  if (rval != 0) {
+#elif defined(OS5)
+  TIMEOUT(rval = statvfs(dir, &sfsbuf));
   if (rval != 0) {
 #else
 #ifndef AIXPS2
@@ -2483,7 +2491,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   *buf = (sfsbuf.f_bavail) * 4; /* AIX 3.1 returns no. of 4K blocks */
 #elif defined(ISC)
   *buf = (sfsbuf.f_bfree) / 2; /* ISC claims 1K blocks, but it's really 512b */
-#elif defined(SYSVONLY)
+#elif defined(SYSVONLY) || defined(OS5)
   *buf = sfsbuf.f_bfree;
 #elif (!defined(AIXPS2))
   *buf = sfsbuf.f_bavail;

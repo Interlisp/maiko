@@ -44,7 +44,7 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include <signal.h>
 #include <setjmp.h>
 
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
+#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
 #include <sys/fcntl.h>
 #include <dirent.h>
 #include <unistd.h>

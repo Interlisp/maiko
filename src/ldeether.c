@@ -29,11 +29,11 @@ int main(int argc, char *argv[]) { return (0); }
 #include <sys/stropts.h>
 #include <sys/pfmod.h>
 
-#if defined(SVR4) && !defined(SUNOS5)
+#if defined(SVR4) && !defined(OS5)
 char *devices[] = {"emd0", "emd1", "emd2", "emd3", "emd4", 0};
 #endif
 
-#ifdef SUNOS5
+#ifdef OS5
 #include <sys/bufmod.h>
 
 char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "ie2", "ie3",
@@ -68,6 +68,7 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 #include <nlist.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <malloc.h>
 
 #endif /* NOETHER */
 
@@ -108,8 +109,9 @@ int main(int argc, char *argv[]) {
     /* Use DLPI to connect to the ethernet.  This code is stolen
        from NFSWATCH4.3
     */
-
-    if (ether_fd = setup_dlpi_dev(NULL)) { /* Open an ether interface */
+    char *etherdev = (char *)getenv("LDEETHERDEV");
+    ether_fd = setup_dlpi_dev(etherdev);
+    if (ether_fd >= 0) { /* Open an ether interface */
       ether_intf_type = dlpi_devtype(ether_fd);
       printf("opened ldeether fd %d.\n", ether_fd);
       /* first and foremost, get the packet filter module attached
