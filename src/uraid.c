@@ -69,9 +69,11 @@ extern int Win_security_p;
 #ifdef OS5
 #include <stropts.h>
 #endif /* OS5 */
-#if defined(FREEBSD) || defined(MACOSX)
+#if defined(FREEBSD) || defined(MACOSX) || defined(OS5)
 /* for memset */
 #include <string.h>
+/* vfork is deprecated */
+#define vfork fork
 #endif
 
 #include "lispemul.h"
