@@ -66,7 +66,7 @@ Unix Interface Communications
 #include <sys/un.h>
 #endif /* ISC */
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5) || defined(MACOSX)
 #include <unistd.h>
 #endif /* HPUX */
 
