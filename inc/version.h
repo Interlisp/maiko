@@ -218,7 +218,7 @@ error Must specify RELEASE to build Medley.
 	/*							*/
 	/********************************************************/
 #ifdef sun
-typedef char s_char;
+typedef signed char s_char;
 #endif /* sun */
 
 
