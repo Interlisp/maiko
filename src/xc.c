@@ -293,7 +293,7 @@ nextopcode:
 #endif /* MYOPTRACE */
 
     OPTPRINT(
-        ("PC= 0x%x op= 0%o TOS= 0x%x\n", (int)PCMAC, Get_BYTE_PCMAC0, TOPOFSTACK));
+             ("PC= 0x%x (fn+%d) op= 0%o TOS= 0x%x\n", (int)PCMAC, (int)PCMAC - (int)FuncObj, Get_BYTE_PCMAC0, TOPOFSTACK));
 #ifdef MYOPTRACE
   }
 #endif /* MYOPTRACE */
