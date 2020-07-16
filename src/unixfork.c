@@ -66,9 +66,10 @@ typedef int clockid_t;
 #include <unistd.h>
 #endif /* HPUX */
 
-#if defined(SYSVONLY) || defined(OS5)
+#if defined(SYSVONLY) || defined(OS5) || defined(FREEBSD) || defined(MACOSX)
 #include <fcntl.h>
 #include <unistd.h>
+#include <time.h>
 #endif /* SYSVONLY */
 
 #include <stdio.h>
@@ -300,8 +301,6 @@ of the packet received except:
              Byte 1 and Byte 2 are the process ID of OCR process
 
 */
-
-// long time(long); /* XXX where does time come from? */
 
 int fork_Unix() {
   int LispToUnix[2], /* Incoming pipe from LISP */
