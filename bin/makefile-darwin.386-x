@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
-CC = clang -m64 -std=gnu89 -Wimplicit-function-declaration -funsigned-char
+CC = clang -m64 -std=gnu89 -funsigned-char
 OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
@@ -21,7 +21,8 @@ XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT -D$(XVERSION) # $(CLXFLAGS)
 OPTFLAGS =  -O2 -g
 DISPOPTFLAGS = -O2 -g
 FPFLAGS =
-DFLAGS = -DFSERROR -DNEW_STORAGE -DMACOSX -DOLD_CURSOR -DUSETERMIOS \
+DEBUGFLAGS = # -DDEBUG -DOPTRACE
+DFLAGS = $(DEBUGFLAGS) -DFSERROR -DNEW_STORAGE -DMACOSX -DOLD_CURSOR -DUSETERMIOS \
 	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
 	-DRELEASE=351
 
@@ -34,7 +35,7 @@ BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default	: ../$(OSARCHNAME)/lde 
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
 
 ############
 #
