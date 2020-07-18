@@ -36,15 +36,12 @@
 #include "xdefs.h"
 #endif /* XWINDOW */
 
-#ifndef XWINDOW
+#ifdef SUNDISPLAY
 #ifndef NOPIXRECT
-#ifndef DOS
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>
-#endif /* DOS */
 #endif /* NOPIXRECT */
-
-#endif /* XWINDOW */
+#endif /* SUNDISPLAY */
 
 #include "lispemul.h"
 #include "lspglob.h"
