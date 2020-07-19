@@ -9,7 +9,7 @@ DISPOPTFLAGS = -g
 FPFLAGS =
 # Now share the same ldesingle with COLOR(CG4)/MONO Suns
 # If you load MAIKOCOLOR.LCOM etc., you can use color functions
-DFLAGS = -DKBINT -DOS4 -DSPARCDISP -DSUN4_OS4_IL -DOS4_TYPE4BUG -DCOLOR -DNEWBITBLT -DLOGINT -DSUNDISPLAY -DFORKCOMM -DNOEUROKBD
+DFLAGS = -DKBINT -DOS4 -DSPARCDISP -DSUN4_OS4_IL -DOS4_TYPE4BUG -DCOLOR -DNEWBITBLT -DLOGINT -DSUNDISPLAY -DNOEUROKBD
 LDFLAGS = -lsuntool -lsunwindow -lpixrect -ldld -lc -lm
 # SPARC Assemble optimize check
 DFLAGS:sh += optck.sh ; true
