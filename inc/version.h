@@ -177,7 +177,6 @@ error Must specify RELEASE to build Medley.
 #undef SUN4_OS4_IL
 #undef OPDISP
 #undef NATIVETRAN
-#undef UNSAFE
 #undef PROFILE
 #define NOASMFNCALL	1
 #endif

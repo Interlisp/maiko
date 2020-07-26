@@ -109,9 +109,6 @@ extern MouseInterface currentmouse;
 
 #ifdef SUN3_OS3_OR_OS4_IL
 #include "inln68k.h"
-#ifdef UNSAFE
-#include "fastinln68k.h"
-#endif
 #endif
 
 typedef struct conspage ConsPage;
@@ -230,10 +227,6 @@ void dispatch(void) {
 #endif
 #endif
 
-#ifdef UNSAFE
-  register int Save_D5_shift_amount;
-#endif
-
   /* OP_FN_COMMON arguments */
 
   DefCell *fn_defcell;
@@ -256,10 +249,6 @@ void dispatch(void) {
 
 #ifdef SPARCDISP
   table = (InstPtr *)compute_dispatch_table();
-#endif
-
-#ifdef UNSAFE
-  Save_D5_shift_amount = 15;
 #endif
 
 #ifdef I386
@@ -1480,10 +1469,6 @@ PopNextop2:
 setup_table:
 #ifndef ISC
   SaveD6 = 0;
-
-#ifdef UNSAFE
-  Save_D5_shift_amount = 15;
-#endif
 
   {
     int i;
