@@ -10,6 +10,9 @@ freebsd.386-x/**
 freebsd.386/**
 sunos5.386-x/**
 sunos5.386/**
+sunos5.sparc-x/**
+sunos5.sparc/**
 init.386/**
 # core files
+core
 *.core
