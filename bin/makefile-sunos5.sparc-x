@@ -17,7 +17,12 @@
 #*									*/
 #************************************************************************/
 
-CC = gcc -std=gnu89 -funsigned-char
+# Setup for using gcc
+#  CC = gcc -std=gnu89 -funsigned-char
+# Setup for using Solaris Developer Studio 12.6 cc
+#  CC = cc -m32 -funsigned-char
+
+CC = cc -m32 -funsigned-char -O2
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
