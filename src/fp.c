@@ -29,6 +29,7 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "emlglob.h"
+#include "arith.h"
 #include "my.h"
 #include "medleyfp.h"
 

@@ -30,8 +30,8 @@ static char *id = "$Id: eqf.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyright
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "medleyfp.h"
-#include "my.h"
 #include "arith.h"
+#include "my.h"
 
 /************************************************************
 op 072   N_OP_eqlop	EQL
