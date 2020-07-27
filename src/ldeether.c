@@ -18,6 +18,7 @@ static char *id = "$Id: ldeether.c,v 1.3 2001/12/24 01:09:04 sybalsky Exp $ Copy
 
 #ifdef NOETHER
 /* No ethernet, so have a dummy here. */
+unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */
 int main(int argc, char *argv[]) { return (0); }
 #else
 /* THERE -IS- AN ETHERNET */
