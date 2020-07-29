@@ -20,10 +20,9 @@
 #include "dspifdefs.h"
 #include "xinitdefs.h"
 
-DspInterfaceRec _curdsp, _coldsp;
+DspInterfaceRec _curdsp;
 
 DspInterface currentdsp = &_curdsp;
-DspInterface colordsp = &_coldsp;
 
 #ifdef XWINDOW
 extern int LispDisplayRequestedWidth;
@@ -95,26 +94,11 @@ void GenericPanic(DspInterface dsp) {
   exit(0);
 }
 
-LispPTR SwitchDisplay(LispPTR display) {
-  DspInterface tmp; /* Switch-a-roo! */
-
-  TPRINT(("Enter SwitchDisplay\n"));
-  tmp = currentdsp;
-  currentdsp = colordsp;
-  colordsp = tmp;
-  TPRINT(("Exit SwitchDisplay\n"));
-  return (display);
-}
-
 void describedsp(DspInterface dsp) {
   if (dsp == 0) {
     printf("describedsp: Not a dsp!\n");
     return;
   }
-  if (dsp == &_curdsp)
-    printf("dsp is B/W display\n");
-  else
-    printf("dsp is COLOR display\n");
 
   printf("\n");
   printf("width= %d\n", dsp->Display.width);
