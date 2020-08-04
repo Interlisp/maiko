@@ -367,7 +367,6 @@ typedef signed char s_char;
 	/********************************************************/
 #ifdef LINUX
 		/* LINUX, the free POSIX-compliant Unix */
-#define SYSVONLY 1
 #define NOETHER 1
 #define XWINDOWS 1
 /* JDS trial 12/22/01 #define USETIMEFN 1 */
