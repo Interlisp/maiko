@@ -221,6 +221,11 @@ int main(int argc, char *argv[])
 
   /* start ldemono or ldecolor */
 
+  if (filetorun[0] == '\0') {
+    fprintf(stderr, "Unable to determine what display program to run.\n");
+    exit(1);
+  }
+
   argv[0] = filetorun; /* or whatever... */
 
   /* then execve the LDE executable */
