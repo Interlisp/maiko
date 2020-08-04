@@ -50,7 +50,11 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <sys/types.h>
 #include <stdio.h>
 #include <signal.h>
+#ifdef LINUX
+#include <linux/fcntl.h>
+#else
 #include <fcntl.h>
+#endif
 
 #ifdef ISC
 #include <sys/bsdtypes.h>
@@ -77,7 +81,6 @@ extern int ether_fd;
 #endif
 
 #ifdef LINUX
-#include <stropts.h>
 #include <sys/ioctl.h>
 #define _BSD_SOURCE
 #include <signal.h>
@@ -366,7 +369,7 @@ void subr_settime(LispPTR args[])
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
 
-#elif defined(SYSVONLY) && !defined(MACOSX)
+#elif defined(SYSVONLY) && !defined(MACOSX) && !defined(LINUX)
   time_t newTime = (time_t)(*((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF);
   stime(&newTime);
 #else
@@ -686,7 +689,11 @@ void int_io_init() {
 #ifndef DOS
   SIGERRCHK(sigset(SIGIO, getsignaldata), "sigset io");
 #ifdef XWINDOW
+#ifdef LINUX
+  if (fcntl(ConnectionNumber(currentdsp->display_id), F_SETSIG, 0) < 0)
+#else
   if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
+#endif
     perror("ioctl on X fd - SETSIG");
 #endif /* XWINDOW */
 #ifdef USE_DLPI

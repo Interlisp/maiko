@@ -12,6 +12,8 @@ sunos5.386-x/**
 sunos5.386/**
 sunos5.sparc-x/**
 sunos5.sparc/**
+linux.x86_64-x/**
+linux.x86_64/**
 init.386/**
 # core files
 core

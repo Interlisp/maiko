@@ -33,7 +33,7 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-#ifdef OSF1
+#if defined(OSF1) || defined(LINUX)
 #include "time.h"
 #endif
 
