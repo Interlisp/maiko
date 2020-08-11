@@ -498,7 +498,7 @@ extern int error(char *);
 #define TIMER_EXIT(tos)		{TopOfStack=tos; Error_Exit = 1; return(-2);}
 
 
-#define WARN(message,operation)	{warn(message);operation;return;}
+#define WARN(message,operation)	{warn(message);operation;}
 #define NO_WOP	{}
 
 #define NIL	0	/* added 29-jan */

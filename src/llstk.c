@@ -112,6 +112,7 @@ tryfsb:
 #endif /* BIGVM */
       if ((n <= StkOffset_from_68K(oldfx68k)) && (n >= oldfx68k->nextblock)) {
         WARN("moveframe:check!!", sff(LADDR_from_68k(oldfx68k)));
+        return 0; /* ? */
       }
     }
 #endif
@@ -348,10 +349,12 @@ SCAN:
       if (((Bframe *)scanptr68k)->residual) {
         if (scanptr68k != orig68k) {
           WARN("freestackblock:scanptr68k !=org", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+          return 0; /* ? */
         }
       } else {
         if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(orig68k)) {
           WARN("BF doesn't point TopIVAR", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+          return 0; /* ? */
         }
       }
 #endif
@@ -531,6 +534,14 @@ void blt(register DLword *dest68k, register DLword *source68k, int nw) {
                 for DEBUG
 */
 /**************************************************************/
+#ifdef FSBCHECK
+  struct big_fsbs {
+    DLword offset;
+    DLword size;
+  } bigFSB[100];
+  int bigFSBindex = 0;
+#endif
+
 void stack_check(StackWord *start68k) {
   StackWord *scanptr68k;
   StackWord *endstack68k;
@@ -541,12 +552,6 @@ void stack_check(StackWord *start68k) {
   DLword freesize;
 
 #ifdef FSBCHECK
-  struct big_fsbs {
-    DLword offset;
-    DLword size;
-  } bigFSB[100];
-  int bigFSBindex = 0;
-
   memset((char *)bigFSB, 0, 100 * 2 * 2);
 #endif
 
