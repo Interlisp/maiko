@@ -393,8 +393,8 @@ LispPTR gcmapunscan(void) {
 }
 
 LispPTR gcscanstack(void) {
-  register Bframe *bascframe;
-  Bframe *obascframe;
+  register Bframe *basicframe;
+  Bframe *obasicframe;
   LispPTR scanptr, scanend;
   UNSIGNED scanend68K;
   struct fnhead *nametable;
@@ -404,26 +404,26 @@ LispPTR gcscanstack(void) {
   scanptr = VAG2(STK_HI, InterfacePage->stackbase);
   scanend = VAG2(STK_HI, InterfacePage->endofstack);
   scanend68K = (UNSIGNED)Addr68k_from_LADDR(scanend);
-  bascframe = (Bframe *)Addr68k_from_LADDR(scanptr);
+  basicframe = (Bframe *)Addr68k_from_LADDR(scanptr);
 
-  if (0 != (3 & (UNSIGNED)bascframe)) {
+  if (0 != (3 & (UNSIGNED)basicframe)) {
     char debugStr[100];
     sprintf(debugStr,
             "Frame ptr (%p) not to word bound at start of gcscanstack.",
-            bascframe);
+            basicframe);
     error(debugStr);
   }
 
   while (1) {
     /*This is endless loop until encountering tail of stack */
 
-    ftyp = (int)bascframe->flags;
+    ftyp = (int)basicframe->flags;
     switch (ftyp) {
       case STK_FX: {
         {
           register struct frameex1 *frameex;
           register struct fnhead *fnheader;
-          frameex = (struct frameex1 *)bascframe;
+          frameex = (struct frameex1 *)basicframe;
           scanptr = LADDR_from_68k(frameex);
           {
             register LispPTR fn_head;
@@ -438,7 +438,7 @@ LispPTR gcscanstack(void) {
           {
             register int pcou;
             register LispPTR *pvars;
-            pvars = (LispPTR *)((DLword *)bascframe + FRAMESIZE);
+            pvars = (LispPTR *)((DLword *)basicframe + FRAMESIZE);
             for (pcou = fnheader->nlocals; pcou-- != 0;) {
               register LispPTR value;
               value = *pvars;
@@ -481,37 +481,37 @@ LispPTR gcscanstack(void) {
                 Stkref(nametable);
             }; /* frameex->validnametable */
 
-            obascframe = bascframe;
-            bascframe =
-                (Bframe *)ADD_OFFSET(bascframe, FRAMESIZE + PADDING + (((fnheader->pv) + 1) << 2));
+            obasicframe = basicframe;
+            basicframe =
+                (Bframe *)ADD_OFFSET(basicframe, FRAMESIZE + PADDING + (((fnheader->pv) + 1) << 2));
 
-            if (0 != (3 & (UNSIGNED)bascframe)) {
+            if (0 != (3 & (UNSIGNED)basicframe)) {
               char debugStr[100];
               sprintf(debugStr,
                       "Frame ptr (%p) not to word bound "
                       "in gcscanstack() STK_FX case; old frame = %p.",
-                      bascframe, obascframe);
+                      basicframe, obasicframe);
               error(debugStr);
             }
 
           scantemps:
-            while ((UNSIGNED)bascframe < (UNSIGNED)qtemp) {
+            while ((UNSIGNED)basicframe < (UNSIGNED)qtemp) {
               register LispPTR value;
-              value = *((LispPTR *)bascframe);
+              value = *((LispPTR *)basicframe);
               if
                 Boundp(BIND_BITS(value)) Stkref(value);
-              bascframe++;
+              basicframe++;
             }; /* while */
 
             if (ntend != 0) {
-              obascframe = bascframe;
-              bascframe = (Bframe *)ntend;
-              if (0 != (3 & (UNSIGNED)bascframe)) {
+              obasicframe = basicframe;
+              basicframe = (Bframe *)ntend;
+              if (0 != (3 & (UNSIGNED)basicframe)) {
                 char debugStr[100];
                 sprintf(debugStr,
                         "Frame ptr (%p) not to word bound "
                         "in gcscanstack() scantemps; old frame = %p.",
-                        bascframe, obascframe);
+                        basicframe, obasicframe);
                 error(debugStr);
               }
 
@@ -520,15 +520,15 @@ LispPTR gcscanstack(void) {
               goto scantemps;
             };
 
-            obascframe = bascframe;
-            bascframe = (Bframe *)next;
+            obasicframe = basicframe;
+            basicframe = (Bframe *)next;
 
-            if (0 != (3 & (UNSIGNED)bascframe)) {
+            if (0 != (3 & (UNSIGNED)basicframe)) {
               char debugStr[100];
               sprintf(debugStr,
                       "Frame ptr (%p) not to word bound "
                       "in gcscanstack(), end scantemps; old frame = %p.",
-                      bascframe, obascframe);
+                      basicframe, obasicframe);
               error(debugStr);
             }
 
@@ -537,33 +537,33 @@ LispPTR gcscanstack(void) {
         break;
       };
       case STK_GUARD: /* stack's tail ? */ {
-        if ((UNSIGNED)bascframe >= (UNSIGNED)scanend68K)
+        if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K)
           return (NIL);
         else {
-          obascframe = bascframe;
-          bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
+          obasicframe = basicframe;
+          basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
 
-          if (0 != (3 & (UNSIGNED)bascframe)) {
+          if (0 != (3 & (UNSIGNED)basicframe)) {
             char debugStr[100];
             sprintf(debugStr,
                     "Frame ptr (%p) not to word bound "
                     "in gcscanstack() STK_GUARD; old frame = %p.",
-                    bascframe, obascframe);
+                    basicframe, obasicframe);
             error(debugStr);
           }
         };
         break;
       };
       case STK_FSB: {
-        obascframe = bascframe;
-        bascframe = (Bframe *)((DLword *)bascframe + bascframe->ivar);
+        obasicframe = basicframe;
+        basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
 
-        if (0 != (3 & (UNSIGNED)bascframe)) {
+        if (0 != (3 & (UNSIGNED)basicframe)) {
           char debugStr[100];
           sprintf(debugStr,
                   "Frame ptr (%p) not to word bound "
                   "in gcscanstack() STK_FSB; old frame = %p.",
-                  bascframe, obascframe);
+                  basicframe, obasicframe);
           error(debugStr);
         }
 
@@ -572,17 +572,17 @@ LispPTR gcscanstack(void) {
       default: /* must be basic frame !! */
       {
         register LispPTR bf_word;
-        while (STK_BF != BF_FLAGS(bf_word = *((LispPTR *)bascframe))) {
+        while (STK_BF != BF_FLAGS(bf_word = *((LispPTR *)basicframe))) {
           Stkref(PTR_BITS(bf_word));
-          bascframe++;
+          basicframe++;
         };
-        bascframe++;
+        basicframe++;
       };
 
         /* **** NOTE THIS CODE DOES NOT COMPILE CORRECTLY ON THE SUN 4
            {register LispPTR bf_word;
            while(STK_BF != BF_FLAGS(
-           bf_word = *((LispPTR *)bascframe++)))
+           bf_word = *((LispPTR *)basicframe++)))
            { Stkref(PTR_BITS(bf_word));
            };
            };
