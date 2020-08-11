@@ -28,6 +28,7 @@ static char *id = "$Id: hardrtn.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyr
 
 */
 /********************************************************************/
+#include <stdio.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"
@@ -57,7 +58,7 @@ void incusecount68k(FX *fx68k), decusecount68k(register FX *frame68k);
 
         RET VAL : If 0 success
                   If 1  NO STACK SPACE->uraid-> HARDRESET
-
+                  NBriggs, Aug 11 2020: I see no return (1) case!
 */
 /********************************************************************/
 
@@ -246,7 +247,7 @@ FX *make_FXcopy(register FX *fx68k) {
 
   decusecount68k(fx68k); /* if usecon==0  -> FSB */
   SETACLINK(CURRENTFX, StkOffset_from_68K(new68k));
-  CHECK_FX(new68k);
+  CHECK_FX((FX *)new68k);
   CHECK_FX(CURRENTFX);
 #ifdef STACKCHECK
   stack_check(0);
@@ -292,7 +293,7 @@ void incusecount68k(FX *fx68k) {
   scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
 
   if (STKWORD(scanptr68k)->flags == STK_FX) {
-    CHECK_FX(scanptr68k);
+    CHECK_FX((FX *)scanptr68k);
     SET_FASTP_NIL(scanptr68k);
   }
 
