@@ -24,16 +24,12 @@
 #define GCFXP		5
 #define FAULTFXP	6
 
-#define STK_FSB_WORD	0xA000
-#define STK_FSB_32	0xA0000000
-
-#define STK_GUARD_WORD	0xE000
-#define STK_GUARD_32	0xE0000000
-#define  BF_MARK0	0x8000
-#define  BF_MARK	0x8000
+#define STK_FSB_WORD	0xA000u
+#define STK_GUARD_WORD	0xE000u
+#define  BF_MARK	0x8000u
 #define  BF_MARK32	0x80000000
-#define  FX_MARK	0xc000
-#define  FX_MARK_NATIVE 0xc800
+#define  FX_MARK	0xc000u
+#define  FX_MARK_NATIVE 0xc800u
 
 #define STK_GUARD	7
 #define STK_FX		6
@@ -372,13 +368,13 @@ typedef struct stackp
 #define MAKEFREEBLOCK(ptr68k,size)				\
   {								\
     if ((size) <= 0) error("creating 0 long FSP");		\
-    *((LispPTR*)(ptr68k))=STK_FSB_32| ((DLword)(size));		\
+    *((LispPTR*)(ptr68k))=(STK_FSB_WORD << 16) | ((DLword)(size)); \
   }
 
 #define SETUPGUARDBLOCK(ptr68k,size)    			\
   {								\
     if ((size) <= 0) error("creating 0 long Guard block");	\
-    ( *((LispPTR*)(ptr68k))=STK_GUARD_32| ((DLword)(size)) );	\
+    ( *((LispPTR*)(ptr68k))=(STK_GUARD_WORD << 16) | ((DLword)(size)) ); \
   }
 
 
