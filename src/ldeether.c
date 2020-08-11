@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
 
   /* then execve the LDE executable */
   execvp(filetorun, newargv);
-  perror(filetorun);
+  perror("failed to exec lde");
   return (1);
 }
 
