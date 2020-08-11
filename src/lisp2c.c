@@ -81,6 +81,8 @@ int LispIntToCInt(LispPTR lispint) {
         char msg[200];
         sprintf(msg, "Arg 0x%x isn't a lisp integer.", lispint);
         error(msg);
+        /* NOTREACHED */
+        return(0);
       }
       break;
   }
@@ -92,16 +94,6 @@ LispPTR CIntToLispInt(int cint) {
     wordp = (LispPTR *)createcell68k(TYPE_FIXP);
     *((int *)wordp) = cint;
     return (LADDR_from_68k(wordp));
-  } else if (cint >= 0) { /* its a positive smallp! */
-    return (S_POSITIVE | cint);
-  } else { /* its a negative smallp! */
-    return (S_NEGATIVE | (0xFFFF & cint));
-  }
-}
-
-DLword CIntToSmallp(int cint) {
-  if (abs(cint) > 0xFFFF) { /* its a fixp! */
-    error("Arg not a Smallp.\n");
   } else if (cint >= 0) { /* its a positive smallp! */
     return (S_POSITIVE | cint);
   } else { /* its a negative smallp! */
