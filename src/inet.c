@@ -112,7 +112,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
       if (!host) return (NIL);
-      N_ARITH_SWITCH(*(int *)host->h_addr);
+      N_ARITH_SWITCH(ntohl(*(long *)host->h_addr));
       break;
 
     case TCPservicelookup:
@@ -120,7 +120,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(proto, servstring, 50);
       service = getservbyname(namestring, servstring);
       if (!service) return (NIL);
-      return (GetSmallp(service->s_port));
+      return (GetSmallp(ntohs(service->s_port)));
       break;
 
     case TCPsocket:
@@ -238,7 +238,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(nameConn);
       result = socket(AF_INET, SOCK_STREAM, 0);
       farend.sin_family = AF_INET;
-      farend.sin_port = sock;
+      farend.sin_port = htons(sock);
       farend.sin_addr.s_addr = INADDR_ANY;
       if (bind(result, (struct sockaddr *)&farend, sizeof(farend)) < 0) {
         perror("TCP bind");
@@ -331,7 +331,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(nameConn);
       buffer = (char *)Addr68k_from_LADDR(proto);
       ures = sizeof(addr);
-      addr.sin_addr.s_addr = sock;
+      addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
       if (!host) return (GetSmallp(0));
       strcpy(buffer, host->h_name);
@@ -342,7 +342,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(nameConn);
       result = socket(AF_INET, SOCK_DGRAM, 0);
       farend.sin_family = AF_INET;
-      farend.sin_port = sock;
+      farend.sin_port = htons(sock);
       farend.sin_addr.s_addr = INADDR_ANY;
       if (bind(result, (struct sockaddr *)&farend, sizeof(farend)) < 0) {
         perror("UDP bind");
@@ -374,8 +374,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     case UDPSendto: /* fd-socket# addr remote-socket buffer len*/
       sock = LispNumToCInt(nameConn);
       farend.sin_family = AF_INET;
-      farend.sin_port = LispNumToCInt(length);
-      farend.sin_addr.s_addr = LispNumToCInt(proto);
+      farend.sin_port = htons(LispNumToCInt(length));
+      farend.sin_addr.s_addr = htonl(LispNumToCInt(proto));
       buffer = (char *)Addr68k_from_LADDR(bufaddr);
       buflen = LispNumToCInt(maxlen);
 
@@ -408,11 +408,12 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       }
 
       DBPRINT(("UDP recv:  socket = %d, len = %d.\n", sock, result));
-      DBPRINT(("           remote-addr = 0x%x, remote-port = %d.\n", farend.sin_addr.s_addr,
-               farend.sin_port));
+      DBPRINT(("           remote-addr = 0x%x, remote-port = %d.\n", ntohl(farend.sin_addr.s_addr),
+               ntohs(farend.sin_port)));
       DBPRINT(("           bufsize = %d, addrcell = 0x%x, portcell = 0x%x.\n", buflen, bufaddr,
                maxlen));
 
+      /* XXX NBriggs: 12 Aug 2020 -- WHAT IS GOING ON HERE? */
       *((int *)Addr68k_from_LADDR(bufaddr)) = (int)farend.sin_addr.s_addr;
       *((int *)Addr68k_from_LADDR(maxlen)) = (int)farend.sin_port;
 

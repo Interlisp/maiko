@@ -195,7 +195,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 #define	LispNumToCInt(Lisp)					\
 		( ((Lisp & SEGMASK) == S_POSITIVE) ?		\
-		(Lisp & 0xFFFF) : (*((int *)(Addr68k_from_LADDR(Lisp)))) );
+		(Lisp & 0xFFFF) : (*((int *)(Addr68k_from_LADDR(Lisp)))) )
 
 #define	UPLOWDIFF	0x20
 
