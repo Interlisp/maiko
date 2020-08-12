@@ -25,17 +25,6 @@
 */
 /**********************************************************************/
 
-
-
-
-/************************************************************************/
-/*									*/
-/*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
-/*	Manufactured in the United States of America.			*/
-/*									*/
-/************************************************************************/
-
-
  extern  DLword *Atomspace; 		/* ATOMSPACE */
  extern  DLword *Stackspace;		/* STACKSPACE*/
  extern  DLword *Plistspace;		/* PLISTSPACE */
