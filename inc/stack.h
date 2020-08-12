@@ -390,6 +390,8 @@ typedef struct stackp
 
 #ifdef STACKCHECK
 
+#include <stdio.h>
+
 #define S_CHECK(condition, msg)					\
   { 								\
     if(!(condition))						\
@@ -403,7 +405,7 @@ typedef struct stackp
   { 								\
     if(!(condition))						\
       {								\
-	printf("\n\nStack check failed at 0x%x:  %s.\n\n", (scanptr), (msg));	\
+	printf("\n\nStack check failed at %p:  %s.\n\n", (scanptr), (msg));	\
       }								\
   }
 
