@@ -10,11 +10,6 @@ static char *id = "$Id: xlspwin.c,v 1.4 2001/12/26 22:17:07 sybalsky Exp $ Copyr
 /*									*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
-/*	The contents of this file are proprietary information 		*/
-/*	belonging to Venue, and are provided to you under license.	*/
-/*	They may not be further distributed or disclosed to third	*/
-/*	parties without the specific permission of Venue.		*/
-/*									*/
 /************************************************************************/
 
 #include "version.h"

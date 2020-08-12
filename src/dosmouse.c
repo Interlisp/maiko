@@ -8,11 +8,6 @@ static char *id = "$Id: dosmouse.c,v 1.2 1999/01/03 02:06:56 sybalsky Exp $ Copy
 /*	    All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
-/*	The contents of this file are proprietary information 		*/
-/*	belonging to Venue, and are provided to you under license.	*/
-/*	They may not be further distributed or disclosed to third	*/
-/*	parties without the specific permission of Venue.		*/
-/*									*/
 /************************************************************************/
 
 #include "version.h"

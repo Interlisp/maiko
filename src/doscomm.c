@@ -8,11 +8,6 @@ static char *id = "$Id: doscomm.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copyr
 /*	    All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
-/*	The contents of this file are proprietary information 		*/
-/*	belonging to Venue, and are provided to you under license.	*/
-/*	They may not be further distributed or disclosed to third	*/
-/*	parties without the specific permission of Venue.		*/
-/*									*/
 /************************************************************************/
 
 #include "version.h"

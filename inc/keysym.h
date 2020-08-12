@@ -9,11 +9,6 @@
 /*	    All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
-/*	The contents of this file are proprietary information 		*/
-/*	belonging to Venue, and are provided to you under license.	*/
-/*	They may not be further distributed or disclosed to third	*/
-/*	parties without the specific permission of Venue.		*/
-/*									*/
 /************************************************************************/
 
 /* * * *   D O S   K E Y B O A R D   M A P P I N G S   * * * */

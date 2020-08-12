@@ -6,11 +6,6 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 /*	(C) Copyright 1989-99 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
-/*	The contents of this file are proprietary information 		*/
-/*	belonging to Venue, and are provided to you under license.	*/
-/*	They may not be further distributed or disclosed to third	*/
-/*	parties without the specific permission of Venue.		*/
-/*									*/
 /************************************************************************/
 
 #include "version.h"
