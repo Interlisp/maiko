@@ -26,6 +26,9 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 */
 /******************************************************************/
 #include <stdio.h> /* for printf */
+#ifdef FSBCHECK
+#include <string.h>    /* for memset */
+#endif
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
@@ -140,7 +143,7 @@ tryfsb:
   new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
   ((FX *)new68k)->nextblock = (StkOffset_from_68K(new68k) + size) - DLWORDSPER_CELL;
   /* (CHECK (fetch (BF CHECKED) of (fetch (FX BLINK) of OLDFRAME)))*/
-  CHECK_BF(Addr68k_from_StkOffset(GETBLINK(oldfx68k)));
+  CHECK_BF((Bframe *)Addr68k_from_StkOffset(GETBLINK(oldfx68k)));
 
   /* Set true BFptr,not residual */
   SETBLINK(new68k, GETBLINK(oldfx68k));
@@ -605,7 +608,7 @@ void stack_check(StackWord *start68k) {
         break;
 
       case STK_FX:
-        CHECK_FX(scanptr68k);
+        CHECK_FX((FX *)scanptr68k);
         scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
         putchar('X');
         break;
@@ -618,7 +621,7 @@ void stack_check(StackWord *start68k) {
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */;
-        CHECK_BF(scanptr68k);
+        CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)
             printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));
@@ -701,15 +704,15 @@ void walk_stack(StackWord *start68k) {
 
   if (start68k) {
     scanptr68k = (StackWord *)((unsigned long)start68k & -2);
-    printf("Starting at 0x%x.", (DLword *)scanptr68k - Stackspace);
+    printf("Starting at 0x%tx.", (DLword *)scanptr68k - Stackspace);
   } else {
     scanptr68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->stackbase);
-    printf("Stack base = 0x%x.", (DLword *)scanptr68k - Stackspace);
+    printf("Stack base = 0x%tx.", (DLword *)scanptr68k - Stackspace);
   }
 
   endstack68k = (StackWord *)Addr68k_from_StkOffset(InterfacePage->endofstack);
 
-  printf("  End of stack = 0x%x.\n\n", (DLword *)endstack68k - Stackspace);
+  printf("  End of stack = 0x%tx.\n\n", (DLword *)endstack68k - Stackspace);
 
   if (STKWORD(endstack68k)->flags != STK_GUARD)
     printf("?? endstack is not GUARD BLK\nendstack = %p, flags = %d\n\n", endstack68k,
@@ -720,7 +723,7 @@ void walk_stack(StackWord *start68k) {
       /* Free stack block */
       case STK_FSB:
         freesize = FSB_size(scanptr68k);
-        printf("%04x:  Free block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
+        printf("%04tx:  Free block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
                freesize);
 
         if (freesize == 0) { freesize = 2; }
@@ -731,7 +734,7 @@ void walk_stack(StackWord *start68k) {
 
       case STK_GUARD:
         freesize = FSB_size(scanptr68k);
-        printf("%04x:  Guard block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
+        printf("%04tx:  Guard block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
                freesize);
         if (freesize == 0) { freesize = 2; }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
@@ -739,9 +742,9 @@ void walk_stack(StackWord *start68k) {
         break;
 
       case STK_FX:
-        CHECK_FX(scanptr68k);
+        CHECK_FX((FX *)scanptr68k);
 
-        printf("%04x:  ", (DLword *)scanptr68k - Stackspace);
+        printf("%04tx:  ", (DLword *)scanptr68k - Stackspace);
 
         {
           FX *fx = (FX *)scanptr68k;
@@ -782,7 +785,7 @@ void walk_stack(StackWord *start68k) {
         top_ivar = (DLword *)scanptr68k;
         while (STKWORD(scanptr68k)->flags != STK_BF) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
-            printf("%04x:  Bad BF IVAR 0x%x\n", (DLword *)scanptr68k - Stackspace,
+            printf("%04tx:  Bad BF IVAR 0x%x\n", (DLword *)scanptr68k - Stackspace,
                    GETWORD(scanptr68k));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
@@ -790,12 +793,12 @@ void walk_stack(StackWord *start68k) {
         /* CHECK_BF(scanptr68k); */
         {
           Bframe *bf = (Bframe *)scanptr68k;
-          printf("%04x:  BF  usecnt %d, resid %d, padding %d, ivar 0x%04x\n",
+          printf("%04tx:  BF  usecnt %d, resid %d, padding %d, ivar 0x%04x\n",
                  (DLword *)scanptr68k - Stackspace, bf->usecnt, bf->residual, bf->padding,
                  bf->ivar);
 
           if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
-            printf("       [but top_ivar = 0x%04x]\n", top_ivar - Stackspace);
+            printf("       [but top_ivar = 0x%04tx]\n", top_ivar - Stackspace);
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         break;
@@ -905,7 +908,7 @@ void quick_stack_check(void) {
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
         break;
       case STK_FX:
-        CHECK_FX(scanptr68k);
+        CHECK_FX((FX *)scanptr68k);
         scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
         break;
       default:
@@ -918,7 +921,7 @@ void quick_stack_check(void) {
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */;
-        CHECK_BF(scanptr68k);
+        CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)
             printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));

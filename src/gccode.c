@@ -166,7 +166,7 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
       char errtext[200];
       sprintf(errtext,
-              "Unrecognized bytecode (0%o) at offset 0%o in code block x%x,x%x; continue to use "
+              "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
               "UFN length",
               opnum, codeptr - (InstPtr)fnbase, (codeblock >> 16) & 0xFF, codeblock & 0xFFFF);
       error(errtext);
@@ -274,7 +274,7 @@ int code_block_size(long unsigned int codeblock68k) {
         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
       char errtext[200];
       sprintf(errtext,
-              "Unrecognized bytecode (0%o) at offset 0%o in code block x%x,x%x; continue to use "
+              "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
               "UFN length",
               opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF), (int)(codeblock68k & 0xFFFF));
       error(errtext);
