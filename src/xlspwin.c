@@ -276,16 +276,38 @@ void Create_LispWindow(DspInterface dsp)
 
 void lisp_Xvideocolor(int flag)
 {
-  XLOCK;
-  XCopyArea(currentdsp->display_id, currentdsp->DisplayWindow, currentdsp->DisplayWindow,
-            currentdsp->Copy_GC, 0, 0, currentdsp->Visible.width, currentdsp->Visible.height, 0,
-            0);
+  Screen *screen;
+  XEvent event;
+  unsigned long newForeground;
 
+  XLOCK;
+  screen = ScreenOfDisplay(currentdsp->display_id, DefaultScreen(currentdsp->display_id));
+  newForeground = flag ? WhitePixelOfScreen(screen) : BlackPixelOfScreen(screen);
+
+  /* window -- are we making a change? */
+  XGetGCValues(currentdsp->display_id, currentdsp->Copy_GC, GCForeground | GCBackground, &gcv);
+  if (newForeground != gcv.foreground) {
+      /* swap foreground and background in the graphics context*/
+      gcv.background = gcv.foreground;
+      gcv.foreground = newForeground;
+      XChangeGC(currentdsp->display_id, currentdsp->Copy_GC, GCForeground | GCBackground, &gcv);
+      /* notify the display code to refresh the visible screen with new fg/bg colors */
+      event.type = Expose;
+      event.xexpose.window = currentdsp->DisplayWindow;
+      event.xexpose.x = 0;
+      event.xexpose.y = 0;
+      event.xexpose.width = currentdsp->Visible.width;
+      event.xexpose.height = currentdsp->Visible.height;
+      XSendEvent(currentdsp->display_id, currentdsp->DisplayWindow, True, 0, &event);
+  }
+
+#if 0
   /* Cursor */
   gcv.function = GXcopy;
   XChangeGC(currentdsp->display_id, cursor_source_gc, GCFunction, &gcv);
   /* JDS 011213: Remember set_xcursor does 15-y val, so do it here! */
   Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
+#endif
 
   XFlush(currentdsp->display_id);
   XUNLOCK;
