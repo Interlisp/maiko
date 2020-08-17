@@ -986,7 +986,28 @@ void int_file_init() {
 
 /* 2017-06-22 NBriggs -- it's not clear that this definition has the correct
    parameters for any known signal handler
+
+      Superceded by sigaction on FreeBSD, Solaris 11, Linux
+      Unavailable on macOS
+      SVr4, POSIX.1-2001, POSIX.1-2008 (marked obsolete; use sigaction)
+
+      void (*)(int) sigset(int, void (*disp)(int));
+
+
+     OK on FreeBSD, Solaris 11, macOS, Linux
+
+     struct  sigaction {
+             void    (*sa_handler)(int);
+             void    (*sa_sigaction)(int, siginfo_t *, void *);
+             int     sa_flags;                see signal options below
+	     sigset_t sa_mask;                signal mask to apply
+     };
+
+     int
+     sigaction(int sig, const struct sigaction * restrict act,
+               struct sigaction * restrict oact);
  */
+
 void panicuraid(int sig, int code, struct sigcontext *scp, void *addr)
 {
   static char errormsg[200];
