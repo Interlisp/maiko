@@ -21,16 +21,11 @@ static char *id = "$Id: misc7.c,v 1.2 1999/01/03 02:07:22 sybalsky Exp $ Copyrig
 #include "adr68k.h"
 #include "lispmap.h"
 #include "lsptypes.h"
-#include "emlglob.h"
-#include "gc.h"
 #include "arith.h"
-#include "my.h"
-#include "bitblt.h"
-#include "bbtsub.h"
 #include "dbprint.h"
 /* osamu '90/02/08
- * add display.h, because in_display_secment() is changed as
- * macro. difinition is in display.h
+ * add display.h, because in_display_segment() is changed as
+ * macro. definition is in display.h
  */
 #include "display.h"
 
@@ -61,6 +56,9 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 {
   DLword *base;
   int x, y, operation, heightminus1, rasterwidth, oldbit;
+  int offset;
+  DLword bmdata;
+  DLword bmmask;
   int displayflg;
 
   DBPRINT(("MISC7 op with alpha byte %d.\n", alpha));
@@ -77,23 +75,26 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   DBPRINT(("MISC7 args OK.\n"));
 
   displayflg = n_new_cursorin(base, x, (heightminus1 - y), 1, 1);
-
-  base = base + (rasterwidth * (heightminus1 - y)) + (0xFFFF & (x >> 4));
-  x = 32768 >> (x & 0xF);
-
-  oldbit = x & *base;
-
-  ScreenLocked = T;
-
 #ifdef SUNDISPLAY
   if (displayflg) HideCursor;
 #endif /* SUNDISPLAY */
 
+/* Bitmaps use a positive integer coordinate system with the lower left
+   corner pixel at coordinate (0, 0). Storage is allocated in 16-bit words
+   from the upper left corner (0, h-1), with rasterwidth 16-bit words per row.
+*/
+  offset = (rasterwidth * (heightminus1 - y)) + (x / BITSPER_DLWORD);
+  bmmask = (1 << (BITSPER_DLWORD - 1)) >> (x & (BITSPER_DLWORD - 1));
+  bmdata = GETWORDBASEWORD(base, offset);
+  oldbit = bmdata & bmmask;
+
+  ScreenLocked = T;
+
   switch (operation) {
-    case OP_INVERT: *base ^= x; break;
-    case OP_ERASE: *base &= ~x; break;
-    case OP_READ: break;
-    default: *base |= x;
+  case OP_INVERT: GETWORDBASEWORD(base, offset) = bmdata ^ bmmask; break;
+  case OP_ERASE: GETWORDBASEWORD(base, offset) = bmdata & ~bmmask; break;
+  case OP_READ: break;
+  default: GETWORDBASEWORD(base, offset) = bmdata | bmmask;
   };
 
 #ifdef SUNDISPLAY
