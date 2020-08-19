@@ -14,6 +14,8 @@ sunos5.sparc-x/**
 sunos5.sparc/**
 linux.x86_64-x/**
 linux.x86_64/**
+linux.armv7l-x/**
+linux.armv7l/**
 init.386/**
 # core files
 core

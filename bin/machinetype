@@ -16,6 +16,7 @@ case "$os" in
         sparc-*)	      echo sparc ;;
         alpha-*)	      echo alpha ;;
 	i*86-*-*)             echo 386 ;;
+	armv7l-*-*)	      echo armv7l ;;
         x86_64-apple-darwin15*) echo 386 ;;
 	x86_64-*)	      echo x86_64 ;;
         powerpc-*)	      echo ppc ;;
