@@ -1,7 +1,7 @@
 # Options for Linux, Intel 386/486 and X-Window
 
 #CC = gcc -m32 -std=gnu89 -fno-omit-frame-pointer -Wall -Wextra -fwrapv -fno-aggressive-loop-optimizations -fno-strict-aliasing
-CC = clang -m32 -std=gnu89
+CC = clang -m32 -std=gnu89 -funsigned-char -fno-strict-aliasing
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
 	$(OBJECTDIR)dspif.o \

@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
-CC = clang -m64 -std=gnu89 -funsigned-char
+CC = clang -m32 -std=gnu89 -funsigned-char -fno-strict-aliasing
 OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
@@ -24,7 +24,7 @@ FPFLAGS =
 DEBUGFLAGS = # -DDEBUG -DOPTRACE
 DFLAGS = $(DEBUGFLAGS) -DFSERROR -DNEW_STORAGE -DMACOSX -DOLD_CURSOR -DUSETERMIOS \
 	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
-	-DRELEASE=351
+	-DRELEASE=351 -DSTACKCHECK -DFSBCHECK -DPCTRACE
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lm
 LDELDFLAGS =  -L/usr/X11/lib -lX11 -lm
