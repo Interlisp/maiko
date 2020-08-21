@@ -4,18 +4,14 @@
 *~
 \#*#
 # build directories
-darwin.386-x/**
-darwin.386/**
-freebsd.386-x/**
-freebsd.386/**
-sunos5.386-x/**
-sunos5.386/**
-sunos5.sparc-x/**
-sunos5.sparc/**
-linux.x86_64-x/**
-linux.x86_64/**
-linux.armv7l-x/**
-linux.armv7l/**
+*.386-x/**
+*.386/**
+*.sparc-x/**
+*.sparc/**
+*.x86_64-x/**
+*.x86_64/**
+*.armv7l-x/**
+*.armv7l/**
 init.386/**
 # core files
 core
