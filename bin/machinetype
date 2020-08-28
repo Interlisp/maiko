@@ -9,8 +9,7 @@
 #									#
 #########################################################################
 
-os=`./config.guess`
-
+os=${LDEARCH:-`./config.guess`}
 # o/s switch block
 case "$os" in
         sparc-*)	      echo sparc ;;
@@ -21,7 +20,6 @@ case "$os" in
 	x86_64-*)	      echo x86_64 ;;
         powerpc-*)	      echo ppc ;;
 esac
-
 
 ### Don't leave the variables set.
 unset os
