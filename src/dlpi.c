@@ -637,7 +637,7 @@ int dlunitdatareq(int fd, u_char *addrp, int addrlen, u_long minpri, u_long maxp
 #ifdef NEVER
   if (putmsg(fd, &ctl, &data, 0) < 0)
 #else
-  if (putmsg(fd, (char *)NULL, &data, 0) < 0)
+  if (putmsg(fd, NULL, &data, 0) < 0)
 #endif /* NEVER tst on 9/30/96 jds to see if raw out works */
     return -1;
   else
