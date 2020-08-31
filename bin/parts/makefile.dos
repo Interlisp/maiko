@@ -1,0 +1,631 @@
+AFLAGS = /T
+ARCHFILES = dosmouse.obj doskbd.obj vesafns.obj vesainit.obj vgainit.obj kbdif.obj
+  
+
+ADMINFILES = makefile mkvdate.c optck.c
+
+LPFILES = lpmain.obj lpread.obj lpsolve.obj lpwrite.obj lpdual.obj lptran.obj
+
+KEY = keytstno.obj
+
+CFLAGS = -DBIGATOMS -DNEW_STORAGE  -DDOS -DBYTESWAP -DKBINT -DFSERROR -DNOPIXRECT \
+	 -DNOFORN -DNOETHER -DNOVERSION -DBIGVM -DNEWCDRCODING
+
+LDFLAGS = -g graphics.lib binmode.lib mouse.lib 
+
+RM = del
+
+SRCFILES = conspage.c gcoflow.c shift.c dbgtool.c gcr.c         gcrcell.c llstk.c gcscan.c loopsops.c   storage.c allocmds.c dir.c gvar2.c lowlev1.c    subr.c arith2.c hacks.c lowlev2.c subr0374.c    arith3.c doscomm.c hardrtn.c lsthandl.c sxhash.c        arith4.c draw.c main.c testtool.c array.c dsk.c         inet.c misc7.c timer.c array2.c dspif.c initdsp.c       miscn.c typeof.c array3.c initkbd.c ubf1.c      array4.c dspsubrs.c initsout.c mkatom.c ubf2.c  array5.c eqf.c intcall.c mkcell.c ubf3.c array6.c       ether.c mkvdate.c ufn.c atom.c findkey.c        kbdsubrs.c mouseif.c ufs.c bbtsub.c foreign.c   keyevent.c unixcomm.c bin.c fp.c keylib.c binds.c       asmbbt.c fvar.c mvs.c unwind.c bitblt.c gc.c    uraid.c blt.c gc2.c kprint.c keytstno.c keytst.c       osmsg.c usrsubr.c byteswap.c gcarray.c  perrno.c ldeboot.c ldeether.c uutils.c carcdr.c gccode.c        rawcolor.c vars3.c gcfinal.c ldsout.c return.c  vmemsave.c chardev.c gchtfind.c lineblt8.c rpc.c        xc.c common.c gcmain3.c lisp2c.c rplcons.c z2.c         find-dsp.l dsphack.l    xmkicon.c xbbt.c xinit.c xscroll.c xcursor.c xlspwin.c  xrdopt.c xwinman.c      dosmouse.c vesafns.asm vesainit.c vgainit.c kbdif.c     dspsparc.il copyright launch.asm lpread.c lpsolve.c lpmain.c lpwrite.c lpdual.c lptran.c
+
+OFILES = conspage.obj gcoflow.obj shift.obj dbgtool.obj         gcr.obj  gcrcell.obj llstk.obj  gcscan.obj loopsops.obj storage.obj     allocmds.obj dir.obj gvar2.obj lowlev1.obj      subr.obj arith2.obj hacks.obj lowlev2.obj       subr0374.obj arith3.obj doscomm.obj     hardrtn.obj lsthandl.obj sxhash.obj arith4.obj  draw.obj main.obj testtool.obj array.obj        dsk.obj inet.obj misc7.obj timer.obj    array2.obj dspif.obj initdsp.obj miscn.obj      typeof.obj array3.obj initkbd.obj ubf1.obj      array4.obj dspsubrs.obj initsout.obj    mkatom.obj ubf2.obj array5.obj eqf.obj  intcall.obj mkcell.obj ubf3.obj array6.obj      ether.obj ufn.obj atom.obj      findkey.obj kbdsubrs.obj mouseif.obj ufs.obj    bbtsub.obj foreign.obj keyevent.obj     unixcomm.obj bin.obj fp.obj keylib.obj  binds.obj fvar.obj mvs.obj      unwind.obj bitblt.obj gc.obj    uraid.obj blt.obj gc2.obj       kprint.obj osmsg.obj usrsubr.obj byteswap.obj   gcarray.obj perrno.obj uutils.obj       carcdr.obj asmbbt.obj gccode.obj        vars3.obj gcfinal.obj ldsout.obj        return.obj vmemsave.obj chardev.obj     gchtfind.obj lineblt8.obj rpc.obj xc.obj        common.obj gcmain3.obj lisp2c.obj rplcons.obj   z2.obj  vdate.obj $(KEY) $(COLORFILES) $(ARCHFILES) $(LPFILES)
+
+
+HFILES = address.h adr68k.h arith.h cell.h dbprint.h display.h  dspif.h ifpage.h iopage.h lispemul.h lispmap.h  lsptypes.h miscstat.h lspglob.h array.h bb.h    bitblt.h debug.h devconf.h dspdata.h ether.h    fast_dsp.h fp.h gc.h hdw_conf.h initatms.h inlinec.h keyboard.h         lispver1.h lispver2.h lldsp.h locfile.h mouseif.h my.h  opcodes.h osmsg.h pilotbbt.h print.h profile.h  return.h stack.h stream.h subrs.h sysatms.h timeout.h   tos1defs.h tosfns.h tosret.h vmemsave.h         xdefs.h xbitmaps.h xkeymap.h
+
+
+
+bigvm:
+	CFLAGS = $(CFLAGS) -DBIGVM -DNEWCDRCODRING
+	make -f foot emul.exe
+
+emul.exe : $(OFILES) 
+	@ echo $** > linkopts
+	@ echo  $(CFLAGS) > copts
+	$(RM) vdate.c
+	$(CC) @copts @linkopts $(LDFLAGS) /e$@
+	del linkopts
+	del copts
+	@ echo "Executable is now named '$@'"
+   
+main.o  :       lispemul.h address.h lsptypes.h adr68k.h stack.h lspglob.h lispmap.h ifpage.h iopage.h return.h debug.h profile.h
+
+
+													
+
+.SUFFIXES .exe .lib .c .obj .c .asm .s .c
+
+medley.exe:     launch.obj
+	TLINK launch,medley
+
+launch.obj:     launch.asm
+
+	# xc.obj:      xc.s
+	#     tasm /ml xc.s
+	# 
+	#xc.s:        xc.c
+	#      rsh sparky (cd /users/nilsson/curr ; gcc-make $* )
+
+vdate.obj : mkvdate.exe
+	mkvdate > vdate.c
+	$(CC) vdate.c -c $@                                     
+
+mkvdate.exe : ../dossrc/mkvdate.c
+	@ echo $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/mkvdate.c
+	del copts
+	
+xc.obj  : ../dossrc/xc.c
+	@ echo  $(CFLAGS) > copts       
+	$(CC) @copts ../dossrc/xc.c -I ../dosinc -c $@
+	del copts
+
+lpmain.obj : ../dossrc/lpmain.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lpmain.c -I ../dosinc -c $@
+	del copts
+
+lpsolve.obj : ../dossrc/lpsolve.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lpsolve.c -I ../dosinc -c $@
+	del copts
+
+lpread.obj : ../dossrc/lpread.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lpread.c -I ../dosinc -c $@
+	del copts
+
+lptran.obj : ../dossrc/lptran.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lptran.c -I ../dosinc -c $@
+	del copts
+
+lpdual.obj : ../dossrc/lpdual.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lpdual.c -I ../dosinc -c $@
+	del copts
+
+lpwrite.obj : ../dossrc/lpwrite.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lpwrite.c -I ../dosinc -c $@
+	del copts
+
+
+
+conspage.obj : ../dossrc/conspage.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/conspage.c -I ../dosinc -c $@
+	del copts
+
+keytstno.obj : ../dossrc/keytstno.c
+	@ echo $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/keytstno.c -I ../dosinc -c $@
+	del copts
+
+dosmouse.obj : ../dossrc/dosmouse.c
+	@ echo $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dosmouse.c -I ../dosinc -c $@
+	del copts
+
+doskbd.obj : ../dossrc/doskbd.c
+	@ echo $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/doskbd.c -I ../dosinc -c $@
+	del copts
+
+vesafns.obj : ../dossrc/vesafns.asm
+	tasm /ml ..\dossrc\vesafns.asm 
+
+vesainit.obj : ../dossrc/vesainit.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/vesainit.c -I ../dosinc -c $@
+	del copts
+
+vgainit.obj : ../dossrc/vgainit.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/vgainit.c -I ../dosinc -c $@
+	del copts
+
+kbdif.obj : ../dossrc/kbdif.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/kbdif.c -I ../dosinc -c $@
+	del copts
+
+gcoflow.obj : ../dossrc/gcoflow.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcoflow.c -I ../dosinc -c $@
+	del copts
+
+shift.obj : ../dossrc/shift.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/shift.c -I ../dosinc -c $@
+	del copts
+
+dbgtool.obj : ../dossrc/dbgtool.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dbgtool.c -I ../dosinc -c $@
+	del copts
+
+gcr.obj : ../dossrc/gcr.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcr.c -I ../dosinc -c $@
+	del copts
+
+gcrcell.obj : ../dossrc/gcrcell.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcrcell.c -I ../dosinc -c $@
+	del copts
+
+llstk.obj : ../dossrc/llstk.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/llstk.c -I ../dosinc -c $@
+	del copts
+
+gcscan.obj : ../dossrc/gcscan.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcscan.c -I ../dosinc -c $@
+	del copts
+
+loopsops.obj : ../dossrc/loopsops.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/loopsops.c -I ../dosinc -c $@
+	del copts
+
+storage.obj : ../dossrc/storage.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/storage.c -I ../dosinc -c $@
+	del copts
+
+allocmds.obj : ../dossrc/allocmds.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/allocmds.c -I ../dosinc -c $@
+	del copts
+
+dir.obj : ../dossrc/dir.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dir.c -I ../dosinc -c $@
+	del copts
+
+gvar2.obj : ../dossrc/gvar2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gvar2.c -I ../dosinc -c $@
+	del copts
+
+lowlev1.obj : ../dossrc/lowlev1.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lowlev1.c -I ../dosinc -c $@
+	del copts
+
+subr.obj : ../dossrc/subr.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/subr.c -I ../dosinc -c $@
+	del copts
+
+arith2.obj : ../dossrc/arith2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/arith2.c -I ../dosinc -c $@
+	del copts
+
+hacks.obj : ../dossrc/hacks.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/hacks.c -I ../dosinc -c $@
+	del copts
+
+lowlev2.obj : ../dossrc/lowlev2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lowlev2.c -I ../dosinc -c $@
+	del copts
+
+subr0374.obj : ../dossrc/subr0374.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/subr0374.c -I ../dosinc -c $@
+	del copts
+
+arith3.obj : ../dossrc/arith3.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/arith3.c -I ../dosinc -c $@
+	del copts
+
+doscomm.obj : ../dossrc/doscomm.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/doscomm.c -I ../dosinc -c $@
+	del copts
+
+hardrtn.obj : ../dossrc/hardrtn.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/hardrtn.c -I ../dosinc -c $@
+	del copts
+
+lsthandl.obj : ../dossrc/lsthandl.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lsthandl.c -I ../dosinc -c $@ -Le
+	del copts
+
+sxhash.obj : ../dossrc/sxhash.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/sxhash.c -I ../dosinc -c $@
+	del copts
+
+arith4.obj : ../dossrc/arith4.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/arith4.c -I ../dosinc -c $@
+	del copts
+
+draw.obj : ../dossrc/draw.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/draw.c -I ../dosinc -c $@
+	del copts
+
+main.obj : ../dossrc/main.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/main.c -I ../dosinc -c $@
+	del copts
+
+testtool.obj : ../dossrc/testtool.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/testtool.c -I ../dosinc -c $@
+	del copts
+
+array.obj : ../dossrc/array.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array.c -I ../dosinc -c $@
+	del copts
+
+dsk.obj : ../dossrc/dsk.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dsk.c -I ../dosinc -c $@
+	del copts
+
+inet.obj : ../dossrc/inet.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/inet.c -I ../dosinc -c $@
+	del copts
+
+misc7.obj : ../dossrc/misc7.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/misc7.c -I ../dosinc -c $@
+	del copts
+
+timer.obj : ../dossrc/timer.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/timer.c -I ../dosinc -c $@
+	del copts
+
+array2.obj : ../dossrc/array2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array2.c -I ../dosinc -c $@
+	del copts
+
+dspif.obj : ../dossrc/dspif.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dspif.c -I ../dosinc -c $@
+	del copts
+
+initdsp.obj : ../dossrc/initdsp.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/initdsp.c -I ../dosinc -c $@
+	del copts
+
+miscn.obj : ../dossrc/miscn.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/miscn.c -I ../dosinc -c $@
+	del copts
+
+typeof.obj : ../dossrc/typeof.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/typeof.c -I ../dosinc -c $@
+	del copts
+
+array3.obj : ../dossrc/array3.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array3.c -I ../dosinc -c $@
+	del copts
+
+initkbd.obj : ../dossrc/initkbd.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/initkbd.c -I ../dosinc -c $@
+	del copts
+
+ubf1.obj : ../dossrc/ubf1.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ubf1.c -I ../dosinc -c $@
+	del copts
+
+array4.obj : ../dossrc/array4.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array4.c -I ../dosinc -c $@
+	del copts
+
+dspsubrs.obj : ../dossrc/dspsubrs.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/dspsubrs.c -I ../dosinc -c $@
+	del copts
+
+initsout.obj : ../dossrc/initsout.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/initsout.c -I ../dosinc -c $@
+	del copts
+
+mkatom.obj : ../dossrc/mkatom.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/mkatom.c -I ../dosinc -c $@
+	del copts
+
+ubf2.obj : ../dossrc/ubf2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ubf2.c -I ../dosinc -c $@
+	del copts
+
+array5.obj : ../dossrc/array5.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array5.c -I ../dosinc -c $@
+	del copts
+
+eqf.obj : ../dossrc/eqf.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/eqf.c -I ../dosinc -c $@
+	del copts
+
+intcall.obj : ../dossrc/intcall.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/intcall.c -I ../dosinc -c $@
+	del copts
+
+mkcell.obj : ../dossrc/mkcell.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/mkcell.c -I ../dosinc -c $@
+	del copts
+
+ubf3.obj : ../dossrc/ubf3.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ubf3.c -I ../dosinc -c $@
+	del copts
+
+array6.obj : ../dossrc/array6.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/array6.c -I ../dosinc -c $@
+	del copts
+
+ether.obj : ../dossrc/ether.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ether.c -I ../dosinc -c $@
+	del copts
+
+ufn.obj : ../dossrc/ufn.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ufn.c -I ../dosinc -c $@
+	del copts
+
+atom.obj : ../dossrc/atom.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/atom.c -I ../dosinc -c $@
+	del copts
+
+findkey.obj : ../dossrc/findkey.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/findkey.c -I ../dosinc -c $@
+	del copts
+
+kbdsubrs.obj : ../dossrc/kbdsubrs.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/kbdsubrs.c -I ../dosinc -c $@
+	del copts
+
+mouseif.obj : ../dossrc/mouseif.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/mouseif.c -I ../dosinc -c $@
+	del copts
+
+ufs.obj : ../dossrc/ufs.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ufs.c -I ../dosinc -c $@
+	del copts
+
+bbtsub.obj : ../dossrc/bbtsub.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/bbtsub.c -I ../dosinc -c $@
+	del copts
+
+foreign.obj : ../dossrc/foreign.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/foreign.c -I ../dosinc -c $@
+	del copts
+
+keyevent.obj : ../dossrc/keyevent.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/keyevent.c -I ../dosinc -c $@
+	del copts
+
+unixcomm.obj : ../dossrc/unixcomm.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/unixcomm.c -I ../dosinc -c $@
+	del copts
+
+bin.obj : ../dossrc/bin.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/bin.c -I ../dosinc -c $@
+	del copts
+
+fp.obj : ../dossrc/fp.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/fp.c -I ../dosinc -c $@
+	del copts
+
+keylib.obj : ../dossrc/keylib.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/keylib.c -I ../dosinc -c $@
+	del copts
+
+binds.obj : ../dossrc/binds.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/binds.c -I ../dosinc -c $@
+	del copts
+
+fvar.obj : ../dossrc/fvar.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/fvar.c -I ../dosinc -c $@
+	del copts
+
+mvs.obj : ../dossrc/mvs.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/mvs.c -I ../dosinc -c $@
+	del copts
+
+unwind.obj : ../dossrc/unwind.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/unwind.c -I ../dosinc -c $@
+	del copts
+
+bitblt.obj : ../dossrc/bitblt.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/bitblt.c -I ../dosinc -c $@
+	del copts
+
+gc.obj : ../dossrc/gc.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gc.c -I ../dosinc -c $@
+	del copts
+
+uraid.obj : ../dossrc/uraid.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/uraid.c -I ../dosinc -c $@
+	del copts
+
+blt.obj : ../dossrc/blt.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/blt.c -I ../dosinc -c $@
+	del copts
+
+gc2.obj : ../dossrc/gc2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gc2.c -I ../dosinc -c $@
+	del copts
+
+kprint.obj : ../dossrc/kprint.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/kprint.c -I ../dosinc -c $@
+	del copts
+
+osmsg.obj : ../dossrc/osmsg.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/osmsg.c -I ../dosinc -c $@
+	del copts
+
+usrsubr.obj : ../dossrc/usrsubr.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/usrsubr.c -I ../dosinc -c $@
+	del copts
+
+byteswap.obj : ../dossrc/byteswap.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/byteswap.c -I ../dosinc -c $@
+	del copts
+
+gcarray.obj : ../dossrc/gcarray.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcarray.c -I ../dosinc -c $@
+	del copts
+
+perrno.obj : ../dossrc/perrno.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/perrno.c -I ../dosinc -c $@
+	del copts
+
+uutils.obj : ../dossrc/uutils.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/uutils.c -I ../dosinc -c $@
+	del copts
+
+carcdr.obj : ../dossrc/carcdr.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/carcdr.c -I ../dosinc -c $@
+	del copts
+
+asmbbt.obj : ../dossrc/asmbbt.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/asmbbt.c -I ../dosinc -c $@
+	del copts
+
+gccode.obj : ../dossrc/gccode.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gccode.c -I ../dosinc -c $@
+	del copts
+
+vars3.obj : ../dossrc/vars3.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/vars3.c -I ../dosinc -c $@
+	del copts
+
+gcfinal.obj : ../dossrc/gcfinal.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcfinal.c -I ../dosinc -c $@
+	del copts
+
+ldsout.obj : ../dossrc/ldsout.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/ldsout.c -I ../dosinc -c $@
+	del copts
+
+return.obj : ../dossrc/return.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/return.c -I ../dosinc -c $@
+	del copts
+
+vmemsave.obj : ../dossrc/vmemsave.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/vmemsave.c -I ../dosinc -c $@
+	del copts
+
+chardev.obj : ../dossrc/chardev.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/chardev.c -I ../dosinc -c $@
+	del copts
+
+gchtfind.obj : ../dossrc/gchtfind.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gchtfind.c -I ../dosinc -c $@
+	del copts
+
+lineblt8.obj : ../dossrc/lineblt8.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lineblt8.c -I ../dosinc -c $@
+	del copts
+
+rpc.obj : ../dossrc/rpc.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/rpc.c -I ../dosinc -c $@
+	del copts
+
+common.obj : ../dossrc/common.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/common.c -I ../dosinc -c $@
+	del copts
+
+gcmain3.obj : ../dossrc/gcmain3.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/gcmain3.c -I ../dosinc -c $@
+	del copts
+
+lisp2c.obj : ../dossrc/lisp2c.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/lisp2c.c -I ../dosinc -c $@
+	del copts
+
+rplcons.obj : ../dossrc/rplcons.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/rplcons.c -I ../dosinc -c $@
+	del copts
+
+z2.obj : ../dossrc/z2.c
+	@ echo  $(CFLAGS) > copts
+	$(CC) @copts ../dossrc/z2.c -I ../dosinc -c $@
+	del copts
+

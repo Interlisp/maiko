@@ -31,7 +31,7 @@
 #	1. setenv OPTFLAGS '-DINIT -g'
 #	2. rm objectdir/bitblt.c objectdir/dspsubrs.c objectdir/keyevent.c
 #	3. makeright -e init
-#	4. follow the instructions on {eris}<lispcore>sunloadup>howto-loadup-sunlisp.txt
+#	4. follow the instructions in $MEDLEDIR/internal/howto-loadup-sunlisp.txt
 
 
 # '90/04/23 osamu: $INSDIR is defined in makeright 

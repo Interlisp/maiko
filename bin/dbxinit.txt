@@ -57,6 +57,6 @@ a   stoppc      "stop in \!:1 if (((struct fnhead *)(MachineState.currentfunc))-
 a   sop         "stop in \!:1"
 a sc		"call stack_check(0)"
 
-use . /python0/users/maiko/working/src /python0/users/maiko/working/inc
+# use . /python0/users/maiko/working/src /python0/users/maiko/working/inc
 ignore VTALRM
 ignore IO

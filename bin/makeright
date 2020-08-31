@@ -1,4 +1,4 @@
-#!/bin/sh
+#!m/bin/sh
 # $Id: makeright,v 1.5 2002/01/01 23:00:13 sybalsky Exp $
 
 #************************************************************************/
@@ -40,31 +40,33 @@
 #
 # Hide X shared libraries from link libraries search path.
 LD_LIBRARY_PATH=/usr/local/lib 
-RELDIR="../RELEASE/"
 
+# no longer
+# RELDIR="../RELEASE/"
+#
 if test "$1" = ""
    then
 	display="single"
 else
-	if test "$1" = "release"
-          then
- 		case "$2" in
-		single)	display = single
-			;;
-		multi)	display = multi
-			;;
-		x)	display=x
-			;;
-		*)	makeright single release
-			makeright multi release
-			makeright x	release
-			exit
-			;;
-		esac
-	    else
-		display="$1"
-	fi
-fi
+#	if test "$1" = "release"
+#          then
+# 		case "$2" in
+# 		single)	display = single
+# 			;;
+# 		multi)	display = multi
+# 			;;
+# 		x)	display=x
+# 			;;
+# 		*)	makeright single release
+# 			makeright multi release
+# 			makeright x	release
+# 			exit
+# 			;;
+# 		esac
+# 	    else
+# 		display="$1"
+# 	fi
+# fi
 
 if test $# -gt 0
     then
@@ -109,7 +111,7 @@ else
 	releaseflg=0
 fi
 
-installdir=${RELDIR}install.${osversion}.${architecture}/
+# installdir=${RELDIR}install.${osversion}.${architecture}/
 
 #if($display == single ) then
 #       releasename = ${osversion}.${architecture}
@@ -134,5 +136,5 @@ echo start making lde for ${releasename}.
 
 make RELEASENAME=${releasename} INSDIR=${installdir} LDENAME=${ldename} \
 			OSARCHNAME=${osversion}.${architecture} \
-			-f makefile-header -f makefile-${releasename} \
+			-f makefile-header -f parts/makefile-${releasename} \
 			-f makefile-tail $*
