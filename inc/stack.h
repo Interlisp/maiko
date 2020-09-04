@@ -1,3 +1,5 @@
+#ifndef STACK_H
+#define STACK_H 1
 /* $Id: stack.h,v 1.2 1999/01/03 02:06:23 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -445,3 +447,4 @@ typedef struct stackp
 	{Irq_Stk_Check = STK_END_COMPUTE((Irq_Stk_End = (UNSIGNED) EndSTKP), \
 					 FuncObj);			\
 	}
+#endif
