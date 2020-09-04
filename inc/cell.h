@@ -1,3 +1,5 @@
+#ifndef CELL_H
+#define CELL_H 1
 /* $Id: cell.h,v 1.2 1999/01/03 02:05:55 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /************************************************************************/
@@ -418,3 +420,4 @@ struct cadr_cell {
     } else                                   \
       dest = cadr(parm);                     \
   }
+#endif
