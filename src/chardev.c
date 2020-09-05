@@ -56,7 +56,11 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include "locfile.h"
 #include "osmsg.h"
 #include "dbprint.h"
-#include "chardev.h"
+
+#include "chardevdefs.h"
+#include "byteswapdefs.h"
+#include "commondefs.h"
+#include "perrnodefs.h"
 
 #if defined(ISC) || defined(FREEBSD)
 #include <dirent.h>
@@ -328,7 +332,7 @@ LispPTR CHAR_bins(LispPTR *args)
   }
 
 #ifdef BYTESWAP
-  word_swap_page(buffer, (nbytes + 3) >> 2);
+  word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
   return (GetSmallp(rval));
@@ -369,12 +373,12 @@ LispPTR CHAR_bouts(LispPTR *args)
   nbytes = LispNumToCInt(args[3]);
 /* Write PAGE_SIZE bytes file contents from filepointer. */
 #ifdef BYTESWAP
-  word_swap_page(buffer, (nbytes + 3) >> 2);
+  word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
   TIMEOUT(rval = write(id, buffer, nbytes));
 #ifdef BYTESWAP
-  word_swap_page(buffer, (nbytes + 3) >> 2);
+  word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
   if (rval == -1) {

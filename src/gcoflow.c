@@ -37,6 +37,10 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "gc.h"
 
+#include "gcoflowdefs.h"
+#include "gchtfinddefs.h"
+#include "gcrdefs.h"
+
 #define MAXSMALLP 65535
 #define HTBIGENTRYSIZE 4
 #define WORDSPERPAGE 256

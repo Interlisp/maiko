@@ -38,6 +38,10 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 #include "ifpage.h"
 #include "dbprint.h"
 
+#include "ldsoutdefs.h"
+#include "byteswapdefs.h"
+#include "initdspdefs.h"
+
 #ifdef GCC386
 #include "inlnPS2.h"
 #endif /* GCC386 */
@@ -136,7 +140,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   }
 
 #ifdef BYTESWAP
-  word_swap_page((unsigned int *)&ifpage, (3 + sizeof(IFPAGE)) / 4);
+  word_swap_page((unsigned short *)&ifpage, (3 + sizeof(IFPAGE)) / 4);
 #endif
 
 /* Check the sysout and emulator for compatibility:
@@ -277,7 +281,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   }
 
 #ifdef BYTESWAP
-  word_swap_page(fptovp, (sysout_size / 2) + 1); /* So space to swap is twice as big, too. */
+  word_swap_page((unsigned short *)fptovp, (sysout_size / 2) + 1); /* So space to swap is twice as big, too. */
 #endif                                           /* BYTESWAP */
 
 #else
@@ -288,7 +292,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   }
 
 #ifdef BYTESWAP
-  word_swap_page(fptovp, (sysout_size / 4) + 1);
+  word_swap_page((unsigned short *)fptovp, (sysout_size / 4) + 1);
 #endif /* BYTESWAP */
 
 #endif /* BIGVM */
@@ -341,7 +345,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
         exit(-1);
       };
 #ifdef BYTESWAP
-      word_swap_page(lispworld_scratch + lispworld_offset, 128);
+      word_swap_page((DLword *)(lispworld_scratch + lispworld_offset), 128);
 #endif
     };
   }

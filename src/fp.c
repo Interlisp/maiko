@@ -24,9 +24,12 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "emlglob.h"
+#include "mkcelldefs.h"
 #include "arith.h"
 #include "my.h"
 #include "medleyfp.h"
+
+#include "fpdefs.h"
 
 /************************************************************
         N_OP_fplus2       -- op 350
@@ -35,8 +38,6 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
         N_OP_fquotient    -- op 353
         N_OP_fgreaterp    -- op 362
 ***********************************************************/
-
-DLword *createcell68k(unsigned int type);
 
 /************************************************************************/
 /*									*/

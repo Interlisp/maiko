@@ -25,6 +25,10 @@ static char *id = "$Id: xwinman.c,v 1.3 2001/12/26 22:17:07 sybalsky Exp $ Copyr
 #include "devif.h"
 #include "xdefs.h"
 #include "xscroll.h"
+#include "xwinmandefs.h"
+#include "keyeventdefs.h"
+#include "xlspwindefs.h"
+#include "xscrolldefs.h"
 
 int Mouse_Included = FALSE;
 
@@ -80,7 +84,7 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
   XUNLOCK;
 } /* end Set_BitGravity */
 
-void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWinHeight)
+static void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWinHeight)
 {
   int GravSize, Col2, Row2, Col3, Row3;
 

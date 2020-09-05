@@ -17,9 +17,11 @@ static char *id = "$Id: vars3.c,v 1.4 2001/12/24 01:09:07 sybalsky Exp $ Copyrig
 #include "adr68k.h"
 #include "emlglob.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "lsptypes.h"
 #include "stack.h"
+
+#include "vars3defs.h"
+#include "car-cdrdefs.h"
 
 /* def. of car_cell moved to cell.h */
 

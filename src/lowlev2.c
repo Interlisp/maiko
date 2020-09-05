@@ -19,6 +19,8 @@ static char *id = "$Id: lowlev2.c,v 1.3 1999/05/31 23:35:38 sybalsky Exp $ Copyr
 #include "lsptypes.h"
 #include "emlglob.h"
 
+#include "lowlev2defs.h"
+
 /*** NOTE: these routines likely not called (see inlinedefsC.h) ***/
 
 /************************************************************

@@ -25,6 +25,9 @@ static char *id = "@(#) array3.c	2.9 10/12/88";
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "emlglob.h"
+
+#include "array3defs.h"
+#include "mkcelldefs.h"
 #include "arith.h"
 #include "my.h"
 
@@ -33,9 +36,6 @@ LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {
   register LispPTR baseL;
   register int type, index;
   register OneDArray *arrayblk;
-
-  /*	for CREATECELL  */
-  DLword *createcell68k(unsigned int type);
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) ERROR_EXIT(inx);

@@ -29,6 +29,12 @@ static char *id = "$Id: kbdsubrs.c,v 1.2 1999/01/03 02:07:10 sybalsky Exp $ Copy
 
 #include "lispemul.h"
 
+#include "kbdsubrsdefs.h"
+#include "commondefs.h"
+#ifdef XWINDOW
+#include "xwinmandefs.h"
+#endif
+
 #ifdef DOS
 #define PORT_A 0x60
 #define KBD_COMMAND_PORT 0x64

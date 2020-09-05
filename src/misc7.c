@@ -29,6 +29,10 @@ static char *id = "$Id: misc7.c,v 1.2 1999/01/03 02:07:22 sybalsky Exp $ Copyrig
  */
 #include "display.h"
 
+#include "misc7defs.h"
+#include "bbtsubdefs.h"
+#include "initdspdefs.h"
+
 #ifndef NOPIXRECT
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>

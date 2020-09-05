@@ -41,6 +41,9 @@ static char *id = "$Id: bitblt.c,v 1.2 1999/01/03 02:06:47 sybalsky Exp $ Copyri
 #include "bitblt.h"
 #include "bb.h"
 
+#include "bitbltdefs.h"
+#include "initdspdefs.h"
+
 #ifdef DOS
 #include "devif.h"
 #include "iopage.h"

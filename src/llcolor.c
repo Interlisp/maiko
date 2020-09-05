@@ -44,6 +44,8 @@ static char *id = "$Id: llcolor.c,v 1.2 1999/01/03 02:07:15 sybalsky Exp $ Copyr
 #include "pilotbbt.h"
 #include "dbprint.h"
 
+#include "llcolordefs.h"
+
 int MonoOrColor = MONO_SCREEN;
 DLword *ColorDisplayRegion68k;
 int Dispcolorsize;

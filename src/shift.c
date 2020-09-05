@@ -19,9 +19,8 @@ static char *id = "$Id: shift.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrig
 #include "lsptypes.h"
 #include "arith.h"
 
-#define LSH 0347
-
-DLword *createcell68k(unsigned int type);
+#include "shiftdefs.h"
+#include "mkcelldefs.h"
 
 /*
  * XXX: it feels as though something is not clean here, looks like the

@@ -43,18 +43,23 @@ static char *id = "$Id: gcfinal.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
+#include <stdio.h>
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "address.h"
 #include "adr68k.h"
 #include "lspglob.h"
 #include "stack.h"
-#include "llstk.h"
 #include "cell.h"
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"
-#include <stdio.h>
+
+#include "gcfinaldefs.h"
+#include "commondefs.h"
+#include "gccodedefs.h"
+#include "gchtfinddefs.h"
+#include "llstkdefs.h"
 
 #ifdef NEVER
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1) /* segnum field */

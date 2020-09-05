@@ -27,11 +27,12 @@ static char *id = "$Id: mvs.c,v 1.3 1999/05/31 23:35:40 sybalsky Exp $ Copyright
 #include "emlglob.h"
 #include "adr68k.h"
 #include "lsptypes.h"
-#include "stack.h"
 #include "opcodes.h"
 #include "cell.h"
-#include "conspage.h"
-#include "car-cdr.h"
+
+#include "mvsdefs.h"
+#include "car-cdrdefs.h"
+#include "conspagedefs.h"
 
 #ifdef AIXPS2
 #include "inlnPS2.h"

@@ -19,6 +19,7 @@ static char *id = "$Id: ether.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyrig
 #endif
 
 #include <stdio.h>
+#include <unistd.h>
 #include <ctype.h>
 #ifndef DOS
 #include <sys/file.h>
@@ -697,12 +698,26 @@ LispPTR get_packet() {
 } /* end get_packet */
 
 /**********************************************************************
+ *	ether_addr_equal(add1, add2)
+ *	checks ethernet addresses equality
+ *	Also believed obsolete
+ **********************************************************************/
+
+static int ether_addr_equal(u_char add1[], u_char add2[])
+{
+  register int i;
+  for (i = 0; i < 6; i++)
+    if (add1[i] != add2[i]) return (0);
+  return (1);
+}
+
+/**********************************************************************
  *	check_filter(buffer)
  *	see if this packet passes the current filter setting
  *	This is believed obsolete with packet filtering enabled
  **********************************************************************/
 
-int check_filter(u_char *buffer)
+static int check_filter(u_char *buffer)
 {
   /* broadcast packets */
   if (ether_addr_equal(buffer, broadcast)) switch (((short *)buffer)[6]) {
@@ -720,24 +735,10 @@ int check_filter(u_char *buffer)
 }
 
 /**********************************************************************
- *	ether_addr_equal(add1, add2)
- *	checks ethernet addresses equality
- *	Also believed obsolete
- **********************************************************************/
-
-int ether_addr_equal(u_char add1[], u_char add2[])
-{
-  register int i;
-  for (i = 0; i < 6; i++)
-    if (add1[i] != add2[i]) return (0);
-  return (1);
-}
-
-/**********************************************************************
  *	init_uid()
  *	sets effective user-id to real user-id
  **********************************************************************/
-void init_uid() {
+static void init_uid() {
 #ifndef NOETHER
   int rid;
   rid = getuid();

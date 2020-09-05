@@ -20,10 +20,8 @@ static char *id = "$Id: arith2.c,v 1.4 2001/12/24 01:08:58 sybalsky Exp $ Copyri
 #include "medleyfp.h"
 #include "arith.h"
 
-DLword *createcell68k(unsigned int type);
-LispPTR N_OP_flpus2();
-LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2);
-LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2);
+#include "fpdefs.h"
+#include "mkcelldefs.h"
 
 /************************************************************
 N_OP_plus2

@@ -65,7 +65,7 @@ void ufn(DLword bytecode)
 
 #ifdef TRACE
   printPC();
-  print_atomname("TRACE : ufn() 0%o ", bytecode);
+  print_atomname("TRACE : ufn() 0%o ", bytecode); /* XXX: this is WRONG */
 #endif
 
   PushCStack;

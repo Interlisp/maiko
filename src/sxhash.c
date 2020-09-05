@@ -22,23 +22,25 @@ static char *id = "$Id: sxhash.c,v 1.4 2001/12/24 01:09:06 sybalsky Exp $ Copyri
 #include "address.h"
 #include "stack.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "array.h"
-
 #include "arith.h"
+
+#include "sxhashdefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
 
 /** Follows definition in LLARRAYELT: **/
 #define EQHASHINGBITS(item) \
   ((((item) >> 16) & 0xFFFF) ^ ((((item)&0x1FFF) << 3) ^ (((item) >> 9) & 0x7f)))
 
-unsigned short sxhash(LispPTR obj);
-unsigned short sxhash_rotate(short unsigned int value);
-unsigned short sxhash_string(OneDArray *obj);
-unsigned short sxhash_bitvec(OneDArray *obj);
-unsigned short sxhash_list(LispPTR obj);
-unsigned short sxhash_pathname(LispPTR obj);
-unsigned short stringequalhash(LispPTR obj);
-unsigned short stringhash(LispPTR obj);
+static unsigned short sxhash(LispPTR obj);
+static unsigned short sxhash_rotate(short unsigned int value);
+static unsigned short sxhash_string(OneDArray *obj);
+static unsigned short sxhash_bitvec(OneDArray *obj);
+static unsigned short sxhash_list(LispPTR obj);
+static unsigned short sxhash_pathname(LispPTR obj);
+static unsigned short stringequalhash(LispPTR obj);
+static unsigned short stringhash(LispPTR obj);
 
 /****************************************************************/
 /*                                                              */
@@ -47,7 +49,6 @@ unsigned short stringhash(LispPTR obj);
 /*         C-coded version of the hashing function SXHASH       */
 /*								*/
 /****************************************************************/
-typedef struct { LispPTR object; } SXHASHARG;
 
 LispPTR SX_hash(register SXHASHARG *args) {
   return (S_POSITIVE | (0xFFFF & (sxhash(args->object))));
@@ -62,7 +63,7 @@ LispPTR SX_hash(register SXHASHARG *args) {
 /* Fails to handle ratios, complex's, bitvectors pathnames & odd */
 /* cases */
 /*****************************************************************/
-unsigned short sxhash(LispPTR obj) {
+static unsigned short sxhash(LispPTR obj) {
   /* unsigned short hashOffset; Not Used */
   unsigned int cell;
   unsigned typen;
@@ -113,13 +114,13 @@ unsigned short sxhash(LispPTR obj) {
 
 #ifndef SUN3_OS3_OR_OS4_IL
 /* Rotates the 16-bit work to the left 7 bits (or to the right 9 bits) */
-unsigned short sxhash_rotate(short unsigned int value) {
+static unsigned short sxhash_rotate(short unsigned int value) {
   return ((value << 7) | ((value >> 9) & 0x7f));
 }
 
 #endif
 
-unsigned short sxhash_string(OneDArray *obj) {
+static unsigned short sxhash_string(OneDArray *obj) {
   unsigned len, offset;
   register unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
@@ -143,7 +144,7 @@ unsigned short sxhash_string(OneDArray *obj) {
   return (hash);
 }
 
-unsigned short sxhash_bitvec(OneDArray *obj) {
+static unsigned short sxhash_bitvec(OneDArray *obj) {
   unsigned short *base;
   unsigned len, offset, bitoffset;
   unsigned short hash = 0;
@@ -162,7 +163,7 @@ unsigned short sxhash_bitvec(OneDArray *obj) {
   return (hash);
 }
 
-unsigned short sxhash_list(LispPTR obj) {
+static unsigned short sxhash_list(LispPTR obj) {
   unsigned short hash = 0;
   int counter;
   for (counter = 0; (counter < 13) && (GetTypeNumber(obj) == TYPE_LISTP); counter++) {
@@ -172,7 +173,7 @@ unsigned short sxhash_list(LispPTR obj) {
   return (hash);
 }
 
-unsigned short sxhash_pathname(LispPTR obj) {
+static unsigned short sxhash_pathname(LispPTR obj) {
   unsigned short hash = 0;
   PATHNAME *path;
   path = (PATHNAME *)(Addr68k_from_LADDR(obj));
@@ -197,7 +198,7 @@ LispPTR STRING_EQUAL_HASHBITS(SXHASHARG *args) {
   return (S_POSITIVE | (0xFFFF & (stringequalhash(args->object))));
 } /* STRING_EQUAL_HASHBITS */
 
-unsigned short stringequalhash(LispPTR obj) {
+static unsigned short stringequalhash(LispPTR obj) {
   unsigned len, offset, fatp, ind;
   register unsigned short hash = 0;
   PNCell *pnptr;
@@ -265,7 +266,7 @@ LispPTR STRING_HASHBITS(SXHASHARG *args) {
   return (S_POSITIVE | (0xFFFF & (stringhash(args->object))));
 } /* STRING_HASHBITS */
 
-unsigned short stringhash(LispPTR obj) {
+static unsigned short stringhash(LispPTR obj) {
   unsigned len, offset, fatp, ind;
   register unsigned short hash = 0;
   PNCell *pnptr;

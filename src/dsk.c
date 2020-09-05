@@ -108,11 +108,12 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "locfile.h"
 #include "osmsg.h"
 #include "dbprint.h"
-#include "conspage.h"
-#include "car-cdr.h"
-#include "dsk.h"
-#include "ufs.h"
-#include "dir.h"
+
+#include "dskdefs.h"
+#include "byteswapdefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "ufsdefs.h"
 
 #if defined(ULTRIX) || defined(MACOSX) || defined(FREEBSD)
 #include <sys/mount.h>
@@ -2065,7 +2066,7 @@ rdlp:
   for (bp = &bufp[count], rval = count; rval < FDEV_PAGE_SIZE; ++rval) *bp++ = 0;
 
 #ifdef BYTESWAP
-  word_swap_page(bufp, FDEV_PAGE_SIZE / 4);
+  word_swap_page((DLword *)bufp, FDEV_PAGE_SIZE / 4);
 #endif /* BYTESWAP */
 
   return (GetSmallp(count));
@@ -2131,7 +2132,7 @@ sklp2:
 /* OK to write the page. */
 
 #ifdef BYTESWAP
-  word_swap_page(bufp, (count + 3) >> 2);
+  word_swap_page((DLword *)bufp, (count + 3) >> 2);
 #endif /* BYTESWAP */
 
 wlp:
@@ -2140,13 +2141,13 @@ wlp:
     if (errno == EINTR) goto wlp; /* interrupted; retry */
     *Lisp_errno = errno;
 #ifdef BYTESWAP
-    word_swap_page(bufp, (count + 3) >> 2);
+    word_swap_page((DLword *)bufp, (count + 3) >> 2);
 #endif /* BYTESWAP */
     return (NIL);
   }
 
 #ifdef BYTESWAP
-  word_swap_page(bufp, (count + 3) >> 2);
+  word_swap_page((DLword *)bufp, (count + 3) >> 2);
 #endif /* BYTESWAP */
 
 #endif /* DEMO */

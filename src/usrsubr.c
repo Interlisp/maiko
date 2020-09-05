@@ -13,13 +13,15 @@ static char *id = "$Id: usrsubr.c,v 1.3 1999/05/31 23:35:46 sybalsky Exp $ Copyr
 
 #include <stdio.h>
 
+#include "usrsubrdefs.h"
+
 /** User defined subrs here.  Do NOT attempt to use this unless you FULLY
     understand the dependencies of the LDE architecture.                 **/
 
 #define DO_UFN \
   { return (-1); }
 
-int UserSubr(int user_subr_index, int num_args, int *args) {
+int UserSubr(int user_subr_index, int num_args, unsigned *args) {
   int result = 0;
 
   /* *** remove the printf when finished debugging your user subr *** */

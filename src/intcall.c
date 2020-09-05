@@ -17,13 +17,17 @@ static char *id = "$Id: intcall.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copyr
 #include "lsptypes.h"
 #include "lispmap.h"
 #include "stack.h"
-#include "llstk.h"
 #include "return.h"
 #include "emlglob.h"
 #include "lspglob.h"
 #include "initatms.h"
 #include "cell.h"
 #include "tosfns.h"
+
+#include "intcalldefs.h"
+#include "commondefs.h"
+#include "llstkdefs.h"
+#include "returndefs.h"
 
 void cause_interruptcall(register unsigned int atom_index)
 /* Atomindex for Function you want to invoke */

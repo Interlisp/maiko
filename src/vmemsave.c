@@ -71,9 +71,14 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include "locfile.h"
 #include "dbprint.h"
 #include "devif.h"
-#include "dsk.h"
-#include "ufs.h"
-#include "dir.h"
+
+#include "vmemsavedefs.h"
+#include "byteswapdefs.h"
+#include "commondefs.h"
+#include "dskdefs.h"
+#include "initkbddefs.h"
+#include "perrnodefs.h"
+#include "ufsdefs.h"
 
 #ifdef GCC386
 #include "inlnPS2.h"
@@ -173,7 +178,6 @@ LispPTR vmem_save0(LispPTR *args)
 #else
   struct passwd *pwd;
 #endif /* DOS */
-  char *getenv();
 
   Lisp_errno = &Dummy_errno;
 
@@ -460,7 +464,7 @@ LispPTR vmem_save(char *sysout_file_name)
       DBPRINT(("%4d: writing %d pages from %x\n", i, contig_pages, base_addr - (char *)Lisp_world));
 
 #ifdef BYTESWAP
-      word_swap_page(base_addr, contig_pages * BYTESPER_PAGE / 4);
+      word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);
 #endif /* BYTESWAP */
 
       if (contig_pages > maxpages) {
@@ -485,7 +489,7 @@ LispPTR vmem_save(char *sysout_file_name)
         TIMEOUT_TIME = oldTT;
       }
 #ifdef BYTESWAP
-      word_swap_page(base_addr, contig_pages * BYTESPER_PAGE / 4);
+      word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);
 #endif /* BYTESWAP */
 
       if (rval == -1) {
@@ -502,12 +506,12 @@ LispPTR vmem_save(char *sysout_file_name)
     return (FILECANNOTSEEK);
   }
 #ifdef BYTESWAP
-  word_swap_page((char *)InterfacePage, BYTESPER_PAGE / 4);
+  word_swap_page((unsigned short *)InterfacePage, BYTESPER_PAGE / 4);
 #endif /* BYTESWAP */
 
   TIMEOUT(rval = write(sysout, (char *)InterfacePage, BYTESPER_PAGE));
 #ifdef BYTESWAP
-  word_swap_page((char *)InterfacePage, BYTESPER_PAGE / 4);
+  word_swap_page((unsigned short *)InterfacePage, BYTESPER_PAGE / 4);
 #endif /* BYTESWAP */
 
   if (rval == -1) {

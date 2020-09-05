@@ -18,6 +18,9 @@ static char *id = "$Id: dspif.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyrig
 #include "dbprint.h"
 #include "devif.h"
 
+#include "dspifdefs.h"
+#include "xinitdefs.h"
+
 DspInterfaceRec _curdsp, _coldsp;
 
 DspInterface currentdsp = &_curdsp;

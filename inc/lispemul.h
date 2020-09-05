@@ -463,14 +463,9 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /*	bytes--but the default fn decl is int, a 4-byte return.		*/
 /*									*/
 /************************************************************************/
+/*  All external functions defined in xxx.c now declared in xxxdefs.h   */
 
 #include <stdlib.h>
-extern DLword *createcell68k(unsigned int type);
-extern LispPTR *alloc_mdspage(register short int type);
-extern UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep);
-extern int error(char *);
-
-
 
 /************************************************************************/
 /*									*/

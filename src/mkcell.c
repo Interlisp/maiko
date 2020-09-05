@@ -38,6 +38,11 @@ static char *id = "$Id: mkcell.c,v 1.3 1999/05/31 23:35:39 sybalsky Exp $ Copyri
 #include "cell.h"
 #include "gc.h"
 
+#include "mkcelldefs.h"
+#include "allocmdsdefs.h"
+#include "commondefs.h"
+#include "gchtfinddefs.h"
+
 static LispPTR oldoldfree;
 static LispPTR oldfree;
 

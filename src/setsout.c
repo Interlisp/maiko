@@ -37,6 +37,8 @@ static char *id = "$Id: setsout.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 #include "ifpage.h"
 #include "dbprint.h"
 
+#include "byteswapdefs.h"
+
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */
 extern int errno;
@@ -71,7 +73,7 @@ void set_sysout(int version, char *sysout_file_name) {
   }
 
 #ifdef BYTESWAP
-  word_swap_page(&ifpage, (3 + sizeof(IFPAGE)) / 4);
+  word_swap_page((unsigned short *)&ifpage, (3 + sizeof(IFPAGE)) / 4);
 #endif
 
   ifpage.lversion = version;

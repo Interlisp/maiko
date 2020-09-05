@@ -26,7 +26,10 @@ static char *id = "$Id: lsthandl.c,v 1.4 1999/05/31 23:35:38 sybalsky Exp $ Copy
 #include "address.h"
 #include "adr68k.h"
 #include "cell.h"
-#include "car-cdr.h"
+
+#include "lsthandldefs.h"
+#include "car-cdrdefs.h"
+#include "vars3defs.h"
 
 /***********************************************************************/
 /*	 N_OP_fmemb							*/

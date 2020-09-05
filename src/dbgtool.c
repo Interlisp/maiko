@@ -37,6 +37,10 @@ static char *id = "$Id: dbgtool.c,v 1.4 2001/12/24 01:09:00 sybalsky Exp $ Copyr
 #include "cell.h"
 #include "stack.h"
 
+#include "dbgtooldefs.h"
+#include "kprintdefs.h"
+#include "testtooldefs.h"
+
 #define LOCAL_PVAR 0xFFFF
 #ifdef BIGATOMS
 #define VTY_IVAR 0x00000000

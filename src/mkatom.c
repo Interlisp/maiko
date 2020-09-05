@@ -39,6 +39,10 @@ static char *id = "$Id: mkatom.c,v 1.4 2001/12/24 01:09:05 sybalsky Exp $ Copyri
 #include "cell.h"
 #include "dbprint.h"
 
+#include "mkatomdefs.h"
+#include "commondefs.h"
+#include "mkcelldefs.h"
+
 #define ATOMoffset 2         /* NIL NOBIND  */
 #define MAX_ATOMINDEX 0xffff /* max number of atoms */
 
@@ -215,12 +219,12 @@ LispPTR compare_lisp_chars(register char *char1, register char *char2, register 
 #endif /* BYTESWAP */
 
   } else if (fat1) { /* char1 is fat, char2 isn't */
-    if (lispcmp(char1, char2, length))
+      if (lispcmp((DLword *)char1, char2, length))
       return (T);
     else
       return (NIL);
   } else { /* char2 is fat, char1 isn't */
-    if (lispcmp(char2, char1, length))
+      if (lispcmp((DLword *)char2, char1, length))
       return (T);
     else
       return (NIL);

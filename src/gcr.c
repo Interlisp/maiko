@@ -61,8 +61,13 @@ static char *id = "$Id: gcr.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyright
 #include "adr68k.h"
 #include "lspglob.h"
 #include "stack.h"
-#include "dspsubrs.h"
 #include "gc.h"
+
+#include "gcrdefs.h"
+#include "commondefs.h"
+#include "dspsubrsdefs.h"
+#include "gcmain3defs.h"
+#include "timerdefs.h"
 
 #define MAXSMALLP 65535
 #define HTBIGENTRYSIZE 4

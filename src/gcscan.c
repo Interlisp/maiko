@@ -52,6 +52,8 @@ static char *id = "$Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyri
 #include "gc.h"
 #include "lsptypes.h"
 
+#include "gcscandefs.h"
+
 #ifdef BIGVM
 #define HTSTKBIT 0x10000 /* = 512 */
 #define HTENDS ((struct hashentry *)htlptr)

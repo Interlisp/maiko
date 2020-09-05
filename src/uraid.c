@@ -78,15 +78,25 @@ extern int Win_security_p;
 #include "lspglob.h"
 #include "emlglob.h"
 #include "cell.h"
-#include "stack.h"
-#include "llstk.h"
 #include "ifpage.h"
 #include "debug.h"
 #include "devconf.h"
 
 #include "display.h"
 #include "bitblt.h"
-#include "uraid.h"
+
+#include "uraiddefs.h"
+#include "dbgtooldefs.h"
+#include "gcarraydefs.h"
+#include "initdspdefs.h"
+#include "initkbddefs.h"
+#include "kprintdefs.h"
+#include "llstkdefs.h"
+#include "mkatomdefs.h"
+#include "returndefs.h"
+#include "testtooldefs.h"
+#include "timerdefs.h"
+#include "vmemsavedefs.h"
 
 #ifdef DOS
 #define vfork() printf("No forking around here.\n")
@@ -167,10 +177,10 @@ extern u_int EtherReadFds;
 
 LispPTR RadiAtomIndex;
 LispPTR RaidPackageIndex;
-char *HideDisp68k;
+DLword *HideDisp68k;
 
 #ifdef COLOR
-char *HideColorDisp68k;
+DLword *HideColorDisp68k;
 extern int Inited_Color;
 #endif /* COLOR */
 
@@ -245,7 +255,6 @@ v filename\t\tSave the virtual memory on the filename(Not Bootable)\n\
     printf("Address out of range.\n");            \
     return (T);                                   \
   }
-extern int get_package_atom();
 
 #define URMAXCOMM 512
 #define URMAXFXNUM 2000
@@ -280,7 +289,6 @@ extern int PrintMaxLevel; /* for print level */
 */
 /***********************************************************************/
 
-LispPTR make_atom();
 LispPTR parse_atomstring(char *string)
 {
   char *start, *packageptr, *nameptr;
@@ -339,13 +347,21 @@ void uraid_commclear() {
   URaid_argnum = 0;
 }
 
-void copy_region(short *src, short *dst, int width, int h)
+void copy_region(DLword *src, DLword *dst, int width, int h)
 {
   register int w;
 
   for (; (h--);) {
     for (w = width; (w--);) { GETWORD(dst++) = GETWORD(src++); }
   }
+}
+
+struct dtd * uGetDTD(unsigned int typenum) {
+    return (struct dtd *)GetDTD(typenum);
+}
+
+unsigned int uGetTN(unsigned int address) {
+    return GetTypeNumber(address);
 }
 
 /***********************************************************************/
@@ -582,12 +598,22 @@ LispPTR uraid_commands() {
           printf("{DISPLAY}");
           printf("0x%x\n", address);
           break;
-        default:
-          num = GetTypeNumber(address);
+      default: {
+          struct dtd *dtd = GetDTD(GetTypeNumber(address));
+#ifdef BIGVM
+          index = dtd->dtd_name;
+#else
+          index = (dtd->dtd_namehi << 16) + dtd->dtd_namelo;
+#endif
           putchar('{');
-          print_atomname((DLword *)GetDTD(num));
-          putchar('}');
+          if (index != 0) {
+              print_atomname(index);
+          } else {
+              printf("unknown");
+          }
+          printf("}\n");
           break;
+      }
       } /* switch end */
 
       break;

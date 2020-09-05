@@ -19,21 +19,18 @@ static char *id = "$Id: kprint.c,v 1.2 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 #include "lspglob.h"
 #include "initatms.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "emlglob.h"
 #include "lispmap.h"
 #include "adr68k.h"
+
+#include "kprintdefs.h"
+#include "car-cdrdefs.h"
+#include "testtooldefs.h"
 
 int PrintMaxLevel = 3;
 int Printdepth = 0;
 int PrintMaxLen = 10;
 int PrintLen[20];
-
-/* forward references */
-void print_string(LispPTR x);
-void print_NEWstring(LispPTR x);
-void print_fixp(LispPTR x);
-void print_floatp(LispPTR x);
 
 /************************************************************************/
 /*									*/

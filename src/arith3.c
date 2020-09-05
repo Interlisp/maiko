@@ -31,6 +31,9 @@ static char *id = "$Id: arith3.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 #include "cell.h"
 #include "arith.h"
 
+#include "arith3defs.h"
+#include "mkcelldefs.h"
+
 /************************************************************************/
 /*									*/
 /*			N _ O P _ m a k e n u m b e r			*/

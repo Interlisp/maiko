@@ -22,6 +22,8 @@ static char *id = "$Id: xmkicon.c,v 1.3 2001/12/24 01:09:09 sybalsky Exp $ Copyr
 #include "xdefs.h"
 #include "devif.h"
 
+#include "xmkicondefs.h"
+
 XImage IconImage;
 
 extern int Bitmap_Pad, Default_Depth, Lisp_icon_width, Lisp_icon_height;

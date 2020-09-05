@@ -68,6 +68,10 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "bitblt.h"
 #include "pilotbbt.h"
 
+#include "keyeventdefs.h"
+#include "osmsgdefs.h"
+#include "xwinmandefs.h"
+
 #include "dbprint.h"
 #if (defined(DOS) || defined(XWINDOW))
 #include "devif.h"
@@ -295,7 +299,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void getsignaldata(int sig, int code, struct sigcontext *scp)
+void getsignaldata(int sig, int code, void *scp)
 {
 #ifndef DOS
 #ifndef XWINDOW

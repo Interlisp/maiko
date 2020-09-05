@@ -66,12 +66,19 @@ static char *id = "$Id: bbtsub.c,v 1.3 2001/12/24 01:08:59 sybalsky Exp $ Copyri
 #include "address.h"
 #include "arith.h"
 #include "stack.h"
-#include "llstk.h"
 #include "return.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "gc.h"
 #include "iopage.h"
+
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "gcarraydefs.h"
+#include "initdspdefs.h"
+#include "kprintdefs.h"
+#include "llstkdefs.h"
+#include "returndefs.h"
+
 extern IOPAGE *IOPage68K;
 
 #ifdef AIX

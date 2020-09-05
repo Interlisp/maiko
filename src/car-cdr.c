@@ -39,7 +39,11 @@ static char *id = "$Id: car-cdr.c,v 1.3 1999/05/31 23:35:25 sybalsky Exp $ Copyr
 #include "adr68k.h"
 #include "gc.h"
 #include "cell.h"
-#include "car-cdr.h"
+
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "conspagedefs.h"
+#include "gchtfinddefs.h"
 
 /************************************************************************/
 /*									*/

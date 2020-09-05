@@ -40,7 +40,6 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 #include "address.h"
 #include "adr68k.h"
 #include "stack.h"
-#include "llstk.h"
 #include "return.h"
 #include "dbprint.h"
 
@@ -48,8 +47,6 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 #include "lsptypes.h"
 #include "lispmap.h"
 #include "cell.h"
-#include "car-cdr.h"
-#include "conspage.h"
 #include "initatms.h"
 #include "gc.h"
 #include "arith.h"
@@ -59,6 +56,51 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 #include "tosret.h"
 #include "tosfns.h"
 #include "inlineC.h"
+
+#include "xcdefs.h"
+#include "arith2defs.h"
+#include "arith3defs.h"
+#include "arith4defs.h"
+#include "arraydefs.h"
+#include "array2defs.h"
+#include "array3defs.h"
+#include "array4defs.h"
+#include "array5defs.h"
+#include "array6defs.h"
+#include "bitbltdefs.h"
+#include "bltdefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "conspagedefs.h"
+#include "drawdefs.h"
+#include "eqfdefs.h"
+#include "findkeydefs.h"
+#include "fpdefs.h"
+#include "fvardefs.h"
+#include "gchtfinddefs.h"
+#include "gcscandefs.h"
+#include "gvar2defs.h"
+#include "hardrtndefs.h"
+#include "intcalldefs.h"
+#include "keyeventdefs.h"
+#include "llstkdefs.h"
+#include "lowlev2defs.h"
+#include "lsthandldefs.h"
+#include "misc7defs.h"
+#include "miscndefs.h"
+#include "mkcelldefs.h"
+#include "returndefs.h"
+#include "rplconsdefs.h"
+#include "shiftdefs.h"
+#include "subrdefs.h"
+#include "timerdefs.h"
+#include "typeofdefs.h"
+#include "ubf1defs.h"
+#include "ubf2defs.h"
+#include "ubf3defs.h"
+#include "unwinddefs.h"
+#include "vars3defs.h"
+#include "z2defs.h"
 
 #ifdef DOS
 #include "iopage.h"
@@ -1303,11 +1345,14 @@ check_interrupt:
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
       if (StkOffset_from_68K(CSTKPTR) > InterfacePage->stackbase) {
 /* Interrupts not Disabled */
+/* XXX: what on earth is this code trying to accomplish by calling
+   getsignaldata -- it used to have no arguments, but that's an error
+*/
 #ifndef KBINT
-        getsignaldata();
+          getsignaldata(0, 0, NULL);
 #endif
 #ifdef OS4
-        getsignaldata();
+          getsignaldata(0, 0, NULL);
 #endif
         EXT;
         update_timer();

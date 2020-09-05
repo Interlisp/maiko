@@ -27,11 +27,17 @@ static const char *id =
 #include "stack.h"
 #include "lspglob.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "lsptypes.h"
 #include "ifpage.h"
 #include "gc.h"
-#include "storage.h"
+
+#include "storagedefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "conspagedefs.h"
+#include "gcfinaldefs.h"
+#include "gchtfinddefs.h"
+#include "mkatomdefs.h"
 
 #define MINARRAYBLOCKSIZE 4
 #define GUARDVMEMFULL 500

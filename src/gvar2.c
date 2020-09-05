@@ -20,6 +20,9 @@ static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 #include "cell.h"
 #include "dbprint.h"
 
+#include "gvar2defs.h"
+#include "gchtfinddefs.h"
+
 /************************************************************************/
 /*									*/
 /*			    N _ O P _ g v a r _				*/

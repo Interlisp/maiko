@@ -28,6 +28,11 @@ static char *id = "$Id: xlspwin.c,v 1.4 2001/12/26 22:17:07 sybalsky Exp $ Copyr
 #include "devif.h"
 #include "dbprint.h"
 
+#include "xlspwindefs.h"
+#include "commondefs.h"
+#include "xcursordefs.h"
+#include "xmkicondefs.h"
+
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
     *EmRealUtilin68K;
 extern DLword *CTopKeyevent;
@@ -165,25 +170,25 @@ void Create_LispWindow(DspInterface dsp)
       dsp->display_id, dsp->LispWindow, plain_bits, 16, 16, BlackPixelOfScreen(screen),
       WhitePixelOfScreen(screen), DefaultDepthOfScreen(screen));
 
-  set_Xcursor(dsp, (char *)default_cursor.cuimage, (int)default_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)default_cursor.cuimage, (int)default_cursor.cuhotspotx,
               (int)(15 - default_cursor.cuhotspoty), &DefaultCursor, 0);
-  set_Xcursor(dsp, (char *)wait_cursor.cuimage, (int)wait_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)wait_cursor.cuimage, (int)wait_cursor.cuhotspotx,
               (int)(15 - wait_cursor.cuhotspoty), &WaitCursor, 0);
-  set_Xcursor(dsp, (char *)scrolldown_cursor.cuimage, (int)scrolldown_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)scrolldown_cursor.cuimage, (int)scrolldown_cursor.cuhotspotx,
               (int)(15 - scrolldown_cursor.cuhotspoty), &ScrollDownCursor, 0);
-  set_Xcursor(dsp, (char *)scrollleft_cursor.cuimage, (int)scrollleft_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)scrollleft_cursor.cuimage, (int)scrollleft_cursor.cuhotspotx,
               (int)(15 - scrollleft_cursor.cuhotspoty), &ScrollLeftCursor, 0);
-  set_Xcursor(dsp, (char *)vertscroll_cursor.cuimage, (int)vertscroll_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)vertscroll_cursor.cuimage, (int)vertscroll_cursor.cuhotspotx,
               (int)(15 - vertscroll_cursor.cuhotspoty), &VertScrollCursor, 0);
-  set_Xcursor(dsp, (char *)vertthumb_cursor.cuimage, (int)vertthumb_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)vertthumb_cursor.cuimage, (int)vertthumb_cursor.cuhotspotx,
               (int)(15 - vertthumb_cursor.cuhotspoty), &VertThumbCursor, 0);
-  set_Xcursor(dsp, (char *)horizscroll_cursor.cuimage, (int)horizscroll_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)horizscroll_cursor.cuimage, (int)horizscroll_cursor.cuhotspotx,
               (int)(15 - horizscroll_cursor.cuhotspoty), &HorizScrollCursor, 0);
-  set_Xcursor(dsp, (char *)horizthumb_cursor.cuimage, (int)horizthumb_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)horizthumb_cursor.cuimage, (int)horizthumb_cursor.cuhotspotx,
               (int)(15 - horizthumb_cursor.cuhotspoty), &HorizThumbCursor, 0);
-  set_Xcursor(dsp, (char *)scrollright_cursor.cuimage, (int)scrollright_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)scrollright_cursor.cuimage, (int)scrollright_cursor.cuhotspotx,
               (int)(15 - scrollright_cursor.cuhotspoty), &ScrollRightCursor, 0);
-  set_Xcursor(dsp, (char *)scrollup_cursor.cuimage, (int)scrollup_cursor.cuhotspotx,
+  set_Xcursor(dsp, (unsigned char *)scrollup_cursor.cuimage, (int)scrollup_cursor.cuhotspotx,
               (int)(15 - scrollup_cursor.cuhotspoty), &ScrollUpCursor, 0);
 
   /********************************/

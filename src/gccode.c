@@ -30,6 +30,7 @@ static char *id = "$Id: gccode.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyri
 /* \Tomtom								*/
 /************************************************************************/
 
+#include <stdio.h>
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "address.h"
@@ -41,7 +42,10 @@ static char *id = "$Id: gccode.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyri
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"
-#include <stdio.h>
+
+#include "gccodedefs.h"
+#include "commondefs.h"
+#include "gchtfinddefs.h"
 
 #define min(a, b) ((a > b) ? b : a)
 

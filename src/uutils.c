@@ -40,13 +40,17 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 #endif
 
 #include <stdio.h>
+#include <unistd.h>
 #include "lispemul.h"
 #include "adr68k.h"
 #include "lsptypes.h"
 #include "lspglob.h"
 #include "osmsg.h"
 #include "keyboard.h"
-#include "uraid.h"
+
+#include "uutilsdefs.h"
+#include "osmsgdefs.h"
+#include "uraiddefs.h"
 
 #ifdef OS5
 #define gethostid() 0
@@ -382,7 +386,7 @@ LispPTR suspend_lisp(LispPTR *args) {
 #ifdef SYSVONLY
   kill(0, SIGTSTP);
 #else
-  killpg(getpgrp(0), SIGTSTP);
+  killpg(getpgrp(), SIGTSTP);
 #endif /* SYSVONLY */
 
   OSMESSAGE_PRINT(printf("resuming\n"));

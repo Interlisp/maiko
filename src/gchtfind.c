@@ -19,7 +19,11 @@ static char *id = "$Id: gchtfind.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copy
 #include "gc.h"
 #include "lispmap.h"
 #include "cell.h"
-#include "storage.h"
+
+#include "gchtfinddefs.h"
+#include "commondefs.h"
+#include "gcrdefs.h"
+#include "storagedefs.h"
 
 #define Evenp(num, prim) ((num % prim) == 0)
 #ifdef BIGVM

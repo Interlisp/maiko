@@ -33,8 +33,11 @@ static char *id = "$Id: hardrtn.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyr
 #include "emlglob.h"
 #include "cell.h"
 #include "stack.h"
-#include "llstk.h"
 #include "return.h"
+
+#include "hardrtndefs.h"
+#include "commondefs.h"
+#include "llstkdefs.h"
 
 #define MAKE_FXCOPY(fx68k)                                                                   \
   {                                                                                          \
@@ -43,7 +46,92 @@ static char *id = "$Id: hardrtn.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyr
     AFTER_CONTEXTSW;                                                                         \
     CHECK_FX(fx68k);                                                                         \
   }
-void incusecount68k(FX *fx68k), decusecount68k(register FX *frame68k);
+static FX *make_FXcopy(register FX *fx68k) {
+  register int size;
+  int nametbl_on_stk = NIL;
+  register DLword *new68k;
+  register Bframe *retbf68k;
+  extern DLword *freestackblock(DLword n, StackWord * start68k, int align);
+
+#ifdef FLIPCURSOR
+  flip_cursorbar(5);
+#endif
+
+  CHECK_FX(fx68k);
+  size = FX_size(fx68k) + DLWORDSPER_CELL;
+#ifdef BIGVM
+  if (fx68k->validnametable && ((fx68k->nametable >> 16) == STK_HI))
+#else
+  if (fx68k->validnametable && (fx68k->hi2nametable == STK_HI))
+#endif /* BIGVM */
+  {
+/* frame contains a name table, so we care that the alignment
+ of the new block be same as old */
+#ifdef STACKCHECK
+    {
+      DLword n;
+#ifdef BIGVM
+      n = fx68k->nametable & 0xFFFF;
+#else
+      n = fx68k->lonametable;
+#endif /* BIGVM */
+      if ((n <= StkOffset_from_68K(fx68k)) && (n >= fx68k->nextblock))
+        error("hardreturn:nametable check");
+    }
+#endif
+    nametbl_on_stk = T;
+    /* Find a free stack block */
+    new68k = freestackblock(size, (StackWord *)CURRENTFX,
+                            (StkOffset_from_68K(fx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
+  } /*if end */
+  else
+    new68k = freestackblock(size, (StackWord *)CURRENTFX, -1); /* No align */
+
+  if (new68k == 0) return (0); /* No more space for STACK */
+
+  /* blt(dest,source,size) */
+  blt(new68k, (((DLword *)fx68k) - DLWORDSPER_CELL), size);
+
+  ((Bframe *)new68k)->residual = T;
+  new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
+  ((FX *)new68k)->nextblock = (StkOffset_from_68K(new68k) + size) - DLWORDSPER_CELL;
+  retbf68k = (Bframe *)Addr68k_from_StkOffset(GETBLINK(fx68k));
+  /* Set true BFptr,not the residual */
+  SETBLINK(new68k, GETBLINK(fx68k));
+  ((FX *)new68k)->usecount = 0;
+  CHECK_BF(retbf68k);
+
+#ifdef BIGVM
+  if (nametbl_on_stk) ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+#else
+  if (nametbl_on_stk) ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+#endif
+  /* increment use count of basic frame of returnee because
+  we made another FX which points to it */
+  retbf68k->usecnt++;
+  SET_FASTP_NIL(fx68k);
+  /* increment use count of CLINK of returnee
+     because we made a copy of returnee */
+  incusecount68k((FX *)Addr68k_from_StkOffset(GETCLINK(fx68k)));
+
+  if (GETCLINK(fx68k) != GETALINK(fx68k)) {
+    incusecount68k((FX *)Addr68k_from_StkOffset(GETALINK(fx68k)));
+  }
+
+  decusecount68k(fx68k); /* if usecon==0  -> FSB */
+  SETACLINK(CURRENTFX, StkOffset_from_68K(new68k));
+  CHECK_FX((FX *)new68k);
+  CHECK_FX(CURRENTFX);
+#ifdef STACKCHECK
+  stack_check(0);
+#endif
+#ifdef FLIPCURSOR
+  flip_cursorbar(5);
+#endif
+
+  return ((FX *)new68k);
+} /* make_FXcopy end */
+
 /********************************************************************/
 /*
         Func Name :	slowreturn()
@@ -62,7 +150,6 @@ int slowreturn(void) {
   register DLword *freeptr;
   register Bframe *currentBF;
   register FX *returnFX;
-  extern FX *make_FXcopy(register FX * fx68k);
 
   S_CHECK(SLOWP(CURRENTFX), "CURRENTFX not SLOWP");
 
@@ -167,92 +254,6 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
   }
 
 } /* slowreturn end */
-
-FX *make_FXcopy(register FX *fx68k) {
-  register int size;
-  int nametbl_on_stk = NIL;
-  register DLword *new68k;
-  register Bframe *retbf68k;
-  extern DLword *freestackblock(DLword n, StackWord * start68k, int align);
-
-#ifdef FLIPCURSOR
-  flip_cursorbar(5);
-#endif
-
-  CHECK_FX(fx68k);
-  size = FX_size(fx68k) + DLWORDSPER_CELL;
-#ifdef BIGVM
-  if (fx68k->validnametable && ((fx68k->nametable >> 16) == STK_HI))
-#else
-  if (fx68k->validnametable && (fx68k->hi2nametable == STK_HI))
-#endif /* BIGVM */
-  {
-/* frame contains a name table, so we care that the alignment
- of the new block be same as old */
-#ifdef STACKCHECK
-    {
-      DLword n;
-#ifdef BIGVM
-      n = fx68k->nametable & 0xFFFF;
-#else
-      n = fx68k->lonametable;
-#endif /* BIGVM */
-      if ((n <= StkOffset_from_68K(fx68k)) && (n >= fx68k->nextblock))
-        error("hardreturn:nametable check");
-    }
-#endif
-    nametbl_on_stk = T;
-    /* Find a free stack block */
-    new68k = freestackblock(size, (StackWord *)CURRENTFX,
-                            (StkOffset_from_68K(fx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
-  } /*if end */
-  else
-    new68k = freestackblock(size, (StackWord *)CURRENTFX, -1); /* No align */
-
-  if (new68k == 0) return (0); /* No more space for STACK */
-
-  /* blt(dest,source,size) */
-  blt(new68k, (((DLword *)fx68k) - DLWORDSPER_CELL), size);
-
-  ((Bframe *)new68k)->residual = T;
-  new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
-  ((FX *)new68k)->nextblock = (StkOffset_from_68K(new68k) + size) - DLWORDSPER_CELL;
-  retbf68k = (Bframe *)Addr68k_from_StkOffset(GETBLINK(fx68k));
-  /* Set true BFptr,not the residual */
-  SETBLINK(new68k, GETBLINK(fx68k));
-  ((FX *)new68k)->usecount = 0;
-  CHECK_BF(retbf68k);
-
-#ifdef BIGVM
-  if (nametbl_on_stk) ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
-#else
-  if (nametbl_on_stk) ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
-#endif
-  /* increment use count of basic frame of returnee because
-  we made another FX which points to it */
-  retbf68k->usecnt++;
-  SET_FASTP_NIL(fx68k);
-  /* increment use count of CLINK of returnee
-     because we made a copy of returnee */
-  incusecount68k((FX *)Addr68k_from_StkOffset(GETCLINK(fx68k)));
-
-  if (GETCLINK(fx68k) != GETALINK(fx68k)) {
-    incusecount68k((FX *)Addr68k_from_StkOffset(GETALINK(fx68k)));
-  }
-
-  decusecount68k(fx68k); /* if usecon==0  -> FSB */
-  SETACLINK(CURRENTFX, StkOffset_from_68K(new68k));
-  CHECK_FX((FX *)new68k);
-  CHECK_FX(CURRENTFX);
-#ifdef STACKCHECK
-  stack_check(0);
-#endif
-#ifdef FLIPCURSOR
-  flip_cursorbar(5);
-#endif
-
-  return ((FX *)new68k);
-} /* make_FXcopy end */
 
 #define MAXSAFEUSECOUNT 200
 

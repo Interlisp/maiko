@@ -34,13 +34,50 @@ static char *id = "$Id: llstk.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyrig
 #include "emlglob.h"
 #include "cell.h"
 #include "stack.h"
-#include "llstk.h"
 #include "return.h"
-#include "storage.h"
+
+#include "llstkdefs.h"
+#include "commondefs.h"
+#include "dbgtooldefs.h"
+#include "testtooldefs.h"
+#include "kprintdefs.h"
+#include "storagedefs.h"
 
 extern int extended_frame;
 
-static DLword *extendstack(void);
+/******************************************************************/
+/*
+        Func Name :     extendstack()
+        Desc.     :     if LastStackAddr_word is exceeded,then allocate
+                        one new lisppage for STACK area.
+
+        Edited by :     Take(March 14, 1988)
+
+*/
+/******************************************************************/
+static DLword *extendstack(void) {
+  register LispPTR easp;
+  register LispPTR scanptr;
+
+  easp = InterfacePage->endofstack;
+
+  if (easp < LOLOC(*LastStackAddr_word)) {
+    if ((easp > LOLOC(*GuardStackAddr_word)) && ((*STACKOVERFLOW_word) == NIL)) {
+      extended_frame = 1;
+      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->stackoverflow = 1;
+      *STACKOVERFLOW_word = *PENDINGINTERRUPT_word = ATOM_T;
+    }
+    newpage(STK_OFFSET | (scanptr = easp + 2));
+    /* I don't concern about DOLOCKPAGES */
+
+    MAKEFREEBLOCK(Addr68k_from_StkOffset(scanptr), DLWORDSPER_PAGE - 2);
+    InterfacePage->endofstack = scanptr = easp + DLWORDSPER_PAGE;
+    SETUPGUARDBLOCK(Addr68k_from_StkOffset(InterfacePage->endofstack), 2);
+    MAKEFREEBLOCK(Addr68k_from_StkOffset(easp), 2);
+    return ((DLword *)Addr68k_from_StkOffset(scanptr));
+  } else
+    return (NIL);
+} /* end extendstack */
 
 /******************************************************************/
 /*
@@ -240,40 +277,6 @@ int do_stackoverflow(int incallp) {
   /* If  incallp ,we CAN continue executing FN or APPLY by just returning */
   /* new PVar will set in funcall */
 } /* end do_stackoverflow */
-
-/******************************************************************/
-/*
-        Func Name :     extendstack()
-        Desc.     :     if LastStackAddr_word is exceeded,then allocate
-                        one new lisppage for STACK area.
-
-        Edited by :     Take(March 14, 1988)
-
-*/
-/******************************************************************/
-static DLword *extendstack(void) {
-  register LispPTR easp;
-  register LispPTR scanptr;
-
-  easp = InterfacePage->endofstack;
-
-  if (easp < LOLOC(*LastStackAddr_word)) {
-    if ((easp > LOLOC(*GuardStackAddr_word)) && ((*STACKOVERFLOW_word) == NIL)) {
-      extended_frame = 1;
-      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->stackoverflow = 1;
-      *STACKOVERFLOW_word = *PENDINGINTERRUPT_word = ATOM_T;
-    }
-    newpage(STK_OFFSET | (scanptr = easp + 2));
-    /* I don't concern about DOLOCKPAGES */
-
-    MAKEFREEBLOCK(Addr68k_from_StkOffset(scanptr), DLWORDSPER_PAGE - 2);
-    InterfacePage->endofstack = scanptr = easp + DLWORDSPER_PAGE;
-    SETUPGUARDBLOCK(Addr68k_from_StkOffset(InterfacePage->endofstack), 2);
-    MAKEFREEBLOCK(Addr68k_from_StkOffset(easp), 2);
-    return ((DLword *)Addr68k_from_StkOffset(scanptr));
-  } else
-    return (NIL);
-} /* end extendstack */
 
 /******************************************************************/
 /*

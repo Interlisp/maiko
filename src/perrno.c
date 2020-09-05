@@ -14,7 +14,11 @@ static char *id = "$Id: perrno.c,v 1.4 2001/12/26 22:17:04 sybalsky Exp $ Copyri
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include "lispemul.h"
 #include "osmsg.h"
+
+#include "perrnodefs.h"
+#include "osmsgdefs.h"
 
 /************************************************************************/
 /*									*/

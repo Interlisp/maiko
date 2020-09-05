@@ -19,7 +19,9 @@ static char *id = "$Id: lowlev1.c,v 1.3 1999/05/31 23:35:38 sybalsky Exp $ Copyr
 #include "lsptypes.h"
 #include "emlglob.h"
 
-int mask_array[16] = {1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,
+#include "lowlev1defs.h"
+
+static int mask_array[16] = {1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,
                       0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff};
 
 /************************************************************

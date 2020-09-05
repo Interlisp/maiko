@@ -80,6 +80,11 @@ Unix Interface Communications
 #include "stack.h"
 #include "arith.h"
 #include "dbprint.h"
+
+#include "unixcommdefs.h"
+#include "byteswapdefs.h"
+#include "commondefs.h"
+
 #ifdef GCC386
 #include "inlinePS2.h"
 #endif /* GCC386 */
@@ -877,7 +882,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       /**********************************************************/
 
       {
-        char *bufp;
+        DLword *bufp;
         int terno; /* holds errno thru sys calls after I/O fails */
 
         N_GETNUMBER(args[1], slot, bad);     /* Get job # */
@@ -888,7 +893,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         else
           sock = slot;
 
-        bufp = (char *)(Addr68k_from_LADDR(args[2])); /* User buffer */
+        bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
         DBPRINT(("Read buffer slot %d, type is %d\n", slot, UJ[slot].type));
 
         switch (UJ[slot].type) {
@@ -1074,9 +1079,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
     case 15: /* Write buffer */
     {
-      char *bufp;
+      DLword *bufp;
       N_GETNUMBER(args[1], slot, bad);              /* Get job # */
-      bufp = (char *)(Addr68k_from_LADDR(args[2])); /* User buffer */
+      bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
       N_GETNUMBER(args[3], i, bad);                 /* # to write */
       DBPRINT(("Write buffer, type is %d\n", UJ[slot].type));
 

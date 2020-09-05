@@ -26,6 +26,8 @@ static char *id = "$Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ Copy
 #include "lsptypes.h"
 #include "stack.h"
 
+#include "byteswapdefs.h"
+
 #if defined(ISC)
 #include "inlnPS2.h"
 #else
@@ -82,7 +84,7 @@ void byte_swap_page(unsigned short *page, int wordcount) {
 /*     Byte- & word-swap a region wordcount long-words long     */
 /*                                                              */
 /****************************************************************/
-void word_swap_page(short unsigned int *page, int longwordcount) {
+void word_swap_page(unsigned short *page, int longwordcount) {
   register int i;
   register unsigned int *longpage;
   longpage = (unsigned int *)page;
@@ -142,7 +144,7 @@ unsigned char reversedbits[256] = {
 ******/
 #define reverse_bits(word) ((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word)&0xff])
 
-void bit_reverse_region(register short unsigned int *top, int width, int height, int rasterwidth) {
+void bit_reverse_region(unsigned short *top, int width, int height, int rasterwidth) {
   register int i, j, wordwid = ((width + 31) >> 5) << 1;
   register unsigned short *word;
 

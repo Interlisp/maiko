@@ -23,6 +23,14 @@ static char *id = "$Id: dspsubrs.c,v 1.3 2001/12/26 22:17:02 sybalsky Exp $ Copy
 #include "lispmap.h"
 #include "display.h"
 #include "arith.h"
+
+#include "dspsubrsdefs.h"
+#include "commondefs.h"
+#ifdef XWINDOW
+#include "xcursordefs.h"
+#include "xlspwindefs.h"
+#endif
+
 extern int DebugDSP;
 extern int displaywidth, displayheight;
 

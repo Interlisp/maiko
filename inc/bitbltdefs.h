@@ -1,0 +1,6 @@
+#ifndef BITBLTDEFS_H
+#define BITBLTDEFS_H 1
+LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos);
+int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward);
+#endif
+

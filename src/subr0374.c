@@ -35,6 +35,8 @@ static char *id = "$Id: subr0374.c,v 1.3 1999/05/31 23:35:43 sybalsky Exp $ Copy
 #include "adr68k.h"
 #include "lspglob.h"
 
+#include "subr0374defs.h"
+
 LispPTR subr_k_trace(LispPTR *args) {
   int len;
   char *base;

@@ -33,6 +33,10 @@ static char *id = "$Id: arith4.c,v 1.3 1999/05/31 23:35:21 sybalsky Exp $ Copyri
 #include "medleyfp.h"
 #include "arith.h"
 
+#include "arith4defs.h"
+#include "fpdefs.h"
+#include "mkcelldefs.h"
+
 /**********************************************************************/
 /*
 

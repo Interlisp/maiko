@@ -19,6 +19,7 @@ static char *id = "$Id: xbbt.c,v 1.2 1999/01/03 02:07:46 sybalsky Exp $ Copyrigh
 #include "lispemul.h"
 #include "xdefs.h"
 #include "devif.h"
+#include "xbbtdefs.h"
 
 extern DspInterface currentdsp;
 

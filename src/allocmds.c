@@ -35,7 +35,13 @@ static char *id = "$Id: allocmds.c,v 1.4 1999/05/31 23:35:20 sybalsky Exp $ Copy
 #include "initatms.h"
 #include "sysatms.h"
 #include "lspglob.h"
-#include "storage.h"
+
+#include "allocmdsdefs.h"
+#include "commondefs.h"
+#include "gcrdefs.h"
+#include "perrnodefs.h"
+#include "storagedefs.h"
+#include "timerdefs.h"
 
 /************************************************************************/
 /*									*/

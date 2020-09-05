@@ -21,6 +21,7 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 
 #ifndef DOS
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/time.h>
@@ -38,6 +39,9 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 #include "adr68k.h"
 #include "arith.h"
 #include "locfile.h"
+
+#include "rpcdefs.h"
+#include "commondefs.h"
 
 #define MAX_HOSTNAME_LENGTH 100
 #define UDP_DATA_BLOCK_SIZE 1000

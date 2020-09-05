@@ -45,6 +45,11 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #include "dbprint.h"
 #include "locfile.h"
 
+#include "inetdefs.h"
+#include "byteswapdefs.h"
+#include "commondefs.h"
+#include "mkcelldefs.h"
+
 #ifdef HPUX
 #define FASYNC O_NONBLOCK
 #endif /* NPUX */
@@ -98,7 +103,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
   struct servent *service;
   struct sockaddr_in farend;
   int addr_class, protocol;
-  char *buffer;
+  DLword *buffer;
   int result;
 #ifdef RS6000
   static int one = 1; /* Used in TCPconnect */
@@ -187,7 +192,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case TCPsend: /* args: conn, buffer, len */
       sock = LispNumToCInt(nameConn);
-      buffer = (char *)Addr68k_from_LADDR(proto);
+      buffer = Addr68k_from_LADDR(proto);
       len = LispNumToCInt(length);
       DBPRINT(("sock: %d, len %d.\n", sock, len));
 
@@ -210,7 +215,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case TCPrecv: /* args: conn, buffer, maxlen */
       sock = LispNumToCInt(nameConn);
-      buffer = (char *)Addr68k_from_LADDR(proto);
+      buffer = Addr68k_from_LADDR(proto);
       len = LispNumToCInt(length);
       result = read(sock, buffer, len);
       if (result < 0) {
@@ -319,22 +324,22 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case INETpeername: /* socket#, buffer for name string */
       sock = LispNumToCInt(nameConn);
-      buffer = (char *)Addr68k_from_LADDR(proto);
+      buffer = Addr68k_from_LADDR(proto);
       ures = sizeof(addr);
       getpeername(sock, (struct sockaddr *)&addr, &ures);
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
-      strcpy(buffer, host->h_name);
+      strcpy((char *)buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
       break;
 
     case INETgetname: /* host addr, buffer for name string */
       sock = LispNumToCInt(nameConn);
-      buffer = (char *)Addr68k_from_LADDR(proto);
+      buffer = Addr68k_from_LADDR(proto);
       ures = sizeof(addr);
       addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
       if (!host) return (GetSmallp(0));
-      strcpy(buffer, host->h_name);
+      strcpy((char *)buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
       break;
 
@@ -376,7 +381,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       farend.sin_family = AF_INET;
       farend.sin_port = htons(LispNumToCInt(length));
       farend.sin_addr.s_addr = htonl(LispNumToCInt(proto));
-      buffer = (char *)Addr68k_from_LADDR(bufaddr);
+      buffer = Addr68k_from_LADDR(bufaddr);
       buflen = LispNumToCInt(maxlen);
 
       DBPRINT(("UDP send:  socket = %d, remote-port = %d.\n", sock, farend.sin_port));
@@ -399,7 +404,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case UDPRecvfrom: /* fd-socket# buffer len addr-cell port-cell*/
       sock = LispNumToCInt(nameConn);
-      buffer = (char *)Addr68k_from_LADDR(proto);
+      buffer = Addr68k_from_LADDR(proto);
       buflen = LispNumToCInt(length);
       ures = sizeof farend;
       if ((result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &ures)) < 0) {

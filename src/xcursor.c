@@ -29,6 +29,8 @@ static char *id = "$Id: xcursor.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyr
 #include "dbprint.h"
 #include "devif.h"
 
+#include "xcursordefs.h"
+
 extern IOPAGE *IOPage;
 
 extern XGCValues gcv;
@@ -60,7 +62,6 @@ int    cursor_sw;
 
 int Current_Hot_X = 0, Current_Hot_Y = 0;
 
-void set_Xcursor(DspInterface, unsigned char *, int, int, Cursor *, int);
 
 /************************************************************************/
 /*									*/

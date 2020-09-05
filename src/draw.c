@@ -36,6 +36,9 @@ static char *id = "$Id: draw.c,v 1.2 1999/01/03 02:06:56 sybalsky Exp $ Copyrigh
 #include "bbtsub.h"
 #include "display.h"
 
+#include "drawdefs.h"
+#include "initdspdefs.h"
+
 #ifdef DISPLAYBUFFER
 extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif

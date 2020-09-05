@@ -41,6 +41,9 @@ static char *id = "$Id: return.c,v 1.4 2001/12/24 01:09:05 sybalsky Exp $ Copyri
 #include "cell.h"
 #include "return.h"
 
+#include "returndefs.h"
+#include "commondefs.h"
+
 /***********************************************************************/
 /*
                 Func Name :	OP_contextsw

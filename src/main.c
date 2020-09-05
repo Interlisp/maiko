@@ -18,7 +18,6 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include "lispemul.h"
 #include "dbprint.h"
 #include "unixfork.h"
-#include "dir.h"
 
 #include <sys/types.h>
 #ifndef DOS
@@ -95,7 +94,21 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include "profile.h"
 
 #include "timeout.h"
-#include "storage.h"
+
+#include "maindefs.h"
+#include "commondefs.h"
+#include "dirdefs.h"
+#include "dspifdefs.h"
+#include "etherdefs.h"
+#include "initdspdefs.h"
+#include "initkbddefs.h"
+#include "initsoutdefs.h"
+#include "ldsoutdefs.h"
+#include "storagedefs.h"
+#include "timerdefs.h"
+#include "unixcommdefs.h"
+#include "xcdefs.h"
+#include "xrdoptdefs.h"
 
 DLword *Lisp_world; /* lispworld */
 
@@ -521,12 +534,6 @@ int main(int argc, char *argv[])
 #endif /* DOS */
 
   strcpy(keytyped, keystring);
-
-  if (keytester(keystring)) { /* keytester destroys keystring */
-    fprintf(stderr, "Sorry, invalid or expired access key.\n");
-    fprintf(stderr, "Key tried: %s\n", keytyped);
-    exit(-1);
-  }
 
 #ifndef NOETHER
   init_ether(); /* modified by kiuchi Nov. 4 */

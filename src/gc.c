@@ -17,6 +17,9 @@ static char *id = "$Id: gc.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 #include "emlglob.h"
 #include "gc.h"
 
+#include "gcdefs.h"
+#include "gchtfinddefs.h"
+
 /************************************************************
 
         entry		OP_gcref		OPCODE[025]

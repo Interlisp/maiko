@@ -28,6 +28,13 @@ static char *id = "$Id: miscn.c,v 1.3 1999/05/31 23:35:39 sybalsky Exp $ Copyrig
 #include "subrs.h"
 #include "profile.h"
 
+#include "miscndefs.h"
+#include "commondefs.h"
+#include "loopsopsdefs.h"
+#include "mvsdefs.h"
+#include "sxhashdefs.h"
+#include "usrsubrdefs.h"
+
 /***********************************************************/
 /*
         Func Name  :	OP_miscn

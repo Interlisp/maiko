@@ -24,7 +24,12 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 #include "lispmap.h"
 #include "lspglob.h"
 #include "gc.h"
-#include "conspage.h"
+
+#include "conspagedefs.h"
+#include "allocmdsdefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "gchtfinddefs.h"
 
 /************************************************************************/
 /*									*/

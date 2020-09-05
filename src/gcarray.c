@@ -50,7 +50,6 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "stack.h"
 #include "cell.h"
-#include "car-cdr.h"
 #include "ifpage.h"
 #include "gc.h"
 #include "array.h"
@@ -60,6 +59,12 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #if defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
 #endif
+
+#include "gcarraydefs.h"
+#include "car-cdrdefs.h"
+#include "commondefs.h"
+#include "mkatomdefs.h"
+#include "testtooldefs.h"
 
 /*** not currently used -FS
         #define min(a,b)		((a > b)?b:a)
@@ -265,7 +270,6 @@ LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword
   PACKAGE *packaddr;
   LispPTR hashtbladdr;
   LispPTR index;
-  extern LispPTR find_package_from_name(char *packname, int len);
 
   /* For convenience, recognize the common package nicknames: */
 

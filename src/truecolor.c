@@ -22,7 +22,6 @@ static char *id = "$Id: truecolor.c,v 1.2 1999/01/03 02:07:38 sybalsky Exp $ Cop
 #include "adr68k.h"
 #include "arith.h"
 #include "devconf.h"
-#include "uraid.h"
 
 #include "picture.h"
 

@@ -27,6 +27,8 @@ static char *id = "$Id: typeof.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyri
 #include "lispmap.h"
 #include "lspglob.h"
 
+#include "typeofdefs.h"
+
 /************************************************************************/
 /*									*/
 /*			N _ O P _ d t e s t				*/

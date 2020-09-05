@@ -71,6 +71,7 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #include <setjmp.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <errno.h>
 #include "lispemul.h"
 #include "lispmap.h"
@@ -82,8 +83,10 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #include "timeout.h"
 #include "locfile.h"
 #include "dbprint.h"
-#include "dsk.h"
-#include "ufs.h"
+
+#include "ufsdefs.h"
+#include "commondefs.h"
+#include "dskdefs.h"
 
 int *Lisp_errno;
 int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */

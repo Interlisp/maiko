@@ -10,6 +10,8 @@ static char *id = "$Id: hacks.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 
 #include "version.h"
 
+#include "hacksdefs.h"
+
 /* These functions are created so that you can split a float into */
 /* four integers. The general idea behind these functions is to */
 /* act as a caster between different entitys on the stack */

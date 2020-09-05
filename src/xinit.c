@@ -12,6 +12,7 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #include "version.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -25,6 +26,12 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #include "devif.h"
 
 #include "adr68k.h"
+#include "xinitdefs.h"
+#include "dspifdefs.h"
+#include "xbbtdefs.h"
+#include "xlspwindefs.h"
+#include "xwinmandefs.h"
+
 
 #ifdef HPUX
 #define FASYNC O_NONBLOCK
@@ -77,8 +84,6 @@ Colormap Colors;
 
 int XLocked = 0; /* non-zero while doing X ops, to avoid signals */
 extern int LispReadFds;
-extern PFUL GenericReturnT();
-extern PFUL clipping_Xbitblt();
 
 /************************************************************************/
 /*									*/

@@ -25,6 +25,8 @@ static char *id = "$Id: foreign.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyr
 #include "arith.h"
 #include "stack.h"
 
+#include "foreigndefs.h"
+
 /***********************************************************/
 /*	       L S t r i n g T o C S t r i n g		   */
 /*							   */

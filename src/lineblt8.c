@@ -13,6 +13,8 @@ static char *id = "$Id: lineblt8.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copy
 
 #include <sys/types.h>
 #include "lispemul.h"
+#include "lineblt8defs.h"
+#include "commondefs.h"
 
 #ifdef ISC
 #include <sys/bsdtypes.h>

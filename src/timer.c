@@ -45,6 +45,7 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <sys/types.h>
 #include <stdio.h>
 #include <signal.h>
+#include <unistd.h>
 #ifdef LINUX
 #include <linux/fcntl.h>
 #else
@@ -108,6 +109,10 @@ extern int ether_fd;
 #include "stack.h"
 #include "dbprint.h"
 
+#include "timerdefs.h"
+#include "commondefs.h"
+#include "mkcelldefs.h"
+
 #ifdef XWINDOW
 #include "devif.h"
 extern DspInterface currentdsp;
@@ -147,23 +152,7 @@ int Event_Req = FALSE;
 #define SIGERRCHK(set, str) \
   if (set == SIG_ERR) perror(str)
 
-void update_miscstats();
-
-/************************************************************************/
-/*									*/
-/*			i n i t _ m i s c s t a t s			*/
-/*									*/
-/*	Called at initialization time to set miscstats words.		*/
-/*	?? and to periodically update them ?? [JDS 11/22/89]		*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-void init_miscstats() {
-  MiscStats->starttime = gettime(0);
-  MiscStats->gctime = 0;
-  update_miscstats();
-}
+static int gettime(int casep);
 
 /************************************************************************/
 /*									*/
@@ -223,6 +212,22 @@ void update_miscstats() {
 
 /************************************************************************/
 /*									*/
+/*			i n i t _ m i s c s t a t s			*/
+/*									*/
+/*	Called at initialization time to set miscstats words.		*/
+/*	?? and to periodically update them ?? [JDS 11/22/89]		*/
+/*									*/
+/*									*/
+/************************************************************************/
+
+void init_miscstats() {
+  MiscStats->starttime = gettime(0);
+  MiscStats->gctime = 0;
+  update_miscstats();
+}
+
+/************************************************************************/
+/*									*/
 /*			s u b r _ g e t t i m e				*/
 /*									*/
 /*	Handler for Lisps GETTIME subr call, dispatched thru		*/
@@ -265,7 +270,7 @@ LispPTR subr_gettime(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-int gettime(int casep)
+static int gettime(int casep)
 {
 #ifndef USETIMEFN
   struct timeval timev;
@@ -510,9 +515,9 @@ static struct sigvec timerv;
 #endif /* SYSVSIGNALS */
 
 #if (defined(OS4) || defined(SYSVONLY)) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
-void int_timer_service(int sig, int code, struct sigcontext *scp)
+static void int_timer_service(int sig, int code, void *scp)
 #else
-int int_timer_service(int sig, int code, struct sigcontext *scp)
+static int int_timer_service(int sig, int code, void *scp)
 #endif /* OS4 | SYSVONLY | MACOSX | FREEBSD */
 {
   /* this may have to do more in the future, like check for nested interrupts,
@@ -553,7 +558,7 @@ int int_timer_service(int sig, int code, struct sigcontext *scp)
 /*									*/
 /************************************************************************/
 
-void int_timer_init()
+static void int_timer_init()
 
 {
 #ifdef DOS
@@ -655,7 +660,7 @@ void int_io_close(int fd)
 /*									*/
 /************************************************************************/
 
-void int_io_init() {
+static void int_io_init() {
 #ifndef SYSVSIGNALS
   static struct sigvec timerv;
   static struct sigvec poll_timerv;
@@ -912,7 +917,7 @@ void int_fp_init() { /* first set up the signal handler */
 /************************************************************************/
 
 jmp_buf jmpbuf;
-void timeout_error() {
+static void timeout_error() {
 /*
  * Following printf changes the contents of jmpbuf!
  * This would lead to horrible segmentation violation.
@@ -938,7 +943,7 @@ void timeout_error() {
 /*									*/
 /************************************************************************/
 
-void int_file_init() {
+static void int_file_init() {
 #ifndef SYSVSIGNALS
   static struct sigvec timerv;
 #endif /* SYSVSIGNALS */
@@ -1008,7 +1013,7 @@ void int_file_init() {
                struct sigaction * restrict oact);
  */
 
-void panicuraid(int sig, int code, struct sigcontext *scp, void *addr)
+void panicuraid(int sig, int code, void *scp, void *addr)
 {
   static char errormsg[200];
   static char *stdmsg =
@@ -1021,35 +1026,35 @@ and do a 'v' before trying anything else.";
   switch (sig) {
 #ifdef SIGBUS
     case SIGBUS:
-      sprintf(errormsg, "BUS error (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "BUS error (code %d) at address %p.\n%s", code, addr, stdmsg);
       break;
 #endif /* SIGBUS */
     case SIGSEGV:
-      sprintf(errormsg, "SEGV error (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "SEGV error (code %d) at address %p.\n%s", code, addr, stdmsg);
       break;
     case SIGILL:
-      sprintf(errormsg, "Illegal instruction (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "Illegal instruction (code %d) at address %p.\n%s", code, addr, stdmsg);
       break;
 #ifdef SIGPIPE
     case SIGPIPE:
-      sprintf(errormsg, "Broken PIPE (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "Broken PIPE (code %d) at address %p.\n%s", code, addr, stdmsg);
       break;
 #endif /* SGPIPE */
 #ifdef SIGHUP
     case SIGHUP:
-      sprintf(errormsg, "HANGUP signalled (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "HANGUP signalled (code %d) at address %p.\n%s", code, addr, stdmsg);
 /* Assume that a user tried to exit UNIX shell */
 #ifdef SYSVONLY
       kill(0, SIGKILL);
       exit(0);
 #else
-      killpg(getpgrp(0), SIGKILL);
+      killpg(getpgrp(), SIGKILL);
       exit(0);
 #endif /* SYSVONLY */
       break;
 #endif /* SIGHUP */
     case SIGFPE:
-      sprintf(errormsg, "FP error (code %d) at address 0x%x.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "FP error (code %d) at address %p.\n%s", code, addr, stdmsg);
       break;
     default: sprintf(errormsg, "Uncaught SIGNAL %d (code %d).\n%s", sig, code, stdmsg);
   }
@@ -1067,7 +1072,7 @@ and do a 'v' before trying anything else.";
 /*     uraid and get a clue about why you're dying.                     */
 /*                                                                      */
 /************************************************************************/
-void int_panic_init() {
+static void int_panic_init() {
 #ifdef SYSVSIGNALS
 #ifdef ISC
   sigset(SIGHUP, panicuraid);

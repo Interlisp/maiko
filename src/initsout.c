@@ -19,6 +19,7 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 #include "version.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #if defined(MACOSX) || defined(FREEBSD)
 #include <stdlib.h>
@@ -43,6 +44,13 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 #include "dbprint.h"
 #include "lldsp.h"
 #include "gc.h" /* for ADDREF & GCLOOKUP */
+
+#include "initsoutdefs.h"
+#include "byteswapdefs.h"
+#include "gcarraydefs.h"
+#include "gchtfinddefs.h"
+#include "mkcelldefs.h"
+#include "testtooldefs.h"
 
 /********** definitions for bitblt. add by osamu **********/
 DLword TEXTURE_atom;
@@ -222,8 +230,6 @@ void init_iopage(void) {
 /************************************************************************/
 
 extern int for_makeinit;
-
-extern LispPTR *MakeAtom68k(char *string);
 
 void build_lisp_map(void) {
   DLword index;

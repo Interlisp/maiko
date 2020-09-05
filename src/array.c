@@ -17,8 +17,12 @@ static char *id = "@(#) array.c	2.8 12/23/88		(envos & Fuji Xerox)";
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "emlglob.h"
+
+#include "arraydefs.h"
+#include "mkcelldefs.h"
 #include "arith.h"
 #include "my.h"
+
 
 /************************************************************
  OP_claref  -- op 372/9 (base typenumber index)
@@ -41,9 +45,6 @@ type    size    typenumber
 /***	N_OP_misc3  -- op 372/9 (base typenumber index)   ***/
 LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha) {
   register int index, type;
-
-  /*	for CREATECELL  */
-  DLword *createcell68k(unsigned int type);
 
   if (alpha != 9) ERROR_EXIT(inx);
   /*  test and setup index  */

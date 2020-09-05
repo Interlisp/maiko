@@ -21,6 +21,7 @@ static char *id = "$Id: keylib.c,v 1.4 2001/12/24 01:09:03 sybalsky Exp $ Copyri
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include "keylibdefs.h"
 
 #define GOLDEN_RATIO_HACK -478700649
 #define ULONG_MAX 4294967295

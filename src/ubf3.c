@@ -19,6 +19,8 @@ static char *id = "$Id: ubf3.c,v 1.3 1999/05/31 23:35:45 sybalsky Exp $ Copyrigh
 #include "lispmap.h"
 #include "medleyfp.h"
 
+#include "ubf3defs.h"
+
 /************************************************************
         N_OP_ubfloat3  -- op 062
 062/0	POLY

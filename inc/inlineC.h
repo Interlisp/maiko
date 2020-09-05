@@ -585,7 +585,6 @@ LispPTR arrayarg;							\
 register LispPTR baseL;							\
 register int index;							\
 register OneDArray *arrayblk;						\
-DLword	*createcell68k();						\
     SV; arrayarg = POP_TOS_1;						\
     if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) goto aref_ufn;	\
     arrayblk = (OneDArray *)Addr68k_from_LADDR(arrayarg);		\

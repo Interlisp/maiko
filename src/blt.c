@@ -34,6 +34,8 @@ static char *id = "$Id: blt.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyright
 #include "lspglob.h"
 #include "cell.h"
 
+#include "bltdefs.h"
+
 /*
   N_OP_blt takes 3 arguments.
         STK-1 has destination's pointer.

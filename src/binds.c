@@ -15,6 +15,8 @@ static char *id = "$Id: binds.c,v 1.3 1999/05/31 23:35:24 sybalsky Exp $ Copyrig
 #include "lspglob.h"
 #include "emlglob.h"
 
+#include "bindsdefs.h"
+
 /**************************************************
 N_OP_bind(stack_pointer, tos, n1, n2)
 

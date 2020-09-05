@@ -108,8 +108,12 @@ extern int KBDEventFlg;
 #include "ifpage.h"
 #include "keyboard.h"
 
+#include "initkbddefs.h"
+#include "initdspdefs.h"
+
 #ifdef XWINDOW
 #include "devif.h"
+#include "xinitdefs.h"
 extern DspInterface currentdsp;
 #endif /* XWINDOW */
 
@@ -531,7 +535,7 @@ char *getenv(); /*  ---- external entry points --------*/
  * 
  */
 
-int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int sym, u_char *table)
+static int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int sym, u_char *table)
 {
   int i;
 
@@ -556,7 +560,7 @@ int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int
 /*									*/
 /************************************************************************/
 
-u_char *make_X_keymap() {
+static u_char *make_X_keymap() {
   u_char *table = (u_char *)malloc(256); /* the final result table */
   int lisp_codes_used[256];              /* Keep track of the Lisk key #s we've used */
   int last_KEYSYM = -1;

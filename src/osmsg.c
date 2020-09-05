@@ -24,6 +24,7 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #include <pwd.h>
 
 #include <sys/types.h>
+#include <unistd.h>
 #ifdef ISC
 #include <sys/bsdtypes.h>
 #endif /* ISC */
@@ -61,6 +62,9 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #include "locfile.h"
 #include "osmsg.h"
 #include "dbprint.h"
+
+#include "osmsgdefs.h"
+
 #ifdef OS4
 #include <stropts.h>
 #endif

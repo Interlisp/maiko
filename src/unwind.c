@@ -26,7 +26,8 @@ static char *id = "$Id: unwind.c,v 1.3 1999/05/31 23:35:46 sybalsky Exp $ Copyri
 #include "emlglob.h"
 #include "stack.h"
 #include "lspglob.h"
-#include "uraid.h"
+
+#include "unwinddefs.h"
 
 UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep) {
   register int num;           /* number of UNBOUND slot */

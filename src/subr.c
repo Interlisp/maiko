@@ -42,13 +42,29 @@ static char *id = "$Id: subr.c,v 1.3 1999/05/31 23:35:42 sybalsky Exp $ Copyrigh
 #include "subrs.h"
 #include "profile.h"
 #include "dbprint.h"
-#include "dsk.h"
-#include "ufs.h"
-#include "dir.h"
-#include "chardev.h"
-#include "dspsubrs.h"
-#include "storage.h"
 #include "bbtsub.h"
+
+#include "subrdefs.h"
+#include "bbtsubdefs.h"
+#include "chardevdefs.h"
+#include "commondefs.h"
+#include "dirdefs.h"
+#include "dskdefs.h"
+#include "dspsubrsdefs.h"
+#include "etherdefs.h"
+#include "gcarraydefs.h"
+#include "gcrdefs.h"
+#include "inetdefs.h"
+#include "kbdsubrsdefs.h"
+#include "mkcelldefs.h"
+#include "osmsgdefs.h"
+#include "rpcdefs.h"
+#include "storagedefs.h"
+#include "timerdefs.h"
+#include "ufsdefs.h"
+#include "unixcommdefs.h"
+#include "uutilsdefs.h"
+#include "vmemsavedefs.h"
 
 extern LispPTR *PENDINGINTERRUPT68k;
 
@@ -187,7 +203,9 @@ void OP_subrcall(int subr_no, int argnum) {
     /*************/
     case sb_SETUNIXTIME:
       POP_SUBR_ARGS;
-      TopOfStack = subr_settime(args);
+      subr_settime(args);
+      /* don't know whether it worked or not */
+      TopOfStack = NIL;
       break;
     case sb_GETUNIXTIME:
       POP_SUBR_ARGS;
@@ -195,7 +213,9 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
     case sb_COPYTIMESTATS:
       POP_SUBR_ARGS;
-      TopOfStack = subr_copytimestats(args);
+      subr_copytimestats(args);
+      /* no result */
+      TopOfStack = NIL; 
       break;
 
     /*************/

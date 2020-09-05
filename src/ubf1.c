@@ -16,9 +16,13 @@ static char *id = "$Id: ubf1.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 #include "lspglob.h"
 #include "lsptypes.h"
 #include "lispmap.h"
+#include "mkcelldefs.h"
 #include "arith.h"
 #include "medleyfp.h"
 #include "my.h"
+
+#include "ubf1defs.h"
+
 /************************************************************
         OP_ubfloat1  -- op 355  ==  UBFLOAT1
 355/0	BOX
@@ -33,7 +37,6 @@ LispPTR N_OP_ubfloat1(int arg, int alpha) {
     case 0: /* box */
     {
       register DLword *wordp;
-      DLword *createcell68k(unsigned int type);
       wordp = createcell68k(TYPE_FLOATP);
       *((int *)wordp) = arg;
       return (LADDR_from_68k(wordp));

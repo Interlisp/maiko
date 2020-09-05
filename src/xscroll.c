@@ -21,6 +21,9 @@ static char *id = "$Id: xscroll.c,v 1.2 1999/01/03 02:07:48 sybalsky Exp $ Copyr
 #include "xdefs.h"
 #include "devif.h"
 
+#include "xscrolldefs.h"
+#include "xwinmandefs.h"
+
 int ScrollPitch = SCROLL_PITCH;
 
 /* Move the DisplayWindow and the ScrollButtons to a new */

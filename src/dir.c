@@ -63,7 +63,7 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #define alarm(x) 1
 #endif /* DOS */
 
-#ifdef SYSVONLY
+#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
 #include <unistd.h>
 #endif /* SYSVONLY */
 
@@ -82,9 +82,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include "lspglob.h"
 #include "timeout.h"
 #include "locfile.h"
-#include "dsk.h"
-#include "ufs.h"
-#include "dir.h"
 
 extern int *Lisp_errno;
 extern int Dummy_errno;
@@ -357,6 +354,12 @@ unsigned MAXFINFO;
     lastp->next = FreeFinfoList;                                           \
     FreeFinfoList = fp;                                                    \
   }
+
+/* XXX: the datatypes need to go into dirdefs.h so that one could include it elsewhere */
+#include "dirdefs.h"
+#include "commondefs.h"
+#include "dskdefs.h"
+#include "ufsdefs.h"
 
 /*
  * For debug aid.
@@ -1843,7 +1846,7 @@ static int trim_finfo_version(FINFO **fp, int rver)
  * Caller have to free the area after sorting done.
  */
 
-FINFO **prepare_sort_buf(register FINFO *fp, register int n)
+static FINFO **prepare_sort_buf(register FINFO *fp, register int n)
 {
   register FINFO **bp;
   register FINFO **bufp;
@@ -1876,7 +1879,7 @@ FINFO **prepare_sort_buf(register FINFO *fp, register int n)
  * Note that the result is in the reversed order.
  */
 
-int dsk_filecmp(FINFO **fp1, FINFO **fp2)
+static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
 {
   register int res, v1, v2;
 
@@ -1907,7 +1910,7 @@ int dsk_filecmp(FINFO **fp1, FINFO **fp2)
  * Note that the result is in the reversed order.
  */
 
-int unix_filecmp(register FINFO **f1, register FINFO **f2)
+static int unix_filecmp(register FINFO **f1, register FINFO **f2)
 { return (strcmp((*f1)->lname, (*f2)->lname)); }
 
 /*
@@ -1929,7 +1932,7 @@ int unix_filecmp(register FINFO **f1, register FINFO **f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-int file_sort(register FINFO **fpp, register int n, register int (*sortfn)())
+static int file_sort(register FINFO **fpp, register int n, register int (*sortfn)())
 {
   register FINFO **fp;
   register FINFO **sort_bufp;

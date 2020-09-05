@@ -55,11 +55,16 @@ static char *id = "$Id: testtool.c,v 1.4 2001/12/24 01:09:07 sybalsky Exp $ Copy
 #include "lspglob.h"
 #include "emlglob.h"
 #include "cell.h"
-#include "stack.h"
 #include "ifpage.h"
 #include "debug.h"
 #include "dbprint.h"
 #include "tosfns.h"
+
+#include "testtooldefs.h"
+#include "dbgtooldefs.h"
+#include "gcarraydefs.h"
+#include "kprintdefs.h"
+#include "mkatomdefs.h"
 
 #define URMAXFXNUM 100
 #define URSCAN_ALINK 0
@@ -814,20 +819,11 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
 /*									*/
 /************************************************************************/
 
-struct doko {
-  LispPTR func;
-  int pc;
-};
-
-struct doko doko(void) {
-  struct doko tmp;
-
+void doko(void) {
   printf(" At ");
   print_atomname(FuncObj->framename);
   putchar('\n');
-  printf("   PC cnt = 0%o\n", tmp.pc = ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
-  tmp.func = FuncObj->framename;
-  return (tmp);
+  printf("   PC cnt = 0%o\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
 }
 
 /**** dump specified area (in 32 bit width) ***/
@@ -1055,7 +1051,7 @@ int MAKEATOM(char *string) {
 /*									*/
 /************************************************************************/
 
-DLword *MakeAtom68k(char *string) {
+LispPTR *MakeAtom68k(char *string) {
   int index;
   index = make_atom(string, 0, countchar(string), 0);
 #ifdef BIGVM

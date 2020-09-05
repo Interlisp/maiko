@@ -17,6 +17,8 @@ static char *id = "$Id: ubf2.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyrigh
 #include "lispemul.h"
 #include "medleyfp.h"
 
+#include "ubf2defs.h"
+
 /************************************************************
         OP_ub2  -- op 354  ==  UBFLOAT2
 354/0	ADD

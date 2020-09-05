@@ -24,6 +24,10 @@ static char *id = "$Id: lisp2c.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copyri
 #include "medleyfp.h"
 #include "arith.h"
 
+#include "lisp2cdefs.h"
+#include "commondefs.h"
+#include "mkcelldefs.h"
+
 int LispStringP(LispPTR object) {
   int type;
 

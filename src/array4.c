@@ -24,9 +24,13 @@ static char *id = "@(#) array4.c	2.7 10/12/88";
 #include "adr68k.h"
 #include "lispmap.h"
 #include "lsptypes.h"
+#include "mkcelldefs.h"
 #include "arith.h"
 #include "gc.h"
 #include "my.h"
+
+#include "array4defs.h"
+#include "gchtfinddefs.h"
 
 /***	N_OP_aset1   -- op 267   (new-value array index)   ***/
 

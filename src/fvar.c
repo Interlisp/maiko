@@ -20,6 +20,11 @@ static char *id = "$Id: fvar.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyrigh
 #include "lsptypes.h"
 #include "gc.h"
 
+#include "fvardefs.h"
+#include "byteswapdefs.h"
+#include "commondefs.h"
+#include "gchtfinddefs.h"
+
 #ifdef GCC386
 #include "inlnPS2.h"
 #endif

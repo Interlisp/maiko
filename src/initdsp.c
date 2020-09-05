@@ -17,6 +17,7 @@ static char *id = "$Id: initdsp.c,v 1.2 1999/01/03 02:07:08 sybalsky Exp $ Copyr
  */
 
 #include <stdio.h>
+#include <unistd.h>
 
 #ifndef NOPIXRECT
 #ifndef DOS
@@ -66,6 +67,14 @@ static char *id = "$Id: initdsp.c,v 1.2 1999/01/03 02:07:08 sybalsky Exp $ Copyr
 #include "bitblt.h"
 #include "pilotbbt.h"
 #include "dbprint.h"
+
+#include "initdspdefs.h"
+#ifdef BYTESWAP
+#include "byteswapdefs.h"
+#endif
+#ifdef XWINDOW
+#include "xcursordefs.h"
+#endif
 
 #ifdef ISC
 #define getpagesize() 512
@@ -274,7 +283,7 @@ void clear_display() {
 /*  ================================================================  */
 /*  Now takes 68k address, function renamed for safety  */
 
-void init_display2(INT display_addr, INT display_max)
+void init_display2(DLword *display_addr, int display_max)
 {
   int mmapstat;
   int fbgattr_result;
@@ -729,7 +738,7 @@ void byte_swapped_displayregion(int x, int y, int w, int h)
                               ((x + 7) >> 3)) &
                              0xfffffffc);
 
-  bit_reverse_region(longptr, w, h, DLWORD_PERLINE);
+  bit_reverse_region((unsigned short *)longptr, w, h, DLWORD_PERLINE);
 
   return;
 

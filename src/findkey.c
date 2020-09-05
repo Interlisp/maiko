@@ -18,6 +18,8 @@ static char *id = "$Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyr
 #include "lspglob.h"
 #include "adr68k.h"
 
+#include "findkeydefs.h"
+
 /***********************************************************************/
 /*
                 File Name :	findkey.c
