@@ -33,7 +33,7 @@ static char *id = "$Id: asmbitblt.c,v 1.3 2001/12/24 01:08:58 sybalsky Exp $ Cop
 #include "arith.h"
 #include "stack.h"
 #include "cell.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "bb.h"
 #include "bitblt.h"

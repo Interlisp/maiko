@@ -39,7 +39,7 @@ default: ../$(OSARCHNAME)/$(LDENAME)
 $(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
 	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
 	 $(INCDIR)arith.h $(INCDIR)stream.h \
 	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
 	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
@@ -92,7 +92,7 @@ $(OBJECTDIR)xc.s3:	$(OBJECTDIR)xc.s2 $(INLINE)
 $(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	 $(INCDIR)initatms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
 	 $(INCDIR)arith.h $(INCDIR)stream.h \
 	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
 	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   

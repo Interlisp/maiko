@@ -26,7 +26,7 @@ static char *id = "@(#) array4.c	2.7 10/12/88";
 #include "lsptypes.h"
 #include "mkcelldefs.h"
 #include "arith.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "my.h"
 
 #include "array4defs.h"

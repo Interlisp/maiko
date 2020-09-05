@@ -25,7 +25,7 @@ static char *id = "@(#) array2.c	2.9 10/12/88";
 #include "lispmap.h"
 #include "lsptypes.h"
 #include "emlglob.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "mkcelldefs.h"
 #include "arith.h"
 #include "my.h"

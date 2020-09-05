@@ -23,7 +23,7 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 #include "cell.h"
 #include "lispmap.h"
 #include "lspglob.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "conspagedefs.h"
 #include "allocmdsdefs.h"

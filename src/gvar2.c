@@ -15,7 +15,7 @@ static char *id = "$Id: gvar2.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyrig
 #include "lsptypes.h"
 #include "lspglob.h"
 #include "adr68k.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "emlglob.h"
 #include "cell.h"
 #include "dbprint.h"

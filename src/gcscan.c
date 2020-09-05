@@ -49,7 +49,7 @@ static char *id = "$Id: gcscan.c,v 1.3 1999/05/31 23:35:33 sybalsky Exp $ Copyri
 
 #include "lispemul.h"
 #include "lspglob.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "lsptypes.h"
 
 #include "gcscandefs.h"

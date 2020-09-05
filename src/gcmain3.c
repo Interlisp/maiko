@@ -45,7 +45,7 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "stack.h"
 #include "cell.h"
 #include "ifpage.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "gcmain3defs.h"
 #include "commondefs.h"

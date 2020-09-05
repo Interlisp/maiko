@@ -48,7 +48,7 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 #include "lispmap.h"
 #include "cell.h"
 #include "initatms.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "arith.h"
 #include "stream.h"
 

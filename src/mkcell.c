@@ -36,7 +36,7 @@ static char *id = "$Id: mkcell.c,v 1.3 1999/05/31 23:35:39 sybalsky Exp $ Copyri
 #include "address.h"
 #include "adr68k.h"
 #include "cell.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "mkcelldefs.h"
 #include "allocmdsdefs.h"

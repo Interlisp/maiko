@@ -24,7 +24,7 @@
 #		 $(INCDIR)lispemul.h $(INCDIR)version.h \
 #		 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 #		 $(INCDIR)stack.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
-#		 $(INCDIR)gc.h
+#		 $(INCDIR)gcdata.h
 #		$(CC) $(RFLAGS) $(SRCDIR)<<file-name>>.c $(INLINE) -o $(OBJECTDIR)<<file-name>>.o
 
 # to build sysouts on the sun, you must do the following:
@@ -335,7 +335,7 @@ $(OBJECTDIR)bbtsub.o :  $(SRCDIR)bbtsub.c $(INCDIR)bbtsub.h $(REQUIRED-INCS) $(I
 	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
 	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h $(INCDIR)dspdata.h \
 	 $(INCDIR)bitblt.h $(INCDIR)bb.h $(INCDIR)dbprint.h \
-	 $(INCDIR)stack.h $(INCDIR)cell.h $(INCDIR)gc.h $(INCDIR)arith.h $(INCDIR)fp.h
+	 $(INCDIR)stack.h $(INCDIR)cell.h $(INCDIR)gcdata.h $(INCDIR)arith.h $(INCDIR)fp.h
 	$(CC) $(RFLAGS) $(SRCDIR)bbtsub.c $(INLINE) -o $(OBJECTDIR)bbtsub$(OEXT)
 
 $(OBJECTDIR)blt.o :  $(SRCDIR)blt.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)address.h  \
@@ -350,7 +350,7 @@ $(OBJECTDIR)byteswap.o: $(SRCDIR)byteswap.c  $(REQUIRED-INCS) $(INLINE)
 $(OBJECTDIR)car-cdr.o :  $(SRCDIR)car-cdr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)gc.h  $(INCDIR)cell.h
+	 $(INCDIR)gcdata.h  $(INCDIR)cell.h
 	$(CC) $(RFLAGS) $(SRCDIR)car-cdr.c $(INLINE) -o $(OBJECTDIR)car-cdr$(OEXT)
 
 $(OBJECTDIR)chardev.o :  $(SRCDIR)chardev.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -388,13 +388,13 @@ $(OBJECTDIR)common.o :  $(SRCDIR)common.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 $(OBJECTDIR)conspage.o :  $(SRCDIR)conspage.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h  $(INCDIR)lispmap.h \
-	 $(INCDIR)gc.h  $(INCDIR)lspglob.h
+	 $(INCDIR)gcdata.h  $(INCDIR)lspglob.h
 	$(CC) $(RFLAGS) $(SRCDIR)conspage.c $(INLINE) -o $(OBJECTDIR)conspage$(OEXT)
 
 $(OBJECTDIR)mkcell.o :  $(SRCDIR)mkcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)gc.h
+	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)mkcell.c $(INLINE) -o $(OBJECTDIR)mkcell$(OEXT)
 
 $(OBJECTDIR)draw.o :  $(SRCDIR)draw.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -407,7 +407,7 @@ $(OBJECTDIR)z2.o :  $(SRCDIR)z2.c  $(REQUIRED-INCS)  \
 	 $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
-	 $(INCDIR)gc.h  $(INCDIR)my.h
+	 $(INCDIR)gcdata.h  $(INCDIR)my.h
 	$(CC) $(RFLAGS) $(SRCDIR)z2.c $(INLINE) -o $(OBJECTDIR)z2$(OEXT)
 
 $(OBJECTDIR)eqf.o :  $(SRCDIR)eqf.c  $(REQUIRED-INCS)  $(INCDIR)fp.h \
@@ -494,10 +494,10 @@ $(OBJECTDIR)dir.o :  $(SRCDIR)dir.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 $(OBJECTDIR)fvar.o :  $(SRCDIR)fvar.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)stack.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
-	 $(INCDIR)gc.h $(INCDIR)lsptypes.h
+	 $(INCDIR)gcdata.h $(INCDIR)lsptypes.h
 	$(CC) $(DISPRFLAGS) $(SRCDIR)fvar.c $(INLINE) -o $(OBJECTDIR)fvar$(OEXT)
 
-$(OBJECTDIR)gc.o :  $(SRCDIR)gc.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)gc.h  \
+$(OBJECTDIR)gc.o :  $(SRCDIR)gc.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)gcdata.h  \
 	 $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h
 	$(CC) $(RFLAGS) $(SRCDIR)gc.c $(INLINE) -o $(OBJECTDIR)gc$(OEXT)
@@ -511,25 +511,25 @@ $(OBJECTDIR)gc2.o :  $(SRCDIR)gc2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INC
 $(OBJECTDIR)gcarray.o :  $(SRCDIR)gcarray.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
-	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h \
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gcdata.h \
 	 $(INCDIR)array.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcarray.c $(INLINE) -o $(OBJECTDIR)gcarray$(OEXT)
 
 $(OBJECTDIR)gcfinal.o :  $(SRCDIR)gcfinal.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
-	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h \
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gcdata.h \
 	 $(INCDIR)array.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcfinal.c $(INLINE) -o $(OBJECTDIR)gcfinal$(OEXT)
 
 $(OBJECTDIR)gcoflow.o :  $(SRCDIR)gcoflow.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gc.h
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcoflow.c $(INLINE) -o $(OBJECTDIR)gcoflow$(OEXT)
 
 $(OBJECTDIR)gchtfind.o :  $(SRCDIR)gchtfind.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gc.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)gcdata.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)cell.h
 	$(CC) $(RFLAGS) $(SRCDIR)gchtfind.c $(INLINE) -o $(OBJECTDIR)gchtfind$(OEXT)
 
@@ -537,35 +537,35 @@ $(OBJECTDIR)gcmain3.o :  $(SRCDIR)gcmain3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)stack.h  $(INCDIR)cell.h  $(INCDIR)ifpage.h \
-	 $(INCDIR)gc.h
+	 $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcmain3.c $(INLINE) -o $(OBJECTDIR)gcmain3$(OEXT)
 
 $(OBJECTDIR)gcr.o :  $(SRCDIR)gcr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)emlglob.h  $(INCDIR)lsptypes.h \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h  $(INCDIR)lspglob.h \
-	 $(INCDIR)stack.h  $(INCDIR)gc.h
+	 $(INCDIR)stack.h  $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcr.c $(INLINE) -o $(OBJECTDIR)gcr$(OEXT)
 
 $(OBJECTDIR)gcrcell.o :  $(SRCDIR)gcrcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h $(INCDIR)dbprint.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)stack.h \
-	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gc.h
+	 $(INCDIR)cell.h  $(INCDIR)ifpage.h  $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcrcell.c $(INLINE) -o $(OBJECTDIR)gcrcell$(OEXT)
 
 $(OBJECTDIR)gccode.o :  $(SRCDIR)gccode.c  $(REQUIRED-INCS) \
 	 $(INCDIR)lispemul.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)lispmap.h \
 	 $(INCDIR)stack.h  $(INCDIR)cell.h  $(INCDIR)ifpage.h \
-	 $(INCDIR)gc.h  $(INCDIR)array.h
+	 $(INCDIR)gcdata.h  $(INCDIR)array.h
 	$(CC) $(RFLAGS) $(SRCDIR)gccode.c $(INLINE) -o $(OBJECTDIR)gccode$(OEXT)
 
 $(OBJECTDIR)gcscan.o :  $(SRCDIR)gcscan.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
-	 $(INCDIR)lspglob.h  $(INCDIR)gc.h $(INCDIR)lsptypes.h
+	 $(INCDIR)lspglob.h  $(INCDIR)gcdata.h $(INCDIR)lsptypes.h
 	$(CC) $(RFLAGS) $(SRCDIR)gcscan.c $(INLINE) -o $(OBJECTDIR)gcscan$(OEXT)
 
 $(OBJECTDIR)gvar2.o :  $(SRCDIR)gvar2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)gc.h  $(INCDIR)emlglob.h $(INCDIR)cell.h $(INCDIR)lsptypes.h
+	 $(INCDIR)gcdata.h  $(INCDIR)emlglob.h $(INCDIR)cell.h $(INCDIR)lsptypes.h
 	$(CC) $(RFLAGS) $(SRCDIR)gvar2.c $(INLINE) -o $(OBJECTDIR)gvar2$(OEXT)
 
 $(OBJECTDIR)hardrtn.o :  $(SRCDIR)hardrtn.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -596,7 +596,7 @@ $(OBJECTDIR)initsout.o :  $(SRCDIR)initsout.c  $(REQUIRED-INCS) $(INCDIR)hdw_con
 	 $(INCDIR)lispemul.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)ifpage.h  $(INCDIR)iopage.h  $(INCDIR)cell.h \
-	 $(INCDIR)gc.h
+	 $(INCDIR)gcdata.h
 	$(CC) $(RFLAGS) $(SRCDIR)initsout.c $(INLINE) -o $(OBJECTDIR)initsout$(OEXT)
 
 $(OBJECTDIR)kbdsubrs.o :  $(SRCDIR)kbdsubrs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h
@@ -688,7 +688,7 @@ $(OBJECTDIR)return.o :  $(SRCDIR)return.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 $(OBJECTDIR)rplcons.o :  $(SRCDIR)rplcons.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)gc.h  $(INCDIR)cell.h
+	 $(INCDIR)gcdata.h  $(INCDIR)cell.h
 	$(CC) $(RFLAGS) $(SRCDIR)rplcons.c $(INLINE) -o $(OBJECTDIR)rplcons$(OEXT)
 
 $(OBJECTDIR)rs232c.o :  $(SRCDIR)rs232c.c  $(REQUIRED-INCS) $(INCDIR)rs232c.h

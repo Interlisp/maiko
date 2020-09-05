@@ -35,7 +35,7 @@ static char *id = "$Id: gcoflow.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 #include "address.h"
 #include "adr68k.h"
 #include "lspglob.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "gcoflowdefs.h"
 #include "gchtfinddefs.h"

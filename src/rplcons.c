@@ -29,7 +29,7 @@ static char *id = "$Id: rplcons.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 #include "lsptypes.h"
 #include "address.h"
 #include "adr68k.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "cell.h"
 
 #include "rplconsdefs.h"

@@ -54,7 +54,7 @@ $(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
 	 $(INCDIR)address.h \
 	 $(INCDIR)address68k.h  $(INCDIR)stack.h  $(INCDIR)lispglobal.h \
 	 $(INCDIR)lisptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	 $(INCDIR)initatoms.h  $(INCDIR)gc.h  \
+	 $(INCDIR)initatoms.h  $(INCDIR)gcdata.h  \
 	 $(INCDIR)arith.h $(INCDIR)stream.h  $(INCDIR)dbprint.h\
 	 $(INCDIR)tos1defs.h  $(INCDIR)tosretmacro.h \
 	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \

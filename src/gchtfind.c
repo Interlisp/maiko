@@ -16,7 +16,7 @@ static char *id = "$Id: gchtfind.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copy
 #include "address.h"
 #include "adr68k.h"
 #include "lspglob.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "lispmap.h"
 #include "cell.h"
 

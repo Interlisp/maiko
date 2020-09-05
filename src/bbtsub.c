@@ -68,7 +68,7 @@ static char *id = "$Id: bbtsub.c,v 1.3 2001/12/24 01:08:59 sybalsky Exp $ Copyri
 #include "stack.h"
 #include "return.h"
 #include "cell.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "iopage.h"
 
 #include "car-cdrdefs.h"

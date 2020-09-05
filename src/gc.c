@@ -15,7 +15,7 @@ static char *id = "$Id: gc.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 #include "lspglob.h"
 #include "lsptypes.h"
 #include "emlglob.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "gcdefs.h"
 #include "gchtfinddefs.h"

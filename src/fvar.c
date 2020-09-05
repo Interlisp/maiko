@@ -18,7 +18,7 @@ static char *id = "$Id: fvar.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyrigh
 #include "emlglob.h"
 #include "lispmap.h"
 #include "lsptypes.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "fvardefs.h"
 #include "byteswapdefs.h"

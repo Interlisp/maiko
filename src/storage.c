@@ -29,7 +29,7 @@ static const char *id =
 #include "cell.h"
 #include "lsptypes.h"
 #include "ifpage.h"
-#include "gc.h"
+#include "gcdata.h"
 
 #include "storagedefs.h"
 #include "car-cdrdefs.h"

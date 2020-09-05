@@ -259,8 +259,3 @@ struct  htoverflow
 #endif /* BIGVM */
 
 #endif /*  BYTESWAP */
-
-
-extern LispPTR htfind(LispPTR ptr, int casep);
-extern LispPTR rec_htfind(LispPTR ptr, int casep);
-extern LispPTR gcreccell(LispPTR cell);

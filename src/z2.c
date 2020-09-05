@@ -34,7 +34,7 @@ static char *id = "$Id: z2.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 #include "adr68k.h"
 #include "cell.h"
 #include "stack.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "mkcelldefs.h"
 #include "arith.h"
 #include "my.h"

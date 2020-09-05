@@ -52,7 +52,7 @@ static char *id = "$Id: gcfinal.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "stack.h"
 #include "cell.h"
 #include "ifpage.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "array.h"
 
 #include "gcfinaldefs.h"

@@ -43,7 +43,7 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 #include "devconf.h"
 #include "dbprint.h"
 #include "lldsp.h"
-#include "gc.h" /* for ADDREF & GCLOOKUP */
+#include "gcdata.h" /* for ADDREF & GCLOOKUP */
 
 #include "initsoutdefs.h"
 #include "byteswapdefs.h"

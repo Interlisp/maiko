@@ -73,7 +73,7 @@ static char *id = "$Id: gcrcell.c,v 1.3 1999/05/31 23:35:32 sybalsky Exp $ Copyr
 #include "stack.h"
 #include "cell.h"
 #include "ifpage.h"
-#include "gc.h"
+#include "gcdata.h"
 #include "dbprint.h"
 
 #include "gcrcelldefs.h"
