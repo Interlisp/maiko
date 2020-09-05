@@ -465,7 +465,7 @@ int kb_event(struct inputevent *event);
       break;
 
     default: /* keystroke */
-      if ((kn = SUNLispKeyMap[((unsigned short)event->ie_code)]) > -1)
+      if ((kn = SUNLispKeyMap[((unsigned short)event->ie_code)]) < 255)
         kb_trans(kn, upflg);
       else
         printf("kb_event: unknown key number=%d\n", event->ie_code);
