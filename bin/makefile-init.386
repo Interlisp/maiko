@@ -48,5 +48,5 @@ $(OBJECTDIR)xc.o:      $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
 	$(INCDIR)initatms.h  $(INCDIR)gc.h  \
 	$(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h $(INCDIR)car-cdr.h
+	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h
 	$(CC) $(DISPRFLAGS) -UOPDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o
