@@ -72,11 +72,11 @@ int OP_miscn(int misc_index, int arg_count) {
       N_GETNUMBER(args[0], user_subr, do_ufn);
       if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) goto do_ufn;
     } break;
-    case miscn_SXHASH: result = SX_hash(args); break;
+    case miscn_SXHASH: result = SX_hash(args[0]); break;
 
-    case miscn_STRING_EQUAL_HASHBITS: result = STRING_EQUAL_HASHBITS(args); break;
+    case miscn_STRING_EQUAL_HASHBITS: result = STRING_EQUAL_HASHBITS(args[0]); break;
 
-    case miscn_STRINGHASHBITS: result = STRING_HASHBITS(args); break;
+    case miscn_STRINGHASHBITS: result = STRING_HASHBITS(args[0]); break;
 
     case miscn_VALUES:
       if (arg_count > 255) {

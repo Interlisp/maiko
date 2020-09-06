@@ -50,8 +50,8 @@ static unsigned short stringhash(LispPTR obj);
 /*								*/
 /****************************************************************/
 
-LispPTR SX_hash(register SXHASHARG *args) {
-  return (S_POSITIVE | (0xFFFF & (sxhash(args->object))));
+LispPTR SX_hash(LispPTR object) {
+    return (S_POSITIVE | (0xFFFF & (sxhash(object))));
   /* Smash the top of the stack to a 0xe, offset */
 }
 
@@ -194,8 +194,8 @@ static unsigned short sxhash_pathname(LispPTR obj) {
 /* 								*/
 /****************************************************************/
 
-LispPTR STRING_EQUAL_HASHBITS(SXHASHARG *args) {
-  return (S_POSITIVE | (0xFFFF & (stringequalhash(args->object))));
+LispPTR STRING_EQUAL_HASHBITS(LispPTR object) {
+  return (S_POSITIVE | (0xFFFF & (stringequalhash(object))));
 } /* STRING_EQUAL_HASHBITS */
 
 static unsigned short stringequalhash(LispPTR obj) {
@@ -262,8 +262,8 @@ static unsigned short stringequalhash(LispPTR obj) {
 /* 								*/
 /****************************************************************/
 
-LispPTR STRING_HASHBITS(SXHASHARG *args) {
-  return (S_POSITIVE | (0xFFFF & (stringhash(args->object))));
+LispPTR STRING_HASHBITS(LispPTR object) {
+  return (S_POSITIVE | (0xFFFF & (stringhash(object))));
 } /* STRING_HASHBITS */
 
 static unsigned short stringhash(LispPTR obj) {
