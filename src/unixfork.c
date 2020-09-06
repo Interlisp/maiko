@@ -420,6 +420,7 @@ int fork_Unix() {
           } else /* old style, no args */
           {
             termtype[0] = 0;
+            cmdstring = shcom;
             cmdstring[0] = 0;
           }
 
