@@ -444,6 +444,7 @@ nextopcode:
 
     case 021:
     CASE021:
+      /* UB: left shift of negative value -4 */
       BIND;
     case 022:
     CASE022:
@@ -901,6 +902,7 @@ nextopcode:
     case 0261:
     CASE261 : {
       CHECK_INTERRUPT;
+      /* UB: left shift of negative value -1 */
       PCMACL += (Get_SBYTE_PCMAC1 << 8) | Get_BYTE_PCMAC2;
       nextop0;
     }

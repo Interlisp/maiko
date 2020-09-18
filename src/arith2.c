@@ -47,6 +47,7 @@ doufn2:
   ERROR_EXIT(tos);
 
 #else
+  /* UB: signed integer overflow: 2147483647 + 2147483647 cannot be represented in type 'int' */
   result = arg1 + arg2;
   if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);
@@ -82,6 +83,7 @@ dummy:
 
 #else
 
+  /* UB: signed integer overflow: 2147483647 + 2147483647 cannot be represented in type 'int' */
   result = arg1 + arg2;
   if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);
@@ -117,6 +119,7 @@ doufn2:
 
 #else
 
+  /* UB: signed integer overflow: -2147483647 - 320 cannot be represented in type 'int' */
   result = arg1 - arg2;
   if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);
@@ -142,7 +145,7 @@ dummy:
   idiff_err_label();
 
 #else
-
+  /* UB: signed integer overflow: -2147483647 - 100 cannot be represented in type 'int' */
   result = arg1 - arg2;
   if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);

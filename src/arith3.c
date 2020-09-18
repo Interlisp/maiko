@@ -47,6 +47,7 @@ LispPTR N_OP_makenumber(int tosm1, int tos) {
   register int result;
 
   if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) ERROR_EXIT(tos);
+  /* UB: left shift of 49152 by 16 places cannot be represented in type 'int' */
   result = ((tosm1 & 0xffff) << 16) | (tos & 0xffff);
   N_ARITH_SWITCH(result);
 } /* end OP_makenumber */

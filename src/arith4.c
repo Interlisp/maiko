@@ -89,6 +89,7 @@ dummy:
 
 #else
 
+  /* UB: signed integer overflow: 1073741824 * 32768 cannot be represented in type 'int' */
   result = arg1 * arg2;
   if ((arg2 != 0) && ((result / arg2) != arg1)) { goto doufn; }
   N_ARITH_SWITCH(result);
