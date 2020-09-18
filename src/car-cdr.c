@@ -97,39 +97,28 @@ LispPTR cdr(register LispPTR datum)
   register DLword cdr_code;
   register ConsCell *temp;
 
+  if (datum == NIL_PTR) return (NIL_PTR);
+  if (!Listp(datum)) error("cdr : ARG not list");
+
   datum68k = (ConsCell *)(Addr68k_from_LADDR(datum));
   cdr_code = datum68k->cdr_code;
 
-  if (Listp(datum)) {
-    if (cdr_code == CDR_NIL)
-      return (NIL_PTR); /* cdr is nil */
-
-    else if ((cdr_code & CDR_ONPAGE) != 0) /* cdr-samepage */
+  if (cdr_code == CDR_NIL) return (NIL_PTR); /* cdr is nil */
+  if ((cdr_code & CDR_ONPAGE) != 0) /* cdr-samepage */
 #ifdef NEWCDRCODING
-      return (datum + ((cdr_code & 7) << 1));
+    return (datum + ((cdr_code & 7) << 1));
 #else
-      return (POINTER_PAGEBASE(datum) + ((cdr_code & 127) << 1));
+    return (POINTER_PAGEBASE(datum) + ((cdr_code & 127) << 1));
 #endif                                 /* NEWCDRCODING */
-    else if (cdr_code == CDR_INDIRECT) /* cdr_code > CDR_ONPAGE */
-                                       /* cdr-indirect */
-      return (cdr((LispPTR)(datum68k->car_field)));
-
-    else {
-/* cdr isn't a CONS, but is stored on this page. */
+  if (cdr_code == CDR_INDIRECT) /* cdr_code > CDR_ONPAGE cdr-indirect */
+    return (cdr((LispPTR)(datum68k->car_field)));
+  /* cdr isn't a CONS, but is stored on this page. */
 #ifdef NEWCDRCODING
-      temp = (ConsCell *)(Addr68k_from_LADDR(datum + (cdr_code << 1)));
+  temp = (ConsCell *)(Addr68k_from_LADDR(datum + (cdr_code << 1)));
 #else
-      temp = (ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(datum) + (cdr_code << 1)));
+  temp = (ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(datum) + (cdr_code << 1)));
 #endif /* NEWCDRCODING */
-      return ((LispPTR)temp->car_field);
-    }
-  } else if (datum == NIL_PTR)
-    return (NIL_PTR);
-
-  /**** We assume CAR/CDRERR is CDR ****************/
-  else
-    error("cdr : ARG not list");
-
+  return ((LispPTR)temp->car_field);
 } /* end of cdr */
 
 /**********************************************************************/
@@ -366,39 +355,29 @@ LispPTR N_OP_cdr(register LispPTR tos) {
   register ConsCell *datum68k;
   register DLword cdr_code;
 
+  if (tos == NIL_PTR) return (tos);
+  if (!Listp(tos)) {
+      ERROR_EXIT(tos);
+  }
+
   datum68k = (ConsCell *)(Addr68k_from_LADDR(tos));
   cdr_code = datum68k->cdr_code;
 
-  if (Listp(tos)) {
-    if (cdr_code == CDR_NIL)
-      return (NIL_PTR); /* cdr-nil */
-
-    else if (cdr_code > CDR_ONPAGE) /* cdr-samepage */
+    if (cdr_code == CDR_NIL) return (NIL_PTR); /* cdr-nil */
+    if (cdr_code > CDR_ONPAGE) /* cdr-samepage */
 #ifdef NEWCDRCODING
       return (tos + ((cdr_code & 7) << 1));
 #else
       return (POINTER_PAGEBASE(tos) + ((cdr_code & 127) << 1));
 #endif                                 /*NEWCDRCODING */
-    else if (cdr_code == CDR_INDIRECT) /* cdr_code < CDR_ONPAGE */
-                                       /* cdr-indirect */
+    if (cdr_code == CDR_INDIRECT) /* cdr-indirect */
       return (cdr((LispPTR)(datum68k->car_field)));
-
-    else {
-/* cdr-differentpage */
-
+    /* cdr-differentpage */
 #ifdef NEWCDRCODING
-      return ((LispPTR)((ConsCell *)(Addr68k_from_LADDR(tos + (cdr_code << 1))))->car_field);
+    return ((LispPTR)((ConsCell *)(Addr68k_from_LADDR(tos + (cdr_code << 1))))->car_field);
 #else
-      return ((LispPTR)((ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(tos) + (cdr_code << 1))))
-                  ->car_field);
+    return ((LispPTR)((ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(tos) + (cdr_code << 1))))->car_field);
 #endif /*NEWCDRCODING */
-    }
-  } else if (tos == NIL_PTR)
-    return (tos);
-  else {
-    ERROR_EXIT(tos);
-  }
-
 } /* end of N_OP_cdr */
 
 /**********************************************************************/
