@@ -11,11 +11,10 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 
 #include "version.h"
 
-/***********************************************************************/
-/*
-                File Name :conspage.c
-*/
-/************************************************************************/
+/**
+ *  @file conspage.c
+ */
+
 #include "lispemul.h"
 #include "address.h"
 #include "adr68k.h"
@@ -31,47 +30,39 @@ static char *id = "$Id: conspage.c,v 1.3 1999/05/31 23:35:27 sybalsky Exp $ Copy
 #include "commondefs.h"
 #include "gchtfinddefs.h"
 
-/************************************************************************/
-/*									*/
-/*			i n i t _ c o n s p a g e			*/
-/*									*/
-/*	Initialize a fresh page of CONS cells.  Sets the count field	*/
-/*	and chains the cells together for ease of searching.		*/
-/*									*/
-/*	A fresh CONS page looks like this:				*/
-/*									*/
-/*	+--------+--------+----------------+				*/
-/*    0 | count  | nxtcell|   (padding)    |	nxtcell = 254.		*/
-/*	+--------+--------+----------------+				*/
-/*    2 |      next_page                   |				*/
-/*	+--------+-------------------------+				*/
-/*    4 |     0  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*    6 |     4  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*  ... |   ...  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*  254 |   252  |         N I L           |				*/
-/*	+--------+-------------------------+				*/
-/*									*/
-/*	The cells are chained together thru their high 8 bits,		*/
-/*	using the word offset within page as the chain.  Cells		*/
-/*	are chained from the top of the page down.			*/
-/*									*/
-/*	Experimental version goes nxtcell = 248 */
-/*	count/nxtcell in cell 4, next_page in cell 6
+/**
+ * Initializes a page of CONS cells, sets up the free count and
+ * chains the cells together for ease of searching.
+ *
+ *	A fresh CONS page looks like this:
+ *
+ *	+--------+--------+----------------+
+ *    0 | count  |nextcell|   (padding)    |	nextcell = 254.
+ *	+--------+--------+----------------+
+ *    2 |      next_page                   |
+ *	+--------+-------------------------+
+ *    4 |     0  |         N I L           |
+ *	+--------+-------------------------+
+ *    6 |     4  |         N I L           |
+ *	+--------+-------------------------+
+ *  ... |   ...  |         N I L           |
+ *	+--------+-------------------------+
+ *  254 |   252  |         N I L           |
+ *	+--------+-------------------------+
+ *
+ *	The cells are chained together thru their high 8 bits,
+ *	using the (16-bit) word offset within page as the chain.
+ *	Cells are chained from the top of the page down.
+ *
+ *	Experimental version goes nextcell = 248
+ *	count/nextcell in cell 4, next_page in cell 6
+ *	Chain up 4 down 8 ( ^ 6 into word count)
+ *
+ * @param[in,out] base Native pointer to cons page
+ * @param[in] link Lisp page number of next cons page
  */
-/*	Chain up 4 down 8 ( ^ 6 into word count)
- */
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
 
 static void init_conspage(register struct conspage *base, unsigned int link)
-/* Page Base */
-/* Prev Link page number DL->int*/
 {
   register ConsCell *cell;
   register int j; /* DL-> int */
@@ -81,22 +72,29 @@ static void init_conspage(register struct conspage *base, unsigned int link)
 #endif
 
 #ifdef NEWCDRCODING
-  base->next_cell = 6 ^ (j = 254);
+  j = 254;
+  base->next_cell = 6 ^ j;
   while (j > 8) {
     cell = (ConsCell *)((DLword *)base + (6 ^ j));
     cell->car_field = NIL_PTR;
     j -= 2;
     ((freecons *)cell)->next_free = (6 ^ j);
   }
+  cell = (ConsCell *)((DLword *)base + (6 ^ j));
+  cell->car_field = NIL_PTR;
+  ((freecons *)cell)->next_free = 0;
   base->count = 124;
 #else
   base->next_cell = j = 254;
   while (j != 0) {
-    cell = (ConsCell *)((DLword *)base + (j));
+    cell = (ConsCell *)((DLword *)base + j);
     cell->car_field = NIL_PTR;
     j -= 2;
-    ((freecons *)cell)->next_free = (j);
+    ((freecons *)cell)->next_free = j;
   }
+  cell = (ConsCell *)((DLword *)base + j);
+  cell->car_field = NIL_PTR;
+  ((freecons *)cell)->next_free = 0;
   base->count = 127;
 #endif /* NEWCDRCODING */
   base->next_page = link;
@@ -127,12 +125,12 @@ struct conspage *next_conspage(void) {
   register int next, prior;
 
 #ifdef NEWCDRCODING
-  /* Alloc 2 Conspages and get 1st page base */
+  /* Allocate 2 conspages and get 1st page base */
   page1 = (struct conspage *)alloc_mdspage(TYPE_LISTP);
-  /* Culc. next Conspage's Base address */
+  /* Calculate next conspage's base address */
   page2 = (struct conspage *)((DLword *)page1 + DLWORDSPER_PAGE);
 
-  init_conspage(page2, 0); /* Doesn't exst next page */
+  init_conspage(page2, 0); /* No next page */
   init_conspage(page1, LPAGE_from_68k(page2));
 
   prior = 0;
@@ -151,16 +149,19 @@ struct conspage *next_conspage(void) {
   if (page2->next_page) error("page2 has a next page??");
   if (page2 == priorpg) error("loop in conspage next_pages");
 #else
-  for (next = (int)ListpDTD->dtd_nextpage; /* getnext free conspage */
+  for (next = (int)ListpDTD->dtd_nextpage; /* /!\ Note no exit condition /!\ */ /* get next free conspage */
        ; ListpDTD->dtd_nextpage = next = page1->next_page, page1->next_page = 0xffff) {
     if (next == 0) {
-      /* Alloc 2 Conspages and get 1st page base */
+      /* Allocate 2 conspages and get 1st page base */
       page1 = (struct conspage *)alloc_mdspage(TYPE_LISTP);
 
-      /* Culc. next Conspage's Base address */
+      /* Calculate next conspage's base address */
       page2 = (struct conspage *)((DLword *)page1 + DLWORDSPER_PAGE);
 
-      init_conspage(page2, ListpDTD->dtd_nextpage); /* Doesn't exst next page */
+      /* XXX: why is the link for page2's next here?
+       * when it was previously commented as "Doesn't exst next page"
+       */
+      init_conspage(page2, ListpDTD->dtd_nextpage);
       init_conspage(page1, LPAGE_from_68k(page2));
 
       ListpDTD->dtd_nextpage = LPAGE_from_68k(page1);
@@ -179,15 +180,14 @@ ex:
 
 /************************************************************************/
 /*									*/
-/*			f i n d _ c d r c o d a b l e _ p a i r			*/
+/*			f i n d _ c d r c o d a b l e _ p a i r		*/
 /*									*/
-/*	Find a pair of CONS cells that are close enough (within 7)			*/
-/*	that the second can be cdr-coded as the cdr of the first.			*/
-/*	Set up the cdr code in the first cell, and return it.
- */
+/*	Find a pair of CONS cells that are close enough (within 7)	*/
+/*	that the second can be cdr-coded as the cdr of the first.	*/
+/*	Set up the cdr code in the first cell, and return it.		*/
 /*									*/
-/*	First searches the CONS page given, then the free-page chain			*/
-/*	finally, calls conspage to get a fresh (and guaranteed useful) page.			*/
+/*	First searches the CONS page given, then the free-page chain	*/
+/*	finally, calls conspage to get a fresh (and guaranteed useful) page.*/
 /*									*/
 /************************************************************************/
 
@@ -301,8 +301,6 @@ LispPTR N_OP_cons(register int cons_car, register int cons_cdr) {
   register struct conspage *new_conspage;
   register ConsCell *new_cell, *temp_cell;
   register int new_page; /* hold the return  val of nextconspage ,DL->int */
-
-  extern ConsCell *find_close_prior_cell(struct conspage * page, LispPTR oldcell);
 
   GCLOOKUP(cons_cdr &= POINTERMASK, ADDREF);
   GCLOOKUP(cons_car, ADDREF);
