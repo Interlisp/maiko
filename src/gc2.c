@@ -45,7 +45,6 @@ static char *id = "$Id: gc2.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyright
 /**********************************************************************/
 
 void OP_gcscan1(void) {
-  DLword gcscan1(register int probe);
 
 #ifdef TRACE
   printPC();
@@ -63,7 +62,6 @@ void OP_gcscan1(void) {
 /**********************************************************************/
 
 void OP_gcscan2(void) {
-  DLword gcscan2(register int probe);
 
 #ifdef TRACE
   printPC();

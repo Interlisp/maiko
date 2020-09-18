@@ -26,6 +26,8 @@ static const char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp 
 #include <string.h>
 #include <ctype.h>
 
+#include "keylibdefs.h"
+
 #define GOLDEN_RATIO_HACK -478700649
 #define floadbyte(number, pos) ((number >> pos) & 0xFFFF)
 #define hash_unhash(number, hashkey) \
@@ -40,11 +42,6 @@ static const char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp 
 #define FAILURE1 -1
 #define FAILURE2 -2
 #define FAILURE3 -3
-
-unsigned long make_verification(unsigned long x, unsigned long y);
-unsigned long date_integer16(char *date);
-unsigned long idate(char *str);
-unsigned long modify(unsigned long hostid);
 
 /************************************************************************/
 /*									*/

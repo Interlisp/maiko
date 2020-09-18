@@ -403,8 +403,6 @@ getmore:
 #endif /* DOS */
 } /* end getsignaldata */
 
-void kb_trans(u_short keycode, u_short upflg);
-
 /************************************************************************/
 /*									*/
 /*			    k b _ e v e n t				*/

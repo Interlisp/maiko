@@ -158,8 +158,6 @@ register LispPTR tscache asm("bx");
 #define PVARL PVar
 #define IVARL IVar
 
-extern DLword *createcell68k(unsigned int type);
-
 #ifdef DOS
 extern unsigned char inchar;
 extern unsigned short kn;

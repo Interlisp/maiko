@@ -35,9 +35,6 @@ static char *id = "$Id: loopsops.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copy
 #include "gcarraydefs.h"
 #include "gchtfinddefs.h"
 
-LispPTR lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum);
-LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword packlen,
-                         int externalp);
 static char il_string[] = "INTERLISP";
 #define GET_IL_ATOM(string) get_package_atom((string), (sizeof(string) - 1), il_string, 9, NIL)
 

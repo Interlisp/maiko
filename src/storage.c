@@ -156,8 +156,6 @@ static void advance_array_seg(register unsigned int nxtpage)
 /* rare page num */
 {
   unsigned int ncellsleft;
-  LispPTR mergebackward(LispPTR base);
-  LispPTR makefreearrayblock(LispPTR block, DLword length);
 
 /* Called when 8Mb are exhausted,and we want to switch array space
  into the extended area(Secondary space),starting with nextpage.
@@ -206,7 +204,6 @@ static void advance_array_seg(register unsigned int nxtpage)
 
 /* DLword */
 static void advance_storagestate(DLword flg) {
-  LispPTR dremove(LispPTR x, LispPTR l);
 #ifdef DEBUG
   printf("STORAGEFULLSTATE is now set to %d \n", flg);
 #endif
@@ -226,8 +223,6 @@ static void advance_storagestate(DLword flg) {
 */
 /*****************************************************************/
 static void set_storage_state(void) {
-  LispPTR cons(LispPTR cons_car, LispPTR cons_cdr);
-
   if ((*MACHINETYPE_word & 0xffff) == KATANA) {
     if (InterfacePage->dl24bitaddressable != 0)
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_SWITCHABLE;

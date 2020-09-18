@@ -706,10 +706,6 @@ void sff(LispPTR laddr) { sf((FX *)Addr68k_from_LADDR(laddr)); }
 #define DUMPSIZE 40
 #define FNOVERHEADWORDS (8)
 
-void nt1(LispPTR *start, int size, char *str);
-
-void ntheader(struct fnhead *fnobj);
-
 void nt(LispPTR index)
 /* atom index */
 {

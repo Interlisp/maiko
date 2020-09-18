@@ -345,9 +345,6 @@ const char *helpstring =
  -help        Print this message\n";
 #endif /* DOS */
 
-void start_lisp();
-void print_info_lines();
-
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/

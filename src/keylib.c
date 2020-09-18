@@ -32,11 +32,6 @@ static char *id = "$Id: keylib.c,v 1.4 2001/12/24 01:09:03 sybalsky Exp $ Copyri
 
 #define FAILURE2 -2
 
-unsigned long make_verification(unsigned long x, unsigned long y);
-unsigned long date_integer16(const char *date);
-unsigned long idate(const char *str);
-unsigned long modify(unsigned long hostid);
-
 /* ===========================================================================
         IMOD64BIT computs (IMOD X Y).
         X is a 64-bit integer; x1 is the higher 32-bit while x0 is the lower 32-bit.

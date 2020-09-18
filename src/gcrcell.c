@@ -108,8 +108,6 @@ unsigned todo_uses = 0;
 unsigned todo_misses = 0;
 unsigned todo_reads = 0;
 
-void freelistcell(LispPTR cell);
-
 /************************************************************************/
 /*									*/
 /*				g c r e c c e l l			*/

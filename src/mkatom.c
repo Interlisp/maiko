@@ -267,7 +267,6 @@ LispPTR make_atom(char *char_base, DLword offset, DLword length, short int non_n
   extern DLword *AtomHT;
   extern DLword *Pnamespace;
   extern DLword *AtomSpace;
-  LispPTR parse_number(char *char_base, short int length);
 
   DLword hash;
   LispPTR hash_entry; /* hash entry contents */

@@ -57,10 +57,6 @@ static char *id = "$Id: gcmain3.c,v 1.4 1999/05/31 23:35:31 sybalsky Exp $ Copyr
 #include "inlnPS2.h"
 #endif
 
-/* from gcscan.c */
-DLword gcscan1(register int probe);
-DLword gcscan2(register int probe);
-
 #define WORDSPERCELL 2
 #define MAXHTCNT 63
 #define PADDING 4

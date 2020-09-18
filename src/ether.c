@@ -361,8 +361,6 @@ LispPTR ether_reset(LispPTR args[])
 /*	it's OK to read packets from the network on interrupt.		*/
 /*									*/
 /************************************************************************/
-LispPTR get_packet();
-
 LispPTR ether_get(LispPTR args[])
 {
   LispPTR MaxByteCount;

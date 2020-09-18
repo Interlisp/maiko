@@ -74,8 +74,6 @@ extern int URaid_currentFX;
 extern FX *URaid_FXarray[];
 extern int URaid_ArrMAXIndex;
 
-void print_package_name(int index);
-
 /************************************************************************/
 /*									*/
 /*			P R I N T _ A T O M N A M E			*/

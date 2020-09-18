@@ -115,8 +115,6 @@ struct buf {
 };
 #endif /* BYTESWAP */
 
-void printarrayblock(LispPTR base);
-
 /************* The following procedure is common !! **************************/
 
 int integerlength(unsigned int n) {

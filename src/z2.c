@@ -44,8 +44,6 @@ static char *id = "$Id: z2.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 #include "conspagedefs.h"
 #include "vars3defs.h"
 
-struct cadr_cell cadr(LispPTR cell_adr);
-
 /*   N_OP_classoc()  OP 33Q  */
 LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
   REGISTER struct cadr_cell cadr1;

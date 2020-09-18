@@ -76,8 +76,6 @@ LispPTR fmemb(register LispPTR item, register LispPTR list) {
  */
 /**********************************************************************/
 
-extern struct cadr_cell cadr(LispPTR cell_adr); /** declaration only **/
-
 #define SAVE_ERROR_EXIT2(topcstk, tos) \
   {                                    \
     Scratch_CSTK = topcstk;            \

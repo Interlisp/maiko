@@ -23,10 +23,6 @@ static char *id = "$Id: vars3.c,v 1.4 2001/12/24 01:09:07 sybalsky Exp $ Copyrig
 #include "vars3defs.h"
 #include "car-cdrdefs.h"
 
-/* def. of car_cell moved to cell.h */
-
-struct cadr_cell cadr(LispPTR cell_adr);
-
 /*******************************************
 cadr
 

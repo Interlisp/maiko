@@ -46,8 +46,6 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   int arindex, temp;
   LispArray *arrayblk;
   int j;
-  /*	for CREATECELL  */
-  DLword *createcell68k(unsigned int type);
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);

@@ -138,8 +138,6 @@ LispPTR *alloc_mdspage(register short int type) {
   extern LispPTR *Next_MDSpage_word;
   extern LispPTR *Next_Array_word;
 
-  LispPTR newpage(LispPTR base);
-
   register LispPTR *ptr; /* points Top 32 bit of the MDS page */
   LispPTR next_page;
 

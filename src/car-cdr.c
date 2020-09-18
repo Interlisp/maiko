@@ -183,7 +183,6 @@ LispPTR rplaca(register LispPTR x, register LispPTR y)
 static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart); /* below... */
 static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell);
 #endif
-extern struct conspage *next_conspage(void); /* conspage.c */
 
 LispPTR rplacd(LispPTR x, register LispPTR y)
 /* cdr of x will be smashed */

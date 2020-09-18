@@ -68,11 +68,6 @@ DLword REPLACE_atom;
 #define GCENTRY DLword
 #endif
 
-/* forward references */
-void init_for_keyhandle(void);
-void init_for_bltchar(void);
-void init_for_bitblt(void);
-
 /************************************************************************/
 /*									*/
 /*	f i x p _ v a l u e			*/

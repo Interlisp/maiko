@@ -46,9 +46,6 @@ static char *id = "$Id: mkcell.c,v 1.3 1999/05/31 23:35:39 sybalsky Exp $ Copyri
 static LispPTR oldoldfree;
 static LispPTR oldfree;
 
-LispPTR *alloc_mdspage(register short int type);
-LispPTR initmdspage(register LispPTR *base, register DLword size, register LispPTR prev);
-
 LispPTR N_OP_createcell(register LispPTR tos) {
   register struct dtd *dtd68k;
   register DLword *ptr, *lastptr;

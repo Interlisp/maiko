@@ -399,8 +399,6 @@ int FindAvailablePty(char *Master, char *Slave) {
 return (-1);
 }
 
-void WriteLispStringToPipe(LispPTR lispstr);
-
 /************************************************************************/
 /*                                                                      */
 /*  U n i x _ h a n d l e c o m m                                       */

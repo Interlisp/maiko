@@ -26,6 +26,8 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 #include <string.h>
 #include <ctype.h>
 
+#include "keylibdefs.h"
+
 #ifdef HPUX
 /* On HPUX, use the UNAME syscall to get hostid */
 #include <sys/utsname.h>
@@ -50,11 +52,6 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 #define FAILURE3 -3
 #define FAILURE4 -4
 #define FAILURE99 -99
-
-unsigned long make_verification(unsigned long x, unsigned long y);
-unsigned long date_integer16(char *date);
-unsigned long idate(char *str);
-unsigned long modify(unsigned long hostid);
 
 /* =====================================================================
         KEYTESTER checks the input key string.
