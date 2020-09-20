@@ -206,11 +206,12 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   /* allocate Virtual Memory Space */
 
   lispworld_scratch = valloc(sys_size * MBYTE);
-
   if (lispworld_scratch == NULL) {
     fprintf(stderr, "sysout_loader: can't allocate Lisp %dMBytes VM \n", sys_size);
     exit(-1);
   }
+  /* Sadly, parts of the system depend on memory being initialized to zero */
+  memset(lispworld_scratch, 0, sys_size * MBYTE);
 
   /* now you can access lispworld */
   Lisp_world = (DLword *)lispworld_scratch;
