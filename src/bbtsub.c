@@ -618,7 +618,7 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
     }                                                                                         \
     CurrentStackPTR += (BITBLTBITMAP_argnum - 1) * DLWORDSPER_CELL;                           \
     ccfuncall(BITBLTBITMAP_index, BITBLTBITMAP_argnum, 3);                                    \
-    return (T);                                                                               \
+    return (ATOM_T);                                                                               \
   }
 
 LispPTR BITBLTBITMAP_index;
@@ -630,25 +630,25 @@ LispPTR BITBLTBITMAP_index;
 /*      which does bitmap-to-bitmap cases of BITBLT, after BITBLT       */
 /*      does some setup and massaging first.                            */
 /*                                                                      */
-/*      args[xx]: SourceBitmap                                          */
-/*      args[xx]: SourceLeft            Must be a SMALLPOSP             */
-/*      args[xx]: SourceBottom          Must be a SMALLPOSP             */
-/*      args[xx]: DestBitmap                                            */
-/*      args[xx]: DestLeft              Must be a SMALLPOSP             */
-/*      args[xx]: DestBottom            Must be a SMALLPOSP             */
-/*      args[xx]: Width                         Must be a SMALLPOSP             */
-/*      args[xx]: height                Must be a SMALLPOSP             */
-/*      args[xx]: SourceType                                            */
-/*      args[xx]: Operation                                             */
-/*      args[xx]: Texture                                               */
-/*      args[xx]: ClippingRegion                                        */
-/*      args[xx]: ClippedSrcLeft        Must be a SMALLPOSP             */
-/*      args[xx]: ClippedSrcBottom      Must be a SMALLPOSP             */
+/*      args[0]:  SourceBitmap                                          */
+/*      args[1]:  SourceLeft            Must be a SMALLPOSP             */
+/*      args[2]:  SourceBottom          Must be a SMALLPOSP             */
+/*      args[3]:  DestBitmap                                            */
+/*      args[4]:  DestLeft              Must be a SMALLPOSP             */
+/*      args[5]:  DestBottom            Must be a SMALLPOSP             */
+/*      args[6]:  Width                 Must be a SMALLPOSP             */
+/*      args[7]:  Height                Must be a SMALLPOSP             */
+/*      args[8]:  SourceType            [May be NIL]                    */
+/*      args[9]:  Operation             [May be NIL]                    */
+/*      args[10]: Texture               [May be NIL]                    */
+/*      args[11]: ClippingRegion        [May be NIL]                    */
+/*      args[12]: ClippedSrcLeft        Must be a SMALLPOSP             */
+/*      args[13]: ClippedSrcBottom      Must be a SMALLPOSP             */
 /*                                                                      */
 /*                                                                      */
 /*      SourceType must not be MERGE, which should be handled by        */
 /*      the lisp code in \BITBLT.BITMAP.                                */
-/*      This func. can't handle COLOR & souecetype == MERGE case.       */
+/*      This function can't handle COLOR & sourcetype == MERGE case.    */
 /*      It causes punting to \\PUNT.BITBLT.BITMAP.                      */
 /*      Therefore SYSOUT must contain \\PUNT.BITBLT.BITMAP.             */
 /*                                                                      */
@@ -673,30 +673,33 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   SourceBitmap = (BITMAP *)Addr68k_from_LADDR(args[0]);
   DestBitmap = (BITMAP *)Addr68k_from_LADDR(args[3]);
   /* It does not handle COLOR ..... maybe later */
-  if (((destbits = DestBitmap->bmbitperpixel) != 1) ||
-      ((sourcebits = SourceBitmap->bmbitperpixel) != 1)) {
+  destbits = DestBitmap->bmbitperpixel;
+  sourcebits = SourceBitmap->bmbitperpixel;
+  if ((destbits != 1) || (sourcebits != 1)) {
     PUNT_TO_BITBLTBITMAP;
   }
   sourcetype = args[8];
-  /* sourcetype == MERGE_atom case must be handled in
-      Lisp func \\BITMAP.BITBLT */
+  /* sourcetype == MERGE_atom case must be handled in Lisp function \\PUNT.BITBLT.BITMAP */
   if (sourcetype == MERGE_atom) { PUNT_TO_BITBLTBITMAP; }
 
   N_GETNUMBER(args[1], sleft, bad_arg);
   N_GETNUMBER(args[2], sbottom, bad_arg);
   N_GETNUMBER(args[4], dleft, bad_arg);
   N_GETNUMBER(args[5], dbottom, bad_arg);
+  N_GETNUMBER(args[6], width, bad_arg);
+  N_GETNUMBER(args[7], height, bad_arg);
   operation = args[9];
   texture = args[10];
   clipreg = args[11];
   N_GETNUMBER(args[12], clipleft, bad_arg);
   N_GETNUMBER(args[13], clipbottom, bad_arg);
 
-  top = DestBitmap->bmheight;
   left = bottom = 0;
+  top = DestBitmap->bmheight;
   right = DestBitmap->bmwidth;
 
-  if (clipreg != NIL_PTR) { /* clip the BITBLT using the clipping region supplied */
+  if (clipreg != NIL_PTR) {
+    /* clip the BITBLT using the clipping region supplied */
     register LispPTR clipvalue;
     register int temp, cr_left, cr_bot;
 
@@ -721,17 +724,11 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   }
 
   left = max(left, dleft);
+  right = min(right, dleft + width);
   bottom = max(bottom, dbottom);
-  if (args[6] != NIL_PTR) {
-    N_GETNUMBER(args[6], width, bad_arg);
-    right = min(right, dleft + width);
-  }
-  if (args[7] != NIL_PTR) {
-    N_GETNUMBER(args[7], height, bad_arg);
-    top = min(top, dbottom + height);
-  }
-  stodx = dleft - sleft;
+  top = min(top, dbottom + height);
   stody = dbottom - sbottom;
+  stodx = dleft - sleft;
 
   {
     register int temp;
@@ -746,35 +743,37 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   if ((right <= left) || (top <= bottom)) return (NIL);
 
   /*** PUT SOURCETYPE MERGE special code HERE ***/
-  /**** See avobe, earler in this code check
-          souecetype and punting. *****/
+  /**** See above, earlier in this code check sourcetype and punting. *****/
+  /**** sourcebits CANNOT be unequal to destbits from earlier check */
 
-  if (sourcebits == destbits) { /* not 1-bit-per-pixel, so adjust limits by pixel size */
-    switch (sourcebits) {
-      case 4:
-        left = left * 4;
-        right = right * 4;
-        stodx = stodx * 4;
-        /* Put color texture merge case here */
-        break;
+  if (sourcebits != destbits) {
+    /* DBPRINT(("BITBLT between bitmaps of different sizes, unimplemented.")); */
+      return NIL;
+  }
+  /* if not 1-bit-per-pixel adjust limits by pixel size */
+  switch (sourcebits) {
+  case 1:
+      break;
+  case 4:
+      left = left * 4;
+      right = right * 4;
+      stodx = stodx * 4;
+      /* Put color texture merge case here */
+      break;
 
-      case 8:
-        left = left * 8;
-        right = right * 8;
-        stodx = stodx * 8;
-        /* Put color texture merge case here */
-        break;
+  case 8:
+      left = left * 8;
+      right = right * 8;
+      stodx = stodx * 8;
+      /* Put color texture merge case here */
+      break;
 
-      case 24:
-        left = left * 24;
-        right = right * 24;
-        stodx = stodx * 24;
-        /* Put color texture merge case here */
-        break;
-    }
-  } else {
-    /*      DBPRINT(("BITBLT between bitmaps of different sizes, unimplemented.")); */
-    return (NIL);
+  case 24:
+      left = left * 24;
+      right = right * 24;
+      stodx = stodx * 24;
+      /* Put color texture merge case here */
+      break;
   }
 
   height = top - bottom;
@@ -790,7 +789,7 @@ LispPTR bitblt_bitmap(LispPTR *args) {
 
   dstbpl = DestBitmap->bmrasterwidth << 4;
 
-  /* Sourcetype guaragneed not to be TEXTURE by BITBLT fn */
+  /* Sourcetype guaranteed not to be TEXTURE by BITBLT fn */
   srcbpl = SourceBitmap->bmrasterwidth << 4;
 
   /* compute flags */
@@ -899,7 +898,7 @@ bad_arg:
     }                                                                                             \
     CurrentStackPTR += (BLTSHADEBITMAP_argnum - 1) * DLWORDSPER_CELL;                             \
     ccfuncall(BLTSHADEBITMAP_index, BLTSHADEBITMAP_argnum, 3);                                    \
-    return (T);                                                                                   \
+    return (ATOM_T);                                                                                   \
   }
 
 LispPTR BLTSHADEBITMAP_index;
