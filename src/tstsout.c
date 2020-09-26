@@ -36,6 +36,7 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 extern int errno;
 
 /* JDS protoize char *valloc(size_t); */
+void check_sysout(char *sysout_file_name);
 
 void check_sysout(char *sysout_file_name) {
   int sysout; /* SysoutFile descriptor */

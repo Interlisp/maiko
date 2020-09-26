@@ -13,4 +13,7 @@ static char *id = "$Id: keytstno.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copy
 
 #include "version.h"
 
-int keytester(void) { return 0; }
+int keytester(void);
+int keytester() {
+    return 0;
+}

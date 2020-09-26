@@ -1,4 +1,4 @@
-int fork_Unix();
+int fork_Unix(void);
 #ifdef FULLSLAVENAME
 int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg);
 #else

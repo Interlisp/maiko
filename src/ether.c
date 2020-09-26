@@ -67,6 +67,7 @@ static char *id = "$Id: ether.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyrig
 #include "adr68k.h"
 #include "ether.h"
 #include "dbprint.h"
+#include "etherdefs.h"
 
 #ifdef USE_DLPI
 #define NIOCSETF PFIOCSETF

@@ -5,4 +5,5 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
 unsigned long GenericReturnT(void);
 void GenericPanic(DspInterface dsp);
 LispPTR SwitchDisplay(LispPTR display);
+void describedsp(DspInterface dsp);
 #endif

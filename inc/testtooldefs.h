@@ -32,6 +32,7 @@ int MAKEATOM(char *string);
 LispPTR *MakeAtom68k(char *string);
 void GETTOPVAL(char *string);
 void S_TOPVAL(char *string);
+int S_MAKEATOM(char *string);
 void all_stack_dump(DLword start, DLword end, DLword silent);
 void dtd_chain(DLword type);
 void Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos);

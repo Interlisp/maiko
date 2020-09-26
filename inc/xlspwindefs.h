@@ -4,5 +4,5 @@
 void Create_LispWindow(DspInterface dsp);
 void lisp_Xvideocolor(int flag);
 void set_Xmouseposition(int x, int y);
-void DoRing();
+void DoRing(void);
 #endif

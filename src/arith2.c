@@ -20,6 +20,7 @@ static char *id = "$Id: arith2.c,v 1.4 2001/12/24 01:08:58 sybalsky Exp $ Copyri
 #include "medleyfp.h"
 #include "arith.h"
 
+#include "arith2defs.h"
 #include "fpdefs.h"
 #include "mkcelldefs.h"
 

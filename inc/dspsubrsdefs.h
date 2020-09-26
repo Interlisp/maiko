@@ -7,5 +7,5 @@ void DSP_Cursor(LispPTR *args, int argnum);
 void DSP_SetMousePos(register LispPTR *args);
 LispPTR DSP_ScreenWidth(LispPTR *args);
 LispPTR DSP_ScreenHight(LispPTR *args);
-void flip_cursor();
+void flip_cursor(void);
 #endif

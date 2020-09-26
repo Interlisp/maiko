@@ -51,7 +51,6 @@ static FX *make_FXcopy(register FX *fx68k) {
   int nametbl_on_stk = NIL;
   register DLword *new68k;
   register Bframe *retbf68k;
-  extern DLword *freestackblock(DLword n, StackWord * start68k, int align);
 
 #ifdef FLIPCURSOR
   flip_cursorbar(5);
