@@ -691,11 +691,13 @@ static void int_io_init() {
 #ifdef XWINDOW
 #ifdef LINUX
   if (fcntl(ConnectionNumber(currentdsp->display_id), F_SETSIG, 0) < 0)
+    perror("fcntl on X fd - SETSIG for input handling failed");
 #else
   if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
+    perror("ioctl on X fd - SETSIG for input handling failed");
 #endif
-    perror("ioctl on X fd - SETSIG");
 #endif /* XWINDOW */
+
 #ifdef USE_DLPI
   DBPRINT(("INIT ETHER:  Doing I_SETSIG.\n"));
   if (ether_fd > 0)
