@@ -112,14 +112,14 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
   register LispPTR pc = NIL_PTR;
 
   LispPTR CATCH_RETURN_PC_ATOM = parse_atomstring("SI::*CATCH-RETURN-PC*");
-  LispPTR CHATCH_RETURN_TO_ATOM = parse_atomstring("SI::*CATCH-RETURN-TO*");
+  LispPTR CATCH_RETURN_TO_ATOM = parse_atomstring("SI::*CATCH-RETURN-TO*");
   LispPTR CATCH_RETURN_FROM_ATOM = parse_atomstring("SI::*CATCH-RETURN-FROM*");
 
   for (target = (LispPTR)unwinder; FX_INVALIDP(target); GETCLINK(target_addr)) {
     target_addr = (FX *)Addr68k_from_StkOffset(target);
     if (blip == *target_addr) {
       register LispPTR var_name_in_frame = variable_name_in_frame(target_addr, (FVPVAR << 8) + 1);
-      if (var_name_in_frame == CHATCH_RETURN_TO_ATOM) {
+      if (var_name_in_frame == CATCH_RETURN_TO_ATOM) {
         if (throwp) {
           pc = pvar_value_in_frame(target_addr, CATCH_RETURN_PC_ATOM);
           if
