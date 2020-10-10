@@ -136,7 +136,7 @@ void print_Xusage(char *prog)
   fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   fprintf(stderr,
           " -xsync                               -turn  XSyncronize on. (default is off)\n\n");
-  fprintf(stderr, "If you have any further questions, please refer to the manual \n\n");
+  fprintf(stderr, "Please refer to the manual for further information.\n\n");
   exit(0);
 } /* end print_Xusage() */
 
