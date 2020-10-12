@@ -172,6 +172,7 @@ unsigned long parse_color(char *s, size_t size) {
     if (c >= '0' && c <= '9') c -= '0';
     else if (c >= 'a' && c <='f') c -= 'a' - 10;
     else if (c >= 'A' && c <='F') c -= 'A' - 10;
+    else continue;
     // 0x will be ignored, as will #, ...
     result = (result << 4) | (c & 0xF);
   }
@@ -272,12 +273,19 @@ void read_Xoption(int *argc, char *argv[])
       if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
     }
     Screen *defaultScreen = ScreenOfDisplay(xdisplay, DefaultScreen(xdisplay));
-    Fg_Color = WhitePixelOfScreen(defaultScreen); // set default colors here
-    Bg_Color = BlackPixelOfScreen(defaultScreen);
+    Fg_Color = BlackPixelOfScreen(defaultScreen); // set default colors here
+    Bg_Color = WhitePixelOfScreen(defaultScreen);
     XCloseDisplay(xdisplay);
   } else {
     fprintf(stderr, "Open_Display: cannot connect to display %s.", XDisplayName(Display_Name));
     exit(-1);
+  }
+
+  if (XrmGetResource(commandlineDB, "ldex.foreground", "Ldex.Foreground", str_type, &value) == True) {
+    Fg_Color = parse_color(value.addr, value.size);
+  }
+  if (XrmGetResource(commandlineDB, "ldex.background", "Ldex.Background", str_type, &value) == True) {
+    Bg_Color = parse_color(value.addr, value.size);
   }
 
   envname = (char *)getenv("HOME");
@@ -304,12 +312,6 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(Window_Title, value.addr, (int)value.size);
   } else {
     (void)strcpy(Window_Title, WINDOW_NAME);
-  }
-  if (XrmGetResource(rDB, "ldex.foreground", "Ldex.Foreground", str_type, &value) == True) {
-    Fg_Color = parse_color(value.addr, value.size);
-  }
-  if (XrmGetResource(rDB, "ldex.background", "Ldex.Background", str_type, &value) == True) {
-    Bg_Color = parse_color(value.addr, value.size);
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
     (void)strncpy(Icon_Title, value.addr, (int)value.size);
