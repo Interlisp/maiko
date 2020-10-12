@@ -92,6 +92,8 @@ char Display_Name[128];
 char iconpixmapfile[1024];
 char Window_Title[255];
 char Icon_Title[255];
+unsigned long Fg_Color;
+unsigned long Bg_Color;
 
 extern char sysout_name[], keystring[];
 extern int sysout_size, for_makeinit, please_fork, Scroll_Border;
@@ -132,6 +134,8 @@ void print_Xusage(char *prog)
   fprintf(stderr,
           " -sc[reen] <geom>                     -size & placement for the medley display\n");
   fprintf(stderr, " -t[itle] <string>                    -titlebar text for the window manager\n");
+  fprintf(stderr, " -f[ore]g[round] <hex color>          -display foreground color (hex RGB)\n");
+  fprintf(stderr, " -b[ack]g[round] <hex color>          -display background color (hex RGB)\n");
   fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
   fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   fprintf(stderr,
@@ -159,6 +163,20 @@ void print_lispusage(char *prog)
   fprintf(stderr, "\n");
 
 } /* end print_lisp_usage() */
+
+unsigned long parse_color(char *s, size_t size) {
+  int i;
+  unsigned long result = 0;
+  for (i = 0; i < size; i++) {
+    char c = s[i];
+    if (c >= '0' && c <= '9') c -= '0';
+    else if (c >= 'a' && c <='f') c -= 'a' - 10;
+    else if (c >= 'A' && c <='F') c -= 'A' - 10;
+    // 0x will be ignored, as will #, ...
+    result = (result << 4) | (c & 0xF);
+  }
+  return result;
+}
 
 /************************************************************************/
 /*									*/
@@ -234,7 +252,7 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(Display_Name, value.addr, (int)value.size);
   } else if (getenv("DISPLAY") == (char *)NULL) {
     fprintf(stderr, "Can't find a display. Either set the shell\n");
-    fprintf(stderr, "variabel DISPLAY to an appropriate display\n");
+    fprintf(stderr, "variable DISPLAY to an appropriate display\n");
     fprintf(stderr, "or provide a -display argument.\n");
     print_Xusage(argv[0]);
   } else {
@@ -253,6 +271,9 @@ void read_Xoption(int *argc, char *argv[])
       serverDB = XrmGetStringDatabase(XResourceManagerString(xdisplay));
       if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
     }
+    Screen *defaultScreen = ScreenOfDisplay(xdisplay, DefaultScreen(xdisplay));
+    Fg_Color = WhitePixelOfScreen(defaultScreen); // set default colors here
+    Bg_Color = BlackPixelOfScreen(defaultScreen);
     XCloseDisplay(xdisplay);
   } else {
     fprintf(stderr, "Open_Display: cannot connect to display %s.", XDisplayName(Display_Name));
@@ -283,6 +304,12 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(Window_Title, value.addr, (int)value.size);
   } else {
     (void)strcpy(Window_Title, WINDOW_NAME);
+  }
+  if (XrmGetResource(rDB, "ldex.foreground", "Ldex.Foreground", str_type, &value) == True) {
+    Fg_Color = parse_color(value.addr, value.size);
+  }
+  if (XrmGetResource(rDB, "ldex.background", "Ldex.Background", str_type, &value) == True) {
+    Bg_Color = parse_color(value.addr, value.size);
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
     (void)strncpy(Icon_Title, value.addr, (int)value.size);
