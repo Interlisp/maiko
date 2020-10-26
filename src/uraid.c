@@ -186,7 +186,7 @@ extern int Inited_Color;
 
 #ifdef DOS
 char *URaid_summary1 =
-    "<<Displaying the Stack>>\n\
+    "\n-- Stack display commands\n\
 c\t\t\tChecks all user stack contents\n\
 f number\t\tDisplays stack frame for that frame number (decimal)\n\
 k type\t\t\tChanges the type of stack link following. (a|c)\n\
@@ -194,7 +194,7 @@ l [type]\t\tBack Trace for specified type stack. (k|m|r|g|p|u|<null>)\n\
 <CR>\t\t\tDisplay next frame.\n";
 
 char *URaid_summary2 =
-    "<<Displaying memory contents>>\n\
+    "\n-- Memory display commands\n\
 a litatom\t\tDisplays the top-level value of the litatom\n\
 B Xaddress\t\tPrint the contents of the arrayblock at that address.\n\
 d litatom\t\tDisplays the definition cell for the litatom\n\
@@ -209,7 +209,7 @@ x Xaddress [xnum]\tHex-Dump xnum (16-bit) words starting at Xaddress\n\
 < Xaddress Xval\t\tSets the (16-bit) word at the address to Xval\n";
 
 char *URaid_summary3 =
-    "<<Return or Exit>>\n\
+    "\n-- Continue or exit commands\n\
 e\t\t\tExit to DOS\n\
 h\t\t\tDo a HARDRESET\n\
 q\t\t\tReturns from URAID with NO change\n\
@@ -221,33 +221,35 @@ v filename\t\tSave the virtual memory on the filename(Not Bootable)\n\
 #else
 char *URaid_summary =
     "---URAID command summary---\n\
-<<Displaying the Stack>>\n\
+\n-- Stack display commands\n\
 c\t\t\tChecks all user stack contents\n\
 f number\t\tDisplays stack frame for that frame number (decimal)\n\
 k type\t\t\tChanges the type of stack link following. (a|c)\n\
-l [type]\t\tBack Trace for specified type stack. (k|m|r|g|p|u|<null>)\n\
-<CR>\t\t\tDisplay next frame.\n<<Displaying memory contents>>\n\
+l [type]\t\tDisplays backtrace for specified type of stack. (k|m|r|g|p|u|<null>)\n\
+<CR>\t\t\tDisplays next frame.\n\
+\n-- Memory display commands\n\
 a litatom\t\tDisplays the top-level value of the litatom\n\
-B Xaddress\t\tPrint the contents of the arrayblock at that address.\n\
-d litatom\t\tDisplays the definition cell for the litatom\n\
+B Xaddress\t\tDisplays the contents of the arrayblock at that address.\n\
+d litatom\t\tDisplays the definition cell of the litatom\n\
 M\t\t\tDisplays TOS,CSP,PVAR,IVAR,PC\n\
-m func1 func2\t\tMOVD func1 to func2\n\
+m func1 func2\t\tMoves definition of func1 to func2 (MOVD)\n\
 O Xaddress\t\tDisplays the object with that address\n\
-t Xaddress\t\tDisplays the type of this object\n\
+t Xaddress\t\tDisplays the type of the object with that address\n\
 p litatom\t\tDisplays the property list of the litatom\n\
-w\t\t\tDisplays the current function-name and PC\n\
-x Xaddress [xnum]\tHex-Dump xnum (16-bit) words starting at Xaddress\n\
-@ litatom val\t\tSets TOPVAL of litatom to Decimal-val\n\
+w\t\t\tDisplays the current function name and PC\n\
+x Xaddress [xnum]\tDisplays in hexadecimal xnum (16-bit) words starting at Xaddress\n\
+@ litatom val\t\tSets the TOPVAL of litatom to (decimal) val \n\
 < Xaddress Xval\t\tSets the (16-bit) word at the address to Xval\n\
-<<Return or Exit>>\n\
-e\t\t\tExit to UNIX\n\
-h\t\t\tDo a HARDRESET\n\
+\n-- Continue or exit commands\n\
+e\t\t\tExits to UNIX\n\
+h\t\t\tPerforms a HARDRESET\n\
 q\t\t\tReturns from URAID with NO change\n\
-<<Misc>>\ns\t\t\tInvoke Shell\n\
-v filename\t\tSave the virtual memory on the filename(Not Bootable)\n\
-( [num]\t\t\tSets Print level\n\
-!\t\t\tPrints the error message passed from the emulator\n\
-?\t\t\tDisplay this summary";
+\n-- Miscellaneous commands\n\
+s\t\t\tInvokes Shell\n\
+v filename\t\tSaves the virtual memory on the filename (Not Bootable)\n\
+( [num]\t\t\tSets the print level\n\
+!\t\t\tDisplays the error message passed from the emulator\n\
+?\t\t\tDisplays this summary";
 #endif /* DOS */
 
 #define ADD_RANGEP(address)                       \
