@@ -37,7 +37,10 @@ Unix Interface Communications
 #elif APOLLO
 #include </sys5/usr/include/termios.h>
 #elif LINUX
-#include <termio.h>
+#include <termios.h>
+/* this was called termio in the past, but no longer
+ * see https://man7.org/linux/man-pages/man7/termio.7.html
+ */
 #elif MACOSX
 #include <termios.h>
 #elif FREEBSD

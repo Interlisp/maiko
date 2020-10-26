@@ -39,6 +39,9 @@
 #	X shared libraries are needed at run time.
 #
 # Hide X shared libraries from link libraries search path.
+
+export PATH=".:$PATH"
+
 LD_LIBRARY_PATH=/usr/local/lib 
 RELDIR="../RELEASE/"
 
