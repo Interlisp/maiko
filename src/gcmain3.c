@@ -394,7 +394,6 @@ LispPTR gcscanstack(void) {
   Bframe *obasicframe;
   LispPTR scanptr, scanend;
   UNSIGNED scanend68K;
-  struct fnhead *nametable;
   int ftyp;
   int pvcount;
 
