@@ -46,11 +46,7 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <stdio.h>
 #include <signal.h>
 #include <unistd.h>
-#ifdef LINUX
-#include <linux/fcntl.h>
-#else
 #include <fcntl.h>
-#endif
 
 #ifdef ISC
 #include <sys/bsdtypes.h>

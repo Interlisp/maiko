@@ -42,6 +42,8 @@
 LD_LIBRARY_PATH=/usr/local/lib 
 RELDIR="../RELEASE/"
 
+export PATH=".:$PATH"
+
 if test "$1" = ""
    then
 	display="single"
