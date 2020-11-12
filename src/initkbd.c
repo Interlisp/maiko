@@ -502,7 +502,12 @@ static int find_unused_key(KeySym *map, int minkey, int codecount, int symsperco
   for (i = 0; i < (codecount * symspercode); i++) {
     if (sym == map[i]) {
       int code = minkey + (i / symspercode);
-      if (table[code - 7] != 255) continue;
+      if (table[code - 7] != 255) {
+#ifdef DEBUG
+          printf("table[%d - 7] != 255\n", code);
+#endif
+          continue;
+      }
       return (code);
     }
   }
@@ -561,7 +566,18 @@ static u_char *make_X_keymap() {
     table[xcode - 7] = code;
   }
 
+  XFree(mapping); /* No locking required? */
+
 #ifdef DEBUG
+  printf("\n\n\tXGetKeyboardMapping table\n\n");
+  for (i = 0; i < codecount * symspercode; i += symspercode) {
+      printf("%d:", minkey + (i / symspercode));
+      for (int j = 0; j < symspercode; j++) {
+          printf("\t %8x", mapping[i+j]);
+      }
+      printf("\n");
+  }
+
   printf("\n\n\tKeyboard mapping table\n\n");
   for (i = 0; i < 256; i += 8) {
     printf("%d:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, table[i], table[i + 1], table[i + 2], table[i + 3], table[i + 4],
