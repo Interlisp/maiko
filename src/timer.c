@@ -40,6 +40,7 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #define USETIMEFN
 
 #else
+#include <time.h>
 #include <sys/time.h>
 #endif /* DOS */
 #include <sys/types.h>
@@ -60,10 +61,6 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <sys/resource.h>
 #endif /* DOS */
 #endif /* ISC */
-
-#ifdef SYSVONLY
-extern long timezone; /* seconds difference GMT to local */
-#endif
 
 #ifdef OS5
 #include <sys/times.h>
@@ -270,7 +267,6 @@ static int gettime(int casep)
 {
 #ifndef USETIMEFN
   struct timeval timev;
-  struct timezone tz;
 #elif DOS
   struct dostime_t dtm; /* for hundredths of secs */
 #endif /* USETIMEFN */
@@ -319,15 +315,10 @@ static int gettime(int casep)
       return (305); /* this is wrong, only works in PST */
 
     case 8:
-#ifdef OS5
+      /* other methods of determining timezone offset are unreliable and/or deprecated */
+      /* timezone is declared in <time.h>; the time mechanisms must be initialized     */
+      tzset();
       return (timezone / 3600); /* timezone, extern, is #secs diff GMT to local. */
-
-#elif USETIMEFN
-      return (timezone / 3600); /* timezone, extern, is #secs diff GMT to local. */
-#else
-      gettimeofday(&timev, &tz);
-      return (tz.tz_minuteswest / 60); /* only integral timezones work */
-#endif
 
     default: return (0);
   }
