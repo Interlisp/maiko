@@ -18,6 +18,7 @@ static char *id = "$Id: fp.c,v 1.3 1999/05/31 23:35:29 sybalsky Exp $ Copyright 
 /*									*/
 /************************************************************************/
 #include <stdio.h>
+#include <math.h>
 #include "lispemul.h"
 #include "lspglob.h"
 #include "adr68k.h"
