@@ -16,6 +16,7 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -36,9 +37,10 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 extern int errno;
 
 /* JDS protoize char *valloc(size_t); */
-void check_sysout(char *sysout_file_name);
+void check_sysout(char *sysout_file_name, int verbose);
+void usage(char *prog);
 
-void check_sysout(char *sysout_file_name) {
+void check_sysout(char *sysout_file_name, int verbose) {
   int sysout; /* SysoutFile descriptor */
 
   IFPAGE ifpage; /* IFPAGE */
@@ -71,14 +73,35 @@ void check_sysout(char *sysout_file_name) {
   word_swap_page((unsigned short *)&ifpage, (3 + sizeof(IFPAGE)) / 4);
 #endif
   close(sysout);
-  printf("%d", ifpage.minbversion);
+  if (verbose) {
+      printf("ifpage.minbversion %d\n", ifpage.minbversion);
+      printf("ifpage.process_size %d\n", ifpage.process_size);
+      printf("ifpage.storagefullstate %d\n", ifpage.storagefullstate);
+      printf("ifpage.nactivepages %d\n", ifpage.nactivepages);
+  } else {
+      printf("%d", ifpage.minbversion);
+  }
+}
+
+void usage(char *prog) {
+    fprintf(stderr, "Usage: %s [-v] sysout-filename\n", prog);
+    exit(-1);
 }
 
 int main(int argc, char **argv) {
-  if (argc != 2) {
-    printf("You forgot to supply a file name.");
-    return (-1);
-  }
-  check_sysout(argv[1]);
+    switch (argc) {
+    case 2:
+        check_sysout(argv[1], 0);
+        break;
+    case 3:
+        if (0 == strncmp(argv[1], "-v", 2)) {
+            check_sysout(argv[2], 1);
+        } else {
+            usage(argv[0]);
+        }
+        break;
+    default:
+        usage(argv[0]);
+    }
   exit(0);
 }
