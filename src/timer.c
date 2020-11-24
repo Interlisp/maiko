@@ -317,9 +317,16 @@ static int gettime(int casep)
     case 8:
       /* other methods of determining timezone offset are unreliable and/or deprecated */
       /* timezone is declared in <time.h>; the time mechanisms must be initialized     */
+      /* Unfortunately, FreeBSD does not support the timezone external variable, nor   */
+      /* does gettimeofday() seem to produce the correct timezone values.	       */
       tzset();
+#if defined(FREEBSD)
+      time_t tv = time(NULL);
+      struct tm *tm = localtime(&tv);
+      return (tm->tm_gmtoff / -3600);
+#else
       return (timezone / 3600); /* timezone, extern, is #secs diff GMT to local. */
-
+#endif
     default: return (0);
   }
 }
