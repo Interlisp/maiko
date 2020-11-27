@@ -127,7 +127,7 @@
     }/* end switch typenumber */					\
 }
 #else
-static LispPTR __inline__
+__inline__ static LispPTR
 aref_switch(int type, LispPTR tos, LispPTR baseL, int index)
 {								  
   LispPTR result;
