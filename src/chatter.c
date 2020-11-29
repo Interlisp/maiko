@@ -65,21 +65,21 @@ int chatter_fd;
     OneDArray *arrayp;                                                                             \
     char *base;                                                                                    \
     short *sbase;                                                                                  \
-    int id;                                                                                        \
+    int idx;                                                                                       \
                                                                                                    \
     arrayp = (OneDArray *)(Addr68k_from_LADDR((UNSIGNED)Lisp));                                    \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base = ((char *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
-        for (id = 0; id < Len; id++) base[id] = C[id];                                             \
+        for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase = ((short *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
-        for (id = 0; id < Len * 2; id++) base[id] = C[id];                                         \
+        for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \

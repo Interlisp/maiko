@@ -67,7 +67,7 @@ static char *id = "$Id: picture.c,v 1.2 1999/01/03 02:07:30 sybalsky Exp $ Copyr
     OneDArray *arrayp;                                                                             \
     char *base;                                                                                    \
     short *sbase;                                                                                  \
-    int id;                                                                                        \
+    int idx;                                                                                       \
                                                                                                    \
     arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
                                                                                                    \
@@ -75,7 +75,7 @@ static char *id = "$Id: picture.c,v 1.2 1999/01/03 02:07:30 sybalsky Exp $ Copyr
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
             ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
-        for (id = 0; id < Len; id++) base[id] = C[id];                                             \
+        for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
@@ -83,7 +83,7 @@ static char *id = "$Id: picture.c,v 1.2 1999/01/03 02:07:30 sybalsky Exp $ Copyr
         sbase =                                                                                    \
             ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
-        for (id = 0; id < Len * 2; id++) base[id] = C[id];                                         \
+        for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \

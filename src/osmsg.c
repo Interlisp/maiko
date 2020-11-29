@@ -96,7 +96,6 @@ extern u_int LispReadFds;
 void mess_init() {
 #ifndef XWINDOW
 #ifndef DOS
-  int id;
   struct passwd *pwd;
   int ttyfd;
   int ptyfd, ptynum;
@@ -224,7 +223,6 @@ static struct timeval selecttimeout = {0, 0};
 LispPTR mess_readp() {
 #ifndef DOS
 #ifndef XWINDOW
-  int id;
   struct stat sbuf;
   int size;
   int rval;
@@ -269,7 +267,6 @@ LispPTR mess_read(LispPTR *args)
 #if defined(DOS) || defined(XWINDOW)
   return (NIL);
 #else
-  int id;
   struct stat sbuf;
   int size, save_size;
   char *base;
@@ -344,7 +341,6 @@ LispPTR flush_pty() {
 #if defined(DOS) || defined(XWINDOW)
   return (NIL);
 #else
-  int id;
   struct stat sbuf;
   char buf[MESSAGE_BUFFER_SIZE]; /* Buffer between pty and log file */
   int size;

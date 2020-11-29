@@ -2070,7 +2070,7 @@ LispPTR COM_gen_files(register LispPTR *args)
 {
   char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
   char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN], drive[1];
-  int dskp, count, highestp, propp, id, version;
+  int dskp, count, highestp, propp, fid, version;
   register char *cp;
   FINFO *fp;
   int dsk_filecmp(), unix_filecmp();
@@ -2197,10 +2197,10 @@ LispPTR COM_gen_files(register LispPTR *args)
           count = trim_finfo(&fp);
       }
 
-      if ((id = get_finfo_id()) < 0) return (GetSmallp(-1));
-      *(int *)(Addr68k_from_LADDR(args[2])) = id;
-      FinfoArray[id].head = fp;
-      FinfoArray[id].next = fp;
+      if ((fid = get_finfo_id()) < 0) return (GetSmallp(-1));
+      *(int *)(Addr68k_from_LADDR(args[2])) = fid;
+      FinfoArray[fid].head = fp;
+      FinfoArray[fid].next = fp;
       return (GetSmallp(count));
   }
 }
