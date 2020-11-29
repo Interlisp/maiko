@@ -90,7 +90,7 @@ LispPTR CHAR_openfile(LispPTR *args)
 /* args[2]            errno */
 {
 #ifndef DOS
-  register int id;    /* return value  of open system call. */
+  register int fd;    /* return value  of open system call. */
   register int flags; /* open system call's argument */
   register int rval;
   struct stat statbuf;
@@ -114,8 +114,8 @@ LispPTR CHAR_openfile(LispPTR *args)
     case ACCESS_BOTH: flags |= (O_RDWR | O_CREAT); break;
     default: return (NIL);
   }
-  TIMEOUT(id = open(pathname, flags));
-  if (id == -1) {
+  TIMEOUT(fd = open(pathname, flags));
+  if (fd == -1) {
     err_mess("open", errno);
     *Lisp_errno = errno;
     return (NIL);
@@ -123,20 +123,20 @@ LispPTR CHAR_openfile(LispPTR *args)
 /* Prevent I/O requests from blocking -- make them error */
 /* if no char is available, or there's no room in pipe.  */
 #ifdef RS6000
-  ioctl(id, FIONBIO, &one);
-  fcntl(id, F_SETOWN, getpid());
+  ioctl(fd, FIONBIO, &one);
+  fcntl(fd, F_SETOWN, getpid());
 #else
 #ifdef HPUX
-  ioctl(id, FIOSNBIO, &one);
+  ioctl(fd, FIOSNBIO, &one);
 #else
-  rval = fcntl(id, F_GETFL, 0);
+  rval = fcntl(fd, F_GETFL, 0);
   rval |= FNDELAY;
-  rval = fcntl(id, F_SETFL, rval);
+  rval = fcntl(fd, F_SETFL, rval);
 #endif /* HPUX */
 
 #endif /* RS6000 */
 
-  return (GetSmallp(id));
+  return (GetSmallp(fd));
 #endif /* DOS */
 }
 
@@ -155,16 +155,16 @@ LispPTR CHAR_openfile(LispPTR *args)
 /************************************************************************/
 
 LispPTR CHAR_closefile(LispPTR *args)
-/* args[0]            id      */
+/* args[0]            fd      */
 /* args[1]            errno   */
 {
 #ifndef DOS
-  register int id; /* FileID */
+  register int fd; /* file descriptor */
   register int rval;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
-  id = LispNumToCInt(args[0]);
+  fd = LispNumToCInt(args[0]);
   ERRSETJMP(NIL);
-  TIMEOUT(rval = close(id));
+  TIMEOUT(rval = close(fd));
   if (rval == -1) {
     /** This if is a patch for an apparent problem **/
     /** in SunOS 4 that causes a close on /dev/ttya **/
@@ -173,7 +173,7 @@ LispPTR CHAR_closefile(LispPTR *args)
       DBPRINT(("Got errno 1 on a CLOSE!"));
       return (ATOM_T);
     }
-    DBPRINT(("Closing char device descriptor #%d.\n", id));
+    DBPRINT(("Closing char device descriptor #%d.\n", fd));
     err_mess("close", errno);
     *Lisp_errno = errno;
     return (NIL);
@@ -203,14 +203,15 @@ LispPTR CHAR_closefile(LispPTR *args)
 LispPTR CHAR_ioctl(LispPTR *args)
 {
 #ifndef DOS
-  int id, request, data;
+  int fd, request;
+  void *data;
   register int rval;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
-  id = LispNumToCInt(args[0]);
+  fd = LispNumToCInt(args[0]);
   request = LispNumToCInt(args[1]);
-  data = (int)(Addr68k_from_LADDR(args[2]));
+  data = (Addr68k_from_LADDR(args[2]));
   ERRSETJMP(NIL);
-  TIMEOUT(rval = ioctl(id, request, data));
+  TIMEOUT(rval = ioctl(fd, request, data));
   if (rval != 0) {
     err_mess("ioctl", errno);
     *Lisp_errno = errno;
@@ -224,23 +225,23 @@ LispPTR CHAR_ioctl(LispPTR *args)
 /*                                                                      */
 /*                         C H A R _ b i n                              */
 /*                                                                      */
-/*      Reads one character from the character file descriptor          */
-/*      id, and returns the value.  If no character is available,       */
+/*      Reads one character from the character file descriptor,         */
+/*      and returns the value.  If no character is available,           */
 /*      or an error happens, returns NIL and sets the errno FIXP        */
 /*      cell to the Unix error number.                                  */
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bin(int id, LispPTR errn)
+LispPTR CHAR_bin(int fd, LispPTR errn)
 {
 #ifndef DOS
   register int rval;
   unsigned char ch[4];
   Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
   ERRSETJMP(NIL);
-  id = LispNumToCInt(id);
-  /* Read PAGE_SIZE bytes file contents from filepointer. */
-  TIMEOUT(rval = read(id, ch, 1));
+  fd = LispNumToCInt(fd);
+
+  TIMEOUT(rval = read(fd, ch, 1));
   if (rval == 0) {
     *Lisp_errno = EWOULDBLOCK;
     return (NIL);
@@ -263,18 +264,17 @@ LispPTR CHAR_bin(int id, LispPTR errn)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bout(int id, LispPTR ch, LispPTR errn)
+LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
 {
 #ifndef DOS
   register int rval;
   char buf[4];
   Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
   ERRSETJMP(NIL);
-  id = LispNumToCInt(id);
+  fd = LispNumToCInt(fd);
   buf[0] = LispNumToCInt(ch);
-  /* Write PAGE_SIZE bytes file contents from filepointer. */
 
-  TIMEOUT(rval = write(id, buf, 1));
+  TIMEOUT(rval = write(fd, buf, 1));
 
   if (rval == -1) {
     *Lisp_errno = errno;
@@ -312,16 +312,16 @@ LispPTR CHAR_bout(int id, LispPTR ch, LispPTR errn)
 LispPTR CHAR_bins(LispPTR *args)
 {
 #ifndef DOS
-  register int id, rval;
+  register int fd, rval;
   char *buffer;
   int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
   ERRSETJMP(NIL);
-  id = LispNumToCInt(args[0]);
+  fd = LispNumToCInt(args[0]);
   buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
   nbytes = LispNumToCInt(args[3]);
   /* Read PAGE_SIZE bytes file contents from filepointer. */
-  TIMEOUT(rval = read(id, buffer, nbytes));
+  TIMEOUT(rval = read(fd, buffer, nbytes));
   if (rval == 0) {
     *Lisp_errno = EWOULDBLOCK;
     return (NIL);
@@ -344,7 +344,7 @@ LispPTR CHAR_bins(LispPTR *args)
 /*                         C H A R _ b o u t s                          */
 /*                                                                      */
 /*      Given the argument vector:                                      */
-/*      args[0] the file id to write bytes to                           */
+/*      args[0] the file descriptor to write bytes to                   */
 /*      args[1] the base address of the buffer to write from            */
 /*      args[2] starting offset within the buffer to gt bytes from      */
 /*      args[3] the number of bytes desired to write, maximum           */
@@ -363,12 +363,12 @@ LispPTR CHAR_bins(LispPTR *args)
 LispPTR CHAR_bouts(LispPTR *args)
 {
 #ifndef DOS
-  register int id, rval;
+  register int fd, rval;
   char *buffer;
   int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
   ERRSETJMP(NIL);
-  id = LispNumToCInt(args[0]);
+  fd = LispNumToCInt(args[0]);
   buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
   nbytes = LispNumToCInt(args[3]);
 /* Write PAGE_SIZE bytes file contents from filepointer. */
@@ -376,7 +376,7 @@ LispPTR CHAR_bouts(LispPTR *args)
   word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
-  TIMEOUT(rval = write(id, buffer, nbytes));
+  TIMEOUT(rval = write(fd, buffer, nbytes));
 #ifdef BYTESWAP
   word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
