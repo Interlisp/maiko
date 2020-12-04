@@ -15,6 +15,7 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>
