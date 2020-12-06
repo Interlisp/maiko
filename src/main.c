@@ -288,7 +288,7 @@ char keystring[128] = {""};
 
 char *getenv();
 int Lisp_Xinitialized = FALSE;
-char sysout_name[1024]; /* Set by read_Xoption, in the X version. */
+char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */
 
 int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
@@ -403,12 +403,12 @@ int main(int argc, char *argv[])
   }
 
   if (argc > 1 && argv[1][0] != '-') {
-    strcpy(sysout_name, argv[1]);
+    strncpy(sysout_name, argv[1], MAXPATHLEN);
     i++;
   } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
-    strcpy(sysout_name, envname);
+    strncpy(sysout_name, envname, MAXPATHLEN);
   } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
-    strcpy(sysout_name, envname);
+    strncpy(sysout_name, envname, MAXPATHLEN);
 #ifdef DOS
   else if (!makepathname("lisp.vm", sysout_name)
 #else
@@ -708,11 +708,7 @@ int makepathname(char *src, char *dst)
   base = src;
   switch (*base) {
     case '.':
-#ifdef DOS
       if (getcwd(dst, MAXPATHLEN) == 0)
-#else
-      if (getwd(dst) == 0)
-#endif  /* DOS */
       { /* set working directory */
 #ifdef FSERROR
         *Lisp_errno = errno;
