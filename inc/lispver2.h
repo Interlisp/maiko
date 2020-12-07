@@ -4,68 +4,68 @@
 
 #define LispVersionToUnixVersion(pathname){				\
 									\
-	register char	*cp;						\
-	register char	*vp;						\
-	register int	ver;						\
-	char		ver_buf[VERSIONLEN];				\
+	register char	*lv_cp;						\
+	register char	*lv_vp;						\
+	register int	lv_ver;						\
+	char		lv_ver_buf[VERSIONLEN];				\
 									\
-	cp = pathname;							\
-	vp = NULL;							\
-	while (*cp) {							\
-		switch (*cp) {						\
+	lv_cp = pathname;						\
+	lv_vp = NULL;							\
+	while (*lv_cp) {						\
+		switch (*lv_cp) {					\
 									\
 		      case ';':						\
-			vp = cp;					\
-			cp++;						\
+			lv_vp = lv_cp;					\
+			lv_cp++;					\
 			break;						\
 									\
 		      case '\'':					\
-			if (*(cp + 1) != 0) cp += 2; 		\
-			else cp++;					\
+			if (*(lv_cp + 1) != 0) lv_cp += 2; 		\
+			else lv_cp++;					\
 			break;						\
 									\
 		      default:						\
-			cp++;						\
+			lv_cp++;					\
 			break;						\
 		}							\
 	}								\
 									\
-	if (vp != NULL) {						\
+	if (lv_vp != NULL) {						\
 		/*							\
 		 * A semicolon which is not quoted has been found.	\
 		 */							\
-		if (*(vp + 1) == 0) {				\
+		if (*(lv_vp + 1) == 0) {				\
 			/*						\
 			 * The empty version field.			\
 			 * This is regared as a versionless file.	\
 			 */						\
-			*vp = 0;					\
+			*lv_vp = 0;					\
 		} else {						\
-			NumericStringP((vp + 1), YES, NO);		\
+			NumericStringP((lv_vp + 1), YES, NO);		\
 		      YES:						\
 			/*						\
 			 * Convert the remaining field to digit.	\
 			 */						\
-			ver = atoi(vp + 1);				\
-			if (ver == 0) {					\
+			lv_ver = atoi(lv_vp + 1);				\
+			if (lv_ver == 0) {					\
 				/* versionless */			\
-				*vp = 0;				\
+				*lv_vp = 0;				\
 			} else {					\
-				sprintf(ver_buf, ".~%d~", ver);		\
-				*vp = 0;				\
-				strcat(pathname, ver_buf);		\
+				sprintf(lv_ver_buf, ".~%d~", lv_ver);		\
+				*lv_vp = 0;				\
+				strcat(pathname, lv_ver_buf);		\
 			}						\
 			goto CONT;					\
 									\
 		      NO:						\
-			strcpy(ver_buf, vp + 1);			\
-			strcat(ver_buf, "~");				\
-			*vp++ = '.';					\
-			*vp++ = '~';					\
-			*vp = 0;					\
-			strcat(pathname, ver_buf);			\
+			strcpy(lv_ver_buf, lv_vp + 1);			\
+			strcat(lv_ver_buf, "~");				\
+			*lv_vp++ = '.';					\
+			*lv_vp++ = '~';					\
+			*lv_vp = 0;					\
+			strcat(pathname, lv_ver_buf);			\
 		      CONT:						\
-			vp--;	/* Just for label */			\
+			lv_vp--;	/* Just for label */		\
 		}							\
 	}								\
 }
