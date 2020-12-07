@@ -42,21 +42,21 @@
 #define SET_CHANNEL_RESET_FLAG    15
 
 /*
- Devise Status
+ Device Status
 */
 
-#define IOP_DATA_LINE.OCCUPIED 	4096
+#define IOP_DATA_LINE_OCCUPIED 	4096
 #define PRESENT_NEXT_DIGIT 	2048
 #define CALL_ORIGINATION_STATUS 1024
 #define ABANDON_CALL_AND_RETRY 	 512
 #define POWER_INDICATION 	 256
 #define REAK_DETECTED 		 128
 #define DATA_LOST 		  64
-#define CLEAR_TO.SEND 		  32
+#define CLEAR_TO_SEND 		  32
 #define NOT_DEFINED 		  16
 #define CARRIER_DETECT 		   8
 #define RING_HEARD 		   4
-#define DATA_SET.READY 		   2
+#define DATA_SET_READY 		   2
 #define RING_INDICATOR 		   1
 
 /*
