@@ -13,7 +13,7 @@ static const char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp 
 
 /* =====================================================================
         This function is used to generate copyright protection keys for
-        enue's Medley software.  It prompts for a machine's host id and
+        Venue's Medley software.  It prompts for a machine's host id and
         the software's expiration date before generating a set of 3 keys.
 
         The external functions called were stored in file 'keylib.o'.
@@ -43,22 +43,9 @@ static const char *id = "$Id: keymaker.c,v 1.3 1999/05/31 23:35:35 sybalsky Exp 
 #define FAILURE2 -2
 #define FAILURE3 -3
 
-/************************************************************************/
-/*									*/
-/*			w r i t e r e s u l t s				*/
-/*									*/
-/*	Prints the newly-generated key, along with identifying info	*/
-/*									*/
-/************************************************************************/
-
 void writeresults(FILE *fp, char *host, char *expdate,
 		  unsigned long key1, unsigned long key2, unsigned long key3,
-		  char *info) {
-  fprintf(fp, "Host ID: %-14s Expiration: %-9s", host, expdate);
-  fprintf(fp, " Key: %8lx %8lx %8lx", key1, key2, key3);
-  fprintf(fp, " Doc: %s\n", info);
-}
-
+		  char *info);
 /************************************************************************/
 /*									*/
 /*									*/
@@ -183,4 +170,20 @@ int main(int argc, char **argv) {
     writeresults(stdout, sptr, saveexpdate, keys[0], keys[1], keys[2], infostring);
   };
   exit(0);
+}
+
+/************************************************************************/
+/*									*/
+/*			w r i t e r e s u l t s				*/
+/*									*/
+/*	Prints the newly-generated key, along with identifying info	*/
+/*									*/
+/************************************************************************/
+
+void writeresults(FILE *fp, char *host, char *expdate,
+		  unsigned long key1, unsigned long key2, unsigned long key3,
+		  char *info) {
+  fprintf(fp, "Host ID: %-14s Expiration: %-9s", host, expdate);
+  fprintf(fp, " Key: %8lx %8lx %8lx", key1, key2, key3);
+  fprintf(fp, " Doc: %s\n", info);
 }
