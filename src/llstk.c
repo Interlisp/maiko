@@ -540,7 +540,7 @@ void blt(register DLword *dest68k, register DLword *source68k, int nw) {
     DLword offset;
     DLword size;
   } bigFSB[100];
-  int bigFSBindex = 0;
+  int bigFSBindex;
 #endif
 
 void stack_check(StackWord *start68k) {
@@ -553,7 +553,8 @@ void stack_check(StackWord *start68k) {
   DLword freesize;
 
 #ifdef FSBCHECK
-  memset((char *)bigFSB, 0, 100 * 2 * 2);
+  bigFSBindex = 0;
+  memset((char *)bigFSB, 0, sizeof(bigFSB));
 #endif
 
   if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
@@ -848,13 +849,8 @@ void quick_stack_check(void) {
   DLword freesize;
 
 #ifdef FSBCHECK
-  struct big_fsbs {
-    DLword offset;
-    DLword size;
-  } bigFSB[100];
-  int bigFSBindex = 0;
-
-  memset((char *)bigFSB, 0, 100 * 2 * 2);
+  bigFSBindex = 0;
+  memset((char *)bigFSB, 0, sizeof(bigFSB));
 #endif
 
   if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
