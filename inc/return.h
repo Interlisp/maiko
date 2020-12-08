@@ -96,19 +96,17 @@
 
 
 #define AFTER_CONTEXTSW							\
-  { register DLword *ptr68k,*freeptr;					\
-    ptr68k = (DLword*)Addr68k_from_StkOffset(CURRENTFX->nextblock);	\
-    if(GETWORD(ptr68k) != STK_FSB_WORD) error("pre_moveframe: MP9316");	\
+  { register DLword *ac_ptr68k,*ac_freeptr;					\
+    ac_ptr68k = (DLword*)Addr68k_from_StkOffset(CURRENTFX->nextblock);	\
+    if(GETWORD(ac_ptr68k) != STK_FSB_WORD) error("pre_moveframe: MP9316");	\
     CHECK_FX(CURRENTFX);						\
-    freeptr=ptr68k;							\
-    while(GETWORD(freeptr) == STK_FSB_WORD)  				\
-      EndSTKP=freeptr=freeptr+  GETWORD(freeptr+1);			\
+    ac_freeptr=ac_ptr68k;							\
+    while(GETWORD(ac_freeptr) == STK_FSB_WORD)  				\
+      EndSTKP=ac_freeptr=ac_freeptr+  GETWORD(ac_freeptr+1);			\
     S_CHECK(CURRENTFX->incall== NIL, "CONTEXTSW during fn call");	\
     /*S_CHECK(CURRENTFX->nopush== NIL, "CONTEXTSW, NOPUSH is set");	** JDS 4/9/96 this seems not to matter, so I removed it. */\
-    CurrentStackPTR = ptr68k- 2 ;					\
+    CurrentStackPTR = ac_ptr68k- 2 ;					\
     CHECK_FX(CURRENTFX);						\
     S_CHECK( EndSTKP > CurrentStackPTR, 				\
 		"End of stack isn't beyond current stk pointer."); 	\
   }
-
-void contextsw(register DLword fxnum, register DLword bytenum, register DLword flags);
