@@ -550,7 +550,6 @@ int fork_Unix() {
 
       case 'W': /* Wait for a process to die. */
       {
-        int pid;
 #if defined(SYSVONLY) || defined(WAITINT)
         int status;
 #else

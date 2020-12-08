@@ -99,7 +99,6 @@ int main(int argc, char *argv[])
   {
     char *Display_Name = (char *)NULL;
     Display *Xdisplay = (Display *)NULL;
-    int i;
     char *pos;
 
     for (i = 1; i < argc; i++) {
