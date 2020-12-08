@@ -442,11 +442,8 @@ LispPTR vmem_save(char *sysout_file_name)
   for (i = 0; i < vmemsize; i++) {
     if (GETPAGEOK(fptovp, i) != 0177777) {
       int oldfptovp = GETFPTOVP(fptovp, i);
+      int saveoldfptovp = oldfptovp;
       int contig_pages = 0;
-#ifdef BYTESWAP
-      int pc;
-#endif /* BYTESWAP */
-
       register char *base_addr;
 
       TIMEOUT(rval = lseek(sysout, i * BYTESPER_PAGE, 0));
@@ -461,7 +458,7 @@ LispPTR vmem_save(char *sysout_file_name)
         contig_pages++, oldfptovp++, i++;
       }
       i--; /* Previous loop always overbumps i */
-      DBPRINT(("%4d: writing %d pages from %x\n", i, contig_pages, base_addr - (char *)Lisp_world));
+      DBPRINT(("%4d: writing %d pages from %x (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
 
 #ifdef BYTESWAP
       word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);
