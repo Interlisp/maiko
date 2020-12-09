@@ -18,6 +18,7 @@ static char *id = "$Id: initkbd.c,v 1.2 1999/01/03 02:07:09 sybalsky Exp $ Copyr
 #endif
 #ifndef DOS
 #include <sys/file.h>
+#include <sys/select.h>
 #endif /* DOS */
 #ifdef SUNDISPLAY
 #include <sundev/kbd.h>
@@ -135,7 +136,7 @@ extern int errno;
 int DebugKBD = NIL;
 FILE *KBlog;
 
-u_int LispReadFds = 0;
+extern fd_set LispReadFds;
 #ifdef SUNDISPLAY
 struct inputmask LispEventMask;
 #endif /* SUNDISPLAY */

@@ -24,6 +24,7 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/select.h>
 #include <sys/time.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -70,11 +71,11 @@ LispPTR rpc(LispPTR *args)
   struct sockaddr_in sin, sin1, from;
   char *outbuf, *inbuf, *destaddr;
   register int s, msec_until_timeout, msec_between_tries, out_length;
-  register int received, mask;
+  register int received;
   register int port;
-  int dontblock, dest, read_descriptors;
+  int dontblock, dest;
   unsigned fromlen;
-
+  fd_set read_descriptors;
   struct timeval pertry_timeout, total_timeout, time_waited;
 
   /* Set timeout */
@@ -145,9 +146,6 @@ LispPTR rpc(LispPTR *args)
   if (sendto(s, outbuf, out_length, 0, (struct sockaddr *)&sin1, sizeof(sin1)) != out_length)
     goto handle_error;
 
-  /* Set the select mask */
-  mask = 1 << s;
-
   /* Set up the timers */
   time_waited.tv_sec = 0;
   time_waited.tv_usec = 0;
@@ -155,10 +153,11 @@ LispPTR rpc(LispPTR *args)
 /* Start the waiting loop */
 receive:
 
-  read_descriptors = mask;
+  /* Set the select mask */
+  FD_SET(s, &read_descriptors);
 
   switch (
-      select(32, (fd_set *)&read_descriptors, (fd_set *)NULL, (fd_set *)NULL, &pertry_timeout)) {
+      select(32, &read_descriptors, NULL, NULL, &pertry_timeout)) {
     /* Per try timeout expired, Check the total timeout */
     case 0:
       time_waited.tv_sec += pertry_timeout.tv_sec;
@@ -184,8 +183,8 @@ receive:
       else
         goto handle_error;
   }
-  /* Did something arrive for this socket */
-  if ((read_descriptors & mask) == 0) goto receive;
+  /* Nothing arrived for this socket, try again */
+  if (!FD_ISSET(s, &read_descriptors)) goto receive;
 
 /* Something arrived; try to get it */
 

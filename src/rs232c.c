@@ -10,9 +10,9 @@ static char *id = "$Id: rs232c.c,v 1.2 1999/01/03 02:07:32 sybalsky Exp $ Copyri
 /************************************************************************/
 
 #include "version.h"
-
 #include "rs232c.h"
-
+#include "lspglob.h"
+#include <sys/select.h>
 /*
  * Lisp Interface
  */
@@ -28,9 +28,8 @@ static DLword *RS232CGetCSB, *RS232CPutCSB;
 /*
  * File descriptor
  */
-extern int LispReadFds;
-static int RS232C_Fd;
-int RS232CReadFds;
+extern fd_set LispReadFds;
+int RS232C_Fd;
 
 int RS232C_remain_data;
 static char *RS232C_Dev;
@@ -171,8 +170,7 @@ rs232c_open() {
         rs_error("RS232C: rs232c_open: cannot set signal");
       else {
         rs_install_hup_handler();
-
-        LispReadFds |= (RS232CReadFds = 1 << RS232C_Fd);
+        FD_SET(RS232C_Fd, &LispReadFds);
         RS232C_remain_data = 0;
       }
     }
@@ -186,7 +184,7 @@ rs232c_close() {
 
     rs_restore_hup_handler();
 
-    LispReadFds &= ~RS232CReadFds;
+    FD_CLR(RS232C_Fd, &LispReadFds);
 
     /*
                     if (close(RS232C_Fd) < 0)

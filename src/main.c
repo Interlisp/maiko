@@ -55,6 +55,7 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 
 #ifndef DOS
 #include <sys/file.h>
+#include <sys/select.h>
 #endif /* DOS */
 
 #include <setjmp.h>
@@ -358,7 +359,7 @@ int main(int argc, char *argv[])
   char *envname;
   extern int TIMER_INTERVAL;
   char keytyped[255];
-
+  extern fd_set LispReadFds;
 #ifndef NOFORN
   if (dld_find_executable(argv[0]) == 0) {
     perror("Name of executable not found.");
@@ -531,6 +532,8 @@ int main(int argc, char *argv[])
 #endif /* DOS */
 
   strcpy(keytyped, keystring);
+
+  FD_ZERO(&LispReadFds);
 
 #ifndef NOETHER
   init_ether(); /* modified by kiuchi Nov. 4 */

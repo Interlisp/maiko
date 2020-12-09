@@ -24,6 +24,7 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #include <pwd.h>
 
 #include <sys/types.h>
+#include <sys/select.h>
 #include <unistd.h>
 #ifdef ISC
 #include <sys/bsdtypes.h>
@@ -79,7 +80,7 @@ int previous_size;
 int logChanged; /* T if log file has changed since last READ */
                 /* Set by flush_pty, to avoid the stat call  */
 u_int LogFileFd;
-extern u_int LispReadFds;
+extern fd_set LispReadFds;
 
 /************************************************************************/
 /*									*/
@@ -162,7 +163,7 @@ gotpty:
 
   if ((log_id = open(logfile, (O_RDWR | O_CREAT), 0666)) < 0) return;
 #ifdef LOGINT
-  LogFileFd = 1 << cons_pty;
+  LogFileFd = cons_pty; /* was kept as an fd_set, but doesn't need to be */
   flags = fcntl(cons_pty, F_GETFL, 0);
   flags = fcntl(cons_pty, F_SETFL, (flags | FASYNC | FNDELAY));
   if (fcntl(cons_pty, F_SETOWN, getpid()) == -1) {
@@ -170,7 +171,7 @@ gotpty:
     perror("fcntl F_SETOWN of log PTY");
 #endif
   };
-  LispReadFds |= LogFileFd;
+  FD_SET(LogFileFd, &LispReadFds);
   flush_pty();
 #endif
   previous_size = 0;
@@ -344,7 +345,7 @@ LispPTR flush_pty() {
   struct stat sbuf;
   char buf[MESSAGE_BUFFER_SIZE]; /* Buffer between pty and log file */
   int size;
-  static int rfds;
+  static fd_set rfds;
   int rval;
   struct statfs fsbuf;
 
@@ -352,10 +353,10 @@ LispPTR flush_pty() {
   DBPRINT(("flush_pty() called.\n"));
 /* polling pty nd flush os message to log file */
 #ifndef LOGINT
-  rfds = (1 << cons_pty);
-  if (select(32, &rfds, NULL, NULL, &selecttimeout) < 0) return (NIL);
+  FD_SET(cons_pty, &rfds);
+  if (select(32, &rfds, NULL, NULL, &selecttimeout) <= 0) return (NIL);
 
-  if ((cons_pty >= 0) && (rfds & (1 << cons_pty)))
+  if ((cons_pty >= 0) && FD_ISSET(cons_pty, rfds))
 #else /* LOGINT */
 
   if ((cons_pty >= 0) && ((size = read(cons_pty, buf, MESSAGE_BUFFER_SIZE - 1)) > 0))

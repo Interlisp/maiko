@@ -20,9 +20,11 @@ static char *id = "$Id: keyevent.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copy
 #include <stdio.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <string.h>
 #ifndef DOS
 #include <sys/file.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/time.h>
 #else
 #include <time.h>
@@ -143,20 +145,21 @@ struct pollfd pollfds[33] = {
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUtilin68K;
 extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 extern u_char *SUNLispKeyMap;
-extern u_int LispReadFds, LispWindowFd;
-extern int RS232CReadFds, RS232C_remain_data, XLocked;
+extern int LispWindowFd;
+extern int RS232C_Fd, RS232C_remain_data, XLocked;
+extern fd_set LispIOFds;
+fd_set LispReadFds;
 int XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 
 #ifdef NOETHER
 extern u_int LogFileFd;
 #else
 extern int ether_fd;
-extern u_int LogFileFd, EtherReadFds;
+extern u_int LogFileFd;
 #endif /* NOETHER */
 
 extern DLword *DisplayRegion68k;
 
-u_int LispIOFds = 0;
 #ifndef DOS
 static struct timeval SelectTimeout = {0, 0};
 #endif /* DOS */
@@ -278,6 +281,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /*	Statics:  LispReadFds	A 32-bit vector with a 1 for each	*/
 /*				FD that can get SIGIO interrupts.	*/
+/*				12/04/2020 - now an fd_set		*/
 /*									*/
 /*		  LispWindowFd	The keyboard/window FD, for keyboard	*/
 /*				and mouse events.			*/
@@ -286,14 +290,17 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*				FDs Lisp is doing async I/O on.		*/
 /*				Activity on any of these will signal	*/
 /*				the Lisp IOInterrupt interrupt.		*/
+/*				12/04/2020 - now an fd_set		*/
 /*									*/
 /*		  ether_fd	The raw ethernet FD, for 10MB I/O	*/
 /*									*/
 /*		  EtherReadFds	A bit vector with the raw enet's	*/
 /*				bit turned on.  To speed up processing.	*/
+/*				12/04/2020 - now obsolete		*/
 /*									*/
 /*		  LogFileFd	A bit vector with the log-file's	*/
 /*				bit on, for capturing console msgs.	*/
+/*				12/04/2020 - now just the FD number	*/
 /*									*/
 /*									*/
 /*									*/
@@ -305,12 +312,13 @@ void getsignaldata(int sig, int code, void *scp)
 #ifndef XWINDOW
   struct inputevent event;
 #endif /* XWINDOW */
-
-  static int rfds, wfds, efds, res;
-
+  fd_set rfds, efds;
+  u_int iflags;
+  int i;
 #ifdef ISC
   int fdcount = 0;
   int bit;
+  int res;
 #endif
 
 #ifdef XWINDOW
@@ -327,22 +335,26 @@ void getsignaldata(int sig, int code, void *scp)
 #endif /* XWINDOW */
 
   /* #ifndef KBINT */
-  rfds = LispReadFds;
-  efds = LispReadFds;
+  /* FD_COPY would be preferred but uses deprecated bcopy() on macOS.  Why? */
+  memcpy(&rfds, &LispReadFds, sizeof(rfds));
+  memcpy(&efds, &LispReadFds, sizeof(efds));
+
 /* label and ifs not needed if only keyboard on SIGIO */
 getmore:
 #ifdef ISC
   for (res = 0, bit = 1; res < 32; res++, bit <<= 1)
-    if (LispReadFds & bit) { pollfds[fdcount++].fd = res; }
+      if (FD_ISSET(bit, &LispReadFds)) { pollfds[fdcount++].fd = res; }
   if ((res = poll(pollfds, fdcount, 0)) > 0)
 #else
-  if (select(32, (fd_set *)&rfds, NULL, (fd_set *)&efds, &SelectTimeout) >= 0)
+  if (select(32, &rfds, NULL, &efds, &SelectTimeout) >= 0)
 #endif
   {
+      /* need to print out fd sets...
     DBPRINT(("SIGIO: fd mask(r/e) = 0x%x/0x%x.\n", rfds, efds));
+      */
 
 #ifdef SUNDISPLAY
-    if (rfds & (1 << LispWindowFd)) {
+    if (FD_ISSET(LispWindowFd, &rfds)) {
       /* #endif */
       while (input_readevent(LispWindowFd, &event) >= 0) {
         /*if(!kb_event( &event )) {goto getmore;};*/
@@ -356,7 +368,7 @@ getmore:
 #endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
-    if (rfds & (1 << ConnectionNumber(currentdsp->display_id))) {
+    if (FD_ISSET(ConnectionNumber(currentdsp->display_id), &rfds)) {
       if (!XLocked)
         getXsignaldata(currentdsp);
       else
@@ -367,19 +379,19 @@ getmore:
 
 #ifdef NOETHER
 #else
-    if (rfds & EtherReadFds) { /* Raw ethernet (NIT) I/O happened, so handle it. */
+    if (FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
       DBPRINT(("Handling enet interrupt.\n\n"));
       check_ether();
     }
 #endif /* NOETHER */
 
 #ifdef RS232
-    if (((rfds & RS232CReadFds) == RS232CReadFds) || (RS232C_remain_data && rs232c_lisp_is_ready()))
+    if (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready()))
       rs232c_read();
 #endif /* RS232 */
 
 #ifdef LOGINT
-    if (rfds & LogFileFd) { /* There's info in the log file.  Tell Lisp to print it. */
+    if (FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
       flush_pty();          /* move the msg(s) to the log file */
 
       ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->LogFileIO = 1;
@@ -388,10 +400,13 @@ getmore:
       Irq_Stk_End = Irq_Stk_Check = 0;
     }
 #endif
-    if (rfds & LispIOFds) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
+    iflags = 0;
+    for (i = 0; i < 32; i++)
+        if (FD_ISSET(i, &rfds) & FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
+    if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
       u_int *flags;
       flags = (u_int *)Addr68k_from_LADDR(*IOINTERRUPTFLAGS_word);
-      *flags = rfds & LispIOFds;
+      *flags = iflags;
 
       ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->IOInterrupt = 1;
 

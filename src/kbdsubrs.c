@@ -19,6 +19,7 @@ static char *id = "$Id: kbdsubrs.c,v 1.2 1999/01/03 02:07:10 sybalsky Exp $ Copy
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/file.h>
+#include <sys/select.h>
 #endif /* DOS */
 
 #ifdef SUNDISPLAY
@@ -32,6 +33,7 @@ static char *id = "$Id: kbdsubrs.c,v 1.2 1999/01/03 02:07:10 sybalsky Exp $ Copy
 #include "kbdsubrsdefs.h"
 #include "commondefs.h"
 #ifdef XWINDOW
+#include "lisp2cdefs.h"
 #include "xwinmandefs.h"
 #endif
 
@@ -65,7 +67,8 @@ extern struct screen LispScreen;
 #include <X11/Xlib.h>
 #endif /* XWINDOW */
 
-extern int LispWindowFd, LispReadFds;
+extern int LispWindowFd;
+extern fd_set LispReadFds;
 
 extern int errno;
 
@@ -76,7 +79,7 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
 {
   if (args[0] == ATOM_T)
 #ifdef SUNDISPLAY
-    LispReadFds |= 1 << LispWindowFd;
+      FD_SET(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     enable_Xkeyboard(currentdsp);
 #elif DOS
@@ -86,7 +89,7 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
 
   else if (args[0] == NIL)
 #ifdef SUNDISPLAY
-    LispReadFds &= ~(1 << LispWindowFd);
+      FD_SET(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     disable_Xkeyboard(currentdsp);
 #elif DOS

@@ -27,6 +27,7 @@ static char *id = "$Id: ether.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyrig
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <sys/select.h>
 #ifndef NOETHER
 #include <sys/socket.h>
 #include <net/if.h>
@@ -73,8 +74,6 @@ static char *id = "$Id: ether.c,v 1.4 2001/12/24 01:09:02 sybalsky Exp $ Copyrig
 #define NIOCSETF PFIOCSETF
 #endif
 
-u_int EtherReadFds;
-
 int ether_fd = -1; /* file descriptor for ether socket */
 int ether_intf_type = 0;
 u_char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
@@ -83,7 +82,7 @@ int ether_bsize = 0;  /* if nonzero then a receive is pending */
 u_char *ether_buf;    /* address of receive buffer */
 u_char nit_buf[3000]; /* the current chunk read from NIT (one packet) */
 extern LispPTR *PENDINGINTERRUPT68k;
-extern u_int LispReadFds;
+extern fd_set LispReadFds;
 
 int ETHEREventCount = 0;
 
@@ -508,13 +507,13 @@ LispPTR check_ether() {
 
 #ifndef NOETHER
 #ifndef PKTFILTER
-  static int rfds;
+  fd_set rfds;
   int result, fromlen;
   struct nit_hdr header;
   int posi, i;
 #else  /* PKTFILTER */
 
-  static int rfds;
+  fd_set rfds;
   int result;
   int i;
   int plen;
@@ -522,7 +521,7 @@ LispPTR check_ether() {
   char ctlbuf[2000];
 #endif /* PKTFILTER */
 
-  rfds = EtherReadFds;
+  FD_SET(ether_fd, &rfds);
 #ifndef PKTFILTER
   i = 2;
   if (/* select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0 ) */ (1)) {
@@ -573,7 +572,7 @@ LispPTR check_ether() {
   if (ether_fd >= 0 && ether_bsize > 0
       /*   && select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0
        *     -- [on '90/02/14: getsignsldata() chech this] */
-      && (rfds & (1 << ether_fd))) {
+      && (FD_ISSET(ether_fd, &rfds))) {
     data.maxlen = sizeof(nit_buf);
     data.len = 0;
     data.buf = (char *)nit_buf;
@@ -617,13 +616,13 @@ LispPTR check_ether() {
 LispPTR get_packet() {
 #ifndef NOETHER
 #ifndef PKTFILTER
-  static int rfds;
+  fd_set rfds;
   int result, fromlen;
   struct nit_hdr header;
   int posi, i;
 #else  /* PKTFILTER */
 
-  static int rfds;
+  fd_set rfds;
   int result;
   int i;
   int plen;
@@ -988,14 +987,11 @@ void init_ether() {
     nioc.nioc_flags = 0;
     if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
       printf("init_ether: ioctl failed\n");
-
       close(ether_fd);
       ether_fd = -1;
       return;
     }
 #else /* PKTFILTER */
-
-  EtherReadFds |= (1 << ether_fd);
 
 /* first and foremost, flush out ether_fd's buffers and filter it */
 /* install packetfilter that rejects everything */
@@ -1024,7 +1020,6 @@ void init_ether() {
 #endif /* USE_DLPI */
 #endif /* PKTFILTER -- jds 23 sep 96 unmatched if fix */
 #ifndef PKTFILTER
-    EtherReadFds |= (1 << ether_fd);
     if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | FASYNC | FNDELAY) < 0)
       perror("Ether setup SETFLAGS fcntl");
     if (fcntl(ether_fd, F_SETOWN, getpid()) < 0) perror("Ether setup SETOWN");
@@ -1037,7 +1032,7 @@ void init_ether() {
   if (ioctl(ether_fd, I_FLUSH, (char *)FLUSHR) < 0) { perror("init_ether I_FLUSH"); }
 #else
         {
-          int rfds = EtherReadFds;
+          FD_SET(ether_fd, &rfds);
           while (select(32, &rfds, NULL, NULL, &EtherTimeout) > 0)
             read(ether_fd, nit_buf, sizeof(nit_buf));
         }
@@ -1082,8 +1077,8 @@ void init_ether() {
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
 
-    if (EtherReadFds == 0) error("EtherReadFds is zero, but enet opened??");
-    LispReadFds |= EtherReadFds;
+    if (ether_fd < 0) error ("ether_fd is -1, but enet opened??");
+    FD_SET(ether_fd, &LispReadFds);
 
     DBPRINT(("init_ether: **** Ethernet starts ****\n"));
   }

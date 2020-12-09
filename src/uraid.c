@@ -39,6 +39,7 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 #include <sys/param.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
+#include <sys/select.h>
 #endif /* DOS */
 #include <fcntl.h>
 #ifndef XWINDOW
@@ -164,7 +165,8 @@ extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif /* NOPIXRECT */
 
 extern int DisplayRasterWidth;
-extern unsigned int LispReadFds, LispWindowFd, LispKbdFd;
+extern unsigned int LispWindowFd, LispKbdFd;
+extern fd_set LispReadFds;
 #ifndef NOPIXRECT
 extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
 #endif /* NOPIXRECT */
@@ -173,7 +175,6 @@ extern struct screen LispScreen;
 extern int displaywidth, displayheight;
 extern DLword *DisplayRegion68k;
 extern int FrameBufferFd, ether_fd, RS232C_Fd;
-extern u_int EtherReadFds;
 
 LispPTR RadiAtomIndex;
 LispPTR RaidPackageIndex;
@@ -1085,7 +1086,7 @@ static int re_init_display(int, int);
 int device_after_raid() {
   extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
   extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
-  LispReadFds = 0;
+  FD_ZERO(&LispReadFds);
   if (re_init_display(DISPLAY_OFFSET, 65536 * 16 * 2) == -1) return (-1);
   set_cursor();
   init_keyboard(1);
@@ -1118,17 +1119,17 @@ int device_after_raid() {
   int_init();
 
 #ifdef SUNDISPLAY
-  LispReadFds |= (1 << LispWindowFd);
+  FD_SET(LispWindowFd, &LispReadFds);
 #endif /* SUNDISPLAY */
 
 #ifdef NOETHER
 #else
-  LispReadFds |= EtherReadFds;
+  FD_SET(ether_fd, &LispReadFds);
 #endif /* NOETHER */
 
 #ifdef XWINDOW
   (currentdsp->device.after_raid)(currentdsp);
-  LispReadFds |= (1 << ConnectionNumber(currentdsp->display_id));
+  FD_SET(ConnectionNumber(currentdsp->display_id), &LispReadFds);
   flush_display_buffer();
 #elif DOS
   (currentdsp->device.after_raid)(currentdsp);

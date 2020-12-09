@@ -39,6 +39,7 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 
 #ifndef APOLLO
 #ifndef HPUX
@@ -83,7 +84,7 @@ unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 Colormap Colors;
 
 int XLocked = 0; /* non-zero while doing X ops, to avoid signals */
-extern int LispReadFds;
+extern fd_set LispReadFds;
 
 /************************************************************************/
 /*									*/
@@ -203,7 +204,7 @@ void Xevent_after_raid(DspInterface dsp)
 /************************************************************************/
 void Open_Display(DspInterface dsp)
 {
-  LispReadFds |= (1 << ConnectionNumber(dsp->display_id));
+    FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
 #ifndef ISC
 #ifndef HPUX
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());

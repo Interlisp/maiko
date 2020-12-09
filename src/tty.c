@@ -10,6 +10,7 @@ static char *id = "$Id: tty.c,v 1.2 1999/01/03 02:07:39 sybalsky Exp $ Copyright
 
 #include "version.h"
 
+#include <sys/select.h>
 #include "tty.h"
 
 DLTTY_OUT_COMMAND *DLTTYPortCmd;
@@ -18,7 +19,7 @@ DLTTY_OUT_CSB *DLTTYOut;
 
 char *TTY_Dev;
 int TTY_Fd;
-extern int LispReadFds;
+extern fd_set LispReadFds;
 struct sgttyb TTY_Mode;
 
 void tty_init() {
@@ -47,7 +48,7 @@ void tty_open() {
       TTY_Mode.sg_flags = RAW;
       stat = ioctl(TTY_Fd, TIOCSETP, &TTY_Mode);
 
-      LispReadFds |= (1 << TTY_Fd);
+      FD_SET(TTY_Fd, &LispReadFds);
 #ifdef TTYINT
       int_io_open(TTY_Fd);
 #endif
@@ -66,7 +67,7 @@ void tty_close() {
 #endif
 
   if (TTY_Fd >= 0) {
-    LispReadFds &= ~(1 << TTY_Fd);
+    FD_CLR(TTY_Fd, &LispReadFds);
     stat = close(TTY_Fd);
 #ifdef TTYINT
     int_io_close(TTY_Fd);

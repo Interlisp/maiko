@@ -17,6 +17,7 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #include <sys/types.h>
 #include <sys/file.h>
 #include <signal.h>
+#include <sys/select.h> /* for FD_ fns */
 #ifdef ISC
 #include <sys/fcntl.h>
 #include <sys/bsdtypes.h>
@@ -88,8 +89,9 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #define UDPSendto 130
 #define UDPRecvfrom 131
 
-extern u_int LispIOFds, LispReadFds;
 extern int *Lisp_errno;
+extern fd_set LispReadFds;
+fd_set LispIOFds;
 
 LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, LispPTR bufaddr, LispPTR maxlen)
 {
@@ -233,8 +235,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case TCPclose:
       sock = LispNumToCInt(nameConn);
-      LispIOFds &= ~(1 << sock);
-      LispReadFds &= ~(1 << sock);
+      FD_CLR(sock, &LispIOFds);
+      FD_CLR(sock, &LispReadFds);
       shutdown(sock, 2);
       close(sock);
       return (ATOM_T);
@@ -290,8 +292,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         sigsetmask(oldmask);
 #endif /* SYSVSIGNALS */
       }
-      LispIOFds |= (1 << result); /* so we get interrupts */
-      LispReadFds |= LispIOFds;
+      FD_SET(result, &LispIOFds);  /* so we get interrupts */
+      FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = 0x%x.\n", LispIOFds));
       return (GetSmallp(result));
       break;
@@ -370,8 +372,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
 #endif /* RS6000 */
 
-      LispIOFds |= (1 << result); /* so we get interrupts */
-      LispReadFds |= LispIOFds;
+      FD_SET(result, &LispIOFds);  /* so we get interrupts */
+      FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = 0x%x.\n", LispIOFds));
       return (GetSmallp(result));
       break;

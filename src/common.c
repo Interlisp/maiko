@@ -16,6 +16,7 @@ static char *id = "$Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ Copyri
 #include <setjmp.h>
 #include <fcntl.h>
 #include <string.h> /* for memset */
+#include <sys/select.h> /* for fd_set */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
@@ -45,7 +46,8 @@ error
 ******************************************************************/
 #define URMAXFXNUM 100
 
-extern unsigned int LispReadFds, LispWindowFd, LispKbdFd;
+extern fd_set LispReadFds;
+extern int LispWindowFd, LispKbdFd;
 extern struct screen LispScreen;
 extern int displaywidth, displayheight;
 extern DLword *DisplayRegion68k;

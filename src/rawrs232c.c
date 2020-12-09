@@ -11,6 +11,7 @@ static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Cop
 
 #include "version.h"
 
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/termios.h>
 #include <sys/ttold.h>
@@ -261,13 +262,13 @@ LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
   unsigned char *buffptr;
   int length;
   u_int real_fd;
-  u_int readfds;
+  fd_set readfds;
 
-  real_fd = fd & 0xffff;
-  readfds = (1 << real_fd);
+  real_fd = fd & 0xffff; /* FIXME: should be GetSmallp() ? */
+  FD_SET(real_fd, &readfds);
 
   select(32, &readfds, NULL, NULL, &RS_TimeOut);
-  if (readfds & (1 << real_fd)) {
+  if (FD_ISSET(real_fd, &readfds)) {
     buffptr = (unsigned char *)Addr68k_from_LADDR(buff);
 
     if ((length = read(real_fd, buffptr, (nbytes & 0xffff))) < 0) {
@@ -285,20 +286,20 @@ LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
 
 LispPTR raw_rs232c_setint(LispPTR fd, LispPTR onoff)
 {
-  extern u_int LispReadFds;
-  extern u_int LispIOFds;
+  extern fd_set LispReadFds;
+  extern fd_set LispIOFds;
   u_int real_fd;
 
-  real_fd = (fd & 0xffff);
+  real_fd = (fd & 0xffff); /* FIXME: should be GetSmallp() */
 
   if (onoff == ATOM_T) {
-    LispReadFds |= (1 << real_fd);
-    LispIOFds |= (1 << real_fd);
+    FD_SET(real_fd, &LispReadFds);
+    FD_SET(real_fd, &LispIOFds);
     int_io_open(real_fd);
   } else {
     int_io_close(real_fd);
-    LispReadFds &= ~(1 << real_fd);
-    LispIOFds &= ~(1 << real_fd);
+    FD_CLR(real_fd, &LispReadFds);
+    FD_CLR(real_fd, &LispIOFds);
   }
   return (ATOM_T);
 }
