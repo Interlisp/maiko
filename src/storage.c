@@ -272,10 +272,17 @@ LispPTR dremove(LispPTR x, LispPTR l) {
 
                 Created	:	Oct. 12, 1987 Takeshi Shimizu
                 Changed :	Oct. 13, 1987 take
-                                OCt. 20, 1987 take
+                                Oct. 20, 1987 take
 
 */
+/**
+ * Makes an entry in the FPtoVP table for the newly created page.
+ * Ensures that the FPtoVP table has room for the additional entry,
+ * extending the FPtoVP table by an additional  page, if necessary,
+ * such that it is maintained as a contiguous region of file pages.
+ */
 /*****************************************************************/
+
 LispPTR newpage(LispPTR base) {
 #ifdef BIGVM
   register unsigned int vp; /* Virtual Page we're creating */
