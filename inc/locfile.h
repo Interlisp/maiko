@@ -320,7 +320,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
  * Destructively modify the version part of pathname which is following the
  * Xerox Lisp file naming convention to UNIX one.
  * If the file name which is passed from Lisp has the version part, it must be
- * a valid one (i.e. construected with only number).  This is guaranteed by Lisp
+ * a valid one (i.e. constructed with only number).  This is guaranteed by Lisp
  * code.
  * This macro should be called at the top of the routines which accept the
  * file name from lisp before converting it into UNIX file name, because

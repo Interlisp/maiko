@@ -65,7 +65,7 @@
 		if(Warn_count == MAX_WARN_COUNT) \
 		  { \
 		    fprintf(stderr, \
-			    "*** Surpressing further rounding warnings\n"); \
+			    "*** Suppressing further rounding warnings\n"); \
 		  } \
 	      } \
 	  } \
@@ -226,14 +226,14 @@ typedef struct _lprec
   int       sum;                /* The size of the variables + the slacks */
   int       sum_alloc;
 
-  short     names_used;         /* Flag to indecate if names for rows and
+  short     names_used;         /* Flag to indicate if names for rows and
 				   columns are used */
   nstring   *row_name;		/* rows_alloc+1 */
   nstring   *col_name;		/* columns_alloc+1 */
 
- /* Row[0] of the sparce matrix is the objective function */
+ /* Row[0] of the sparse matrix is the objective function */
 
-  int       non_zeros;          /* The number of elements in the sparce matrix*/
+  int       non_zeros;          /* The number of elements in the sparse matrix*/
   int       mat_alloc;		/* The allocated size for matrix sized 
 				   structures */
   matrec    *mat;               /* mat_alloc :The sparse matrix */
@@ -251,7 +251,7 @@ typedef struct _lprec
 				  changing, but before `Bound transformation' */
   REAL      *rh;		/* rows_alloc+1 :As orig_rh, but after Bound 
 				   transformation */
-  REAL      *rhs;		/* rows_alloc+1 :The RHS of the curent simplex 	
+  REAL      *rhs;		/* rows_alloc+1 :The RHS of the current simplex
 				   tableau */
   short     *must_be_int;       /* sum_alloc+1 :TRUE if variable must be 
 				   Integer */
@@ -327,7 +327,7 @@ typedef struct _lprec
   REAL      lag_bound;		/* the lagrangian lower bound */
 
   short     valid;		/* Has this lp pased the 'test' */
-  REAL      infinite;           /* ## numercal stuff */
+  REAL      infinite;           /* ## numerical stuff */
   REAL      epsilon;            /* ## */
   REAL      epsb;               /* ## */
   REAL      epsd;               /* ## */
@@ -423,7 +423,7 @@ void set_row_name(lprec *lp, int row, nstring new_name);
 /* Set the name of a constraint row, make sure that the name has < 25 characters */
 
 void set_col_name(lprec *lp, int column, nstring new_name);
-/* Set the name of a varaible column, make sure that the name has < 25 characters */
+/* Set the name of a variable column, make sure that the name has < 25 characters */
 
 void auto_scale(lprec *lp);
 /* Automatic scaling of the problem */
@@ -441,7 +441,7 @@ int lag_solve(lprec *lp, REAL start_bound, int num_iter, short verbose);
 /* Do NumIter iterations with Lagrangian relaxation constraints */
 
 void reset_basis(lprec *lp);
-/* Reset the basis of a problem, can be usefull in case of degeneracy - JD */
+/* Reset the basis of a problem, can be useful in case of degeneracy - JD */
 
 REAL mat_elm(lprec *lp, int row, int column);
 /* get a single element from the matrix */
@@ -472,7 +472,7 @@ void write_LP(lprec *lp, FILE *output);
 /* write a LP file to output */
 
 void print_lp(lprec *lp);
-/* Print the current problem, only usefull in very small (test) problems. 
+/* Print the current problem, only useful in very small (test) problems.
   Shows the effect of scaling */
 
 void print_solution(lprec *lp);
@@ -487,7 +487,7 @@ void print_scales(lprec *lp);
 
 
 
-/* functions used internaly by the lp toolkit */
+/* functions used internally by the lp toolkit */
 void error(char *format, ...);
 void inc_mat_space(lprec *lp, int max_extra);
 void inc_row_space(lprec *lp);

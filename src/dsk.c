@@ -211,7 +211,7 @@ static void separate_drive(char *lfname, char *drive)
  *
  * Accepts a Lisp full file name from Lisp code, and separate the host field
  * from other components.  The result will be appropriate form to pass to
- * unixpathname.  For convinience to unixpathname, the initial directory
+ * unixpathname.  For convenience to unixpathname, the initial directory
  * delimiter will be removed from lfname except the case lfname specifies the
  * very root directory.  And if the lfname is regarded as other directory,
  * the trail directory delimiter is also removed.
@@ -284,7 +284,7 @@ void separate_host(char *lfname, char *host)
  * Argument:	LispPTR	*args	args[0]
  *				 Full file name which is following the Xerox
  *				 Lisp file naming convention.
- *				args[1] Recoginition mode.  See IRM.
+ *				args[1] Recognition mode.  See IRM.
  *				args[2] Access mode.  See IRM.
  *				args[3]	The place where the creation date of the
  *				        opened file should be stored.
@@ -360,7 +360,7 @@ LispPTR COM_openfile(register LispPTR *args)
    * Set up the flags argument for open system call.
    * And we have to handle the non existing directory case if the device is
    * DSK.
-   * link_check_flg is used to determine wheter we have to check a hard-link
+   * link_check_flg is used to determine whether we have to check a hard-link
    * based version control after opening a file.
    */
   link_check_flg = 0;
@@ -391,10 +391,10 @@ LispPTR COM_openfile(register LispPTR *args)
     case RECOG_NEW:
     case RECOG_OLD_NEW:
       /*
-       * In DSK device, the not exsting yet file can be recognized.  In this
+       * In DSK device, the not existing yet file can be recognized.  In this
        * case, if there is a chance to create a new file, we have to make
        * sure that all directory to reach the recognized file exists.
-       * Also we have to check the versionless file is collectly maintained
+       * Also we have to check the versionless file is correctly maintained
        * or not when we have a chance to create a new file.
        */
       switch (args[2]) {
@@ -407,7 +407,7 @@ LispPTR COM_openfile(register LispPTR *args)
             return (NIL);
           } else {
             /*
-             * Even if OLD/NEW recoginition, opening a input
+             * Even if OLD/NEW recognition, opening a input
              * stream never try to create a new file.  Thus,
              * without O_CREAT.
              */
@@ -452,7 +452,7 @@ LispPTR COM_openfile(register LispPTR *args)
    * from the actual file name on DSK, even after the Lisp name is converted
    * to UNIX form with unixpathname.  Lisp always recognize a file on DSK
    * with version.  If the versionless file exists and it is not correctly
-   * maintained, that is it is not hard linked to the exisiting highest
+   * maintained, that is it is not hard linked to the existing highest
    * versioned file, Lisp regards such link missing versionless file as
    * the highest versioned file, but the actual name on the file system
    * is still versionless.
@@ -460,7 +460,7 @@ LispPTR COM_openfile(register LispPTR *args)
    * complicated cases correctly and let us know the "Lisp recognizing"
    * name and "Real" name.  Both of them are UNIX format.
    * At this point, we will use one of the four routines and get the
-   * real name.  We can use it to open a file which is requeste from Lisp
+   * real name.  We can use it to open a file which is requested from Lisp
    * with the "Lisp recognizing" name.
    */
 
@@ -521,7 +521,7 @@ LispPTR COM_openfile(register LispPTR *args)
   if (dskp && link_check_flg) {
     /*
      * When we are opening a file with a mode we might create a new file,
-     * we have to make sure that versionless file is maintaied
+     * we have to make sure that versionless file is maintained
      * correctly before we actually creating a new file, because a
      * created new file will change the status and the recognition on
      * the same file with the same recognition mode will return the
@@ -728,13 +728,13 @@ LispPTR COM_closefile(register LispPTR *args)
 
   if (dskp) {
     /*
-     * On {DSK}, we have to make sure dir is case sensitively exisiting
+     * On {DSK}, we have to make sure dir is case sensitively existing
      * directory.
      */
     if (true_name(dir) != -1) return (NIL);
 
     /*
-     * There is a very troublesom problem here.  The file name Lisp
+     * There is a very troublesome problem here.  The file name Lisp
      * recognizes is not always the same as the name which COM_openfile
      * used to open the file.  Sometimes COM_openfile uses the versionless
      * file name to open a file, although Lisp always recognizes with
@@ -856,13 +856,13 @@ LispPTR COM_closefile(register LispPTR *args)
 
   if (dskp) {
     /*
-     * On {DSK}, we have to make sure dir is case sensitively exisiting
+     * On {DSK}, we have to make sure dir is case sensitively existing
      * directory.
      */
     if (true_name(dir) != -1) return (NIL);
 
     /*
-     * There is a very troublesom problem here.  The file name Lisp
+     * There is a very troublesome problem here.  The file name Lisp
      * recognizes is not always the same as the name which COM_openfile
      * used to open the file.  Sometimes COM_openfile uses the versionless
      * file name to open a file, although Lisp always recognizes with
@@ -923,7 +923,7 @@ LispPTR COM_closefile(register LispPTR *args)
  * Name:	DSK_getfilename
  *
  * Argument:	LispPTR	*args	args[0] Full file name in Lisp format.
- *				args[1] Rcoginition mode.  See IRM.
+ *				args[1] Recognition mode.  See IRM.
  *				args[2] Name area where the recognized full file name
  *				 will be stored.
  *				args[3] The place where the error number should be
@@ -995,7 +995,7 @@ LispPTR DSK_getfilename(register LispPTR *args)
     case RECOG_OLD:
       /*
        * "Old" file means the "newest existing" file.  Thus, we have to
-       * check dir is an existing directory or not.  The serach have to
+       * check dir is an existing directory or not.  The search has to
        * be done in case insensitive manner.  true_name does this work.
        */
 
@@ -1009,7 +1009,7 @@ LispPTR DSK_getfilename(register LispPTR *args)
        */
       if (strcmp(name, "") == 0) {
         /*
-         * The file name is specified with a trail directory delimitor.
+         * The file name is specified with a trail directory delimiter.
          * We should recognize it as a directory.
          */
         strcpy(aname, dir);
@@ -1053,7 +1053,7 @@ LispPTR DSK_getfilename(register LispPTR *args)
       }
       if (strcmp(name, "") == 0) {
         /*
-         * The file name is specified with a trail directory delimitor.
+         * The file name is specified with a trail directory delimiter.
          * We should recognize it as a directory.
          */
         strcpy(aname, dir);
@@ -1085,7 +1085,7 @@ LispPTR DSK_getfilename(register LispPTR *args)
       /*
        * "New" file means the "not existing" file.  Thus it is not
        * necessary that dir is an existing directory.  If dir is not
-       * an exisiting directory, we returns the specified file name
+       * an existing directory, we returns the specified file name
        * as if, the subsequent OPENFILE will find the truth.
        */
       if (true_name(dir) != -1) {
@@ -1093,7 +1093,7 @@ LispPTR DSK_getfilename(register LispPTR *args)
         dirp = 0;
       } else if (strcmp(name, "") == 0) {
         /*
-         * The file name is specified with a trail directory delimitor.
+         * The file name is specified with a trail directory delimiter.
          * We should recognize it as a directory.
          */
         strcpy(aname, dir);
@@ -1270,7 +1270,7 @@ LispPTR DSK_deletefile(register LispPTR *args)
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
                    * Lisp recognize it and now, this case
-                   * will occure.
+                   * will occur.
                    */
 
   /*
@@ -1298,7 +1298,7 @@ LispPTR DSK_deletefile(register LispPTR *args)
   /*
    * If a versionless file exists, we have to check the link status of it,
    * because deleting a versionless file or a file to which a versionless
-   * file is linked will destroy the concistency of the version status.
+   * file is linked will destroy the consistency of the version status.
    */
 
   if (check_vless_link(vless, varray, fbuf, &rval) == 0) return (NIL);
@@ -1329,7 +1329,7 @@ LispPTR DSK_deletefile(register LispPTR *args)
        * Although the versionfile is specified, it is not linked
        * to any file in varray.  We should not maintain the version
        * status after deleting the versionless file, because
-       * we cannot say wheter the versionless file is actually under
+       * we cannot say whether the versionless file is actually under
        * control of the Medley DSK file system or not.
        */
       TIMEOUT(rval = unlink(vless));
@@ -1425,7 +1425,7 @@ LispPTR DSK_renamefile(register LispPTR *args)
   if (unpack_filename(dst, dir, fbuf, ver, 1) == 0) return (NIL);
   /*
    * The destination file has been recognized as new file.  Thus we have
-   * to make sure that the directory exisits.
+   * to make sure that the directory exists.
    */
   if (make_directory(dir) == 0) return (NIL);
 
@@ -1452,7 +1452,7 @@ LispPTR DSK_renamefile(register LispPTR *args)
    * no member of the destination family, there is nothing to do.  If there
    * is only a versionless file and, if the "real" destination is not the
    * versionless, we have to rename it to version 1.  And last case, if the
-   * "real" destination file is the file to which the versinless file is linked,
+   * "real" destination file is the file to which the versionless file is linked,
    * we have to unlink the versionless file.
    */
   if (!NoFileP(varray)) {
@@ -1491,7 +1491,7 @@ LispPTR DSK_renamefile(register LispPTR *args)
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
                    * Lisp recognize it and now, this case
-                   * will occure.
+                   * will occur.
                    */
 
   /*
@@ -1512,7 +1512,7 @@ LispPTR DSK_renamefile(register LispPTR *args)
     /*
      * If a versionless file exists, we have to check the link status
      * of it, because renaming a versionless file or a file to which a
-     * versionless file is linked will destroy the concistency of the
+     * versionless file is linked will destroy the consistency of the
      * version status.
      */
     if (check_vless_link(vless, varray, fbuf, &rval) == 0) return (NIL);
@@ -1592,7 +1592,7 @@ LispPTR DSK_renamefile(register LispPTR *args)
  * Description:
  *
  * The implementation of the DIRECTORYNAMEP FDEV method for DSK device.
- * Performs the recoginition as well. Accepts the directory representation which
+ * Performs the recognition as well. Accepts the directory representation which
  * obeys the Xerox Lisp file naming convention. The "true" name which is stored
  * on the area specified with the second argument also follows the Xerox Lisp
  * file naming convention, and it includes the initial and trail directory
@@ -1622,7 +1622,7 @@ LispPTR DSK_directorynamep(register LispPTR *args)
    * terminating character.
    */
   len = fatp ? len + 4 + 1 : len + 2 + 1;
-  /* -2 for the initial and trail directory delimitor. */
+  /* -2 for the initial and trail directory delimiter. */
   if (len > MAXPATHLEN - 2) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], dirname, MAXPATHLEN);
@@ -1880,7 +1880,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
  *
  * The implementation of SETFILEINFO FDEV method for DSK and UNIX device.  Try to
  * replace a value of a specified file attribute.
- * In this implementation, only WDATE(as well as Createion Date) and PROTECTION
+ * In this implementation, only WDATE(as well as Creation Date) and PROTECTION
  * make sense.
  */
 
@@ -2042,7 +2042,7 @@ LispPTR COM_readpage(register LispPTR *args)
   if ((sbuf.st_mode & S_IFREG) != 0) {
   /*
    * The request file is a regular file.  We have to make sure that
-   * next byte read is at the beggning of the requested page of the
+   * next byte read is at the beginning of the requested page of the
    * file.  If the request file is special file, lseek is not needed.
    */
   sklp:
@@ -2249,7 +2249,7 @@ LispPTR COM_truncatefile(register LispPTR *args)
  *
  * Value:	If succeed, returns a Lisp T, otherwise Lisp NIL.
  *
- * Side Effect:	If succeed, the current directory of this Lisp proecess will be changed.
+ * Side Effect:	If succeed, the current directory of this Lisp process will be changed.
  *
  * Description:
  *
@@ -2345,12 +2345,12 @@ LispPTR COM_changedir(register LispPTR *args)
  * Description:
  *
  * Examines the statistics of the file system on which the specified sysout file
- * resides, and returns the number of available free blocks thorugh the specified
+ * resides, and returns the number of available free blocks through the specified
  * buffer.
  * This routine is invoked just before the Lisp flushes its image on a sysout file so
  * as to make sure the Lisp image is gracefully written on a sysout file.  See
  * \MAIKO.CHECKFREESPACE in MOD44IO.
- * The version controll based on a file naming convention is not applicable to a
+ * The version control based on a file naming convention is not applicable to a
  * sysout file, even if the sysout file is specified on {DSK} device.  The Lisp code
  * strips the version field by invoking DSK_getfilename with NON recognition mode.
  */
@@ -2413,7 +2413,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 
   if (dskp) {
     /*
-     * Although Lisp code gurantees the directory is an existing one,
+     * Although Lisp code guarantees the directory is an existing one,
      * by calling DSK_getfilename, we check it again for safety.
      */
     if (true_name(dir) != -1) return (NIL);
@@ -2737,7 +2737,7 @@ int true_name(register char *path)
  *
  *		char	*name	The name which is searched on dir.
  *
- * Value:	If name is recognized as an existing diretory, returns -1,
+ * Value:	If name is recognized as an existing directory, returns -1,
  *		recognized as an existing file, returns 1, otherwise 0.
  *
  * Side Effect:	If succeed, the contents of dir is replaced with the true name
@@ -2746,7 +2746,7 @@ int true_name(register char *path)
  * Description:
  *
  * Try to find the file or directory specified with name on the directory
- * specified with dir.  The search is case insensitve.
+ * specified with dir.  The search is case insensitive.
  *
  */
 
@@ -2884,9 +2884,9 @@ static int make_directory(register char *dir)
          * Now, dir_buf contains the absolute path to the next
          * subdirectory or file.  If one of the parent directories
          * are created, we have to create a new subdirectory
-         * anyway.  If all of the parent directories are exisiting
+         * anyway.  If all of the parent directories are existing
          * directories, we have to check this subdirectory is an
-         * exisiting or not.
+         * existing or not.
          */
         if (maked) {
 #ifdef DOS
@@ -3122,8 +3122,8 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   int res;
 
   /*
-   * First of all, prepare a lower cased file name for the case insensitve
-   * serch.  Also we have to separate file name from its version field.
+   * First of all, prepare a lower cased file name for the case insensitive
+   * search.  Also we have to separate file name from its version field.
    */
   if (dir[1] == DRIVESEP) drive = dir[0];
 
@@ -3187,7 +3187,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
       svarray->version_no = 1;
     } else {
       /*
-       * separater_version guranteeds ver is a numeric
+       * separator_version guarantees ver is a numeric
        * string.
        */
       svarray->version_no = atoi(ver);
@@ -3225,8 +3225,8 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   struct stat sbuf;
 
   /*
-   * First of all, prepare a lower cased file name for the case insensitve
-   * serch.  Also we have to separate file name from its version field.
+   * First of all, prepare a lower cased file name for the case insensitive
+   * search.  Also we have to separate file name from its version field.
    */
   strcpy(lcased_file, file);
   separate_version(lcased_file, ver, 1);
@@ -3245,9 +3245,9 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
    */
 
   /*
-   * Cache machaisme is not used now, because of the bug of Sun OS.
+   * Cache mechanism is not used now, because of the bug of Sun OS.
    * Sometimes just after unlinking a file on a directory, the st_mtime
-   * of the directory does not change.  This will make Maiko beleive
+   * of the directory does not change.  This will make Maiko believe
    * cached version array is still valid, although it is already invalid.
    * sync(2) has no effect on such case.
    */
@@ -3279,7 +3279,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
           svarray->version_no = 0;
         } else {
           /*
-           * separater_version guranteeds ver is a numeric
+           * separator_version guarantees ver is a numeric
            * string.
            */
           svarray->version_no = atoi(ver);
@@ -3423,7 +3423,7 @@ static int maintain_version(char *file, FileName *varray, int forcep)
     /*
      * The versionless file is not linked to any file in varray.
      * Thus, we have to link the versionless file to the file which
-     * is versioned one higher than the exisiting highest version.
+     * is versioned one higher than the existing highest version.
      */
     FindHighestVersion(varray, entry, max_no);
     sprintf(ver, "%d", max_no + 1);
@@ -3485,7 +3485,7 @@ static int maintain_version(char *file, FileName *varray, int forcep)
  *
  * Argument:	FileName *varray
  *				The version array already filled by
- *				get_version_array routin.
+ *				get_version_array routine.
  *		char	*file	The place where the full file name of the found
  *				versionless file will be stored.
  *		char	*dir	Directory absolute path following the UNIX
@@ -3625,7 +3625,7 @@ static int check_vless_link(char *vless, FileName *varray, char *to_file, int *h
  *				has been gathered.
  *		FileName *varray
  *				The version array already filled by
- *				get_version_array routin.
+ *				get_version_array routine.
  *		char	*afile	File name.  It might include a version field.
  *				The version field have to be following the
  *				UNIX convention, that is "name.~##~", not
@@ -3673,7 +3673,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
 
   if (get_versionless(varray, vless, dir) == 0) {
     /*
-     * There is no versionless file, but at least one vernsioned
+     * There is no versionless file, but at least one versioned
      * file exists.
      */
     if (*ver == '\0') {
@@ -3744,7 +3744,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
       if (*ver == '\0') {
         /*
          * No version is specified.  The one higher than an
-         * exisiting maximum version is dealt with as the
+         * existing maximum version is dealt with as the
          * old version, and it should be a version of the
          * link missing versionless file.
          */
@@ -3824,7 +3824,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
  *				has been gathered.
  *		FileName *varray
  *				The version array already filled by
- *				get_version_array routin.
+ *				get_version_array routine.
  *		char	*afile	File name.  It might include a version field.
  *				The version field have to be following the
  *				UNIX convention, that is "name.~##~", not
@@ -3872,7 +3872,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
 
   if (get_versionless(varray, vless, dir) == 0) {
     /*
-     * There is no versionless file, but at least one vernsioned
+     * There is no versionless file, but at least one versioned
      * file exists.
      */
     if (*ver == '\0') {
@@ -4020,7 +4020,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
  *				has been gathered.
  *		FileName *varray
  *				The version array already filled by
- *				get_version_array routin.
+ *				get_version_array routine.
  *		char	*afile	File name.  It might include a version field.
  *				The version field have to be following the
  *				UNIX convention, that is "name.~##~", not
@@ -4096,7 +4096,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
 
   if (get_versionless(varray, vless, dir) == 0) {
     /*
-     * There is no versionless file, but at least one vernsioned
+     * There is no versionless file, but at least one versioned
      * file exists.
      */
     if (*ver == '\0') {
@@ -4107,7 +4107,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       FindHighestVersion(varray, entry, max_no);
       sprintf(vbuf, "%d", max_no + 1);
       /*
-       * We weill use the file name of the exisiting highest
+       * We will use the file name of the existing highest
        * versioned file as the name of the new file, so that
        * new file is as the same case as old.
        */
@@ -4191,7 +4191,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       if (*ver == '\0') {
         /*
          * No version is specified.  The two higher than an
-         * exisiting maximum version is dealt with as the
+         * existing maximum version is dealt with as the
          * new version, because the one higher version is
          * dealt with as the actual version of the link
          * missing versionless file.
@@ -4256,7 +4256,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       if (*ver == '\0') {
         /*
          * No version is specified.  The one higher than the
-         * exisiting highest versioned file in varray is a
+         * existing highest versioned file in varray is a
          * new file.
          */
         FindHighestVersion(varray, entry, max_no);
@@ -4314,7 +4314,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
  *				has been gathered.
  *		FileName *varray
  *				The version array already filled by
- *				get_version_array routin.
+ *				get_version_array routine.
  *		char	*afile	File name.  It might include a version field.
  *				The version field have to be following the
  *				UNIX convention, that is "name.~##~", not
@@ -4385,7 +4385,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
 
   if (get_versionless(varray, vless, dir) == 0) {
     /*
-     * There is no versionless file, but at least one vernsioned
+     * There is no versionless file, but at least one versioned
      * file exists.
      */
     if (*ver == '\0') {
@@ -4471,7 +4471,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
       if (*ver == '\0') {
         /*
          * No version is specified.  The one higher than an
-         * exisiting maximum version is dealt with as the
+         * existing maximum version is dealt with as the
          * old version, and it should be a version of the
          * link missing versionless file.
          */

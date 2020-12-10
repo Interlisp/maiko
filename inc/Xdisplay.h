@@ -23,7 +23,7 @@ typedef struct
   {
     char *name;		/* name of this window */
     Window win;          	/* window id */
-    int    x,y;          	/* x and y cordinates */
+    int    x,y;          	/* x and y coordinates */
     int    width,height; 	/* window size */
     int    border;       	/* border width */
     GC     *gc; 
@@ -43,7 +43,7 @@ typedef struct
 typedef struct 
   {
     int left_x;  /* x coordinate of upper-left corner */
-    int top_y;   /* y coordinate of upper-lert corner */
+    int top_y;   /* y coordinate of upper-left corner */
     int right_x; /* x coordinate of lower-right corner */
     int bottom_y;/* y coordinate of lower-right corner */
   } DisplayArea;

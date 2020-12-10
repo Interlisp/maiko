@@ -4,7 +4,7 @@
 /*									*/
 /*			inlinedefs386i.c				*/
 /*									*/
-/*	Dispatch-loop macro devinitions specific to the Sun386i		*/
+/*	Dispatch-loop macro definitions specific to the Sun386i		*/
 /*									*/
 /************************************************************************/
 

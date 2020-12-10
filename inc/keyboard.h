@@ -141,7 +141,7 @@ typedef struct
     LispPTR deadkeyalist;
   } KBEVENT;  /* CHANGED-BY-TAKE ***/
 
-/*** OBSLOETE 
+/*** OBSOLETE
 **#define RCLK(hi,lo) \
   { \
     struct timeval time;\

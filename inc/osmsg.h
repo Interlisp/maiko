@@ -2,7 +2,7 @@
 
 
 /*************************************************
-	This is OSMESSAGE stuf.
+	This is OSMESSAGE stuff.
 
 	Print a console message.
 *************************************************/

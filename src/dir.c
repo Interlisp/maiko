@@ -97,7 +97,7 @@ extern int Dummy_errno;
  * Name:	SetupMatch
  *
  * Argument:	char	*tname	Target name including name ,extension and version.
- *		char	*pname	Pattern including name and extenstion.
+ *		char	*pname	Pattern including name and extension.
  *		char	*text	The place where separated target extension will be
  *				stored.
  *		char	*pext	The place where separated pattern extension will be
@@ -107,11 +107,11 @@ extern int Dummy_errno;
  *
  * Value:	N/A
  *
- * Side Effect:	The string tname and pname points are destructivly modified.
+ * Side Effect:	The string tname and pname points are destructively modified.
  *
  * Description:
  *
- * Split target and pattern to each component for the convinience of match_pattern
+ * Split target and pattern to each component for the convenience of match_pattern
  * routine.
  */
 
@@ -221,7 +221,7 @@ static int match_pattern(char *tp, char *pp)
         if (inastr) {
           /*
            * Try to find a character which match to
-           * a character psp points from a charcter
+           * a character psp points from a character
            * next to tsp.  If found retry from there.
            */
           for (tp = tsp + 1; *tp != '\0' && *tp != *psp; tp++) {}
@@ -270,10 +270,10 @@ int make_old_version(char *old, char *file)
 /*
  * FINFO and FPROP are used to store the information of the enumerated files
  * and directories.  They are arranged in a form of linked list.  Each list is
- * corresponding to the each directory enumeratreion.  All of the informations
+ * corresponding to the each directory enumeration.  All of the informations
  * Lisp needs are stored in the list.  This list is in the emulator's address space
  * and can be specified by "ID" which is the interface between the emulator and Lisp
- * code.  In this implementation, ID is represeted as an integer and is actually
+ * code.  In this implementation, ID is represented as an integer and is actually
  * an index of the array of the lists.
  *
  * To avoid the overhead of the FINFO and FPROP structure dynamic allocation and
@@ -434,13 +434,13 @@ int init_finfo() {
  * Value:	If suceed, returns the id of linked list of FINFO structures,
  *		otherwise -1.
  *
- * Side Effect:	If needed, FinfoArray will be extened according to the value of
+ * Side Effect:	If needed, FinfoArray will be extended according to the value of
  *		FINFOARRAYRSIZE.
  *
  * Description:
  *
  * Get an ID which can be used to name a linked list of FINFO structure.  ID is
- * represeted as an integer, and it is actualy an index of an array FinfoArray.
+ * represented as an integer, and it is actually an index of an array FinfoArray.
  *
  * If all entries of FinfoArray is occupied by linked lists of FINFO structures,
  * extended storage is allocated and old contents of the array are copied to the
@@ -478,9 +478,9 @@ static int get_finfo_id() {
  *				enumerated.
  *		FINFO	**finfo_buf
  *				The place where linked list of FINFO structures
- *				reslt of the enumeration will be stored.
+ *				result of the enumeration will be stored.
  *
- * Value:	If suceed, returns the number of enumerated files, otherwise -1.
+ * Value:	If succeed, returns the number of enumerated files, otherwise -1.
  *
  * Side Effect:	None.
  *
@@ -761,9 +761,9 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
  *				enumerated.
  *		FINFO	**finfo_buf
  *				The place where linked list of FINFO structures
- *				reslt of the enumeration will be stored.
+ *				result of the enumeration will be stored.
  *
- * Value:	If suceed, returns the number of enumerated files, otherwise -1.
+ * Value:	If succeed, returns the number of enumerated files, otherwise -1.
  *
  * Side Effect:	None.
  *
@@ -1010,9 +1010,9 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
  *				enumerated.
  *		FINFO	**finfo_buf
  *				The place where linked list of FINFO structures
- *				reslt of the enumeration will be stored.
+ *				result of the enumeration will be stored.
  *
- * Value:	If suceed, returns the number of enumerated files, otherwise -1.
+ * Value:	If succeed, returns the number of enumerated files, otherwise -1.
  *
  * Side Effect:	None.
  *
@@ -1212,9 +1212,9 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
  *				enumerated.
  *		FINFO	**finfo_buf
  *				The place where linked list of FINFO structures
- *				reslt of the enumeration will be stored.
+ *				result of the enumeration will be stored.
  *
- * Value:	If suceed, returns the number of enumerated files, otherwise -1.
+ * Value:	If succeed, returns the number of enumerated files, otherwise -1.
  *
  * Side Effect:	None.
  *
@@ -1605,7 +1605,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
         }
       } else {
         /*
-         * Only versionless file exists. It is regared as
+         * Only versionless file exists. It is regarded as
          * version 1.
          */
         strcat(cp->lname, ";1");
@@ -1669,7 +1669,7 @@ static int trim_finfo_version(FINFO **fp, int rver)
   do {
     if (cp->dirp) {
       /*
-       * Directory has no version, thus they should be remvoed.
+       * Directory has no version, thus they should be removed.
        */
       sp = cp = cp->next;
       continue;
@@ -1794,7 +1794,7 @@ static int trim_finfo_version(FINFO **fp, int rver)
         }
       } else {
         /*
-         * Only versionless file exists. It is regared as
+         * Only versionless file exists. It is regarded as
          * version 1.  Unless rver is 1, we can remove it.
          */
         if (rver != 1) {
@@ -1842,7 +1842,7 @@ static int trim_finfo_version(FINFO **fp, int rver)
  * Description:
  *
  * Prepare an area to be used as a sort buffer by qsort routine, and arrange the
- * contents of the buffer to be convinience to qsort routine.
+ * contents of the buffer to be convenience to qsort routine.
  * Caller have to free the area after sorting done.
  */
 
@@ -1916,7 +1916,7 @@ static int unix_filecmp(register FINFO **f1, register FINFO **f2)
 /*
  * Name:	file_sort
  *
- * Argument:	FINFO	**fpp	A pointer to a pointer adressing the linked FINFO
+ * Argument:	FINFO	**fpp	A pointer to a pointer addressing the linked FINFO
  *				being sorted.
  *		int	n	A number of FINFO structure linked.
  *		int	(*sortfn)()
@@ -2122,9 +2122,9 @@ LispPTR COM_gen_files(register LispPTR *args)
  * "{UNIX}<tmp>*.*;*" enumerates all of the files on /tmp directory
  * even if they never include ';' character in its name, as well as '.'.
  *
- * Thus I beleive, the specification should be clean upped as like,
+ * Thus I believe, the specification should be clean upped as like,
  * "UNIX device always ignores the version field in it file name representation
- * even if a user specifies it expricitly".
+ * even if a user specifies it explicitly".
  * But to keep a compatibility to an already released version, we have
  * to do some trick here.
  */
@@ -2142,7 +2142,7 @@ LispPTR COM_gen_files(register LispPTR *args)
 
   if (dskp) {
     /*
-     * On {DSK}, we have to make sure dir is case insensitively exisiting
+     * On {DSK}, we have to make sure dir is case insensitively existing
      * directory.
      */
     if (true_name(dir) != -1) return (GetSmallp(-1));
@@ -2172,7 +2172,7 @@ LispPTR COM_gen_files(register LispPTR *args)
     else
       count = enum_dsk(dir, name, ver, &fp);
   } else {
-    /* Makes UNIX device matchts any version. */
+    /* Makes UNIX device matches any version. */
     strcpy(ver, "*");
 
     if (propp)
@@ -2289,7 +2289,7 @@ LispPTR COM_next_file(register LispPTR *args)
  *
  * Description:
  *
- * When Lisp directory enumerateion file generator is exhausted or the enumerating
+ * When Lisp directory enumeration file generator is exhausted or the enumerating
  * operation is aborted, this routine is called.
  * Abandon all cached information corresponding to the generator.
  */

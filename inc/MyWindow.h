@@ -54,10 +54,10 @@ typedef struct _MyWindow
 
 typedef struct
   {
-    int left_x;  /* x cordinate of upperleft corner */
-    int top_y;   /* y cordinate of upperlert corner */
-    int right_x; /* x cordinate of lowerright corner */
-    int bottom_y;/* y cordinate of lowerright corner */
+    int left_x;  /* x coordinate of upper left corner */
+    int top_y;   /* y coordinate of upper left corner */
+    int right_x; /* x coordinate of lower right corner */
+    int bottom_y;/* y coordinate of lower right corner */
   } DisplayArea;
 
 #define CreateWindow(display, parent_win,child_win) { \

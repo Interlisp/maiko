@@ -91,7 +91,7 @@ typedef struct
 			   Cleanup and restart device after uraid. */
     void (* sync_device)(); /* SYNC_DEVICE, a function.
 			   args: self
-			   Make reality and emualtor coinside with eachother */
+			   Make reality and emulator coincide with each other */
   } DevRec;
 
 
@@ -211,14 +211,14 @@ typedef struct
     unsigned long (* bitblt_from_screen)();
     unsigned long (* scroll_region)(); /* ie. bbt from screen to screen */
 
-    void (* mouse_invisible)();	/* MOUSE_INVISSIBLE
+    void (* mouse_invisible)();	/* MOUSE_INVISIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
 				   This method makes the mouse invisible on the screen. Note that
-				   the dsp supplys the method and the iop supplys the data. */
-  void	(* mouse_visible)();	/* MOUSE_VISSIBLE
+				   the dsp supplies the method and the iop supplies the data. */
+  void	(* mouse_visible)();	/* MOUSE_VISIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
 				   This method makes the mouse visible on the screen. Note that
-				   the dsp supplys the method and the iop supplys the data. */
+				   the dsp supplies the method and the iop supplies the data. */
     MRegion Display;		/* Dimensions of the physical display. */
     unsigned short bitsperpixel;
     unsigned long colors;	/* cash for the available_colors */

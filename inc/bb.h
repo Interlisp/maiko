@@ -30,7 +30,7 @@
 	(there is one exception, B_postloop_mask, which may have its
 	shift count = 32, in which case it is not used)
 	Right shifted data is masked if necessary to compensate for
-	possible arithemetic shifts.  Arithmetic shifts are assumed as
+	possible arithmetic shifts.  Arithmetic shifts are assumed as
 	the default.
 
 	The backwards bit of the control block is followed blindly,

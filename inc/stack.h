@@ -74,7 +74,7 @@ typedef struct fnhead{
 	unsigned	nlocals		: 8;	/* ?? */
 	unsigned	fvaroffset	: 8;
 			/* DLword offset from head of NameTable */
-	/* NameTable of variavle length is follwing with this structure. */
+	/* NameTable of variable length is following with this structure. */
 } FNHEAD;
 
 
@@ -200,7 +200,7 @@ typedef struct fnhead
 			/* DLword offset from head of NameTable */
     unsigned	nlocals		:8;	/* ?? */
     DLword	ntsize;		/* size of NameTable */
-	/* NameTable of variavle length is follwing with this structure. */
+	/* NameTable of variable length is following with this structure. */
   } FNHEAD;
 
 
