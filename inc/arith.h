@@ -174,11 +174,11 @@
 			return(S_POSITIVE | arg);			\
 		case 0xFFFF0000:					\
 			return(S_NEGATIVE | (0xFFFF & arg));		\
-		default:{register LispPTR *wordp;			\
+		default:{register LispPTR *fixpp;			\
 			/* arg is FIXP, call createcell */		\
-			wordp = (LispPTR *) createcell68k(TYPE_FIXP);	\
-			*((int *)wordp) = arg;				\
-			return(LADDR_from_68k(wordp));			\
+			fixpp = (LispPTR *) createcell68k(TYPE_FIXP);	\
+			*((int *)fixpp) = arg;				\
+			return(LADDR_from_68k(fixpp));			\
 			}						\
 	}
 
