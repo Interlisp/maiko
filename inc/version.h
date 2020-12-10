@@ -271,7 +271,6 @@ typedef unsigned long u_long;
 #undef UNALIGNED_FETCH_OK
 #undef HAS_GETHOSTID
 #define seteuid(x) setresuid(-1, (x), -1)
-#define getwd(x) getcwd((x), MAXPATHLEN)
 #define getrusage(x, y)
 #define getpagesize() 4096
 #define USE_UTIME
@@ -308,7 +307,6 @@ typedef signed char s_char;
 #undef UNALIGNED_FETCH_OK
 #define MAXPATHLEN MAXNAMLEN
 #define EWOULDBLOCK EAGAIN
-#define getwd(x) getcwd((x), MAXPATHLEN)
  /* we compile on a 386 with GCC, so can use optimizations. */
 #define GCC386
 #define RESWAPPEDCODESTREAM
@@ -424,7 +422,6 @@ typedef unsigned short u_short;
 #define SYSVONLY 1
 #define SYSVSIGNALS 1
 #define NOETHER 1
-#define getwd(x) getcwd((x), MAXPATHLEN)
 #define USHORT unsigned
 #else
 #define USHORT unsigned short
@@ -453,7 +450,6 @@ typedef unsigned short u_short;
 
 #if !defined(LINUX) && !defined(MACOSX) && !defined(FREEBSD)
 /* these are in the POSIX standard */
-#define getwd(x) getcwd((x), MAXPATHLEN)
 #define getrusage(x, y) 
 #define getpagesize() 4096
 #endif /* LINUX , MACOSX, FREEBSD  */

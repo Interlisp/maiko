@@ -552,7 +552,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
              * "..>" or ".." means the parent directory of the
              * user's current working directory.
              */
-            if (getwd(dst) == 0) return (0);
+            if (getcwd(dst, MAXPATHLEN) == 0) return (0);
 #ifdef DOS
             dp = max(strrchr(dst, '/'), strrchr(dst, DIRSEP));
 #else
@@ -575,7 +575,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 #endif
         case '>':
           /* ".>" means the user's current working directory. */
-          if (getwd(dst) == 0) return (0);
+          if (getcwd(dst, MAXPATHLEN) == 0) return (0);
           while (*dp != '\0') dp++;
 
           *dp++ = DIRSEP;
@@ -584,7 +584,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 
         case '\0':
           /* "." also means the user's current working directory. */
-          if (getwd(dst) == 0) return (0);
+          if (getcwd(dst, MAXPATHLEN) == 0) return (0);
           while (*dp != '\0') dp++;
 
           *dp++ = DIRSEP;
