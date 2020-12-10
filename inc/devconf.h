@@ -37,7 +37,7 @@
 #define SUN_TYPE3_KBD	0x0
 #define SUN_TYPE4_KBD	0x1
 
-/* DISPALY */
+/* DISPLAY */
 #define SUN_DISPTYPE_MASK 0x78
 #define  SUN2BW		(2<<3)
 #define  SUN2COLOR	(3<<3)

@@ -147,7 +147,7 @@ void DSP_Cursor(LispPTR *args, int argnum)
 #endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
-  /* For X-Windows, set the cursor the the given location. */
+  /* For X-Windows, set the cursor to the given location. */
   Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
 #endif /* XWINDOW */
 }
@@ -240,7 +240,7 @@ void flip_cursor() {
   /* since this is called frequently, and you don't want to have
      to build a different LDE to run the 2 parts of a Loadup, there is
      an ifdef AND a test.  This way we don't generate
-     extra code for anybody elses building an LDE
+     extra code for anybody else building an LDE
      except those who want to try building loadups.  */
 
   if (!for_makeinit) {

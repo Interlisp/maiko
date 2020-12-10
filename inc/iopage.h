@@ -12,7 +12,7 @@
 #ifndef IOPAGE_DEFINED
 #define IOPAGE_DEFINED	(1)
 #ifndef BYTESWAP
-/* Normal definition, for big-indian machines */
+/* Normal definition, for big-endian machines */
 typedef struct iopage {
 	DLword	 dummy0[022];
 	DLword   dlmaintpanel;

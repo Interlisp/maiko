@@ -101,7 +101,7 @@ struct fnhead{
 	unsigned		nlocals :8;	/* ?? */
 	unsigned		fvaroffset :8;	
 			/* DLword offset from head of NameTable */
-	/* NameTable of variavle length is follwing with this structure. */
+	/* NameTable of variable length is following with this structure. */
 };
 
 
@@ -381,7 +381,7 @@ typedef struct definition_cell {
 /************************************************************************/
 
 /* 	The code generator must expand this differently, depending on
-  	the number of paramaters available to the function.
+  	the number of parameters available to the function.
 */
 
 #define framesetup(x, stkmin, swapped_func_obj)	{ 			\

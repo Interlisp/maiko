@@ -17,7 +17,7 @@
 #define IFPAGE_KEYVAL 0x15e3
 #ifndef BYTESWAP
 #ifdef BIGVM
-	/* Normal definition, for big-indian BIGVM machines */
+	/* Normal definition, for big-endian BIGVM machines */
 typedef struct ifpage {
 	DLword    currentfxp;
 	DLword    resetfxp;
@@ -105,7 +105,7 @@ typedef struct ifpage {
 	int    process_size; /* was lastnumchars */
 } IFPAGE;
 #else
-/* Normal definition, for big-indian machines */
+/* Normal definition, for big-endian machines */
 typedef struct ifpage {
 	DLword    currentfxp;
 	DLword    resetfxp;

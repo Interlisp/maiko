@@ -155,7 +155,7 @@ error Must specify RELEASE to build Medley.
 	/*								*/
 	/*  Architecture-specific flags:  Set flags			*/
 	/*  based on thing we know about the architecture		*/
-	/*  or idiosyncracies of the machine we're compiling for.	*/
+	/*  or idiosyncrasies of the machine we're compiling for.	*/
 	/*								*/
 	/*  Defaults:	Unaligned fetches OK	UNALIGNED_FETCH_OK	*/
 	/*		type char is signed	SIGNED_CHARS		*/

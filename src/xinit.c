@@ -234,17 +234,17 @@ void Open_Display(DspInterface dsp)
 /*********************************************************************/
 /*                                                                   */
 /*			  X _ i n i t                                */
-/* dsp: a display structure to be filled with all the neccessary     */
+/* dsp: a display structure to be filled with all the necessary      */
 /*      information.                                                 */
 /*                                                                   */
 /* lispbitmap: The bitmapdata that is to be dumped to the screen.    */
 /* width_hint and height_hint: The requested size of the screen. The */
 /*      width and height hints will be obeyed as close as possible   */
-/*      with respect to the physicalk limitations. This makes it     */
+/*      with respect to the physical limitations. This makes it      */
 /*      possible to get a screen that is larger (or smaller) than    */
 /*      the physical screen. 0 will give you some default value      */
-/* depth_hint: The requested depth in bits. depth 1 can allways be   */
-/*      granted. Any value of 1 or less will yeild depth 1.          */
+/* depth_hint: The requested depth in bits. depth 1 can always be    */
+/*      granted. Any value of 1 or less will yield depth 1.          */
 /*                                                                   */
 /* Return value: the lispbitmap or 1 if all is ok. else FALSE is     */
 /* returned                                                          */
@@ -262,7 +262,7 @@ DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int heig
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */
                                   /* has to dealt with in a more */
-                                  /* gracefull way. */
+                                  /* graceful way. */
 
   /* Try to open the X display. If this isn't possible, we just */
   /* return FALSE. */

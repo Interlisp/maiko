@@ -30,7 +30,7 @@
 /*									*/
 /*			N _ M a k e F l o a t				*/
 /*									*/
-/*	Get a numeric argument as a flowting-point number, converting	*/
+/*	Get a numeric argument as a floating-point number, converting	*/
 /*	from SMALLP or FIXP, if necessary.				*/
 /*									*/
 /************************************************************************/

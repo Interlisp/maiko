@@ -2,7 +2,7 @@
 
 This is the implementation of the Medley Interlisp virtual machine, for a
 byte-coded Lisp instruction set and some low-level functions for
-connecting witih Lisp for access to display and disk etc.
+connecting with Lisp for access to display and disk etc.
 
 There are make file fragments that include all the flags and
 variables you have to set for each hardware/OS target.

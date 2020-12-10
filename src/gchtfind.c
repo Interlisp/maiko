@@ -80,7 +80,7 @@ static char *id = "$Id: gchtfind.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copy
 */
 
 /*
- * NewEntry is never called in the course of the reclaimation.
+ * NewEntry is never called in the course of the reclamation.
  * Thus STKREF case is not needed.
  */
 #define NewEntry(entry, hiptr, casep, ptr)                            \
@@ -99,7 +99,7 @@ static char *id = "$Id: gchtfind.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copy
   }
 
 /*
- * RecNewEntry is called in the course of the reclaimation.
+ * RecNewEntry is called in the course of the reclamation.
  * Does not maintain the allocation count.
  */
 #define RecNewEntry(entry, hiptr, casep, ptr)                           \
@@ -165,7 +165,7 @@ static char *id = "$Id: gchtfind.c,v 1.3 1999/05/31 23:35:31 sybalsky Exp $ Copy
   }
 
 /*
- * RecModEntry is called in the course of the reclaimation.
+ * RecModEntry is called in the course of the reclamation.
  * Does not maintain the allocation count.
  */
 #define RecModEntry(entry, contents, ptr, casep, remove)                                    \
@@ -320,7 +320,7 @@ LispPTR htfind(LispPTR ptr, int casep) {
 
   /*
    * Following two tests were moved into GCLOOKUP macro
-   * for efficency.
+   * for efficiency.
    */
   /*
       if (GetTypeEntry(ptr) & TT_NOREF) return NIL;
@@ -441,7 +441,7 @@ LispPTR rec_htfind(LispPTR ptr, int casep) {
   disabled. */
   /*
    * Following two tests were moved into GCLOOKUP macro
-   * for efficency.
+   * for efficiency.
    */
   /*
       if (GetTypeEntry(ptr) & TT_NOREF)

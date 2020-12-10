@@ -21,7 +21,7 @@ typedef struct {
   u_char lastbyte;
   void	(*prev_handler)();
 #endif /* DOS */
-  void	(* sync_device)();	/* Make reality and emualtor coinside with eachother */
+  void	(* sync_device)();	/* Make reality and emulator coincide with each other */
   void	(* enter_device)();
   void	(* exit_device)();
   void	(* device_event)();

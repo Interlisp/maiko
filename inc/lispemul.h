@@ -34,7 +34,7 @@ typedef struct ufn_entry
   {
     DLword atom_name;   /* UFN's atomindex */
     unsigned byte_num : 8; /* num of byte code */
-    unsigned arg_num  : 8; /* num of argments */
+    unsigned arg_num  : 8; /* num of arguments */
   } UFN;
 
 typedef struct closure_type
@@ -56,7 +56,7 @@ typedef struct ufn_entry
   {
     DLword atom_name;   /* UFN's atomindex */
     unsigned byte_num : 8; /* num of byte code */
-    unsigned arg_num  : 8; /* num of argments */
+    unsigned arg_num  : 8; /* num of arguments */
   } UFN;
 
 typedef struct closure_type
@@ -78,7 +78,7 @@ typedef struct interrupt_state
     unsigned stackoverflow	:1;
     unsigned storagefull	:1;
     unsigned waitinginterrupt	:1;
-    unsigned nil	:8;	    /* mask of ints being processes */
+    unsigned nil	:8;	    /* mask of ints being processed */
     DLword   intcharcode;
   } INTSTAT;
 
@@ -190,7 +190,7 @@ typedef struct  consstr
 
 typedef struct ufn_entry
   {
-    unsigned arg_num  : 8; /* num of argments */
+    unsigned arg_num  : 8; /* num of arguments */
     unsigned byte_num : 8; /* num of byte code */
     DLword atom_name;   /* UFN's atomindex */
   } UFN;
@@ -211,7 +211,7 @@ typedef struct consstr
 
 typedef struct ufn_entry
   {
-    unsigned arg_num  : 8; /* num of argments */
+    unsigned arg_num  : 8; /* num of arguments */
     unsigned byte_num : 8; /* num of byte code */
     DLword atom_name;   /* UFN's atomindex */
   } UFN;
@@ -395,7 +395,7 @@ GetLoWord:
 /****************************************************
 GetLongWord:
 	address:	DLword*	
-	retrun:		int
+	return:		int
 *****************************************************/
 #define GetLongWord(address)		(*((LispPTR *) (address)))
 
@@ -501,7 +501,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 #define STKLIM		0x1FFFF
 #define FRAMESIZE	10		/* size of frameex1: 10 words */
 #define FNHEADSIZE	8		/* size of fnhead: 8 words */
-#define BFSIZE	2		/* size of basci frame pointer: 2 words */
+#define BFSIZE	2		/* size of basic frame pointer: 2 words */
 
 #define BITSPER_DLWORD		16
 #define BITSPER_CELL		32
@@ -531,7 +531,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 
 #define AtomHTSIZE		256 * DLWORDSPER_PAGE
 
-#define MAXPNCHARS		255    /* Maximam length of PnChars */
+#define MAXPNCHARS		255    /* Maximum length of PnChars */
 
 #define GET_NATIVE_ADDR(fnobject)					\
 		*((int *) ((UNSIGNED)fnobject + fnobject->startpc - 4))

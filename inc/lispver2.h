@@ -37,7 +37,7 @@
 		if (*(lv_vp + 1) == 0) {				\
 			/*						\
 			 * The empty version field.			\
-			 * This is regared as a versionless file.	\
+			 * This is regarded as a versionless file.	\
 			 */						\
 			*lv_vp = 0;					\
 		} else {						\

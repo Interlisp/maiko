@@ -170,7 +170,7 @@ exit_host_filesystem() {
  * Argument:	LispPTR	*args	args[0]
  *				 Full file name in Lisp format.
  *				args[1]
- *				 Rcoginition mode.  See IRM.
+ *				 Recognition mode.  See IRM.
  *				args[2]
  *				 Name area where the recognized full file name
  *				 will be stored.
@@ -201,7 +201,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
 
   LispStringLength(args[0], len, rval);
-  len += 1; /* Add 1 for tuminating NULL char. */
+  len += 1; /* Add 1 for terminating NULL char. */
   if (len > MAXPATHLEN) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
@@ -237,7 +237,7 @@ LispPTR UFS_getfilename(LispPTR *args)
        * "New" file means the "not existing" file.  UNIX device always
        * recognizes a not existing file as if, the subsequent OPENFILE will
        * find the truth.
-       * "Non" reognition is used to recognize a sysout file.
+       * "Non" recognition is used to recognize a sysout file.
        */
       break;
   }
@@ -395,7 +395,7 @@ LispPTR UFS_renamefile(LispPTR *args)
  * Description:
  *
  * The implementation of the DIRECTORYNAMEP FDEV method for UNIX device.
- * Performs the recoginition as well. Accepts the directory representation which
+ * Performs the recognition as well. Accepts the directory representation which
  * obeys the Xerox Lisp file naming convention. The "true" name which is stored
  * on the area specified with the second argument also follows the Xerox Lisp
  * file naming convention, and it includes the initial and trail directory
@@ -416,7 +416,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
 
   LispStringLength(args[0], len, rval);
   len += 1;
-  /* -2 for the initial and trail directory delimitor. */
+  /* -2 for the initial and trail directory delimiter. */
   if (len > MAXPATHLEN - 2) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], dirname, MAXPATHLEN);
@@ -465,7 +465,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
  *				version form.  {DSK} device invokes unixpathname
  *				with versionp.
  *		int	genp	If 1, it indicates unixpathname is called from
- *				directory enmumerateion routine.  In this case,
+ *				directory enumeration routine.  In this case,
  *				trail period which is used to specify an empty
  *				extension field is treated specially.
  *
@@ -621,7 +621,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
       } else {
         /*
          * In this case, we assume some user's home directory
-         * is specifed in the form "~username".
+         * is specified in the form "~username".
          */
         for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
         *np = '\0';
@@ -657,7 +657,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
       } else {
         /*
          * In this case, we assume some user's home directory
-         * is specifed in the form "~username".
+         * is specified in the form "~username".
          */
         for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
         *dp++ = DIRSEP;
@@ -674,7 +674,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 
   /*
    * At this point, cp is placed at the point from which the source pathname
-   * will be scaned, and dp is placed at the point on dst from which the
+   * will be scanned, and dp is placed at the point on dst from which the
    * pathname will be copied.
    */
 
@@ -716,7 +716,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
                  * The Lisp directory is translated as
                  * like "/users/akina/..~*~" by
                  * unixpathname.   Although such
-                 * file name representaion makes no sense,
+                 * file name representation makes no sense,
                  * to avoid infinite loop, skip the
                  * first period here, as well as down
                  * a newdirflg.
@@ -825,8 +825,8 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
      * confused by this case.
      *
      * Only case in which genp is 1 is unixpathname is used to convert
-     * a pattern which is used to enumerate directory.  In this csae,
-     * for the convinience of the pattern matching routines, we don't
+     * a pattern which is used to enumerate directory.  In this case,
+     * for the convenience of the pattern matching routines, we don't
      * care about the last period character.
      */
     strcpy(fbuf1, lfname);
@@ -860,12 +860,12 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  * Name:	lisppathname
  *
  * Argument:	char	*fullname	UNIX full pathname.
- *		char	*lispname	The pathnaem following the Xerox
+ *		char	*lispname	The pathname following the Xerox
  *					Lisp naming convention.
  *				        The first argument fullname is assumed
  *					the "true" name of lispname.
  *					The lispname is used to determine which
- *					charcter should be quoted in the result
+ *					character should be quoted in the result
  *					Xerox Lisp pathname representation.
  *		int	dirp		If 1, fullname is a directory.  If 0,
  *					fullname is a file.
@@ -885,7 +885,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  *
  * Converts the UNIX file name to Xerox Lisp file name.  The fields which might
  * be included in the result filename are directory, name, extension, and version.
- * The result file name can use the quotation mark to quote the chracters which
+ * The result file name can use the quotation mark to quote the characters which
  * are dealt with specially in the Xerox Lisp file naming convention.  These
  * characters include "<", ">", ";", ".", and "'" itself.  Notice that "." must be
  * quoted if it is used as a part of the extension field.  Also notice that "<"
@@ -914,9 +914,9 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   
   if (!dirp) {
     /*
-     * The characters which are dealt with specialy (i.e. are quoted)
+     * The characters which are dealt with specially (i.e. are quoted)
      * in the Xerox Lisp file naming convention are all valid in UNIX
-     * file name convetion.  So the conversion rule is almost
+     * file name convention.  So the conversion rule is almost
      * straightforward except the "extension" field.  Only glancing
      * the UNIX file name, we cannot determine which period character
      * should be quoted in the result Xerox Lisp file name when more
@@ -951,7 +951,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   }
 
   /*
-   * Convertion rule of file name from UNIX to Xerox Lisp.
+   * Conversion rule of file name from UNIX to Xerox Lisp.
    *	UNIX		Lisp
    *	/		<    only if it is used as a root directory
    *			     delimiter.
@@ -1009,7 +1009,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   }
 
   /*
-   * Be careful dealing with the extenstion field.  If we encounter with the
+   * Be careful dealing with the extension field.  If we encounter with the
    * period mark which was quoted in the original Lisp file name, we have
    * to quote it in the result file name.
    * First we count the period mark included in the Lisp file name, and
@@ -1064,8 +1064,8 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   *dp = '\0';
 
   /*
-   * exntensionp indicates whether exentsion field is included in a file name
-   * or not.  If extenstion field is not included, we have to add a period
+   * extensionp indicates whether extension field is included in a file name
+   * or not.  If extension field is not included, we have to add a period
    * to specify empty extension field.
    */
   strcpy(fbuf, namebuf);
@@ -1127,7 +1127,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
  * Name:	quote_fname
  *
  * Argument:	char	*file		The root file name in UNIX format.  "Root"
- *					file name contains the name, extenstion and
+ *					file name contains the name, extension and
  *					version fields.  A valid version field is in a
  *					form as ".~##~".
  *
@@ -1175,8 +1175,8 @@ int quote_fname(char *file)
   *dp = '\0';
 
   /*
-   * exntensionp indicates whether exentsion field is included in a file
-   * name or not.  If extenstion field is not included, we have to add a
+   * extensionp indicates whether extension field is included in a file
+   * name or not.  If extension field is not included, we have to add a
    * period to specify empty extension field.
    */
   separate_version(fbuf, ver, 1);
@@ -1221,7 +1221,7 @@ int quote_fname(char *file)
  * Name:	quote_fname_ufs
  *
  * Argument:	char	*file		The root file name in UNIX format.  "Root"
- *					file name contains the name, extenstion and
+ *					file name contains the name, extension and
  *					version fields.  A valid version field is in a
  *					form as ".~##~".
  *
@@ -1260,8 +1260,8 @@ int quote_fname_ufs(char *file)
   *dp = '\0';
 
   /*
-   * exntensionp indicates whether exentsion field is included in a file
-   * name or not.  If extenstion field is not included, we have to add a
+   * extensionp indicates whether extension field is included in a file
+   * name or not.  If extension field is not included, we have to add a
    * period to specify empty extension field.
    */
   cp = fbuf;

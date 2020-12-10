@@ -343,7 +343,7 @@ typedef struct{
   LispPTR	MOVEFN;
   LispPTR	WTITLE;
   LispPTR	NEWREGION;
-  LispPTR	WBORDER;	/* Assumed to allways be a SMALLP */
+  LispPTR	WBORDER;	/* Assumed to always be a SMALLP */
   LispPTR	PROCESS;
   LispPTR	WINDOWENTRYFN;
   LispPTR	SCREEN;

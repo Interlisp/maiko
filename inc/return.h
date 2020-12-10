@@ -84,7 +84,7 @@
 
 
 /**** Calls when invoke the function is assumed
-	that it is called by CONTEXTSW in orginal LISP code **/
+	that it is called by CONTEXTSW in original LISP code **/
 
 #define BEFORE_CONTEXTSW						\
   { CurrentStackPTR += 2; 						\

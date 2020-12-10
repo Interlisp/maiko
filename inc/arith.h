@@ -256,7 +256,7 @@ do_ufn:	ERROR_EXIT(a);							\
 
 	/*********************************************************/
 	/*							 */
-	/*  Macros for airthmetic operations, to let inline work */
+	/*  Macros for arithmetic operations, to let inline work */
 	/*							 */
 	/*********************************************************/
 
