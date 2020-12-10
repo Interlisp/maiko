@@ -11,7 +11,6 @@ static char *id = "$Id: findkey.c,v 1.3 1999/05/31 23:35:28 sybalsky Exp $ Copyr
 
 #include "version.h"
 
-#include <stdint.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "emlglob.h"
@@ -53,7 +52,7 @@ LispPTR N_OP_findkey(register LispPTR tos, register int byte) {
 
   arg_nth = byte + 1;
 
-  for (ptr = (LispPTR *)(IVar + ((byte * 2) - 2)); (uintptr_t)find_end >= (uintptr_t)ptr;
+  for (ptr = (LispPTR *)(IVar + ((byte * 2) - 2)); (UNSIGNED)find_end >= (UNSIGNED)ptr;
        ptr += 2, arg_nth += 2) {
     if (*ptr == tos) { /* KEY founded */
       return (S_POSITIVE | arg_nth);
