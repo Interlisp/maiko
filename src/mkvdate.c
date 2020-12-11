@@ -46,8 +46,8 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 int main(void) {
   long dtime;
   time(&dtime);
-  fprintf(stderr, "Mdate :%d\n", dtime);
-  printf("long MDate= %d;\n", dtime);
+  fprintf(stderr, "Mdate :%ld\n", dtime);
+  printf("long MDate= %ld;\n", dtime);
   return (0);
 }
 #else
@@ -56,10 +56,10 @@ int main(void) {
   struct timeval time;
 
   gettimeofday(&time, NULL);
-  fprintf(stderr, "Mdate :%d\n", time.tv_sec);
+  fprintf(stderr, "Mdate :%ld\n", (long)time.tv_sec);
   fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
 
-  printf("long MDate= %d;\n", time.tv_sec);
+  printf("long MDate= %ld;\n", (long)time.tv_sec);
   return (0);
 }
 
