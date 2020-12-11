@@ -42,7 +42,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #include <sys/select.h>
 
 #ifndef HPUX
-#ifndef ULTRIX
 #ifndef LINUX
 #ifndef MACOSX
 #ifndef FREEBSD
@@ -50,7 +49,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* LINUX */
-#endif /* ULTRIX */
 #endif /* HPUX */
 
 #ifdef ISC

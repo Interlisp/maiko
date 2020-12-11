@@ -113,12 +113,6 @@
 #define bcopy(a,b,n)	memcpy(b,a,n)
 #endif
 
-#ifdef ULTRIX
-#ifndef USE_PFILT
-#define USE_PFILT	1
-#endif
-#endif
-
 #ifdef DECOSF
 #ifndef USE_PFILT
 #define USE_PFILT	1
