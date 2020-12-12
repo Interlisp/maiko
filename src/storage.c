@@ -45,6 +45,7 @@ static const char *id =
 
 static void advance_array_seg(register unsigned int nxtpage);
 static void advance_storagestate(DLword flg);
+static LispPTR dremove(LispPTR x, LispPTR l);
 static void set_storage_state(void);
 
 /*****************************************************************/
@@ -242,7 +243,7 @@ static void set_storage_state(void) {
 
 } /* set_storage_state() end */
 
-LispPTR dremove(LispPTR x, LispPTR l) {
+static LispPTR dremove(LispPTR x, LispPTR l) {
   LispPTR z;
 
   if (Listp(l) == NIL)
