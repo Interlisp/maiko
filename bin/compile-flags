@@ -25,7 +25,6 @@ NOPIXRECT	Used to suppress pixrect/pixwin options when they're not
 		needed or not available.  True if XWINDOW is.
 
 AIX		True if compiling for AIX
-_I386		True if compiling for PS/2 under AIX (not our flag)
 AIXPS2		True if compiling for PS/2 under AIX (our flag)
 APOLLO		True if compiling for the Apollo
 sparc		True if we're compiling on a SPARC machine.
