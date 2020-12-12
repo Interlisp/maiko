@@ -252,7 +252,8 @@ LispPTR dremove(LispPTR x, LispPTR l) {
       rplaca(l, car(cdr(l)));
       rplacd(l, cdr(cdr(l)));
       return (dremove(x, l));
-    }
+    } else 
+        return (NIL);
   } else {
     z = l;
   lp:
