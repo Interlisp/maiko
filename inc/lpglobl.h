@@ -55,15 +55,8 @@ extern int        yyleng;
 extern int        Lin_term_count;
 extern int        Sign;
 
-
-/* I hate #ifdefs, but there seems to be no "standard" way to do this */
-#if defined(__hpux)
-/* for HP (and possibly others) */
-extern unsigned char       yytext[];
-#else
 /* For other computers */
 extern char    yytext[];
-#endif
 
 /*extern hashelem   *Hash_tab[HASH_SIZE];*/
 extern rside      *First_rside;

@@ -33,15 +33,10 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #include "xwinmandefs.h"
 
 
-#ifdef HPUX
-#define FASYNC O_NONBLOCK
-#endif /* HPUX */
-
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
 
-#ifndef HPUX
 #ifndef LINUX
 #ifndef MACOSX
 #ifndef FREEBSD
@@ -49,7 +44,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* LINUX */
-#endif /* HPUX */
 
 #ifdef ISC
 #define FASYNC O_NONBLOCK
@@ -202,9 +196,7 @@ void Open_Display(DspInterface dsp)
 {
     FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
 #ifndef ISC
-#ifndef HPUX
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
-#endif /* HPUX */
 #endif /* ISC */
 
   /****************************************************/

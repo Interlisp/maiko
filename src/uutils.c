@@ -220,8 +220,7 @@ LispPTR unix_username(LispPTR *args) {
  * clear what use they are. RS/6000 systems use a PowerPC processor,
  * and so did PowerBook Macintosh systems.
  * "MACH" and "ARCH" both seem to be a mix of instruction set architecture and
- * system types (rs/6000 used PowerPC, hp9000 had mc68000, PA-RISC,
- * and later, IA-64 [Itanium]).
+ * system types (rs/6000 used PowerPC).
  * The only usage seems to be checking "ARCH" == "dos" and for the existance
  * of *any* result from the call, which indicates it's an emulated system.
  */
@@ -238,8 +237,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "i386";
 #elif defined(RS6000)
     envvalue = "rs/6000";
-#elif defined(HP9000)
-    envvalue = "hp9000";
 #elif defined(ISC)
     envvalue = "i386";
 #elif defined(RISCOS)
@@ -259,8 +256,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "sun386";
 #elif defined(RS6000)
     envvalue = "rs/6000";
-#elif defined(HP9000)
-    envvalue = "hp9000";
 #elif defined(ISC)
     envvalue = "i386";
 #elif defined(RISCOS)

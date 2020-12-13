@@ -288,25 +288,6 @@ u_char SUNLispKeyMap_DEC3100[256] = {
     /* 247 */ 105, 255,  10,  58,  28, 255, 255, 255,
 };
 
-u_char SUNLispKeyMap_HP9000[135] = {
-    /*   7 */ 255, 255, 255,  93,  31,  60,  41,  36,
-    /*  15 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  23 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  31 */ 255,  39,   7,  37,  24,  40, 255, 255,
-    /*  39 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  47 */ 255,  52,  50,  35,   5,  20,  21, 255,
-    /*  55 */  56,   6,  51,  49,  48,   3,  18,  19,
-    /*  63 */  34,   4,   2,   0,   1,  16,  17,  32,
-    /*  71 */  45, 255, 255, 255, 255, 255, 255, 255,
-    /*  79 */ 255,  68,  67, 100,  99,  97, 255, 255,
-    /*  87 */ 255,  68, 101,  66, 104,  80,  13, 255,
-    /*  95 */ 255,  53,  22,   8,  10,  59,  15, 255,
-    /* 103 */ 255,  23,  25,  11,  58,  29, 105, 255,
-    /* 111 */ 255,  38,   9,  26,  43,  28,  44, 255,
-    /* 119 */ 255,  55,  27,  42,  12, 255, 255, 255,
-    /* 127 */  47,  54,  57, 255, 255, 255, 255, 255,
-};
-
 u_char *XGenericKeyMap; /* filled in with malloc if needed */
 
 /* For the IBM-101 kbd FF marks exceptions */
@@ -470,7 +451,7 @@ char *getenv(); /*  ---- external entry points --------*/
 #define KB_AS3000J (7 + MIN_KEYTYPE)
 #define KB_RS6000 (8 + MIN_KEYTYPE)
 #define KB_DEC3100 (9 + MIN_KEYTYPE)
-#define KB_HP9000 (10 + MIN_KEYTYPE)
+#define KB_HP9000 (10 + MIN_KEYTYPE)  // TODO: Can we remove this?
 #define KB_X (11 + MIN_KEYTYPE)
 #define KB_DOS (12 + MIN_KEYTYPE)
 
@@ -600,7 +581,6 @@ static u_char *make_X_keymap() {
 /*		type3	Sun type-3 keyboard				*/
 /*		type4	Sun type-4 keyboard				*/
 /*		rs6000	IBM RS/6000					*/
-/*		hp9000	HP 9000 series 800 or 700			*/
 /*		dec3100	DECstation 3100 or 5000				*/
 /*		x	generic X keyboard map				*/
 /*									*/
@@ -646,9 +626,6 @@ void keyboardtype(int fd)
 #ifdef RS6000
     type = KB_RS6000;
 #else
-#ifdef HP9000
-    type = KB_HP9000;
-#else
 #ifdef XWINDOW
     type = KB_X;
 #elif DOS
@@ -659,7 +636,6 @@ void keyboardtype(int fd)
       type = KB_SUN3;
     } /* otherwise, type is set */
 #endif /* XWINDOW */
-#endif /* HP9000 */
 
 #endif /* RS6000 */
 
@@ -685,8 +661,6 @@ void keyboardtype(int fd)
       type = KB_RS6000;
     else if (strcmp("dec3100", key) == 0)
       type = KB_DEC3100;
-    else if (strcmp("hp9000", key) == 0)
-      type = KB_HP9000;
     else if (strcmp("X", key) == 0)
       type = KB_X;
     else if (strcmp("x", key) == 0)
@@ -727,10 +701,6 @@ void keyboardtype(int fd)
     case KB_DEC3100:
       SUNLispKeyMap = SUNLispKeyMap_DEC3100;
       InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 9 */
-      break;
-    case KB_HP9000:
-      SUNLispKeyMap = SUNLispKeyMap_HP9000;
-      InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
       break;
 #ifdef XWINDOW
     case KB_X:

@@ -492,9 +492,7 @@ extern u_int LispWindowFd;
 /*									*/
 /*		    i n t _ t i m e r _ s e r v i c e			*/
 /*									*/
-/*	Handle the virtual-time alarm signal VTALRM.  If running in	*/
-/*	HPUX, re-set the alarm ourselves, because the OS walks on	*/
-/*	your timer if you let IT do the resetting.			*/
+/*	Handle the virtual-time alarm signal VTALRM.			*/
 /*									*/
 /*									*/
 /************************************************************************/
@@ -519,15 +517,6 @@ static int int_timer_service(int sig, int code, void *scp)
 #ifdef XWINDOW
   Event_Req = TRUE;
 #endif
-#ifdef HPTIMERBUG
-  {
-    struct itimerval timert, tmpt;
-    timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
-    timert.it_interval.tv_usec = 0;
-    timert.it_value.tv_usec = TIMER_INTERVAL;
-    setitimer(ITIMER_VIRTUAL, &timert, 0);
-  }
-#endif /* HPTIMERBUG */
 
 #ifdef SYSVSIGNALS
 #ifndef ISC
@@ -581,17 +570,8 @@ static void int_timer_init()
 #endif /* SYSVSIGNALS */
 
 /* then attach a timer to it and turn it loose */
-#ifdef HPTIMERBUG
-  /* HPUX on the series 700 trashes the timer if you use */
-  /* the auto-reset feature (interval != 0), so have to  */
-  /* move the reset into the timer handler (above).      */
-  timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
-  timert.it_interval.tv_usec = 0;
-  timert.it_value.tv_usec = TIMER_INTERVAL;
-#else
   timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
   timert.it_interval.tv_usec = timert.it_value.tv_usec = TIMER_INTERVAL;
-#endif /* HPTIMERBUG */
 
   timerclear(&tmpt.it_value);
   timerclear(&tmpt.it_interval);
@@ -732,10 +712,7 @@ void int_block() {
 #endif /* SIGXFSZ */
 #else
   oldmask = sigblock(sigmask(SIGVTALRM) | sigmask(SIGIO) | sigmask(SIGALRM)
-#ifndef HPUX
                      | sigmask(SIGXFSZ)
-#endif /* HPUX */
-
 #ifdef FLTINT
                      | sigmask(SIGFPE)
 #endif

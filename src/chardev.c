@@ -31,11 +31,9 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include <sys/dir.h>
 #endif /* FREEBSD */
 #endif /* OS5 */
-#ifndef HPUX
 #ifndef OS5
 #include <strings.h>
 #endif /* OS5 */
-#endif /* HPUX */
 #include <sys/ioctl.h>
 #else /* DOS */
 #include <string.h>
@@ -96,8 +94,8 @@ LispPTR CHAR_openfile(LispPTR *args)
   struct stat statbuf;
   char pathname[MAXPATHLEN];
 
-#if (defined(RS6000) || defined(HPUX))
-  static int one = 1; /* Used in charopenfile, etc. */
+#if defined(RS6000)
+  static int one = 1; /* Used in ioctl, etc. */
 #endif
 
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
@@ -126,14 +124,9 @@ LispPTR CHAR_openfile(LispPTR *args)
   ioctl(fd, FIONBIO, &one);
   fcntl(fd, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-  ioctl(fd, FIOSNBIO, &one);
-#else
   rval = fcntl(fd, F_GETFL, 0);
   rval |= FNDELAY;
   rval = fcntl(fd, F_SETFL, rval);
-#endif /* HPUX */
-
 #endif /* RS6000 */
 
   return (GetSmallp(fd));

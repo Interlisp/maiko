@@ -29,8 +29,6 @@ AIXPS2		True if compiling for PS/2 under AIX (our flag)
 sparc		True if we're compiling on a SPARC machine.
 mc68020		True if we're compiling on a Motorola 680x0 machine.
 sun3		We're compiling for a Sun-3.
-HP9000		We're compiling on an HP9000 RISC machine.
-HPUX		We're compiling for HP-UX
 RS6000		We're compiling for the RS/6000 processor.
 DEC3100		We're compiling for the DECStation 3100.
 RISCOS		We're compiling for the MIPS RISCstation under RISCOS.
@@ -56,8 +54,6 @@ SUN3_OS3_OR_OS4_IL Try asm optimizations for 68K & either sunOS.  This is
 
 OPDISP		Use "fast-opcode-dispatch" macros
 SPARCDISP	Use fast-opcode-dispatch macros on SPARC
-HPTIMERBUG	True if we must compile in the patch around the HPUX
-		timer-resetting bug for Series 700.
 
 
 

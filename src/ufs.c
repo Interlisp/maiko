@@ -21,10 +21,8 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 
 #include <sys/file.h>
 #ifndef OS5
-#ifndef HPUX
 #ifndef FREEBSD
 #include <sys/dir.h>
-#endif
 #endif
 #endif
 
