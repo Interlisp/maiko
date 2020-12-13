@@ -28,11 +28,6 @@ static char *id = "$Id: keytst.c,v 1.3 1999/05/31 23:35:36 sybalsky Exp $ Copyri
 
 #include "keylibdefs.h"
 
-#ifdef HPUX
-/* On HPUX, use the UNAME syscall to get hostid */
-#include <sys/utsname.h>
-#endif
-
 #define GOLDEN_RATIO_HACK -478700649
 #define floadbyte(number, pos) ((number >> pos) & 0xFFFF)
 #define hash_unhash(number, hashkey) \
@@ -62,22 +57,14 @@ int keytester(char *keystring) {
   unsigned long hostid;               /* 32-bit unique identifier of the current host  */
   unsigned long hashedword;
   int rc; /* return code */
-#ifdef HPUX
-  struct utsname unameinfo;
-#endif
 
   /* check the keys and convert them from hexdecimal strings to numbers  */
   if (keystring == NULL) return FAILURE3;
   if (read_hex(keystring, keyarray) == FAILURE3) return FAILURE3;
 
 /*  get machines host id  */
-#ifdef HPUX
-  uname(&unameinfo);
-  hostid = atol(unameinfo.idnumber);
-#else
   hostid = gethostid();
   printf("hostid = 0x%x\n", hostid);
-#endif
 
   hostid = modify(hostid);
 
@@ -108,9 +95,7 @@ int read_hex(char *s1, long unsigned int *array) {
     if ((strspn(ptr, hexdigits)) != strlen(ptr)) return FAILURE3;
 
 /* convert key to numeric format*/
-#ifdef HPUX
-    *(array + i) = strtoul(ptr, NULL, 16); /* On HP, must convert to unsigned */
-#elif defined(RS6000)
+#if defined(RS6000)
     *(array + i) = strtoul(ptr, NULL, 16); /* On RS/6000, must convert to unsigned */
 #elif defined(OSF1)
     *(array + i) = strtoul(ptr, NULL, 16); /* On Alpha, must convert to unsigned */

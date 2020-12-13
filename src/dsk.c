@@ -36,9 +36,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #ifdef sun
 #include <sys/vfs.h>
 #endif /* sun */
-#ifdef HPUX
-#include <sys/vfs.h>
-#endif /* HPUX */
 
 #else /* DOS */
 
@@ -119,13 +116,13 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <sys/mount.h>
 #else
 #ifdef AIX
-#if (!defined(AIXPS2) && !defined(HPUX))
+#if !defined(AIXPS2)
 #ifdef LINUX
 #include <sys/vfs.h>
 #else
 #include <sys/statfs.h>
 #endif
-#endif /* AIXPS2 | HPUX */
+#endif /* AIXPS2 */
 
 #define d_fileno d_ino
 #endif /* AIX */
@@ -1961,7 +1958,7 @@ LispPTR COM_setfileinfo(register LispPTR *args)
       TIMEOUT(rval = utime(file, time));
 #else
       TIMEOUT(rval = utimes(file, time));
-#endif /* HPUX */
+#endif /* USE_UTIME */
 #endif /* DOS */
       if (rval != 0) {
         *Lisp_errno = errno;
@@ -2434,9 +2431,6 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   TIMEOUT(rval = statfs(dir, &sfsbuf));
   if (rval != 0) {
 #elif defined(MACOSX) || defined(FREEBSD)
-  TIMEOUT(rval = statfs(dir, &sfsbuf));
-  if (rval != 0) {
-#elif HPUX
   TIMEOUT(rval = statfs(dir, &sfsbuf));
   if (rval != 0) {
 #elif defined(SYSVONLY)

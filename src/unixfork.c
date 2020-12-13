@@ -49,11 +49,6 @@ typedef int clockid_t;
 #include <sys/resource.h>
 #endif /* OSF1 */
 
-#ifdef HPUX
-#include <sgtty.h>
-#include <unistd.h>
-#endif /* HPUX */
-
 #if defined(SYSVONLY) || defined(OS5) || defined(FREEBSD) || defined(MACOSX)
 #include <fcntl.h>
 #include <unistd.h>
@@ -313,10 +308,7 @@ int fork_Unix() {
   sighold(SIGFPE);
 #else
   sigblock(sigmask(SIGVTALRM) | sigmask(SIGIO) | sigmask(SIGALRM)
-#ifndef HPUX
            | sigmask(SIGXFSZ)
-#endif /* HPUX */
-
            | sigmask(SIGFPE));
 #endif /* SYSVSIGNALS */
 
@@ -507,7 +499,7 @@ int fork_Unix() {
 #else
             /* Make sure everything else is closed */
             for (i = 3; i < getdtablesize(); i++) close(i);
-#endif /* HPUX */
+#endif /* SYSVONLY */
 
             /* Run the shell command and get the result */
             status = system(cmdstring);

@@ -21,9 +21,7 @@ static char *id = "$Id: socket.c,v 1.2 1999/01/03 02:07:34 sybalsky Exp $ Copyri
 #include <sys/ioctl.h>
 #include <netdb.h>
 #include <sys/socket.h>
-#ifndef hpux
 #include <netinet/tcp.h>
-#endif
 
 extern int errno; /* Certain (broken) OS's don't have this */
                   /* decl in errno.h */

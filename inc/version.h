@@ -262,25 +262,6 @@ typedef signed char s_char;
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef HPUX
-typedef char s_char;
-typedef unsigned short u_short;
-typedef unsigned long u_long;
-#define O_NDELAY FNDELAY
-#define valloc malloc
-#undef UNALIGNED_FETCH_OK
-#undef HAS_GETHOSTID
-#define seteuid(x) setresuid(-1, (x), -1)
-#define getrusage(x, y)
-#define getpagesize() 4096
-#define USE_UTIME
-#endif
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef RS6000
 typedef signed char s_char;
 #endif /* RS6000 */

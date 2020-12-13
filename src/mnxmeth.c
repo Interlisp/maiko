@@ -2820,9 +2820,7 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
   LispReadFds |= (1 << Xfd);
   MNWReadFds |= (1 << Xfd);
 #ifndef ISC
-#ifndef HPUX
   fcntl(Xfd, F_SETOWN, getpid());
-#endif /* HPUX */
 #endif /* ISC */
 
   dspif->screen = args[0];                  /* So we know which SCREEN this display is */

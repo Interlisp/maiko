@@ -51,10 +51,6 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #include "commondefs.h"
 #include "mkcelldefs.h"
 
-#ifdef HPUX
-#define FASYNC O_NONBLOCK
-#endif /* NPUX */
-
 #ifdef ISC
 #define FASYNC O_NONBLOCK
 #define SIGIO SIGPOLL
@@ -108,10 +104,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
   DLword *buffer;
   int result;
 #ifdef RS6000
-  static int one = 1; /* Used in TCPconnect */
-#endif
-#ifdef HPUX
-  static int one = 1; /* Used in TCPconnect */
+  static int one = 1; /* Used in ioctl */
 #endif
 
   switch (op & 0xFFFF) {
@@ -138,15 +131,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ioctl(result, FIONBIO, &one);
       fcntl(result, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-      ioctl(result, FIOSNBIO, &one);
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
 #ifndef ISC
       fcntl(result, F_SETOWN, getpid());
 #endif /* ISC */
-
-#endif /* HPUX */
 
 #endif /* RS6000 */
 
@@ -177,15 +165,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ioctl(result, FIONBIO, &one);
       fcntl(result, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-      ioctl(result, FIOSNBIO, &one);
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
 #ifndef ISC
       fcntl(result, F_SETOWN, getpid());
 #endif /* ISC */
-
-#endif /* HPUX */
 
 #endif /* RS6000 */
 
@@ -263,15 +246,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         ioctl(result, FIONBIO, &one);
         fcntl(result, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-        ioctl(result, FIOSNBIO, &one);
-#else
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
 #ifndef ISC
         fcntl(result, F_SETOWN, getpid());
 #endif /* ISC */
-
-#endif /* HPUX */
 
 #endif /* RS6000 */
 
@@ -309,15 +287,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ioctl(result, FIONBIO, &one);
       fcntl(result, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-      ioctl(result, FIOSNBIO, &one);
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
 #ifndef ISC
       fcntl(result, F_SETOWN, getpid());
 #endif /* ISC */
-
-#endif /* HPUX */
 
 #endif /* RS6000 */
 
@@ -360,15 +333,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ioctl(result, FIONBIO, &one);
       fcntl(result, F_SETOWN, getpid());
 #else
-#ifdef HPUX
-      ioctl(result, FIOSNBIO, &one);
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
 #ifndef ISC
       fcntl(result, F_SETOWN, getpid());
 #endif /* ISC */
-
-#endif /* HPUX */
 
 #endif /* RS6000 */
 

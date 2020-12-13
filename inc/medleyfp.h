@@ -63,7 +63,7 @@ volatile extern int  FP_error;
 #define FPCLEAR
 #define FPTEST(result) (!finite(result))
 
-#elif (defined(sparc) || defined(I386) || defined(HPUX))
+#elif defined(sparc) || defined(I386)
 #define FPCLEAR
 #define FPTEST(result) (isinf(result) || isnan(result))
 

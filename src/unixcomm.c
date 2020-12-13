@@ -62,7 +62,7 @@ Unix Interface Communications
 
 #if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5) || defined(MACOSX)
 #include <unistd.h>
-#endif /* HPUX */
+#endif
 
 #ifdef sun
 /* to get S_IFIFO defn for creating fifos */
@@ -936,16 +936,16 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 10: /* Change window */
     {
       int rows, cols, pgrp, pty;
-#if (!defined(HPUX) && !defined(RISCOS))
+#if !defined(RISCOS)
       struct winsize w;
-#endif /* HPUX */
+#endif /* !RISCOS */
 
       /* Get job #, rows, columns */
       N_GETNUMBER(args[1], slot, bad);
       N_GETNUMBER(args[2], rows, bad);
       N_GETNUMBER(args[3], cols, bad);
 
-#if (!defined(HPUX) && !defined(RISCOS))
+#if !defined(RISCOS)
       if (valid_slot(slot) && (UJ[slot].type == UJSHELL) && (UJ[slot].status == -1)) {
         w.ws_row = rows;
         w.ws_col = cols;
@@ -970,7 +970,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           return (ATOM_T);
         return (GetSmallp(errno));
       }
-#endif /* HPUX | RISCOS */
+#endif /* !RISCOS */
 
       return (NIL);
     }
