@@ -57,8 +57,8 @@ extern int        Sign;
 
 
 /* I hate #ifdefs, but there seems to be no "standard" way to do this */
-#if defined(__hpux) || defined(__apollo)
-/* for HP and Apollo (and possibly others) */
+#if defined(__hpux)
+/* for HP (and possibly others) */
 extern unsigned char       yytext[];
 #else
 /* For other computers */

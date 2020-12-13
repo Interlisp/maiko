@@ -34,13 +34,11 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #include <sys/stat.h>
 #include <sys/time.h>
 #ifndef AIX
-#ifndef APOLLO
 #ifndef MACOSX
 #ifndef FREEBSD
 #include <sys/vfs.h>
 #endif /* FREEBSD */
 #endif /* MACOSX */
-#endif /* APOLLO */
 #endif /* AIX */
 
 #if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5)

@@ -134,12 +134,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 
 #endif /* ULTRIX */
 
-#ifdef APOLLO
-#include <sys/statfs.h>
-#define d_fileno d_ino
-#define f_bavail f_bfree
-#endif /* APOLLO */
-
 #ifdef GCC386
 #include "inlnPS2.h"
 #endif /* GCC386 */
@@ -2448,9 +2442,6 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs)));
   if (rval <= 0) {
 #elif defined(ISC)
-  TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
-  if (rval != 0) {
-#elif APOLLO
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
   if (rval != 0) {
 #elif defined(LINUX)

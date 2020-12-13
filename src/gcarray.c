@@ -127,16 +127,7 @@ LispPTR aref1(LispPTR array, int index) {
   base = actarray->base;
   switch (typenumber) {
     case 3: /* unsigned 8bits */
-/* the following code confuses the Apollo compiler;	*/
-/* its equivalent doesn't				*/
-#ifndef APOLLO
       retval = (GETBYTE(((char *)Addr68k_from_LADDR(base)) + index)) & 0x0ff;
-#else
-    {
-      register char *eightbitbase = (char *)Addr68k_from_LADDR(base);
-      retval = GETBYTE(eightbitbase + index) & 0xff;
-    }
-#endif
       retval |= S_POSITIVE;
       break;
     case 4: /* unsigned 16bits */

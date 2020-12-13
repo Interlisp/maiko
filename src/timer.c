@@ -82,11 +82,6 @@ extern int ether_fd;
 #include <sys/fpcontrol.h>
 #endif /* AIXPS2 */
 
-/* Apollo and Sun have different ideas about the name of this field */
-#ifdef APOLLO
-#define sv_flags sv_onstack
-#endif
-
 #ifdef OSF1
 /* This is where FPE_FLTOVF & friends are defined */
 #include <siginfo.h>

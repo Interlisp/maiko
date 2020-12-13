@@ -322,7 +322,7 @@ void getsignaldata(int sig, int code, void *scp)
 #endif
 
 #ifdef XWINDOW
-#if (defined(APOLLO) || defined(sun))
+#if defined(sun)
   if (Event_Req) {
     if (!XLocked++)
       getXsignaldata(currentdsp);

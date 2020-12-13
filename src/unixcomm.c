@@ -34,8 +34,6 @@ Unix Interface Communications
 #include <string.h> /* for strcpy etc. */
 #ifdef OS4
 #include <sys/termios.h>
-#elif APOLLO
-#include </sys5/usr/include/termios.h>
 #elif LINUX
 #include <termios.h>
 /* this was called termio in the past, but no longer
