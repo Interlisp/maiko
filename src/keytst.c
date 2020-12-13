@@ -97,8 +97,6 @@ int read_hex(char *s1, long unsigned int *array) {
 /* convert key to numeric format*/
 #if defined(RS6000)
     *(array + i) = strtoul(ptr, NULL, 16); /* On RS/6000, must convert to unsigned */
-#elif defined(OSF1)
-    *(array + i) = strtoul(ptr, NULL, 16); /* On Alpha, must convert to unsigned */
 #else
     *(array + i) = strtol(ptr, NULL, 16); /* On suns, this works OK */
 #endif

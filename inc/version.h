@@ -231,25 +231,6 @@ typedef signed char s_char;
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef DEC3100
-#undef UNALIGNED_FETCH_OK
-#ifdef OSF1
-typedef signed char s_char;
-#undef UNSIGNED
-#undef INT
-#define UNSIGNED unsigned long long
-#define INT long long
-#undef REGISTER
-#define REGISTER
-#endif /* OSF1 */
-#endif /* DEC3100 */
-
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef AIXPS2
 typedef signed char s_char;
 #define GCC386

@@ -25,10 +25,6 @@ static char *id = "$Id: xc.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright 
 /*									*/
 /************************************************************************/
 
-#ifdef OSF1
-#include "time.h"
-#endif
-
 #include <sys/types.h>
 #ifdef DOS
 #include <i32.h>      /* Defines "#pragma interrupt"  */
