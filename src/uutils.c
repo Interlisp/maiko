@@ -242,8 +242,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "hp9000";
 #elif defined(ISC)
     envvalue = "i386";
-#elif defined(INDIGO)
-    envvalue = "mips";
 #elif defined(RISCOS)
     envvalue = "mips";
 #elif defined(DOS)
@@ -265,8 +263,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "hp9000";
 #elif defined(ISC)
     envvalue = "i386";
-#elif defined(INDIGO)
-    envvalue = "mips";
 #elif defined(RISCOS)
     envvalue = "mips";
 #elif defined(DOS)

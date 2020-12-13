@@ -20,11 +20,9 @@ Unix Interface Communications
 #ifndef DOS
 
 /* FULLSLAVENAME => use a full file name for slave PTY */
-#ifdef INDIGO
+#ifdef OS5
 #define FULLSLAVENAME
-#elif OS5
-#define FULLSLAVENAME
-#endif /* INDIGO or OS5 */
+#endif /* OS5 */
 
 /* JRB - timeout.h needs setjmp.h */
 #include <sys/ioctl.h>
@@ -356,12 +354,8 @@ int FindUnixPipes(void) {
 int FindAvailablePty(char *Master, char *Slave) {
   int res, flags;
   char *let, *num;
-#ifdef INDIGO
 
-  let = (char *)_getpty(&res, O_RDWR | O_NDELAY, 0600, 0);
-  strcpy(Slave, let);
-#elif OS5
-
+#ifdef OS5
   res = open("/dev/ptmx", O_RDWR);
   if (res < 0) {
     perror("ptmx open");

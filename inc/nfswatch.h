@@ -196,13 +196,6 @@ typedef	u_int32	ipaddrt;
 #endif
 
 /*
- * Snoop definitions.
- */
-#ifdef USE_SNOOP
-#define SNOOP_BUFFER_SIZE	(55 * 1024)	/* for grabbing packets	*/
-#endif
-
-/*
  * Data Link Provider Interface (DLPI) definitions.
  */
 #ifdef USE_DLPI

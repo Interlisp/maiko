@@ -72,11 +72,6 @@ volatile extern int  FP_error;
 #define FPCLEAR
 #define FPTEST(result) (!FINITE(result))
 
-#elif defined(INDIGO)
-#include <nan.h>
-#define FPCLEAR
-#define FPTEST(result) (IsNANorINF(result))
-
 #elif defined(AIX)
 #define FPCLEAR
 #define FPTEST(result) ((!finite(result)) || isnan(result))
