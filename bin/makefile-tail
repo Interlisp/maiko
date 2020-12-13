@@ -240,7 +240,7 @@ $(OBJECTDIR)dbgtool.o :  $(SRCDIR)dbgtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 	$(CC) $(RFLAGS) $(SRCDIR)dbgtool.c $(INLINE) -o $(OBJECTDIR)dbgtool$(OEXT)
 
 $(OBJECTDIR)dlpi.o :  $(SRCDIR)dlpi.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)os.h $(INCDIR)nfswatch.h $(INCDIR)externs.h
+	$(INCDIR)os.h $(INCDIR)nfswatch.h
 	$(CC) $(RFLAGS) $(SRCDIR)dlpi.c $(INLINE) -o $(OBJECTDIR)dlpi$(OEXT)
 
 $(OBJECTDIR)kprint.o :  $(SRCDIR)kprint.c  $(REQUIRED-INCS) $(INCDIR)print.h  \
