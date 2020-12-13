@@ -161,7 +161,6 @@ error Must specify RELEASE to build Medley.
 	/*		type char is signed	SIGNED_CHARS		*/
 	/*		fp values used with				*/
 	/*		FPTEST can be in regs.	REGISTER		*/
-	/*		CC supports "void"	VOID			*/
 	/*		Use asm inline arith	USE_INLINE_ARITH	*/
 	/*		pointer-wide unsigned	UNSIGNED		*/
 	/*		pointer-wide int	INT	 		*/
@@ -205,7 +204,6 @@ error Must specify RELEASE to build Medley.
 #undef USE_UTIME
 #define UNSIGNED unsigned long
 #define INT long
-#define VOID void
 
 
 
