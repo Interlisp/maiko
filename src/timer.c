@@ -82,11 +82,6 @@ extern int ether_fd;
 #include <sys/fpcontrol.h>
 #endif /* AIXPS2 */
 
-#ifdef OSF1
-/* This is where FPE_FLTOVF & friends are defined */
-#include <siginfo.h>
-#endif /* OSF1 */
-
 #include "lispemul.h"
 #include "emlglob.h"
 #include "lspglob.h"
@@ -821,13 +816,6 @@ void int_fp_service(int sig, int code, struct sigcontext *scp)
     case FPM_UNDERFLOW:
     case FPM_OVERFLOW:
     case FPM_PRECISION:
-#elif OSF1
-    case FPE_FLTDIV:
-    case FPE_FLTOVF:
-    case FPE_FLTUND:
-    case FPE_FLTRES:
-    case FPE_FLTINV:
-    case FPE_FLTSUB:
 #else
 #ifndef ISC
     case FPE_FLTDIV_TRAP:
@@ -860,8 +848,6 @@ void int_fp_init() { /* first set up the signal handler */
   if (sigset(SIGFPE, int_fp_service))
 #elif OS5
   if (sigset(SIGFPE, int_fp_service))
-#elif OSF1
-  if (SIG_ERR == sigset(SIGFPE, int_fp_service))
 #else
   if (ieee_handler("set", "all", int_fp_service))
 #endif /* AIXPS2 */
@@ -1069,11 +1055,6 @@ static void int_panic_init() {
   sigset(SIGSYS, panicuraid);
 #endif
   sigset(SIGTERM, panicuraid);
-#ifndef FLTINT
-#ifdef OSF1
-  sigignore(SIGFPE);
-#endif /* OSF1 */
-#endif /* FLTINT */
 #endif
 #else
   static struct sigvec panicv;
@@ -1114,11 +1095,6 @@ static void int_panic_init() {
 
   sigvec(SIGUSR1, &panicv, 0);
   sigvec(SIGUSR2, &panicv, 0);
-#ifndef FLTINT
-#ifdef OSF1
-  sigignore(SIGFPE);
-#endif /* OSF1 */
-#endif
 #endif /* SYSVSIGNALS */
 
   DBPRINT(("Panic interrupts enabled\n"));
@@ -1140,10 +1116,6 @@ void int_init() {
 
 #ifdef FLTINT
   int_fp_init(); /* Floating-point exception handler */
-#else
-#ifdef OSF1
-  sigignore(SIGFPE);
-#endif
 #endif
 
   int_unblock(); /* Turn on interrupts */

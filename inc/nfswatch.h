@@ -189,13 +189,6 @@ typedef	u_int32	ipaddrt;
 #endif
 
 /*
- * Pfilt definitions.
- */
-#ifdef USE_PFILT
-#define PFILT_CHUNKSIZE	8192		/* chunk size for grabbing pkts	*/
-#endif
-
-/*
  * Data Link Provider Interface (DLPI) definitions.
  */
 #ifdef USE_DLPI

@@ -112,7 +112,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "commondefs.h"
 #include "ufsdefs.h"
 
-#if defined(OSF1) || defined(MACOSX) || defined(FREEBSD)
+#if defined(MACOSX) || defined(FREEBSD)
 #include <sys/mount.h>
 #else
 #ifdef AIX
@@ -127,7 +127,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define d_fileno d_ino
 #endif /* AIX */
 
-#endif /* OSF1 | MACOSX | FREEBSD */
+#endif /* MACOSX | FREEBSD */
 
 #ifdef GCC386
 #include "inlnPS2.h"
@@ -2421,10 +2421,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   }
 #else
-#if OSF1
-  TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs)));
-  if (rval <= 0) {
-#elif defined(ISC)
+#if defined(ISC)
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
   if (rval != 0) {
 #elif defined(LINUX)
@@ -2445,7 +2442,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #endif /* AIXPS2 */
 
   if (rval != 0) {
-#endif /* OSF1 */
+#endif /* ISC */
     *Lisp_errno = errno;
     return (NIL);
   }

@@ -252,42 +252,6 @@ u_char SUNLispKeyMap_RS6000[128] = {
     /* 127 */ 104,  80, 106, 107,  92,  76,  14,  61
 };
 
-/* For DECStation 3100 */
-
-u_char SUNLispKeyMap_DEC3100[256] = {
-    /*   7 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  15 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  23 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  31 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  39 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  47 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  55 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  63 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  71 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /*  79 */ 255, 255, 255, 255, 255, 255, 255,  97,
-    /*  87 */  99, 100,  67,  68, 255, 255, 255, 255,
-    /*  95 */ 255, 255, 255, 255, 255, 101,  66, 104,
-    /* 103 */  80, 106, 255, 255, 255, 255, 255, 255,
-    /* 111 */ 255, 255, 107, 108, 255, 255, 255, 255,
-    /* 119 */ 255, 255, 255, 255, 255,  92,  76, 255,
-    /* 127 */ 255, 255, 255, 255, 255, 255, 255, 255,
-    /* 135 */ 255, 255, 255,  90,  91,  46,  93,  89,
-    /* 143 */  47, 255, 255,  98, 255,  13,  76,  94,
-    /* 151 */  69,  70,  84,  85,  87, 102,  81,  82,
-    /* 159 */  83, 255, 255, 255, 255, 255, 255, 255,
-    /* 167 */ 129, 132, 131, 130, 255, 255, 255,  41,
-    /* 175 */  36,  56,  31, 255, 255, 255, 255, 255,
-    /* 183 */ 255, 255, 255, 255, 255,  15,  44,  34,
-    /* 191 */  33,  32,  19,  21,  40, 255,  17,  18,
-    /* 199 */  20,  24,  45, 255,  16,   3,   5,  37,
-    /* 207 */ 255,   1,  48,  35,   7,  57, 255,   0,
-    /* 215 */  49,  50,  39, 255,   2,  51,  52,  54,
-    /* 223 */ 255,   4,   6,  38,  55, 255,  53,  23,
-    /* 231 */   9,  27, 255,  22,  25,  26,  42, 255,
-    /* 239 */   8,  11, 255,  43,  12, 255,  59,  29,
-    /* 247 */ 105, 255,  10,  58,  28, 255, 255, 255,
-};
-
 u_char *XGenericKeyMap; /* filled in with malloc if needed */
 
 /* For the IBM-101 kbd FF marks exceptions */
@@ -450,8 +414,8 @@ char *getenv(); /*  ---- external entry points --------*/
 #define MIN_KEYTYPE 3
 #define KB_AS3000J (7 + MIN_KEYTYPE)
 #define KB_RS6000 (8 + MIN_KEYTYPE)
-#define KB_DEC3100 (9 + MIN_KEYTYPE)
-#define KB_HP9000 (10 + MIN_KEYTYPE)  // TODO: Can we remove this?
+#define KB_DEC3100 (9 + MIN_KEYTYPE) /* TODO: Can we remove this? */
+#define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
 #define KB_DOS (12 + MIN_KEYTYPE)
 
@@ -576,12 +540,11 @@ static u_char *make_X_keymap() {
 /*									*/
 /*	Determine what kind of keyboard we're dealing with, by		*/
 /*	checking the LDEKBDTYPE shell variable.  It it's not set,	*/
-/*	either default it (for DEC, IBM), or complain and exit.		*/
+/*	either default it (for Sun, IBM), or complain and exit.		*/
 /*	Valid LDEKBDTYPE values:					*/
 /*		type3	Sun type-3 keyboard				*/
 /*		type4	Sun type-4 keyboard				*/
 /*		rs6000	IBM RS/6000					*/
-/*		dec3100	DECstation 3100 or 5000				*/
 /*		x	generic X keyboard map				*/
 /*									*/
 /*									*/
@@ -620,9 +583,6 @@ void keyboardtype(int fd)
     printf("       (one of type2, type3, type4, jle, or as3000j)");
     exit(0); /* exit to shell */
 #else
-#ifdef DECSTN
-    type = KB_DEC3100;
-#else
 #ifdef RS6000
     type = KB_RS6000;
 #else
@@ -638,8 +598,6 @@ void keyboardtype(int fd)
 #endif /* XWINDOW */
 
 #endif /* RS6000 */
-
-#endif /* DECSTN */
 
 #endif /* FUJI */
 
@@ -659,8 +617,6 @@ void keyboardtype(int fd)
       type = KB_JLE;
     else if (strcmp("rs6000", key) == 0)
       type = KB_RS6000;
-    else if (strcmp("dec3100", key) == 0)
-      type = KB_DEC3100;
     else if (strcmp("X", key) == 0)
       type = KB_X;
     else if (strcmp("x", key) == 0)
@@ -698,9 +654,6 @@ void keyboardtype(int fd)
       SUNLispKeyMap = SUNLispKeyMap_RS6000;
       InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 8 */
       break;
-    case KB_DEC3100:
-      SUNLispKeyMap = SUNLispKeyMap_DEC3100;
-      InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 9 */
       break;
 #ifdef XWINDOW
     case KB_X:

@@ -42,13 +42,6 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 #endif /* MACOSX or FREEBSD */
 #endif /* USETERMIOS */
 
-#ifdef OSF1
-#define _CLOCK_ID_T
-typedef int clockid_t;
-#include "time.h"
-#include <sys/resource.h>
-#endif /* OSF1 */
-
 #if defined(SYSVONLY) || defined(OS5) || defined(FREEBSD) || defined(MACOSX)
 #include <fcntl.h>
 #include <unistd.h>

@@ -30,7 +30,6 @@ sparc		True if we're compiling on a SPARC machine.
 mc68020		True if we're compiling on a Motorola 680x0 machine.
 sun3		We're compiling for a Sun-3.
 RS6000		We're compiling for the RS/6000 processor.
-DEC3100		We're compiling for the DECStation 3100.
 RISCOS		We're compiling for the MIPS RISCstation under RISCOS.
 
 UNSAFE		If true, enables the "fast" version of 68020 opcodes.
