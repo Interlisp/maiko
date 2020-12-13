@@ -574,19 +574,9 @@ void keyboardtype(int fd)
 
   /* Get keytype from LDEKBDTYPE  */
   if ((key = getenv("LDEKBDTYPE")) == 0) {
-#ifdef FUJI
-    /* obnoxious behavior */
-    mess_reset();
-    printf("!!CAUTION: LDEKBDTYPE is not set.\n");
-    printf("Please retry after setting LDEKBDTYPE correctly.\n");
-    printf("Usage: setenv LDEKBDTYPE <kbdtype>\n");
-    printf("       (one of type2, type3, type4, jle, or as3000j)");
-    exit(0); /* exit to shell */
-#else
 #ifdef RS6000
     type = KB_RS6000;
-#else
-#ifdef XWINDOW
+#elif XWINDOW
     type = KB_X;
 #elif DOS
     type = KB_DOS;
@@ -596,15 +586,6 @@ void keyboardtype(int fd)
       type = KB_SUN3;
     } /* otherwise, type is set */
 #endif /* XWINDOW */
-
-#endif /* RS6000 */
-
-#endif /* FUJI */
-
-#ifdef XWINDOW
-#undef FUJI
-#endif /* XWINDOW */
-
   } /* if end */
   else {
     if (strcmp("as3000j", key) == 0)
