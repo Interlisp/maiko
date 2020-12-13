@@ -12,10 +12,8 @@ static char *id = "$Id: initkbd.c,v 1.2 1999/01/03 02:07:09 sybalsky Exp $ Copyr
 #include "version.h"
 
 #include <stdio.h>
-#include <sys/types.h>
-#if defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
-#endif
+#include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>
 #include <sys/select.h>
