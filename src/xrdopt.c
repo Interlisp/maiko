@@ -13,6 +13,7 @@ static char *id = "$Id: xrdopt.c,v 1.6 2001/12/26 22:17:07 sybalsky Exp $ Copyri
 #include "version.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
 #include <sys/time.h>
@@ -27,10 +28,6 @@ static char *id = "$Id: xrdopt.c,v 1.6 2001/12/26 22:17:07 sybalsky Exp $ Copyri
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
-
-#ifdef __STDC__
-#include <stdlib.h>
-#endif /* __STDC__ */
 
 #include "xdefs.h"
 #include "dbprint.h"

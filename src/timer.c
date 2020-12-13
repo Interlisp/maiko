@@ -108,11 +108,7 @@ extern DspInterface currentdsp;
 
 #define LISP_UNIX_TIME_DIFF 29969152
 #define LISP_ALTO_TIME_MASK 0x80000000
-#ifdef __STDC__
 #define UNIX_ALTO_TIME_DIFF 2177452800U
-#else
-#define UNIX_ALTO_TIME_DIFF 2177452800
-#endif /* __STDC__ */
 
 /*	Interlisp time is signed; MIN.FIXP = "01-JAN-01 00:00:00 GMT"
  *	Interlisp 0 is at	"19-Jan-69 12:14:08 PST"
