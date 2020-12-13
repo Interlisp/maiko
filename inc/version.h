@@ -319,18 +319,6 @@ typedef signed char s_char;
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef INDIGO
-typedef signed char s_char;
-#undef UNALIGNED_FETCH_OK
-#undef REGISTER
-#define REGISTER
-#endif /* INDIGO */
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #undef HAS_GETHOSTID
@@ -433,10 +421,10 @@ typedef unsigned short u_short;
 
 #ifdef SYSVONLY
 
-#if defined(INDIGO) || defined(OS5) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
+#if defined(OS5) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
 #else
 #define seteuid(x) setresuid(-1, (x), -1)
-#endif /* INDIGO, OS5, MACOSX, FREEBSD, LINUX do have seteuid */
+#endif /* OS5, MACOSX, FREEBSD, LINUX do have seteuid */
 
 #if !defined(LINUX) && !defined(MACOSX) && !defined(FREEBSD)
 /* these are in the POSIX standard */

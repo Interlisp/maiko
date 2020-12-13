@@ -54,14 +54,6 @@
  * Initial revision
  *
  */
-#ifdef IRIX40
-#ifndef USE_SNOOP
-#define USE_SNOOP	1
-#endif
-#define signal		sigset
-#define	U_INT32_DECLARED_IN_AUTH	1
-#endif
-
 #ifdef OS4
 #ifndef USE_NIT
 #define USE_NIT	1

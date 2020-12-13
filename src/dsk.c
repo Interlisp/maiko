@@ -2212,16 +2212,9 @@ LispPTR COM_truncatefile(register LispPTR *args)
  * TRUNCATEFILE FDEV method is invoked from FORCEOUTPUT Lisp function.
  * Thus we have to sync the file state here.
  */
-#ifdef INDIGO
+#ifndef DOS
     TIMEOUT(rval = fsync(fd));
-#elif OS5
-    TIMEOUT(rval = fsync(fd));
-#elif DOS
-#elif SYSVONLY
-    TIMEOUT(rval = fsync(fd));
-#else
-    TIMEOUT(rval = fsync(fd));
-#endif /* INDIGO */
+#endif
 
     if (rval != 0) {
       *Lisp_errno = errno;
@@ -2445,9 +2438,6 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   if (rval != 0) {
 #elif HPUX
   TIMEOUT(rval = statfs(dir, &sfsbuf));
-  if (rval != 0) {
-#elif INDIGO
-  TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
   if (rval != 0) {
 #elif defined(SYSVONLY)
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));

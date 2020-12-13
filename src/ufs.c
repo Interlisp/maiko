@@ -20,8 +20,6 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #endif /* SYSVONLY */
 
 #include <sys/file.h>
-#ifndef INDIGO
-/* Indigo has this duplicated in dirent.h, sigh. */
 #ifndef OS5
 #ifndef HPUX
 #ifndef FREEBSD
@@ -29,7 +27,6 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #endif
 #endif
 #endif
-#endif /* INDIGO */
 
 #include <sys/stat.h>
 #include <sys/time.h>

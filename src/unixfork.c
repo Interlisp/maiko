@@ -31,22 +31,15 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 #define FULLSLAVENAME
 #endif
 
-#ifdef INDIGO
-#define USETERMIOS
-#define TCSETS TCSETA
-#define TCGETS TCGETA
-#define FULLSLAVENAME
-#endif
-
 #include <sys/ioctl.h>
 #ifndef USETERMIOS
 #include <sys/ioctl.h>
 #else
-#if defined(INDIGO) || defined(MACOSX) || defined(FREEBSD)
+#if defined(MACOSX) || defined(FREEBSD)
 #include <termios.h>
 #else
 #include <sys/termios.h>
-#endif /* INDIGO */
+#endif /* MACOSX or FREEBSD */
 #endif /* USETERMIOS */
 
 #ifdef OSF1
@@ -82,11 +75,6 @@ typedef int clockid_t;
 /* #include <sys/un.h> */
 #include <sgtty.h>
 #endif /* RISCOS */
-
-#ifdef INDIGO
-/* #include <sys/un.h> */
-#include <sgtty.h>
-#endif
 
 #include "unixfork.h"
 
@@ -199,11 +187,7 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
 #else
     ioctl(SlaveFD, TCGETS, (char *)&tio);
 #endif
-#ifdef INDIGO
-    tio.c_lflag |= ICANON | ECHO | ECHOE;
-#else
     tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
-#endif /* INDIGO */
 #if defined(MACOSX) || defined(FREEBSD)
     tcsetattr(SlaveFD, TCSANOW, &tio);
 #else
@@ -405,7 +389,7 @@ int fork_Unix() {
 
           if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading slave pty len");
           if (SAFEREAD(LispPipeIn, slavepty, tmp) < 0) perror("Slave reading slave pty id");
-#endif /* INDIGO */
+#endif /* FULLSLAVENAME */
 
           if (IOBuf[0] == 'P') { /* The new style, which takes term type & command to csh */
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");

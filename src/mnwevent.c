@@ -255,12 +255,7 @@ void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Bool
         l = ev->x;
         b = ev->y;
 
-#ifdef INDIGO
-        /* apparent bug in SGI's x server */
-        if ((!xevent->send_event) && (l == 0) && (b == 0))
-#else
         if ((!xevent->send_event))
-#endif /* INDIGO */
         {
           Window parent, root, *children;
           int nch;
