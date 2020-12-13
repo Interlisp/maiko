@@ -64,8 +64,8 @@ extern int        Lin_term_count;
 extern int        Sign;
 extern constraint_name *First_constraint_name;
 /* I hate #ifdefs, but there seems to be no "standard" way to do this */
-#if defined(__hpux) || defined(__apollo) || defined(_AIX)
-/* for HP and Apollo (and possibly others) */
+#if defined(__hpux) || defined(_AIX)
+/* for HP, AIX, and possibly others */
 extern unsigned char       yytext[];
 #else
 /* For other computers */

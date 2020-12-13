@@ -110,8 +110,6 @@ int read_hex(char *s1, long unsigned int *array) {
 /* convert key to numeric format*/
 #ifdef HPUX
     *(array + i) = strtoul(ptr, NULL, 16); /* On HP, must convert to unsigned */
-#elif defined(APOLLO)
-    *(array + i) = strtoul(ptr, NULL, 16); /* On APOLLO, must convert to unsigned */
 #elif defined(INDIGO)
     *(array + i) = strtoul(ptr, NULL, 16); /* On Indigo, must convert to unsigned */
 #elif defined(RS6000)

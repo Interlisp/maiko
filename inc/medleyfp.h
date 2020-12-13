@@ -71,20 +71,6 @@ volatile extern int  FP_error;
 #define FPCLEAR
 #define FPTEST(result) (isinf(result) || isnan(result))
 
-#elif defined(APOLLO)
-	/**********************************************************/
-	/*  Need values.h & nan.h, so we all parts of IsNANorINF  */
-	/*  are defined.  IsNANorINF uses structure aliasing to   */
-	/*  get at pieces of the float to test it, so the item    */
-	/*  being tested can't be a register variable.  Sigh.     */
-	/**********************************************************/
-#include </sys5/usr/include/values.h>
-#include </sys5/usr/include/nan.h>
-#define FPCLEAR
-#define FPTEST(result) (IsNANorINF(result))
-#undef REGISTER
-#define REGISTER
-
 #elif defined(OSF1)
 #include <fp.h>
 #define FPCLEAR

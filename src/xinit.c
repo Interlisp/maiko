@@ -41,7 +41,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #include <sys/ioctl.h>
 #include <sys/select.h>
 
-#ifndef APOLLO
 #ifndef HPUX
 #ifndef ULTRIX
 #ifndef LINUX
@@ -53,7 +52,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #endif /* LINUX */
 #endif /* ULTRIX */
 #endif /* HPUX */
-#endif /* APOLLO */
 
 #ifdef ISC
 #define FASYNC O_NONBLOCK
