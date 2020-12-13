@@ -20,10 +20,6 @@
 #include <i32.h>
 #endif /* DOS */
 
-#ifdef ULTRIX
-#include <ieeefp.h>
-#endif /* ULTRIX */
-
 #ifdef RISCOS
 /*#include <ieeefp.h> */
 /*#define isnan isnand */

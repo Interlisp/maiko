@@ -115,9 +115,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "commondefs.h"
 #include "ufsdefs.h"
 
-#if defined(ULTRIX) || defined(MACOSX) || defined(FREEBSD)
-#include <sys/mount.h>
-#elif OSF1
+#if defined(OSF1) || defined(MACOSX) || defined(FREEBSD)
 #include <sys/mount.h>
 #else
 #ifdef AIX
@@ -132,7 +130,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define d_fileno d_ino
 #endif /* AIX */
 
-#endif /* ULTRIX */
+#endif /* OSF1 | MACOSX | FREEBSD */
 
 #ifdef GCC386
 #include "inlnPS2.h"
@@ -2355,9 +2353,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
   char name[MAXNAMLEN + 1], file[MAXPATHLEN], ver[VERSIONLEN];
   char drive[2];
-#ifdef ULTRIX
-  struct fs_data sfsbuf;
-#elif defined(OS5)
+#if defined(OS5)
   struct statvfs sfsbuf;
 #else
 #ifndef AIXPS2
@@ -2366,7 +2362,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #endif /* DOS */
 #endif /* AIXPS2 */
 
-#endif /* ULTRIX */
+#endif /* OS5 */
 #ifdef DOS
   struct diskfree_t sfsbuf;
 #endif /* DOS */
@@ -2435,10 +2431,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   }
 #else
-#ifdef ULTRIX
-  TIMEOUT(rval = getmnt(0, &sfsbuf, 0, STAT_ONE, dir));
-  if (rval <= 0) {
-#elif OSF1
+#if OSF1
   TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs)));
   if (rval <= 0) {
 #elif defined(ISC)
@@ -2468,13 +2461,11 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #endif /* AIXPS2 */
 
   if (rval != 0) {
-#endif /* ULTRIX */
+#endif /* OSF1 */
     *Lisp_errno = errno;
     return (NIL);
   }
-#ifdef ULTRIX
-  *buf = sfsbuf.fd_req.bfree;
-#elif defined(RS6000)
+#if defined(RS6000)
   *buf = (sfsbuf.f_bavail) * 4; /* AIX 3.1 returns no. of 4K blocks */
 #elif defined(ISC)
   *buf = (sfsbuf.f_bfree) / 2; /* ISC claims 1K blocks, but it's really 512b */
@@ -2484,7 +2475,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   *buf = sfsbuf.f_bavail;
 #else
   *buf = 200000; /* FAKE - pretend we have 200,000 blocks free! */
-#endif /* ULTRIX */
+#endif /* RS6000 */
 #endif /* DOS */
   return (ATOM_T);
 }

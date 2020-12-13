@@ -1,4 +1,4 @@
-# Options for Ultrix, DECStation 3100, and X-Window
+# Options for OSF1, DECStation 3100, and X-Window
 
 
 CC = cc
