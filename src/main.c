@@ -584,15 +584,6 @@ int main(int argc, char *argv[])
   _getrealerror();
 #endif /* I386 */
 
-#ifdef RS6000
-  /****************************************************/
-  /*  For the IBM RS/6000, we have to initialize its	*/
-  /*  notion of the time zone, so gettimeofday works	*/
-  /****************************************************/
-
-  tzset();
-#endif /* RS6000 */
-
 #ifdef DOS
   tzset();
 #endif

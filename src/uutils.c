@@ -232,8 +232,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "sparc";
 #elif defined(I386)
     envvalue = "i386";
-#elif defined(RS6000)
-    envvalue = "rs/6000";
 #elif defined(DOS)
     envvalue = "386";
 #elif defined(MACOSX)
@@ -247,8 +245,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "sun4";
 #elif defined(I386)
     envvalue = "sun386";
-#elif defined(RS6000)
-    envvalue = "rs/6000";
 #elif defined(DOS)
     envvalue = "dos";
 #elif defined(MACOSX)

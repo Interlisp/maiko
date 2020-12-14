@@ -227,27 +227,6 @@ u_char SUNLispKeyMap_jle[128] = {
 /* [116] 255 -> 103 Henkan */
 /* [117] 255 -> 109 Nihongo On-Off */
 
-/* For IBM Risc System 6000 */
-
-u_char SUNLispKeyMap_RS6000[128] = {
-    /*   7 */ 255, 255,  45,  32,  17,  16,   1,   0,
-    /*  15 */   2,   4,  53,  22,   8,  10,  59, 255,
-    /*  23 */  15,  34,  19,  18,   3,  48,  49,  51,
-    /*  31 */   6,  23,  25,  11,  58,  29, 105,  56,
-    /*  39 */  21,  20,   5,  35,  50,  52,  38,   9,
-    /*  47 */  26,  43,  28, 255,  44,  41, 255,  40,
-    /*  55 */  24,  37,   7,  39,  54,  55,  27,  42,
-    /*  63 */  12, 255,  60,  36, 255,  31,  57,  93,
-    /*  71 */ 255,  47, 255, 255, 255, 255, 255, 255,
-    /*  79 */ 255, 255, 255, 255,  89,  46, 255, 255,
-    /*  87 */ 129,  62,  90, 255, 130, 131,  63,  91,
-    /*  95 */ 255, 255, 132,  73,  81,  84,  94, 255,
-    /* 103 */  65,  82,  85,  69,  98,  95,  83,  87,
-    /* 111 */  70,  13,  96, 102, 255, 128, 255,  33,
-    /* 119 */ 255,  97,  99, 100,  67,  68, 101,  66,
-    /* 127 */ 104,  80, 106, 107,  92,  76,  14,  61
-};
-
 u_char *XGenericKeyMap; /* filled in with malloc if needed */
 
 /* For the IBM-101 kbd FF marks exceptions */
@@ -409,7 +388,7 @@ char *getenv(); /*  ---- external entry points --------*/
 
 #define MIN_KEYTYPE 3
 #define KB_AS3000J (7 + MIN_KEYTYPE)
-#define KB_RS6000 (8 + MIN_KEYTYPE)
+#define KB_RS6000 (8 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 #define KB_DEC3100 (9 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 #define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
@@ -570,9 +549,7 @@ void keyboardtype(int fd)
 
   /* Get keytype from LDEKBDTYPE  */
   if ((key = getenv("LDEKBDTYPE")) == 0) {
-#ifdef RS6000
-    type = KB_RS6000;
-#elif XWINDOW
+#ifdef XWINDOW
     type = KB_X;
 #elif DOS
     type = KB_DOS;
@@ -592,8 +569,6 @@ void keyboardtype(int fd)
       type = KB_SUN2;
     else if (strcmp("jle", key) == 0)
       type = KB_JLE;
-    else if (strcmp("rs6000", key) == 0)
-      type = KB_RS6000;
     else if (strcmp("X", key) == 0)
       type = KB_X;
     else if (strcmp("x", key) == 0)
@@ -626,11 +601,6 @@ void keyboardtype(int fd)
     case KB_AS3000J: /* for AS, use type4 map */
       SUNLispKeyMap = SUNLispKeyMap_for4;
       InterfacePage->devconfig |= type - MIN_KEYTYPE; /* 7 */
-      break;
-    case KB_RS6000:
-      SUNLispKeyMap = SUNLispKeyMap_RS6000;
-      InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 8 */
-      break;
       break;
 #ifdef XWINDOW
     case KB_X:

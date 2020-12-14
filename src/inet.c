@@ -92,9 +92,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
   int addr_class, protocol;
   DLword *buffer;
   int result;
-#ifdef RS6000
-  static int one = 1; /* Used in ioctl */
-#endif
 
   switch (op & 0xFFFF) {
     case TCPhostlookup:
@@ -116,13 +113,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       addr_class = LispNumToCInt(nameConn);
       protocol = LispNumToCInt(proto);
       result = socket(addr_class, protocol, 0);
-#ifdef RS6000
-      ioctl(result, FIONBIO, &one);
-      fcntl(result, F_SETOWN, getpid());
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
       fcntl(result, F_SETOWN, getpid());
-#endif /* RS6000 */
 
       return (GetSmallp(result));
       break;
@@ -145,15 +137,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         perror("TCP connect");
         return (NIL);
       }
-#ifdef RS6000
-      /* FNDELAY alone isn't enough on aix */
-      /* (don't know if FIONBIO alone is enough) */
-      ioctl(result, FIONBIO, &one);
-      fcntl(result, F_SETOWN, getpid());
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
       fcntl(result, F_SETOWN, getpid());
-#endif /* RS6000 */
 
       return (GetSmallp(result));
       break;
@@ -225,13 +210,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         int oldmask = sigblock(sigmask(SIGIO));
 #endif /* SYSVSIGNALS */
 
-#ifdef RS6000
-        ioctl(result, FIONBIO, &one);
-        fcntl(result, F_SETOWN, getpid());
-#else
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
         fcntl(result, F_SETOWN, getpid());
-#endif /* RS6000 */
 
         if (listen(result, 5) == -1) {
           perror("TCP Listen");
@@ -263,13 +243,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         if (errno != EWOULDBLOCK) perror("TCP Accept");
         return (NIL);
       }
-#ifdef RS6000
-      ioctl(result, FIONBIO, &one);
-      fcntl(result, F_SETOWN, getpid());
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
       fcntl(result, F_SETOWN, getpid());
-#endif /* RS6000 */
 
       return (GetSmallp(result));
       break;
@@ -306,13 +281,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         close(result);
         return (NIL);
       }
-#ifdef RS6000
-      ioctl(result, FIONBIO, &one);
-      fcntl(result, F_SETOWN, getpid());
-#else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
       fcntl(result, F_SETOWN, getpid());
-#endif /* RS6000 */
 
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);
