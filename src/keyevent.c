@@ -48,12 +48,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include <sundev/kbio.h>
 #endif /* DOS */
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#include <signal.h>
-#define SIGIO SIGPOLL
-#endif /* ISC */
-
 #include "lispemul.h"
 #include "lspglob.h"
 #include "adr68k.h"
@@ -80,27 +74,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 extern DspInterface currentdsp, colordsp;
 extern IOPAGE *IOPage68K;
 #endif /* DOS */
-
-#ifdef ISC
-/*****************************************************/
-/*  ISC Unix uses POLL, rather than SELECT, because  */
-/*  SELECT causes intermittent wild jumps.  This is  */
-/*  the pollfd structure to drive it.		     */
-/*****************************************************/
-#include <poll.h>
-struct pollfd pollfds[33] = {
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0},
-    {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}, {0, POLLIN | POLLOUT, 0}};
-#endif /* ISC */
 
 /* for contextsw */
 #define AS_OPCODE 1
@@ -315,11 +288,6 @@ void getsignaldata(int sig, int code, void *scp)
   fd_set rfds, efds;
   u_int iflags;
   int i;
-#ifdef ISC
-  int fdcount = 0;
-  int bit;
-  int res;
-#endif
 
 #ifdef XWINDOW
 #if defined(sun)
@@ -341,13 +309,7 @@ void getsignaldata(int sig, int code, void *scp)
 
 /* label and ifs not needed if only keyboard on SIGIO */
 getmore:
-#ifdef ISC
-  for (res = 0, bit = 1; res < 32; res++, bit <<= 1)
-      if (FD_ISSET(bit, &LispReadFds)) { pollfds[fdcount++].fd = res; }
-  if ((res = poll(pollfds, fdcount, 0)) > 0)
-#else
   if (select(32, &rfds, NULL, &efds, &SelectTimeout) >= 0)
-#endif
   {
       /* need to print out fd sets...
     DBPRINT(("SIGIO: fd mask(r/e) = 0x%x/0x%x.\n", rfds, efds));

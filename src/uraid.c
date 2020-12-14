@@ -24,11 +24,6 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 #include <stdlib.h>
 #include <unistd.h>
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#define vfork fork
-#endif /* ISC */
-
 #include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>

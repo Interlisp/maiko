@@ -60,7 +60,7 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include "commondefs.h"
 #include "perrnodefs.h"
 
-#if defined(ISC) || defined(FREEBSD)
+#if defined(FREEBSD)
 #include <dirent.h>
 #endif
 

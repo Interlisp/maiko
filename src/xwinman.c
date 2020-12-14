@@ -17,10 +17,6 @@ static char *id = "$Id: xwinman.c,v 1.3 2001/12/26 22:17:07 sybalsky Exp $ Copyr
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#endif /* ISC */
-
 #include "lispemul.h"
 #include "devif.h"
 #include "xdefs.h"

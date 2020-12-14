@@ -92,10 +92,6 @@ extern int KBDEventFlg;
 #include "xdefs.h"
 #endif /* XWINDOW */
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#endif /* ISC */
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"

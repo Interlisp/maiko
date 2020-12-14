@@ -63,11 +63,6 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include <pwd.h>
 #endif /* DOS */
 
-#ifdef ISC
-#include <unistd.h>
-#include <sys/dirent.h>
-#endif
-
 #if defined(MACOSX) || defined(FREEBSD)
 #include <string.h>
 #include <unistd.h>
@@ -624,7 +619,7 @@ int main(int argc, char *argv[])
   tzset();
 #endif /* RS6000 */
 
-#if defined(ISC) || defined(DOS)
+#ifdef DOS
   tzset();
 #endif
 

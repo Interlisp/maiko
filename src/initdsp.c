@@ -76,10 +76,6 @@ static char *id = "$Id: initdsp.c,v 1.2 1999/01/03 02:07:08 sybalsky Exp $ Copyr
 #include "xcursordefs.h"
 #endif
 
-#ifdef ISC
-#define getpagesize() 512
-#endif /* ISC */
-
 #ifdef DOS
 #define getpagesize() 512
 #endif /* DOS */

@@ -45,11 +45,6 @@ static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyrig
 #endif /* MACOSX */
 #endif /* LINUX */
 
-#ifdef ISC
-#define FASYNC O_NONBLOCK
-#define SIGIO SIGPOLL
-#endif /* ISC */
-
 #define FALSE 0
 #define TRUE !FALSE
 #define PERCENT_OF_SCREEN 95
@@ -195,9 +190,7 @@ void Xevent_after_raid(DspInterface dsp)
 void Open_Display(DspInterface dsp)
 {
     FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
-#ifndef ISC
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
-#endif /* ISC */
 
   /****************************************************/
   /* If debugging, set the X connection so that	*/

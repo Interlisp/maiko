@@ -49,18 +49,9 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <unistd.h>
 #include <fcntl.h>
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#include <stropts.h>
-#include <sys/ioctl.h>
-#include <sys/times.h>
-#define SIGIO SIGPOLL
-#define USETIMEFN
-#else
 #ifndef DOS
 #include <sys/resource.h>
 #endif /* DOS */
-#endif /* ISC */
 
 #ifdef OS5
 #include <sys/times.h>
@@ -150,7 +141,7 @@ void update_miscstats() {
 
   MiscStats->totaltime = (time(0) * 1000) + (10 * dtm.hsecond);
   MiscStats->swapwaittime = 0;
-  MiscStats->pagefaults = 0; /* can't tell this on ISC */
+  MiscStats->pagefaults = 0;
   MiscStats->swapwrites = 0;
   MiscStats->diskiotime = 0; /* ?? not available ?? */
   MiscStats->diskops = 0;
@@ -510,9 +501,7 @@ static int int_timer_service(int sig, int code, void *scp)
 #endif
 
 #ifdef SYSVSIGNALS
-#ifndef ISC
 /*    sigset(SIGVTALRM, int_timer_service); */
-#endif /* ISC */
 #endif /* SYSVSIGNALS */
 }
 
@@ -638,14 +627,6 @@ static void int_io_init() {
   DBPRINT(("I/O interrupts enabled\n"));
 #endif /* KBINT */
 #else  /* SYSVSIGNALS in effect... */
-#ifdef ISC
-  {
-    int res = sigset(SIGIO, getsignaldata);
-    if (res == SIG_ERR) perror("sigset for I/O polling");
-    if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
-      perror("ioctl on X fd - SETSIG");
-  }
-#else
 #ifndef DOS
   SIGERRCHK(sigset(SIGIO, getsignaldata), "sigset io");
 #ifdef XWINDOW
@@ -670,7 +651,6 @@ static void int_io_init() {
 #endif /* USE_DLPI */
 
 #endif /* DOS */
-#endif /* ISC */
 #endif /* SYSVSIGNALS */
 }
 
@@ -760,10 +740,7 @@ void int_timer_off() { int_block(); }
 
 void int_timer_off() {
 #ifdef SYSVSIGNALS
-#ifndef ISC
   sigignore(SIGVTALRM);
-#endif /* ISC */
-
 #else
   struct sigvec tmpv, timeroffv;
 
@@ -813,12 +790,10 @@ void int_fp_service(int sig, int code, struct sigcontext *scp)
     case FPM_OVERFLOW:
     case FPM_PRECISION:
 #else
-#ifndef ISC
     case FPE_FLTDIV_TRAP:
     case FPE_FLTUND_TRAP:
     case FPE_FLTOVF_TRAP:
     case FPE_FLTOPERR_TRAP:
-#endif /* ISC */
 #endif /* AIXPS2  */
 
       FP_error = code;
@@ -839,7 +814,6 @@ void int_fp_service(int sig, int code, struct sigcontext *scp)
 }
 
 void int_fp_init() { /* first set up the signal handler */
-#ifndef ISC
 #ifdef AIXPS2
   if (sigset(SIGFPE, int_fp_service))
 #elif OS5
@@ -848,9 +822,8 @@ void int_fp_init() { /* first set up the signal handler */
   if (ieee_handler("set", "all", int_fp_service))
 #endif /* AIXPS2 */
 
-    perror("Sigvec for FPE failed");
+  perror("Sigvec for FPE failed");
   DBPRINT(("FP interrupts enabled\n"));
-#endif /* ISC */
 }
 
 #endif /* FLTINT */
@@ -908,11 +881,7 @@ static void int_file_init() {
   sigvec(SIGALRM, &timerv, 0);
 #else
 #ifdef SIGALRM
-#ifdef ISC
   sigset(SIGALRM, timeout_error);
-#else
-  sigset(SIGALRM, timeout_error);
-#endif /* ISC */
 #endif /* SIGALRM */
 #endif /* SYSVSIGNALS */
 
@@ -1024,21 +993,7 @@ and do a 'v' before trying anything else.";
 /************************************************************************/
 static void int_panic_init() {
 #ifdef SYSVSIGNALS
-#ifdef ISC
-  sigset(SIGHUP, panicuraid);
-  sigset(SIGQUIT, panicuraid);
-  sigset(SIGILL, panicuraid);
-#ifdef SIGEMT
-  sigset(SIGEMT, panicuraid);
-#endif
-  sigset(SIGBUS, panicuraid);
-  sigset(SIGSEGV, panicuraid);
-#ifdef SIGSYS
-  sigset(SIGSYS, panicuraid);
-#endif
-  sigset(SIGTERM, panicuraid);
-#elif DOS
-#else
+#ifndef DOS
   sigset(SIGHUP, panicuraid);
   sigset(SIGQUIT, panicuraid);
   sigset(SIGILL, panicuraid);

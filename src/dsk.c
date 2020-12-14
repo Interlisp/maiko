@@ -61,14 +61,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define L_SET SEEK_SET
 #endif /* OS5 */
 
-#ifdef ISC
-#include <dirent.h>
-#include <unistd.h>
-#define direct dirent
-#define d_namlen d_reclen
-#define L_SET SEEK_SET
-#endif /* ISC */
-
 #if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
 #include <dirent.h>
 #include <unistd.h>
@@ -2186,7 +2178,6 @@ LispPTR COM_truncatefile(register LispPTR *args)
     return (ATOM_T);
   }
   if ((off_t)length != sbuf.st_size) {
-#ifndef ISC /* ISC has no ftruncate; sigh */
 #ifdef DOS
     TIMEOUT(rval = chsize(fd, (off_t)length));
 #else
@@ -2196,7 +2187,6 @@ LispPTR COM_truncatefile(register LispPTR *args)
       *Lisp_errno = errno;
       return (NIL);
     }
-#endif /* ISC */
 
 /*
  * TRUNCATEFILE FDEV method is invoked from FORCEOUTPUT Lisp function.
@@ -2414,10 +2404,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   }
 #else
-#if defined(ISC)
-  TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
-  if (rval != 0) {
-#elif defined(LINUX)
+#if defined(LINUX)
   TIMEOUT(rval = statfs(dir, &sfsbuf));
   if (rval != 0) {
 #elif defined(MACOSX) || defined(FREEBSD)
@@ -2435,14 +2422,12 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #endif /* AIXPS2 */
 
   if (rval != 0) {
-#endif /* ISC */
+#endif
     *Lisp_errno = errno;
     return (NIL);
   }
 #if defined(RS6000)
   *buf = (sfsbuf.f_bavail) * 4; /* AIX 3.1 returns no. of 4K blocks */
-#elif defined(ISC)
-  *buf = (sfsbuf.f_bfree) / 2; /* ISC claims 1K blocks, but it's really 512b */
 #elif defined(SYSVONLY) || defined(OS5)
   *buf = sfsbuf.f_bfree;
 #elif (!defined(AIXPS2))

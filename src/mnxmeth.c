@@ -2819,9 +2819,7 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
   FD_to_dspif[Xfd] = dspif;
   LispReadFds |= (1 << Xfd);
   MNWReadFds |= (1 << Xfd);
-#ifndef ISC
   fcntl(Xfd, F_SETOWN, getpid());
-#endif /* ISC */
 
   dspif->screen = args[0];                  /* So we know which SCREEN this display is */
   dspif->root = RootWindowOfScreen(screen); /* And the root window for the screen */

@@ -427,7 +427,6 @@ int fork_Unix() {
           if (pid == 0) {
             int i;
             int status, sock;
-#ifndef ISC
             struct sockaddr_un addr;
             char PipeName[40];
             sock = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -436,7 +435,7 @@ int fork_Unix() {
               exit(0);
             }
             sprintf(PipeName, "/tmp/LPU%ld-%d", StartTime, slot);
-	    memset(&addr, 0, sizeof(struct sockaddr_un));
+            memset(&addr, 0, sizeof(struct sockaddr_un));
             addr.sun_family = AF_UNIX;
             strcpy(addr.sun_path, PipeName);
             status =
@@ -454,32 +453,6 @@ int fork_Unix() {
             dup2(sock, 0);
             dup2(sock, 1);
             dup2(sock, 2);
-#else
-            /* New, FIFO-based communication regime */
-            int down, up; /* fifo fds */
-            char DownFIFO[48], UpFIFO[48];
-
-            sprintf(DownFIFO, "/tmp/LPD%d-%d", StartTime, slot);
-            sprintf(UpFIFO, "/tmp/LPU%d-%d", StartTime, slot);
-
-            if ((down = open(DownFIFO, O_RDONLY | O_NDELAY)) < 0) {
-              perror("slave opening down fifo");
-              exit(0);
-            }
-            if ((up = open(UpFIFO, O_WRONLY | O_NDELAY)) < 0) {
-              perror("slave opening up fifo");
-              exit(0);
-            }
-
-            /* Copy the fifos onto stdin, stdout, and stderr */
-            dup2(down, 0);
-            dup2(up, 1);
-            dup2(up, 2);
-
-/*	unlink(DownFIFO);
-        unlink(UpFIFO); */
-
-#endif /* oldPIPEway */
 
 #ifdef SYSVONLY
             /* Make sure everything else is closed POSIX has no getdtab... */

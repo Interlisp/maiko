@@ -26,9 +26,6 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #include <sys/types.h>
 #include <sys/select.h>
 #include <unistd.h>
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#endif /* ISC */
 #include <sys/file.h>
 #include <sys/stat.h>
 #ifndef AIX
