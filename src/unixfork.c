@@ -165,17 +165,9 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
    kill processing, echo, backspace to erase, echo ctrl
    chars as ^x, kill line by backspacing */
 
-#if defined(MACOSX) || defined(FREEBSD)
     tcgetattr(SlaveFD, &tio);
-#else
-    ioctl(SlaveFD, TCGETS, (char *)&tio);
-#endif
     tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
-#if defined(MACOSX) || defined(FREEBSD)
     tcsetattr(SlaveFD, TCSANOW, &tio);
-#else
-    ioctl(SlaveFD, TCSETS, (char *)&tio);
-#endif
 #endif /* USETERMIOS */
 
     (void)dup2(SlaveFD, 0);
