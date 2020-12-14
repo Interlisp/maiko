@@ -51,14 +51,8 @@ Unix Interface Communications
 #include <sys/wait.h>
 #include <errno.h>
 #include <sys/socket.h>
-#ifdef ISC
-#include <sys/fcntl.h>
-/* Needed for window size setting ops: */
-#include <sys/sioctl.h>
-#else
 #include <fcntl.h>
 #include <sys/un.h>
-#endif /* ISC */
 
 #if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5) || defined(MACOSX)
 #include <unistd.h>
@@ -208,32 +202,12 @@ void wait_for_comm_processes(void) {
 /*	Returns a string which is the pathname associated with a        */
 /*       socket descriptor.  Has ONE string buffer.                     */
 /************************************************************************/
-#ifndef ISC
 char *build_socket_pathname(int desc) {
   static char PathName[50];
 
   sprintf(PathName, "/tmp/LPU%ld-%d", StartTime, desc);
   return (PathName);
 }
-
-#else
-
-char *build_upward_socket_pathname(int desc)
-{
-  static char UpPathName[50];
-
-  sprintf(UpPathName, "/tmp/LPU%ld-%d", StartTime, desc);
-  return (UpPathName);
-}
-
-char *build_downward_socket_pathname(int desc)
-{
-  static char DownPathName[50];
-
-  sprintf(DownPathName, "/tmp/LPD%ld-%d", StartTime, desc);
-  return (DownPathName);
-}
-#endif /* ISC */
 
 /************************************************************************/
 /*									*/
@@ -379,11 +353,7 @@ int FindAvailablePty(char *Master, char *Slave) {
 
   if (res != -1) {
     flags = fcntl(res, F_GETFL, 0);
-#ifdef ISC
-    flags |= O_NONBLOCK;
-#else
     flags |= FNDELAY;
-#endif /* ISC */
 
     flags = fcntl(res, F_SETFL, flags);
     return (res);
@@ -452,7 +422,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       char *UpPipeName, *DownPipeName, *PipeName;
       int res, slot, PipeFD, sockFD;
 
-#ifndef ISC
       /* First create the socket */
       struct sockaddr_un sock;
       sockFD = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -476,58 +445,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Socket %d bound to name %s.\n", sockFD, PipeName));
 
       if (listen(sockFD, 1) < 0) perror("Listen");
-#else
-
-      sockFD = open("/tmp/dummyforlisp", O_CREAT);
-      UpPipeName = build_upward_socket_pathname(sockFD);
-      DownPipeName = build_downward_socket_pathname(sockFD);
-
-      DBPRINT(("Downward FIFO: %s\n", DownPipeName));
-      DBPRINT(("Upward FIFO: %s\n", UpPipeName));
-#ifdef sun
-      if ((mknod(UpPipeName, 0777 | S_IFIFO, 0) < 0) && (errno != EEXIST)) {
-        perror("Making Upward FIFO");
-        printf("(named %s).\n", UpPipeName);
-        fflush(stdout);
-      }
-      if ((mknod(DownPipeName, 0777 | S_IFIFO, 0) < 0) && (errno != EEXIST)) {
-        perror("Making Downward FIFO");
-        printf("(named %s).\n", DownPipeName);
-        fflush(stdout);
-      }
-#else
-      if (mkfifo(UpPipeName, 0777) < 0) {
-        perror("Making Upward FIFO");
-        printf("(named %s).\n", UpPipeName);
-        fflush(stdout);
-      }
-      if (mkfifo(DownPipeName, 0777) < 0) {
-        perror("Making Downward FIFO");
-        printf("(named %s).\n", DownPipeName);
-        fflush(stdout);
-      }
-#endif /* SUNs */
-
-      PipeFD = open(DownPipeName, O_WRONLY | O_NDELAY);
-      if (PipeFD < 0) {
-        perror("Opening Down pipe from lisp");
-        printf("(Name is %s.)\n", DownPipeName);
-        fflush(stdout);
-        close(sockFD);
-        return (NIL);
-      }
-      dup2(PipeFD, sockFD);
-      unlink("/tmp/dummyforlisp");
-
-      PipeFD = open(UpPipeName, O_RDONLY | O_NDELAY);
-      if (PipeFD < 0) {
-        perror("Opening Up pipe from lisp");
-        printf("(Name is %s.)\n", UpPipeName);
-        fflush(stdout);
-        close(sockFD);
-        return (NIL);
-      }
-#endif /* ISC */
 
       d[0] = 'F';
       d[3] = sockFD;
@@ -541,7 +458,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       /* If it worked, return job # */
       if (d[3] == 1) {
-#ifndef ISC
       case0_lp:
         TIMEOUT(PipeFD = accept(sockFD, NULL, NULL));
         if (PipeFD < 0) {
@@ -551,50 +467,24 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           if (unlink(PipeName) < 0) perror("Unlink");
           return (NIL);
         }
-#endif /* oldPIPEway */
         res = fcntl(PipeFD, F_GETFL, 0);
-#ifdef ISC
-        res |= O_NONBLOCK;
-#else
         res |= FNDELAY;
-#endif /* ISC */
         res = fcntl(PipeFD, F_SETFL, res);
         if (res < 0) {
           perror("setting up fifo to nodelay");
           return (NIL);
         }
-#ifdef ISC
-        UJ[sockFD].type = UJPROCESS;
-        UJ[sockFD].status = -1;
-        UJ[sockFD].PID = (d[1] << 8) | d[2];
-        UJ[sockFD].readsock = PipeFD;
-#else
         UJ[PipeFD].type = UJPROCESS;
         UJ[PipeFD].status = -1;
         UJ[PipeFD].PID = (d[1] << 8) | d[2];
         UJ[PipeFD].readsock = 0;
         close(sockFD);
         unlink(PipeName);
-#endif /* ISC */
-
-	/* unlink(UpPipeName); */
-	/* unlink(DownPipeName); */
-#ifdef ISC
-        return (GetSmallp(sockFD));
-#else
         return (GetSmallp(PipeFD));
-#endif /* ISC */
       } else {
         DBPRINT(("Fork request failed."));
-#ifdef ISC
-        close(sockFD);
-        close(PipeFD);
-        unlink(UpPipeName);
-        unlink(DownPipeName);
-#else
         close(sockFD);
         unlink(PipeName);
-#endif /* ISC */
         return (NIL);
       }
       break;
@@ -779,11 +669,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       if (d[3] == 1) {
         /* Set up the IO not to block */
         res = fcntl(Master, F_GETFL, 0);
-#ifdef ISC
-        res |= O_NONBLOCK;
-#else
         res |= FNDELAY;
-#endif /* ISC */
         res = fcntl(Master, F_SETFL, res);
 
         UJ[slot].type = UJSHELL; /* so we can find them */
@@ -904,22 +790,12 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
             /* Something's amiss; update process status */
             DBPRINT(("Problem: Got status %d from read, errno %d.\n", dest, errno));
-#ifndef ISC
             wait_for_comm_processes(); /* make sure we're up to date */
             if (((dest == 0) || (errno == EINTR) || (errno == 0) || (errno == EAGAIN) ||
                  (errno == EWOULDBLOCK)) &&
                 (UJ[slot].status == -1))
               /* No available chars, but other guy still running */
               return (ATOM_T);
-#else
-            if (dest == 0)
-              wait_for_comm_processes(); /* make sure we're up to date, because dest==0 means no
-                                            process is writing there. */
-            if (((errno == EINTR) || (errno == 0) || (errno == EAGAIN) || (errno == EWOULDBLOCK)) &&
-                (dest == -1) && (UJ[slot].status == -1))
-              /* No available chars, but other guy still running */
-              return (ATOM_T);
-#endif /* ISC */
 
             /* At this point, we either got an I/O error, or there */
             /* were no chars available and the other end has terminated. */
@@ -971,7 +847,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       return (NIL);
     }
 
-#ifndef ISC
     case 12: /* create Unix socket */
 
     {
@@ -1005,11 +880,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       if (listen(sockFD, 1) < 0) perror("Listen");
       /* Set up the IO not to block */
       res = fcntl(sockFD, F_GETFL, 0);
-#ifdef ISC
-      res |= O_NONBLOCK;
-#else
       res |= FNDELAY;
-#endif /* ISC */
       res = fcntl(sockFD, F_SETFL, res);
 
       /* things seem sane, fill out the rest of the UJ slot and return */
@@ -1019,9 +890,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       return (GetSmallp(sockFD));
     } break;
-#else
-      error("Socket creation not supported on ISC");
-#endif /* ISC */
 
     case 13: /* try to accept */
     {

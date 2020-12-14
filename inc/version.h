@@ -250,23 +250,6 @@ typedef signed char s_char;
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef ISC
-typedef signed char s_char;
-#undef UNALIGNED_FETCH_OK
-#define MAXPATHLEN MAXNAMLEN
-#define EWOULDBLOCK EAGAIN
- /* we compile on a 386 with GCC, so can use optimizations. */
-#define GCC386
-#define RESWAPPEDCODESTREAM
-#undef HAS_GETHOSTID
-#define LOCK_X_UPDATES 1
-#endif /* ISC */
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #undef HAS_GETHOSTID

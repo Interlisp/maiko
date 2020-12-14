@@ -16,10 +16,6 @@ static char *id = "$Id: lineblt8.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copy
 #include "lineblt8defs.h"
 #include "commondefs.h"
 
-#ifdef ISC
-#include <sys/bsdtypes.h>
-#endif /* ISC */
-
 #define COLOR8ARRAYSIZE 16
 #define BITSPERNIBBLE 4
 #define BITSPERDLWORD 16

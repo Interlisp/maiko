@@ -12,11 +12,9 @@ _________	________________________________________________________
 BYTESWAP	Used when compiling for a hardware architecture that has
 		byte-swapped words and word-swapped 32-bit cells, e.g. 80386.
 SYSVSIGNALS	True when compiling on a system that requires the use of
-		SYSV (rather than BSD) signal-handling code (just MIPS & ISC
-		for 486, now).
+		SYSV (rather than BSD) signal-handling code.
 SYSVONLY	True when compiling on a system that has little or no
-		BSD support (the ISC unix for 486, or MIPS).  E.g. gettimofday
-		is missing.
+		BSD support.  E.g. gettimeofday is missing.
 I386		True if compiling for the Sun386i (not just any 80386);
 		used because the 386i's display controller is odd.
 OS4		True if compiling for SunOS 4.x

@@ -18,10 +18,6 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #include <sys/file.h>
 #include <signal.h>
 #include <sys/select.h> /* for FD_ fns */
-#ifdef ISC
-#include <sys/fcntl.h>
-#include <sys/bsdtypes.h>
-#endif /* ISC */
 
 #ifdef OS5
 #include <sys/fcntl.h>
@@ -50,11 +46,6 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 #include "byteswapdefs.h"
 #include "commondefs.h"
 #include "mkcelldefs.h"
-
-#ifdef ISC
-#define FASYNC O_NONBLOCK
-#define SIGIO SIGPOLL
-#endif /* ISC */
 
 #ifdef GCC386
 #include "inlnPS2.h"
@@ -132,10 +123,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 #else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
-#ifndef ISC
       fcntl(result, F_SETOWN, getpid());
-#endif /* ISC */
-
 #endif /* RS6000 */
 
       return (GetSmallp(result));
@@ -166,10 +154,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 #else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
-#ifndef ISC
       fcntl(result, F_SETOWN, getpid());
-#endif /* ISC */
-
 #endif /* RS6000 */
 
       return (GetSmallp(result));
@@ -247,10 +232,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         fcntl(result, F_SETOWN, getpid());
 #else
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
-#ifndef ISC
         fcntl(result, F_SETOWN, getpid());
-#endif /* ISC */
-
 #endif /* RS6000 */
 
         if (listen(result, 5) == -1) {
@@ -288,10 +270,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 #else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
-#ifndef ISC
       fcntl(result, F_SETOWN, getpid());
-#endif /* ISC */
-
 #endif /* RS6000 */
 
       return (GetSmallp(result));
@@ -334,10 +313,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 #else
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
-#ifndef ISC
       fcntl(result, F_SETOWN, getpid());
-#endif /* ISC */
-
 #endif /* RS6000 */
 
       FD_SET(result, &LispIOFds);  /* so we get interrupts */

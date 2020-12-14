@@ -191,7 +191,7 @@ newframe:
       ph = 0;
       goto foundit;
     }
-#endif /* ISC */
+#endif
 
 #else
     if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {

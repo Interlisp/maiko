@@ -33,13 +33,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include <string.h>
 #endif /* LINUX */
 
-#ifdef ISC
-#include <dirent.h>
-#include <unistd.h>
-#include <sys/bsdtypes.h>
-#define direct dirent
-#endif /* ISC */
-
 #else /* DOS, now */
 #include <dos.h>
 #include <string.h>
