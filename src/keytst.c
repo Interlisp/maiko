@@ -95,11 +95,7 @@ int read_hex(char *s1, long unsigned int *array) {
     if ((strspn(ptr, hexdigits)) != strlen(ptr)) return FAILURE3;
 
 /* convert key to numeric format*/
-#if defined(RS6000)
-    *(array + i) = strtoul(ptr, NULL, 16); /* On RS/6000, must convert to unsigned */
-#else
     *(array + i) = strtol(ptr, NULL, 16); /* On suns, this works OK */
-#endif
     printf("0x%x ", *(array + i));
     fflush(stdout);
     /* continue search the next one */

@@ -2399,15 +2399,13 @@ LispPTR COM_getfreeblock(register LispPTR *args)
     *Lisp_errno = errno;
     return (NIL);
   }
-#if defined(RS6000)
-  *buf = (sfsbuf.f_bavail) * 4; /* AIX 3.1 returns no. of 4K blocks */
-#elif defined(SYSVONLY) || defined(OS5)
+#if defined(SYSVONLY) || defined(OS5)
   *buf = sfsbuf.f_bfree;
 #elif (!defined(AIXPS2))
   *buf = sfsbuf.f_bavail;
 #else
   *buf = 200000; /* FAKE - pretend we have 200,000 blocks free! */
-#endif /* RS6000 */
+#endif
 #endif /* DOS */
   return (ATOM_T);
 }

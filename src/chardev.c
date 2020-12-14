@@ -83,10 +83,6 @@ LispPTR CHAR_openfile(LispPTR *args)
   struct stat statbuf;
   char pathname[MAXPATHLEN];
 
-#if defined(RS6000)
-  static int one = 1; /* Used in ioctl, etc. */
-#endif
-
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
 
   LispStringToCString(args[0], pathname, MAXPATHLEN);
@@ -107,16 +103,11 @@ LispPTR CHAR_openfile(LispPTR *args)
     *Lisp_errno = errno;
     return (NIL);
   }
-/* Prevent I/O requests from blocking -- make them error */
-/* if no char is available, or there's no room in pipe.  */
-#ifdef RS6000
-  ioctl(fd, FIONBIO, &one);
-  fcntl(fd, F_SETOWN, getpid());
-#else
+  /* Prevent I/O requests from blocking -- make them error */
+  /* if no char is available, or there's no room in pipe.  */
   rval = fcntl(fd, F_GETFL, 0);
   rval |= FNDELAY;
   rval = fcntl(fd, F_SETFL, rval);
-#endif /* RS6000 */
 
   return (GetSmallp(fd));
 #endif /* DOS */

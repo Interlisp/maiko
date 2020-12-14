@@ -27,7 +27,6 @@ AIXPS2		True if compiling for PS/2 under AIX (our flag)
 sparc		True if we're compiling on a SPARC machine.
 mc68020		True if we're compiling on a Motorola 680x0 machine.
 sun3		We're compiling for a Sun-3.
-RS6000		We're compiling for the RS/6000 processor.
 
 UNSAFE		If true, enables the "fast" version of 68020 opcodes.
 NOASM		If true, suppress any attempt to include assembler
