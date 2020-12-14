@@ -64,13 +64,11 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <sys/mount.h>
 #else
 #ifdef AIX
-#if !defined(AIXPS2)
 #ifdef LINUX
 #include <sys/vfs.h>
 #else
 #include <sys/statfs.h>
 #endif
-#endif /* AIXPS2 */
 #endif /* AIX */
 #endif /* MACOSX | FREEBSD */
 
@@ -2289,12 +2287,9 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 #if defined(OS5)
   struct statvfs sfsbuf;
 #else
-#ifndef AIXPS2
 #ifndef DOS
   struct statfs sfsbuf;
 #endif /* DOS */
-#endif /* AIXPS2 */
-
 #endif /* OS5 */
 #ifdef DOS
   struct diskfree_t sfsbuf;
@@ -2377,10 +2372,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   TIMEOUT(rval = statvfs(dir, &sfsbuf));
   if (rval != 0) {
 #else
-#ifndef AIXPS2
   TIMEOUT(rval = statfs(dir, &sfsbuf));
-#endif /* AIXPS2 */
-
   if (rval != 0) {
 #endif
     *Lisp_errno = errno;
@@ -2388,10 +2380,8 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   }
 #if defined(SYSVONLY) || defined(OS5)
   *buf = sfsbuf.f_bfree;
-#elif (!defined(AIXPS2))
-  *buf = sfsbuf.f_bavail;
 #else
-  *buf = 200000; /* FAKE - pretend we have 200,000 blocks free! */
+  *buf = sfsbuf.f_bavail;
 #endif
 #endif /* DOS */
   return (ATOM_T);

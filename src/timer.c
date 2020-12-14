@@ -69,10 +69,6 @@ extern int ether_fd;
 
 #include <setjmp.h>
 
-#ifdef AIXPS2
-#include <sys/fpcontrol.h>
-#endif /* AIXPS2 */
-
 #include "lispemul.h"
 #include "emlglob.h"
 #include "lspglob.h"
@@ -783,18 +779,10 @@ int FP_error = 0;
 void int_fp_service(int sig, int code, struct sigcontext *scp)
 {
   switch (code) {
-#ifdef AIXPS2
-    case FPM_DENORM:
-    case FPM_DIVIDE_0:
-    case FPM_UNDERFLOW:
-    case FPM_OVERFLOW:
-    case FPM_PRECISION:
-#else
     case FPE_FLTDIV_TRAP:
     case FPE_FLTUND_TRAP:
     case FPE_FLTOVF_TRAP:
     case FPE_FLTOPERR_TRAP:
-#endif /* AIXPS2  */
 
       FP_error = code;
       break;
@@ -814,13 +802,11 @@ void int_fp_service(int sig, int code, struct sigcontext *scp)
 }
 
 void int_fp_init() { /* first set up the signal handler */
-#ifdef AIXPS2
-  if (sigset(SIGFPE, int_fp_service))
-#elif OS5
+#ifdef OS5
   if (sigset(SIGFPE, int_fp_service))
 #else
   if (ieee_handler("set", "all", int_fp_service))
-#endif /* AIXPS2 */
+#endif /* OS5 */
 
   perror("Sigvec for FPE failed");
   DBPRINT(("FP interrupts enabled\n"));
