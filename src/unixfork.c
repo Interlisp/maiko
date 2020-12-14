@@ -446,13 +446,8 @@ int fork_Unix() {
             dup2(sock, 1);
             dup2(sock, 2);
 
-#ifdef SYSVONLY
-            /* Make sure everything else is closed POSIX has no getdtab... */
+            /* Make sure everything else is closed. */
             for (i = 3; i < sysconf(_SC_OPEN_MAX); i++) close(i);
-#else
-            /* Make sure everything else is closed */
-            for (i = 3; i < getdtablesize(); i++) close(i);
-#endif /* SYSVONLY */
 
             /* Run the shell command and get the result */
             status = system(cmdstring);

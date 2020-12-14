@@ -277,11 +277,7 @@ int FindUnixPipes(void) {
   if ((envtmp = getenv("LDEUNIXPID"))) UnixPID = atoi(envtmp);
 
 /* This is a good place to initialize stuff like the UJ table */
-#ifdef SYSVONLY
   NPROCS = sysconf(_SC_OPEN_MAX);
-#else
-  NPROCS = getdtablesize();
-#endif /* SYSVONLY */
 
   UJ = (struct unixjob *)malloc(NPROCS * sizeof(struct unixjob));
   cleareduj.status = -1;
