@@ -376,12 +376,7 @@ LispPTR uraid_commands() {
   LispPTR index;
   DefCell *defcell68k;
 #ifndef DOS
-#if defined(SYSVONLY) || defined(WAITINT)
   int status;
-#else
-  union wait status;
-#endif /* SYSVONLY */
-
 #endif /* DOS */
 
   if (URaid_argnum == -1) {
