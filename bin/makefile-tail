@@ -356,10 +356,9 @@ $(OBJECTDIR)car-cdr.o :  $(SRCDIR)car-cdr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 $(OBJECTDIR)chardev.o :  $(SRCDIR)chardev.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h  $(INCDIR)lspglob.h $(INCDIR)stream.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)arith.h $(INCDIR)locfile.h \
-	 $(INCDIR)sunerrno.h $(INCDIR)suntermios.h $(INCDIR)sunfilio.h \
-	 $(INCDIR)sunioccom.h $(INCDIR)sunttycom.h  $(INCDIR)sunttold.h \
-	 $(INCDIR)sunttydev.h
+	 $(INCDIR)arith.h $(INCDIR)locfile.h $(INCDIR)timeout.h \
+	 $(INCDIR)dbprint.h $(INCDIR)chardevdefs.h $(INCDIR)byteswapdefs.h \
+	 $(INCDIR)commondefs.h $(INCDIR)perrnodefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)chardev.c $(INLINE) -o $(OBJECTDIR)chardev$(OEXT)
 
 $(OBJECTDIR)rawcolor.o :  $(SRCDIR)rawcolor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
