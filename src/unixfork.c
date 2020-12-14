@@ -59,11 +59,6 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 
 #include <sys/un.h>
 
-#ifdef RISCOS
-/* #include <sys/un.h> */
-#include <sgtty.h>
-#endif /* RISCOS */
-
 #include "unixfork.h"
 
 #ifdef DEBUG

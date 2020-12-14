@@ -250,18 +250,6 @@ typedef signed char s_char;
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef RISCOS
-typedef signed char s_char;
-#undef UNALIGNED_FETCH_OK
-#define USE_UTIME
-#define LOCK_X_UPDATES 1
-#endif
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef ISC
 typedef signed char s_char;
 #undef UNALIGNED_FETCH_OK
