@@ -23,8 +23,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include <dirent.h>
 #include <pwd.h>
 #include <sys/param.h>
-// TODO: Remove the need for this.
-#define direct dirent
 #else /* DOS, now */
 #include <dos.h>
 #define index strchr
@@ -615,7 +613,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
+  register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
   int n, len, rval;
@@ -633,7 +631,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   }
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-       dp != (struct direct *)NULL || errno == EINTR;
+       dp != (struct dirent *)NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
     if (dp) {
       if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
@@ -878,7 +876,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
 static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
+  register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
   int n, len, rval;
@@ -895,7 +893,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
   }
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-       dp != (struct direct *)NULL || errno == EINTR;
+       dp != (struct dirent *)NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
     if (dp) {
       if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
@@ -1072,7 +1070,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
+  register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
   int n, len, rval;
@@ -1089,7 +1087,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   }
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-       dp != (struct direct *)NULL || errno == EINTR;
+       dp != (struct dirent *)NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
     if (dp) {
       if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
@@ -1255,7 +1253,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
+  register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
   int n, len, rval;
@@ -1271,7 +1269,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
   }
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
-       dp != (struct direct *)NULL || errno == EINTR;
+       dp != (struct dirent *)NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
     if (dp) {
       if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;

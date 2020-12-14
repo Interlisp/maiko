@@ -28,15 +28,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #ifdef sun
 #include <sys/vfs.h>
 #endif /* sun */
-
-// We should be using the POSIX definitions in this file.
-#define direct dirent
-#define d_namlen d_reclen
-#define d_fileno d_ino
-#ifndef LINUX
-#define L_SET SEEK_SET
-#endif
-
 #else /* DOS */
 
 #include <direct.h>
@@ -48,7 +39,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define rindex strrchr
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEM _MAX_PATH
-#define L_SET SEEK_SET
 #define alarm(x) 0
 #endif /* DOS */
 
@@ -81,10 +71,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <sys/statfs.h>
 #endif
 #endif /* AIXPS2 */
-
-#define d_fileno d_ino
 #endif /* AIX */
-
 #endif /* MACOSX | FREEBSD */
 
 #ifdef GCC386
@@ -731,7 +718,7 @@ LispPTR COM_closefile(register LispPTR *args)
   char file[MAXPATHLEN], dir[MAXPATHLEN], name[MAXNAMLEN + 1];
   char ver[VERSIONLEN];
   register DIR *dirp;
-  register struct direct *dp;
+  register struct dirent *dp;
   struct stat sbuf;
   struct timeval time[2];
   ino_t ino;
@@ -832,10 +819,10 @@ LispPTR COM_closefile(register LispPTR *args)
       return (NIL);
     }
 
-    for (S_TOUT(dp = readdir(dirp)); dp != (struct direct *)NULL || errno == EINTR;
+    for (S_TOUT(dp = readdir(dirp)); dp != (struct dirent *)NULL || errno == EINTR;
          errno = 0, S_TOUT(dp = readdir(dirp)))
       if (dp) {
-        if (ino == (ino_t)dp->d_fileno) sprintf(file, "%s/%s", dir, dp->d_name);
+        if (ino == (ino_t)dp->d_ino) sprintf(file, "%s/%s", dir, dp->d_name);
       }
     TIMEOUT(closedir(dirp));
   }
@@ -1993,7 +1980,7 @@ LispPTR COM_readpage(register LispPTR *args)
    * file.  If the request file is special file, lseek is not needed.
    */
   sklp:
-    TIMEOUT(rval = lseek(fd, (npage * FDEV_PAGE_SIZE), L_SET));
+    TIMEOUT(rval = lseek(fd, (npage * FDEV_PAGE_SIZE), SEEK_SET));
     if (rval == -1) {
       if (errno == EINTR) goto sklp; /* interrupted, retry */
       *Lisp_errno = errno;
@@ -2065,7 +2052,7 @@ LispPTR COM_writepage(register LispPTR *args)
   count = LispNumToCInt(args[3]);
 
 sklp2:
-  TIMEOUT(rval = lseek(fd, (npage * FDEV_PAGE_SIZE), L_SET));
+  TIMEOUT(rval = lseek(fd, (npage * FDEV_PAGE_SIZE), SEEK_SET));
   if (rval == -1) {
     if (errno == EINTR) goto sklp2; /* interrupted; retry */
     *Lisp_errno = errno;
@@ -2687,7 +2674,7 @@ static int locate_file(char *dir, char *name)
   char nb1[MAXNAMLEN], nb2[MAXNAMLEN];
   register int type, len;
   DIR *dirp;
-  struct direct *dp;
+  struct dirent *dp;
 
   /* First of all, recognize as if. */
   sprintf(path, "%s/%s", dir, name);
@@ -2727,7 +2714,7 @@ static int locate_file(char *dir, char *name)
   for (S_TOUT(dp = readdir(dirp)); dp != NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)))
     if (dp) {
-      if (dp->d_namlen == len) {
+      if (dp->d_reclen == len) {
         strcpy(nb2, dp->d_name);
         UPCASE(nb2);
         if (strcmp(nb1, nb2) == 0) {
@@ -3132,7 +3119,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   char ver[VERSIONLEN];
   register FileName *svarray;
   register DIR *dirp;
-  register struct direct *dp;
+  register struct dirent *dp;
   register int rval;
   struct stat sbuf;
 

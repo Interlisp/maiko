@@ -246,7 +246,6 @@ typedef signed char s_char;
 #undef HAS_GETHOSTID
 #define BSD_COMP 1
 #define SYSVSIGNALS 1
-#define L_SET SEEK_SET
 #define NOFORN
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */

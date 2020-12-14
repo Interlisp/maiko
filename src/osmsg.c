@@ -286,7 +286,7 @@ LispPTR mess_read(LispPTR *args)
     size = MESSAGE_BUFFER_SIZE;
   else
     logChanged = 0; /* only reset msg-pending flg if we cleaned it out! */
-  TIMEOUT(i = lseek(log_id, previous_size, L_SET));
+  TIMEOUT(i = lseek(log_id, previous_size, SEEK_SET));
   if (i == -1) {
     OSMESSAGE_PRINT(printf("seek err\n"));
     return (NIL);
@@ -298,7 +298,7 @@ LispPTR mess_read(LispPTR *args)
     OSMESSAGE_PRINT(printf("read err\n"));
     return (NIL);
   }
-  TIMEOUT(i = lseek(log_id, save_size, L_SET));
+  TIMEOUT(i = lseek(log_id, save_size, SEEK_SET));
   if (i == -1) {
     OSMESSAGE_PRINT(printf("seek err\n"));
     return (NIL);
