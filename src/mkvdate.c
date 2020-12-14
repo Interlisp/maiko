@@ -33,15 +33,13 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 #endif
 
 #include <stdio.h>
-#ifdef USETIMEFN
-#include <time.h>
-#elif DOS
+#ifdef DOS
 #include <time.h>
 #else
 #include <sys/time.h>
-#endif /* USETIMEFN */
+#endif /* DOS */
 
-#ifdef USETIMEFN
+#ifdef DOS
 /* RISCOS doesn't have the BSD time functions */
 int main(void) {
   long dtime;

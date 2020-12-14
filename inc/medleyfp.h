@@ -20,13 +20,6 @@
 #include <i32.h>
 #endif /* DOS */
 
-#ifdef RISCOS
-/*#include <ieeefp.h> */
-/*#define isnan isnand */
-#define isnan(x) 0
-#endif /* RISCOS */
-
-
 /*  --------------------------------------------------
     FPCLEAR         - clear status as necessary
     FPTEST(result)  - check result or status

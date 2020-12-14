@@ -55,13 +55,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define alarm(x) 0
 #endif /* DOS */
 
-#ifdef RISCOS
-#include <dirent.h>
-#include <unistd.h>
-#define direct dirent
-#define d_namlen d_reclen
-#endif /* RISCOS */
-
 #ifdef OS5
 #define index strchr
 #define rindex strrchr

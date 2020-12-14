@@ -33,11 +33,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include <string.h>
 #endif /* LINUX */
 
-#ifdef RISCOS
-#include <dirent.h>
-#define direct dirent
-#endif /* RISCOS */
-
 #ifdef ISC
 #include <dirent.h>
 #include <unistd.h>

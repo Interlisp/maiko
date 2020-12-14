@@ -936,16 +936,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 10: /* Change window */
     {
       int rows, cols, pgrp, pty;
-#if !defined(RISCOS)
       struct winsize w;
-#endif /* !RISCOS */
 
       /* Get job #, rows, columns */
       N_GETNUMBER(args[1], slot, bad);
       N_GETNUMBER(args[2], rows, bad);
       N_GETNUMBER(args[3], cols, bad);
 
-#if !defined(RISCOS)
       if (valid_slot(slot) && (UJ[slot].type == UJSHELL) && (UJ[slot].status == -1)) {
         w.ws_row = rows;
         w.ws_col = cols;
@@ -965,12 +962,11 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             (kill(-pgrp, SIGWINCH) >= 0))
 #else
             (killpg(pgrp, SIGWINCH) >= 0))
-#endif /* RISCOS */
+#endif /* SYSVONLY */
 
           return (ATOM_T);
         return (GetSmallp(errno));
       }
-#endif /* !RISCOS */
 
       return (NIL);
     }
