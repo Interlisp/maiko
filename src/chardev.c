@@ -19,31 +19,23 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 /*                                                                      */
 /************************************************************************/
 
+#include <errno.h>
+#include <fcntl.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <string.h>
+#include <unistd.h>
+
 #ifndef DOS
+#include <dirent.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
 #include <sys/param.h>
 #include <sys/time.h>
-#ifndef OS5
-#ifndef FREEBSD
-#include <sys/dir.h>
-#endif /* FREEBSD */
-#endif /* OS5 */
-#ifndef OS5
-#include <strings.h>
-#endif /* OS5 */
 #include <sys/ioctl.h>
-#else /* DOS */
-#include <string.h>
 #endif /* DOS */
-
-#include <unistd.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <errno.h>
-#include <fcntl.h>
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -60,9 +52,6 @@ static char *id = "$Id: chardev.c,v 1.2 1999/01/03 02:06:50 sybalsky Exp $ Copyr
 #include "commondefs.h"
 #include "perrnodefs.h"
 
-#if defined(FREEBSD)
-#include <dirent.h>
-#endif
 
 extern int *Lisp_errno;
 extern int Dummy_errno;

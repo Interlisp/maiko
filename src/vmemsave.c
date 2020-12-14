@@ -17,43 +17,26 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 *
 */
 
-#include <stdio.h>
-#include <sys/types.h>
-#ifndef DOS
-#include <sys/file.h>
-#endif /* DOS */
-#include <sys/stat.h>
-#ifndef DOS
-#include <sys/param.h>
-#ifndef AIX
-#ifndef MACOSX
-#ifndef FREEBSD
-#include <sys/vfs.h>
-#endif /* FREEBSD */
-#endif /* MACOSX */
-#endif /* AIX */
-
-#include <pwd.h>
-#endif /* DOS */
 #include <errno.h>
-#include <signal.h>
-#include <setjmp.h>
-
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
-#include <sys/fcntl.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <string.h>
-#elif DOS
-#include <direct.h>
 #include <fcntl.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdio.h>
+
+#ifndef DOS
+#include <dirent.h>
+#include <string.h>
+#include <sys/param.h>
+#include <sys/stat.h>
+#include <pwd.h>
+#include <unistd.h>
+#else
+#include <direct.h>
 #include <stdlib.h>
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEN _MAX_PATH
 #define alarm(x) 1
-#else
-#include <sys/dir.h>
-#endif /* SYSVONLY, DOS */
+#endif /* DOS */
 
 #ifndef NOPIXRECT
 #include <sunwindow/win_cursor.h>

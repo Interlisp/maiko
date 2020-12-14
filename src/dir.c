@@ -10,36 +10,23 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-#include <sys/types.h>
+#include <errno.h>
 #include <setjmp.h>
-#ifndef DOS
-#include <sys/param.h>
-#ifndef OS5
-#ifndef FREEBSD
-#include <sys/dir.h>
-#endif /* FREEBSD */
-#endif /* OS5 */
-#include <sys/stat.h>
-#include <setjmp.h>
-#include <pwd.h>
-
-#ifndef SYSVONLY
-#include <strings.h>
-/*  #else  */
-/*  #include <string.h> */
-#endif /* SYSVONLY */
-
-#if defined(LINUX) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
-#include <string.h>
-#endif /* LINUX */
-
-#else /* DOS, now */
-#include <dos.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+#ifndef DOS
+#include <dirent.h>
+#include <pwd.h>
+#include <sys/param.h>
+// TODO: Remove the need for this.
+#define direct dirent
+#else /* DOS, now */
+#include <dos.h>
 #define index strchr
 #define rindex strrchr
 #define MAXPATHLEN _MAX_PATH
@@ -47,17 +34,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #define alarm(x) 1
 #endif /* DOS */
 
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
-#include <unistd.h>
-#endif /* SYSVONLY */
-
-#if defined(OS5) || defined(FREEBSD)
-#include <dirent.h>
-#define direct dirent
-#endif
-
-#include <stdio.h>
-#include <errno.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"

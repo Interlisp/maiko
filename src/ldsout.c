@@ -12,24 +12,13 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 
 #include "version.h"
 
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#ifndef DOS
-#include <sys/file.h>
-#endif /* DOS */
 #include <sys/stat.h>
-#include <errno.h>
-
-#if defined(SYSVONLY) || defined(OS5)
-#include <sys/fcntl.h>
-#endif /* SYSVONLY || OS5 */
-
-#ifdef DOS
-#include <fcntl.h>
-#endif /* DOS */
+#include <unistd.h>
 
 #include "adr68k.h"
 #include "lispemul.h"

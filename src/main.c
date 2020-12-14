@@ -19,56 +19,30 @@ static char *id = "$Id: main.c,v 1.4 2001/12/26 22:17:03 sybalsky Exp $ Copyrigh
 #include "dbprint.h"
 #include "unixfork.h"
 
+#include <errno.h>
+#include <setjmp.h>
+#include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
+#include <time.h>
+
 #ifndef DOS
+#include <pwd.h>
 #include <sys/param.h>
-#include <sys/time.h>
 #include <unistd.h>
 #else /* DOS */
+#include <i32.h>
 #define MAXPATHLEN 128
 #define R_OK 04
 #define index strchr
 #define rindex strrchr
-#include <time.h>
-#include <string.h>
-#include <i32.h>
 #endif /* DOS */
-#ifdef LINUX
-#include <time.h>
-#endif
 
 #ifndef NOETHER
 #ifndef USE_DLPI
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_DLPI */
 #endif               /* NOETHER */
-#include <stdio.h>
-
-#ifndef SYSVONLY
-#ifndef DOS
-#include <strings.h>
-#endif /* DOS */
-#else  /* SYSVONLY -IS- ON */
-#include <string.h>
-#include <unistd.h>
-#endif /* SYSVONLY */
-
-#ifndef DOS
-#include <sys/file.h>
-#include <sys/select.h>
-#endif /* DOS */
-
-#include <setjmp.h>
-#ifndef DOS
-#include <pwd.h>
-#endif /* DOS */
-
-#if defined(MACOSX) || defined(FREEBSD)
-#include <string.h>
-#include <unistd.h>
-#endif
-
-#include <errno.h>
 
 #include "emlglob.h"
 #include "address.h"

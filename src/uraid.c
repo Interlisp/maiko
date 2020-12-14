@@ -20,11 +20,13 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 /************************************************************************/
 /************************************************************************/
 
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-#include <sys/types.h>
 #ifndef DOS
 #include <sys/file.h>
 #include <sys/param.h>
@@ -32,7 +34,7 @@ static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 #include <sys/wait.h>
 #include <sys/select.h>
 #endif /* DOS */
-#include <fcntl.h>
+
 #ifndef XWINDOW
 #ifdef SUNDISPLAY
 #include <sundev/kbd.h>
@@ -56,9 +58,8 @@ extern int Win_security_p;
 #ifdef OS5
 #include <stropts.h>
 #endif /* OS5 */
+
 #if defined(FREEBSD) || defined(MACOSX) || defined(OS5)
-/* for memset */
-#include <string.h>
 /* vfork is deprecated */
 #define vfork fork
 #endif
