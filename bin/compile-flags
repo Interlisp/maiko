@@ -143,9 +143,6 @@ RECLAIMINC	If true, then the RECLAIMCELL opcode calls gcreclaimcell in
 		and is not in any system.  Probably fairly easy to debug??
 KB_SUN4		The kbd type for the Type-4 keyboard.  Defined only because
 		older OS versions of the compiler don't define it automatically.
-FUJI		If true, and you don't set the LDEKBDTYPE environment variable,
-		you'll get a nasty message asking you to set it before
-		running lisp.  Otherwise, you'll default to a type-3 kbd.
 FLTINT		If true, use the floating-point exception interrupts to detect
 		errors and overflows on FP operations.  The interrupt sets a
 		global error flag.  Otherwise, calls library routines to see
