@@ -259,7 +259,9 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
        fptr--, InterfacePage->nactivepages--, size--)
     ;
 
-  if (size != oldsize) DBPRINT(("Found %d holes in fptovp table\n", oldsize - size));
+  if (size != oldsize) {
+    DBPRINT(("Found %d holes in fptovp table\n", oldsize - size));
+  }
 
   /* Sanity check; it's just possible there are duplicate entries... */
   {
