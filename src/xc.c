@@ -21,7 +21,9 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 /*									*/
 /************************************************************************/
 
+#include <stdio.h>
 #include <sys/types.h>
+
 #ifdef DOS
 #include <i32.h> /* Defines "#pragma interrupt"  */
 #include <stk.h> /* _XSTACK struct definition    */
@@ -29,7 +31,6 @@ static char *id = "$Id: xc.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright 
 #else            /* DOS */
 #include <sys/time.h>
 #endif /* DOS */
-#include <stdio.h>
 
 #include "lispemul.h"
 #include "emlglob.h"

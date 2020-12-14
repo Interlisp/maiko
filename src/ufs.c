@@ -10,47 +10,24 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-#include <sys/types.h>
-#ifndef DOS
-#include <sys/param.h>
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD)
-#include <string.h>
-#else
-#include <strings.h>
-#endif /* SYSVONLY */
-
-#include <sys/file.h>
-#ifndef OS5
-#ifndef FREEBSD
-#include <sys/dir.h>
-#endif
-#endif
-
-#include <sys/stat.h>
-#include <sys/time.h>
-#ifndef AIX
-#ifndef MACOSX
-#ifndef FREEBSD
-#include <sys/vfs.h>
-#endif /* FREEBSD */
-#endif /* MACOSX */
-#endif /* AIX */
-
-#if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5)
-#include <dirent.h>
-#include <unistd.h>
-#endif /* SYSVONLY | FREEBSD */
-
-#include <pwd.h>
-#else /* DOS */
-#include <sys/stat.h>
-#include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
+#include <setjmp.h>
+#include <stdio.h>
 #include <stdlib.h>
-#include <dos.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
+#ifndef DOS
+#include <dirent.h>
+#include <pwd.h>
+#include <sys/param.h>
+#include <sys/time.h>
+#else /* DOS */
+#include <dos.h>
 #include <i32.h> /* "#pragma interrupt" & '_chain_intr'*/
-#include <sys\types.h>
 #include <io.h>
 #include <stk.h> /* _XSTACK struct definition          */
 
@@ -61,11 +38,6 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 #define alarm(x) 1
 #endif /* DOS */
 
-#include <setjmp.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <errno.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"

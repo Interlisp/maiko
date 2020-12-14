@@ -19,18 +19,16 @@ static char *id = "$Id: initsout.c,v 1.3 1999/05/31 23:35:34 sybalsky Exp $ Copy
 #include "version.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#if defined(MACOSX) || defined(FREEBSD)
 #include <stdlib.h>
-#else
-#include <malloc.h>
-#endif
+#include <string.h>
+#include <unistd.h>
+
 #ifndef DOS
 #include <pwd.h>
 #else
 #undef HAS_GETHOSTID
 #endif /* DOS */
+
 #include "hdw_conf.h"
 #include "lispemul.h"
 #include "lspglob.h"

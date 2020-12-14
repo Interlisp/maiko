@@ -10,39 +10,36 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 
 #include "version.h"
 
-#if defined(MACOSX) || defined(FREEBSD) || defined(LINUX) || defined(OS5)
+#include <errno.h>
+#include <fcntl.h>
+#include <setjmp.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#endif
-
 #include <sys/types.h>
-#ifndef DOS
-#include <sys/param.h>
-#include <sys/file.h>
-#ifndef OS5
-#include <strings.h>
-#endif /* OS5  Solaris doesn't need strings.h */
-#ifndef SYSVONLY
-#ifndef MACOSX
-#ifndef FREEBSD
-#ifndef OS5
-#include <sys/dir.h>
-#endif /* OS5 */
-#endif /* FREEBSD */
-#endif /* MACOSX */
-#endif /* SYSVONLY */
+#include <unistd.h>
 
+#ifndef DOS
+#include <dirent.h>
+#include <pwd.h>
+#include <sys/param.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #ifdef sun
 #include <sys/vfs.h>
 #endif /* sun */
 
+// We should be using the POSIX definitions in this file.
+#define direct dirent
+#define d_namlen d_reclen
+#define d_fileno d_ino
+#ifndef LINUX
+#define L_SET SEEK_SET
+#endif
+
 #else /* DOS */
 
-#include <string.h>
 #include <direct.h>
-#include <stdlib.h>
-#include <unistd.h> /* get R_OK, F_OK symbols */
 #include <dos.h>
 #include <sys/stat.h>
 #include <time.h>
@@ -55,30 +52,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #define alarm(x) 0
 #endif /* DOS */
 
-#ifdef OS5
-#define index strchr
-#define rindex strrchr
-#define L_SET SEEK_SET
-#endif /* OS5 */
-
-#if defined(SYSVONLY) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
-#include <dirent.h>
-#include <unistd.h>
-#define direct dirent
-#define d_namlen d_reclen
-#define d_fileno d_ino
-#ifndef LINUX
-#define L_SET SEEK_SET
-#endif
-#endif /* SYSVONLY */
-
-#ifndef DOS
-#include <pwd.h>
-#endif /* DOS */
-#include <setjmp.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <errno.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"

@@ -22,12 +22,11 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 
 #ifndef DOS
 #include <pwd.h>
-
-#include <sys/types.h>
-#include <sys/select.h>
-#include <unistd.h>
 #include <sys/file.h>
+#include <sys/select.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #ifndef AIX
 #include <sys/ioctl.h>
 #endif /* AIX */
@@ -39,9 +38,6 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #endif /* FREEBSD */
 #endif /* MACOSX */
 #endif /* AIX */
-#ifndef SYSVONLY
-#include <strings.h>
-#endif /* SYSVONLY */
 #endif /* DOS */
 
 #include <setjmp.h>

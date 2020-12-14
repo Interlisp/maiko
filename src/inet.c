@@ -10,27 +10,25 @@ static char *id = "$Id: inet.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyrigh
 
 #include "version.h"
 
-#include <stdio.h>
 #include <ctype.h>
+#include <fcntl.h>
+#include <stdio.h>
 #include <string.h> /* for mem... fns */
+
 #ifndef DOS
-#include <sys/types.h>
-#include <sys/file.h>
-#include <signal.h>
-#include <sys/select.h> /* for FD_ fns */
-
-#ifdef OS5
-#include <sys/fcntl.h>
-#endif /* OS5 */
-
-#include <sys/time.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <sys/ioctl.h>
 #include <errno.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/select.h> /* for FD_ fns */
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <sys/types.h>
 #include <unistd.h>
 #endif /* DOS */
+
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"

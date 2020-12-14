@@ -43,6 +43,9 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 /*                                                               \Tomtom */
 /*************************************************************************/
 
+#include <stdio.h>
+#include <string.h>
+
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "address.h"
@@ -55,10 +58,6 @@ static char *id = "$Id: gcarray.c,v 1.3 1999/05/31 23:35:30 sybalsky Exp $ Copyr
 #include "array.h"
 #include "debug.h"
 #include "lispmap.h"
-#include <stdio.h>
-#if defined(MACOSX) || defined(FREEBSD)
-#include <string.h>
-#endif
 
 #include "gcarraydefs.h"
 #include "car-cdrdefs.h"

@@ -19,19 +19,16 @@ static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyri
 /*									*/
 /************************************************************************/
 
+#include <signal.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
+
 #ifndef DOS
 #include <pwd.h>
 #endif
-#include <signal.h>
-#ifdef DOS
-#include <time.h>
-#else
-#include <sys/time.h>
-#endif
 
-#include <stdio.h>
-#include <string.h>
-#include <unistd.h>
 #include "lispemul.h"
 #include "adr68k.h"
 #include "lsptypes.h"

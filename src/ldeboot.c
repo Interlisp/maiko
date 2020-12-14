@@ -11,16 +11,21 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 
 #include "version.h"
 
+#include <ctype.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <unistd.h>
+
 #if defined(sun) && !defined(OS5)
 #define USESUNSCREEN
 #else
 #undef USESUNSCREEN
 #endif
 
-#include <stdio.h>
-#include <ctype.h>
-
-#include <sys/ioctl.h>
 #ifdef USESUNSCREEN
 #ifdef OS5
 #include <sys/fbio.h>
@@ -29,19 +34,9 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 #endif /* OS5 */
 #endif /* USESUNSCREEN */
 
-#include <fcntl.h>
-#include <errno.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-
 #include "unixfork.h"
 
 #ifdef XWINDOW
-#ifndef SYSVONLY
-#include <strings.h>
-#endif /* SYSVONLY */
-
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "XVersion.h"

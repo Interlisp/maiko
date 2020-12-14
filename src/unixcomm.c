@@ -7,6 +7,9 @@ Unix Interface Communications
 
 */
 
+// Don't compile this at all under DOS.
+#ifndef DOS
+
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-1995 by Venue. All Rights Reserved.		*/
@@ -17,46 +20,35 @@ Unix Interface Communications
 #include "version.h"
 
 #include "lispemul.h"
-#ifndef DOS
+
 
 /* FULLSLAVENAME => use a full file name for slave PTY */
 #ifdef OS5
 #define FULLSLAVENAME
 #endif /* OS5 */
 
-/* JRB - timeout.h needs setjmp.h */
-#include <sys/ioctl.h>
-#include <setjmp.h>
-#include "timeout.h"
+#include <errno.h>
+#include <fcntl.h>
+#include <setjmp.h> /* JRB - timeout.h needs setjmp.h */
+#include <signal.h>
 #include <stdio.h>
-#include <string.h> /* for strcpy etc. */
+#include <string.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+
 #ifdef OS4
 #include <sys/termios.h>
-#elif LINUX
-#include <termios.h>
-/* this was called termio in the past, but no longer
- * see https://man7.org/linux/man-pages/man7/termio.7.html
- */
-#elif MACOSX
-#include <termios.h>
-#elif FREEBSD
-#include <termios.h>
-#else
+#elif OS5
 #include <sys/termio.h>
+#else
+#include <termios.h>
 #endif /* OS4 */
-
-#include <sys/types.h>
-#include <sys/file.h>
-#include <signal.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <sys/socket.h>
-#include <fcntl.h>
-#include <sys/un.h>
-
-#if defined(SYSVONLY) || defined(FREEBSD) || defined(OS5) || defined(MACOSX)
-#include <unistd.h>
-#endif
 
 #ifdef sun
 /* to get S_IFIFO defn for creating fifos */
@@ -73,6 +65,7 @@ Unix Interface Communications
 #include "stack.h"
 #include "arith.h"
 #include "dbprint.h"
+#include "timeout.h"
 
 #include "unixcommdefs.h"
 #include "byteswapdefs.h"

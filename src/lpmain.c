@@ -12,16 +12,17 @@ static char *id = "$Id: lpmain.c,v 1.2 1999/01/03 02:07:19 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-#include <signal.h>
-#include "lpkit.h"
-#include "lpglob.h"
-#include "lppatch.h"
 #include <setjmp.h>
-#include <malloc.h>
+#include <signal.h>
+#include <stdlib.h>
 
 #ifdef OS4
 #include <sys/types.h>
 #endif /* OS4 */
+
+#include "lpkit.h"
+#include "lpglob.h"
+#include "lppatch.h"
 
 #include "lispemul.h"
 #include "lspglob.h"
