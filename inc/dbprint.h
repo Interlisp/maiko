@@ -38,10 +38,10 @@ extern int flushing;
 #endif
 
 #ifdef DEBUG
-#define DBPRINT(X)   printf X ; if (flushing) fflush(stdout);
-#define DEBUGGER(X)  X;
+#define DBPRINT(X) do {printf X ; if (flushing) fflush(stdout); } while(0)
+#define DEBUGGER(X) X
 #else
-#define DBPRINT(X)
+#define DBPRINT(X) do {} while(0)
 #define DEBUGGER(X)
 #endif
 
@@ -49,11 +49,11 @@ extern int flushing;
 	/* For trace print statements */
 
 #ifdef TRACE
-#define TPRINT(X)   printf X; if (flushing) fflush(stdout);
-#define TRACER(X)  X;
+#define TPRINT(X) do {  printf X; if (flushing) fflush(stdout); } while (0)
+#define TRACER(X) X
 #else /* TRACE */
 
-#define TPRINT(X)
+#define TPRINT(X) do { } while (0)
 #define TRACER(X)
 #endif /* TRACE */
 
@@ -62,10 +62,10 @@ extern int flushing;
 	/* For tracing individual opcode executions */
 
 #ifdef OPTRACE
-#define OPTPRINT(X)   printf X; if (flushing) fflush(stdout);
-#define OPTRACER(X)  X;
+#define OPTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
+#define OPTRACER(X) X
 #else
-#define OPTPRINT(X)
+#define OPTPRINT(X) do { } while (0)
 #define OPTRACER(X)
 #endif
 
@@ -73,10 +73,10 @@ extern int flushing;
 	/* For tracing function calls */
 
 #ifdef FNTRACE
-#define FNTPRINT(X)   printf X; if (flushing) fflush(stdout);
-#define FNTRACER(X)  X;
+#define FNTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
+#define FNTRACER(X)  X
 #else
-#define FNTPRINT(X)
+#define FNTPRINT(X) do { } while (0)
 #define FNTRACER(X)
 #endif
 
@@ -84,10 +84,10 @@ extern int flushing;
 	/* For function-call & return stack checking */
 
 #ifdef FNSTKCHECK
-#define FNCHKPRINT(X)   printf X ; if (flushing) fflush(stdout);
-#define FNCHECKER(X)  X;
+#define FNCHKPRINT(X) do { printf X ; if (flushing) fflush(stdout); } while (0)
+#define FNCHECKER(X) X
 #else
-#define FNCHKPRINT(X)
+#define FNCHKPRINT(X) do { } while (0)
 #define FNCHECKER(X)
 #endif
 

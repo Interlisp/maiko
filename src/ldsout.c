@@ -344,9 +344,9 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   DBPRINT(("sysout file is read completely.\n"));
 
 #if (defined(DISPLAYBUFFER) || defined(XWINDOW) || defined(DOS))
-  TPRINT(("Flushing display buffer...\n"))
+  TPRINT(("Flushing display buffer...\n"));
   flush_display_buffer();
-  TPRINT(("After Flushing display buffer\n"))
+  TPRINT(("After Flushing display buffer\n"));
 #endif /* DISPLAYBUFFER || XWINDOW || DOS */
 
   close(sysout);
