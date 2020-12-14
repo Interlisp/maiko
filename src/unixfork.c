@@ -487,47 +487,26 @@ int fork_Unix() {
 
       case 'W': /* Wait for a process to die. */
       {
-#if defined(SYSVONLY) || defined(WAITINT)
         int status;
-#else
-        union wait status;
-#endif /* SYSVONLY */
 
 #ifdef OCR
         int slot;
 #endif
 
-#if defined(SYSVONLY) || defined(WAITINT)
         status = 0;
-#else
-        status.w_status = 0;
-#endif /* SYSVONLY */
 
         IOBuf[0] = 0;
         IOBuf[1] = 0;
         DBPRINT(("About to wait for processes.\n"));
-#ifdef SYSVONLY
       retry1:
         pid = waitpid(-1, &status, WNOHANG);
         if (pid == -1 && errno == EINTR) goto retry1;
-#else
-        pid = wait3(&status, WNOHANG, 0);
-#endif /* SYSVONLY */
-        if (pid > 0)
-
-        {
-/* Ignore processes which are suspended but haven't exited
-   (this shouldn't happen) */
-#if defined(SYSVONLY) || defined(WAITINT)
+        if (pid > 0) {
+          /* Ignore processes which are suspended but haven't exited
+             (this shouldn't happen) */
           if (WIFSTOPPED(status)) break;
           IOBuf[3] = status >> 8;
           IOBuf[2] = status & 0xFF;
-#else
-          if (status.w_stopval == WSTOPPED) break;
-          IOBuf[3] = status.w_T.w_Retcode;
-          IOBuf[2] = status.w_T.w_Termsig;
-#endif /* SYSVONLY */
-
           IOBuf[1] = pid & 0xFF;
           IOBuf[0] = (pid >> 8) & 0xFF;
         }
