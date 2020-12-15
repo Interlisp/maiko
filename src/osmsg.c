@@ -30,14 +30,8 @@ static char *id = "$Id: osmsg.c,v 1.2 1999/01/03 02:07:29 sybalsky Exp $ Copyrig
 #ifndef AIX
 #include <sys/ioctl.h>
 #endif /* AIX */
+#include <sys/statvfs.h>
 #include <sys/time.h>
-#ifndef AIX
-#ifndef MACOSX
-#ifndef FREEBSD
-#include <sys/vfs.h>
-#endif /* FREEBSD */
-#endif /* MACOSX */
-#endif /* AIX */
 #endif /* DOS */
 
 #include <setjmp.h>
@@ -218,7 +212,6 @@ LispPTR mess_readp() {
   struct stat sbuf;
   int size;
   int rval;
-  struct statfs fsbuf;
 
   /* polling pty nd flush os message to log file */
   flush_pty();
@@ -338,7 +331,7 @@ LispPTR flush_pty() {
   int size;
   static fd_set rfds;
   int rval;
-  struct statfs fsbuf;
+  struct statvfs vfsbuf;
 
   SETJMP(NIL);
   DBPRINT(("flush_pty() called.\n"));
@@ -364,10 +357,10 @@ LispPTR flush_pty() {
 
     /* Check free space to avoid print System Error Mesage
        to /dev/console */
-    TIMEOUT(rval = statfs("/tmp", &fsbuf));
+    TIMEOUT(rval = statvfs("/tmp", &vfsbuf));
     if (rval != 0) return (NIL);
 
-    if (fsbuf.f_bavail <= (long)0) {
+    if (vfsbuf.f_bavail <= (long)0) {
       /* No Free Space */
       error("osmessage error: No free space on file system (/tmp).");
       return (NIL);

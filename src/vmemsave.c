@@ -27,7 +27,6 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #include <dirent.h>
 #include <string.h>
 #include <sys/param.h>
-#include <sys/stat.h>
 #include <pwd.h>
 #include <unistd.h>
 #else
@@ -75,8 +74,6 @@ static char *id = "$Id: vmemsave.c,v 1.2 1999/01/03 02:07:45 sybalsky Exp $ Copy
 #define FILECANNOTSEEK S_POSITIVE | 4
 #define FILECANNOTWRITE S_POSITIVE | 5
 #define FILETIMEOUT S_POSITIVE | 6
-
-struct stat DEBUG_stat;
 
 extern int LispWindowFd;
 extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
@@ -327,7 +324,6 @@ LispPTR vmem_save(char *sysout_file_name)
   int vmemsize; /* VMEMSIZE */
   register int i;
   char tempname[MAXPATHLEN];
-  /* * *   struct statfs	fsbuf; * * */
   char *cp;
   register int rval;
   DLword *bmptr;
