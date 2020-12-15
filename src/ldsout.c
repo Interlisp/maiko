@@ -47,11 +47,6 @@ extern int errno;
   is going to expand or not */
 int Storage_expanded; /*  T or NIL */
 
-/* This used to be ifdef for RISCOS and OSF/1. */
-#if defined(SYSVONLY)
-#define valloc malloc
-#endif /* SYSVONLY */
-
 /************************************************************************/
 /*									*/
 /*			s y s o u t _ l o a d e r			*/
