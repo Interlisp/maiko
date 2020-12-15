@@ -234,7 +234,6 @@ typedef signed char s_char;
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #undef HAS_GETHOSTID
-#define BSD_COMP 1
 #define SYSVSIGNALS 1
 #define NOFORN
 #define LOCK_X_UPDATES 1
