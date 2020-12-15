@@ -31,8 +31,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <dos.h>
 #include <time.h>
 #include <io.h>
-#define index strchr
-#define rindex strrchr
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEM _MAX_PATH
 #define alarm(x) 0
@@ -2468,7 +2466,7 @@ int unpack_filename(char *file, char *dir, char *name, char *ver, int checkp)
   register char *cp;
 
 #ifdef DOS
-  if ((cp = (char *)max((UNSIGNED)rindex(file, DIRSEP), (UNSIGNED)rindex(file, UNIXDIRSEP))) == 0)
+  if ((cp = (char *)max((UNSIGNED)strrchr(file, DIRSEP), (UNSIGNED)strrchr(file, UNIXDIRSEP))) == 0)
     return (0);
 
   if (file[1] == DRIVESEP) { /* There's a drive spec; copy it and ignore it from here on. */
@@ -2476,7 +2474,7 @@ int unpack_filename(char *file, char *dir, char *name, char *ver, int checkp)
     *dir++ = *file++;
   }
 #else  /* DOS */
-  if ((cp = (char *)rindex(file, UNIXDIRSEP)) == NULL) return (0);
+  if ((cp = (char *)strrchr(file, UNIXDIRSEP)) == NULL) return (0);
 #endif /* DOS */
 
   if (cp == file) {
