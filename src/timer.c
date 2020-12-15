@@ -335,15 +335,12 @@ void subr_settime(LispPTR args[])
   dosday.year = uxtime.tm_year;
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
-
-#elif defined(SYSVONLY) && !defined(MACOSX) && !defined(LINUX)
-  time_t newTime = (time_t)(*((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF);
-  stime(&newTime);
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF;
+  timev.tv_usec = 0;
   settimeofday(&timev, NULL);
-#endif /* DOS */
+#endif
 } /* end subr_settime */
 
 /************************************************************************/
