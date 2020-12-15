@@ -19,34 +19,28 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 
 #include "version.h"
 
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/file.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <sys/wait.h>
+#include <termios.h>
+#include <time.h>
+#include <unistd.h>
 
 #ifdef OS5
 #include <sys/stropts.h>
 #define FULLSLAVENAME
 #endif
 
-#include <sys/ioctl.h>
-#include <termios.h>
-
-#if defined(SYSVONLY) || defined(OS5) || defined(FREEBSD) || defined(MACOSX)
-#include <fcntl.h>
-#include <unistd.h>
-#include <time.h>
-#endif /* SYSVONLY */
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <sys/file.h>
-#include <signal.h>
-#include <sys/wait.h>
-#include <errno.h>
 #include "dbprint.h"
-#include <sys/socket.h>
-
-#include <sys/un.h>
-
 #include "unixfork.h"
 
 #ifdef DEBUG
