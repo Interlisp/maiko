@@ -23,7 +23,6 @@ NOPIXRECT	Used to suppress pixrect/pixwin options when they're not
 		needed or not available.  True if XWINDOW is.
 
 AIX		True if compiling for AIX
-AIXPS2		True if compiling for PS/2 under AIX (our flag)
 sparc		True if we're compiling on a SPARC machine.
 mc68020		True if we're compiling on a Motorola 680x0 machine.
 sun3		We're compiling for a Sun-3.

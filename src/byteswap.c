@@ -65,7 +65,7 @@ unsigned int word_swap_longword(word)
 #ifndef I386
 #define word_swap_longword(word) (((word >> 16) & 0xffff) | ((word & 0xffff) << 16))
 #endif
-#endif /* AIXPS2 */
+#endif /* !ISC */
 
 /****************************************************************/
 /*                                                              */
