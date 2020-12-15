@@ -25,8 +25,6 @@ static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright
 #include <sys/param.h>
 #else /* DOS, now */
 #include <dos.h>
-#define index strchr
-#define rindex strrchr
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEN _MAX_PATH
 #define alarm(x) 1
@@ -79,14 +77,14 @@ extern int Dummy_errno;
                                                      \
     separate_version(tname, tver, 0);                \
                                                      \
-    if ((pp = (char *)rindex(tname, '.')) == NULL) { \
+    if ((pp = (char *)strrchr(tname, '.')) == NULL) { \
       *text = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \
       strcpy(text, pp + 1);                          \
     }                                                \
                                                      \
-    if ((pp = (char *)rindex(pname, '.')) == NULL) { \
+    if ((pp = (char *)strrchr(pname, '.')) == NULL) { \
       *pext = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \

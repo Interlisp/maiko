@@ -33,8 +33,6 @@ static char *id = "$Id: ufs.c,v 1.2 1999/01/03 02:07:41 sybalsky Exp $ Copyright
 
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEN _MAX_PATH
-#define index strchr
-#define rindex strrchr
 #define alarm(x) 1
 #endif /* DOS */
 
