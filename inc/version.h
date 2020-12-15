@@ -258,12 +258,6 @@ typedef signed char s_char;
 typedef signed char s_char;
 
 #undef UNALIGNED_FETCH_OK
-
-/* #define sigvec sigaction */
-/* #define sigmask __sigmask */
-/* #define sv_handler sa_handler */
-/* #define sv_mask sa_mask */
-/* #define sv_flags sa_flags */
 #endif /* LINUX */
 
 
@@ -327,21 +321,6 @@ typedef unsigned short u_short;
 	/* 	    --Start of system-specific flags (e.g. SYSVONLY)-- 	*/
 	/*								*/
 	/****************************************************************/
-
-#ifdef SYSVONLY
-
-#if defined(OS5) || defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
-#else
-#define seteuid(x) setresuid(-1, (x), -1)
-#endif /* OS5, MACOSX, FREEBSD, LINUX do have seteuid */
-
-#if !defined(LINUX) && !defined(MACOSX) && !defined(FREEBSD)
-/* these are in the POSIX standard */
-#define getrusage(x, y) 
-#define getpagesize() 4096
-#endif /* LINUX , MACOSX, FREEBSD  */
-
-#endif /* SYSVONLY */
 
 	/****************************************************************/
 	/* 	    End of system-specific flag settings		*/
