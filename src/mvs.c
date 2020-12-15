@@ -34,9 +34,9 @@ static char *id = "$Id: mvs.c,v 1.3 1999/05/31 23:35:40 sybalsky Exp $ Copyright
 #include "car-cdrdefs.h"
 #include "conspagedefs.h"
 
-#ifdef AIXPS2
+#ifdef GCC386
 #include "inlnPS2.h"
-#endif /* AIXPS2 */
+#endif /* GCC386 */
 
 /* to optionally swap the fnhead field of a frame */
 #ifdef BIGVM
