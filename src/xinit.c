@@ -99,13 +99,9 @@ void init_Xevent(DspInterface dsp)
   XSelectInput(dsp->display_id, dsp->SWGrav, GravMask);
   XSelectInput(dsp->display_id, dsp->NWGrav, GravMask);
 
-#ifdef SYSVONLY
-#ifndef LINUX
-#ifndef MACOSX
+#if defined(OS5) && defined(I_SETSIG)
   ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, S_INPUT); /* so we see X events fast */
 #endif
-#endif
-#endif /* SYSVONLY */
 } /*end init_Xevent */
 
 /************************************************************************/
@@ -117,13 +113,9 @@ void init_Xevent(DspInterface dsp)
 /************************************************************************/
 void lisp_Xexit(DspInterface dsp)
 {
-#ifdef SYSVONLY
-#ifndef LINUX
-#ifndef MACOSX
+#if defined(OS5) && defined(I_SETSIG)
   ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
 #endif
-#endif
-#endif /* SYSVONLY */
 
   XDestroySubwindows(dsp->display_id, dsp->LispWindow);
   XDestroyWindow(dsp->display_id, dsp->LispWindow);
