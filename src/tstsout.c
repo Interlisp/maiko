@@ -36,7 +36,6 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 #define MBYTE 0x100000 /* 1 Mbyte */
 extern int errno;
 
-/* JDS protoize char *valloc(size_t); */
 void check_sysout(char *sysout_file_name, int verbose);
 void usage(char *prog);
 
