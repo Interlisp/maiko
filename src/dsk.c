@@ -16,6 +16,7 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 
@@ -23,16 +24,11 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include <dirent.h>
 #include <pwd.h>
 #include <sys/param.h>
-#include <sys/stat.h>
+#include <sys/statvfs.h>
 #include <sys/time.h>
-#ifdef sun
-#include <sys/vfs.h>
-#endif /* sun */
 #else /* DOS */
-
 #include <direct.h>
 #include <dos.h>
-#include <sys/stat.h>
 #include <time.h>
 #include <io.h>
 #define index strchr
@@ -59,18 +55,6 @@ static char *id = "$Id: dsk.c,v 1.4 2001/12/24 01:09:01 sybalsky Exp $ Copyright
 #include "car-cdrdefs.h"
 #include "commondefs.h"
 #include "ufsdefs.h"
-
-#if defined(MACOSX) || defined(FREEBSD)
-#include <sys/mount.h>
-#else
-#ifdef AIX
-#ifdef LINUX
-#include <sys/vfs.h>
-#else
-#include <sys/statfs.h>
-#endif
-#endif /* AIX */
-#endif /* MACOSX | FREEBSD */
 
 #ifdef GCC386
 #include "inlnPS2.h"
@@ -2284,16 +2268,11 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
   char name[MAXNAMLEN + 1], file[MAXPATHLEN], ver[VERSIONLEN];
   char drive[2];
-#if defined(OS5)
-  struct statvfs sfsbuf;
-#else
-#ifndef DOS
-  struct statfs sfsbuf;
-#endif /* DOS */
-#endif /* OS5 */
 #ifdef DOS
   struct diskfree_t sfsbuf;
-#endif /* DOS */
+#else
+  struct statvfs sfsbuf;
+#endif
 
   ERRSETJMP(NIL);
   Lisp_errno = &Dummy_errno;
@@ -2359,30 +2338,12 @@ LispPTR COM_getfreeblock(register LispPTR *args)
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   }
 #else
-#if defined(LINUX)
-  TIMEOUT(rval = statfs(dir, &sfsbuf));
-  if (rval != 0) {
-#elif defined(MACOSX) || defined(FREEBSD)
-  TIMEOUT(rval = statfs(dir, &sfsbuf));
-  if (rval != 0) {
-#elif defined(SYSVONLY)
-  TIMEOUT(rval = statfs(dir, &sfsbuf, sizeof(struct statfs), 0));
-  if (rval != 0) {
-#elif defined(OS5)
   TIMEOUT(rval = statvfs(dir, &sfsbuf));
   if (rval != 0) {
-#else
-  TIMEOUT(rval = statfs(dir, &sfsbuf));
-  if (rval != 0) {
-#endif
     *Lisp_errno = errno;
     return (NIL);
   }
-#if defined(SYSVONLY) || defined(OS5)
-  *buf = sfsbuf.f_bfree;
-#else
   *buf = sfsbuf.f_bavail;
-#endif
 #endif /* DOS */
   return (ATOM_T);
 }
