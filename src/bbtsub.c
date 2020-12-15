@@ -81,13 +81,6 @@ static char *id = "$Id: bbtsub.c,v 1.3 2001/12/24 01:08:59 sybalsky Exp $ Copyri
 
 extern IOPAGE *IOPage68K;
 
-#ifdef AIX
-#include <sys/types.h>
-#if !defined(LINUX) && !defined(MACOSX) /* LINUX and MACOSX have no macros.h */
-#include <macros.h>
-#endif /* LINUX */
-#endif /* AIX */
-
 #include "bb.h"
 #include "bitblt.h"
 #include "pilotbbt.h"

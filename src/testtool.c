@@ -44,9 +44,6 @@ static char *id = "$Id: testtool.c,v 1.4 2001/12/24 01:09:07 sybalsky Exp $ Copy
 */
 #include <stdio.h>
 #include <setjmp.h>
-#ifdef AIX
-#include <sys/types.h>
-#endif /* AIX */
 
 #include "lispemul.h"
 #include "lispmap.h"
