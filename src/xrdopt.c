@@ -17,14 +17,12 @@ static char *id = "$Id: xrdopt.c,v 1.6 2001/12/26 22:17:07 sybalsky Exp $ Copyri
 #include <string.h>
 #include <sys/file.h>
 #include <sys/time.h>
+#include <unistd.h>
 #ifndef NOETHER
 #ifndef USE_DLPI
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_DLPI */
 #endif               /* NOETHER */
-#if defined(SYSVONLY) || defined(OS5) || defined(MACOSX)
-#include <unistd.h>
-#endif /* SYSVONLY */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
