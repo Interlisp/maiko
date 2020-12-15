@@ -479,11 +479,7 @@ extern u_int LispWindowFd;
 static struct sigvec timerv;
 #endif /* SYSVSIGNALS */
 
-#if (defined(OS4) || defined(SYSVONLY)) || defined(MACOSX) || defined(FREEBSD) || defined(OS5)
 static void int_timer_service(int sig, int code, void *scp)
-#else
-static int int_timer_service(int sig, int code, void *scp)
-#endif /* OS4 | SYSVONLY | MACOSX | FREEBSD */
 {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
