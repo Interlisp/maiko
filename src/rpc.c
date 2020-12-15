@@ -20,6 +20,7 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 /************************************************************************/
 
 #ifndef DOS
+#include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -29,7 +30,6 @@ static char *id = "$Id: rpc.c,v 1.3 2001/12/24 01:09:06 sybalsky Exp $ Copyright
 #include <netinet/in.h>
 #include <netdb.h>
 #include <errno.h>
-#include <sys/ioctl.h>
 #include <string.h> /* for memset/memcpy */
 #endif              /* DOS */
 #include "lispemul.h"
@@ -121,12 +121,8 @@ LispPTR rpc(LispPTR *args)
 
   dontblock = 1;
 
-/* The sockets that rpc controls don't block */
-#ifdef SYSVONLY
-/* NEED TO FILL THIS IN PROPERLY */
-#else
-  (void)ioctl(s, FIONBIO, &dontblock);
-#endif /* SYSVONLY */
+  /* The sockets that rpc controls don't block */
+  fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK);
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
