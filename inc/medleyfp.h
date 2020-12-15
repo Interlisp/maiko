@@ -60,7 +60,7 @@ volatile extern int  FP_error;
 #define FPCLEAR
 #define FPTEST(result) (isinf(result) || isnan(result))
 
-#elif defined(AIX)
+#elif defined(LINUX)
 #define FPCLEAR
 #define FPTEST(result) ((!finite(result)) || isnan(result))
 
