@@ -22,25 +22,13 @@ static char *id = "$Id: unixfork.c,v 1.6 2001/12/26 22:17:05 sybalsky Exp $ Copy
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef OS4
-#define USETERMIOS
-#endif
 #ifdef OS5
-#define USETERMIOS
 #include <sys/stropts.h>
 #define FULLSLAVENAME
 #endif
 
 #include <sys/ioctl.h>
-#ifndef USETERMIOS
-#include <sys/ioctl.h>
-#else
-#if defined(MACOSX) || defined(FREEBSD)
 #include <termios.h>
-#else
-#include <sys/termios.h>
-#endif /* MACOSX or FREEBSD */
-#endif /* USETERMIOS */
 
 #if defined(SYSVONLY) || defined(OS5) || defined(FREEBSD) || defined(MACOSX)
 #include <fcntl.h>
@@ -110,11 +98,7 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
   char PtySlave[20];
 #endif
   int res, PID, SlaveFD;
-#ifdef USETERMIOS
   struct termios tio;
-#else
-  struct sgttyb tio;
-#endif /* USETERMIOS */
 
   PID = fork();
 
@@ -153,22 +137,12 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
     ioctl(SlaveFD, I_PUSH, "ldterm");
 #endif /* OS5 */
 
-#ifndef USETERMIOS
-    /* This is the old way we set up terminal (OS 3), using an
-       obsolete ioctl and wrong flags for a display. */
-    ioctl(SlaveFD, TIOCGETP, (char *)&tio);
-    tio.sg_flags |= CRMOD;
-    tio.sg_flags |= ECHO;
-    ioctl(SlaveFD, TIOCSETP, (char *)&tio);
-#else
-/* Set up as basic display terminal: canonical erase,
-   kill processing, echo, backspace to erase, echo ctrl
-   chars as ^x, kill line by backspacing */
-
+    /* Set up as basic display terminal: canonical erase,
+       kill processing, echo, backspace to erase, echo ctrl
+       chars as ^x, kill line by backspacing */
     tcgetattr(SlaveFD, &tio);
     tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
     tcsetattr(SlaveFD, TCSANOW, &tio);
-#endif /* USETERMIOS */
 
     (void)dup2(SlaveFD, 0);
     (void)dup2(SlaveFD, 1);
