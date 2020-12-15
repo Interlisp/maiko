@@ -30,7 +30,6 @@ s/osmessage\.c/osmsg\.c/g
 s/osmessage\.h/osmsg\.h/g
 s/setsysout\.c/setsout\.c/g
 s/socketdvr\.c/socdvr\.c/g
-s/timeofday\.c/timeoday\.c/g
 s/usersubrs\.c/usrsubr\.c/g
 s/InitXevent\.c/Xinit\.c/g
 s/LispWindow\.c/Xlspwin\.c/g
