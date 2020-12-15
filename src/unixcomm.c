@@ -7,7 +7,7 @@ Unix Interface Communications
 
 */
 
-// Don't compile this at all under DOS.
+/* Don't compile this at all under DOS. */
 #ifndef DOS
 
 /************************************************************************/
