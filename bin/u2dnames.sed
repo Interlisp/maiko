@@ -30,7 +30,6 @@ s/osmessage/osmsg/g
 s/osmessage/osmsg/g
 s/setsysout/setsout/g
 s/socketdvr/socdvr/g
-s/timeofday/timeoday/g
 s/usersubrs/usrsubr/g
 s/InitXevent/Xinit/g
 s/LispWindow/Xlspwin/g
