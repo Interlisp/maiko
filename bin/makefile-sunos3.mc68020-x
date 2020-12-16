@@ -40,7 +40,7 @@ INLINE = $(SRCDIR)disp68K.il
 BITBLTFILE = $(OBJECTDIR)bitblt68K.o
 
 OBJECTDIR = ../sunos3.mc68020-x/
-BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether
 

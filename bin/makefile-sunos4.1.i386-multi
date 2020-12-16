@@ -12,7 +12,7 @@ INLINE = $(SRCDIR)disp386i.il
 BITBLTFILE=$(OBJECTDIR)bitblt386i.o
 
 OBJECTDIR = ../sunos4.i386-multi/
-BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o 
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 COLORFILES = $(OBJECTDIR)colorbltfns.o
 
 default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether

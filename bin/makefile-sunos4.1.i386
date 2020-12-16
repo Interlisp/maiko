@@ -10,7 +10,7 @@ LDFLAGS = -lsuntool -lsunwindow -lpixrect -lc -lm
 INLINE = $(SRCDIR)disp386i.il
 
 OBJECTDIR = ../sunos4.i386/
-BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o 
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 COLORFILES = $(OBJECTDIR)colorbltfns.o
 
 default	: $(OBJECTDIR)lde $(OBJECTDIR)ldeether
