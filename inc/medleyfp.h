@@ -16,10 +16,6 @@
 /*									*/
 /************************************************************************/
 
-#ifdef DOS
-#include <i32.h>
-#endif /* DOS */
-
 /*  --------------------------------------------------
     FPCLEAR         - clear status as necessary
     FPTEST(result)  - check result or status
@@ -61,6 +57,7 @@ volatile extern int  FP_error;
 #define FPTEST(result) (isinf(result) || isnan(result))
 
 #elif defined(LINUX)
+#include <math.h>
 #define FPCLEAR
 #define FPTEST(result) ((!finite(result)) || isnan(result))
 
@@ -70,6 +67,7 @@ volatile extern int  FP_error;
 #define FPTEST(result) (!isfinite(result))
 
 #elif defined(DOS)
+#include <i32.h>
 #define FPCLEAR
 #define FPTEST(result) (_getrealerror() & ( I87_ZERO_DIVIDE | I87_OVERFLOW | I87_UNDERFLOW))
 
