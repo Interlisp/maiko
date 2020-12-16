@@ -86,8 +86,6 @@
 #define SUNOS54		1
 #endif
 #undef U_INT32_DECLARED_IN_AUTH
-#define index		strchr
-#define rindex		strrchr
 #define bzero(b,n)	memset(b,0,n)
 #define bcmp(a,b,n)	memcmp(a,b,n)
 #define bcopy(a,b,n)	memcpy(b,a,n)
@@ -97,8 +95,6 @@
 #ifndef USE_DLPI
 #define USE_DLPI	1
 #endif
-#define index		strchr
-#define rindex		strrchr
 #define signal		sigset
 #define bzero(b,n)	memset(b,0,n)
 #define bcmp(a,b,n)	memcmp(a,b,n)
