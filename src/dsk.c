@@ -818,11 +818,7 @@ LispPTR COM_closefile(register LispPTR *args)
     return (NIL);
   }
 
-#ifdef USE_UTIME
-  TIMEOUT(rval = utime(file, time));
-#else
   TIMEOUT(rval = utimes(file, time));
-#endif
   if (rval != 0) {
     *Lisp_errno = errno;
     return (NIL);
@@ -1879,11 +1875,7 @@ LispPTR COM_setfileinfo(register LispPTR *args)
       time[0].tv_usec = 0L;
       time[1].tv_sec = (long)ToUnixTime(date);
       time[1].tv_usec = 0L;
-#ifdef USE_UTIME
-      TIMEOUT(rval = utime(file, time));
-#else
       TIMEOUT(rval = utimes(file, time));
-#endif /* USE_UTIME */
 #endif /* DOS */
       if (rval != 0) {
         *Lisp_errno = errno;
