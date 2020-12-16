@@ -39,7 +39,7 @@ LDFLAGS = -lX11 -lpixrect -lc -lm
 # -Dsparc?
 INLINE = $(SRCDIR)dispSPARC.il
 BITBLTFILE = $(OBJECTDIR)bitbltSPARC.o
-BYTESWAPFILES = $(OBJECTDIR)byteswapfns.o
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 OBJECTDIR = ../$(RELEASENAME)/
 
