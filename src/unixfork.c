@@ -57,10 +57,10 @@ char shcom[512]; /* Here because I'm suspicious of */
                  /* large allocations on the stack */
 
 
-static __inline__ int
+static __inline__ ssize_t
 SAFEREAD(int f, char *b, int c)
 {
-  int res;
+  ssize_t res;
 loop:
   res = read(f, b, c);
   if ((res < 0)) {
@@ -303,7 +303,7 @@ int fork_Unix() {
   res = fcntl(LispPipeIn, F_SETFL, res);
 
   while (1) {
-    int len;
+    ssize_t len;
     len = 0;
     while (len != 4) {
       if ((len = SAFEREAD(LispPipeIn, IOBuf, 4)) < 0) { /* Get packet */
