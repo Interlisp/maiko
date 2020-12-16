@@ -29,7 +29,6 @@ s/miscstats/miscstat/g
 s/osmessage/osmsg/g
 s/osmessage/osmsg/g
 s/setsysout/setsout/g
-s/socketdvr/socdvr/g
 s/usersubrs/usrsubr/g
 s/InitXevent/Xinit/g
 s/LispWindow/Xlspwin/g

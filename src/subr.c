@@ -704,36 +704,6 @@ void OP_subrcall(int subr_no, int argnum) {
         TopOfStack = ATOM_T;
         break;
       }
-/*******************/
-/* CLX Support ops */
-/*******************/
-#ifdef NEVER /* CLX */
-    case sb_OPEN_SOCKET: {
-      POP_SUBR_ARGS;
-      TopOfStack = Open_Socket(args);
-      break;
-    }
-    case sb_CLOSE_SOCKET: {
-      TopOfStack = Close_Socket();
-      break;
-    }
-    case sb_READ_SOCKET: {
-      POP_SUBR_ARGS;
-      TopOfStack = Read_Socket(args);
-      break;
-    }
-    case sb_WRITE_SOCKET: {
-      POP_SUBR_ARGS;
-      TopOfStack = Write_Socket(args);
-      break;
-    }
-    case 0244: /* KB_TRANSITION */
-    {
-      POP_SUBR_ARGS;
-      TopOfStack = Kbd_Transition(args);
-      break;
-    }
-#endif /* CLX */
 
 #ifndef NOFORN
     /*****************************************/
