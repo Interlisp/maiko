@@ -15,7 +15,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 
 
 XVERSION = XV11R4
-XFLAGS = -DXWINDOW -DNOPIXRECT -D$(XVERSION) # $(CLXFLAGS)
+XFLAGS = -DXWINDOW -DNOPIXRECT -D$(XVERSION)
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o

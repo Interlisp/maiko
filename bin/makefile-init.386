@@ -15,7 +15,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 
 
 XVERSION = XV11R4
-XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT -D$(XVERSION) # $(CLXFLAGS)
+XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT -D$(XVERSION)
 
 # OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
 OPTFLAGS =  -O0 -g
