@@ -62,7 +62,6 @@ extern int ether_fd;
 
 #ifdef LINUX
 #include <sys/ioctl.h>
-#define _BSD_SOURCE
 #include <signal.h>
 #include <sys/times.h>
 #endif
