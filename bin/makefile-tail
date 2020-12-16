@@ -230,7 +230,7 @@ $(OBJECTDIR)main.o : $(SRCDIR)main.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
-	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h $(INCDIR)unixfork.h
+	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h
 	$(CC) $(RFLAGS) $(SRCDIR)main.c $(INLINE) -o $(OBJECTDIR)main$(OEXT)
 
 $(OBJECTDIR)dbgtool.o :  $(SRCDIR)dbgtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
