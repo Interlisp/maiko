@@ -28,14 +28,10 @@ static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyr
 /*									*/
 /************************************************************************/
 
-#if defined(LINUX)
-#include "time.h"
-#endif
-
 #include <stdio.h>
-#ifdef DOS
 #include <time.h>
-#else
+
+#ifndef DOS
 #include <sys/time.h>
 #endif /* DOS */
 
