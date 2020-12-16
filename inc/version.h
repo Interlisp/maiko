@@ -201,7 +201,6 @@ error Must specify RELEASE to build Medley.
 #define UNALIGNED_FETCH_OK
 #define REGISTER register
 #define HAS_GETHOSTID
-#undef USE_UTIME
 #define UNSIGNED unsigned long
 #define INT long
 
