@@ -105,7 +105,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
    */
 
   /* open SysoutFile */
-  sysout = open(sysout_file_name, O_RDONLY, NULL);
+  sysout = open(sysout_file_name, O_RDONLY);
   if (sysout == -1) {
     sprintf(errmsg, "sysout_loader: can't open sysout file: %s", sysout_file_name);
     perror(errmsg);
