@@ -145,11 +145,10 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
 
     /* set the LDESHELL variable so the underlying .cshrc can see it and
        configure the shell appropriately, though this may not be so important any more */
-    putenv("LDESHELL=YES");
+    setenv("LDESHELL", "YES", 1);
 
     if ((termtype[0] != 0) && (strlen(termtype) < 59)) { /* set the TERM environment var */
-      sprintf(envstring, "TERM=%s", termtype);
-      putenv(envstring);
+      setenv("TERM", termtype, 1);
     }
     /* Start up csh */
     argvec[0] = "csh";
@@ -273,20 +272,20 @@ int fork_Unix() {
     char *tempstring;
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "LDEPIPEIN=%d", UnixToLisp[0]);
-    putenv(tempstring);
+    sprintf(tempstring, "%d", UnixToLisp[0]);
+    setenv("LDEPIPEINE", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "LDEPIPEOUT=%d", LispToUnix[1]);
-    putenv(tempstring);
+    sprintf(tempstring, "%d", LispToUnix[1]);
+    setenv("LDEPIPEOUT", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "LDESTARTTIME=%ld", StartTime);
-    putenv(tempstring);
+    sprintf(tempstring, "%ld", StartTime);
+    setenv("LDESTARTTIME", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "LDEUNIXPID=%d", UnixPID);
-    putenv(tempstring);
+    sprintf(tempstring, "%d", UnixPID);
+    setenv("LDEUNIXPID", tempstring, 1);
 
     close(LispToUnix[0]);
     close(UnixToLisp[1]);
