@@ -272,19 +272,19 @@ int fork_Unix() {
     char *tempstring;
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "%d", UnixToLisp[0]);
+    snprintf(tempstring, 30, "%d", UnixToLisp[0]);
     setenv("LDEPIPEINE", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "%d", LispToUnix[1]);
+    snprintf(tempstring, 30, "%d", LispToUnix[1]);
     setenv("LDEPIPEOUT", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "%ld", StartTime);
+    snprintf(tempstring, 30, "%ld", StartTime);
     setenv("LDESTARTTIME", tempstring, 1);
 
     tempstring = (char *)malloc(30);
-    sprintf(tempstring, "%d", UnixPID);
+    snprintf(tempstring, 30, "%d", UnixPID);
     setenv("LDEUNIXPID", tempstring, 1);
 
     close(LispToUnix[0]);
