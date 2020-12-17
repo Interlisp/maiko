@@ -64,7 +64,7 @@ int log_id;
 int previous_size;
 int logChanged; /* T if log file has changed since last READ */
                 /* Set by flush_pty, to avoid the stat call  */
-u_int LogFileFd;
+int LogFileFd = -1;
 extern fd_set LispReadFds;
 
 /************************************************************************/

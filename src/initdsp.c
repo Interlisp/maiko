@@ -108,8 +108,8 @@ int oldred[2], oldgreen[2], oldblue[2];
 #endif /* DISPLAYBUFFER */
 #endif /* NOPIXRECT */
 
-int LispWindowFd;
-int FrameBufferFd;
+int LispWindowFd = -1;
+int FrameBufferFd = -1;
 
 int displaywidth, displayheight, DisplayRasterWidth, DisplayType;
 int DisplayByteSize;

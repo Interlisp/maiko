@@ -461,7 +461,7 @@ int TIMER_INTERVAL = 25000;
 
 int FileIOFlag = 0;
 int TimerFlag = 0;
-extern u_int LispWindowFd;
+extern int LispWindowFd;
 
 /************************************************************************/
 /*									*/

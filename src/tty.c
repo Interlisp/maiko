@@ -18,7 +18,7 @@ DLTTY_IN_CSB *DLTTYIn;
 DLTTY_OUT_CSB *DLTTYOut;
 
 char *TTY_Dev;
-int TTY_Fd;
+int TTY_Fd = -1;
 extern fd_set LispReadFds;
 struct sgttyb TTY_Mode;
 

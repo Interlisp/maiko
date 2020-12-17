@@ -29,7 +29,7 @@ static DLword *RS232CGetCSB, *RS232CPutCSB;
  * File descriptor
  */
 extern fd_set LispReadFds;
-int RS232C_Fd;
+int RS232C_Fd = -1;
 
 int RS232C_remain_data;
 static char *RS232C_Dev;

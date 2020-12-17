@@ -124,11 +124,11 @@ extern fd_set LispIOFds;
 fd_set LispReadFds;
 int XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 
+extern int LogFileFd;
+
 #ifdef NOETHER
-extern u_int LogFileFd;
 #else
 extern int ether_fd;
-extern u_int LogFileFd;
 #endif /* NOETHER */
 
 extern DLword *DisplayRegion68k;
