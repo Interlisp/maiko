@@ -27,7 +27,7 @@ extern void ExitDosKbd();
 extern unsigned long GenericReturnT();
 #endif /* DOS */
 
-make_kbd_instance(KbdInterface kbd) {
+void make_kbd_instance(KbdInterface kbd) {
 #ifdef DOS
   kbd->device_event = &Kbd_event; /*  */
   kbd->device.enter = &EnterDosKbd;
