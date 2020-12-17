@@ -243,7 +243,6 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	}							\
 }
 
-#ifdef FSERROR
 #define	DIRP(path, dir, buf){				\
 	int lf_rval;					\
 	struct	stat	lf_statbuf;			\
@@ -261,21 +260,6 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 			return(0);			\
 		}					\
 		}
-#else
-#define	DIRP(path, dir, buf){				\
-	int lf_rval;					\
-	struct	stat	lf_statbuf;			\
-		strcpy(buf, path);			\
-		strcat(buf, dir);			\
-		TIMEOUT( lf_rval=stat(buf, &lf_statbuf) );	\
-		if( lf_rval == 0){				\
-			if( (lf_statbuf.st_mode & S_IFMT) == S_IFDIR ){	\
-				strcat(path, dir);			\
-				return(1);				\
-			}				\
-		}					\
-		}
-#endif
 
 #define	FILEP(path, file, buf){				\
 	int lf_rval;					\
@@ -563,7 +547,6 @@ extern	int	errno;
 		}
 
 
-#ifdef FSERROR
 #define	UNLINK(x){					\
 		TIMEOUT(lf_rval=unlink(x));		\
 		if(lf_rval == -1){				\
@@ -572,17 +555,7 @@ extern	int	errno;
 			return(0);			\
 		}					\
 		}
-#else
-#define	UNLINK(x){					\
-		TIMEOUT(lf_rval=unlink(x));		\
-		if(lf_rval == -1){				\
-			err_mess("unlink", errno);	\
-			return(0);			\
-		}					\
-		}
-#endif
 
-#ifdef FSERROR
 #define LINK(x,y){					\
 		TIMEOUT(lf_rval=link(x, y));		\
 		if(lf_rval == -1){				\
@@ -595,21 +568,7 @@ extern	int	errno;
 			}				\
 		}					\
 		}
-#else
-#define LINK(x,y){					\
-		TIMEOUT(lf_rval=link(x, y));		\
-		if(lf_rval == -1){				\
-			if(errno == 2)			\
-				return(1);		\
-			else{				\
-				err_mess("link", errno);\
-				return(0);		\
-			}				\
-		}					\
-		}
-#endif
 
-#ifdef FSERROR
 #define RENAME(x,y){					\
 		TIMEOUT(lf_rval=rename(x, y));		\
 		if(lf_rval == -1){				\
@@ -626,22 +585,7 @@ extern	int	errno;
 			}				\
 		}					\
 		}
-#else
-#define RENAME(x,y){					\
-		TIMEOUT(lf_rval=rename(x, y));		\
-		if(lf_rval == -1){				\
-			switch(errno){			\
-			case 2:				\
-				return(1);		\
-			default:			\
-				err_mess("rename", errno);\
-				return(0);		\
-			}				\
-		}					\
-		}
-#endif
 
-#ifdef FSERROR
 #define	STAT(x,y){					\
 		TIMEOUT(lf_rval=stat(x, y));		\
 		if(lf_rval != 0){				\
@@ -650,15 +594,6 @@ extern	int	errno;
 			return(-1);			\
 		}					\
 		}
-#else
-#define	STAT(x,y){					\
-		TIMEOUT(lf_rval=stat(x, y));		\
-		if(lf_rval != 0){				\
-			err_mess("stat", errno);	\
-			return(-1);			\
-		}					\
-		}
-#endif
 
 /*
  * For file name length check

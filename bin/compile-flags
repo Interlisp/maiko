@@ -99,9 +99,6 @@ DISPLAYBUFFER	10/3/89 JDS -- enables the experimental code for copying
 		Meant for supporting mono mode on a CG6 with no single-bit
 		bitplane. 1/22/91 JDS:  This is now the standard flag for
 		compiling for color displays.
-FSERROR		Enables the emulator's returning Unix error codes for
-		{DSK} & {UNIX} operations, so Lisp can decode them and
-		give better indication of problems.  FEATURE STANDARD IN 1.1
 WINDOW
 FLIPCURSOR	If true, the "sandbar" line in the cursor will get flipped
 		by the C stack-frame-moving code, just as it does on a D
