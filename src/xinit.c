@@ -99,9 +99,6 @@ void init_Xevent(DspInterface dsp)
   XSelectInput(dsp->display_id, dsp->SWGrav, GravMask);
   XSelectInput(dsp->display_id, dsp->NWGrav, GravMask);
 
-#if defined(OS5) && defined(I_SETSIG)
-  ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, S_INPUT); /* so we see X events fast */
-#endif
 } /*end init_Xevent */
 
 /************************************************************************/
