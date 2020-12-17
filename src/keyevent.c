@@ -124,11 +124,11 @@ extern fd_set LispIOFds;
 fd_set LispReadFds;
 int XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 
+extern int LogFileFd;
+
 #ifdef NOETHER
-extern u_int LogFileFd;
 #else
 extern int ether_fd;
-extern u_int LogFileFd;
 #endif /* NOETHER */
 
 extern DLword *DisplayRegion68k;
@@ -316,7 +316,7 @@ getmore:
       */
 
 #ifdef SUNDISPLAY
-    if (FD_ISSET(LispWindowFd, &rfds)) {
+    if (LispWindowFd >= 0 && FD_ISSET(LispWindowFd, &rfds)) {
       /* #endif */
       while (input_readevent(LispWindowFd, &event) >= 0) {
         /*if(!kb_event( &event )) {goto getmore;};*/
@@ -341,19 +341,19 @@ getmore:
 
 #ifdef NOETHER
 #else
-    if (FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
+    if (ether_fd >= 0 && FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
       DBPRINT(("Handling enet interrupt.\n\n"));
       check_ether();
     }
 #endif /* NOETHER */
 
 #ifdef RS232
-    if (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready()))
+    if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
       rs232c_read();
 #endif /* RS232 */
 
 #ifdef LOGINT
-    if (FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
+    if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
       flush_pty();          /* move the msg(s) to the log file */
 
       ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->LogFileIO = 1;

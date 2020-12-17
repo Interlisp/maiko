@@ -123,7 +123,7 @@ extern struct screen LispScreen;
 #endif /* SUNDISPLAY */
 
 extern int LispWindowFd;
-int LispKbdFd;
+int LispKbdFd = -1;
 extern int errno;
 
 /*   for debug    */
