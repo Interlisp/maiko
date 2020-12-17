@@ -79,6 +79,7 @@ LispPTR car(register LispPTR datum)
       return (NIL);
     else
       error("car : ARG not list");
+    return (NIL); /* NOT REACHED */
   }
 } /* end of car */
 
@@ -151,6 +152,7 @@ LispPTR rplaca(register LispPTR x, register LispPTR y)
         return (NIL_PTR);
     } else
       error("ARG not List");
+      return (NIL_PTR); /* NOT REACHED */
   }
 
   else {
