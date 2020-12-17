@@ -399,8 +399,8 @@ register  char *buff68k;     /* pointer to BUFF */			\
 		}
 
 #define BIND	{register int byte = Get_BYTE_PCMAC1;			\
-		 register int n1;					\
-		register int n2;					\
+		 register unsigned  n1;					\
+		register unsigned n2;					\
 		register LispPTR *ppvar;				\
 		register int i;						\
 		n1 = byte >> 4;				\
@@ -413,8 +413,7 @@ register  char *buff68k;     /* pointer to BUFF */			\
 			*--ppvar = TOPOFSTACK;				\
 			for(i=1; i<n2; i++) { *--ppvar = *(--CSTKPTRL); }	\
 		}							\
-		i = ~(n1 + n2);						\
-		TOPOFSTACK = (i<<16) | (Get_BYTE_PCMAC2<<1);		\
+		TOPOFSTACK = ((~(n1 + n2))<<16) | (Get_BYTE_PCMAC2<<1); \
 		nextop3;						\
 		}
 
