@@ -348,10 +348,8 @@ int main(int argc, char *argv[])
         Barf and print the command line if tha fails
 */
 
-#ifdef FSERROR
   /* For call makepathname */
   Lisp_errno = &Dummy_errno;
-#endif
 
   i = 1;
 
@@ -666,9 +664,7 @@ int makepathname(char *src, char *dst)
     case '.':
       if (getcwd(dst, MAXPATHLEN) == 0)
       { /* set working directory */
-#ifdef FSERROR
         *Lisp_errno = errno;
-#endif
         return (0);
       }
       switch (*(base + 1)) {
@@ -688,11 +684,7 @@ int makepathname(char *src, char *dst)
         default: return (0);
       }
     case '~':
-#ifdef FSERROR
       ERRSETJMP(0);
-#else
-      SETJMP(0);
-#endif
       if (*(base + 1) == '/') {
 /* path is "~/foo" */
 #ifdef DOS
@@ -701,9 +693,7 @@ int makepathname(char *src, char *dst)
         TIMEOUT(pwd = getpwuid(getuid()));
 #endif /* DOS */
         if (pwd == NULL) {
-#ifdef FSERROR
           *Lisp_errno = errno;
-#endif
           return (0);
         }
 #ifndef DOS
@@ -722,9 +712,7 @@ int makepathname(char *src, char *dst)
           TIMEOUT(pwd = getpwnam(name));
 #endif /* DOS */
           if (pwd == NULL) {
-#ifdef FSERROR
             *Lisp_errno = errno;
-#endif
             return (0);
           }
 #ifndef DOS
