@@ -1,6 +1,5 @@
 /* $Id: xcursor.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: xcursor.c,v 1.4 2001/12/26 22:17:06 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

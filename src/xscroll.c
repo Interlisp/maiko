@@ -1,6 +1,5 @@
 /* $Id: xscroll.c,v 1.2 1999/01/03 02:07:48 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: xscroll.c,v 1.2 1999/01/03 02:07:48 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

@@ -1,5 +1,4 @@
 /* This is G-file @(#) array4.c Version 2.7 (10/12/88). copyright Xerox & Fuji Xerox  */
-static char *id = "@(#) array4.c	2.7 10/12/88";
 
 /************************************************************************/
 /*									*/

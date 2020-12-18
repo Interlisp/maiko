@@ -1,6 +1,5 @@
 /* $Id: xmkicon.c,v 1.3 2001/12/24 01:09:09 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: xmkicon.c,v 1.3 2001/12/24 01:09:09 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

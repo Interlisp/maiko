@@ -1,6 +1,5 @@
 /* $Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: uutils.c,v 1.3 1999/05/31 23:35:47 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

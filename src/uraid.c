@@ -1,5 +1,4 @@
 /* @(#) uraid.c Version 1.52 (4/23/92). copyright Venue & Fuji Xerox  */
-static char *id = "@(#) uraid.c 1.52 4/23/92            (Venue & Fuji Xerox)";
 
 /************************************************************************/
 /*                                                                      */

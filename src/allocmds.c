@@ -1,6 +1,5 @@
 /* $Id: allocmds.c,v 1.4 1999/05/31 23:35:20 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: allocmds.c,v 1.4 1999/05/31 23:35:20 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

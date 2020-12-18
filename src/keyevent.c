@@ -1,6 +1,5 @@
 /* $Id: keyevent.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: keyevent.c,v 1.3 2001/12/24 01:09:03 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

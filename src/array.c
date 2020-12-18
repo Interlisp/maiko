@@ -1,5 +1,4 @@
 /* @(#) array.c Version 2.8 (12/23/88). copyright envos & Fuji Xerox  */
-static char *id = "@(#) array.c	2.8 12/23/88		(envos & Fuji Xerox)";
 
 /************************************************************************/
 /*									*/

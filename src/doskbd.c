@@ -1,6 +1,5 @@
 /* $Id: doskbd.c,v 1.2 1999/01/03 02:06:55 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: doskbd.c,v 1.2 1999/01/03 02:06:55 sybalsky Exp $ Copyright (C) Venue";
 /************************************************************************/
 /*                                                                      */
 /*                D O S   K E Y B O A R D   H A N D L E R               */

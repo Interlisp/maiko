@@ -1,6 +1,5 @@
 /* $Id: lpytab.c,v 1.2 1999/01/03 02:07:21 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: lpytab.c,v 1.2 1999/01/03 02:07:21 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

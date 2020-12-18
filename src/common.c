@@ -1,6 +1,5 @@
 /* $Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: common.c,v 1.2 1999/01/03 02:06:52 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/
