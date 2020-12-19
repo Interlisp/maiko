@@ -269,22 +269,18 @@ int fork_Unix() {
        and put their numbers in the environment so parent can find them */
     /* JDS - NB that sprintf doesn't always return a string! */
 
-    char *tempstring;
+    char tempstring[30];
 
-    tempstring = (char *)malloc(30);
-    snprintf(tempstring, 30, "%d", UnixToLisp[0]);
+    snprintf(tempstring, sizeof(tempstring), "%d", UnixToLisp[0]);
     setenv("LDEPIPEINE", tempstring, 1);
 
-    tempstring = (char *)malloc(30);
-    snprintf(tempstring, 30, "%d", LispToUnix[1]);
+    snprintf(tempstring, sizeof(tempstring), "%d", LispToUnix[1]);
     setenv("LDEPIPEOUT", tempstring, 1);
 
-    tempstring = (char *)malloc(30);
-    snprintf(tempstring, 30, "%ld", StartTime);
+    snprintf(tempstring, sizeof(tempstring), "%ld", StartTime);
     setenv("LDESTARTTIME", tempstring, 1);
 
-    tempstring = (char *)malloc(30);
-    snprintf(tempstring, 30, "%d", UnixPID);
+    snprintf(tempstring, sizeof(tempstring), "%d", UnixPID);
     setenv("LDEUNIXPID", tempstring, 1);
 
     close(LispToUnix[0]);
