@@ -1,7 +1,7 @@
 # Options for Linux, Intel x86_64 and X-Window
 
-#CC = gcc -m64 -std=gnu89 -fno-omit-frame-pointer -Wall -Wextra -fwrapv -fno-aggressive-loop-optimizations -fno-strict-aliasing
-CC = clang -m64 -std=gnu89 -funsigned-char -fno-strict-aliasing
+#CC = gcc -m64 $(GCC_CFLAGS) -fno-omit-frame-pointer -Wall -Wextra -fno-aggressive-loop-optimizations
+CC = clang -m64 $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows, for INIT processing
 
-CC = clang -m32 -std=gnu89 -Wimplicit-function-declaration
+CC = clang -m32 $(CLANG_CFLAGS)
 OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \

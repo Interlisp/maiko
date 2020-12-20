@@ -10,7 +10,7 @@
 #*									*/
 #************************************************************************/
 
-CC = clang -std=gnu89 -funsigned-char -fno-strict-aliasing
+CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

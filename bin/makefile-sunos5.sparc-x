@@ -13,7 +13,7 @@
 #************************************************************************/
 
 # Setup for using gcc
-#  CC = gcc -std=gnu89 -funsigned-char
+#  CC = gcc $(GCC_CFLAGS)
 # Setup for using Solaris Developer Studio 12.6 cc
 #  CC = cc -m32 -funsigned-char
 
