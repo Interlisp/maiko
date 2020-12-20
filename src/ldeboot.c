@@ -13,7 +13,6 @@ static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyr
 
 #include <ctype.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

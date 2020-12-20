@@ -11,6 +11,7 @@ static char *id = "$Id: kbdsubrs.c,v 1.2 1999/01/03 02:07:10 sybalsky Exp $ Copy
 
 #include "version.h"
 
+#include <errno.h>
 #include <stdio.h>
 #ifdef DOS
 #include <time.h>
@@ -69,8 +70,6 @@ extern struct screen LispScreen;
 
 extern int LispWindowFd;
 extern fd_set LispReadFds;
-
-extern int errno;
 
 void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
                                      *		T -- ON

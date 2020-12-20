@@ -20,7 +20,6 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 #include <sys/file.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <errno.h>
 #include <fcntl.h>
 
 #include "adr68k.h"
@@ -34,7 +33,6 @@ static char *id = "$Id: tstsout.c,v 1.3 1999/05/31 23:35:44 sybalsky Exp $ Copyr
 
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */
-extern int errno;
 
 void check_sysout(char *sysout_file_name, int verbose);
 void usage(char *prog);

@@ -63,7 +63,6 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 
 #include <nlist.h>
 #include <fcntl.h>
-#include <errno.h>
 #include <malloc.h>
 
 #endif /* NOETHER */

@@ -13,6 +13,7 @@ static char *id = "$Id: socket.c,v 1.2 1999/01/03 02:07:34 sybalsky Exp $ Copyri
 
 #include "version.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <X11/Xos.h>
 #include <X11/Xproto.h>
@@ -22,9 +23,6 @@ static char *id = "$Id: socket.c,v 1.2 1999/01/03 02:07:34 sybalsky Exp $ Copyri
 #include <netdb.h>
 #include <sys/socket.h>
 #include <netinet/tcp.h>
-
-extern int errno; /* Certain (broken) OS's don't have this */
-                  /* decl in errno.h */
 
 #ifdef UNIXCONN
 #include <sys/un.h>
