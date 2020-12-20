@@ -806,14 +806,6 @@ $(OBJECTDIR)array6.o : $(SRCDIR)array6.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  
 	 $(INCDIR)arith.h  $(INCDIR)my.h
 	$(CC) $(RFLAGS) $(SRCDIR)array6.c $(INLINE) -o $(OBJECTDIR)array6$(OEXT)
 
-$(OBJECTDIR)socket.o : $(SRCDIR)socket.c $(REQUIRED-INCS) 
-	$(CC) $(RFLAGS) $(SRCDIR)socket.c -o $(OBJECTDIR)socket$(OEXT)
-
-$(OBJECTDIR)socdvr.o : $(SRCDIR)socdvr.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-       $(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h \
-       $(INCDIR)arith.h
-	$(CC) $(RFLAGS) $(SRCDIR)socdvr.c -o $(OBJECTDIR)socdvr$(OEXT)
-
 $(OBJECTDIR)sxhash.o : $(SRCDIR)sxhash.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \

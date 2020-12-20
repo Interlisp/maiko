@@ -1,10 +1,5 @@
 # Options for SunOS4, SPARC and X-Window
 
-CLXFLAGS = -DCLX -DTCP_NODELAY
-
-CLXFILES = $(OBJECTDIR)socket.o \
-           $(OBJECTDIR)socdvr.o 
-
 XFILES = $(OBJECTDIR)XClose.o \
 	$(OBJECTDIR)Cursor.o \
 	$(OBJECTDIR)XWindow.o \
@@ -28,11 +23,10 @@ XFILES = $(OBJECTDIR)XClose.o \
 	$(OBJECTDIR)XMouse.o \
 	$(OBJECTDIR)Xsubwin.o \
 	$(OBJECTDIR)Xcolor.o \
-	$(OBJECTDIR)Xwinman.o  \
-	$(CLXFILES)
+	$(OBJECTDIR)Xwinman.o
 
 XVERSION = XV11R4
-XFLAGS = -DXWINDOW -D$(XVERSION) $(CLXFLAGS)
+XFLAGS = -DXWINDOW -D$(XVERSION)
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o
