@@ -13,6 +13,10 @@ RANLIB = ranlib
 AR = ar rcv
 ANSICC = $(CC)
 
+# Compiler flags
+CLANG_CFLAGS = -std=gnu89 -funsigned-char -fno-strict-aliasing
+GCC_CFLAGS = -std=gnu89 -funsigned-char -fno-strict-aliasing
+
 # for the files that need to be included in byte-swapped implementations:
 BYTESWAPFILES =
 SXHASHFILE = 

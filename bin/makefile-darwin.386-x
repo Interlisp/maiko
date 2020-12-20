@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
-CC = clang -m32 -std=gnu89 -funsigned-char -fno-strict-aliasing
+CC = clang -m32 $(CLANG_CFLAGS)
 OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
