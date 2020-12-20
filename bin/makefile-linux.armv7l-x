@@ -1,6 +1,6 @@
 # Options for Linux, Intel 386/486 and X-Window
 
-#CC = gcc -m32 $(GCC_CFLAGS) -fno-omit-frame-pointer -Wall -Wextra -fwrapv -fno-aggressive-loop-optimizations
+#CC = gcc -m32 $(GCC_CFLAGS) -fno-omit-frame-pointer -Wall -Wextra -fno-aggressive-loop-optimizations
 CC = clang -m32 $(CLANG_CFLAGS)
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
