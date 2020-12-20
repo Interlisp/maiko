@@ -39,7 +39,6 @@ int main(int argc, char *argv[])
 
 #include <nlist.h>
 #include <fcntl.h>
-#include <errno.h>
 
 int ether_fd = -1;                                /* file descriptor for ether socket */
 unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */

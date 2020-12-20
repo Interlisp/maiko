@@ -15,7 +15,6 @@ static char *id = "$Id: chatter.c,v 1.2 1999/01/03 02:06:51 sybalsky Exp $ Copyr
 #include <sys/termios.h>
 #include <sys/ttydev.h>
 #include <stdio.h>
-#include <errno.h>
 
 #include "lispemul.h"
 #include "address.h"

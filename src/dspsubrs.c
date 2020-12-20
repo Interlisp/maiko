@@ -87,8 +87,6 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
 extern struct cursor CurrentCursor;
 extern int LispWindowFd;
 
-extern int errno;
-
 /****************************************************
  *
  *	DSP_Cursor() entry of SUBRCALL 64 2

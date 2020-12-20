@@ -12,7 +12,6 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 
 #include "version.h"
 
-#include <errno.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,7 +40,6 @@ static char *id = "$Id: ldsout.c,v 1.4 2001/12/26 22:17:02 sybalsky Exp $ Copyri
 #define DEFAULT_PRIME_SYSOUTSIZE 8
 #define MAX_EXPLICIT_SYSOUTSIZE 256 /* Max possible sysout size is 64Mb */
 #define MBYTE 0x100000              /* 1 Mbyte */
-extern int errno;
 
 /* Flag for indication whether process space
   is going to expand or not */

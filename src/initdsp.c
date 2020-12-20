@@ -129,7 +129,6 @@ struct winlock DisplayLockArea;
 #endif /* SUNDISPLAY */
 
 extern DLword *EmCursorBitMap68K;
-extern int errno;
 extern IFPAGE *InterfacePage;
 
 int DebugDSP = T;

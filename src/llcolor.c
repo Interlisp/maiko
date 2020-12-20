@@ -27,8 +27,6 @@ static char *id = "$Id: llcolor.c,v 1.2 1999/01/03 02:07:15 sybalsky Exp $ Copyr
 #include <sys/types.h>
 #include <sys/file.h>
 
-#include <errno.h>
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"

@@ -41,7 +41,6 @@ static char *id = "$Id: setsout.c,v 1.3 1999/05/31 23:35:41 sybalsky Exp $ Copyr
 
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */
-extern int errno;
 
 void set_sysout(int version, char *sysout_file_name);
 

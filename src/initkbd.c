@@ -11,6 +11,7 @@ static char *id = "$Id: initkbd.c,v 1.2 1999/01/03 02:07:09 sybalsky Exp $ Copyr
 
 #include "version.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -124,7 +125,6 @@ extern struct screen LispScreen;
 
 extern int LispWindowFd;
 int LispKbdFd = -1;
-extern int errno;
 
 /*   for debug    */
 int DebugKBD = NIL;

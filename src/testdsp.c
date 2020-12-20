@@ -55,8 +55,6 @@ short *DisplayRegion68k; /* 68k addr of #{}22,0 */
 struct cursor CurrentCursor, InvisibleCursor;
 struct winlock DisplayLockArea;
 
-extern int errno;
-
 /**************************************
 extern DLword *EmCursorBitMap68K;
 extern IFPAGE *InterfacePage;
