@@ -1,6 +1,5 @@
 /* $Id: arith2.c,v 1.4 2001/12/24 01:08:58 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: arith2.c,v 1.4 2001/12/24 01:08:58 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

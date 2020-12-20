@@ -1,6 +1,5 @@
 /* $Id: rawcolor.c,v 1.3 2001/12/26 22:17:04 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: rawcolor.c,v 1.3 2001/12/26 22:17:04 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

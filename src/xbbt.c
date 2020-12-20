@@ -1,5 +1,4 @@
 /* $Id: xbbt.c,v 1.2 1999/01/03 02:07:46 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
-static char *id = "$Id: xbbt.c,v 1.2 1999/01/03 02:07:46 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

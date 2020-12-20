@@ -1,6 +1,5 @@
 /* $Id: Cldeetr.c,v 1.3 1999/01/03 02:06:30 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: Cldeetr.c,v 1.3 1999/01/03 02:06:30 sybalsky Exp $ Copyright (C) Venue";
 
 /*
  *

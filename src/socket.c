@@ -1,6 +1,5 @@
 /* $Id: socket.c,v 1.2 1999/01/03 02:07:34 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: socket.c,v 1.2 1999/01/03 02:07:34 sybalsky Exp $ Copyright (C) Venue";
 /* Copyright    Massachusetts Institute of Technology    1988	*/
 /*
  * THIS IS AN OS DEPENDENT FILE! It should work on 4.2BSD derived

@@ -1,5 +1,4 @@
 /* $Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
-static char *id = "$Id: dir.c,v 1.4 2001/12/26 22:17:01 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

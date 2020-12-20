@@ -1,6 +1,5 @@
 /* $Id: bitblt.c,v 1.2 1999/01/03 02:06:47 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: bitblt.c,v 1.2 1999/01/03 02:06:47 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

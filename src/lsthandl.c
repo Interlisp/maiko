@@ -1,6 +1,5 @@
 /* $Id: lsthandl.c,v 1.4 1999/05/31 23:35:38 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: lsthandl.c,v 1.4 1999/05/31 23:35:38 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

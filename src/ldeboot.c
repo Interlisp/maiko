@@ -1,6 +1,5 @@
 /* $Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: ldeboot.c,v 1.3 1999/01/03 02:07:13 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

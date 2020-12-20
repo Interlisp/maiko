@@ -1,6 +1,5 @@
 /* $Id: lisp2c.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: lisp2c.c,v 1.3 1999/05/31 23:35:37 sybalsky Exp $ Copyright (C) Venue";
 /* File containing the conversion functions between lisp and C */
 /* -jarl */
 

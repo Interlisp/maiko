@@ -1,6 +1,5 @@
 /* $Id: dosmouse.c,v 1.2 1999/01/03 02:06:56 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: dosmouse.c,v 1.2 1999/01/03 02:06:56 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

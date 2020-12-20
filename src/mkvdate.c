@@ -1,6 +1,5 @@
 /* $Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: mkvdate.c,v 1.5 2001/12/26 22:17:03 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

@@ -1,6 +1,5 @@
 /* $Id: sxhash.c,v 1.4 2001/12/24 01:09:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: sxhash.c,v 1.4 2001/12/24 01:09:06 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

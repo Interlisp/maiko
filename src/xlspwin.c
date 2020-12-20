@@ -1,6 +1,5 @@
 /* $Id: xlspwin.c,v 1.4 2001/12/26 22:17:07 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: xlspwin.c,v 1.4 2001/12/26 22:17:07 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

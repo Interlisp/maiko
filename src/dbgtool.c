@@ -1,6 +1,5 @@
 /* $Id: dbgtool.c,v 1.4 2001/12/24 01:09:00 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: dbgtool.c,v 1.4 2001/12/24 01:09:00 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

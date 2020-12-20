@@ -1,5 +1,4 @@
 /* $Id: timer.c,v 1.5 2001/12/26 22:17:05 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
-static char *id = "$Id: timer.c,v 1.5 2001/12/26 22:17:05 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

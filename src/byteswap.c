@@ -1,6 +1,5 @@
 /* $Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static char *id = "$Id: byteswap.c,v 1.5 2002/01/02 08:15:16 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

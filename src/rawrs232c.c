@@ -1,6 +1,5 @@
 /* $Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ (C) Copyright Venue, All Rights
  * Reserved  */
-static char *id = "$Id: rawrs232c.c,v 1.2 1999/01/03 02:07:31 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

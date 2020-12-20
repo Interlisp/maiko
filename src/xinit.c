@@ -1,5 +1,4 @@
 /* $Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved */
-static char *id = "$Id: xinit.c,v 1.5 2001/12/26 22:17:06 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/
