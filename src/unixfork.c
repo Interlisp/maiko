@@ -146,7 +146,7 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
        configure the shell appropriately, though this may not be so important any more */
     setenv("LDESHELL", "YES", 1);
 
-    if ((termtype[0] != 0) && (strlen(termtype) < 59)) { /* set the TERM environment var */
+    if (termtype[0] != 0) { /* set the TERM environment var */
       setenv("TERM", termtype, 1);
     }
     /* Start up csh */
@@ -327,7 +327,9 @@ int fork_Unix() {
 
           if (IOBuf[0] == 'P') { /* The new style, which takes term type & command to csh */
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");
+            if (tmp > 63) perror("Slave termtype length too long");
             if (SAFEREAD(LispPipeIn, termtype, tmp) < 0) perror("Slave reading termtype");
+            termtype[tmp] = '\0';
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");
             if (tmp > 510)
               cmdstring = (char *)malloc(tmp + 5);
