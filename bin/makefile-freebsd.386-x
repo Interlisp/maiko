@@ -1,6 +1,6 @@
-# Options for Linux, Intel 386/486 and X-Window
+# Options for FreeBSD, Intel 386/486 and X Windows
 
-CC = gcc -m32 -std=c89 -Wall
+CC = clang -m32 $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
