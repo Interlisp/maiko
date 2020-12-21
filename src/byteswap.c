@@ -166,7 +166,7 @@ void bit_reverse_region(unsigned short *top, int width, int height, int rasterwi
 /*									*/
 /************************************************************************/
 
-#ifdef RESWAPPEDDCODESTREAM
+#ifdef RESWAPPEDCODESTREAM
 unsigned int byte_swap_code_block(unsigned int *base) {
   UNSIGNED startpc, len;
 
