@@ -95,24 +95,13 @@ int main(int argc, char *argv[])
     char *pos;
 
     for (i = 1; i < argc; i++) {
-#ifdef XV11R1
-      pos = strchr(argv[i], ':');
-      if (pos != NULL) {
-        Display_Name = argv[i];
-        continue;
-      }
-#endif /* XV11R1 */
-
-#ifndef XV11R1
       if ((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "-display") == 0)) {
         if (i == argc) break;
         pos = (char *)strchr(argv[++i], ':');
         if (pos != NULL) { Display_Name = argv[i]; }
         continue;
       }
-#endif /* XV11R1 */
-
-    } /*end for() */
+    }
 
     if ((Xdisplay = XOpenDisplay(Display_Name)) != (Display *)NULL) {
       /* success to connect X-server */
