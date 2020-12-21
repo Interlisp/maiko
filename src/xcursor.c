@@ -31,8 +31,6 @@ extern IOPAGE *IOPage;
 extern XGCValues gcv;
 extern int Lisp_Xinitialized, Bitmap_Pad, Default_Depth;
 
-XImage CursorImage;
-Pixmap CursorPixmap_source, CursorPixmap_mask;
 GC cursor_source_gc, cursor_mask_gc;
 XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;
@@ -156,30 +154,6 @@ void init_Xcursor(Display *display, int window)
   TPRINT(("TRACE: init_Xcursor()\n"));
 
   XLOCK; /* Take no X signals during this activity (ISC 386) */
-
-  CursorImage.width = CURSORWIDTH;
-  CursorImage.height = CURSORHEIGHT;
-  CursorImage.xoffset = 0;
-  CursorImage.format = XYBitmap;
-#if (defined(XV11R1) || defined(BYTESWAP))
-  CursorImage.byte_order = LSBFirst;
-#else  /* XV11R1 | BYTESWAP */
-  CursorImage.byte_order = MSBFirst;
-#endif /* XV11R1 | BYTESWAP */
-
-  CursorImage.bitmap_unit = BITSPER_DLWORD;
-#ifdef AIX
-  CursorImage.bitmap_pad = 32;
-#else
-  CursorImage.bitmap_pad = Bitmap_Pad;
-#endif /* AIX */
-  CursorImage.depth = 1;
-  CursorImage.bytes_per_line = BITSPER_DLWORD / 8;
-  CursorImage.bitmap_bit_order = MSBFirst;
-
-  CursorPixmap_source = XCreatePixmap(display, window, CURSORWIDTH, CURSORHEIGHT, 1);
-  CursorPixmap_mask = XCreatePixmap(display, window, CURSORWIDTH, CURSORHEIGHT, 1);
-
   gcv.function = GXcopy;
   gcv.foreground = BlackPixelOfScreen(ScreenOfDisplay(display, DefaultScreen(display)));
   gcv.background = WhitePixelOfScreen(ScreenOfDisplay(display, DefaultScreen(display)));
