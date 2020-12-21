@@ -2286,5 +2286,4 @@ FP_noint:	DW	003fh	;; No interrupts, round to closest, 24bit precision");
 #endif /* OPDISP */
 }
 
-int retfun(void) { return (0); }
 void do_brk(void) {}
