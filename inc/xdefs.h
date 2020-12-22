@@ -50,36 +50,4 @@ extern int XNeedSignal;
 #define XUNLOCK
 #endif	/* LOCK_X_UPDATES */
 
-#ifdef XWINDOW
-#ifdef XV11R4
-#undef XV11R1
-#undef XV11R2
-#undef XV11R3
-#endif /* XV11R4 */
-
-#ifdef XV11R3
-#undef XV11R1
-#undef XV11R2
-#undef XV11R4
-#endif /* XV11R3 */
-
-#ifdef XV11R2
-#undef XV11R1
-#undef XV11R3
-#undef XV11R4
-#endif /* XV11R2 */
-
-#ifdef XV11R1
-#undef XV11R2
-#undef XV11R3
-#undef XV11R4
-#endif /* XV11R1 */
-
-#if ( !(defined( XV11R1 ))  \
-   && !(defined( XV11R2 ))  \
-   && !(defined( XV11R3 ))  \
-   && !(defined( XV11R4 )) )
-#define XV11R4			/* newest version */
-#endif
-#endif /* XWINDOW */
 #endif /* XDEFS_H */

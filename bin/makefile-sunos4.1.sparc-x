@@ -25,8 +25,7 @@ XFILES = $(OBJECTDIR)XClose.o \
 	$(OBJECTDIR)Xcolor.o \
 	$(OBJECTDIR)Xwinman.o
 
-XVERSION = XV11R4
-XFLAGS = -DXWINDOW -D$(XVERSION)
+XFLAGS = -DXWINDOW
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o
