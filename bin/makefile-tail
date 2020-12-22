@@ -824,15 +824,15 @@ $(OBJECTDIR)xinit.o : $(SRCDIR)xinit.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	$(INCDIR)adr68k.h
 	$(CC) $(RFLAGS) $(SRCDIR)xinit.c -o $(OBJECTDIR)xinit$(OEXT)
 
-$(OBJECTDIR)XClose.o : $(SRCDIR)XClose.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)XClose.o : $(SRCDIR)XClose.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h 
 	$(CC) $(RFLAGS) $(SRCDIR)XClose.c -o $(OBJECTDIR)XClose$(OEXT)
 
-$(OBJECTDIR)Cursor.o : $(SRCDIR)Cursor.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h $(INCDIR)MyWindow.h \
+$(OBJECTDIR)Cursor.o : $(SRCDIR)Cursor.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h $(INCDIR)MyWindow.h \
 	$(INCDIR)lispemul.h $(INCDIR)display.h 
 	$(CC) $(RFLAGS) $(SRCDIR)Cursor.c -o $(OBJECTDIR)Cursor$(OEXT)
 
-$(OBJECTDIR)XWindow.o : $(SRCDIR)XWindow.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)XWindow.o : $(SRCDIR)XWindow.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)lispemul.h $(INCDIR)address.h \
 	$(INCDIR)adr68k.h 
 	$(CC) $(RFLAGS) $(SRCDIR)XWindow.c -o $(OBJECTDIR)XWindow$(OEXT)
@@ -840,64 +840,64 @@ $(OBJECTDIR)XWindow.o : $(SRCDIR)XWindow.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h
 $(OBJECTDIR)DoRing.o : $(SRCDIR)DoRing.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h
 	$(CC) $(RFLAGS) $(SRCDIR)DoRing.c -o $(OBJECTDIR)DoRing$(OEXT)
 
-$(OBJECTDIR)DoScroll.o : $(SRCDIR)DoScroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)DoScroll.o : $(SRCDIR)DoScroll.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
 	$(CC) $(RFLAGS) $(SRCDIR)DoScroll.c -o $(OBJECTDIR)DoScroll$(OEXT)
 
-$(OBJECTDIR)XEvent.o : $(SRCDIR)XEvent.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)XEvent.o : $(SRCDIR)XEvent.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
 	$(CC) $(RFLAGS) $(SRCDIR)XEvent.c -o $(OBJECTDIR)XEvent$(OEXT)
 
-$(OBJECTDIR)XGravity.o : $(SRCDIR)XGravity.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)XGravity.o : $(SRCDIR)XGravity.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)XGravity.c -o $(OBJECTDIR)XGravity$(OEXT)
 
 $(OBJECTDIR)XInit.o : $(SRCDIR)XInit.c $(REQUIRED-INCS) 
 	$(CC) $(RFLAGS) $(SRCDIR)XInit.c -o $(OBJECTDIR)XInit$(OEXT)
 
-$(OBJECTDIR)Xevinit.o : $(SRCDIR)Xevinit.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xevinit.o : $(SRCDIR)Xevinit.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xevinit.c -o $(OBJECTDIR)Xevinit$(OEXT)
 
 $(OBJECTDIR)Xkbdmus.o : $(SRCDIR)Xkbdmus.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h $(INCDIR)dbprint.h
+	$(INCDIR)xdefs.h $(INCDIR)MyWindow.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xkbdmus.c -o $(OBJECTDIR)Xkbdmus$(OEXT)
 
-$(OBJECTDIR)Xlspwin.o : $(SRCDIR)Xlspwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xlspwin.o : $(SRCDIR)Xlspwin.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)Xdeflt.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xlspwin.c -o $(OBJECTDIR)Xlspwin$(OEXT)
 
-$(OBJECTDIR)xlspwin.o : $(SRCDIR)xlspwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)xlspwin.o : $(SRCDIR)xlspwin.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)xdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)xlspwin.c -o $(OBJECTDIR)xlspwin$(OEXT)
 
-$(OBJECTDIR)Xbbt.o : $(SRCDIR)Xbbt.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xbbt.o : $(SRCDIR)Xbbt.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xbbt.c -o $(OBJECTDIR)Xbbt$(OEXT)
 
-$(OBJECTDIR)xbbt.o : $(SRCDIR)xbbt.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)xbbt.o : $(SRCDIR)xbbt.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)xbbt.c -o $(OBJECTDIR)xbbt$(OEXT)
 
 $(OBJECTDIR)LispXdisplay.o : $(SRCDIR)LispXdisplay.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	$(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)pilotbbt.h \
-	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
+	$(INCDIR)xdefs.h $(INCDIR)MyWindow.h $(INCDIR)Xbitblt.h
 	$(CC) $(RFLAGS) $(SRCDIR)LispXdisplay.c -o $(OBJECTDIR)LispXdisplay$(OEXT)
 
-$(OBJECTDIR)Xkbd.o : $(SRCDIR)Xkbd.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xkbd.o : $(SRCDIR)Xkbd.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xkbd.c -o $(OBJECTDIR)Xkbd$(OEXT)
 
-$(OBJECTDIR)Xmkicon.o : $(SRCDIR)Xmkicon.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
-	$(INCDIR)MyWindow.h $(INCDIR)Xicon.h
+$(OBJECTDIR)Xmkicon.o : $(SRCDIR)Xmkicon.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
+	$(INCDIR)MyWindow.h $(INCDIR)xbitmaps.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xmkicon.c -o $(OBJECTDIR)Xmkicon$(OEXT)
 
-$(OBJECTDIR)xmkicon.o : $(SRCDIR)xmkicon.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
-	$(INCDIR)MyWindow.h $(INCDIR)Xicon.h
+$(OBJECTDIR)xmkicon.o : $(SRCDIR)xmkicon.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
+	$(INCDIR)MyWindow.h $(INCDIR)xbitmaps.h
 	$(CC) $(RFLAGS) $(SRCDIR)xmkicon.c -o $(OBJECTDIR)xmkicon$(OEXT)
 
 $(OBJECTDIR)Xopendsp.o : $(SRCDIR)Xopendsp.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(INCDIR)xdefs.h $(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xopendsp.c -o $(OBJECTDIR)Xopendsp$(OEXT)
 
 $(OBJECTDIR)Xrdopt.o : $(SRCDIR)Xrdopt.c  $(REQUIRED-INCS) $(INCDIR)Xdeflt.h
@@ -907,48 +907,46 @@ $(OBJECTDIR)xrdopt.o : $(SRCDIR)xrdopt.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)xrdopt.c -o $(OBJECTDIR)xrdopt$(OEXT)
 
 $(OBJECTDIR)Xreconf.o : $(SRCDIR)Xreconf.c  $(REQUIRED-INCS) \
-	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(INCDIR)xdefs.h $(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xreconf.c -o $(OBJECTDIR)Xreconf$(OEXT)
 
-$(OBJECTDIR)XScroll.o : $(SRCDIR)XScroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
-	$(INCDIR)MyWindow.h $(INCDIR)Stipple.h $(INCDIR)Xcursdef.h \
-	$(INCDIR)XCursors.h
+$(OBJECTDIR)XScroll.o : $(SRCDIR)XScroll.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
+	$(INCDIR)MyWindow.h $(INCDIR)xbitmaps.h
 	$(CC) $(RFLAGS) $(SRCDIR)XScroll.c -o $(OBJECTDIR)XScroll$(OEXT)
 
-$(OBJECTDIR)xscroll.o : $(SRCDIR)xscroll.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
-	$(INCDIR)MyWindow.h $(INCDIR)Stipple.h $(INCDIR)Xcursdef.h \
-	$(INCDIR)XCursors.h
+$(OBJECTDIR)xscroll.o : $(SRCDIR)xscroll.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
+	$(INCDIR)MyWindow.h $(INCDIR)xbitmaps.h
 	$(CC) $(RFLAGS) $(SRCDIR)xscroll.c -o $(OBJECTDIR)xscroll$(OEXT)
 
-$(OBJECTDIR)Xscrolb.o : $(SRCDIR)Xscrolb.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xscrolb.o : $(SRCDIR)Xscrolb.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xscrolb.c -o $(OBJECTDIR)Xscrolb$(OEXT)
 
 $(OBJECTDIR)XCursor.o : $(SRCDIR)XCursor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)iopage.h $(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(INCDIR)iopage.h $(INCDIR)xdefs.h $(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)XCursor.c -o $(OBJECTDIR)XCursor$(OEXT)
 
 $(OBJECTDIR)xcursor.o : $(SRCDIR)xcursor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)iopage.h $(INCDIR)XVersion.h $(INCDIR)MyWindow.h
+	$(INCDIR)iopage.h $(INCDIR)xdefs.h $(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)xcursor.c -o $(OBJECTDIR)xcursor$(OEXT)
 
 $(OBJECTDIR)XMouse.o : $(SRCDIR)XMouse.c  $(REQUIRED-INCS) \
-	$(INCDIR)XVersion.h $(INCDIR)MyWindow.h 
+	$(INCDIR)xdefs.h $(INCDIR)MyWindow.h 
 	$(CC) $(RFLAGS) $(SRCDIR)XMouse.c -o $(OBJECTDIR)XMouse$(OEXT)
 
-$(OBJECTDIR)Xsubwin.o : $(SRCDIR)Xsubwin.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xsubwin.o : $(SRCDIR)Xsubwin.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xsubwin.c -o $(OBJECTDIR)Xsubwin$(OEXT)
 
-$(OBJECTDIR)Xcolor.o : $(SRCDIR)Xcolor.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xcolor.o : $(SRCDIR)Xcolor.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xcolor.c -o $(OBJECTDIR)Xcolor$(OEXT)
 
-$(OBJECTDIR)Xwinman.o : $(SRCDIR)Xwinman.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)Xwinman.o : $(SRCDIR)Xwinman.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)Xwinman.c -o $(OBJECTDIR)Xwinman$(OEXT)
 
-$(OBJECTDIR)xwinman.o : $(SRCDIR)xwinman.c  $(REQUIRED-INCS) $(INCDIR)XVersion.h \
+$(OBJECTDIR)xwinman.o : $(SRCDIR)xwinman.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman$(OEXT)
 

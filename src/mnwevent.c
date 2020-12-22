@@ -16,7 +16,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 
-/* #include "XVersion.h" */
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "MyWindow.h"
