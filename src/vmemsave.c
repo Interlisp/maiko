@@ -160,10 +160,6 @@ LispPTR vmem_save0(LispPTR *args)
 
   Lisp_errno = &Dummy_errno;
 
-#ifdef DEMO
-  return FILECANNOTOPEN;
-#else
-
   if ((args[0] != NIL) && lispstringP(args[0])) {
     /* Check of lispstringP is safer for LispStringToCString */
     LispStringToCString(args[0], pathname, MAXPATHLEN);
@@ -203,7 +199,6 @@ LispPTR vmem_save0(LispPTR *args)
     }
     return (vmem_save(sysout));
   }
-#endif /* DEMO */
 }
 
 /************************************************************************/
