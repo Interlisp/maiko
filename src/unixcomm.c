@@ -31,6 +31,7 @@ Unix Interface Communications
 #include <setjmp.h> /* JRB - timeout.h needs setjmp.h */
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
@@ -258,7 +259,7 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 /************************************************************************/
 
 int FindUnixPipes(void) {
-  char *envtmp, *getenv(const char *);
+  char *envtmp;
   register int i;
   struct unixjob cleareduj;
 

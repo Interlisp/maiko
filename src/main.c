@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <setjmp.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #include <time.h>
@@ -248,7 +249,6 @@ char keystring[128] = {""};
 #define FALSE 0
 #define TRUE !FALSE
 
-char *getenv();
 int Lisp_Xinitialized = FALSE;
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */

@@ -20,6 +20,7 @@
 
 #include <signal.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
@@ -220,8 +221,6 @@ LispPTR unix_username(LispPTR *args) {
  * The only usage seems to be checking "ARCH" == "dos" and for the existance
  * of *any* result from the call, which indicates it's an emulated system.
  */
-char *getenv(const char *);
-
 LispPTR unix_getparm(LispPTR *args) {
   char envname[20], result[128], *envvalue;
   if (lisp_string_to_c_string(args[0], envname, sizeof envname)) return NIL;
