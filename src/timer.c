@@ -793,13 +793,9 @@ void int_fp_service(int sig, int code, struct sigcontext *scp)
 }
 
 void int_fp_init() { /* first set up the signal handler */
-#ifdef OS5
   if (sigset(SIGFPE, int_fp_service))
-#else
-  if (ieee_handler("set", "all", int_fp_service))
-#endif /* OS5 */
 
-  perror("Sigvec for FPE failed");
+  perror("Sigset for FPE failed");
   DBPRINT(("FP interrupts enabled\n"));
 }
 
