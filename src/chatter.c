@@ -11,9 +11,9 @@
 #include "version.h"
 
 #include <sys/fcntlcom.h>
-#include <sys/termios.h>
 #include <sys/ttydev.h>
 #include <stdio.h>
+#include <termios.h>
 
 #include "lispemul.h"
 #include "address.h"
