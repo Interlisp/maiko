@@ -369,7 +369,7 @@ typedef struct{
 	/****************************************************************/
 
 #define GETBYTE(base) (* (base))
-/* GETBASEWORD only works if base points to a 32-bit bounday */
+/* GETBASEWORD only works if base points to a 32-bit boundary */
 #define GETBASEWORD(base, offset) (* ((base)+(offset)))
   /* GETWORDBASEWORD works right with base on a 16-bit boundary. */
 #define GETWORDBASEWORD(base, offset) (* (((DLword *)(base))+(offset)))
@@ -572,7 +572,7 @@ typedef struct
 	/****************************************************************/
 
 #define GETBYTE(base) (* (unsigned char *) (3^(UNSIGNED)(base)))
-  /* GETBASEWORD only works if base points to a 32-bit bounday */
+  /* GETBASEWORD only works if base points to a 32-bit boundary */
 #define GETBASEWORD(base, offset) GETWORDBASEWORD((base),(offset))
 #define GETWORDBASEWORD(base, offset) (* (DLword *) (2^(UNSIGNED)((base)+(offset))))
 #define GETWORD(base) (* (DLword *) (2^(UNSIGNED)(base)))
@@ -625,7 +625,7 @@ typedef struct
 #define GetTypeEntry(address)      ( GETWORD(MDStypetbl+((address)>>9)) )
 
 #else
-	/* Because the 386i's code generator does bettter with them */
+	/* Because the 386i's code generator does better with them */
 	/* in this order (does an add, rather than mov-add) */
 	/* JDS 22-mar-90 */
 

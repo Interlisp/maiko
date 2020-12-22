@@ -214,7 +214,7 @@ LispPTR unix_username(LispPTR *args) {
  * and so did PowerBook Macintosh systems.
  * "MACH" and "ARCH" both seem to be a mix of instruction set architecture and
  * system types (rs/6000 used PowerPC).
- * The only usage seems to be checking "ARCH" == "dos" and for the existance
+ * The only usage seems to be checking "ARCH" == "dos" and for the existence
  * of *any* result from the call, which indicates it's an emulated system.
  */
 LispPTR unix_getparm(LispPTR *args) {

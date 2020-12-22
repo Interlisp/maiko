@@ -27,8 +27,8 @@
 /*	This function's role is  narrowing the gap between the		 */
 /*      contextswitch and the subrcall.					 */
 /*	In the original Lisp Source, as the contextswitch process may    */
-/*	clear the remain area to FSB,there is no problem in scannig stack*/
-/*	.But in the subrcall,there isn't such process.			 */
+/*	clear the remain area to FSB, there is no problem in scanning	 */
+/*	stack. But in the subrcall,there isn't such process.		 */
 /*	Therefore, the function is required to set the remain stack area */
 /*	 to FSB. And this function does so.				 */
 /*  dogc01()								 */
@@ -112,7 +112,7 @@ void gcarrangementstack(void) {
 /****************************************************************/
 /* The following function is the caller that is the reclaimer.  */
 /* And, this function is same as \DOGC1 in Lisp because in the  */
-/* C's implimentation the contextswitch is not required for the */
+/* C's implementation the contextswitch is not required for the */
 /* remaining the system status.					*/
 /****************************************************************/
 

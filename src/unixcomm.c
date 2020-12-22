@@ -321,7 +321,7 @@ int FindAvailablePty(char *Master, char *Slave) {
   grantpt(res);
   unlockpt(res);
   strcpy(Slave, ptsname(res));
-  DBPRINT(("slave pyt name is %s.\n", Slave));
+  DBPRINT(("slave pty name is %s.\n", Slave));
 #else
 
   /* From p to r */

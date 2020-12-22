@@ -47,7 +47,7 @@
 /*		ebx	tscache - the top-of-stack item.		*/
 /*									*/
 /*									*/
-/*	Rgister conventions within arithmetic functions in the files	*/
+/*	Register conventions within arithmetic functions in the files	*/
 /*	arith2.c - arith4.c, etc.:					*/
 /*									*/
 /*		esi	first argument to the function			*/

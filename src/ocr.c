@@ -292,7 +292,7 @@ INVAL:
 /*
  * Subr OCR_COMM: comm = OCR_OPEN
  *
- * Fork OCR process and isssue 'O' command to open OCR device.
+ * Fork OCR process and issue 'O' command to open OCR device.
  */
 
 static int ocr_open() {
@@ -485,7 +485,7 @@ static void ocr_close() {
 /*
  * Subr OCR_COMM: comm = OCR_SCAN
  *
- * Issue 'S' command to start scanning.  'S' commmand returns immediatedly
+ * Issue 'S' command to start scanning.  'S' command returns immediately
  * without waiting device to finish scanning.
  */
 
@@ -525,7 +525,7 @@ static int ocr_scan(sp) struct ocr_scan_para *sp;
  * Subr OCR_COMM: comm = OCR_IMG_INFO
  *
  * Issue 'I' command to get an information about the image being uploaded.
- * 'I' commmand returns immediatedly without waiting OCR process to
+ * 'I' command returns immediately without waiting OCR process to
  * finish its work.
  */
 
@@ -642,7 +642,7 @@ static int ocr_clr_rpara() {
  * Subr OCR_COMM: comm = OCR_READ
  *
  * Issue 'R' command to start reading.
- * 'R' commmand returns immediatedly without waiting OCR process to
+ * 'R' command returns immediately without waiting OCR process to
  * finish its work.
  */
 
@@ -677,7 +677,7 @@ static int ocr_read() {
  * SIGUSR1 handler.
  *
  * If one of time consuming work is finished by OCR process, SIGUSR1 is signalled.
- * Accoding to the waiting reason, do appropriate work, then to notify Lisp.
+ * According to the waiting reason, do appropriate work, then to notify Lisp.
  */
 
 static void ocr_sig_handler(sig, code, scp) int sig, code;
@@ -811,7 +811,7 @@ static void ocr_read_finish() {
 }
 
 /*
- * Set up the interrupt stuff and issue a requst.
+ * Set up the interrupt stuff and issue a request.
  */
 
 static void ocr_irq() {
