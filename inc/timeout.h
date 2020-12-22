@@ -68,10 +68,3 @@ extern	int	TIMEOUT_TIME;
 
 #define INTRSAFE0(exp)				\
   do {} while ((int)(exp) == 0 && errno == EINTR)
-
-#ifdef OS5
-#define INTRCHECK(exp,var)				\
-  while ((int)var == 0 && errno == EINTR) { exp; }
-#else
-#define INTRCHECK(exp,var)
-#endif
