@@ -14,8 +14,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XVERSION = XV11R4
-XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT -D$(XVERSION)
+XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g

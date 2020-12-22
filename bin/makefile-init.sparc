@@ -32,8 +32,7 @@ XFILES = $(OBJECTDIR)xlspwin.o \
 	$(OBJECTDIR)xinit.o
 
 
-XVERSION = XV11R4
-XFLAGS = -DXWINDOW -DXV11R4 -I/usr/openwin/include
+XFLAGS = -DXWINDOW -I/usr/openwin/include
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o
