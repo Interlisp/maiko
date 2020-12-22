@@ -2030,10 +2030,6 @@ sklp2:
     return (NIL);
   }
 
-#ifdef DEMO
-/* Do nothing if this is a demo emulator--not allowed to write files. */
-#else
-
 /* OK to write the page. */
 
 #ifdef BYTESWAP
@@ -2054,8 +2050,6 @@ wlp:
 #ifdef BYTESWAP
   word_swap_page((DLword *)bufp, (count + 3) >> 2);
 #endif /* BYTESWAP */
-
-#endif /* DEMO */
 
   return (ATOM_T);
 }

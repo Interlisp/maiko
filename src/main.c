@@ -743,9 +743,6 @@ void print_info_lines() {
 #else
   printf("Creation date: %s", ctime(&MDate));
 #endif
-#ifdef DEMO
-  printf("Demonstration emulator, not for commercial use\n");
-#endif /* DEMO */
 #ifdef LPSOLVE
   printf("Contains lp_solve LP solver.\n");
 #endif /* LPSOLVE */
