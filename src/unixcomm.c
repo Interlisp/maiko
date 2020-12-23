@@ -41,13 +41,7 @@ Unix Interface Communications
 #include <unistd.h>
 
 
-#ifdef OS4
-#include <sys/termios.h>
-#elif OS5
-#include <sys/termio.h>
-#else
 #include <termios.h>
-#endif /* OS4 */
 
 #ifdef sun
 /* to get S_IFIFO defn for creating fifos */

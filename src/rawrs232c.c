@@ -12,13 +12,13 @@
 
 #include <sys/select.h>
 #include <sys/types.h>
-#include <sys/termios.h>
 #include <sys/ttold.h>
 #include <sys/time.h>
 #include <stropts.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
+#include <termios.h>
 
 #include "lispemul.h"
 #include "address.h"
