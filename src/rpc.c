@@ -46,12 +46,6 @@
 #define MAX_HOSTNAME_LENGTH 100
 #define UDP_DATA_BLOCK_SIZE 1000
 
-#ifdef OS5
-#define ToMem memmove
-#else
-#define ToMem memcpy
-#endif /* OS5 */
-
 LispPTR rpc(LispPTR *args)
 {
 #ifndef DOS
@@ -130,7 +124,7 @@ LispPTR rpc(LispPTR *args)
   /* Resolve the host address. */
   if (hp) {
     sin1.sin_family = hp->h_addrtype;
-    ToMem((caddr_t)&sin1.sin_addr, hp->h_addr, hp->h_length);
+    memcpy((caddr_t)&sin1.sin_addr, hp->h_addr, hp->h_length);
   } else
     goto handle_error;
 

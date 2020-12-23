@@ -48,12 +48,6 @@
 #include "inlnPS2.h"
 #endif
 
-#ifdef OS5
-#define ToMem memmove
-#else
-#define ToMem memcpy
-#endif /* !OS5 */
-
 #define TCPhostlookup 0
 #define TCPservicelookup 1
 #define TCPsocket 2
@@ -126,7 +120,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
       if (!host) return (NIL);
-      ToMem((char *)&farend.sin_addr, (char *)host->h_addr, host->h_length);
+      memcpy((char *)&farend.sin_addr, (char *)host->h_addr, host->h_length);
     host_ok:
       sock = LispNumToCInt(proto);
       result = socket(AF_INET, SOCK_STREAM, 0);
