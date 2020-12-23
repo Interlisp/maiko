@@ -142,7 +142,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
 LispPTR check_unix_password(LispPTR *args) {
 #ifndef DOS
   struct passwd *pwd;
-  char *password, *getpass(const char *);
+  char *password;
 #ifndef OS5
   char *crypt(const char *, const char *);
 #endif /* OS5 */
