@@ -2648,7 +2648,7 @@ static int locate_file(char *dir, char *name)
   for (S_TOUT(dp = readdir(dirp)); dp != NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)))
     if (dp) {
-      if (dp->d_reclen == len) {
+      if (strlen(dp->d_name) == len) {
         strcpy(nb2, dp->d_name);
         UPCASE(nb2);
         if (strcmp(nb1, nb2) == 0) {
