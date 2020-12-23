@@ -289,8 +289,6 @@ typedef unsigned char u_char;
 typedef unsigned long u_int;
 typedef signed char s_char;
 typedef unsigned short u_short;
-	/* DOS doesn't have the BSD bzero &c functions */
-#define bzero(place,len) memset(place, 0, len)
 #undef UNALIGNED_FETCH_OK
 #undef HAS_GETHOSTID
 #undef REGISTER

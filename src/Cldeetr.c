@@ -17,6 +17,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -99,7 +100,7 @@ int main(int argc, char *argv[])
         perror("Couldn't GIFCONF socket; Net is off");
 #else  /* OS4 */
 
-      bzero(ifbuf, sizeof(ifbuf));
+      memset(ifbuf, 0, sizeof(ifbuf));
       {
         /* we have to get the interface name from another socket, since
         /dev/nit doesn't know anything until it gets bound, and we

@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <string.h>
 #include <ctype.h>
 #ifndef DOS
 #include <sys/file.h>
@@ -659,7 +660,7 @@ void init_ether() {
         if_data.ifc_len = sizeof(ifbuf);
         if_data.ifc_req = ifbuf;
         /* 4.0 - before the SIOCGIFCONF, do:
-                bzero(ifbuf, sizeof(ifbuf))
+                memset(ifbuf, 0, sizeof(ifbuf))
         */
         if (ioctl(ether_fd, SIOCGIFCONF, &if_data) < 0) {
           perror("Couldn't GIFCONF socket; Net is off");
@@ -686,7 +687,7 @@ void init_ether() {
         }
         if_data.ifc_len = sizeof(ifbuf);
         if_data.ifc_req = ifbuf;
-        bzero(ifbuf, sizeof(ifbuf));
+        memset(ifbuf, 0, sizeof(ifbuf));
         {
           /* we have to get the interface name from another socket, since
                   /dev/nit doesn't know anything until it gets bound, and we
@@ -783,7 +784,7 @@ if (ether_fd >= 0) {
 
 #ifndef OS4
   /* establish the operating modes */
-  bzero(&nioc, sizeof(nioc));
+  memset(&nioc, 0, sizeof(nioc));
   nioc.nioc_bufspace = 20000;
   nioc.nioc_chunksize = 50; /* small chunks so each packet read */
   nioc.nioc_typetomatch = NT_ALLTYPES;
