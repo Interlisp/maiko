@@ -317,7 +317,7 @@ int fork_Unix() {
       case 'S':
       case 'P':          /* Fork PTY shell */
         if (slot >= 0) { /* Found a free slot */
-          char termtype[32];
+          char termtype[64];
 #ifdef FULLSLAVENAME
           char slavepty[32]; /* For slave pty name */
 
