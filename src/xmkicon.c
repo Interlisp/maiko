@@ -43,7 +43,6 @@ Pixmap make_Xicon(DspInterface dsp)
 {
   unsigned int width, height;
   int value, x_hot, y_hot;
-  char *getenv();
 
 #ifdef TRACE
   printf("In make_Xicon().\n");

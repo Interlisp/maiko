@@ -12,6 +12,7 @@
 
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
 #ifndef DOS
@@ -382,8 +383,6 @@ void seteventmask(struct inputmask *eventmask)
   win_setinputmask(LispWindowFd, eventmask, eventmask, WIN_NULLLINK);
 }
 #endif /* SUNDISPLAY */
-
-char *getenv(); /*  ---- external entry points --------*/
 
 #define MIN_KEYTYPE 3
 #define KB_AS3000J (7 + MIN_KEYTYPE)

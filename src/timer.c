@@ -44,6 +44,7 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #endif /* DOS */
 #include <sys/types.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -102,7 +103,6 @@ extern DspInterface currentdsp;
  */
 
 int TIMEOUT_TIME; /* For file system timeout */
-char *getenv();
 
 #ifdef XWINDOW
 #define FALSE 0

@@ -63,6 +63,7 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 #include <nlist.h>
 #include <fcntl.h>
 #include <malloc.h>
+#include <stdlib.h>
 
 #endif /* NOETHER */
 
@@ -103,7 +104,7 @@ int main(int argc, char *argv[]) {
     /* Use DLPI to connect to the ethernet.  This code is stolen
        from NFSWATCH4.3
     */
-    char *etherdev = (char *)getenv("LDEETHERDEV");
+    char *etherdev = getenv("LDEETHERDEV");
     ether_fd = setup_dlpi_dev(etherdev);
     if (ether_fd >= 0) { /* Open an ether interface */
       ether_intf_type = dlpi_devtype(ether_fd);

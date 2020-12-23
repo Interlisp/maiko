@@ -205,12 +205,12 @@ void read_Xoption(int *argc, char *argv[])
   if (*argc == 2) /* There was probably a sysoutarg */
   {
     (void)strcpy(sysout_name, argv[1]);
-  } else if ((envname = (char *)getenv("LDESRCESYSOUT")) != NULL) {
+  } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
     strcpy(sysout_name, envname);
-  } else if ((envname = (char *)getenv("LDESOURCESYSOUT")) != NULL)
+  } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
     strcpy(sysout_name, envname);
   else {
-    envname = (char *)getenv("HOME");
+    envname = getenv("HOME");
     (void)strcat(sysout_name, envname);
     (void)strcat(sysout_name, "/lisp.virtualmem");
 
@@ -231,7 +231,7 @@ void read_Xoption(int *argc, char *argv[])
     fprintf(stderr, "or provide a -display argument.\n");
     print_Xusage(argv[0]);
   } else {
-    envname = (char *)getenv("DISPLAY");
+    envname = getenv("DISPLAY");
     (void)strcpy(Display_Name, envname);
   }
   if ((xdisplay = XOpenDisplay(Display_Name)) != NULL) {
@@ -252,7 +252,7 @@ void read_Xoption(int *argc, char *argv[])
     exit(-1);
   }
 
-  envname = (char *)getenv("HOME");
+  envname = getenv("HOME");
   (void)strcat(tmp, envname);
   (void)strcat(tmp, "/.Xdefaults");
   if (access(tmp, R_OK) != 0) {
