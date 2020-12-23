@@ -158,7 +158,6 @@ error Must specify RELEASE to build Medley.
 	/*  or idiosyncrasies of the machine we're compiling for.	*/
 	/*								*/
 	/*  Defaults:	Unaligned fetches OK	UNALIGNED_FETCH_OK	*/
-	/*		type char is signed	SIGNED_CHARS		*/
 	/*		fp values used with				*/
 	/*		FPTEST can be in regs.	REGISTER		*/
 	/*		Use asm inline arith	USE_INLINE_ARITH	*/
