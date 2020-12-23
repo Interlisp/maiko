@@ -14,7 +14,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT
+XFLAGS = -I/opt/local/include -DXWINDOW -DNOPIXRECT
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O1 -g
@@ -25,8 +25,8 @@ DFLAGS = $(DEBUGFLAGS) -DNEW_STORAGE -DMACOSX -DOLD_CURSOR \
 	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
 	-DRELEASE=351
 
-LDFLAGS = -L/opt/X11/lib -lX11 -lm
-LDELDFLAGS =  -L/opt/X11/lib -lX11 -lm
+LDFLAGS = -L/opt/local/lib -lX11 -lm
+LDELDFLAGS =  -L/opt/local/lib -lX11 -lm
 
 INLINE = # $(SRCDIR)dspSPARC.il
 BITBLTFILE = # $(OBJECTDIR)bbtSPARC.o

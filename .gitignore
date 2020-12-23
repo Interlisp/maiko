@@ -3,6 +3,7 @@
 # Editor backups and recovery files
 *~
 \#*#
+.DS_Store
 # build directories
 *.386-x/**
 *.386/**
@@ -12,6 +13,8 @@
 *.x86_64/**
 *.armv7l-x/**
 *.armv7l/**
+*.aarch64-x/**
+*.aarch64/**
 init.386/**
 # core files
 core
