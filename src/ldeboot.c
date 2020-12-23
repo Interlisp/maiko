@@ -25,11 +25,7 @@
 #endif
 
 #ifdef USESUNSCREEN
-#ifdef OS5
 #include <sys/fbio.h>
-#else
-#include <sun/fbio.h>
-#endif /* OS5 */
 #endif /* USESUNSCREEN */
 
 #include "unixfork.h"
