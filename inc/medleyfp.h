@@ -27,7 +27,6 @@
 #ifdef FLTINT
 volatile extern int  FP_error;
 
-
 /*  Note that a compiler may very likely move code around the arithmetic
     operation, causing this test (set by an interrupt handler) to be
     incorrect.  For example, the Sun SPARC compiler with -O2 makes
@@ -37,34 +36,10 @@ volatile extern int  FP_error;
 #define FPCLEAR         FP_error = 0;
 #define FPTEST(result)  FP_error
 
-#else
-
-/*  fpstatus_ is a FORTRAN library routine (in libc) which
-    can be called to determine floating point status results.
-    Documented in the Sun manual, "Floating Point Programmer's Guide",
-    (Rev. A 19-Sep-86), pg. 34, it does *not* exist in libc for the
-    SPARC.
-
-    For sparc, should also check for isnan?  Don't know what isnormal
-    & issubnormal do (these are sunos4.0 only)
- */
-#if defined(OS5)
+#elif defined(OS5)
+#include <ieeefp.h>
 #define FPCLEAR
 #define FPTEST(result) (!finite(result))
-
-#elif defined(sparc) || defined(I386)
-#define FPCLEAR
-#define FPTEST(result) (isinf(result) || isnan(result))
-
-#elif defined(LINUX)
-#include <math.h>
-#define FPCLEAR
-#define FPTEST(result) ((!finite(result)) || isnan(result))
-
-#elif defined(MACOSX) || defined(FREEBSD)
-#include <math.h>
-#define FPCLEAR
-#define FPTEST(result) (!isfinite(result))
 
 #elif defined(DOS)
 #include <i32.h>
@@ -72,14 +47,8 @@ volatile extern int  FP_error;
 #define FPTEST(result) (_getrealerror() & ( I87_ZERO_DIVIDE | I87_OVERFLOW | I87_UNDERFLOW))
 
 #else
-static int constant0 = 0;
-unsigned int fpstatus_();
+#include <math.h>
+#define FPCLEAR
+#define FPTEST(result) (!isfinite(result))
 
-#define FPCLEAR         fpstatus_(&constant0);
-#define FPTEST(result) (fpstatus_(&constant0) & 0xF0)
-
-#endif
 #endif /* FLTINT */
-
-
-
