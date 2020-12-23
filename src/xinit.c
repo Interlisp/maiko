@@ -36,13 +36,9 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 
-#ifndef LINUX
-#ifndef MACOSX
-#ifndef FREEBSD
+#ifdef OS5
 #include <stropts.h>
-#endif /* FREEBSD */
-#endif /* MACOSX */
-#endif /* LINUX */
+#endif /* OS5 */
 
 #define FALSE 0
 #define TRUE !FALSE
