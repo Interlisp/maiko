@@ -617,6 +617,7 @@ static void int_io_init() {
 #ifndef DOS
   SIGERRCHK(sigset(SIGIO, getsignaldata), "sigset io");
 #ifdef XWINDOW
+#ifndef __CYGWIN__
 #ifdef LINUX
   if (fcntl(ConnectionNumber(currentdsp->display_id), F_SETSIG, 0) < 0)
     perror("fcntl on X fd - SETSIG for input handling failed");
@@ -624,6 +625,7 @@ static void int_io_init() {
   if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
     perror("ioctl on X fd - SETSIG for input handling failed");
 #endif
+#endif /* __CYGWIN__ */
 #endif /* XWINDOW */
 
 #ifdef USE_DLPI

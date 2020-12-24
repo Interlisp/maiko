@@ -1,0 +1,54 @@
+# Options for Linux, Intel x86_64 and X-Window
+
+#CC = gcc -m64 $(GCC_CFLAGS) -fno-omit-frame-pointer -Wall -Wextra -fno-aggressive-loop-optimizations
+CC = clang -m64 $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+
+XFLAGS = -DXWINDOW -DNOPIXRECT
+
+# This is to make the %$#@! Apollo cc happy
+OEXT = .o
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g3
+DISPOPTFLAGS = -O2 -g3
+FPFLAGS =
+DFLAGS = -DNEW_STORAGE -DLINUX -DAIX -DOLD_CURSOR \
+	-DBYTESWAP -DFORKCOMM -DNOFORN -DLOGINT  $(XFLAGS) \
+	-DRELEASE=351 -DSYSVSIGNALS -DSYSVONLY \
+	-D_GNU_SOURCE
+
+LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lcrypt
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm -lcrypt
+
+INLINE = # $(SRCDIR)dspSPARC.il
+BITBLTFILE = # $(OBJECTDIR)bbtSPARC.o
+BYTESWAPFILES = $(OBJECTDIR)byteswap.o
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde 
+
+############
+#
+#	SPECIAL xc.o  for debugging
+#
+############
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   
+	 $(CC) $(DISPRFLAGS) -UOPDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o
