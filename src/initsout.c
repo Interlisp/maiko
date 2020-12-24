@@ -24,9 +24,7 @@
 
 #ifndef DOS
 #include <pwd.h>
-#else
-#undef HAS_GETHOSTID
-#endif /* DOS */
+#endif
 
 #include "hdw_conf.h"
 #include "lispemul.h"
