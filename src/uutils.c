@@ -40,10 +40,6 @@
 #include "osmsgdefs.h"
 #include "uraiddefs.h"
 
-#ifdef OS5
-#define gethostid() 0
-#endif /* OS5 */
-
 /************************************************************************/
 /*									*/
 /*		l i s p _ s t r i n g _ t o _ c _ s t r i n g		*/
