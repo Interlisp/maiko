@@ -44,8 +44,8 @@
 */
 /**********************************************************************/
 int N_OP_times2(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
@@ -56,6 +56,13 @@ int N_OP_times2(int tosm1, int tos) {
   N_ARITH_SWITCH(result);
 dummy:
   mpy_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_smul_overflow(arg1, arg2, &result)) {
+    goto doufn2;
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
@@ -73,8 +80,8 @@ doufn:
 } /* end N_OP_times2 */
 
 int N_OP_itimes2(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
@@ -85,6 +92,13 @@ int N_OP_itimes2(int tosm1, int tos) {
   N_ARITH_SWITCH(result);
 dummy:
   impy_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_smul_overflow(arg1, arg2, &result)) {
+    goto doufn;
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
@@ -108,8 +122,8 @@ doufn:
 */
 /**********************************************************************/
 int N_OP_quot(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);

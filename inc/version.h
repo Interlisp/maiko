@@ -223,6 +223,16 @@ error Must specify RELEASE to build Medley.
 	/********************************************************/
 	/*							*/
 	/********************************************************/
+#ifdef __GNUC__
+#define USE_OVERFLOW_BUILTINS
+#endif
+
+
+
+
+	/********************************************************/
+	/*							*/
+	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #define MAIKO_ENABLE_ETHERNET

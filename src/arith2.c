@@ -31,8 +31,8 @@ N_OP_plus2
 ************************************************************/
 
 LispPTR N_OP_plus2(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_GETNUMBER(tos, arg1, doufn);
   N_GETNUMBER(tosm1, arg2, doufn);
@@ -45,6 +45,13 @@ LispPTR N_OP_plus2(int tosm1, int tos) {
 doufn2:
   plus_err_label();
   ERROR_EXIT(tos);
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_sadd_overflow(arg1, arg2, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
   /* UB: signed integer overflow: 2147483647 + 2147483647 cannot be represented in type 'int' */
@@ -68,8 +75,8 @@ doufn:
 /************************************************************************/
 
 LispPTR N_OP_iplus2(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_IGETNUMBER(tos, arg1, doufn);
   N_IGETNUMBER(tosm1, arg2, doufn);
@@ -80,6 +87,13 @@ LispPTR N_OP_iplus2(int tosm1, int tos) {
   N_ARITH_SWITCH(result);
 dummy:
   iplus_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_sadd_overflow(arg1, arg2, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
@@ -102,8 +116,8 @@ N_OP_difference
 ************************************************************/
 
 LispPTR N_OP_difference(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
@@ -116,6 +130,13 @@ LispPTR N_OP_difference(int tosm1, int tos) {
 doufn2:
   diff_err_label();
   ERROR_EXIT(tos);
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_ssub_overflow(arg1, arg2, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
@@ -131,8 +152,8 @@ doufn:
 }
 
 LispPTR N_OP_idifference(int tosm1, int tos) {
-  register int arg1, arg2;
-  register int result;
+  int arg1, arg2;
+  int result;
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
@@ -143,6 +164,13 @@ LispPTR N_OP_idifference(int tosm1, int tos) {
   N_ARITH_SWITCH(result);
 dummy:
   idiff_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_ssub_overflow(arg1, arg2, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
   /* UB: signed integer overflow: -2147483647 - 100 cannot be represented in type 'int' */
@@ -220,8 +248,8 @@ N_OP_iplusn
         return(tos + n)
 ************************************************************/
 LispPTR N_OP_iplusn(int tos, int n) {
-  register int arg1;
-  register int result;
+  int arg1;
+  int result;
 
   N_IGETNUMBER(tos, arg1, do_ufn);
 
@@ -231,6 +259,13 @@ LispPTR N_OP_iplusn(int tos, int n) {
   N_ARITH_SWITCH(result);
 dummy:
   iplusn_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_sadd_overflow(arg1, n, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
@@ -250,8 +285,8 @@ N_OP_idifferencen
         return(tos - n)
 ************************************************************/
 LispPTR N_OP_idifferencen(int tos, int n) {
-  register int arg1;
-  register int result;
+  int arg1;
+  int result;
 
   N_IGETNUMBER(tos, arg1, do_ufn);
 
@@ -261,6 +296,13 @@ LispPTR N_OP_idifferencen(int tos, int n) {
   N_ARITH_SWITCH(result);
 dummy:
   idiffn_err_label();
+
+#elif defined(USE_OVERFLOW_BUILTINS)
+
+  if (__builtin_ssub_overflow(arg1, n, &result)) {
+    ERROR_EXIT(tos);
+  }
+  N_ARITH_SWITCH(result);
 
 #else
 
