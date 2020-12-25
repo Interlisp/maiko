@@ -271,7 +271,7 @@ int fork_Unix() {
     char tempstring[30];
 
     snprintf(tempstring, sizeof(tempstring), "%d", UnixToLisp[0]);
-    setenv("LDEPIPEINE", tempstring, 1);
+    setenv("LDEPIPEIN", tempstring, 1);
 
     snprintf(tempstring, sizeof(tempstring), "%d", LispToUnix[1]);
     setenv("LDEPIPEOUT", tempstring, 1);
