@@ -108,10 +108,8 @@ LispPTR *fixp_value(LispPTR *ptr) {
 void init_ifpage(int sysout_size) {
   extern long MDate;
   extern int DisplayType;
-#ifdef NEW_STORAGE
   extern int Storage_expanded;
   int new_lastvmem;
-#endif
   /*
     Initialize IFPAGE
    */
@@ -122,7 +120,6 @@ void init_ifpage(int sysout_size) {
 #endif /* NOETHER */
   /*InterfacePage->dl24bitaddressable = (sysout_size == 32? 0xffff : 0);*/
   InterfacePage->dl24bitaddressable = (sysout_size == 8 ? 0 : 0xffff);
-#ifdef NEW_STORAGE
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;
 
   if ((!Storage_expanded) && (InterfacePage->dllastvmempage != new_lastvmem)) {
@@ -135,9 +132,6 @@ void init_ifpage(int sysout_size) {
   }
   /* Set current process size */
   InterfacePage->process_size = sysout_size;
-#else
-  InterfacePage->dllastvmempage = LASTVMEMPAGE;
-#endif /* NEW_STORAGE */
 
 #ifdef BIGVM
   /* For BIGVM system, save the value in \LASTVMEMFILEPAGE for lisp's use */

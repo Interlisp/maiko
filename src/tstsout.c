@@ -72,9 +72,7 @@ void check_sysout(char *sysout_file_name, int verbose) {
   if (verbose) {
       printf("ifpage.minbversion %d\n", ifpage.minbversion);
       printf("ifpage.process_size %d\n", ifpage.process_size);
-#ifdef NEW_STORAGE
       printf("ifpage.storagefullstate %d\n", ifpage.storagefullstate);
-#endif
       printf("ifpage.nactivepages %d\n", ifpage.nactivepages);
   } else {
       printf("%d", ifpage.minbversion);
