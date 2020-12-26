@@ -27,7 +27,6 @@ sparc		True if we're compiling on a SPARC machine.
 mc68020		True if we're compiling on a Motorola 680x0 machine.
 sun3		We're compiling for a Sun-3.
 
-UNSAFE		If true, enables the "fast" version of 68020 opcodes.
 NOASM		If true, suppress any attempt to include assembler
 		versions of things in the emulator.  In 'lispemul.c',
 		if this is true, disables:
@@ -36,7 +35,6 @@ NOASM		If true, suppress any attempt to include assembler
 			SUN4_OS4_IL
 			OPDISP
 			NATIVETRAN
-			UNSAFE
 			PROFILE
 		and enables NOASMFNCALL
 C_ONLY
