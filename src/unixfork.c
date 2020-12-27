@@ -229,7 +229,7 @@ int fork_Unix() {
   pid_t pid;
 
   char IOBuf[4];
-  unsigned short tmp;
+  unsigned short tmp = 0;
   char *cmdstring;
 
   /* Pipes between LISP subr and process */
