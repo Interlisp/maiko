@@ -64,7 +64,6 @@ int sysout_loader(char * sysout_file_name, int sys_size)
 
   IFPAGE ifpage; /* IFPAGE */
 
-  char *fptovp_scratch; /* scratch area for FPTOVP */
 #ifdef BIGVM
   /* 1 "cell" per page for 256MB in 512 byte pages */
   unsigned int fptovp[0x80000]; /* FPTOVP */
