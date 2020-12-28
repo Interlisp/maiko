@@ -532,9 +532,7 @@ int main(int argc, char *argv[])
   init_ifpage(sysout_size); /* init interface page */
   init_iopage();
   init_miscstats();
-#ifdef NEW_STORAGE
   init_storage();
-#endif /* NEW_STORAGE */
 
   set_cursor();
 

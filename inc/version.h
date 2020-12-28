@@ -153,6 +153,14 @@ error Must specify RELEASE to build Medley.
 
 	/****************************************************************/
 	/*								*/
+	/*  There used to be a define NEW_STORAGE, but this wasn't tied */
+	/*  clearly to any RELEASE values. There are comments related   */
+	/*  to this in LLPARAMS on the Lisp side.			*/
+	/*								*/
+	/****************************************************************/
+
+	/****************************************************************/
+	/*								*/
 	/*  Architecture-specific flags:  Set flags			*/
 	/*  based on thing we know about the architecture		*/
 	/*  or idiosyncrasies of the machine we're compiling for.	*/

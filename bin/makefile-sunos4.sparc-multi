@@ -48,7 +48,7 @@ INLINEFLAGS = # -DSPARCDISP -DSUN4_OS4_IL
 DFLAGS = $(DEBUGFLAGS) \
 		 $(MACHINEFLAGS) \
 		 $(INLINEFLAGS) \
-		 -DKBINT -DNEW_STORAGE  \
+		 -DKBINT \
 	     -DNOVERSION -DRELEASE=350
 
 LDFLAGS = -L$(LIBDIR) -lsuntool -lsunwindow -lpixrect -ldld -lc -lm

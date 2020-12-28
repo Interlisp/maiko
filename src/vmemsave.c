@@ -387,7 +387,6 @@ LispPTR vmem_save(char *sysout_file_name)
 
   InterfacePage->machinetype = KATANA;
 
-#ifdef NEW_STORAGE
   /* Restore storagefull state */
   if (((*STORAGEFULLSTATE_word) & 0xffff) == SFS_NOTSWITCHABLE) {
     /* This sysout uses only 8 Mbyte lisp space.
@@ -402,7 +401,6 @@ LispPTR vmem_save(char *sysout_file_name)
     /*  Otherwise, just restore storagefullstate in IFPAGE */
     InterfacePage->storagefullstate = (*STORAGEFULLSTATE_word) & 0xffff;
   }
-#endif /* NEW_STORAGE */
 
 /* First, sort fptovp table, trying to get pages contiguous */
 #ifndef BIGVM

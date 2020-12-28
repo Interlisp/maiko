@@ -141,7 +141,6 @@ int sysout_loader(char * sysout_file_name, int sys_size)
     exit(-1);
   }
 #endif /* NOVERSION */
-#ifdef NEW_STORAGE
   if (sys_size == 0) /* use default or the previous one */
   {
     if (ifpage.process_size == 0)        /* Pure LISP.SYSOUT */
@@ -180,9 +179,6 @@ int sysout_loader(char * sysout_file_name, int sys_size)
     /* You can use secondary space , though it was STORAGEFULL
        So, STORAGEFULL may be set to NIL later  */
   }
-#else
-  if (sys_size == 0) sys_size = DEFAULT_MAX_SYSOUTSIZE;
-#endif /* NEW_STORAGE */
 
   /* allocate Virtual Memory Space */
 

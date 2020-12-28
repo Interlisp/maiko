@@ -64,13 +64,8 @@ typedef struct ifpage {
 	DLword    mdszonelength;
 	DLword    emubuffers;
 	DLword    emubuflength;
-#ifdef NEW_STORAGE
 	DLword    ex_process_size; /* was lastnumchars */
 	DLword    storagefullstate;  /* was sysdisk */
-#else 
-	DLword    lastnumchars; 
-	DLword    sysdisk;  
-#endif /* NEW_STORAGE */
 	DLword    isfmap;
 	/* these are for \miscapply
 	 * -- note that they are not ref counted, so don't pass the only pointer
@@ -152,13 +147,8 @@ typedef struct ifpage {
 	DLword    mdszonelength;
 	DLword    emubuffers;
 	DLword    emubuflength;
-#ifdef NEW_STORAGE
 	DLword    process_size; /* was lastnumchars */
 	DLword    storagefullstate;  /* was sysdisk */
-#else 
-	DLword    lastnumchars; 
-	DLword    sysdisk;  
-#endif /* NEW_STORAGE */
 	DLword    isfmap;
 	/* these are for \miscapply
 	 * -- note that they are not ref counted, so don't pass the only pointer
@@ -230,17 +220,10 @@ typedef struct ifpage {
 	DLword    nshost2;  /* hi word */
 	DLword    emubuffers;
 	DLword    mdszonelength;  /* hi word */
-#ifdef NEW_STORAGE
 	DLword    ex_process_size;
 	DLword    emubuflength;  /* hi word */
 	DLword    isfmap;
 	DLword    storagefullstate;  /* hi word */
-#else
-	DLword    lastnumchars;
-	DLword    emubuflength;  /* hi word */
-	DLword    isfmap;
-	DLword    sys_disk;  /* hi word */
-#endif /* NEW_STORAGE */
 	/* these are for \miscapply
 	 * -- note that they are not ref counted, so don't pass the only pointer
 	 * to something this way */
@@ -322,17 +305,10 @@ typedef struct ifpage {
 	DLword    nshost2;  /* hi word */
 	DLword    emubuffers;
 	DLword    mdszonelength;  /* hi word */
-#ifdef NEW_STORAGE
 	DLword    process_size;
 	DLword    emubuflength;  /* hi word */
 	DLword    isfmap;
 	DLword    storagefullstate;  /* hi word */
-#else
-	DLword    lastnumchars;
-	DLword    emubuflength;  /* hi word */
-	DLword    isfmap;
-	DLword    sys_disk;  /* hi word */
-#endif /* NEW_STORAGE */
 	/* these are for \miscapply
 	 * -- note that they are not ref counted, so don't pass the only pointer
 	 * to something this way */
