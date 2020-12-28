@@ -613,7 +613,8 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
-  int n, len, rval;
+  int n, rval;
+  size_t len;
   DIR *dirp;
   register struct passwd *pwd;
   struct stat sbuf;
@@ -876,7 +877,8 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
   register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
-  int n, len, rval;
+  int n, rval;
+  size_t len;
   DIR *dirp;
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
@@ -1070,7 +1072,8 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
-  int n, len, rval;
+  int n, rval;
+  size_t len;
   DIR *dirp;
   register struct passwd *pwd;
   struct stat sbuf;
@@ -1253,7 +1256,8 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
   register struct dirent *dp;
   register FINFO *prevp;
   register FINFO *nextp;
-  int n, len, rval;
+  int n, rval;
+  size_t len;
   DIR *dirp;
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
