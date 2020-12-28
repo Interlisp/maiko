@@ -60,7 +60,7 @@ void set_sysout(int version, char *sysout_file_name) {
     exit(-1);
   }
   /* seek to IFPAGE */
-  if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
+  if (lseek(sysout, IFPAGE_ADDRESS, SEEK_SET) == -1) {
     perror("sysout_loader: can't seek to IFPAGE");
     exit(-1);
   }
@@ -78,7 +78,7 @@ void set_sysout(int version, char *sysout_file_name) {
   ifpage.minbversion = version;
 
   /* seek to IFPAGE */
-  if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
+  if (lseek(sysout, IFPAGE_ADDRESS, SEEK_SET) == -1) {
     perror("sysout_loader: can't seek to IFPAGE");
     exit(-1);
   }

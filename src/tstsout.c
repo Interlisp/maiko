@@ -55,7 +55,7 @@ void check_sysout(char *sysout_file_name, int verbose) {
     exit(-1);
   }
   /* seek to IFPAGE */
-  if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
+  if (lseek(sysout, IFPAGE_ADDRESS, SEEK_SET) == -1) {
     perror("sysout_loader: can't seek to IFPAGE");
     exit(-1);
   }

@@ -421,7 +421,7 @@ LispPTR vmem_save(char *sysout_file_name)
       int contig_pages = 0;
       register char *base_addr;
 
-      TIMEOUT(rval = lseek(sysout, i * BYTESPER_PAGE, 0));
+      TIMEOUT(rval = lseek(sysout, i * BYTESPER_PAGE, SEEK_SET));
       if (rval == -1) {
         err_mess("lseek", errno);
         return (FILECANNOTSEEK);
@@ -472,7 +472,7 @@ LispPTR vmem_save(char *sysout_file_name)
   }
 
   /* seek to IFPAGE */
-  TIMEOUT(rval = lseek(sysout, (long)FP_IFPAGE, 0));
+  TIMEOUT(rval = lseek(sysout, (long)FP_IFPAGE, SEEK_SET));
   if (rval == -1) {
     err_mess("lseek", errno);
     return (FILECANNOTSEEK);
