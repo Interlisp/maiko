@@ -149,7 +149,7 @@ void Set_XCursor(int x, int y)
 /*									*/
 /************************************************************************/
 
-void init_Xcursor(Display *display, int window)
+void init_Xcursor(Display *display, Window window)
 {
   TPRINT(("TRACE: init_Xcursor()\n"));
 
