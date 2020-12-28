@@ -165,7 +165,7 @@ are null terminated instead */
     if ((pwd = getpwuid(getuid())) != NULL) {
       InterfacePage->usernameaddr = 0155001;
       s = (char *)Addr68k_from_LADDR(InterfacePage->usernameaddr);
-      len = strlen(pwd->pw_name);
+      len = (int)strlen(pwd->pw_name);
       /* Lisp reserves 32 words for the BCPL String */
       len = (len < 32 * BYTESPER_DLWORD) ? len : 32 * BYTESPER_DLWORD - 1;
       *s = (char)len;

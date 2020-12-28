@@ -2606,7 +2606,8 @@ static int locate_file(char *dir, char *name)
 
   char path[MAXPATHLEN];
   char nb1[MAXNAMLEN], nb2[MAXNAMLEN];
-  register int type, len;
+  register int type;
+  size_t len;
   DIR *dirp;
   struct dirent *dp;
 
