@@ -130,7 +130,7 @@ int main(int argc, char *argv[]) {
       }
 
       flags = fcntl(ether_fd, F_GETFL, 0);
-      flags = fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
+      fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
 
 #else
 /*    N O T   D L P I   C O D E   */
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
       strcpy(Ename, if_data.ifc_req[0].ifr_name);
 
       flags = fcntl(ether_fd, F_GETFL, 0);
-      flags = fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
+      fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
 
 #endif /* USE_DLPI  */
 #ifdef DEBUG

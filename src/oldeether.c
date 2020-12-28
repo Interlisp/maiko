@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
       strcpy(Ename, if_data.ifc_req[0].ifr_name);
 
       flags = fcntl(ether_fd, F_GETFL, 0);
-      flags = fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
+      fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
 
 #ifdef DEBUG
       printf("init_ether: **** Ethernet starts ****\n");
