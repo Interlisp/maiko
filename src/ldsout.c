@@ -109,7 +109,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
   }
 
   /* seek to IFPAGE */
-  if (lseek(sysout, IFPAGE_ADDRESS, 0) == -1) {
+  if (lseek(sysout, IFPAGE_ADDRESS, SEEK_SET) == -1) {
     perror("sysout_loader: can't seek to IFPAGE");
     exit(-1);
   }
@@ -248,7 +248,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
 #else
   fptovp_offset = (fptovp_offset - 1) * BYTESPER_PAGE + 2;
 #endif
-  if (lseek(sysout, fptovp_offset, 0) == -1) {
+  if (lseek(sysout, fptovp_offset, SEEK_SET) == -1) {
     perror("sysout_loader: can't seek to FPTOVP");
     exit(-1);
   }
@@ -310,7 +310,7 @@ int sysout_loader(char * sysout_file_name, int sys_size)
     }
 #endif /* DOS */
     if (GETPAGEOK(fptovp, i) != 0177777) {
-      if (lseek(sysout, i * BYTESPER_PAGE, 0) == -1) {
+      if (lseek(sysout, i * BYTESPER_PAGE, SEEK_SET) == -1) {
         perror("sysout_loader: can't seek sysout file");
         exit(-1);
       };

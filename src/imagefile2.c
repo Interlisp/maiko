@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <unistd.h>
 #include <pixrect/pixrect_hs.h>
 
 #define FALSE 0
@@ -132,7 +133,7 @@ int position_rasterfile(RASTERFILE_INFO *fileinfo, int n)
 
   if (n > 0) {
     position = sizeof(struct rasterfile) + (n - 1) * fileinfo->rh.ras_length;
-    if ((status = fseek(fileinfo->file, position, (int)0)) == 0) {
+    if ((status = fseek(fileinfo->file, position, SEEK_SET)) == 0) {
       /* normal return */
       return (TRUE);
     } /* end if( status ) */
