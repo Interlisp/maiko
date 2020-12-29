@@ -78,7 +78,6 @@ LispPTR CHAR_openfile(LispPTR *args)
 #ifndef DOS
   register int fd;    /* return value  of open system call. */
   register int flags; /* open system call's argument */
-  register int rval;
   struct stat statbuf;
   char pathname[MAXPATHLEN];
 
@@ -104,9 +103,7 @@ LispPTR CHAR_openfile(LispPTR *args)
   }
   /* Prevent I/O requests from blocking -- make them error */
   /* if no char is available, or there's no room in pipe.  */
-  rval = fcntl(fd, F_GETFL, 0);
-  rval |= FNDELAY;
-  rval = fcntl(fd, F_SETFL, rval);
+  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | FNDELAY);
 
   return (GetSmallp(fd));
 #endif /* DOS */

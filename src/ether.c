@@ -823,7 +823,7 @@ void init_ether() {
         }
 
         flags = fcntl(ether_fd, F_GETFL, 0);
-        flags = fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
+        fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
 
       } else {
       I_Give_Up:

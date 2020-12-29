@@ -149,7 +149,7 @@ gotpty:
 #ifdef LOGINT
   LogFileFd = cons_pty; /* was kept as an fd_set, but doesn't need to be */
   flags = fcntl(cons_pty, F_GETFL, 0);
-  flags = fcntl(cons_pty, F_SETFL, (flags | FASYNC | FNDELAY));
+  fcntl(cons_pty, F_SETFL, (flags | FASYNC | FNDELAY));
   if (fcntl(cons_pty, F_SETOWN, getpid()) == -1) {
 #ifdef DEBUG
     perror("fcntl F_SETOWN of log PTY");

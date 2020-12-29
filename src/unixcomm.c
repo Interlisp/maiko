@@ -338,7 +338,7 @@ int FindAvailablePty(char *Master, char *Slave) {
     flags = fcntl(res, F_GETFL, 0);
     flags |= FNDELAY;
 
-    flags = fcntl(res, F_SETFL, flags);
+    fcntl(res, F_SETFL, flags);
     return (res);
   }
 #ifndef FULLSLAVENAME
@@ -452,8 +452,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         }
         res = fcntl(PipeFD, F_GETFL, 0);
         res |= FNDELAY;
-        res = fcntl(PipeFD, F_SETFL, res);
-        if (res < 0) {
+        if (fcntl(PipeFD, F_SETFL, res) == -1) {
           perror("setting up fifo to nodelay");
           return (NIL);
         }
@@ -615,7 +614,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 11: /* Fork PTY process */
     {
       char MasterFD[20], SlavePTY[32];
-      int Master, res, slot;
+      int Master, flags, slot;
       unsigned short len;
 
       Master = FindAvailablePty(MasterFD, SlavePTY);
@@ -651,9 +650,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Pipe/fork result = %d.\n", d[3]));
       if (d[3] == 1) {
         /* Set up the IO not to block */
-        res = fcntl(Master, F_GETFL, 0);
-        res |= FNDELAY;
-        res = fcntl(Master, F_SETFL, res);
+        flags = fcntl(Master, F_GETFL, 0);
+        flags |= FNDELAY;
+        fcntl(Master, F_SETFL, flags);
 
         UJ[slot].type = UJSHELL; /* so we can find them */
         UJ[slot].PID = (d[1] << 8) | d[2];
@@ -833,7 +832,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 12: /* create Unix socket */
 
     {
-      int res, sockFD;
+      int flags, sockFD;
       struct sockaddr_un sock;
 
       /* First open the socket */
@@ -862,9 +861,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Socket %d bound to name %s.\n", sockFD, shcom));
       if (listen(sockFD, 1) < 0) perror("Listen");
       /* Set up the IO not to block */
-      res = fcntl(sockFD, F_GETFL, 0);
-      res |= FNDELAY;
-      res = fcntl(sockFD, F_SETFL, res);
+      flags = fcntl(sockFD, F_GETFL, 0);
+      flags |= FNDELAY;
+      fcntl(sockFD, F_SETFL, flags);
 
       /* things seem sane, fill out the rest of the UJ slot and return */
       UJ[sockFD].status = -1;
