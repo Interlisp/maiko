@@ -309,7 +309,7 @@ int FindUnixPipes(void) {
 /* Find the first PTY pair that is not in use */
 
 int FindAvailablePty(char *Master, char *Slave) {
-  int res, flags;
+  int res;
   char *let, *num;
 
 #ifdef OS5
@@ -335,10 +335,7 @@ int FindAvailablePty(char *Master, char *Slave) {
 #endif
 
   if (res != -1) {
-    flags = fcntl(res, F_GETFL, 0);
-    flags |= FNDELAY;
-
-    fcntl(res, F_SETFL, flags);
+    fcntl(res, F_SETFL, fcntl(res, F_GETFL, 0) | O_NONBLOCK);
     return (res);
   }
 #ifndef FULLSLAVENAME
@@ -403,7 +400,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 0: /* Fork pipe process */
     {
       char *UpPipeName, *DownPipeName, *PipeName;
-      int res, slot, PipeFD, sockFD;
+      int slot, PipeFD, sockFD;
 
       /* First create the socket */
       struct sockaddr_un sock;
@@ -450,9 +447,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           if (unlink(PipeName) < 0) perror("Unlink");
           return (NIL);
         }
-        res = fcntl(PipeFD, F_GETFL, 0);
-        res |= FNDELAY;
-        if (fcntl(PipeFD, F_SETFL, res) == -1) {
+        if (fcntl(PipeFD, F_SETFL, fcntl(PipeFD, F_GETFL, 0) | O_NONBLOCK) == -1) {
           perror("setting up fifo to nodelay");
           return (NIL);
         }
@@ -614,7 +609,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 11: /* Fork PTY process */
     {
       char MasterFD[20], SlavePTY[32];
-      int Master, flags, slot;
+      int Master, slot;
       unsigned short len;
 
       Master = FindAvailablePty(MasterFD, SlavePTY);
@@ -650,9 +645,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Pipe/fork result = %d.\n", d[3]));
       if (d[3] == 1) {
         /* Set up the IO not to block */
-        flags = fcntl(Master, F_GETFL, 0);
-        flags |= FNDELAY;
-        fcntl(Master, F_SETFL, flags);
+        fcntl(Master, F_SETFL, fcntl(Master, F_GETFL, 0) | O_NONBLOCK);
 
         UJ[slot].type = UJSHELL; /* so we can find them */
         UJ[slot].PID = (d[1] << 8) | d[2];
@@ -832,7 +825,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 12: /* create Unix socket */
 
     {
-      int flags, sockFD;
+      int sockFD;
       struct sockaddr_un sock;
 
       /* First open the socket */
@@ -861,9 +854,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Socket %d bound to name %s.\n", sockFD, shcom));
       if (listen(sockFD, 1) < 0) perror("Listen");
       /* Set up the IO not to block */
-      flags = fcntl(sockFD, F_GETFL, 0);
-      flags |= FNDELAY;
-      fcntl(sockFD, F_SETFL, flags);
+      fcntl(sockFD, F_SETFL, fcntl(sockFD, F_GETFL, 0) | O_NONBLOCK);
 
       /* things seem sane, fill out the rest of the UJ slot and return */
       UJ[sockFD].status = -1;

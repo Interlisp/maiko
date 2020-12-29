@@ -317,7 +317,7 @@ static int ocr_init_sv() {
     perror("ocr_init_sv: fcntl");
     return 0;
   }
-  flags &= ~FNDELAY;
+  flags &= ~O_NONBLOCK;
   if (fcntl(OCR_sv, F_SETFL, flags) < 0) {
     perror("ocr_init_sv: fcntl 2");
     return 0;

@@ -408,9 +408,9 @@ int doblock;
   if (flags < 0) return 0;
 
   if (doblock) {
-    flags &= ~FNDELAY;
+    flags &= ~O_NONBLOCK;
   } else {
-    flags |= FNDELAY;
+    flags |= O_NONBLOCK;
   }
 
   if (fcntl(fd, F_SETFL, flags) < 0) return 0;

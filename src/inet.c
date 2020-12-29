@@ -28,6 +28,11 @@
 #include <unistd.h>
 #endif /* DOS */
 
+#ifdef OS5
+/* Solaris doesn't define O_ASYNC, yet still defines FASYNC. */
+#define O_ASYNC FASYNC
+#endif
+
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"
@@ -106,7 +111,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       addr_class = LispNumToCInt(nameConn);
       protocol = LispNumToCInt(proto);
       result = socket(addr_class, protocol, 0);
-      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
@@ -130,7 +135,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         perror("TCP connect");
         return (NIL);
       }
-      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
@@ -203,7 +208,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         int oldmask = sigblock(sigmask(SIGIO));
 #endif /* SYSVSIGNALS */
 
-        fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
+        fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
         fcntl(result, F_SETOWN, getpid());
 
         if (listen(result, 5) == -1) {
@@ -236,7 +241,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         if (errno != EWOULDBLOCK) perror("TCP Accept");
         return (NIL);
       }
-      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY);
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
@@ -274,7 +279,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         close(result);
         return (NIL);
       }
-      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | FNDELAY | FASYNC);
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
       fcntl(result, F_SETOWN, getpid());
 
       FD_SET(result, &LispIOFds);  /* so we get interrupts */

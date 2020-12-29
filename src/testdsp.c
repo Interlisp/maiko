@@ -89,7 +89,7 @@ void init_display2(int display_addr, int display_max)
 #ifdef KBINT
     int_io_open(LispWindowFd);
 #endif
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | FNDELAY);
+    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
   }
 
   DisplayRegion68k = (short *)display_addr;

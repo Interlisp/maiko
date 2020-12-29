@@ -335,7 +335,7 @@ void init_display2(DLword *display_addr, int display_max)
 /* int_io_open(LispWindowFd);  JDS 4/27/94 move to initkbd, to try preventing the
  * move-mouse-never-get-kbd bug */
 #endif
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | FNDELAY);
+    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
   }
 #endif /* SUNDISPLAY */
 

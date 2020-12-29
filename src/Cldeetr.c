@@ -50,7 +50,6 @@ int main(int argc, char *argv[])
 {
   char Earg[30], Ename[30], **newargv;
   int i;
-  int flags;
   /* Kickstart program for the Lisp Development Environment (LDE).
           Run this as setuid root to open the LDE ether socket.
           Passes all arguments through to LDE plus -E <ether-info>
@@ -141,8 +140,7 @@ int main(int argc, char *argv[])
       bcopy(if_data.ifc_req[0].ifr_addr.sa_data, ether_host, 6);
       strcpy(Ename, if_data.ifc_req[0].ifr_name);
 
-      flags = fcntl(ether_fd, F_GETFL, 0);
-      fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
+      fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
 
 #ifdef DEBUG
       printf("init_ether: **** Ethernet starts ****\n");

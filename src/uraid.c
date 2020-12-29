@@ -1185,7 +1185,7 @@ static int re_init_display(int lisp_display_addr, int display_max)
   } else {
 #ifdef KBINT
     int_io_open(LispWindowFd);
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | FNDELAY);
+    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
 
 #ifdef FX_AR_124
     /* For AR 124. Type4 driver bug?? by m.matsuda */
@@ -1297,7 +1297,7 @@ static int re_init_display(int lisp_display_addr, int display_max)
   } else {
 #ifdef KBINT
     int_io_open(LispWindowFd);
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | FNDELAY);
+    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
 #endif
   }
 

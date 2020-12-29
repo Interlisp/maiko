@@ -85,7 +85,7 @@ void mess_init() {
   int ttyfd;
   int ptyfd, ptynum;
   char *ptyname, *ttyname;
-  int temp, flags;
+  int temp;
   int on = 1;
 
   ptyname = "/dev/ptypx";
@@ -148,8 +148,7 @@ gotpty:
   if ((log_id = open(logfile, (O_RDWR | O_CREAT), 0666)) < 0) return;
 #ifdef LOGINT
   LogFileFd = cons_pty; /* was kept as an fd_set, but doesn't need to be */
-  flags = fcntl(cons_pty, F_GETFL, 0);
-  fcntl(cons_pty, F_SETFL, (flags | FASYNC | FNDELAY));
+  fcntl(cons_pty, F_SETFL, fcntl(cons_pty, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
   if (fcntl(cons_pty, F_SETOWN, getpid()) == -1) {
 #ifdef DEBUG
     perror("fcntl F_SETOWN of log PTY");

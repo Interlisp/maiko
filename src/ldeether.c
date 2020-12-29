@@ -76,7 +76,6 @@ char filetorun[30] = "lde";
 int main(int argc, char *argv[]) {
   char Earg[30], Ename[30], **newargv;
   int i;
-  int flags;
 #ifdef USE_DLPI
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
@@ -129,8 +128,7 @@ int main(int argc, char *argv[]) {
         return (-1);
       }
 
-      flags = fcntl(ether_fd, F_GETFL, 0);
-      fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
+      fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_NONBLOCK);
 
 #else
 /*    N O T   D L P I   C O D E   */
@@ -210,8 +208,7 @@ int main(int argc, char *argv[]) {
       bcopy(if_data.ifc_req[0].ifr_addr.sa_data, ether_host, 6);
       strcpy(Ename, if_data.ifc_req[0].ifr_name);
 
-      flags = fcntl(ether_fd, F_GETFL, 0);
-      fcntl(ether_fd, F_SETFL, flags | FASYNC | FNDELAY);
+      fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
 
 #endif /* USE_DLPI  */
 #ifdef DEBUG
