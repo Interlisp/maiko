@@ -252,7 +252,6 @@ typedef signed char s_char;
 #ifdef LINUX
 		/* LINUX, the free POSIX-compliant Unix */
 #define NOETHER 1
-/* JDS trial 12/22/01 #define USETIMEFN 1 */
 
 #undef REGISTER
 #define REGISTER

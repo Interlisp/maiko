@@ -36,7 +36,6 @@ void (*prev_int_1c)(); /* keeps address of previous 1c handlr*/
 void DOStimer();
 
 unsigned long tick_count = 0; /* approx 18 ticks per sec            */
-#define USETIMEFN
 
 #else
 #include <time.h>
@@ -54,16 +53,13 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #endif /* DOS */
 
 #ifdef OS5
-#include <sys/times.h>
 #include <stropts.h>
-/* JDS 991228 removed #define USETIMEFN */
 extern int ether_fd;
 #endif
 
 #ifdef LINUX
 #include <sys/ioctl.h>
 #include <signal.h>
-#include <sys/times.h>
 #endif
 
 #include <setjmp.h>
@@ -140,7 +136,7 @@ void update_miscstats() {
   MiscStats->diskiotime = 0; /* ?? not available ?? */
   MiscStats->diskops = 0;
   MiscStats->secondstmp = MiscStats->secondsclock = (time(0) + UNIX_ALTO_TIME_DIFF);
-#elif !defined(USETIMEFN)
+#else
   struct timeval timev;
   struct rusage ru;
 
@@ -157,20 +153,6 @@ void update_miscstats() {
       ;
   gettimeofday(&timev, NULL);
   MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
-#else
-  struct tms ru;
-
-  times(&ru); /* Get system time used */
-
-  MiscStats->totaltime =
-      ru.tms_utime * 10 + ru.tms_stime * 10 + ru.tms_cutime * 10 + ru.tms_cstime * 10;
-  MiscStats->swapwaittime = ru.tms_stime * 10 + ru.tms_cstime * 10;
-  MiscStats->pagefaults = 0; /* can't tell this on ISC */
-  MiscStats->swapwrites = 0;
-  MiscStats->diskiotime = 0; /* ?? not available ?? */
-  MiscStats->diskops = 0;
-  MiscStats->secondstmp = MiscStats->secondsclock = (time(0) + UNIX_ALTO_TIME_DIFF);
-
 #endif /* DOS */
 }
 
@@ -236,24 +218,20 @@ LispPTR subr_gettime(LispPTR args[])
 
 static int gettime(int casep)
 {
-#ifndef USETIMEFN
-  struct timeval timev;
-#elif DOS
+#ifdef DOS
   struct dostime_t dtm; /* for hundredths of secs */
-#endif /* USETIMEFN */
+#else
+  struct timeval timev;
+#endif /* DOS */
   switch (casep) {
     case 0: /* elapsed time in alto milliseconds */
-#ifdef USETIMEFN
 #ifdef DOS
       _dos_gettime(&dtm);
       return ((time(0) + UNIX_ALTO_TIME_DIFF) * 1000) + (10 * dtm.hsecond);
 #else  /* DOS */
-      return ((time(0) + UNIX_ALTO_TIME_DIFF)) * 1000;
-#endif /* DOS */
-#else  /* USETIMEFN */
       gettimeofday(&timev, NULL);
       return ((timev.tv_sec + UNIX_ALTO_TIME_DIFF) * 1000 + timev.tv_usec / 1000);
-#endif /* USETIMEFN */
+#endif /* DOS */
 
     case 1: /* starting elapsed time in milliseconds */ return (MiscStats->starttime);
 
@@ -264,7 +242,7 @@ static int gettime(int casep)
     case 3: /* total GC time in milliseconds */ return (MiscStats->gctime);
 
     case 4: /* current time of day in Alto format */
-#ifdef USETIMEFN
+#ifdef DOS
       return (time(0) + UNIX_ALTO_TIME_DIFF);
 #else
       gettimeofday(&timev, NULL);
@@ -272,7 +250,7 @@ static int gettime(int casep)
 #endif
 
     case 5: /* current time of day in Interlisp format */
-#ifdef USETIMEFN
+#ifdef DOS
       return (time(0) + LISP_UNIX_TIME_DIFF);
 #else
       gettimeofday(&timev, NULL);
@@ -379,19 +357,15 @@ LispPTR N_OP_rclk(LispPTR tos)
   struct dostime_t dtm;
 #endif /* DOS */
 
-#ifdef USETIMEFN
 #ifdef DOS
   _dos_gettime(&dtm);
   usec = (time(0) * 1000000) + (10000 * dtm.hsecond);
-#else
-  usec = time(0) * 1000000;
-#endif /* DOS */
 #else
   struct timeval timev;
 
   gettimeofday(&timev, NULL);
   usec = (timev.tv_sec * 1000000UL) + timev.tv_usec;
-#endif /* USETIMEFN */
+#endif /* DOS */
   *((unsigned int *)(Addr68k_from_LADDR(tos))) = usec;
   return (tos);
 } /* end N_OP_rclk */
@@ -411,13 +385,13 @@ LispPTR N_OP_rclk(LispPTR tos)
 /************************************************************************/
 
 void update_timer() {
-#ifdef USETIMEFN
+#ifdef DOS
   MiscStats->secondstmp = MiscStats->secondsclock = time(0) + UNIX_ALTO_TIME_DIFF;
 #else
   struct timeval timev;
   gettimeofday(&timev, NIL);
   MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
-#endif /* USETIMEFN */
+#endif /* DOS */
 }
 
 /************************************************************************/
