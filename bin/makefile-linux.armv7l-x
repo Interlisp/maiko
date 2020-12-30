@@ -1,7 +1,7 @@
 # Options for Linux, ARMv7 and X-Window
 
 #CC = gcc $(GCC_CFLAGS)
-CC = clang -m32 $(CLANG_CFLAGS)
+CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
