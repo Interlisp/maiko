@@ -16,5 +16,14 @@ together the makefile parts that it needs.
 It will build in ../ostype.cputype-x (for the .o files) and
 ../ostype.cputype for the executables.
 
+## Development Platforms
 
+We are developing on FreeBSD, Linux, macOS, and Solaris currently
+on arm, arm64, PowerPC, SPARC, x86, and x86_64 hardware.
 
+We believe it will work on these platforms.
+
+Fixes and improvements for additional platforms and hardware is
+welcome. Work is underway to run better on Windows.
+
+In the past, Maiko ran on DOS. This may or may not still work.
