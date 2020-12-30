@@ -1,4 +1,4 @@
-# Options for Linux, Intel 386/486 and X-Window
+# Options for Linux, ARMv7 and X-Window
 
 #CC = gcc -m32 $(GCC_CFLAGS) -fno-omit-frame-pointer -Wall -Wextra -fno-aggressive-loop-optimizations
 CC = clang -m32 $(CLANG_CFLAGS)
