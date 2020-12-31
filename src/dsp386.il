@@ -34,68 +34,6 @@
 /************************************************************************/
 
 
-
-.inline bit_reverse_region,16
-/args: (top width height rasterwidth)
-	.noopt
-	pushl	%edi
-	pushl	%esi
-	pushl	%ebx
-	movl	12(%esp),%edx	/top
-	movl	%edx,%eax
-	andl	$-2,%edx
-	movl	%edx,12(%esp)
-	andl	$1,%eax
-	shll	$4,%eax
-	addl	16(%esp),%eax	/width
-	movl	20(%esp),%edx	/height
-/		24(%esp)	/rasterwidth, in words
-	leal	31(%eax),%eax
-	sarl	$5,%eax
-	leal	(%eax,%eax),%eax
-	movl	%eax,16(%esp)	/ word wid now in width.
-	cld			/ so we move up thru memory
-	leal	reversedbits,%ebx / for xlateb
-	movl	12(%esp),%edi	/ starting init of word ptr
-	sub	$0,%edx
-	jle	.+63		
-/ ..4:
-	movl	%edi,%esi	/so both edi & esi are at start of line to swap
-
-	movl	16(%esp),%ecx	/ byte count to ecx
-	leal	(%ecx,%ecx),%ecx
-/ ..3:
-	lodsb
-	xlat
-	stosb
-	loop	.-3		/ ..3
-
-	movl	16(%esp),%ecx
-	incl	%ecx
-	sarl	$1,%ecx
-	movl	12(%esp),%esi	/ must be into esi, then edi, to
-/	andl	$-2,%edi	/ defeat the peephole optimizer.
-	movl	%esi,%edi
-/ ..5:
-	lodsl
-	rolw	$8,%ax
-	roll	$16,%eax
-	rolw	$8,%ax
-	stosl
-	loop	.-13		/ ..5
-	movl	12(%esp),%edi	/ word = word + rasterwidth
-	addl	24(%esp),%edi
-	addl	24(%esp),%edi
-	movl	%edi,12(%esp)
-	decl	%edx
-/ .L60:	/ at this point, starting word addr is in %edi
-	jg	.-59		/ ..4
-	popl	%ebx
-	popl	%esi
-	popl	%edi
-	.optim
-.end
-
 /////////////////////////////
 //
 //	Dispatch loop speedup functions for the 386i
