@@ -24,7 +24,7 @@ ETHERFILES = ldeether.obj
 
 KEY = keytstno.obj
 
-CFLAGS = -I. -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT -DNOFORN -DNOETHER -O2
+CFLAGS = -I. -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT -DNOFORN -O2
 
 LDFLAGS = -O2 graphics.lib binmode.lib mouse.lib 
 
