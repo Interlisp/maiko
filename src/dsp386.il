@@ -42,12 +42,6 @@
 .end
 
 
-/ swap the words in a long-word
-.inline word_swap_longword,1
-	movl	0(%esp),%eax
-	rol	$16,%eax
-.end
-
 /swap the bytes in a 16-bit word
 .inline byte_swap_word,1
 	movl	0(%esp),%eax

@@ -48,22 +48,6 @@ unsigned int swapx(unsigned int word) {
 unsigned short byte_swap_word(unsigned short word) {
   return (((word >> 8) & 0xff) | ((word & 0xff) << 8));
 }
-
-/****************************************************************/
-/*                                                              */
-/*                   Word-swap a 2-word integer                 */
-/*           Does NOT byte-swap the words themselves.           */
-/*                                                              */
-/****************************************************************/
-/***
-unsigned int word_swap_longword(word)
-  unsigned int word;
-  {
-      return( ((word>>16)&0xffff)+((word&0xffff)<<16) );
-  } ***/
-#ifndef I386
-#define word_swap_longword(word) (((word >> 16) & 0xffff) | ((word & 0xffff) << 16))
-#endif
 #endif /* !ISC */
 
 /****************************************************************/
@@ -90,7 +74,7 @@ void word_swap_page(unsigned short *page, int longwordcount) {
   for (i = 0; i < (longwordcount + longwordcount); i++) {
     *(page + i) = byte_swap_word(*(page + i));
   }
-  for (i = 0; i < longwordcount; i++) { *(longpage + i) = word_swap_longword(*(longpage + i)); }
+  for (i = 0; i < longwordcount; i++) { *(longpage + i) = swapx(*(longpage + i)); }
 }
 #endif /* GCC386 */
 

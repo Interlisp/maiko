@@ -77,15 +77,6 @@ extern inline const unsigned int swapx (unsigned int word)
 
 
 
-extern inline const unsigned int word_swap_longword (unsigned int word)
- {
-    asm("roll	$16,%0" : "=r" (word) : "0" (word));
-
-    return(word);
-  }
-
-
-
 extern inline const unsigned short byte_swap_word (unsigned short word)
  {
     asm("rolw	$8,%0" : "=r" (word) : "0" (word));
