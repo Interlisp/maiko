@@ -803,18 +803,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         /* Change window size, then
            notify process group of the change */
         if ((ioctl(pty, TIOCSWINSZ, &w) >= 0) &&
-#ifdef ISC
-            (tcgetpgrp(pty) >= 0) &&
-#else
-            (ioctl(pty, TIOCGPGRP, &pgrp) >= 0) &&
-#endif /* ISC */
-
-#ifdef SYSVONLY
-            (kill(-pgrp, SIGWINCH) >= 0))
-#else
+            ((pgrp = tcgetpgrp(pty)) >= 0) &&
             (killpg(pgrp, SIGWINCH) >= 0))
-#endif /* SYSVONLY */
-
           return (ATOM_T);
         return (GetSmallp(errno));
       }

@@ -344,11 +344,7 @@ LispPTR suspend_lisp(LispPTR *args) {
 /* Send a terminal-stop signal to the whole process-group, not
    just this process, so that if we are running as part of a
    C-shell file the shell will be suspended too. */
-#ifdef SYSVONLY
-  kill(0, SIGTSTP);
-#else
   killpg(getpgrp(), SIGTSTP);
-#endif /* SYSVONLY */
 
   OSMESSAGE_PRINT(printf("resuming\n"));
   device_after_raid();

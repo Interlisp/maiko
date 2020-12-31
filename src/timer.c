@@ -912,13 +912,8 @@ and do a 'v' before trying anything else.";
     case SIGHUP:
       sprintf(errormsg, "HANGUP signalled (code %d) at address %p.\n%s", code, addr, stdmsg);
 /* Assume that a user tried to exit UNIX shell */
-#ifdef SYSVONLY
-      kill(0, SIGKILL);
-      exit(0);
-#else
       killpg(getpgrp(), SIGKILL);
       exit(0);
-#endif /* SYSVONLY */
       break;
 #endif /* SIGHUP */
     case SIGFPE:
