@@ -204,6 +204,7 @@ error Must specify RELEASE to build Medley.
 
 
 	/* Set up defaults */
+#define NOETHER 1
 #define UNALIGNED_FETCH_OK
 #define REGISTER register
 #define HAS_GETHOSTID
@@ -238,6 +239,7 @@ typedef signed char s_char;
 	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
+#undef NOETHER
 #define SYSVSIGNALS 1
 #define NOFORN
 #define LOCK_X_UPDATES 1
@@ -251,8 +253,6 @@ typedef signed char s_char;
 	/********************************************************/
 #ifdef LINUX
 		/* LINUX, the free POSIX-compliant Unix */
-#define NOETHER 1
-
 #undef REGISTER
 #define REGISTER
 
@@ -269,8 +269,6 @@ typedef signed char s_char;
 /********************************************************/
 #if defined(MACOSX) || defined(FREEBSD)
 /* MacOS X, FreeBSD - mostly POSIX-compliant Unix */
-#define NOETHER 1
-
 #undef REGISTER
 #define REGISTER
 
@@ -300,7 +298,6 @@ typedef unsigned short u_short;
 #define REGISTER
 #define SYSVONLY 1
 #define SYSVSIGNALS 1
-#define NOETHER 1
 #define USHORT unsigned
 #else
 #define USHORT unsigned short
