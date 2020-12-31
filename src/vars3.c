@@ -143,7 +143,7 @@ N_OP_assoc
 *******************************************/
 
 LispPTR N_OP_assoc(register LispPTR key, register LispPTR list) {
-  REGISTER struct cadr_cell cadr1;
+  struct cadr_cell cadr1;
   register LispPTR cdr; /* address of (cdr A-list); Lisp address */
 
   if (list == NIL_PTR) { return (NIL_PTR); }
