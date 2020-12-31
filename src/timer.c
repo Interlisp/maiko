@@ -546,7 +546,7 @@ void int_io_open(int fd)
     perror("fcntl F_SETOWN ERROR");
 #endif
   };
-  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | FASYNC) == -1) perror("fcntl F_SETFL error");
+  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_ASYNC) == -1) perror("fcntl F_SETFL error");
 #endif
 }
 
@@ -555,7 +555,7 @@ void int_io_close(int fd)
 #ifdef DOS
 /* Turn off signaller here */
 #elif KBINT
-  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~FASYNC);
+  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_ASYNC);
 #endif
 }
 

@@ -225,7 +225,7 @@ of the packet received except:
 int fork_Unix() {
   int LispToUnix[2], /* Incoming pipe from LISP */
       UnixToLisp[2], /* Outgoing pipe to LISP */
-      UnixPID, LispPipeIn, LispPipeOut, flags, slot;
+      UnixPID, LispPipeIn, LispPipeOut, slot;
   pid_t pid;
 
   char IOBuf[4];
@@ -292,9 +292,7 @@ int fork_Unix() {
   close(LispToUnix[1]);
   close(UnixToLisp[0]);
 
-  flags = fcntl(LispPipeIn, F_GETFL, 0);
-  flags &= (65535 - FNDELAY);
-  fcntl(LispPipeIn, F_SETFL, flags);
+  fcntl(LispPipeIn, F_SETFL, fcntl(LispPipeIn, F_GETFL, 0) & ~O_NONBLOCK);
 
   while (1) {
     ssize_t len;

@@ -779,7 +779,6 @@ void init_ether() {
      differences are in commented-out code below
       (not ifdefed because they're untested...)
   */
-  int flags;
   struct strioctl si;
   unsigned long snaplen = 0;
 
@@ -822,8 +821,7 @@ void init_ether() {
           return;
         }
 
-        flags = fcntl(ether_fd, F_GETFL, 0);
-        fcntl(ether_fd, F_SETFL, flags | O_NDELAY);
+        fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_NONBLOCK);
 
       } else {
       I_Give_Up:
@@ -858,7 +856,7 @@ void init_ether() {
 #else  /* OS4 */
 
     if (getuid() != geteuid()) {
-      if ((ether_fd = open("/dev/nit", O_RDWR | FASYNC)) >= 0) {
+      if ((ether_fd = open("/dev/nit", O_RDWR | O_ASYNC)) >= 0) {
         /* it's open, now query it and find out its name and address */
         /* JRB - must document that LDE uses the first net board as
            found by SIOCGIFCONF (see if(4)).  Maybe we need an option
@@ -1020,7 +1018,7 @@ void init_ether() {
 #endif /* USE_DLPI */
 #endif /* PKTFILTER -- jds 23 sep 96 unmatched if fix */
 #ifndef PKTFILTER
-    if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | FASYNC | FNDELAY) < 0)
+    if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC | O_NONBLOCK) < 0)
       perror("Ether setup SETFLAGS fcntl");
     if (fcntl(ether_fd, F_SETOWN, getpid()) < 0) perror("Ether setup SETOWN");
 #else /* PKTFILTER */

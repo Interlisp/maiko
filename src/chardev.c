@@ -84,7 +84,7 @@ LispPTR CHAR_openfile(LispPTR *args)
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
 
   LispStringToCString(args[0], pathname, MAXPATHLEN);
-  flags = O_NDELAY;
+  flags = O_NONBLOCK;
   ERRSETJMP(NIL);
   /*    TIMEOUT( rval=stat(pathname, &statbuf) );
       if(rval == 0){      } */
@@ -103,7 +103,7 @@ LispPTR CHAR_openfile(LispPTR *args)
   }
   /* Prevent I/O requests from blocking -- make them error */
   /* if no char is available, or there's no room in pipe.  */
-  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | FNDELAY);
+  fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK);
 
   return (GetSmallp(fd));
 #endif /* DOS */
