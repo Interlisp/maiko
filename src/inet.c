@@ -28,8 +28,8 @@
 #include <unistd.h>
 #endif /* DOS */
 
-#ifdef OS5
-/* Solaris doesn't define O_ASYNC, yet still defines FASYNC. */
+#if (defined(OS5) || defined(__CYGWIN__)) && !defined(O_ASYNC)
+/* Cygwin and Solaris don't define O_ASYNC, yet still define FASYNC. */
 #define O_ASYNC FASYNC
 #endif
 
