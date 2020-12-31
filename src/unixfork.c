@@ -99,20 +99,8 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
     char envstring[64];
     char *argvec[4];
 
-#ifndef SYSVONLY
-    /* Divorce ourselves from /dev/tty */
-    res = open("/dev/tty", O_RDWR);
-    if (res >= 0) {
-      (void)ioctl(res, TIOCNOTTY, (char *)0);
-      (void)close(res);
-    } else {
-      perror("Slave TTY");
-      exit(0);
-    }
-#else
-    if (0 > setsid()) /* create us a new session for tty purposes */
-      perror("setsid");
-#endif
+  if (0 > setsid()) /* create us a new session for tty purposes */
+    perror("setsid");
 
 /* Open the slave side */
 #ifndef FULLSLAVENAME
