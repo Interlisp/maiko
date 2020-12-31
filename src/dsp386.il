@@ -35,32 +35,6 @@
 
 
 
-/ swap the words in a long-word.
-.inline swapx,1
-	movl	0(%esp),%eax
-	rol	$16,%eax
-.end
-
-
-/swap the bytes in a 16-bit word
-.inline byte_swap_word,1
-	movl	0(%esp),%eax
-	rolw	$8,%ax
-.end
-
-
-.inline word_swap_page,8
-	movl	4(%esp),%ecx	/ word count into the loop counter
-	movl	0(%esp),%edx	/ address of the block to swap
-	movl	0(%edx),%eax
-	rolw	$8,%ax
-	roll	$16,%eax
-	rolw	$8,%ax
-	movl	%eax,0(%edx)
-	add	$4,%edx
-	loop	.-20
-.end
-
 .inline bit_reverse_region,16
 /args: (top width height rasterwidth)
 	.noopt

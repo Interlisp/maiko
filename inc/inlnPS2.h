@@ -65,56 +65,6 @@
 /************************************************************************/
 
 
-#undef SWAP_WORDS
-#define SWAP_WORDS swapx
-
-
-extern inline const unsigned int swapx (unsigned int word)
- {
-    asm("roll	$16,%0" : "=g" (word) : "0" (word));
-    return(word);
- }
-
-
-
-extern inline const unsigned short byte_swap_word (unsigned short word)
- {
-    asm("rolw	$8,%0" : "=r" (word) : "0" (word));
-
-    return(word);
-  }
-
-
-
-extern inline void word_swap_page(unsigned short * page, int count)
-  {
-   asm volatile("\
-	pushl %edi					\n\
-	pushl %esi					\n\
-	pushl %ecx					\n\
-	cld");
-    asm volatile("\
-	movl %0,%%esi	// word pointer.		\n\
-	movl %%esi,%%edi				\n\
-	movl %1,%%ecx	// count" : : "g" (page), "g" (count));
-    asm volatile("\
-	lodsl						\n\
-	rolw	$8,%ax					\n\
-	roll	$16,%eax				\n\
-	rolw	$8,%ax					\n\
-	stosl						\n\
-	loop	.-13					\n\
-							\n\
-	// epilogue.					\n\
-	popl %ecx					\n\
-	popl %esi					\n\
-	popl %edi					\
-	");
-
-  }
-
-
-
 /************************************************************************/
 /*									*/
 /*									*/

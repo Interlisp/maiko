@@ -27,10 +27,6 @@
 
 #include "byteswapdefs.h"
 
-#if defined(ISC)
-#include "inlnPS2.h"
-#else
-
 /****************************************************************/
 /*                                                              */
 /*                 swap halves of a single 4-byte word          */
@@ -48,7 +44,6 @@ unsigned int swapx(unsigned int word) {
 unsigned short byte_swap_word(unsigned short word) {
   return (((word >> 8) & 0xff) | ((word & 0xff) << 8));
 }
-#endif /* !ISC */
 
 /****************************************************************/
 /*                                                              */
@@ -61,7 +56,6 @@ void byte_swap_page(unsigned short *page, int wordcount) {
   for (i = 0; i < wordcount; i++) { *(page + i) = byte_swap_word(*(page + i)); }
 }
 
-#ifndef GCC386
 /****************************************************************/
 /*                                                              */
 /*     Byte- & word-swap a region wordcount long-words long     */
@@ -76,7 +70,6 @@ void word_swap_page(unsigned short *page, int longwordcount) {
   }
   for (i = 0; i < longwordcount; i++) { *(longpage + i) = swapx(*(longpage + i)); }
 }
-#endif /* GCC386 */
 
 /****************************************************************/
 /*                                                              */
