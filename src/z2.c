@@ -45,7 +45,7 @@
 
 /*   N_OP_classoc()  OP 33Q  */
 LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
-  REGISTER struct cadr_cell cadr1;
+  struct cadr_cell cadr1;
   register LispPTR cdrcell; /* address of (cdr A-list); Lisp address */
 
   switch (key & SEGMASK) {
