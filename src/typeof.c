@@ -60,7 +60,6 @@ LispPTR N_OP_dtest(register LispPTR tos, register int atom_index) {
 /************************************************************************/
 
 LispPTR N_OP_instancep(register LispPTR tos, register int atom_index) {
-  register unsigned int type;
   register struct dtd *dtd68k;
 
   for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(tos));
