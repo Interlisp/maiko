@@ -296,7 +296,6 @@ typedef unsigned short u_short;
 #undef HAS_GETHOSTID
 #undef REGISTER
 #define REGISTER
-#define SYSVONLY 1
 #define SYSVSIGNALS 1
 #define USHORT unsigned
 #else
@@ -313,7 +312,7 @@ typedef unsigned short u_short;
 
 	/****************************************************************/
 	/* 	    End of architecture-specific flag settings		*/
-	/* 	    --Start of system-specific flags (e.g. SYSVONLY)-- 	*/
+	/* 	    --Start of system-specific flags		 	*/
 	/*								*/
 	/****************************************************************/
 
