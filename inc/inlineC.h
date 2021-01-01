@@ -852,8 +852,7 @@ nextop2;								\
 
 #define UNWIND(n, m)							\
 		{	 						\
-		 if ((INT)(CSTKPTRL = (LispPTR *)			\
-		      N_OP_unwind(CSTKPTR, TOPOFSTACK, n, m)) < 0) 	\
+                    if ((CSTKPTRL = N_OP_unwind(CSTKPTR, TOPOFSTACK, n, m)) == (LispPTR *)-1) \
 			goto unwind_err;				\
 		 POP;							\
 		 nextop3;						\

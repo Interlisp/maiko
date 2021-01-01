@@ -28,7 +28,7 @@
 
 #include "unwinddefs.h"
 
-UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep) {
+LispPTR *N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep) {
   register int num;           /* number of UNBOUND slot */
   register LispPTR *endptr;   /* unwind limit */
   register LispPTR *lastpvar; /* points PVar slot that is unbounded. */
@@ -64,7 +64,10 @@ UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int
 
   if (endptr > cstkptr) {
     CurrentStackPTR = (DLword *)cstkptr;
-    ERROR_EXIT(tos);
+    /* this would be ERROR_EXIT(tos); but for having to return a pointer */
+    TopOfStack = tos;
+    Error_Exit = 1;
+    return (LispPTR *)(-1);
   }
   *cstkptr++ = tos;
 
@@ -85,7 +88,7 @@ UNSIGNED N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int
   /* endptr = cstkptr */
 
   if (keep) { *(cstkptr++) = tos; }
-  return ((UNSIGNED)cstkptr);
+  return (cstkptr);
 
 } /* N_OP_unwind */
 
