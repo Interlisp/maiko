@@ -18,13 +18,18 @@
 
 #include "version.h"
 
-#ifdef DOS
+#include <fcntl.h>
+#include <setjmp.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include <time.h>
+#include <unistd.h>
+
+#ifdef DOS
 #include <dos.h>
 #include <i32.h>   /* "#pragma interrupt" & '_chain_intr'*/
-#include <dos.h>   /* defines REGS & other structs       */
-#include <stdio.h> /* define NULL                        */
-#include <stdlib.h>
 #define SIGVTALRM SIGUSR1
 #define SIGIO SIGREAD
 /******************************************************************************
@@ -36,33 +41,15 @@ void (*prev_int_1c)(); /* keeps address of previous 1c handlr*/
 void DOStimer();
 
 unsigned long tick_count = 0; /* approx 18 ticks per sec            */
-
-#else
-#include <time.h>
+#else /* DOS */
+#include <sys/resource.h>
 #include <sys/time.h>
 #endif /* DOS */
-#include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <unistd.h>
-#include <fcntl.h>
 
-#ifndef DOS
-#include <sys/resource.h>
-#endif /* DOS */
-
-#ifdef OS5
+#ifdef USE_DLPI
 #include <stropts.h>
 extern int ether_fd;
 #endif
-
-#ifdef LINUX
-#include <sys/ioctl.h>
-#include <signal.h>
-#endif
-
-#include <setjmp.h>
 
 #include "lispemul.h"
 #include "emlglob.h"
