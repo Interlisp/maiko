@@ -30,29 +30,6 @@
 
 /************************************************************************/
 /*									*/
-/*			N _ O P _ d t e s t				*/
-/*									*/
-/*	Check for type conformity, else error.				*/
-/*									*/
-/************************************************************************/
-
-LispPTR N_OP_dtest(register LispPTR tos, register int atom_index) {
-  register struct dtd *dtd68k;
-
-  for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(tos));
-#ifdef BIGVM
-       atom_index != dtd68k->dtd_name;
-#else
-       atom_index != dtd68k->dtd_namelo + (dtd68k->dtd_namehi << 16);
-#endif /* BIGVM */
-       dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
-    if (dtd68k->dtd_supertype == 0) ERROR_EXIT(tos);
-  }
-  return (tos);
-} /* OP_DTEST END */
-
-/************************************************************************/
-/*									*/
 /*			N _ O P _ i n s t a n c e p			*/
 /*									*/
 /*	Returns T if tos has type named by atom_index, else NIL.	*/
