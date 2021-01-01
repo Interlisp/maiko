@@ -3366,7 +3366,7 @@ static int get_versionless(FileName *varray, char *file, char *dir)
  *				to which the versionless file is hard linked will
  *				be stored.
  *		int	*highest_p
- *				If to_file is the highest versioned file in varrray,
+ *				If to_file is the highest versioned file in varray,
  *				highest_p will point to 1, otherwise, 0.
  *
  * Value:	If succeed, returns 1, otherwise, 0.

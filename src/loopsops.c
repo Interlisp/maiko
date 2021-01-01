@@ -352,7 +352,7 @@ LispPTR lcfuncall(register unsigned int atom_index, register int argnum, registe
   int rest; /* use for arignments */
   register CClosure *closure68k;
 
-  if (atom_index == 0xffffffff) error("Loops punt to nonexistant fn");
+  if (atom_index == 0xffffffff) error("Loops punt to nonexistent fn");
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;

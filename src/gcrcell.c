@@ -27,7 +27,7 @@
 /*                                                                       */
 /*                                                                       */
 /*************************************************************************/
-/*           Descreption :                                               */
+/*           Description :                                               */
 /*                                                                       */
 /*  The functions "gcreccell" and "freelistcell" are the translated 	 */
 /*  functions from the Lisp functions "\GCRECLAIMCELL" that is the UFN   */

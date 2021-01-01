@@ -26,7 +26,7 @@
 /*                        gcscan2(probe)                                 */
 /*                                                                       */
 /*************************************************************************/
-/*           Descreption :                                               */
+/*           Description :                                               */
 /*                                                                       */
 /* The functions "gcscan1" and "gcscan2" are the translated functions    */
 /*  from the Lisp Functions "\GCSCAN1" & "\GCSCAN2".                     */
@@ -36,7 +36,7 @@
 /*  by OPCODES "GCSCAN1" & "GCSCAN2".                                    */
 /*                                                                       */
 /* gcscan1                                                               */
-/*    INPUT : probe (the startng offset in the HTmain table)             */
+/*    INPUT : probe (the starting offset in the HTmain table)            */
 /*    OUTPUT : the entry's offset or NIL (no more entry existing)        */
 /*                                                                       */
 /* gcscan2                                                               */

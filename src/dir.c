@@ -343,7 +343,7 @@ void print_finfo(FINFO *fp)
  *
  * Argument:	None.
  *
- * Value:	If suceed, returns 1, otherwise 0.
+ * Value:	If succeed, returns 1, otherwise 0.
  *
  * Side Effect:	FreeFinfoList will point to the alloced area.  MAXFINFO will hold
  *		the total number of allocated instances of FINFO structure.
@@ -386,7 +386,7 @@ int init_finfo() {
  *
  * Argument:	None.
  *
- * Value:	If suceed, returns the id of linked list of FINFO structures,
+ * Value:	If succeed, returns the id of linked list of FINFO structures,
  *		otherwise -1.
  *
  * Side Effect:	If needed, FinfoArray will be extended according to the value of
