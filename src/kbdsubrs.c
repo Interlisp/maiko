@@ -123,9 +123,9 @@ void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
                                    * args[1] :	frequency
                                    */
 {
+#ifdef SUNDISPLAY
   int keycommand;
 
-#ifdef SUNDISPLAY
   /*	belltime.tv_usec = args[1] & 0xffff;
           win_bell(LispWindowFd, belltime, 0);
   */

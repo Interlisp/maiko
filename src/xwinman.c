@@ -64,7 +64,6 @@ int bound(int a, int b, int c)
 
 void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)
 {
-  XSetWindowAttributes Lisp_SetWinAttributes;
   Window OldWindow;
 
   /* Change Background Pixmap of Gravity Window */

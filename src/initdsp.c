@@ -279,11 +279,11 @@ void clear_display() {
 
 void init_display2(DLword *display_addr, int display_max)
 {
-  int mmapstat;
-  int fbgattr_result;
-  char *texture_base;
-
 #ifdef SUNDISPLAY
+#ifndef DISPLAYBUFFER
+  int mmapstat;
+#endif
+  int fbgattr_result;
   struct fbtype my_screen;
   char groups[PIXPG_OVERLAY + 1];
   struct fbgattr FBattr;
@@ -724,8 +724,7 @@ void flush_display_region(int x, int y, int w, int h)
 void byte_swapped_displayregion(int x, int y, int w, int h)
 {
   extern unsigned char reversedbits[];
-  register unsigned int *longptr, *lineptr;
-  register int linecount, wordlimit;
+  register unsigned int *longptr;
 
   /* Get QUAD byte aligned pointer */
   longptr = (unsigned int *)(((UNSIGNED)((DLword *)DisplayRegion68k + (DLWORD_PERLINE * y)) +
@@ -808,7 +807,7 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSI
 { flush_display_buffer(); }
 #else
 {
-  int y, x, baseoffset, realw;
+  int y, x, baseoffset;
   baseoffset = (((DLword *)ybase) - DisplayRegion68k);
   y = baseoffset / DLWORD_PERLINE;
   x = bitoffset + (BITSPERWORD * (baseoffset - (DLWORD_PERLINE * y)));

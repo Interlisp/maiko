@@ -60,7 +60,6 @@ LispPTR rpc(LispPTR *args)
      */
   char hostname[MAX_HOSTNAME_LENGTH];
   struct hostent *hp;
-  struct servent *sp;
   struct sockaddr_in sin, sin1, from;
   char *outbuf, *inbuf, *destaddr;
   register int s, msec_until_timeout, msec_between_tries, out_length;

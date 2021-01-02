@@ -257,7 +257,7 @@ LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword
                          int externalp) {
   int packindex;
   PACKAGE *packaddr;
-  LispPTR hashtbladdr;
+  /* LispPTR hashtbladdr; */
   LispPTR index;
 
   /* For convenience, recognize the common package nicknames: */

@@ -137,7 +137,6 @@ static struct timeval SelectTimeout = {0, 0};
 #endif /* DOS */
 
 #ifdef XWINDOW
-static int Xcount = 1;
 extern int Event_Req;
 #endif /* XWINDOW */
 
@@ -647,7 +646,6 @@ void taking_mouse_down() {
 void copy_cursor(int newx, int newy)
 {
   register DLword *srcbase, *dstbase;
-  register int offsetx, offsety;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
   extern DLword *EmCursorBitMap68K;

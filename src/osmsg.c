@@ -201,9 +201,6 @@ void mess_reset() {
 /*	has been set by flush_pty().					*/
 /*									*/
 /************************************************************************/
-#ifndef DOS
-static struct timeval selecttimeout = {0, 0};
-#endif
 LispPTR mess_readp() {
 #ifndef DOS
 #ifndef XWINDOW
@@ -330,6 +327,9 @@ LispPTR flush_pty() {
   static fd_set rfds;
   int rval;
   struct statvfs vfsbuf;
+#ifndef LOGINT
+  struct timeval selecttimeout = {0, 0};
+#endif
 
   SETJMP(NIL);
   DBPRINT(("flush_pty() called.\n"));
