@@ -250,7 +250,8 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
     else
       error("Shouldn't");
   }
-
+  error("Control reached end of slowreturn()!");
+  return (NIL); /* NOT REACHED */
 } /* slowreturn end */
 
 #define MAXSAFEUSECOUNT 200

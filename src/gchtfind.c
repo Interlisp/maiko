@@ -94,6 +94,7 @@
         IncAllocCnt(1);                                               \
         return ptr; /* new 0 entry */                                 \
       default: error("GC error: new entry touches stack bit");        \
+        return NIL; /* NOT REACHED */                                 \
     }                                                                 \
   }
 
@@ -114,6 +115,7 @@
         GETGC(entry) = hiptr | (1 << HTCNTSHIFT) | HTSTKMASK;           \
         return NIL;                                                     \
       default: error("GC error: new entry when turning off stack bit"); \
+        return NIL; /* NOT REACHED */                                   \
     }                                                                   \
   }
 
