@@ -20,12 +20,6 @@ Unix Interface Communications
 
 #include "lispemul.h"
 
-
-/* FULLSLAVENAME => use a full file name for slave PTY */
-#ifdef OS5
-#define FULLSLAVENAME
-#endif /* OS5 */
-
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h> /* JRB - timeout.h needs setjmp.h */
@@ -39,15 +33,8 @@ Unix Interface Communications
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/wait.h>
-#include <unistd.h>
-
-
 #include <termios.h>
-
-#ifdef sun
-/* to get S_IFIFO defn for creating fifos */
-#include <sys/stat.h>
-#endif /* sun */
+#include <unistd.h>
 
 #include "address.h"
 #include "adr68k.h"
@@ -290,58 +277,31 @@ int FindUnixPipes(void) {
 /*		    F i n d A v a i l a b l e P t y			*/
 /*									*/
 /*	Given strings Master and Slave, fill them with path names	*/
-/*	of the forms:							*/
+/*	to the master and slave psuedoterminals.			*/
 /*									*/
-/*		Master:  /dev/ptyxx					*/
-/*		Slave:   /dev/ttyxx					*/
-/*									*/
-/*	Which are the first available pty/tty pair for communicating	*/
-/*	with a forked shell.						*/
-/*									*/
-/*	Assumes that valid PTY names are [pqr][0-f]; if your system	*/
-/*	is different, you'll need to change it.				*/
+/*	This uses POSIX pseudoterminals.				*/
 /*									*/
 /************************************************************************/
-
-#define PTYLETTERS "pqr"
-#define PTYNUMBERS "0123456789abcdef"
-
-/* Find the first PTY pair that is not in use */
 
 int FindAvailablePty(char *Master, char *Slave) {
   int res;
   char *let, *num;
 
-#ifdef OS5
-  res = open("/dev/ptmx", O_RDWR);
+  res = posix_openpt(O_RDWR);
   if (res < 0) {
-    perror("ptmx open");
+    perror("open_pt failed");
     return (-1);
   }
   grantpt(res);
   unlockpt(res);
   strcpy(Slave, ptsname(res));
   DBPRINT(("slave pty name is %s.\n", Slave));
-#else
-
-  /* From p to r */
-  for (let = PTYLETTERS; *let != 0; let++) /* and 0 to f */
-    for (num = PTYNUMBERS; *num != 0; num++) {
-      sprintf(Master, "/dev/pty%c%c", *let, *num);
-      sprintf(Slave, "%c%c", *let, *num);
-      DBPRINT(("Trying %s. ", Master));
-      /* Try to open the Master side */
-      res = open(Master, O_RDWR);
-#endif
 
   if (res != -1) {
     fcntl(res, F_SETFL, fcntl(res, F_GETFL, 0) | O_NONBLOCK);
     return (res);
   }
-#ifndef FULLSLAVENAME
-}
-#endif /* because we commented out the for above also... */
-return (-1);
+  return (-1);
 }
 
 /************************************************************************/
@@ -627,11 +587,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[3] = slot;
       write(UnixPipeOut, d, 4);
 
-#ifdef FULLSLAVENAME
       len = strlen(SlavePTY) + 1;
       write(UnixPipeOut, &len, 2);
       write(UnixPipeOut, SlavePTY, len);
-#endif
 
       if (command != 4) { /* New style has arg1 = termtype, arg2 = command */
         WriteLispStringToPipe(args[1]);
