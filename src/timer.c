@@ -577,17 +577,10 @@ static void int_io_init() {
 #else  /* SYSVSIGNALS in effect... */
 #ifndef DOS
   SIGERRCHK(sigset(SIGIO, getsignaldata), "sigset io");
-#ifdef XWINDOW
-#ifndef __CYGWIN__
-#ifdef LINUX
-  if (fcntl(ConnectionNumber(currentdsp->display_id), F_SETSIG, 0) < 0)
-    perror("fcntl on X fd - SETSIG for input handling failed");
-#else
+#if defined(XWINDOW) && defined(I_SETSIG)
   if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
     perror("ioctl on X fd - SETSIG for input handling failed");
 #endif
-#endif /* __CYGWIN__ */
-#endif /* XWINDOW */
 
 #ifdef USE_DLPI
   DBPRINT(("INIT ETHER:  Doing I_SETSIG.\n"));
