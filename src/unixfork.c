@@ -36,7 +36,6 @@
 
 #ifdef OS5
 #include <sys/stropts.h>
-#define FULLSLAVENAME
 #endif
 
 #include "dbprint.h"
@@ -81,15 +80,8 @@ loop:
 
 /* Creates a PTY connection to a csh */
 
-#ifdef FULLSLAVENAME
 int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
-#else
-int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
-#endif
 {
-#ifndef FULLSLAVENAME
-  char PtySlave[20];
-#endif
   int res, PID, SlaveFD;
   struct termios tio;
 
@@ -103,9 +95,6 @@ int ForkUnixShell(int slot, char ltr, char numb, char *termtype, char *shellarg)
     perror("setsid");
 
 /* Open the slave side */
-#ifndef FULLSLAVENAME
-    sprintf(PtySlave, "/dev/tty%c%c", ltr, numb);
-#endif
     SlaveFD = open(PtySlave, O_RDWR);
     if (SlaveFD == -1) {
       perror("Slave Open");
@@ -304,12 +293,10 @@ int fork_Unix() {
       case 'P':          /* Fork PTY shell */
         if (slot >= 0) { /* Found a free slot */
           char termtype[32];
-#ifdef FULLSLAVENAME
           char slavepty[32]; /* For slave pty name */
 
           if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading slave pty len");
           if (SAFEREAD(LispPipeIn, slavepty, tmp) < 0) perror("Slave reading slave pty id");
-#endif /* FULLSLAVENAME */
 
           if (IOBuf[0] == 'P') { /* The new style, which takes term type & command to csh */
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");
@@ -328,12 +315,8 @@ int fork_Unix() {
             cmdstring[0] = 0;
           }
 
-/* Alloc a PTY and fork  */
-#ifdef FULLSLAVENAME
+          /* Alloc a PTY and fork  */
           pid = ForkUnixShell(slot, slavepty, termtype, cmdstring);
-#else
-          pid = ForkUnixShell(slot, IOBuf[1], IOBuf[2], termtype, cmdstring);
-#endif
 
           if (pid == -1) {
             printf("Impossible failure from ForkUnixShell??\n");
