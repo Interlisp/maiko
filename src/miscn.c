@@ -67,7 +67,7 @@ int OP_miscn(int misc_index, int arg_count) {
 
   switch (misc_index) {
     case miscn_USER_SUBR: {
-      register LispPTR user_subr, user_args;
+      register LispPTR user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
       if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) goto do_ufn;
     } break;

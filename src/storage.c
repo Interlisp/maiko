@@ -1,7 +1,5 @@
 /* $Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
-static const char *id =
-    "$Id: storage.c,v 1.5 2001/12/26 22:17:04 sybalsky Exp $ Copyright (C) Venue";
 
 /************************************************************************/
 /*									*/

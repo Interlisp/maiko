@@ -78,7 +78,7 @@ LispPTR CHAR_openfile(LispPTR *args)
 #ifndef DOS
   register int fd;    /* return value  of open system call. */
   register int flags; /* open system call's argument */
-  struct stat statbuf;
+  /* struct stat statbuf; */
   char pathname[MAXPATHLEN];
 
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));

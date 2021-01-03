@@ -93,7 +93,7 @@ void set_sysout(int version, char *sysout_file_name) {
 }
 
 int main(int argc, char **argv) {
-  int version, res;
+  int version;
   if (argc < 3) {
     printf("setsysout version sysout-name\n");
     return (-1);

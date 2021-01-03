@@ -38,8 +38,11 @@
 /***************************************************/
 
 LispPTR N_OP_rplcons(register LispPTR list, register LispPTR item) {
+#ifndef NEWCDRCODING
   register struct conspage *conspage;
-  register ConsCell *new_cell, *list68k;
+  register ConsCell *new_cell;
+#endif
+  register ConsCell *list68k;
 
   LispPTR register page;
 

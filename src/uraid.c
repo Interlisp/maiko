@@ -286,7 +286,6 @@ extern int PrintMaxLevel; /* for print level */
 LispPTR parse_atomstring(char *string)
 {
   char *start, *packageptr, *nameptr;
-  int flag = 0;
   int packagelen = 0;
   int namelen = 0;
   int cnt;
@@ -371,7 +370,7 @@ unsigned int uGetTN(unsigned int address) {
 /***********************************************************************/
 
 LispPTR uraid_commands() {
-  int num, address, val, tmp;
+  int num, address, val;
   LispPTR index;
   DefCell *defcell68k;
 #ifndef DOS
@@ -869,12 +868,9 @@ extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif /* SUNDISPLAY */
 
 int device_before_raid() {
-  int keytrans;
-  int size;
-  int munmapstat;
-  struct pixrect *fb;
-  /*  extern char *alloc_hideDISP(); */
 #ifdef SUNDISPLAY
+  int size;
+  int keytrans;
   union wait status;
 #endif /* SUNDISPLAY */
 
@@ -1147,12 +1143,11 @@ int device_after_raid() {
 
 static int re_init_display(int lisp_display_addr, int display_max)
 {
+#ifdef SUNDISPLAY
   int mmapstat, size;
   struct pixrect *ColorFb;
   extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
   extern int DisplayType;
-
-#ifdef SUNDISPLAY
 
   union wait status;
 
@@ -1257,15 +1252,11 @@ static int re_init_display(int lisp_display_addr, int display_max)
 
 static int re_init_display(int lisp_display_addr, int display_max)
 {
+#ifdef SUNDISPLAY
   int mmapstat, size;
   struct pixrect *ColorFb;
-  /*
-      extern struct pixrect *color_source;
-  */
   struct pixrect *color_source;
   extern int DisplayType;
-
-#ifdef SUNDISPLAY
   union wait status;
 
   if (Win_security_p) {

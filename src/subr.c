@@ -105,7 +105,6 @@ char *atom_to_str(LispPTR atom_index) {
 void OP_subrcall(int subr_no, int argnum) {
   static LispPTR args[30];
   int arg_num;
-  int i;
 
   PushCStack; /* save TOS in memory */
 

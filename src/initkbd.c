@@ -260,7 +260,9 @@ u_char DOSLispKeyMap_101[0x80] = {
 
 void init_keyboard(int flg) /* if 0 init else re-init */
 {
+#ifdef SUNDISPLAY
   int keytrans;
+#endif
 
   set_kbd_iopointers();
 
@@ -450,7 +452,6 @@ static u_char *make_X_keymap() {
   int *key_sym_pairs = generic_X_keymap;
   int i = 0;
   KeySym *mapping;
-  KeyCode first;
   int codecount, symspercode, minkey, maxkey;
 
   for (; i < 256; i++) { /* clear the tables we just allocated */

@@ -453,7 +453,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int 
 int unixpathname(char *src, char *dst, int versionp, int genp)
 #endif /* DOS */
 {
-  register char *cp, *dp, *np, *rp;
+  register char *cp, *dp, *np;
   register int newdirflg;
   char name[64];
   char lfname[MAXPATHLEN], fbuf1[MAXPATHLEN], fbuf2[MAXPATHLEN];
@@ -461,6 +461,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
   struct passwd *pwd;
 
 #ifdef DOS
+  char *rp;
   int namelen = 0, extlen = 0; /* lengths of name & extension */
   int extensionp = 0;          /* T if we're in the extension */
   int version = 1;             /* version # for this file */
@@ -858,7 +859,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
 {
   register char *cp, *dp, *lnamep, *cnamep;
-  char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN], drive;
+  char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN];
   register int i, mask, extensionp;
 
   if (strcmp(fullname, DIRSEPSTR) == 0) {
