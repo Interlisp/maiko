@@ -453,7 +453,6 @@ LispPTR COM_openfile(register LispPTR *args)
          * maintain a version status.
          */
         if (maintain_version(file, (FileName *)NULL, 1) == 0) {
-          TIMEOUT(rval = close(fd));
           *Lisp_errno = errno;
           return (NIL);
         }
