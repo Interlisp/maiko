@@ -62,66 +62,35 @@
 			dest = FIXP_VALUE(dest);			\
 		}							\
 }
-#ifdef I386
-#define N_IGETNUMBER(sour, dest, label)					\
-{		dest = sour;	/* access memory once */ 		\
-		switch(SEGMASK & dest){				\
-		case S_POSITIVE:					\
-			dest = 0xFFFF & dest;				\
-			break;						\
-		case S_NEGATIVE:					\
-			dest = 0xFFFF0000 | dest;			\
-			break;						\
-		default:						\
-			switch (GetTypeNumber( dest )) {		\
-			case TYPE_FIXP:					\
-			  dest = FIXP_VALUE(dest);			\
-			  break;					\
-			case TYPE_FLOATP:				\
-			  {register float temp;				\
-			   temp = FLOATP_VALUE(dest) ;			\
-			   if (	(temp > ((float) 0x7fffffff)) ||	\
-				(temp < ((float) 0x80000000)) )		\
-				goto label;				\
-			   dest = (int) temp;				\
-			   }						\
-			  break;					\
-			default: goto label;				\
-			}						\
-			break;						\
-		}							\
-}
-#else
-#define N_IGETNUMBER(sour, dest, label)					\
-{		dest = sour;	/* access memory once */ 		\
-		switch(SEGMASK & dest){				\
-		case S_POSITIVE:					\
-			dest = 0xFFFF & dest;				\
-			break;						\
-		case S_NEGATIVE:					\
-			dest = 0xFFFF0000 | dest;			\
-			break;						\
-		default:						\
-			switch (GetTypeNumber( dest )) {		\
-			case TYPE_FIXP:					\
-			  dest = FIXP_VALUE(dest);			\
-			  break;					\
-			case TYPE_FLOATP:				\
-			  {register float temp;				\
-			   temp = FLOATP_VALUE(dest) ;			\
-			   if (	(temp > ((float) 0x7fffffff)) ||	\
-				(temp < ((float) 0x80000000)) )		\
-				goto label;				\
-			   dest = (int) temp;				\
-			   }						\
-			  break;					\
-			default: goto label;				\
-			}						\
-			break;						\
-		}							\
-}
 
-#endif /* I386 */
+#define N_IGETNUMBER(sour, dest, label)					\
+{		dest = sour;	/* access memory once */ 		\
+		switch(SEGMASK & dest){				\
+		case S_POSITIVE:					\
+			dest = 0xFFFF & dest;				\
+			break;						\
+		case S_NEGATIVE:					\
+			dest = 0xFFFF0000 | dest;			\
+			break;						\
+		default:						\
+			switch (GetTypeNumber( dest )) {		\
+			case TYPE_FIXP:					\
+			  dest = FIXP_VALUE(dest);			\
+			  break;					\
+			case TYPE_FLOATP:				\
+			  {register float temp;				\
+			   temp = FLOATP_VALUE(dest) ;			\
+			   if (	(temp > ((float) 0x7fffffff)) ||	\
+				(temp < ((float) 0x80000000)) )		\
+				goto label;				\
+			   dest = (int) temp;				\
+			   }						\
+			  break;					\
+			default: goto label;				\
+			}						\
+			break;						\
+		}							\
+}
 
 
 #define ARITH_SWITCH(arg, result)					\
