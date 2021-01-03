@@ -785,7 +785,7 @@ LispPTR uraid_commands() {
       switch (vfork()) {
         case -1: (void)fprintf(stderr, "uraid: Fork failed.\n"); exit(1);
 
-        case 0: (void)execl("/bin/sh", "sh", "-i", 0); exit(1);
+        case 0: (void)execl("/bin/sh", "sh", "-i", NULL); exit(1);
 
         default: break;
       }
@@ -975,7 +975,7 @@ int device_before_raid() {
       case -1: /* Error */ (void)fprintf(stderr, "display_before_exit: Fork failed.\n"); exit(1);
 
       case 0: /* Child */
-        (void)execl(SV_RELEASE, "sv_release", 0);
+        (void)execl(SV_RELEASE, "sv_release", NULL);
         /* should not return */
         (void)fprintf(stderr, "display_before_exit: exec for sv_release failed\n");
         exit(1);
@@ -1161,7 +1161,7 @@ static int re_init_display(int lisp_display_addr, int display_max)
       case -1: /* Error */ (void)fprintf(stderr, "re_init_display: Fork failed.\n"); exit(1);
 
       case 0: /* Child */
-        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", 0);
+        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", NULL);
         /* should not return */
         (void)fprintf(stderr, "re_init_display: exec for sv_acquire failed\n");
         exit(1);
@@ -1273,7 +1273,7 @@ static int re_init_display(int lisp_display_addr, int display_max)
       case -1: /* Error */ (void)fprintf(stderr, "re_init_display: Fork failed.\n"); exit(1);
 
       case 0: /* Child */
-        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", 0);
+        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", NULL);
         /* should not return */
         (void)fprintf(stderr, "re_init_display: exec for sv_acquire failed\n");
         exit(1);
