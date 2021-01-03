@@ -162,7 +162,7 @@ void separate_host(char *lfname, char *host)
     *lfname = '<';
     *(lfname + 1) = '\0';
   } else {
-    diff = (int)cp - (int)lfname;
+    diff = cp - lfname;
     if (*cp == '<' || *cp == DIRSEP
 #ifdef DOS
         || *cp == UNIXDIRSEP
@@ -2387,7 +2387,7 @@ void separate_version(char *name, char *ver, int checkp)
        * name ends in the form ".~###~". But we have to check
        * ### are all numbers or not, if checkp is 1.
        */
-      len = (int)end - (int)start - 1;
+      len = (end - start) - 1;
       strncpy(ver_buf, start + 1, len);
       ver_buf[len] = '\0';
       if (checkp) {
