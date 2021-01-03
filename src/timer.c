@@ -435,7 +435,7 @@ extern int LispWindowFd;
 static struct sigvec timerv;
 #endif /* SYSVSIGNALS */
 
-static void int_timer_service(int sig, int code, void *scp)
+static void int_timer_service(int sig)
 {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
@@ -861,49 +861,54 @@ static void int_file_init() {
                struct sigaction * restrict oact);
  */
 
-void panicuraid(int sig, int code, void *scp, void *addr)
+void panicuraid(int sig)
 {
   static char errormsg[200];
   static char *stdmsg =
       "Please record the signal and code information\n\
 and do a 'v' before trying anything else.";
-  int i;
-
-  for (i = 0; i < 200; i++) errormsg[i] = 0;
 
   switch (sig) {
 #ifdef SIGBUS
     case SIGBUS:
-      sprintf(errormsg, "BUS error (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "BUS error.\n%s", stdmsg);
       break;
 #endif /* SIGBUS */
     case SIGSEGV:
-      sprintf(errormsg, "SEGV error (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "SEGV error.\n%s", stdmsg);
       break;
     case SIGILL:
-      sprintf(errormsg, "Illegal instruction (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "Illegal instruction.\n%s", stdmsg);
       break;
 #ifdef SIGPIPE
     case SIGPIPE:
-      sprintf(errormsg, "Broken PIPE (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "Broken PIPE.\n%s", stdmsg);
       break;
 #endif /* SGPIPE */
 #ifdef SIGHUP
     case SIGHUP:
-      sprintf(errormsg, "HANGUP signalled (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "HANGUP signalled.\n%s", stdmsg);
 /* Assume that a user tried to exit UNIX shell */
+#ifdef SYSVONLY
+      kill(0, SIGKILL);
+      exit(0);
+#else
       killpg(getpgrp(), SIGKILL);
       exit(0);
+#endif /* SYSVONLY */
       break;
 #endif /* SIGHUP */
     case SIGFPE:
-      sprintf(errormsg, "FP error (code %d) at address %p.\n%s", code, addr, stdmsg);
+      sprintf(errormsg, "FP error.\n%s", stdmsg);
       break;
-    default: sprintf(errormsg, "Uncaught SIGNAL %d (code %d).\n%s", sig, code, stdmsg);
+    default: sprintf(errormsg, "Uncaught SIGNAL %d.\n%s", sig, stdmsg);
   }
 
   error(errormsg);
 }
+
+
+
 
 /************************************************************************/
 /*                                                                      */

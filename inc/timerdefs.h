@@ -13,6 +13,6 @@ void int_block(void);
 void int_unblock(void);
 void int_timer_off(void);
 void int_timer_on(void);
-void panicuraid(int sig, int code, void *scp, void *addr);
+void panicuraid(int sig);
 void int_init(void);
 #endif
