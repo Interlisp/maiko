@@ -54,9 +54,9 @@ void cause_interruptcall(register unsigned int atom_index)
 
   /* This used to be >=, but I think that was a change from earlier,
      when it was originally >.  I changed it back on 2/2/98 to see
-     if that fixes stack overflow toruble.  --JDS */
+     if that fixes stack overflow trouble.  --JDS */
   if ((UNSIGNED)(CurrentStackPTR + tmp_fn->stkmin + STK_SAFE) > (UNSIGNED)EndSTKP) {
-    /*printf("Intrrupt:$$ STKOVER when ");
+    /*printf("Interrupt:$$ STKOVER when ");
     print(atom_index);
     printf(" was called  *****\n");*/
     DOSTACKOVERFLOW(0, -1);

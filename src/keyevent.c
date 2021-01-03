@@ -319,7 +319,7 @@ getmore:
       while (input_readevent(LispWindowFd, &event) >= 0) {
         /*if(!kb_event( &event )) {goto getmore;};*/
         if ((KBDEventFlg += kb_event(&event)) > 0) {
-          /* immidiately request for IRQ check */
+          /* immediately request for IRQ check */
           Irq_Stk_End = Irq_Stk_Check = 0;
         }
       }
@@ -639,8 +639,8 @@ void taking_mouse_down() {
 }
 #endif /* COLOR */
 
-/* LastCursorClippingX must be set brfore calling
- To avoid duplicate caluculation */
+/* LastCursorClippingX must be set before calling
+ To avoid duplicate calculation */
 #ifndef COLOR
 /* FOR MONO ONLY */
 void copy_cursor(int newx, int newy)

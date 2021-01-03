@@ -162,7 +162,7 @@ dosmkfil : mkfile
 lde     : $(OFILES) mkvdate
 	$(RM) vdate.c
 	mkvdate > vdate.c
-	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the speciffic files for this target */
+	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the specific files for this target */
 	$(CC) $(LDFLAGS) $(OFILES) -o $@
 
  ##################
@@ -175,7 +175,7 @@ OBJECTDIR/main.o  :   INCDIR/lispemul.h INCDIR/address.h INCDIR/lsptypes.h INCDI
 
 
  ######################################
- ### Architecture speciffic targets ###
+ ### Architecture specific targets  ###
  ###                                ###
  ### replaces the cruft in the      ###
  ### makefile-<OS>.<ARCH>           ###

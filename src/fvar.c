@@ -305,7 +305,7 @@ void nfvlookup(struct frameex1 *apframe1, register DLword *achain,
         1. save TopOfStack to evaluation stack.
         2. set address of searching FVAR slot to chain.
         3. call lookfor. (It sets some content to FVAR slot)
-        4. get some address by caluculation of content of FVAR slot.
+        4. get some address by calculation of content of FVAR slot.
         5. set the address to TopOfStack.
 **************************************************************************/
 LispPTR N_OP_fvarn(register int n)
@@ -333,7 +333,7 @@ N_OP_stkscan
         entry	STKSCAN		OPCODE[057]
 
         <<Enter>>
-        TopOfStack:	Low word - Atom index number of variable to be saned.
+        TopOfStack:	Low word - Atom index number of variable to be scanned.
         <<Exit>>
         TopOfStack:	Address of found value.
 

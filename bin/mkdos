@@ -171,13 +171,13 @@ emul.exe : $(OFILES)
 ldex    : $(OFILES) mkvdate
 	$(RM) vdate.c
 	mkvdate > vdate.c
-	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the speciffic files for this target */
+	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the specific files for this target */
 	$(CC) $(OFILES) -o $@ $(LDFLAGS)
 
 lde     : $(OFILES) mkvdate
 	$(RM) vdate.c
 	mkvdate > vdate.c
-	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the speciffic files for this target */
+	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the specific files for this target */
 	$(CC) $(LDFLAGS) $(OFILES) -o $@
 
  ##################
@@ -188,7 +188,7 @@ main.o  :       lispemul.h address.h lsptypes.h adr68k.h stack.h lspglob.h lispm
 
 
  ######################################
- ### Architecture speciffic targets ###
+ ### Architecture specific targets  ###
  ###                                ###
  ### replaces the cruft in the      ###
  ### makefile-<OS>.<ARCH>           ###

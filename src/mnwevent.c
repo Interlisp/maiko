@@ -146,7 +146,7 @@ void HandleMotion(Widget widget, WindowInterface wif, XMotionEvent *xevent, Bool
     /* printf("mouse x %d, y %d\n", xevent->x_root, xevent->y_root); */
     DoRing();
     if ((KBDEventFlg) > 0) {
-      /* immidiately request for IRQ check */
+      /* immediately request for IRQ check */
       Irq_Stk_End = Irq_Stk_Check = 0;
     }
   }
@@ -441,7 +441,7 @@ void getMNWsignaldata(int fd)
           (*((DLword *)EmMouseY68K)) = *EmCursorY68K = report.xmotion.y_root;
           DoRing();
           if ((KBDEventFlg) > 0) {
-            /* immidiately request for IRQ check */
+            /* immediately request for IRQ check */
             Irq_Stk_End = Irq_Stk_Check = 0;
           }
         } break;

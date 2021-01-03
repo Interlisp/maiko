@@ -784,7 +784,7 @@ and do a 'v' before trying anything else.";
 /*                                                                      */
 /*                     i n t _ p a n i c _ i n i t                      */
 /*                                                                      */
-/*  A catch for all the deadly interupts (but KILL, of course)          */
+/*  A catch for all the deadly interrupts (but KILL, of course)          */
 /*  Dumps you into uraid; you probably can't get back from it,          */
 /*     but there is hope that you will be able to poke around with      */
 /*     uraid and get a clue about why you're dying.                     */
