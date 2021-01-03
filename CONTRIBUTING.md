@@ -1,12 +1,12 @@
 # How to contribute to Medley Interlisp
 
-Be aware that we are working with 30-year-old code, and there are quite a few interactions unforseen interactions.
-The C code was originally written to K&R C before C standards, for a Big-endian 32-bit machine.
-* The most useful contributions are reproducable errors -- things that don't work as documented.
+Be aware that we are working with 30-year-old code, and there are quite a few unforseen interactions.
+The C code was originally written to K&R C before C standards, for a big-endian 32-bit machine.
+* The most useful contributions are reproducible errors -- things that don't work as documented.
 * Second most useful are reports of unexpected behavior -- things that aren't documented but behave unexpectedly.
 
 ## Reporting a bug or feature request
-* Ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/Interlisp/medley/issues) or [Discussions](https://github.com/Interlisp/medley/issues).
+* Ensure the bug was not already reported by searching on GitHub under [Issues](https://github.com/Interlisp/medley/issues) or [Discussions](https://github.com/Interlisp/medley/discussions).
 Discussions are for questions or topics where there is some disagreement or uncertainty about the "right" direction.
 * If you're unable to find a discussion or open issue addressing the problem, open a new one. Be sure to include a title 
 and clear description, as much relevant information as possible, 
