@@ -123,8 +123,6 @@ LispPTR gcreccell(LispPTR cell) {
   LispPTR ptrfield, carfield;
   int index, code;
   LispPTR *field;
-  int freecnt;
-  LispPTR freeptr;
 
 #ifdef NEWCDRCODING
   LispPTR to_do[TODO_LIMIT];      /* table of pointers to follow, since Cdr coding lost */

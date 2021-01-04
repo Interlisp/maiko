@@ -930,7 +930,10 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   int right, top, destbits, left, bottom;
   LispPTR operation, texture;
   DLword *srcbase, *dstbase, *base;
-  int dty, slx, dstbpl, op, src_comp, displayflg = 0;
+  int dty, slx, dstbpl, op, src_comp;
+#ifdef REALCURSOR
+  int displayflg = 0;
+#endif
   int rasterwidth;
   int num_gray, curr_gray_line;
   DLword grayword[4];
@@ -1171,12 +1174,16 @@ void bltchar(LispPTR *args)
   register PILOTBBT *pbt;
   register DISPLAYDATA *dspdata;
   int base;
+#ifdef REALCURSOR
   register int displayflg;
-
+#endif
   int w, h;
   int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;
-  int gray = 0, num_gray = 0, curr_gray_line = 0;
+  int gray = 0;
+#ifdef NEWBITBLT
+  int num_gray = 0, curr_gray_line = 0;
+#endif
 
   pbt = (PILOTBBT *)Addr68k_from_LADDR(((BLTC *)args)->pilotbbt);
   dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTC *)args)->displaydata);
@@ -1453,10 +1460,15 @@ void newbltchar(LispPTR *args) {
   int lmargin, rmargin, xoff;
   int base;
   int h, w;
+#ifdef REALCURSOR
   int displayflg;
+#endif
   int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;
-  int gray = 0, num_gray = 0, curr_gray_line = 0;
+  int gray = 0;
+#ifdef NEWBITBLT
+  int num_gray = 0, curr_gray_line = 0;
+#endif
 
   displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTARG *)args)->displaydata);
 
@@ -1918,7 +1930,6 @@ void ccfuncall(register unsigned int atom_index, register int argnum, register i
   register short pv_num;                       /* scratch for pv */
   register struct fnhead *tmp_fn;
   int rest; /* use for arignments */
-  int closurep = NIL;
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
@@ -2019,7 +2030,10 @@ void tedit_bltchar(LispPTR *args)
   int h, w;
   int sx, dx, srcbpl, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;
-  int gray = 0, num_gray = 0, curr_gray_line = 0;
+  int gray = 0;
+#ifdef NEWBITBLT
+  int num_gray = 0, curr_gray_line = 0;
+#endif
 
   displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((TBLTARG *)args)->displaydata);
   if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {

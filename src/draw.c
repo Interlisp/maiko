@@ -302,7 +302,10 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
         (start_addr < DisplayRegion68k_end_addr) &&
         ((int)(temp_e = (DLword *)(dataptr - DisplayRegion68k)) >= 0) &&
         ((DLword *)dataptr < DisplayRegion68k_end_addr)) {
-      int start_x, start_y, end_x, end_y, w, h, displayflg;
+      int start_x, start_y, end_x, end_y, w, h;
+#if defined(SUNDISPLAY) && defined(OLD_CURSOR)
+      int displayflg;
+#endif
 
       start_y = (int)temp_s / DisplayRasterWidth;
       start_x = ((int)temp_s % DisplayRasterWidth) * BITSPER_DLWORD;

@@ -127,7 +127,6 @@ void dogc01(void) {
 /*!!!!!! should update clock in Miscstats */
 
 void doreclaim(void) {
-  int gctm1;
   MISCSTATS gcmisc;
 
   if (*GcDisabled_word == NIL) {

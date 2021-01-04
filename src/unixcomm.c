@@ -139,7 +139,6 @@ int find_process_slot(register int pid)
 void wait_for_comm_processes(void) {
   int pid;
   int slot;
-  int res;
   unsigned char d[5];
 
   d[0] = 'W';
@@ -285,7 +284,6 @@ int FindUnixPipes(void) {
 
 int FindAvailablePty(char *Master, char *Slave) {
   int res;
-  char *let, *num;
 
   res = posix_openpt(O_RDWR);
   if (res < 0) {
@@ -346,9 +344,8 @@ int FindAvailablePty(char *Master, char *Slave) {
 /************************************************************************/
 
 LispPTR Unix_handlecomm(LispPTR *args) {
-  int command, c, dest, PID, i, slot, sock, res;
-  LispPTR retval;
-  unsigned char d[4], b[1];
+  int command, dest, i, slot, sock;
+  unsigned char d[4];
   unsigned char ch;
   unsigned char buf[1];
 
@@ -359,8 +356,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
   switch (command) {
     case 0: /* Fork pipe process */
     {
-      char *UpPipeName, *DownPipeName, *PipeName;
-      int slot, PipeFD, sockFD;
+      char *PipeName;
+      int PipeFD, sockFD;
 
       /* First create the socket */
       struct sockaddr_un sock;

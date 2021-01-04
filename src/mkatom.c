@@ -66,8 +66,8 @@ extern DLword *Lisp_world;
 DLword compute_hash(char *char_base, DLword offset, DLword length) {
   DLword hash;
   DLword number;
-  DLword temp1, temp2;
-  DLword *word_base;
+  DLword temp1;
+
   char_base += offset;
   hash = (int)(*(char_base)) << 8; /* get first byte */
   char_base++;                     /* skip length area */
@@ -97,7 +97,7 @@ DLword compute_hash(char *char_base, DLword offset, DLword length) {
 DLword compute_lisp_hash(char *char_base, DLword offset, DLword length, DLword fatp) {
   DLword hash;
   DLword number;
-  DLword temp1, temp2;
+  DLword temp1;
   DLword *word_base;
 
   if (length == 0) return (0);

@@ -82,13 +82,12 @@ loop:
 
 int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
 {
-  int res, PID, SlaveFD;
+  int PID, SlaveFD;
   struct termios tio;
 
   PID = fork();
 
   if (PID == 0) {
-    char envstring[64];
     char *argvec[4];
 
     if (0 > setsid()) /* create us a new session for tty purposes */

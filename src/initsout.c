@@ -436,7 +436,9 @@ void init_for_keyhandle(void) {
 /************************************************************************/
 
 void init_for_bltchar(void) {
+#ifdef COLOR
   LispPTR index;
+#endif
   char *IL;
 
   extern LispPTR *TOPWDS68k;
@@ -479,9 +481,6 @@ void init_for_bltchar(void) {
 /************************************************************************/
 
 void init_for_bitblt(void) {
-  LispPTR index;
-  char *IL;
-
   extern LispPTR BITBLTBITMAP_index;
   extern LispPTR BLTSHADEBITMAP_index;
 #ifdef COLOR

@@ -350,7 +350,6 @@ LispPTR gcmapunscan(void) {
   register GCENTRY probe;
   register GCENTRY *entry;
   GCENTRY offset;
-  register LispPTR ptr;
 
   probe = HTMAIN_ENTRY_COUNT;
   while ((probe = gcscan2(probe)) != NIL) {
@@ -394,7 +393,6 @@ LispPTR gcscanstack(void) {
   LispPTR scanptr, scanend;
   UNSIGNED scanend68K;
   int ftyp;
-  int pvcount;
 
   scanptr = VAG2(STK_HI, InterfacePage->stackbase);
   scanend = VAG2(STK_HI, InterfacePage->endofstack);

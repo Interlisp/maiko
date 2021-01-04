@@ -188,7 +188,7 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
 
 LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   Ikhashtbl *ik_htable;
-  LispPTR reprobe, bits, limits, index, base, value, key_accessor;
+  LispPTR reprobe, bits, limits, index, base, value;
   ik_htable = (Ikhashtbl *)Addr68k_from_LADDR(ik_hash_table);
   bits = Hashingbits(item);
   limits = ik_htable->last_index;
