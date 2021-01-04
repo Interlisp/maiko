@@ -3,13 +3,14 @@
 This is the implementation of the Medley Interlisp virtual machine, for a
 byte-coded Lisp instruction set and some low-level functions for
 connecting with Lisp for access to display and disk etc.
+See [the main Medley repository](https://github.org/Interlisp/medley) for
+Issues, Discussions, documents and more context.)
 
 There are make file fragments that include all the flags and
 variables you have to set for each hardware/OS target.
 
 - cd to the "bin" directory
-- have "." on your PATH
-- do "./makeright x" 
+- do `./makeright x`
 
 It will (attempt to) detect the OS-type and cpu-type, and put
 together the makefile parts that it needs. 
