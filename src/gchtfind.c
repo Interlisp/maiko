@@ -257,7 +257,6 @@ void enter_big_reference_count(LispPTR ptr) {
 void modify_big_reference_count(LispPTR *entry, DLword casep, LispPTR ptr) {
   struct gc_ovfl *oventry;
   LispPTR tmp;
-  int tmpcnt;
 
   /* ditto comment in entry_big_reference_count */
   if (ptr & 1) ptr &= 0xfffffffe;
@@ -312,7 +311,6 @@ void modify_big_reference_count(LispPTR *entry, DLword casep, LispPTR ptr) {
 LispPTR htfind(LispPTR ptr, int casep) {
   register GCENTRY *entry, *link, *prev;
   register GCENTRY entry_contents, hiptr;
-  register struct htlinkptr *htlptr;
 
   /* if the NOREF bit is on in the type table entry, do
   not reference count this pointer. Used for non-reference
@@ -434,7 +432,6 @@ nolink: /* no match */
 LispPTR rec_htfind(LispPTR ptr, int casep) {
   register GCENTRY *entry, *link, *prev;
   register GCENTRY entry_contents, hiptr;
-  register struct htlinkptr *htlptr;
 
   /* if the NOREF bit is on in the type table entry, do
   not reference count this pointer. Used for non-reference

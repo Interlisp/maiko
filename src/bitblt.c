@@ -71,7 +71,9 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
+#if defined(SUNDISPLAY) || defined(DOS)
   int displayflg;
+#endif
   int sx, dx, w, h, srcbpl, dstbpl, backwardflg;
   int src_comp, op, gray, num_gray, curr_gray_line;
 

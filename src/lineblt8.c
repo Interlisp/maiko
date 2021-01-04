@@ -152,8 +152,6 @@ void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, regi
   extern DLword PAINT_atom;
   extern DLword ERASE_atom;
 
-  DLword *baseword; /* Assume dest word always quad aligned */
-
   if (sourcetype == INVERT_atom) {
     register int tempcol;
     tempcol = color0;

@@ -155,8 +155,6 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
 
 LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
   REGISTER float arg1, arg2;
-  register DLword *wordp;
-  register LispPTR lptr;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);

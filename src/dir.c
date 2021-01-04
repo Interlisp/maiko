@@ -988,7 +988,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   register FINFO *nextp;
   int n, len, rval;
   struct find_t dirp;
-  register struct passwd *pwd;
+  /* register struct passwd *pwd; -- From author support */
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
 
@@ -1075,7 +1075,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   int n, rval;
   size_t len;
   DIR *dirp;
-  register struct passwd *pwd;
+  /* register struct passwd *pwd; -- From author support */
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
 
@@ -2028,7 +2028,10 @@ typedef struct ufsgfs {
 LispPTR COM_gen_files(register LispPTR *args)
 {
   char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
-  char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN], drive[1];
+  char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN];
+#ifdef DOS
+  char drive[1];
+#endif
   int dskp, count, highestp, propp, fid, version;
   register char *cp;
   FINFO *fp;

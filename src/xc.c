@@ -234,7 +234,6 @@ void dispatch(void) {
   int fn_opcode_size;
   int fn_num_args;
   int fn_apply;
-  LispPTR fn_loc_defcell;
 
   RET;
   CLR_IRQ;
@@ -1415,8 +1414,8 @@ check_interrupt:
           cause_interruptcall(DORECLAIM_index);
         } else if (*PENDINGINTERRUPT68k != NIL) {
           INTSTAT2 *intstate = ((INTSTAT2 *)Addr68k_from_LADDR(*INTERRUPTSTATE_word));
-          unsigned char newints = (intstate->pendingmask) & ~(intstate->handledmask);
-          /*   if (newints) */
+          /*unsigned char newints = (intstate->pendingmask) & ~(intstate->handledmask);
+          if (newints) */
           {
             intstate->handledmask |= intstate->pendingmask;
             *PENDINGINTERRUPT68k = NIL;

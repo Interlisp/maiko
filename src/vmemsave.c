@@ -319,7 +319,9 @@ LispPTR vmem_save(char *sysout_file_name)
   register int i;
   char tempname[MAXPATHLEN];
   register int rval;
-  DLword *bmptr;
+#ifdef SUNDISPLAY
+  /* DLword *bmptr; */
+#endif
 #ifndef DOS
   extern int ScreenLocked;
   extern DLword *EmCursorX68K;

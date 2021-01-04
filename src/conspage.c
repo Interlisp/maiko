@@ -298,7 +298,10 @@ LispPTR N_OP_cons(register int cons_car, register int cons_cdr) {
   extern struct dtd *ListpDTD;
 
   register struct conspage *new_conspage;
-  register ConsCell *new_cell, *temp_cell;
+  register ConsCell *new_cell;
+#ifndef NEWCDRCODING
+  register ConsCell *temp_cell;
+#endif
   register int new_page; /* hold the return  val of nextconspage ,DL->int */
 
   GCLOOKUP(cons_cdr &= POINTERMASK, ADDREF);
