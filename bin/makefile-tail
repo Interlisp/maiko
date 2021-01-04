@@ -726,9 +726,6 @@ $(OBJECTDIR)timer.o :  $(SRCDIR)timer.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)adr68k.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)timer.c $(INLINE) -o $(OBJECTDIR)timer$(OEXT)
 
-$(OBJECTDIR)tty.o :  $(SRCDIR)tty.c  $(REQUIRED-INCS) $(INCDIR)tty.h
-	$(CC) $(RFLAGS) $(SRCDIR)tty.c $(INLINE) -o $(OBJECTDIR)tty$(OEXT)
-
 $(OBJECTDIR)typeof.o :  $(SRCDIR)typeof.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h \
 	 $(INCDIR)lispmap.h

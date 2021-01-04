@@ -118,7 +118,6 @@ KBINT		If true (it looks like??), the emulator does most of the KBD
 RS232INT	If true, the RS232 device (NOT USED, a translation of Lisp's
 		code), uses the interrupt signalling support of timer.c to
 		know when to read characters.  NOT USED, probably obsolete.
-TTYINT		Analogous to RS232INT, for the translated TTY device.
 ETHERINT
 COLOR		If TRUE, supports 8bits-per-pixel color on CG4 and CG6 frame
 		buffer of Sun work station. IF COLOR is TRUE, don't use OLD_CURSOR 
