@@ -493,7 +493,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 #define	MAXVERSION		999999999
 
-#define	LASTVERSIONARRAY	0xFFFFFFFF
+#define	LASTVERSIONARRAY	-1
 #define	VERSIONARRAYLENGTH	200
 
 #define NoFileP(varray)						\

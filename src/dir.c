@@ -285,7 +285,7 @@ FINFO *FreeFinfoList;
 DFINFO *FinfoArray;
 #define INITFINFOARRAY 32
 
-unsigned MAXFINFO;
+int MAXFINFO;
 
 #define FINFOARRAYRSIZE 16
 
