@@ -793,7 +793,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       sock.sun_family = AF_UNIX;
       strcpy(sock.sun_path, shcom);
-      if (bind(sockFD, (struct sockaddr *)&sock, strlen(shcom) + sizeof(sock.sun_family)) < 0) {
+      if (bind(sockFD, (struct sockaddr *)&sock, sizeof(struct sockaddr_un)) < 0) {
         close(sockFD);
         free(UJ[sockFD].pathname);
         UJ[sockFD].type = UJUNUSED;
