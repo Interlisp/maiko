@@ -141,6 +141,7 @@ void wait_for_comm_processes(void) {
   int slot;
   unsigned char d[5];
 
+  memset(d, 0, sizeof(d));
   d[0] = 'W';
   write(UnixPipeOut, d, 4);
   SAFEREAD(UnixPipeIn, d, 4);
@@ -160,6 +161,7 @@ void wait_for_comm_processes(void) {
       }
     }
     /* Look for another stopped process. */
+    memset(d, 0, sizeof(d));
     d[0] = 'W';
     write(UnixPipeOut, d, 4);
     SAFEREAD(UnixPipeIn, d, 4);
@@ -383,6 +385,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       if (listen(sockFD, 1) < 0) perror("Listen");
 
+      memset(d, 0, sizeof(d));
       d[0] = 'F';
       d[3] = sockFD;
       write(UnixPipeOut, d, 4);
@@ -621,6 +624,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 5: /* Kill all the subprocesses */ close_unix_descriptors(); return (ATOM_T);
 
     case 6: /* Kill this subprocess */
+      memset(d, 0, sizeof(d));
       d[0] = 'C';
 
       /* Get job # */
