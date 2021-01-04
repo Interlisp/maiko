@@ -333,9 +333,6 @@ LispPTR ether_ctrlr(LispPTR args[])
  **********************************************************************/
 LispPTR ether_reset(LispPTR args[])
 {
-  int i;
-  char hostnumber[6];
-
   if (ether_fd < 0) { return (NIL); }
   /* JRB - host number check removed here; if ether_fd is open here,
               net is on... */
@@ -363,11 +360,12 @@ LispPTR ether_reset(LispPTR args[])
 /************************************************************************/
 LispPTR ether_get(LispPTR args[])
 {
-  LispPTR MaxByteCount;
   LispPTR result = NIL;
-  int interrupt_mask;
-
 #ifndef NOETHER
+  LispPTR MaxByteCount;
+#ifndef SYSVSIGNALS
+  int interrupt_mask;
+#endif
   MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
 
   DBPRINT(("Ether Get.  "));
@@ -494,8 +492,10 @@ static struct timeval EtherTimeout = {0, 0};
  *	checks an incoming packet
  **********************************************************************/
 
+#ifndef NOETHER
 #ifndef PKTFILTER
 static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
+#endif
 #endif
 
 LispPTR check_ether() {
