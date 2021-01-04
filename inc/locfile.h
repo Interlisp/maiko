@@ -354,7 +354,8 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	char	*start;							\
 	char	*end;							\
 	char	*lf_cp;							\
-	int	len, ver_no;						\
+	int	ver_no;								\
+	size_t	len;								\
 	char		ver_buf[VERSIONLEN];					\
 										\
 	if ((start = strchr(pathname, '~')) != NULL) {				\

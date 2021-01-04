@@ -138,7 +138,7 @@ void separate_host(char *lfname, char *host)
 #endif /* DOS */
 {
   register char *cp;
-  register int diff;
+  register size_t diff;
 
   cp = lfname + 1; /* Skip the initial "{". */
 
@@ -2368,7 +2368,8 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 void separate_version(char *name, char *ver, int checkp)
 {
   register char *start, *end, *cp;
-  register int len, ver_no;
+  register int ver_no;
+  size_t len;
   char ver_buf[VERSIONLEN];
 
   if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
