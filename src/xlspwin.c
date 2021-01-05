@@ -72,11 +72,11 @@ extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 
 void Create_LispWindow(DspInterface dsp)
 {
-  XSizeHints szhint = {0};
-  XWMHints Lisp_WMhints = {0};
-  XClassHint xclasshint = {0};
-  XTextProperty IconText = {0}, WindowNameText = {0};
-  XSetWindowAttributes Lisp_SetWinAttributes = {0};
+  XSizeHints szhint = {};
+  XWMHints Lisp_WMhints = {};
+  XClassHint xclasshint = {};
+  XTextProperty IconText = {}, WindowNameText = {};
+  XSetWindowAttributes Lisp_SetWinAttributes = {};
 
   Screen *screen;
 
