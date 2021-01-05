@@ -56,9 +56,6 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
-#ifdef I386
-  I386Round;
-#endif
   result = arg1 + arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
@@ -82,9 +79,6 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
-#ifdef I386
-  I386Round;
-#endif
   result = arg1 - arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
@@ -108,9 +102,6 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
-#ifdef I386
-  I386Round;
-#endif
   result = arg1 * arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
@@ -134,9 +125,6 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
-#ifdef I386
-  I386Round;
-#endif
   result = arg1 / arg2;
 
   if (FPTEST(result)) ERROR_EXIT(parg2);
