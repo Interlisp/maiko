@@ -38,7 +38,6 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 #endif
 #endif /* USE_DLPI */
 
-#ifndef NOETHER
 #include <ctype.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -66,8 +65,6 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 #include <malloc.h>
 #include <stdlib.h>
 
-#endif /* NOETHER */
-
 int ether_fd = -1;                                /* file descriptor for ether socket */
 int ether_intf_type = 0;                          /* IF type? from DLPI */
 unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */
@@ -80,8 +77,6 @@ int main(int argc, char *argv[]) {
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
 #endif /* USE_DLPI */
-
-#ifndef NOETHER
 
   /* Only do the ether kick=-start if we've got to. */
 
@@ -222,8 +217,6 @@ int main(int argc, char *argv[]) {
     }
     seteuid(getuid());
   }
-
-#endif /* NOETHER */
 
   /* OK, right here do other stuff like scan args */
   /* finally crank up LDE; first copy the original args */
