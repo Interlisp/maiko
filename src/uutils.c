@@ -50,7 +50,7 @@
 /*									*/
 /************************************************************************/
 
-int lisp_string_to_c_string(LispPTR Lisp, char *C, int length) {
+int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
   register OneDArray *arrayp;
   register char *base;
 
@@ -95,7 +95,7 @@ int lisp_string_to_c_string(LispPTR Lisp, char *C, int length) {
 int c_string_to_lisp_string(char *C, LispPTR Lisp) {
   register OneDArray *arrayp;
   char *base;
-  register int length;
+  register size_t length;
 
   length = strlen(C);
   if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
@@ -111,7 +111,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
       strcpy(base, C);
 #else
       {
-        register int i;
+        register size_t i;
         register char *dp;
         for (i = 0, dp = C; i < length + 1; i++) {
           int ch = *dp++;
