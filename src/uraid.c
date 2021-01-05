@@ -432,24 +432,24 @@ LispPTR uraid_commands() {
       switch (URaid_arg1[0]) {
         case 'k':
           printf("IFP->KBDFXP :\n");
-          bt1(Addr68k_from_StkOffset(InterfacePage->kbdfxp));
+          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->kbdfxp));
           break;
         case 'm':
           printf("IFP->MISCFXP :\n");
-          bt1(Addr68k_from_StkOffset(InterfacePage->miscfxp));
+          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->miscfxp));
           break;
         case 'r':
           printf("IFP->RESETFXP :\n");
-          bt1(Addr68k_from_StkOffset(InterfacePage->resetfxp));
+          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->resetfxp));
           break;
         case 'g':
           printf("IFP->GCFXP :\n");
-          bt1(Addr68k_from_StkOffset(InterfacePage->gcfxp));
+          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->gcfxp));
 
           break;
         case 'p':
           printf("IFP->FAULTFXP :\n");
-          bt1(Addr68k_from_StkOffset(InterfacePage->faultfxp));
+          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->faultfxp));
 
           break;
         case 'u': bt(); break;
@@ -587,7 +587,7 @@ LispPTR uraid_commands() {
           printf("0x%x\n", address);
           break;
       default: {
-          struct dtd *dtd = GetDTD(GetTypeNumber(address));
+          struct dtd *dtd = (struct dtd*)GetDTD(GetTypeNumber(address));
 #ifdef BIGVM
           index = dtd->dtd_name;
 #else
