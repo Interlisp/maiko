@@ -32,7 +32,7 @@
 354/9	AREF
 ***********************************************************/
 LispPTR N_OP_ubfloat2(int a2, int a1, int alpha) {
-  REGISTER float arg1, arg2;
+  float arg1, arg2;
   float ans;
   int ret;
 

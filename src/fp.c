@@ -48,10 +48,10 @@
 /************************************************************************/
 
 LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
-  REGISTER float arg1;
-  REGISTER float arg2;
-  REGISTER float result;
-  register DLword *wordp;
+  float arg1;
+  float arg2;
+  float result;
+  DLword *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
@@ -75,9 +75,9 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
 /************************************************************************/
 
 LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
-  REGISTER float arg1, arg2;
-  REGISTER float result;
-  register DLword *wordp;
+  float arg1, arg2;
+  float result;
+  DLword *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
@@ -101,9 +101,9 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
 /************************************************************************/
 
 LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
-  REGISTER float arg1, arg2;
-  REGISTER float result;
-  register DLword *wordp;
+  float arg1, arg2;
+  float result;
+  DLword *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
@@ -127,9 +127,9 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
 /************************************************************************/
 
 LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
-  REGISTER float arg1, arg2;
-  REGISTER float result;
-  register DLword *wordp;
+  float arg1, arg2;
+  float result;
+  DLword *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
@@ -154,7 +154,7 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
 /************************************************************************/
 
 LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
-  REGISTER float arg1, arg2;
+  float arg1, arg2;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);

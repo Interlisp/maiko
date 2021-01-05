@@ -167,7 +167,6 @@ error Must specify RELEASE to build Medley.
 	/*								*/
 	/*  Defaults:	Unaligned fetches OK	UNALIGNED_FETCH_OK	*/
 	/*		fp values used with				*/
-	/*		FPTEST can be in regs.	REGISTER		*/
 	/*		Use asm inline arith	USE_INLINE_ARITH	*/
 	/*		pointer-wide unsigned	UNSIGNED		*/
 	/*		pointer-wide int	INT	 		*/
@@ -206,7 +205,6 @@ error Must specify RELEASE to build Medley.
 	/* Set up defaults */
 #define NOETHER 1
 #define UNALIGNED_FETCH_OK
-#define REGISTER register
 #define HAS_GETHOSTID
 #define UNSIGNED unsigned long
 #define INT long
@@ -253,9 +251,6 @@ typedef signed char s_char;
 	/********************************************************/
 #ifdef LINUX
 		/* LINUX, the free POSIX-compliant Unix */
-#undef REGISTER
-#define REGISTER
-
 typedef signed char s_char;
 
 #undef UNALIGNED_FETCH_OK
@@ -269,9 +264,6 @@ typedef signed char s_char;
 /********************************************************/
 #if defined(MACOSX) || defined(FREEBSD)
 /* MacOS X, FreeBSD - mostly POSIX-compliant Unix */
-#undef REGISTER
-#define REGISTER
-
 typedef signed char s_char;
 #endif /* MACOSX || FREEBSD */
 
@@ -294,8 +286,6 @@ typedef signed char s_char;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
 #undef HAS_GETHOSTID
-#undef REGISTER
-#define REGISTER
 #define SYSVSIGNALS 1
 #define USHORT unsigned
 #else

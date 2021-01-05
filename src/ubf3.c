@@ -26,10 +26,10 @@
 ***********************************************************/
 
 LispPTR N_OP_ubfloat3(int arg3, LispPTR arg2, LispPTR arg1, int alpha) {
-  REGISTER float val;
-  REGISTER float ans;
-  REGISTER float *fptr;
-  register int degree;
+  float val;
+  float ans;
+  float *fptr;
+  int degree;
   int ret;
   float flot;
 
