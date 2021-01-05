@@ -58,7 +58,7 @@ extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
 /* sys_size is sysout size in megabytes */
-int sysout_loader(char * sysout_file_name, int sys_size)
+int sysout_loader(const char * sysout_file_name, int sys_size)
 {
   int sysout; /* SysoutFile descriptor */
 

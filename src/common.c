@@ -56,7 +56,7 @@ extern char URaid_comm;
 extern char URaid_arg1[256];
 extern char URaid_arg2[10];
 extern int URaid_argnum;
-extern char *URaid_errmess;
+extern const char *URaid_errmess;
 extern int URaid_currentFX;
 extern FX *URaid_FXarray[];
 extern jmp_buf BT_jumpbuf;
@@ -77,7 +77,7 @@ LispPTR Uraid_mess = NIL;
 /************************************************************************/
 
 #define URMAXCOMM 512
-int error(char *cp) {
+int error(const char *cp) {
   char *ptr;
   if (device_before_raid() < 0) {
     fprintf(stderr, "Can't Enter URAID.\n");
@@ -142,7 +142,7 @@ uraidloop:
 /*									*/
 /************************************************************************/
 
-void warn(char *s)
+void warn(const char *s)
 { printf("\nWARN: %s \n", s); }
 
 /*****************************************************************

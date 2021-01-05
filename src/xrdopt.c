@@ -113,7 +113,7 @@ extern struct sockaddr_nit snit;
 /*									*/
 /************************************************************************/
 
-void print_Xusage(char *prog)
+void print_Xusage(const char *prog)
 {
   fprintf(stderr, " %s options:\n", prog);
   fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
@@ -142,7 +142,7 @@ void print_Xusage(char *prog)
 /*									*/
 /************************************************************************/
 
-void print_lispusage(char *prog)
+void print_lispusage(const char *prog)
 {
   TPRINT(("TRACE: print_lisp_usage()\n"));
 

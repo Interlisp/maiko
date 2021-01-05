@@ -266,7 +266,7 @@ char URaid_comm;
 char URaid_arg1[URMAXCOMM / 2];
 char URaid_arg2[URMAXCOMM / 2];
 int URaid_argnum;
-char *URaid_errmess;
+const char *URaid_errmess;
 
 extern int PrintMaxLevel; /* for print level */
 
@@ -340,7 +340,7 @@ void uraid_commclear() {
   URaid_argnum = 0;
 }
 
-void copy_region(DLword *src, DLword *dst, int width, int h)
+void copy_region(const DLword *src, DLword *dst, int width, int h)
 {
   register int w;
 

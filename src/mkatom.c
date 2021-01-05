@@ -63,7 +63,7 @@ extern DLword *Lisp_world;
 */
 /**********************************************************************/
 
-DLword compute_hash(char *char_base, DLword offset, DLword length) {
+DLword compute_hash(const char *char_base, DLword offset, DLword length) {
   DLword hash;
   DLword number;
   DLword temp1;
@@ -94,7 +94,7 @@ DLword compute_hash(char *char_base, DLword offset, DLword length) {
 */
 /**********************************************************************/
 
-DLword compute_lisp_hash(char *char_base, DLword offset, DLword length, DLword fatp) {
+DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DLword fatp) {
   DLword hash;
   DLword number;
   DLword temp1;
@@ -146,7 +146,7 @@ DLword compute_lisp_hash(char *char_base, DLword offset, DLword length, DLword f
 */
 /**********************************************************************/
 
-LispPTR compare_chars(register char *char1, register char *char2, register DLword length) {
+LispPTR compare_chars(register const char *char1, register const char *char2, register DLword length) {
 #ifndef BYTESWAP
   if (memcmp(char1, char2, length) == 0)
 #else
@@ -161,7 +161,7 @@ LispPTR compare_chars(register char *char1, register char *char2, register DLwor
 
 } /* end compare_chars */
 #ifdef BYTESWAP
-int bytecmp(char *char1, char *char2, int len)
+int bytecmp(const char *char1, const char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {
@@ -188,7 +188,7 @@ int bytecmp(char *char1, char *char2, int len)
 */
 /**********************************************************************/
 
-LispPTR compare_lisp_chars(register char *char1, register char *char2, register DLword length,
+LispPTR compare_lisp_chars(register const char *char1, register const char *char2, register DLword length,
                            DLword fat1, DLword fat2) {
   if ((!fat1) == (!fat2)) { /* both fat or both non-fat. */
 #ifdef BYTESWAP
@@ -231,7 +231,7 @@ LispPTR compare_lisp_chars(register char *char1, register char *char2, register 
 
 } /* end compare_lisp_chars */
 
-int lispcmp(DLword *char1, unsigned char *char2, int len) {
+int lispcmp(const DLword *char1, const unsigned char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
       if (GETWORD(char1++) != (unsigned char)GETBYTE(char2++)) return (0);
@@ -259,7 +259,7 @@ int lispcmp(DLword *char1, unsigned char *char2, int len) {
 */
 /**********************************************************************/
 
-LispPTR make_atom(char *char_base, DLword offset, DLword length, short int non_numericp)
+LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int non_numericp)
 /* if it is NIL then these chars are treated as NUMBER */
 {
   extern DLword *Spospspace;
@@ -346,7 +346,7 @@ LispPTR make_atom(char *char_base, DLword offset, DLword length, short int non_n
 /*********************************************************************/
 
 /* Assume this func. should be called with C string in "char_base" */
-LispPTR parse_number(char *char_base, short int length) {
+LispPTR parse_number(const char *char_base, short int length) {
   register LispPTR sign_mask;
   register LispPTR val;
   register int radix;
