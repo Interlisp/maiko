@@ -2,7 +2,7 @@
 #define URAIDDEFS_H 1
 LispPTR parse_atomstring(char *string);
 void uraid_commclear(void);
-void copy_region(DLword *src, DLword *dst, int width, int h);
+void copy_region(const DLword *src, DLword *dst, int width, int h);
 struct dtd *uGetDTD(unsigned int typenum);
 unsigned int uGetTN(unsigned int address);
 LispPTR uraid_commands(void);
