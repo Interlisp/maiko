@@ -350,8 +350,6 @@ void dump_fnbody(LispPTR fnblockaddr)
 /* atom index */
 {
   struct fnhead *fnobj;
-  DefCell *defcell68k;
-  LispPTR cell;
   DLbyte *scratch;
   int i;
 
@@ -403,14 +401,9 @@ void dump_fnbody(LispPTR fnblockaddr)
 void dump_fnobj(LispPTR index)
 /* atom index */
 {
-  struct fnhead *fnobj;
   LispPTR *defcell68k;
-  LispPTR cell;
-  DLbyte *scratch;
-  int i;
 
   defcell68k = GetDEFCELL68k(index);
-
   dump_fnbody(*defcell68k);
 
 } /*dump_fnobj end */
@@ -980,7 +973,6 @@ void dump_CSTK(int before) {
 
 void btv(void) {
   struct frameex1 *fx_addr68k;
-  LispPTR atomindex;
   struct frameex1 *get_nextFX(FX * fx);
 
   fx_addr68k = CURRENTFX;
@@ -1021,7 +1013,6 @@ int get_framename(struct frameex1 *fx_addr68k) {
 } /* get_framename end */
 
 FX *get_nextFX(FX *fx) {
-  DLword *pv;
 
   if (URaid_scanlink == URSCAN_ALINK)
     return ((FX *)Addr68k_from_StkOffset(GETALINK(fx)));
@@ -1053,7 +1044,7 @@ LispPTR *MakeAtom68k(char *string) {
 #else
   index = VALS_OFFSET + (index << 1);
 #endif /* BIGVM */
-  return (Addr68k_from_LADDR(index));
+  return ((LispPTR *) Addr68k_from_LADDR(index));
 }
 
 /************************************************************************/
