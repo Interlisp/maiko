@@ -56,14 +56,7 @@ LispPTR N_OP_ubfloat1(int arg, int alpha) {
       int val;
       temp = *(float *)&arg;
       if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) ERROR_EXIT(arg);
-#ifdef I386
-      I386Reset;
-#endif /* I386 */
-
       val = (int)temp;
-#ifdef I386
-      I386Round;
-#endif
       N_ARITH_SWITCH(val);
     }
     default: ERROR_EXIT(arg);

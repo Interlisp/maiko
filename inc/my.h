@@ -56,8 +56,8 @@
 	}								\
 }
 #else
-#define	N_MakeFloat(arg, dest, tos){		I386Reset;		\
-	switch (SEGMASK & (int)arg) {				\
+#define	N_MakeFloat(arg, dest, tos){					\
+	switch (SEGMASK & (int)arg) {					\
 	case S_POSITIVE:						\
 		dest = (float)(0xFFFF & (int)arg);			\
 		break;							\
@@ -66,7 +66,7 @@
 		break;							\
 	default:							\
 		switch (GetTypeNumber(arg)) {				\
-		  case TYPE_FLOATP: 	I386Reset;				\
+		  case TYPE_FLOATP: 					\
 		    dest = *((float *)Addr68k_from_LADDR(arg));		\
 		    break; 						\
 		  case TYPE_FIXP: 					\
