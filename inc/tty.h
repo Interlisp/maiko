@@ -11,16 +11,8 @@
 /*									*/
 /************************************************************************/
 
-#include <sgtty.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include "lispemul.h"
-#include "adr68k.h"
-
-#include "lispmap.h" 
-
 /*
- TTY Command 
+ TTY Command
 */
 
 #define TTY_GET_STATUS     33280>>8
@@ -55,9 +47,9 @@ typedef struct {
 	DLword  notify_mask;
 } DLTTY_OUT_CSB;
 
-typedef struct { 
-	unsigned state               : 1; 
-	unsigned nil1                : 7; 
+typedef struct {
+	unsigned state               : 1;
+	unsigned nil1                : 7;
 	unsigned success             : 1;
 	unsigned break_detected      : 1;
 	unsigned framing_error       : 1;
@@ -72,8 +64,5 @@ typedef struct {
 	unsigned rx_ready            : 1;
 	unsigned tx_ready            : 1;
 } DLTTY_IN_CSB;
-	
 
-extern DLword *Lisp_world;
-     
 #endif /* TTY_H */

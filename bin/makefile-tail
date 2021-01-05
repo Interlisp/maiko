@@ -127,6 +127,7 @@ DEVICES = $(OBJECTDIR)dspsubrs.o \
 	$(OBJECTDIR)keyevent.o \
 	$(OBJECTDIR)kbdsubrs.o \
 	$(OBJECTDIR)ether.o \
+	$(OBJECTDIR)tty.o \
 	$(OBJECTDIR)initkbd.o
 
 TESTFILES = $(OBJECTDIR)dbgtool.o \

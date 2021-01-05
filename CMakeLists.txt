@@ -107,7 +107,6 @@ SET(BAD_SRCS
     src/rawrs232c.c
     src/rs232c.c
     src/truecolor.c
-    src/tty.c
     src/vesainit.c
     src/vgainit.c
 )
@@ -195,6 +194,7 @@ SET(MAIKO_SRCS
     src/sxhash.c
     src/testtool.c
     src/timer.c
+    src/tty.c
     src/typeof.c
     src/ubf1.c
     src/ubf2.c
