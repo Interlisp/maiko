@@ -354,7 +354,8 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	char	*start;							\
 	char	*end;							\
 	char	*lf_cp;							\
-	int	len, ver_no;						\
+	int	ver_no;								\
+	size_t	len;								\
 	char		ver_buf[VERSIONLEN];					\
 										\
 	if ((start = strchr(pathname, '~')) != NULL) {				\
@@ -376,7 +377,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 			 * pathname ends in the form ".~###~".  But we		\
 			 * check ### is a valid number or not.			\
 			 */							\
-			len = (int)end - (int)start - 1;			\
+			len = (end - start) - 1;			\
 			strncpy(ver_buf, start + 1, len);			\
 			ver_buf[len] = '\0';					\
 			NumericStringP(ver_buf, YES, NO);			\

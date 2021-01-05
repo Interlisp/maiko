@@ -138,7 +138,7 @@ void separate_host(char *lfname, char *host)
 #endif /* DOS */
 {
   register char *cp;
-  register int diff;
+  register size_t diff;
 
   cp = lfname + 1; /* Skip the initial "{". */
 
@@ -162,7 +162,7 @@ void separate_host(char *lfname, char *host)
     *lfname = '<';
     *(lfname + 1) = '\0';
   } else {
-    diff = (int)cp - (int)lfname;
+    diff = cp - lfname;
     if (*cp == '<' || *cp == DIRSEP
 #ifdef DOS
         || *cp == UNIXDIRSEP
@@ -2368,7 +2368,8 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 void separate_version(char *name, char *ver, int checkp)
 {
   register char *start, *end, *cp;
-  register int len, ver_no;
+  register int ver_no;
+  size_t len;
   char ver_buf[VERSIONLEN];
 
   if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
@@ -2387,7 +2388,7 @@ void separate_version(char *name, char *ver, int checkp)
        * name ends in the form ".~###~". But we have to check
        * ### are all numbers or not, if checkp is 1.
        */
-      len = (int)end - (int)start - 1;
+      len = (end - start) - 1;
       strncpy(ver_buf, start + 1, len);
       ver_buf[len] = '\0';
       if (checkp) {
