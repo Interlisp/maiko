@@ -698,6 +698,7 @@ LispPTR get_packet() {
   return (NIL);
 } /* end get_packet */
 
+#ifndef NOETHER
 /**********************************************************************
  *	ether_addr_equal(add1, add2)
  *	checks ethernet addresses equality
@@ -740,12 +741,11 @@ static int check_filter(u_char *buffer)
  *	sets effective user-id to real user-id
  **********************************************************************/
 static void init_uid() {
-#ifndef NOETHER
   int rid;
   rid = getuid();
   seteuid(rid);
-#endif /* NOETHER */
 }
+#endif /* NOETHER */
 
 /************************************************************************/
 /*		i n i t _ i f p a g e _ e t h e r			*/
