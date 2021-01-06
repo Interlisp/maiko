@@ -34,7 +34,9 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
-#ifndef USE_DLPI
+#ifdef USE_DLPI
+#include "dlpidefs.h"
+#else
 #include <net/nit.h>
 #endif
 
@@ -60,6 +62,7 @@
 #endif /* DOS */
 #endif /* NOETHER */
 
+#include "commondefs.h"
 #include "lispemul.h"
 #include "lispmap.h"
 #include "emlglob.h"
@@ -406,10 +409,10 @@ LispPTR ether_send(LispPTR args[])
   struct sockaddr sa;
 
   LispPTR MaxByteCount;
-  char *BufferAddr; /* buffer address pointer(in native address) */
+  u_char *BufferAddr; /* buffer address pointer(in native address) */
 
   MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
-  BufferAddr = (char *)Addr68k_from_LADDR(args[1]);
+  BufferAddr = (u_char *)Addr68k_from_LADDR(args[1]);
 
   if (ether_fd > 0) {
 #ifdef PKTFILTER
@@ -418,7 +421,7 @@ LispPTR ether_send(LispPTR args[])
 #endif /* PKTFILTER */
 
     sa.sa_family = AF_UNSPEC; /* required for the NIT protocol */
-    bcopy(BufferAddr, sa.sa_data, OFFSET);
+    memcpy(sa.sa_data, BufferAddr, OFFSET);
 #ifndef PKTFILTER
     if (sendto(ether_fd, BufferAddr + OFFSET, MaxByteCount - OFFSET, 0, &sa, sizeof(sa)) ==
         (MaxByteCount - OFFSET))
@@ -533,13 +536,13 @@ LispPTR check_ether() {
         }
         /* enumerate the NIT headers until the packet is found */
         while (nitpos < nitlen) {
-          bcopy(&nit_buf[nitpos], &header, sizeof(header));
+          memcpy(&header, &nit_buf[nitpos], sizeof(header));
           nitpos += sizeof(header);
           switch (header.nh_state) {
             case NIT_CATCH:
               fromlen = header.nh_datalen;
               if (check_filter(&nit_buf[nitpos])) {
-                bcopy(&nit_buf[nitpos], &ether_buf[0], fromlen);
+                memcpy(&ether_buf[0], &nit_buf[nitpos], fromlen);
                 ether_bsize = 0; /* deactivate receiver */
                 ether_in++;
                 IOPage->dlethernet[3] = fromlen;
@@ -583,7 +586,7 @@ LispPTR check_ether() {
     result = getmsg(ether_fd, &ctl, &data, &plen);
     if (result >= 0) {
       if (data.len <= ether_bsize && data.len > 0) {
-        bcopy(nit_buf, &ether_buf[0], data.len);
+        memcpy(&ether_buf[0], nit_buf, data.len);
         ether_bsize = 0;
         ether_in++;
         IOPage->dlethernet[3] = data.len;
@@ -640,13 +643,13 @@ LispPTR get_packet() {
 
     /* enumerate the NIT headers until the packet is found */
     while (nitpos < nitlen) {
-      bcopy(&nit_buf[nitpos], &header, sizeof(header));
+      memcpy(&header, &nit_buf[nitpos], sizeof(header));
       nitpos += sizeof(header);
       switch (header.nh_state) {
         case NIT_CATCH:
           fromlen = header.nh_datalen;
           if (check_filter(&nit_buf[nitpos])) {
-            bcopy(&nit_buf[nitpos], &ether_buf[0], fromlen);
+            memcpy(&ether_buf[0], &nit_buf[nitpos], fromlen);
             ether_bsize = 0; /* deactivate receiver */
             ether_in++;
             IOPage->dlethernet[3] = fromlen;
@@ -680,7 +683,7 @@ LispPTR get_packet() {
   if (result >= 0) {
     if (ctl.len > 0) printf("ctl msg rcvd.\n");
     if (data.len <= ether_bsize && data.len > 0) {
-      bcopy(nit_buf, &ether_buf[0], data.len);
+      memcpy(&ether_buf[0], nit_buf, data.len);
       ether_bsize = 0;
       ether_in++;
       IOPage->dlethernet[3] = data.len;
@@ -695,6 +698,7 @@ LispPTR get_packet() {
   return (NIL);
 } /* end get_packet */
 
+#ifndef NOETHER
 /**********************************************************************
  *	ether_addr_equal(add1, add2)
  *	checks ethernet addresses equality
@@ -737,12 +741,11 @@ static int check_filter(u_char *buffer)
  *	sets effective user-id to real user-id
  **********************************************************************/
 static void init_uid() {
-#ifndef NOETHER
   int rid;
   rid = getuid();
   seteuid(rid);
-#endif /* NOETHER */
 }
+#endif /* NOETHER */
 
 /************************************************************************/
 /*		i n i t _ i f p a g e _ e t h e r			*/
@@ -923,7 +926,7 @@ void init_ether() {
 #endif /* OS4 */
         }
 #ifndef OS4
-        bcopy(if_data.ifc_req[0].ifr_addr.sa_data, ether_host, 6);
+        memcpy(ether_host, if_data.ifc_req[0].ifr_addr.sa_data, 6);
         init_uid();
       }
 #else  /* OS4 */
@@ -945,7 +948,7 @@ void init_ether() {
       ether_fd = -1;
       goto I_Give_Up;
     }
-    bcopy(if_data.ifc_req[0].ifr_addr.sa_data, ether_host, 6);
+    memcpy(ether_host, if_data.ifc_req[0].ifr_addr.sa_data, 6);
     DBPRINT(("init_ether: **** Ethernet starts ****\n"));
   } else {
   I_Give_Up:
