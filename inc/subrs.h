@@ -191,4 +191,6 @@
 #define user_subr_DUMMY	012
 #define user_subr_SAMPLE_USER_SUBR	00
 
+/* Experimental yield */
+#define sb_YIELD                        0322
 #endif
