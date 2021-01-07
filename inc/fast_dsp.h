@@ -1,3 +1,5 @@
+#ifndef FAST_DSP_H
+#define FAST_DSP_H 1
 /* $Id: fast_dsp.h,v 1.2 1999/01/03 02:05:59 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* 	These are the Macros Used to generate fast dispatch inline code. 
@@ -251,3 +253,4 @@
 
 
 
+#endif /* FAST_DSP_H */

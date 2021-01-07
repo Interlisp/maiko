@@ -1,3 +1,5 @@
+#ifndef PRINT_H
+#define PRINT_H 1
 /* $Id: print.h,v 1.2 1999/01/03 02:06:21 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -37,3 +39,4 @@
 #define	DOUBLEQUOTE	34
 #define	ATOMINDEXDOT	48
 
+#endif /* PRINT_H */

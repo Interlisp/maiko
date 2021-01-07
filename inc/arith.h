@@ -1,3 +1,5 @@
+#ifndef ARITH_H
+#define ARITH_H 1
 /* $Id: arith.h,v 1.2 1999/01/03 02:05:52 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -237,3 +239,4 @@ do_ufn:	ERROR_EXIT(a);							\
 #define sub32n(a,b) Xisub32n()
 #endif
 
+#endif /* ARITH_H */

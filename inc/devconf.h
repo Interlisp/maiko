@@ -1,3 +1,5 @@
+#ifndef DEVCONF_H
+#define DEVCONF_H 1
 /* $Id: devconf.h,v 1.2 1999/01/03 02:05:56 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /**********************************************************/
 /*
@@ -49,3 +51,4 @@
 /* useful macros */
 #define SUN_GETKEYTYPE		(InterfacePage->devconfig & SUN_KEYTYPE_MASK)
 #define SUN_GETDISPTYPE		(InterfacePage->devconfig & SUN_DISPTYPE_MASK)
+#endif /* DEVCONF_H */

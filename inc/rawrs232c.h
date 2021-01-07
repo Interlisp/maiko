@@ -1,3 +1,5 @@
+#ifndef RAWRS232C_H
+#define RAWRS232C_H 1
 /* $Id: rawrs232c.h,v 1.2 1999/01/03 02:06:22 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -34,3 +36,4 @@ LispPTR RTSCTSCnt;
 #define RAW_RS_LF 	2
 #define RAW_RS_CRLF 	3
  
+#endif /* RAWRS232C_H */

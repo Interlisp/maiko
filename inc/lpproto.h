@@ -1,3 +1,5 @@
+#ifndef LPPROTO_H
+#define LPPROTO_H 1
 /* $Id: lpproto.h,v 1.2 1999/01/03 02:06:15 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /* dual.c */
 void rowdual(int *rownr);
@@ -34,3 +36,4 @@ void print_solution(FILE *stream, REAL *sol, REAL *duals);
 void debug_print_solution(REAL *sol);
 void debug_print_bounds(REAL *upbo, REAL *lowbo);
 void debug_print(char *format, ...);
+#endif /* LPPROTO_H */

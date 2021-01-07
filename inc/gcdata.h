@@ -1,3 +1,5 @@
+#ifndef GCDATA_H
+#define GCDATA_H 1
 /* $Id: gc.h,v 1.3 2001/12/24 01:08:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -259,3 +261,4 @@ struct  htoverflow
 #endif /* BIGVM */
 
 #endif /*  BYTESWAP */
+#endif /* GCDATA_H */

@@ -1,3 +1,5 @@
+#ifndef DEBUG_H
+#define DEBUG_H 1
 /* $Id: debug.h,v 1.2 1999/01/03 02:05:56 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -436,3 +438,4 @@ typedef struct  {
 
 #endif /* BYTESWAP */
 
+#endif /* DEBUG_H */

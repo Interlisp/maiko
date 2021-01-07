@@ -1,3 +1,5 @@
+#ifndef XBITBLT_H
+#define XBITBLT_H 1
 /* $Id: Xbitblt.h,v 1.2 1999/01/03 02:05:49 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /*
 *
@@ -69,3 +71,4 @@
 			Xbitblt( x, y, w, h ); \
 		} \
 }
+#endif /* XBITBLT_H */

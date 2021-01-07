@@ -1,3 +1,5 @@
+#ifndef STREAM_H
+#define STREAM_H 1
 /* $Id: stream.h,v 1.2 1999/01/03 02:06:23 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -176,3 +178,4 @@ typedef struct	stream
 
 #endif /* BYTESWAP */
 
+#endif /* STREAM_H */

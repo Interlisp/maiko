@@ -1,3 +1,5 @@
+#ifndef EMLGLOB_H
+#define EMLGLOB_H 1
 /* $Id: emlglob.h,v 1.2 1999/01/03 02:05:58 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /*
@@ -34,3 +36,4 @@
 /*									*/
 /************************************************************************/
 
+#endif /* EMLGLOB_H */

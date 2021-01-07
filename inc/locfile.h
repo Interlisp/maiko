@@ -1,3 +1,5 @@
+#ifndef LOCFILE_H
+#define LOCFILE_H 1
 /* $Id: locfile.h,v 1.2 1999/01/03 02:06:13 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -638,3 +640,4 @@ extern	int	errno;
 #endif
 #endif
 
+#endif /* LOCFILE_H */

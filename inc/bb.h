@@ -1,3 +1,5 @@
+#ifndef BB_H
+#define BB_H 1
 /* $Id: bb.h,v 1.2 1999/01/03 02:05:53 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /*	bb.h
 		written by don charnley
@@ -830,3 +832,4 @@ next_line:					\
 
 
 
+#endif /* BB_H */

@@ -1,3 +1,5 @@
+#ifndef MEDLEYFP_H
+#define MEDLEYFP_H 1
 /* $Id: medleyfp.h,v 1.2 1999/01/03 02:06:16 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -52,3 +54,4 @@ volatile extern int  FP_error;
 #define FPTEST(result) (!isfinite(result))
 
 #endif /* FLTINT */
+#endif /* MEDLEYFP_H */

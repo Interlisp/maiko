@@ -1,3 +1,5 @@
+#ifndef TOSRET_H
+#define TOSRET_H 1
 /* $Id: tosret.h,v 1.2 1999/01/03 02:06:28 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -86,3 +88,4 @@ retxit:	 {}								\
 } /* OPRETURN end */
 
 #endif
+#endif /* TOSRET_H */

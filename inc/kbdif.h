@@ -1,3 +1,5 @@
+#ifndef KBDIF_H
+#define KBDIF_H 1
 /* $Id: kbdif.h,v 1.2 1999/01/03 02:06:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -39,3 +41,4 @@ typedef struct {
 #define FALSE 0
 #define TRUE  !FALSE
 #endif /* TRUE */
+#endif /* KBDIF_H */

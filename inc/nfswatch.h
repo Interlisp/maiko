@@ -1,3 +1,5 @@
+#ifndef NFSWATCH_H
+#define NFSWATCH_H 1
 /* $Id: nfswatch.h,v 1.2 1999/01/03 02:06:18 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /*
@@ -414,3 +416,4 @@ typedef long		fd_mask;
  */
 #define		OFFADDR(s, n)	(u_char*)((char*)(s) + (int)(n))
 
+#endif /* NFSWATCH_H */

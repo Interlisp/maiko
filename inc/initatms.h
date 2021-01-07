@@ -1,3 +1,5 @@
+#ifndef INITATMS_H
+#define INITATMS_H 1
 /* $Id: initatms.h,v 1.2 1999/01/03 02:06:02 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -42,3 +44,4 @@
 #define ATOM_STACKP		264
 #define ATOM_CHARACTER		265
 #define ATOM_VMEMPAGEP		266
+#endif /* INITATMS_H */

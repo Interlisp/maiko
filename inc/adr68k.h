@@ -1,3 +1,5 @@
+#ifndef ADR68K_H
+#define ADR68K_H 1
 /* $Id: adr68k.h,v 1.2 1999/01/03 02:05:52 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /*
@@ -67,3 +69,4 @@
 #define Addr68k_from_StkOffset(stkoffset)\
 	( (stkoffset) + Stackspace)
 #endif
+#endif /* ADR68K_H */
