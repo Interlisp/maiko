@@ -1,3 +1,5 @@
+#ifndef ADDRESS_H
+#define ADDRESS_H 1
 /* $Id: address.h,v 1.2 1999/01/03 02:05:51 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -52,3 +54,4 @@
 #define POINTER_SEGMENT(datum)		HILOC(datum)
 #define POINTER_PAGEBASE(datum)	((datum) & 0x0ffff00)
 #endif /* BIGVM */
+#endif /* ADDRESS_H */

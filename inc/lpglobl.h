@@ -1,3 +1,5 @@
+#ifndef LPGLOBL_H
+#define LPGLOBL_H 1
 /* $Id: lpglobl.h,v 1.2 1999/01/03 02:06:14 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -68,3 +70,4 @@ extern int SolveCount;
 extern jmp_buf LP_jmpbuf;
 
 
+#endif /* LPGLOBL_H */

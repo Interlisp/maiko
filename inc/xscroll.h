@@ -1,3 +1,5 @@
+#ifndef XSCROLL_H
+#define XSCROLL_H 1
 /************************************************************************/
 /*									*/
 /*			xscroll.h					*/
@@ -13,3 +15,4 @@ void ScrollLeft(DspInterface dsp);
 void ScrollRight(DspInterface dsp);
 void ScrollUp(DspInterface dsp);
 void ScrollDown(DspInterface dsp);
+#endif /* XSCROLL_H */

@@ -1,3 +1,5 @@
+#ifndef LLDSP_H
+#define LLDSP_H 1
 /* $Id: lldsp.h,v 1.2 1999/01/03 02:06:09 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -212,3 +214,4 @@ typedef struct {
 		LispPTR WINDOWENTRYFN;
 		LispPTR SCREEN;
 } WINDOW;
+#endif /* LLDSP_H */

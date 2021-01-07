@@ -1,3 +1,5 @@
+#ifndef LSPTYPES_H
+#define LSPTYPES_H 1
 /*  @(#) lsptypes.h Version 1.4 (12/29/94). copyright Venue   */
 
 
@@ -711,3 +713,4 @@ typedef
 			/* low-order 12 bits first.            */
     } BIGNUM;
 
+#endif /* LSPTYPES_H */

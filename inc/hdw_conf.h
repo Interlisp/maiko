@@ -1,3 +1,5 @@
+#ifndef HDW_CONF_H
+#define HDW_CONF_H 1
 /* $Id: hdw_conf.h,v 1.2 1999/01/03 02:06:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -34,3 +36,4 @@
 #define LASTVMEMPAGE	(65535)
 #endif
 
+#endif /* HDW_CONF_H */

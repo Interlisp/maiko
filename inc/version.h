@@ -1,3 +1,5 @@
+#ifndef VERSION_H
+#define VERSION_H 1
 /* $Id: version.h,v 1.5 2001/12/26 22:17:01 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -310,3 +312,4 @@ typedef unsigned short u_short;
 	/* 	    End of system-specific flag settings		*/
 	/****************************************************************/
 
+#endif /* VERSION_H */

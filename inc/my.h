@@ -1,3 +1,5 @@
+#ifndef MY_H
+#define MY_H 1
 /* @(#) my.h Version 2.15 (2/8/93). copyright venue   */
 
 /************************************************************************/
@@ -229,3 +231,4 @@ aref_switch(int type, LispPTR tos, LispPTR baseL, int index)
         ERROR_EXIT(tos);						\
     }/* end switch typenumber */					\
 }
+#endif /* MY_H */

@@ -1,3 +1,5 @@
+#ifndef LISPVER2_H
+#define LISPVER2_H 1
 /* $Id: lispver2.h,v 1.2 1999/01/03 02:06:09 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* non-DOS version of LispVersionToUnixVersion */
@@ -69,3 +71,4 @@
 		}							\
 	}								\
 }
+#endif /* LISPVER2_H */

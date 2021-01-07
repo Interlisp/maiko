@@ -1,3 +1,5 @@
+#ifndef TOS1DEFS_H
+#define TOS1DEFS_H 1
 /* $Id: tos1defs.h,v 1.2 1999/01/03 02:06:27 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -122,3 +124,4 @@
 		};							\
 	nextop0;							\
 	}
+#endif /* TOS1DEFS_H */

@@ -1,3 +1,5 @@
+#ifndef OSMSG_H
+#define OSMSG_H 1
 /* $Id: osmsg.h,v 1.2 1999/01/03 02:06:20 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -20,3 +22,4 @@
     print_exp;					\
   }
 
+#endif /* OSMSG_H */

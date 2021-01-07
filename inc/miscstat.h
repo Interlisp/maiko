@@ -1,3 +1,5 @@
+#ifndef MISCSTAT_H
+#define MISCSTAT_H 1
 /* $Id: miscstat.h,v 1.2 1999/01/03 02:06:17 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /*
@@ -51,3 +53,4 @@ typedef struct  misc
     int	dlmousetimer;
     int	dlmousetemp;
   } MISCSTATS;
+#endif /* MISCSTAT_H */

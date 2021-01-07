@@ -1,3 +1,5 @@
+#ifndef MNXDEFS_H
+#define MNXDEFS_H 1
 /* $Id: mnxdefs.h,v 1.2 1999/01/03 02:06:17 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -522,3 +524,4 @@ typedef union mnwevenT
 #ifndef min
 #define min( a, b ) (((a)<(b))?(a):(b))
 #endif /* min */
+#endif /* MNXDEFS_H */

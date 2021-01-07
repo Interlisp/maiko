@@ -1,3 +1,5 @@
+#ifndef DSPDATA_H
+#define DSPDATA_H 1
 /* $Id: dspdata.h,v 1.2 1999/01/03 02:05:58 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -124,3 +126,4 @@ typedef struct	displaydata{
 
 #endif /* BYTESWAP */
 
+#endif /* DSPDATA_H */

@@ -1,3 +1,5 @@
+#ifndef OS_H
+#define OS_H 1
 /* $Id: os.h,v 1.2 1999/01/03 02:06:19 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /*
  *
@@ -100,3 +102,4 @@
 #define bcmp(a,b,n)	memcmp(a,b,n)
 #define bcopy(a,b,n)	memcpy(b,a,n)
 #endif
+#endif /* OS_H */

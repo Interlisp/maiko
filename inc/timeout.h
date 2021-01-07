@@ -1,3 +1,5 @@
+#ifndef TIMEOUT_H
+#define TIMEOUT_H 1
 /* $Id: timeout.h,v 1.2 1999/01/03 02:06:27 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -68,3 +70,4 @@ extern	int	TIMEOUT_TIME;
 
 #define INTRSAFE0(exp)				\
   do {} while ((int)(exp) == 0 && errno == EINTR)
+#endif /* TIMEOUT_H */

@@ -1,3 +1,5 @@
+#ifndef OPCODES_H
+#define OPCODES_H 1
 /* $Id: opcodes.h,v 1.2 1999/01/03 02:06:19 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /************************************************************************/
@@ -42,3 +44,4 @@
 #define opc_TJUMP	0240
 #define opc_JUMPX	0260
 #define opc_JUMPXX	0261
+#endif /* OPCODES_H */

@@ -1,3 +1,5 @@
+#ifndef DLD_H
+#define DLD_H 1
 /* $Id: dld.h,v 1.2 1999/01/03 02:05:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /* Error codes */
 
@@ -62,3 +64,4 @@ extern void
 dld_remove_defined_symbol ();	    /* remove a explicitly defined symbol */
 
 extern void dld_perror ();	    /* print error messages. */
+#endif /* DLD_H */

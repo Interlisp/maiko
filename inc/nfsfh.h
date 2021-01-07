@@ -1,3 +1,5 @@
+#ifndef NFSFH_H
+#define NFSFH_H 1
 /* $Id: nfsfh.h,v 1.2 1999/01/03 02:06:18 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /*
  *
@@ -41,3 +43,4 @@ typedef	struct {
 
 #define	fsid_eq(a,b)	((a.fsid_code == b.fsid_code) &&\
 			 dev_eq(a.fsid_dev, b.fsid_dev))
+#endif /* NFSFH_H */

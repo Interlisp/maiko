@@ -1,3 +1,5 @@
+#ifndef BBTSUB_H
+#define BBTSUB_H 1
 /***** Don't use PixRect code on 386i for now *****/
 /***** -or on any machine that doesn't support it (HP, e.g.) *****/
 
@@ -26,3 +28,4 @@ LispPTR newbltchar(LispPTR *args);
 #endif
 void ccfuncall(unsigned int atom_index, int argnum, int bytenum);
 void tedit_bltchar(LispPTR *args);
+#endif /* BBTSUB_H */

@@ -1,3 +1,5 @@
+#ifndef ARITH2_H
+#define ARITH2_H 1
 /* $Id: arith2.h,v 1.2 1999/01/03 02:05:52 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -135,3 +137,4 @@ dummy:	idiffn_err_label();
 #endif /* GCC386 */
 #endif /* ARITHINLINE */
 
+#endif /* ARITH2_H */

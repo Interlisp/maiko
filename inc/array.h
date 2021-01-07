@@ -1,3 +1,5 @@
+#ifndef ARRAY_H
+#define ARRAY_H 1
 /* $Id: array.h,v 1.2 1999/01/03 02:05:53 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -227,3 +229,4 @@ struct abdum
 /*                  End of Definitions                                      */
 /*                                                                          */
 /****************************************************************************/
+#endif /* ARRAY_H */

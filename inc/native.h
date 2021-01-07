@@ -1,3 +1,5 @@
+#ifndef NATIVE_H
+#define NATIVE_H 1
 /* $Id: native.h,v 1.2 1999/01/03 02:06:18 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -822,3 +824,4 @@ extern int Irq_Stk_End;
 extern int Irq_Stk_Check;
 extern LispPTR native_closure_env;
 
+#endif /* NATIVE_H */

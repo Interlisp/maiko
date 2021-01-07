@@ -1,3 +1,5 @@
+#ifndef RETURN_H
+#define RETURN_H 1
 /* $Id: return.h,v 1.2 1999/01/03 02:06:22 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -110,3 +112,4 @@
     S_CHECK( EndSTKP > CurrentStackPTR, 				\
 		"End of stack isn't beyond current stk pointer."); 	\
   }
+#endif /* RETURN_H */

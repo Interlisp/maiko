@@ -1,3 +1,5 @@
+#ifndef LISPEMUL_H
+#define LISPEMUL_H 1
 /* $Id: lispemul.h,v 1.4 2001/12/24 01:08:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -628,3 +630,4 @@ typedef struct newatom
 #define GETFPTOVP GETWORDBASEWORD
 #define GETPAGEOK GETWORDBASEWORD
 #endif
+#endif /* LISPEMUL_H */

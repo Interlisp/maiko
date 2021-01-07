@@ -1,3 +1,5 @@
+#ifndef PROFILE_H
+#define PROFILE_H 1
 /* $Id: profile.h,v 1.2 1999/01/03 02:06:21 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* DEFINE PROFILE if you want to turn on profiling */
@@ -283,3 +285,4 @@
 #define CASE375 ASM("_op375:", "	.globl _op375"); case375
 #define CASE376 ASM("_op376:", "	.globl _op376"); case376
 #define CASE377 ASM("_op377:", "	.globl _op377"); case377
+#endif /* PROFILE_H */

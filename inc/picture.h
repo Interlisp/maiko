@@ -1,3 +1,5 @@
+#ifndef PICTURE_H
+#define PICTURE_H 1
 /* $Id: picture.h,v 1.2 1999/01/03 02:06:20 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -17,3 +19,4 @@ typedef struct _picture{
 	unsigned int storage;
 	LispPTR	userdata;
 } LispPicture;
+#endif /* PICTURE_H */

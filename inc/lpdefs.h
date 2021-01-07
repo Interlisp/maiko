@@ -1,3 +1,5 @@
+#ifndef LPDEFS_H
+#define LPDEFS_H 1
 /* $Id: lpdefs.h,v 1.2 1999/01/03 02:06:13 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -180,11 +182,4 @@ typedef struct solve_state
 
 #define ERR_BUG        0x40       /* Any lp_solve-bug exit */
 #define ERR_BUG_CONDCOL 0x41      /* Condensecol out-of-bounds */
-
-
-
-
-
-
-
-
+#endif /* LPDEFS_H */

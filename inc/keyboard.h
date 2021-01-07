@@ -1,3 +1,5 @@
+#ifndef KEYBOARD_H
+#define KEYBOARD_H 1
 /* $Id: keyboard.h,v 1.2 1999/01/03 02:06:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -189,3 +191,4 @@ typedef union
   DLword noeuro[MINKEYEVENT + (NUMBEROFKEYEVENTS * NOEUROKEYEVENTSIZE)];
  } keybuffer;
 
+#endif /* KEYBOARD_H */

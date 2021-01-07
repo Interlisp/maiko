@@ -1,3 +1,5 @@
+#ifndef LPGLOB_H
+#define LPGLOB_H 1
 /* $Id: lpglob.h,v 1.2 1999/01/03 02:06:13 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* Globals */
@@ -77,3 +79,4 @@ extern rside      *First_rside;
 extern short      Ignore_decl;
 
 extern tmp_store_struct tmp_store;
+#endif /* LPGLOB_H */

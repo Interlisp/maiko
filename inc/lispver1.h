@@ -1,3 +1,5 @@
+#ifndef LISPVER1_H
+#define LISPVER1_H 1
 /* $Id: lispver1.h,v 1.2 1999/01/03 02:06:08 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* DOS version of LispVersionToUnixVersion */
@@ -42,3 +44,4 @@
       }									\
       else ver = -1;							\
   }
+#endif /* LISPVER1_H */

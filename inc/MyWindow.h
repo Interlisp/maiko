@@ -1,3 +1,5 @@
+#ifndef MYWINDOW_H
+#define MYWINDOW_H 1
 /* $Id: MyWindow.h,v 1.2 1999/01/03 02:05:47 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /************************************************************************/
@@ -108,3 +110,4 @@ typedef struct
 		(window)->cursor = mycursor; \
 }
 
+#endif /* MYWINDOW_H */
