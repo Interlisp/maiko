@@ -668,46 +668,6 @@ void int_unblock() {
 void int_timer_on() { int_unblock(); }
 void int_timer_off() { int_block(); }
 
-/************************************************************************/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-#ifdef NEVER
-
-void int_timer_off() {
-#ifdef SYSVSIGNALS
-  sigignore(SIGVTALRM);
-#else
-  struct sigvec tmpv, timeroffv;
-
-  timeroffv.sv_handler = SIG_IGN;
-  timeroffv.sv_mask = timeroffv.sv_flags = 0;
-  sigvec(SIGVTALRM, &timeroffv, &tmpv);
-#endif /* SYSVSIGNALS */
-}
-
-void int_timer_on() {
-#ifdef SYSVSIGNALS
-#ifdef SIGVTALRM
-  SIGERRCHK(sigset(SIGVTALRM, int_timer_service), "sigset vtalrm");
-#endif /* SIGVTALRM */
-
-#else
-  struct sigvec tmpv;
-
-  sigvec(SIGVTALRM, &timerv, &tmpv);
-#endif /* SYSVSIGNALS */
-}
-
-#endif /* NEVER */
-
 #ifdef FLTINT
 /************************************************************************/
 /*									*/
