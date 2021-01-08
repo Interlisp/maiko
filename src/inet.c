@@ -202,11 +202,12 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       { /* Do this without taking IO interrupts */
-#ifdef SYSVSIGNALS
-        sighold(SIGIO);
-#else
-        int oldmask = sigblock(sigmask(SIGIO));
-#endif /* SYSVSIGNALS */
+        sigset_t signals;
+
+        sigemptyset(&signals);
+        sigaddset(&signals, SIGIO);
+
+        sigprocmask(SIG_BLOCK, &signals, NULL);
 
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
         fcntl(result, F_SETOWN, getpid());
@@ -214,19 +215,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         if (listen(result, 5) == -1) {
           perror("TCP Listen");
           close(result);
-#ifdef SYSVSIGNALS
-          sigrelse(SIGIO);
-#else
-          sigsetmask(oldmask);
-#endif /* SYSVSIGNALS */
-
+          sigprocmask(SIG_UNBLOCK, &signals, NULL);
           return (NIL);
         }
-#ifdef SYSVSIGNALS
-        sigrelse(SIGIO);
-#else
-        sigsetmask(oldmask);
-#endif /* SYSVSIGNALS */
+        sigprocmask(SIG_UNBLOCK, &signals, NULL);
       }
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);

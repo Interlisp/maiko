@@ -366,29 +366,28 @@ LispPTR ether_get(LispPTR args[])
   LispPTR result = NIL;
 #ifndef NOETHER
   LispPTR MaxByteCount;
-#ifndef SYSVSIGNALS
-  int interrupt_mask;
-#endif
+  sigset_t signals;
+
   MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
 
   DBPRINT(("Ether Get.  "));
 
-#ifdef SYSVSIGNALS
-  sighold(SIGIO);
-#else
-  interrupt_mask = sigblock(sigmask(SIGIO)); /* turn off ENET interrupts */
-#endif /* SYSVSIGNALS */
+  sigemptyset(&signals);
+  sigaddset(&signals, SIGIO);
+
+  /* turn off ENET interrupts */
+  sigprocmask(SIG_BLOCK, &signals, NULL);
+
   if (ether_fd > 0 && (MaxByteCount > 0)) {
     ether_buf = (u_char *)Addr68k_from_LADDR(args[1]);
     ether_bsize = MaxByteCount; /* do this LAST; it enables reads */
     result = get_packet();
     /*	check_ether(); for old behavior, move comment to above line */
   }
-#ifdef SYSVSIGNALS
-  sigrelse(SIGIO);
-#else
-  sigsetmask(interrupt_mask);                /* interrupts back on */
-#endif /* SYSVISGNALS */
+
+  /* enable interrupts */
+  sigprocmask(SIG_UNBLOCK, &signals, NULL);
+
 #endif /* NOETHER */
 
   return (result);

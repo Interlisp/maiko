@@ -1328,15 +1328,12 @@ check_interrupt:
 
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
       if (StkOffset_from_68K(CSTKPTR) > InterfacePage->stackbase) {
-/* Interrupts not Disabled */
-/* XXX: what on earth is this code trying to accomplish by calling
-   getsignaldata -- it used to have no arguments, but that's an error
-*/
-#ifndef KBINT
-          getsignaldata(0, 0, NULL);
-#endif
-#ifdef OS4
-          getsignaldata(0, 0, NULL);
+        /* Interrupts not Disabled */
+        /* XXX: what on earth is this code trying to accomplish by calling
+           getsignaldata
+        */
+#if !defined(KBINT) || defined(OS4)
+        getsignaldata(0);
 #endif
         EXT;
         update_timer();

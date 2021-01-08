@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
@@ -30,8 +31,6 @@
 #ifdef DOS
 #include <dos.h>
 #include <i32.h>   /* "#pragma interrupt" & '_chain_intr'*/
-#define SIGVTALRM SIGUSR1
-#define SIGIO SIGREAD
 /******************************************************************************
 *   Global variables
 ******************************************************************************/
@@ -64,6 +63,7 @@ extern int ether_fd;
 #include "timerdefs.h"
 #include "commondefs.h"
 #include "mkcelldefs.h"
+#include "keyeventdefs.h"
 
 #ifdef XWINDOW
 #include "devif.h"
@@ -92,12 +92,6 @@ int TIMEOUT_TIME; /* For file system timeout */
 #define TRUE !FALSE
 int Event_Req = FALSE;
 #endif /* XWINDOW */
-
-#define ERRCHK(expr, str) \
-  if (expr == -1) perror(str)
-
-#define SIGERRCHK(set, str) \
-  if (set == SIG_ERR) perror(str)
 
 static int gettime(int casep);
 
@@ -431,11 +425,7 @@ extern int LispWindowFd;
 /*									*/
 /************************************************************************/
 
-#ifndef SYSVSIGNALS
-static struct sigvec timerv;
-#endif /* SYSVSIGNALS */
-
-static void int_timer_service(int sig, int code, void *scp)
+static void int_timer_service(int sig)
 {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
@@ -447,10 +437,6 @@ static void int_timer_service(int sig, int code, void *scp)
 #ifdef XWINDOW
   Event_Req = TRUE;
 #endif
-
-#ifdef SYSVSIGNALS
-/*    sigset(SIGVTALRM, int_timer_service); */
-#endif /* SYSVSIGNALS */
 }
 
 /************************************************************************/
@@ -485,19 +471,19 @@ static void int_timer_init()
                                     /* if any*/
   _dos_setvect(0x1c, DOStimer);     /* hook our int handler to timer int */
 
-#elif SIGVTALRM
-  struct itimerval timert, tmpt;
-
-#ifdef SYSVSIGNALS
-  SIGERRCHK(sigset(SIGVTALRM, int_timer_service), "sigset vtalrm");
 #else
-  /* first set up the signal handler */
-  timerv.sv_handler = int_timer_service;
-  timerv.sv_mask = timerv.sv_flags = 0;
-  sigvec(SIGVTALRM, &timerv, 0);
-#endif /* SYSVSIGNALS */
+  struct itimerval timert, tmpt;
+  struct sigaction timer_action;
 
-/* then attach a timer to it and turn it loose */
+  timer_action.sa_handler = int_timer_service;
+  sigemptyset(&timer_action.sa_mask);
+  timer_action.sa_flags = 0;
+
+  if (sigaction(SIGVTALRM, &timer_action, NULL) == -1) {
+    perror("sigaction: SIGVTALRM");
+  }
+
+  /* then attach a timer to it and turn it loose */
   timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
   timert.it_interval.tv_usec = timert.it_value.tv_usec = TIMER_INTERVAL;
 
@@ -507,7 +493,7 @@ static void int_timer_init()
   getitimer(ITIMER_VIRTUAL, &tmpt);
 
   DBPRINT(("Timer interval set to %d usec\n", timert.it_value.tv_usec));
-#endif /* DOS or SIGVTALRM */
+#endif /* DOS */
 }
 
 /************************************************************************/
@@ -550,7 +536,7 @@ void int_io_close(int fd)
 /*									*/
 /*			i n t _ i o _ i n i t				*/
 /*									*/
-/*	Set up handling for the SIGIO and SIGPOLL signals, in		*/
+/*	Set up handling for the SIGIO signals, in			*/
 /*	support of keyboard event handling and ethernet incoming-	*/
 /*	packet handling.						*/
 /*									*/
@@ -558,25 +544,18 @@ void int_io_close(int fd)
 /************************************************************************/
 
 static void int_io_init() {
-#ifndef SYSVSIGNALS
-  static struct sigvec timerv;
-  static struct sigvec poll_timerv;
-#endif /* SYSVSIGNALS */
-  extern void getsignaldata();
-
-/* first set up the signal handler */
-
-#ifndef SYSVSIGNALS
-#ifdef KBINT
-  timerv.sv_handler = getsignaldata;
-  timerv.sv_mask = timerv.sv_flags = 0;
-  sigvec(SIGIO, &timerv, 0);
-
-  DBPRINT(("I/O interrupts enabled\n"));
-#endif /* KBINT */
-#else  /* SYSVSIGNALS in effect... */
 #ifndef DOS
-  SIGERRCHK(sigset(SIGIO, getsignaldata), "sigset io");
+  struct sigaction io_action;
+  io_action.sa_handler = getsignaldata;
+  sigemptyset(&io_action.sa_mask);
+  io_action.sa_flags = 0;
+
+  if (sigaction(SIGIO, &io_action, NULL) == -1) {
+    perror("sigaction: SIGIO");
+  } else {
+    DBPRINT(("I/O interrupts enabled\n"));
+  }
+
 #if defined(XWINDOW) && defined(I_SETSIG)
   if (ioctl(ConnectionNumber(currentdsp->display_id), I_SETSIG, S_INPUT) < 0)
     perror("ioctl on X fd - SETSIG for input handling failed");
@@ -592,12 +571,8 @@ static void int_io_init() {
       return;
     }
 #endif /* USE_DLPI */
-
 #endif /* DOS */
-#endif /* SYSVSIGNALS */
 }
-
-int oldmask = 0;
 
 /************************************************************************/
 /*									*/
@@ -615,23 +590,16 @@ void int_block() {
 #ifdef DOS
   _dos_setvect(0x1c, prev_int_1c);
 #else /* DOS */
-#ifdef SYSVSIGNALS
-#ifdef SIGVTALRM
-  sighold(SIGVTALRM);
-#endif /* SIGVTALRM */
-  sighold(SIGIO);
-  sighold(SIGALRM);
-#ifdef SIGXFSZ
-  sighold(SIGXFSZ);
-#endif /* SIGXFSZ */
-#else
-  oldmask = sigblock(sigmask(SIGVTALRM) | sigmask(SIGIO) | sigmask(SIGALRM)
-                     | sigmask(SIGXFSZ)
+  sigset_t signals;
+  sigemptyset(&signals);
+  sigaddset(&signals, SIGVTALRM);
+  sigaddset(&signals, SIGIO);
+  sigaddset(&signals, SIGALRM);
+  sigaddset(&signals, SIGXFSZ);
 #ifdef FLTINT
-                     | sigmask(SIGFPE)
+  sigaddset(&signals, SIGFPE);
 #endif
-                         );
-#endif /* SYSVSIGNALS */
+  sigprocmask(SIG_BLOCK, &signals, NULL);
 #endif /* DOS */
 }
 
@@ -650,18 +618,16 @@ void int_unblock() {
 #ifdef DOS
   _dos_setvect(0x1c, DOStimer);
 #else /* DOS */
-#ifdef SYSVSIGNALS
-#ifdef SIGVTALRM
-  ERRCHK(sigrelse(SIGVTALRM), "sigrelse vtalrm");
-#endif /* SIGVTALRM */
-  ERRCHK(sigrelse(SIGIO), "sigrelse io");
-  ERRCHK(sigrelse(SIGALRM), "sigrelse alrm");
-#ifdef SIGXFSZ
-  ERRCHK(sigrelse(SIGXFSZ), "sigrelse XFSZ");
-#endif /* SIGXFSZ */
-#else
-  sigsetmask(oldmask);
-#endif /* SYSVSIGNALS */
+  sigset_t signals;
+  sigemptyset(&signals);
+  sigaddset(&signals, SIGVTALRM);
+  sigaddset(&signals, SIGIO);
+  sigaddset(&signals, SIGALRM);
+  sigaddset(&signals, SIGXFSZ);
+#ifdef FLTINT
+  sigaddset(&signals, SIGFPE);
+#endif
+  sigprocmask(SIG_UNBLOCK, &signals, NULL);
 #endif /* DOS */
 }
 
@@ -681,38 +647,42 @@ void int_timer_off() { int_block(); }
 /************************************************************************/
 
 /* The global used to signal floating-point errors */
-int FP_error = 0;
+volatile int FP_error = 0;
 
-void int_fp_service(int sig, int code, struct sigcontext *scp)
+void int_fp_service(int sig, siginfo_t *info, void *context)
 {
-  switch (code) {
-    case FPE_FLTDIV_TRAP:
-    case FPE_FLTUND_TRAP:
-    case FPE_FLTOVF_TRAP:
-    case FPE_FLTOPERR_TRAP:
+  switch (info->si_code) {
+    case FPE_FLTDIV:
+    case FPE_FLTUND:
+    case FPE_FLTOVF:
+    case FPE_FLTINV:
 
-      FP_error = code;
+      FP_error = info->si_code;
       break;
     default: {
 #ifdef DEBUG
       char stuff[100];
-      sprintf(stuff, "Unexpected FP error signal code: %d", code);
+      snprintf(stuff, sizeof(stuff), "Unexpected FP error signal code: %d", info->si_code);
       perror(stuff);
 #else
-      FP_error = code;
+      FP_error = info->si_code;
 #endif
     }
   }
-#ifdef SYSVSIGNALS
-  sigset(SIGFPE, int_fp_service);
-#endif /* SYSVSIGNALS */
 }
 
-void int_fp_init() { /* first set up the signal handler */
-  if (sigset(SIGFPE, int_fp_service))
+void int_fp_init() {
+  struct sigaction fpe_action;
 
-  perror("Sigset for FPE failed");
-  DBPRINT(("FP interrupts enabled\n"));
+  fpe_action.sa_handler = int_fp_service;
+  sigemptyset(&fpe_action.sa_mask);
+  fpe_action.sa_flags = SA_SIGINFO;
+
+  if (sigaction(SIGFPE, &fpe_action, NULL) == -1) {
+    perror("Sigset for FPE failed");
+  } else {
+    DBPRINT(("FP interrupts enabled\n"));
+  }
 }
 
 #endif /* FLTINT */
@@ -729,18 +699,7 @@ void int_fp_init() { /* first set up the signal handler */
 /************************************************************************/
 
 jmp_buf jmpbuf;
-static void timeout_error() {
-/*
- * Following printf changes the contents of jmpbuf!
- * This would lead to horrible segmentation violation.
- */
-/*  printf("File access timed out.\n"); */
-#ifdef SYSVSIGNALS
-#ifdef SIGALRM
-  sigset(SIGALRM, timeout_error);
-#endif
-#endif /* SYSVSIGNALS */
-
+static void timeout_error(int sig) {
   longjmp(jmpbuf, 1);
 }
 
@@ -756,23 +715,17 @@ static void timeout_error() {
 /************************************************************************/
 
 static void int_file_init() {
-#ifndef SYSVSIGNALS
-  static struct sigvec timerv;
-#endif /* SYSVSIGNALS */
-
   char *envtime;
   int timeout_time;
+  struct sigaction timer_action;
 
-/* first set up the signal handler */
-#ifndef SYSVSIGNALS
-  timerv.sv_handler = timeout_error;
-  timerv.sv_mask = timerv.sv_flags = 0;
-  sigvec(SIGALRM, &timerv, 0);
-#else
-#ifdef SIGALRM
-  sigset(SIGALRM, timeout_error);
-#endif /* SIGALRM */
-#endif /* SYSVSIGNALS */
+  timer_action.sa_handler = timeout_error;
+  sigemptyset(&timer_action.sa_mask);
+  timer_action.sa_flags = 0;
+
+  if (sigaction(SIGALRM, &timer_action, NULL) == -1) {
+    perror("sigaction: SIGALRM");
+  }
 
   /* Set Timeout period */
   if ((envtime = getenv("LDEFILETIMEOUT")) == NULL) {
@@ -796,70 +749,32 @@ static void int_file_init() {
 /*      about what killed you.                                          */
 /*                                                                      */
 /************************************************************************/
-
-/* 2017-06-22 NBriggs -- it's not clear that this definition has the correct
-   parameters for any known signal handler
-
-      Superceded by sigaction on FreeBSD, Solaris 11, Linux
-      Unavailable on macOS
-      SVr4, POSIX.1-2001, POSIX.1-2008 (marked obsolete; use sigaction)
-
-      void (*)(int) sigset(int, void (*disp)(int));
-
-
-     OK on FreeBSD, Solaris 11, macOS, Linux
-
-     struct  sigaction {
-             void    (*sa_handler)(int);
-             void    (*sa_sigaction)(int, siginfo_t *, void *);
-             int     sa_flags;                see signal options below
-	     sigset_t sa_mask;                signal mask to apply
-     };
-
-     int
-     sigaction(int sig, const struct sigaction * restrict act,
-               struct sigaction * restrict oact);
- */
-
-void panicuraid(int sig, int code, void *scp, void *addr)
+void panicuraid(int sig, siginfo_t *info, void *context)
 {
   static char errormsg[200];
   static char *stdmsg =
       "Please record the signal and code information\n\
 and do a 'v' before trying anything else.";
-  int i;
-
-  for (i = 0; i < 200; i++) errormsg[i] = 0;
 
   switch (sig) {
-#ifdef SIGBUS
     case SIGBUS:
-      sprintf(errormsg, "BUS error (code %d) at address %p.\n%s", code, addr, stdmsg);
-      break;
-#endif /* SIGBUS */
-    case SIGSEGV:
-      sprintf(errormsg, "SEGV error (code %d) at address %p.\n%s", code, addr, stdmsg);
-      break;
     case SIGILL:
-      sprintf(errormsg, "Illegal instruction (code %d) at address %p.\n%s", code, addr, stdmsg);
+    case SIGSEGV:
+      snprintf(errormsg, sizeof(errormsg), "%s at address %p.\n%s", strsignal(sig), info->si_addr, stdmsg);
       break;
-#ifdef SIGPIPE
     case SIGPIPE:
-      sprintf(errormsg, "Broken PIPE (code %d) at address %p.\n%s", code, addr, stdmsg);
+      snprintf(errormsg, sizeof(errormsg), "Broken PIPE.\n%s", stdmsg);
       break;
-#endif /* SGPIPE */
-#ifdef SIGHUP
     case SIGHUP:
-      sprintf(errormsg, "HANGUP signalled (code %d) at address %p.\n%s", code, addr, stdmsg);
-/* Assume that a user tried to exit UNIX shell */
+      snprintf(errormsg, sizeof(errormsg), "HANGUP signalled.\n%s", stdmsg);
+      /* Assume that a user tried to exit UNIX shell */
       killpg(getpgrp(), SIGKILL);
       exit(0);
       break;
-#endif /* SIGHUP */
     case SIGFPE:
-      sprintf(errormsg, "FP error (code %d) at address %p.\n%s", code, addr, stdmsg);
+      snprintf(errormsg, sizeof(errormsg), "%s (%d) at address %p.\n%s", strsignal(sig), info->si_code, info->si_addr, stdmsg);
       break;
-    default: sprintf(errormsg, "Uncaught SIGNAL %d (code %d).\n%s", sig, code, stdmsg);
+    default: snprintf(errormsg, sizeof(errormsg), "Uncaught SIGNAL %s (%d).\n%s", strsignal(sig), sig, stdmsg);
   }
 
   error(errormsg);
@@ -876,61 +791,31 @@ and do a 'v' before trying anything else.";
 /*                                                                      */
 /************************************************************************/
 static void int_panic_init() {
-#ifdef SYSVSIGNALS
 #ifndef DOS
-  sigset(SIGHUP, panicuraid);
-  sigset(SIGQUIT, panicuraid);
-  sigset(SIGILL, panicuraid);
+  struct sigaction panic_action, ignore_action;
+
+  panic_action.sa_sigaction = panicuraid;
+  sigemptyset(&panic_action.sa_mask);
+  panic_action.sa_flags = SA_SIGINFO;
+
+  ignore_action.sa_handler = SIG_IGN;
+  sigemptyset(&panic_action.sa_mask);
+  panic_action.sa_flags = 0;
+
+  sigaction(SIGHUP, &panic_action, NULL);
+  sigaction(SIGQUIT, &panic_action, NULL);
+  sigaction(SIGILL, &panic_action, NULL);
 #ifdef SIGEMT
-  sigset(SIGEMT, panicuraid);
+  sigaction(SIGEMT, &panic_action, NULL);
 #endif
-  sigset(SIGBUS, panicuraid);
-  sigset(SIGSEGV, panicuraid);
-#ifdef SIGSYS
-  sigset(SIGSYS, panicuraid);
+  sigaction(SIGBUS, &panic_action, NULL);
+  sigaction(SIGSEGV, &panic_action, NULL);
+  sigaction(SIGSYS, &panic_action, NULL);
+  sigaction(SIGTERM, &panic_action, NULL);
+
+  /* Ignore SIGPIPE */
+  sigaction(SIGPIPE, &ignore_action, NULL);
 #endif
-  sigset(SIGTERM, panicuraid);
-#endif
-#else
-  static struct sigvec panicv;
-  static struct sigvec ignorev;
-
-  /* first set up the signal handlers: */
-
-  panicv.sv_handler = panicuraid;
-  panicv.sv_mask = panicv.sv_flags = 0;
-  ignorev.sv_handler = SIG_IGN;
-  ignorev.sv_mask = ignorev.sv_flags = 0;
-
-  /* Now arrange for signals to be handled properly: */
-
-  sigvec(SIGHUP, &panicv, 0);
-  /*  sigvec(SIGINT,  &panicv, 0); */
-  sigvec(SIGQUIT, &panicv, 0);
-  sigvec(SIGILL, &panicv, 0);
-/*  sigvec(SIGTRAP, &panicv, 0); */
-#ifdef OS4
-  sigvec(SIGABRT, &panicv, 0);
-#endif /* OS4 */
-#ifdef SIGEMT
-  sigvec(SIGEMT, &panicv, 0);
-#endif
-  sigvec(SIGBUS, &panicv, 0);
-  sigvec(SIGSEGV, &panicv, 0);
-#ifdef SIGSYS
-  sigvec(SIGSYS, &panicv, 0);
-#endif
-  /*  sigvec(SIGPIPE, &panicv, 0);  Caused trouble with TCP; now ignored: */
-  sigvec(SIGPIPE, &ignorev, 0);
-  sigvec(SIGTERM, &panicv, 0);
-#ifdef OS4
-  sigvec(SIGXCPU, &panicv, 0);
-  sigvec(SIGLOST, &panicv, 0);
-#endif /* OS4 */
-
-  sigvec(SIGUSR1, &panicv, 0);
-  sigvec(SIGUSR2, &panicv, 0);
-#endif /* SYSVSIGNALS */
 
   DBPRINT(("Panic interrupts enabled\n"));
 }
@@ -945,7 +830,7 @@ static void int_panic_init() {
 
 void int_init() {
   int_timer_init(); /* periodic interrupt timer */
-  int_io_init();    /* SIGIO and SIGPOLL async I/O handlers */
+  int_io_init();    /* SIGIO async I/O handlers */
   int_file_init();  /* file-io TIMEOUT support */
   int_panic_init(); /* catch for all other dangerous interrupts */
 

@@ -240,7 +240,6 @@ typedef signed char s_char;
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #undef NOETHER
-#define SYSVSIGNALS 1
 #define NOFORN
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */
@@ -288,7 +287,6 @@ typedef signed char s_char;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
 #undef HAS_GETHOSTID
-#define SYSVSIGNALS 1
 #define USHORT unsigned
 #else
 #define USHORT unsigned short
