@@ -9,6 +9,10 @@ Unix Interface Communications
 /* Don't compile this at all under DOS. */
 #ifndef DOS
 
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE /* Needed for ptsname on glibc systems. */
+#endif
+
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-1995 by Venue. All Rights Reserved.		*/
