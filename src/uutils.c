@@ -268,7 +268,7 @@ LispPTR unix_getparm(LispPTR *args) {
     if ((pwd = getpwuid(getuid())) == NULL) return NIL;
     envvalue = pwd->pw_gecos;
   } else if (strcmp(envname, "HOSTID") == 0) {
-    sprintf(result, "%x", gethostid());
+    snprintf(result, sizeof(result), "%lx", gethostid());
     envvalue = result;
   }
 #endif /* DOS */
