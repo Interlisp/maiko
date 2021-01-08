@@ -162,8 +162,6 @@ int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
                    K: Kill process
                    E: Exit (kill all subprocesses)
                    C: Close stdin to subprocess
-                   W: call WAIT3 & get one process's close info.
-                   O: Fork OCR process.
    Byte 1:   Process number (0 to NPROCS - 1)
              Not used for S, F, and E commands
              [For S&P, pty letter]
@@ -193,9 +191,6 @@ of the packet received except:
              Byte 3 is 1 if an exit status was available.
    E:        Always the same
    C:        Always the same
-   O:	     Byte 3 is 1 if successful, 0 if not
-             Byte 1 and Byte 2 are the process ID of OCR process
-
 */
 
 int fork_Unix() {
@@ -406,10 +401,6 @@ int fork_Unix() {
       {
         int status;
 
-#ifdef OCR
-        int slot;
-#endif
-
         status = 0;
 
         IOBuf[0] = 0;
@@ -435,73 +426,6 @@ int fork_Unix() {
       case 'C': /* Close stdin to subprocess */ break;
 
       case 'K': /* Kill subprocess */ break;
-
-#ifdef OCR
-      case 'w': /* Wait paticular process to die */
-      {
-        int pid, res, status;
-
-        pid = IOBuf[1] << 8 | IOBuf[2];
-
-      retry:
-        res = waitpid(pid, &status, WNOHANG);
-        if (res == -1 && errno == EINTR) goto retry;
-
-        if (res == pid) {
-          IOBuf[0] = res >> 24 & 0xFF;
-          IOBuf[1] = res >> 16 & 0xFF;
-          IOBuf[2] = res >> 8 & 0xFF;
-          IOBuf[3] = res & 0xFF;
-        } else {
-          IOBuf[0] = IOBuf[1] = IOBuf[2] = IOBuf[3] = 0;
-        }
-      } break;
-
-      case 'O': /* Fork OCR process */
-        if (slot >= 0) {
-          pid_t ppid;
-          ppid = getppid();
-          pid = fork();
-          if (pid == 0) {
-            int i;
-            int status, len;
-            struct sockaddr_un addr;
-            char PipeName[40];
-            extern int OCR_sv;
-
-            OCR_sv = socket(AF_UNIX, SOCK_STREAM, 0);
-            if (OCR_sv < 0) {
-              perror("slave socket");
-              exit(0);
-            }
-            sprintf(PipeName, "/tmp/LispPipe%d-%d", StartTime, slot);
-            addr.sun_family = AF_UNIX;
-            strcpy(addr.sun_path, PipeName);
-            len = strlen(PipeName) + sizeof(addr.sun_family);
-            status = connect(OCR_sv, &addr, len);
-            if (status < 0) {
-              perror("OCR slave connect");
-              OCR_sv = -1;
-              exit(0);
-            }
-
-            (void)ocr_proc(ppid);
-            OCR_sv = -1;
-            exit(1);
-          }
-
-          if (pid == -1) {
-            perror("unixcomm: fork OCR");
-            IOBuf[3] = 0;
-          } else {
-            IOBuf[1] = (pid >> 8) & 0xFF;
-            IOBuf[2] = pid & 0xFF;
-          }
-        } else
-          IOBuf[3] = 0;
-        break;
-#endif /* OCR */
-
     } /* End of switch */
 
     /* Return the status/data packet */

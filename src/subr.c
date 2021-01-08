@@ -517,13 +517,6 @@ void OP_subrcall(int subr_no, int argnum) {
 #endif /* DOS */
       break;
 
-#ifdef OCR
-    case sb_OCR_COMM:
-      POP_SUBR_ARGS;
-      TopOfStack = ocr_comm(args);
-      break;
-#endif /* OCR */
-
     /*
             case 0166: POP_SUBR_ARGS;
                              error("called SUBR 0166, not defined!!");
