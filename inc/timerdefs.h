@@ -11,7 +11,5 @@ void int_io_open(int fd);
 void int_io_close(int fd);
 void int_block(void);
 void int_unblock(void);
-void int_timer_off(void);
-void int_timer_on(void);
 void int_init(void);
 #endif
