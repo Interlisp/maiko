@@ -878,7 +878,7 @@ int device_before_raid() {
   sigset_t signals;
 #endif
 
-  int_timer_off();
+  int_block();
 
 #ifdef XWINDOW
   /* So X events still get recognized. */
@@ -1127,7 +1127,7 @@ int device_after_raid() {
   flush_display_buffer();
 #endif /* XWINDOW | DOS */
 
-  int_timer_on();
+  int_unblock();
   *EmKbdAd068K = *EmRealUtilin68K = *EmKbdAd168K = *EmKbdAd268K = *EmKbdAd368K = *EmKbdAd468K =
       *EmKbdAd568K = KB_ALLUP;
   return (0);

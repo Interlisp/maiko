@@ -102,9 +102,9 @@ int do_system_call(LispPTR arg)
 #ifdef DEBUG
   printf(":: %s \n", cmd_str);
 #endif
-  int_timer_off();
+  int_block();
   result = system(cmd_str);
-  int_timer_on();
+  int_unblock();
   ARITH_SWITCH(result, lisp_result);
   return (lisp_result);
 }
@@ -159,9 +159,9 @@ int exec_command(char *cmd_str)
   char ws[21][80];
   int i, ii, cmd_length;
 
-  int_timer_off();
+  int_block();
   i = system(cmd_str);
-  int_timer_on();
+  int_unblock();
   return (i);
 
 } /*exec_command */

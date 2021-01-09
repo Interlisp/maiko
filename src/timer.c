@@ -631,9 +631,6 @@ void int_unblock() {
 #endif /* DOS */
 }
 
-void int_timer_on() { int_unblock(); }
-void int_timer_off() { int_block(); }
-
 #ifdef FLTINT
 /************************************************************************/
 /*									*/
