@@ -92,7 +92,7 @@ typedef int (*PFP)();   /* Pointer to Function returning a Pointer */
 /*		1 is the result type					*/
 /*		2 is the error return flag: 0=no errors. 1 if there's	*/
 /*			some problem					*/
-/*		3 is the lenght of the arglist passed			*/
+/*		3 is the length of the arglist passed			*/
 /*		4 is the pointer to the smasher place or 0 if return	*/
 /*		5-n the arglist types					*/
 /*	args[1-<number-of-args+1>]: arguments				*/
@@ -355,12 +355,12 @@ LispPTR call_c_fn(LispPTR *args) {
 /*		1 is the result type					*/
 /*		2 is the error return flag: 0=no errors. 1 if there's	*/
 /*			some problem					*/
-/*		3 is the lenght of the arglist passed			*/
+/*		3 is the length of the arglist passed			*/
 /*		4-n the arglist types					*/
 /*	args[1]: Smashing place						*/
 /*	args[2 - <number-of-args+1>]: arguments				*/
 /*									*/
-/*	This is an aboration. It is only implemented on the speciffic	*/
+/*	This is an aberration. It is only implemented on the specific	*/
 /*	request of an influential customer. The things we do for money!	*/
 /*									*/
 /*	The result of this functioncall will be smashed into what	*/

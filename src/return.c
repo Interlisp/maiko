@@ -97,7 +97,7 @@ void contextsw(register DLword fxnum, register DLword bytenum, register DLword f
 #endif
 
   if (!(fxnum == SubovFXP)) {
-    /* interrupt disable during execting [special] function
+    /* interrupt disable during executing [special] function
       invoked by contextsw(\KEYHANDLER,\RESETSTACK,FAULT)
      */
   }

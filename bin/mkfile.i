@@ -60,7 +60,7 @@ dosmkfil : mkfile
 lde     : $(OFILES) mkvdate
 	$(RM) vdate.c
 	mkvdate > vdate.c
-	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the speciffic files for this target */
+	- cd ARCH;$(MAKE) $(MFLAGS) all         #/* Make the specific files for this target */
 	$(CC) $(LDFLAGS) $(OFILES) -o $@
 
    

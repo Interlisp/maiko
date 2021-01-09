@@ -67,7 +67,7 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
 /*									*/
 /*		      N _ O P _ f d i f f e r e n c e			*/
 /*									*/
-/*	2-arugment floating-point subtraction.				*/
+/*	2-argument floating-point subtraction.				*/
 /*									*/
 /************************************************************************/
 

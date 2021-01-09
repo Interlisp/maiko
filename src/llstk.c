@@ -241,10 +241,10 @@ int do_stackoverflow(int incallp) {
 
   /* Call MOVEFRAME directly */
   if ((newfx = (DLword)moveframe(CURRENTFX)) == 0xFFFF) {
-    /* To make immidiately call HARDRESET */
+    /* To make immediately call HARDRESET */
     Irq_Stk_Check = 0;
     Irq_Stk_End = 0;
-    return (1); /* Whole space exausted */
+    return (1); /* Whole space exhausted */
   }
 
   /* Return from MOVEFRAME directly */
@@ -514,7 +514,7 @@ void flip_cursorbar(int n) {
 /**************************************************************/
 void blt(register DLword *dest68k, register DLword *source68k, int nw) {
   /******* OLD def ,
-   Due to C compiler's bug, we can't use pre-decriment for register val
+   Due to C compiler's bug, we can't use pre-decrement for register val
     source68k += nw;
     dest68k += nw;
     while(nw)
