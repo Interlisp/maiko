@@ -203,6 +203,7 @@ int fork_Unix() {
       UnixToLisp[2], /* Outgoing pipe to LISP */
       UnixPID, LispPipeIn, LispPipeOut, slot;
   pid_t pid;
+  sigset_t signals;
 
   char IOBuf[4];
   unsigned short tmp;
@@ -221,18 +222,14 @@ int fork_Unix() {
   StartTime = time(0);   /* Save the time, to create filenames with */
   StartTime &= 0xFFFFFF; /* as a positive number! */
 
-/* interrupts need to be blocked here so subprocess won't see them */
-#ifdef SYSVSIGNALS
-  sighold(SIGVTALRM);
-  sighold(SIGIO);
-  sighold(SIGALRM);
-  sighold(SIGXFSZ);
-  sighold(SIGFPE);
-#else
-  sigblock(sigmask(SIGVTALRM) | sigmask(SIGIO) | sigmask(SIGALRM)
-           | sigmask(SIGXFSZ)
-           | sigmask(SIGFPE));
-#endif /* SYSVSIGNALS */
+  /* interrupts need to be blocked here so subprocess won't see them */
+  sigemptyset(&signals);
+  sigaddset(&signals, SIGVTALRM);
+  sigaddset(&signals, SIGIO);
+  sigaddset(&signals, SIGALRM);
+  sigaddset(&signals, SIGXFSZ);
+  sigaddset(&signals, SIGFPE);
+  sigprocmask(SIG_BLOCK, &signals, NULL);
 
   if ((UnixPID = fork()) == -1) { /* Fork off small version of the emulator */
     perror("fork");

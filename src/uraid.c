@@ -20,6 +20,7 @@
 /************************************************************************/
 
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -873,12 +874,18 @@ int device_before_raid() {
   int keytrans;
   union wait status;
 #endif /* SUNDISPLAY */
+#ifdef XWINDOW
+  sigset_t signals;
+#endif
 
   int_timer_off();
 
-#if (defined(XWINDOW) && defined(SYSVSIGNALS) && defined(SIGIO))
-  sigrelse(SIGIO); /* So X events still get recognized. */
-#endif             /* XWINDOW + SYSVSIGNALS + SIGIO */
+#ifdef XWINDOW
+  /* So X events still get recognized. */
+  sigemptyset(&signals);
+  sigaddset(&signals, SIGIO);
+  sigprocmask(SIG_UNBLOCK, &signals, NULL);
+#endif
 
 #ifdef SUNDISPLAY
   win_setcursor(LispWindowFd, &InvisibleCursor);

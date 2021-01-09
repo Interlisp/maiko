@@ -277,7 +277,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void getsignaldata(int sig, int code, void *scp)
+void getsignaldata(int sig)
 {
 #ifndef DOS
 #ifndef XWINDOW
