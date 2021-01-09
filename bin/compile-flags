@@ -54,7 +54,6 @@ DEBUG		Used when debugging, to enclose trace and dump code.
 		dbprint.h for the definition.
 TRACE
 TRACE2
-TRASE
 OPTRACE		If true, the dispatch loop prints the PC & opcode each time thru
 FNTRACE		If true, you see the name of each function called.
 STACKCHECK	If true, you see unusual cases of stack manipulation
