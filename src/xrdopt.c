@@ -129,7 +129,7 @@ void print_Xusage(const char *prog)
   fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
   fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   fprintf(stderr,
-          " -xsync                               -turn  XSyncronize on. (default is off)\n\n");
+          " -xsync                               -turn  XSynchronize on. (default is off)\n\n");
   fprintf(stderr, "Please refer to the manual for further information.\n\n");
   exit(0);
 } /* end print_Xusage() */
@@ -221,13 +221,13 @@ void read_Xoption(int *argc, char *argv[])
   /* This is just temporary. We'll need this display struct to open the */
   /* main databases for medley. After it is used the display will be */
   /* closed and the opening of the other displays will follow the standard */
-  /* protocoll. */
+  /* protocol. */
 
   if (XrmGetResource(commandlineDB, "ldex.display", "Ldex.Display", str_type, &value) == True) {
     (void)strncpy(Display_Name, value.addr, (int)value.size);
   } else if (getenv("DISPLAY") == (char *)NULL) {
     fprintf(stderr, "Can't find a display. Either set the shell\n");
-    fprintf(stderr, "variabel DISPLAY to an appropriate display\n");
+    fprintf(stderr, "variable DISPLAY to an appropriate display\n");
     fprintf(stderr, "or provide a -display argument.\n");
     print_Xusage(argv[0]);
   } else {
@@ -268,7 +268,7 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(sysout_name, value.addr, (int)value.size);
   }
   if (sysout_name[0] == '\0') {
-    fprintf(stderr, "Coudn't find a sysout to run;\n");
+    fprintf(stderr, "Couldn't find a sysout to run;\n");
     print_Xusage(argv[0]);
   }
 

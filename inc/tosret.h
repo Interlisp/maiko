@@ -74,7 +74,7 @@
 	    - FRAMESIZE);						\
  IVARL = (DLword *)							\
 	    Addr68k_from_StkOffset(GETWORD((DLword *)returnFX -1));	\
-	/* Get PC from Retunee's pc slot in FX */			\
+	/* Get PC from Returnee's pc slot in FX */			\
  PCMACL = returnFX->pc  + (ByteCode *)					\
 	(FuncObj = (struct fnhead *)					\
 	Addr68k_from_LADDR(SWAP_FNHEAD(returnFX->fnheader) & POINTERMASK)) + 1;\
