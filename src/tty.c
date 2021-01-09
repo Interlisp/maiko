@@ -185,7 +185,7 @@ void tty_setbaudrate() {
 int tty_baudtosymbol(short aBaud)
 {
 #ifdef TRACE
-  printf("TRASE: tty_baudtosymbol(%x)\n", aBaud);
+  printf("TRACE: tty_baudtosymbol(%x)\n", aBaud);
 #endif
 
   if (aBaud == 0) return (B50);
