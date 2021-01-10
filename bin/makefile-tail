@@ -259,7 +259,7 @@ $(OBJECTDIR)testtool.o :  $(SRCDIR)testtool.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 $(OBJECTDIR)allocmds.o :  $(SRCDIR)allocmds.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)cell.h  $(INCDIR)lispmap.h \
-	 $(INCDIR)initatms.h  $(INCDIR)sysatms.h  $(INCDIR)lspglob.h
+	 $(INCDIR)initatms.h  $(INCDIR)lspglob.h
 	$(CC) $(RFLAGS) $(SRCDIR)allocmds.c $(INLINE) -o $(OBJECTDIR)allocmds$(OEXT)
 
 $(OBJECTDIR)arith2.o :  $(SRCDIR)arith2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \

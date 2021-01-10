@@ -32,7 +32,6 @@
 #include "cell.h"
 #include "lispmap.h"
 #include "initatms.h"
-#include "sysatms.h"
 #include "lspglob.h"
 
 #include "allocmdsdefs.h"
