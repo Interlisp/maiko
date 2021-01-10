@@ -19,8 +19,11 @@
 /*	InterfacePage->rversion.  The version number is the number	*/
 /*	of whole days since 12:00 13-Oct-87 (Takeshi's birthday).	*/
 /*									*/
-/*	This program prints a single line:				*/
-/*		long MDate = <the version number>			*/
+/*	This program prints a single line, with seconds since Unix      */
+/*	epoch, which is converted to days since Takeshi's birthday in   */
+/*	initsout.c:                     				*/
+/*                                                                      */
+/*		time_t MDate = <the version number>			*/
 /*									*/
 /*	That output is redirected to create the file vdate.c, which	*/
 /*	is then compiled as part of the emulator MAKE.			*/
@@ -39,7 +42,7 @@
 int main(void) {
   long dtime;
   time(&dtime);
-  fprintf(stderr, "Mdate :%ld\n", dtime);
+  fprintf(stderr, "MDate: %ld\n", dtime);
   printf("long MDate= %ld;\n", dtime);
   return (0);
 }
@@ -48,11 +51,17 @@ int main(void) {
 int main(void) {
   struct timeval time;
 
+  /* On some Unix platforms, time_t is an int and on
+   * others, it is a long. We'll store it as a time_t,
+   * but print it as a long so that we can avoid format
+   * warnings about differing sized types.
+   */
   gettimeofday(&time, NULL);
-  fprintf(stderr, "Mdate :%ld\n", (long)time.tv_sec);
+  fprintf(stderr, "MDate: %ld\n", (long)time.tv_sec);
   fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
 
-  printf("long MDate= %ld;\n", (long)time.tv_sec);
+  printf("#include <time.h>\n");
+  printf("time_t MDate= %ld;\n", (long)time.tv_sec);
   return (0);
 }
 
