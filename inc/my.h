@@ -36,7 +36,6 @@
 /*	from SMALLP or FIXP, if necessary.				*/
 /*									*/
 /************************************************************************/
-#ifndef I386
 #define	N_MakeFloat(arg, dest, tos){					\
 	switch (SEGMASK & (LispPTR)arg) {				\
 	case S_POSITIVE:						\
@@ -57,28 +56,6 @@
 		}							\
 	}								\
 }
-#else
-#define	N_MakeFloat(arg, dest, tos){					\
-	switch (SEGMASK & (int)arg) {					\
-	case S_POSITIVE:						\
-		dest = (float)(0xFFFF & (int)arg);			\
-		break;							\
-	case S_NEGATIVE:						\
-		dest = (float)((int)(0xFFFF0000 | (int)arg));		\
-		break;							\
-	default:							\
-		switch (GetTypeNumber(arg)) {				\
-		  case TYPE_FLOATP: 					\
-		    dest = *((float *)Addr68k_from_LADDR(arg));		\
-		    break; 						\
-		  case TYPE_FIXP: 					\
-		    dest = (float)(*((int *)Addr68k_from_LADDR(arg)));	\
-		    break;						\
-		  default: ERROR_EXIT(tos);				\
-		}							\
-	}								\
-}
-#endif /* I386 */
 
 
 
