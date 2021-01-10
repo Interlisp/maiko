@@ -165,7 +165,7 @@ int bytecmp(const char *char1, const char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {
-    if (GETBYTE(char1++) != *(char2++)) return (0);
+      if (GETBYTE(char1++) != *(unsigned char *)(char2++)) return (0);
   }
   return (1);
 }
