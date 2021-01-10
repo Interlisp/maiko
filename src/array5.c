@@ -62,11 +62,6 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   /*  setup typenumber  */
   type = 0xFF & arrayblk->typenumber;
 
-/*  disp on type  */
-#ifdef OS4
-  aref_switch(type, inx1, baseL, arindex);
-#else
+  /*  disp on type  */
   return (aref_switch(type, inx1, baseL, arindex));
-#endif
-
 } /*  end N_OP_aref2()  */

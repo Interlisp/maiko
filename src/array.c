@@ -52,11 +52,6 @@ LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha) {
   /*  test and setup typenumber  */
   N_GetPos(typenumber, type, inx);
 
-/*  disp on type  */
-#ifdef OS4
-  aref_switch(type, inx, baseL, index);
-#else
+  /*  disp on type  */
   return (aref_switch(type, inx, baseL, index));
-#endif
-
 } /*  end N_OP_misc3()  */
