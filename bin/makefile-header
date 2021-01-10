@@ -14,8 +14,8 @@ AR = ar rcv
 ANSICC = $(CC)
 
 # Compiler flags
-CLANG_CFLAGS = -std=gnu89 -funsigned-char -fno-strict-aliasing -fwrapv
-GCC_CFLAGS = -std=gnu89 -funsigned-char -fno-strict-aliasing -fwrapv
+CLANG_CFLAGS = -std=gnu99 -funsigned-char -fno-strict-aliasing -fwrapv
+GCC_CFLAGS = -std=gnu99 -funsigned-char -fno-strict-aliasing -fwrapv
 
 # for the files that need to be included in byte-swapped implementations:
 BYTESWAPFILES =
