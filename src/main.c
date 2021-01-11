@@ -260,7 +260,7 @@ int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will cal
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
-extern long MDate;
+extern time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
 #ifdef DOS
@@ -736,11 +736,7 @@ void print_info_lines() {
 #elif (RELEASE == 351)
   printf("Emulator for Medley release 3.51\n");
 #endif /* RELEASE */
-#if defined(MACOSX) || defined(FREEBSD) || defined(LINUX)
-  printf("Creation date: %s", ctime((const time_t *)&MDate));
-#else
   printf("Creation date: %s", ctime(&MDate));
-#endif
 #ifdef LPSOLVE
   printf("Contains lp_solve LP solver.\n");
 #endif /* LPSOLVE */
