@@ -263,7 +263,7 @@ typedef signed char s_char;
 /********************************************************/
 /*							*/
 /********************************************************/
-#if defined(MACOSX) || defined(FREEBSD)
+#if defined(MACOSX) || defined(FREEBSD) || defined(OPENBSD)
 /* MacOS X, FreeBSD - mostly POSIX-compliant Unix */
 typedef signed char s_char;
 #endif /* MACOSX || FREEBSD */
