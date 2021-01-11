@@ -212,7 +212,6 @@ SET(MAIKO_SRCS
     src/subr0374.c
     src/subr.c
     src/sxhash.c
-    src/sysatms.c
     src/testtool.c
     src/timer.c
     src/typeof.c
@@ -389,7 +388,6 @@ SET(MAIKO_HDRS
     inc/subrdefs.h
     inc/subrs.h
     inc/sxhashdefs.h
-    inc/sysatms.h
     inc/testtooldefs.h
     inc/timeout.h
     inc/timerdefs.h

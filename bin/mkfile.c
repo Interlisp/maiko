@@ -119,7 +119,7 @@ HFILES = INCDIR/address.h INCDIR/adr68k.h INCDIR/arith.h INCDIR/cell.h INCDIR/db
 	INCDIR/fast_dsp.h INCDIR/gcdata.h INCDIR/hdw_conf.h INCDIR/initatms.h INCDIR/inlinec.h INCDIR/keyboard.h \
 	INCDIR/lispver1.h INCDIR/lispver2.h INCDIR/lldsp.h INCDIR/locfile.h INCDIR/medleyfp.h INCDIR/mouseif.h INCDIR/my.h \
 	INCDIR/opcodes.h INCDIR/osmsg.h INCDIR/pilotbbt.h INCDIR/print.h INCDIR/profile.h \
-	INCDIR/return.h INCDIR/stack.h INCDIR/stream.h INCDIR/subrs.h INCDIR/sysatms.h INCDIR/timeout.h \
+	INCDIR/return.h INCDIR/stack.h INCDIR/stream.h INCDIR/subrs.h INCDIR/timeout.h \
 	INCDIR/tos1defs.h INCDIR/tosfns.h INCDIR/tosret.h INCDIR/vmemsave.h \
 	INCDIR/xdefs.h INCDIR/xbitmaps.h INCDIR/xkeymap.h
 
