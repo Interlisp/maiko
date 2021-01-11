@@ -220,16 +220,6 @@ error Must specify RELEASE to build Medley.
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef sun
-typedef signed char s_char;
-#endif /* sun */
-
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
 #ifdef sparc
 	/* SPARCs and MIPSs can't do unaligned word-loads */
 #undef UNALIGNED_FETCH_OK
@@ -255,21 +245,10 @@ typedef signed char s_char;
 	/********************************************************/
 #ifdef LINUX
 		/* LINUX, the free POSIX-compliant Unix */
-typedef signed char s_char;
-
 #undef UNALIGNED_FETCH_OK
 #endif /* LINUX */
 
 
-
-
-/********************************************************/
-/*							*/
-/********************************************************/
-#if defined(MACOSX) || defined(FREEBSD) || defined(OPENBSD)
-/* MacOS X, FreeBSD - mostly POSIX-compliant Unix */
-typedef signed char s_char;
-#endif /* MACOSX || FREEBSD */
 
 
 	/********************************************************/
@@ -286,7 +265,6 @@ typedef signed char s_char;
 #ifdef DOS
 typedef unsigned char u_char;
 typedef unsigned long u_int;
-typedef signed char s_char;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
 #undef HAS_GETHOSTID
