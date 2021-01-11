@@ -33,10 +33,10 @@
 
 
 #include <fcntl.h>
-#include <sys/ioctl.h>
 #include <sys/select.h>
 
 #ifdef OS5
+#include <sys/ioctl.h>
 #include <stropts.h>
 #endif /* OS5 */
 
