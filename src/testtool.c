@@ -41,6 +41,7 @@
 
 
 */
+#include <stdint.h>
 #include <stdio.h>
 #include <setjmp.h>
 
@@ -774,12 +775,12 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
     case 0263: /* TJUMPX */
     case 0264: /* NFJUMPX */
     case 0265: /* NTJUMPX */
-      printf(" 0%o (0x%x)\n", pc + (s_char)GETBYTE(addr + 1), pc + (s_char)GETBYTE(addr + 1));
+      printf(" 0%o (0x%x)\n", pc + (int8_t)GETBYTE(addr + 1), pc + (int8_t)GETBYTE(addr + 1));
       break;
     case 0261: /* JUMPXX */
       printf(" 0%o (0x%x)\n",
-             pc + ((s_char)GETBYTE(addr + 1) << 8) + (unsigned char)GETBYTE(addr + 2),
-             pc + ((s_char)GETBYTE(addr + 1) << 8) + (unsigned char)GETBYTE(addr + 2));
+             pc + ((int8_t)GETBYTE(addr + 1) << 8) + (uint8_t)GETBYTE(addr + 2),
+             pc + ((int8_t)GETBYTE(addr + 1) << 8) + (uint8_t)GETBYTE(addr + 2));
       break;
     case 0120: /* FVAR opcodes */
     case 0121:
