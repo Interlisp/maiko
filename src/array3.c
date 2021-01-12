@@ -51,11 +51,6 @@ LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {
   /*  setup base  */
   baseL = arrayblk->base;
 
-/*  disp on type  */
-#ifdef OS4
-  aref_switch(type, inx, baseL, index);
-#else
+  /*  disp on type  */
   return (aref_switch(type, inx, baseL, index));
-#endif
-
 } /*  end N_OP_aref1()  */
