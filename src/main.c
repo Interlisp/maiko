@@ -736,6 +736,7 @@ void print_info_lines() {
 #elif (RELEASE == 351)
   printf("Emulator for Medley release 3.51\n");
 #endif /* RELEASE */
+  printf("Compiled for %s (%s) (%d bit).\n", MAIKO_OS_NAME, MAIKO_ARCH_NAME, MAIKO_ARCH_WORD_BITS);
   printf("Creation date: %s", ctime(&MDate));
 #ifdef LPSOLVE
   printf("Contains lp_solve LP solver.\n");
