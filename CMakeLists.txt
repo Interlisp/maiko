@@ -77,6 +77,7 @@ ELSEIF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   LIST(APPEND MAIKO_DEFINITIONS
     "-DAIX" # This is temporary
     "-DOS5"
+    "-DUSE_DLPI"
   )
 ENDIF()
 
@@ -278,6 +279,7 @@ SET(MAIKO_HDRS
     inc/dirdefs.h
     inc/display.h
     inc/dld.h
+    inc/dlpidefs.h
     inc/drawdefs.h
     inc/dskdefs.h
     inc/dspdata.h
@@ -456,6 +458,7 @@ TARGET_LINK_LIBRARIES(lde X11::X11)
 ADD_EXECUTABLE(ldeether src/ldeether.c)
 TARGET_COMPILE_DEFINITIONS(ldeether PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(ldeether PUBLIC inc)
+TARGET_LINK_LIBRARIES(ldeether maiko)
 
 ADD_EXECUTABLE(ldex src/main.c vdate.c)
 TARGET_LINK_LIBRARIES(ldex maiko)
