@@ -36,16 +36,6 @@
 #include "xdefs.h"
 #endif /* XWINDOW */
 
-/* from pixrect's rect.h: */
-#ifdef LINUX
-#ifndef max
-#define max(a, b) (((a) > (b)) ? (a) : (b))
-#endif
-#ifndef min
-#define min(a, b) (((a) < (b)) ? (a) : (b))
-#endif
-#endif /* LINUX */
-
 #ifndef XWINDOW
 #ifndef NOPIXRECT
 #ifndef DOS
