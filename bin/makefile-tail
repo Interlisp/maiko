@@ -841,7 +841,7 @@ $(OBJECTDIR)xwinman.o : $(SRCDIR)xwinman.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman$(OEXT)
 
-$(OBJECTDIR)foreign.o : $(SRCDIR)foreign.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
+$(OBJECTDIR)foreign.o : $(SRCDIR)foreign.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h $(INCDIR)foreigndefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)foreign.c $(INLINE) -o $(OBJECTDIR)foreign$(OEXT)
 
 $(OBJECTDIR)lisp2c.o : $(SRCDIR)lisp2c.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h

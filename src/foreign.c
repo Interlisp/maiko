@@ -11,7 +11,9 @@
 #include "version.h"
 
 #ifndef NOFORN
+#include <stdio.h>
 #include <sys/param.h>
+
 #include "dld.h"
 #include "lispemul.h"
 #include "lspglob.h"
@@ -19,9 +21,12 @@
 #include "adr68k.h"
 #include "lispmap.h"
 #include "lsptypes.h"
+#include "lisp2cdefs.h"
 #include "locfile.h"
 #include "medleyfp.h"
+#include "mkcelldefs.h"
 #include "arith.h"
+#include "commondefs.h"
 #include "stack.h"
 
 #include "foreigndefs.h"

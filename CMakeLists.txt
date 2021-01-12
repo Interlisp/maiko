@@ -290,6 +290,7 @@ SET(MAIKO_HDRS
     inc/ether.h
     inc/fast_dsp.h
     inc/findkeydefs.h
+    inc/foreigndefs.h
     inc/fpdefs.h
     inc/fvardefs.h
     inc/gc2defs.h
