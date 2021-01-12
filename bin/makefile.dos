@@ -8,8 +8,7 @@ LPFILES = lpmain.obj lpread.obj lpsolve.obj lpwrite.obj lpdual.obj lptran.obj
 
 KEY = keytstno.obj
 
-CFLAGS = -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT \
-	 -DNOFORN -DNOVERSION
+CFLAGS = -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT -DNOVERSION
 
 LDFLAGS = -g graphics.lib binmode.lib mouse.lib 
 

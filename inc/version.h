@@ -62,7 +62,6 @@
 #define MINBVERSION 15000
 #undef BIGATOMS
 #define NOEUROKBD
-#define NOFORN
 #define NOVERSION
 
 #elif (RELEASE == 200)
@@ -206,6 +205,11 @@ error Must specify RELEASE to build Medley.
 
 	/* Set up defaults */
 #define NOETHER 1
+/* Foreign function call support relies upon DLD which
+ * weren't supported in modern OSes and the GNU DLD
+ * library hasn't been supported or maintained since
+ * at least 2006. */
+#define NOFORN
 #define UNALIGNED_FETCH_OK
 #define HAS_GETHOSTID
 #define UNSIGNED unsigned long
@@ -240,7 +244,6 @@ typedef signed char s_char;
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #undef NOETHER
-#define NOFORN
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */
 

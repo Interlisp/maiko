@@ -25,7 +25,7 @@
  # remember   -DNOEUROKBD
 
 #ifdef _INTELC32_       /* The cpp macro for the DOS extender */
-#define EXTRACFLAGS -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT -DNOFORN
+#define EXTRACFLAGS -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT
 #define EXTRALDFLAGS graphics.lib binmode.lib mouse.lib
 AFLAGS = /T
 COLORFILES = rawcolor.obj
