@@ -345,6 +345,18 @@ LispPTR call_c_fn(LispPTR *args) {
   }
 }
 
+/* These functions are created so that you can split a float into */
+/* four integers. The general idea behind these functions is to */
+/* act as a caster between different entities on the stack */
+
+/* These used to live in hacks.c, but were only used here. The code */
+/* involved here is not valid ANSI C and will have to be fixed before */
+/* this code can be used again. */
+static int pickapart1(int i1, int i2, int i3, int i4) { return (i1); }
+static int pickapart2(int i1, int i2, int i3, int i4) { return (i2); }
+static int pickapart3(int i1, int i2, int i3, int i4) { return (i3); }
+static int pickapart4(int i1, int i2, int i3, int i4) { return (i4); }
+
 /************************************************************************/
 /*									*/
 /*			S M A S H I N G _ C _ F N			*/
@@ -371,7 +383,6 @@ LispPTR call_c_fn(LispPTR *args) {
 LispPTR smashing_c_fn(LispPTR *args) {
   int intarg[Max_Arg], result, i, j;
   int fnaddr, resulttype, *errorflag, arglistlength, *descriptorblock;
-  PFI pickapart1, pickapart2, pickapart3, pickapart4;
   float fresult;
 
   int *valueplace;

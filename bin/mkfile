@@ -58,7 +58,7 @@ LDFLAGS = DEBUG EXTRALDFLAGS XLDFLAGS
 SRCFILES = SRCDIR/conspage.c SRCDIR/gcoflow.c SRCDIR/shift.c SRCDIR/dbgtool.c SRCDIR/gcr.c\
 	SRCDIR/llcolor.c SRCDIR/gcrcell.c SRCDIR/llstk.c SRCDIR/gcscan.c SRCDIR/loopsops.c\
 	SRCDIR/storage.c SRCDIR/allocmds.c SRCDIR/dir.c SRCDIR/gvar2.c SRCDIR/lowlev1.c\
-	SRCDIR/subr.c SRCDIR/arith2.c SRCDIR/hacks.c SRCDIR/lowlev2.c SRCDIR/subr0374.c \
+	SRCDIR/subr.c SRCDIR/arith2.c SRCDIR/lowlev2.c SRCDIR/subr0374.c \
 	SRCDIR/arith3.c SRCDIR/doscomm.c SRCDIR/hardrtn.c SRCDIR/lsthandl.c SRCDIR/sxhash.c \
 	SRCDIR/arith4.c SRCDIR/draw.c SRCDIR/main.c SRCDIR/testtool.c SRCDIR/array.c SRCDIR/dsk.c \
 	SRCDIR/inet.c SRCDIR/misc7.c SRCDIR/timer.c SRCDIR/array2.c SRCDIR/dspif.c SRCDIR/initdsp.c \
@@ -85,7 +85,7 @@ OFILES = conspage.OEXT gcoflow.OEXT shift.OEXT dbgtool.OEXT \
 	gcr.OEXT llcolor.OEXT gcrcell.OEXT llstk.OEXT \
 	gcscan.OEXT loopsops.OEXT storage.OEXT \
 	allocmds.OEXT dir.OEXT gvar2.OEXT lowlev1.OEXT \
-	subr.OEXT arith2.OEXT hacks.OEXT lowlev2.OEXT \
+	subr.OEXT arith2.OEXT lowlev2.OEXT \
 	subr0374.OEXT arith3.OEXT doscomm.OEXT \
 	hardrtn.OEXT lsthandl.OEXT sxhash.OEXT arith4.OEXT \
 	draw.OEXT main.OEXT testtool.OEXT array.OEXT \

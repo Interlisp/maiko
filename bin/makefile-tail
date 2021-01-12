@@ -125,7 +125,6 @@ OFILES = $(OBJECTDIR)arith2.o \
 	$(OBJECTDIR)perrno.o \
 	$(OBJECTDIR)foreign.o \
 	$(OBJECTDIR)lisp2c.o \
-	$(OBJECTDIR)hacks.o \
 	$(OBJECTDIR)osmsg.o
 #	$(OBJECTDIR)mnxmeth.o \
 #	$(OBJECTDIR)mnwevent.o
@@ -841,9 +840,6 @@ $(OBJECTDIR)xcursor.o : $(SRCDIR)xcursor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h
 $(OBJECTDIR)xwinman.o : $(SRCDIR)xwinman.c  $(REQUIRED-INCS) $(INCDIR)xdefs.h \
 	$(INCDIR)MyWindow.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman$(OEXT)
-
-$(OBJECTDIR)hacks.o : $(SRCDIR)hacks.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
-	$(CC) $(RFLAGS) $(SRCDIR)hacks.c -o $(OBJECTDIR)hacks$(OEXT)
 
 $(OBJECTDIR)foreign.o : $(SRCDIR)foreign.c  $(REQUIRED-INCS) $(INCLUDEDIR)dld.h
 	$(CC) $(RFLAGS) $(SRCDIR)foreign.c $(INLINE) -o $(OBJECTDIR)foreign$(OEXT)

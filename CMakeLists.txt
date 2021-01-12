@@ -177,7 +177,6 @@ SET(MAIKO_SRCS
     src/gcrcell.c
     src/gcscan.c
     src/gvar2.c
-    src/hacks.c
     src/hardrtn.c
     src/inet.c
     src/initdsp.c
@@ -306,7 +305,6 @@ SET(MAIKO_HDRS
     inc/gcrdefs.h
     inc/gcscandefs.h
     inc/gvar2defs.h
-    inc/hacksdefs.h
     inc/hardrtndefs.h
     inc/hdw_conf.h
     inc/ifpage.h
