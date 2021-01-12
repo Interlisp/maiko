@@ -31,6 +31,9 @@
 */
 /**********************************************************************/
 
+#ifndef BYTESWAP
+#include <string.h>
+#endif
 #include "lispemul.h"
 #include "adr68k.h"
 #include "lsptypes.h"
