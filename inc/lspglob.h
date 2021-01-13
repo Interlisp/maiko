@@ -100,9 +100,6 @@ extern LispPTR *MDS_free_page_word;
 
 extern LispPTR *Reclaim_cnt_word ;
 
-
-extern int FileIOFlag, TimerFlag;
-
 /*** cache values for array reclaimer by Tomtom 30-Sep-1987 ***/
 
 extern LispPTR *GcDisabled_word;

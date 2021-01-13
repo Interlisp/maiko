@@ -412,8 +412,6 @@ int TIMER_INTERVAL = 100000;
 int TIMER_INTERVAL = 25000;
 #endif
 
-int FileIOFlag = 0;
-int TimerFlag = 0;
 extern int LispWindowFd;
 
 /************************************************************************/
@@ -432,7 +430,6 @@ static void int_timer_service(int sig)
 
   Irq_Stk_Check = 0;
   Irq_Stk_End = 0;
-  TimerFlag = 1;
 
 #ifdef XWINDOW
   Event_Req = TRUE;
@@ -459,7 +456,6 @@ static void int_timer_init()
   *  locked prior to receiving any interrupts.  This prevents the Timer
   *  function from being swapped out during an interrupt.
   ******************************************************************************/
-  _dpmi_lockregion((void *)TimerFlag, sizeof(TimerFlag));
   _dpmi_lockregion((void *)Irq_Stk_End, sizeof(Irq_Stk_End));
   _dpmi_lockregion((void *)Irq_Stk_Check, sizeof(Irq_Stk_Check));
   _dpmi_lockregion((void *)tick_count, sizeof(tick_count));
@@ -860,7 +856,6 @@ void DOStimer() {
   /* if (--tick_count == 0) { */
   Irq_Stk_Check = 0;
   Irq_Stk_End = 0;
-  TimerFlag = 1;
   /*   _dos_setvect(0x1c, prev_int_1c);
    } else if (tick_count <= 0) { */
   /* I'm dead, uninstal me */
