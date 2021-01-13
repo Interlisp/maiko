@@ -192,8 +192,6 @@ typedef struct {
   }
 #endif /* OLD_CURSOR */
 
-/* function that checks to see if more input is waiting on a file;
-        if some is, it bumps FileIOFlag so it'll get seen next time around */
 /* commented out is some code that would also clobber
         Irq_Stk_Check & Irq_Stk_End to force
         a new interrupt as rapidly as possible; it causes odd behavior...
