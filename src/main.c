@@ -321,13 +321,13 @@ int main(int argc, char *argv[])
   extern int TIMER_INTERVAL;
   char keytyped[255];
   extern fd_set LispReadFds;
-#ifndef NOFORN
+#ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
     perror("Name of executable not found.");
   } else if (dld_init(dld_find_executable(argv[0])) != 0) {
     dld_perror("Can't init DLD.");
   };
-#endif /* NOFORN */
+#endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
 
 #ifdef XWINDOW
   read_Xoption(&argc, argv);
@@ -751,9 +751,11 @@ void print_info_lines() {
 #ifdef NOVERSION
   printf("Does not enforce SYSOUT version matching.\n");
 #endif /* NOVERSION */
-#ifdef NOFORN
+#ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
+  printf("Has foreign-function-call interface.\n");
+#else
   printf("Has no foreign-function-call interface.\n");
-#endif /* NOFORN */
+#endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
 #ifdef NOEUROKBD
   printf("No support for European keyboards.\n");
 #else
