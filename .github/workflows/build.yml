@@ -20,3 +20,11 @@ jobs:
       - name: Build
         working-directory: bin
         run: ./makeright x
+
+  build-pi:
+    runs-on: [self-hosted, linux, ARM]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        working-directory: bin
+        run: ./makeright x
