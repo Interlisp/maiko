@@ -10,7 +10,11 @@
 
 #include "version.h"
 
-#ifndef NOFORN
+/* Foreign function call support relies upon DLD which
+ * weren't supported in modern OSes and the GNU DLD
+ * library hasn't been supported or maintained since
+ * at least 2006. */
+#ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
 #include <stdio.h>
 #include <sys/param.h>
 
@@ -928,4 +932,4 @@ int get_c_basebyte(LispPTR *args) {
       break;
   }
 }
-#endif /* NOFORN */
+#endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
