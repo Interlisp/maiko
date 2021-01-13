@@ -125,10 +125,9 @@ int XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 
 extern int LogFileFd;
 
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
 extern int ether_fd;
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 extern DLword *DisplayRegion68k;
 
@@ -337,13 +336,12 @@ getmore:
 
 #endif /* XWINDOW */
 
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
     if (ether_fd >= 0 && FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
       DBPRINT(("Handling enet interrupt.\n\n"));
       check_ether();
     }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef RS232
     if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))

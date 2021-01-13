@@ -206,7 +206,6 @@ error Must specify RELEASE to build Medley.
 
 
 	/* Set up defaults */
-#define NOETHER 1
 #define UNALIGNED_FETCH_OK
 #define UNSIGNED unsigned long
 #define INT long
@@ -229,7 +228,7 @@ error Must specify RELEASE to build Medley.
 	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
-#undef NOETHER
+#define MAIKO_ENABLE_ETHERNET
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */
 

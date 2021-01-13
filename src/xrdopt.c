@@ -17,11 +17,11 @@
 #include <sys/file.h>
 #include <sys/time.h>
 #include <unistd.h>
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef USE_DLPI
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_DLPI */
-#endif               /* NOETHER */
+#endif               /* MAIKO_ENABLE_ETHERNET */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
@@ -97,13 +97,13 @@ extern char keystring[];
 int Lisp_Border = 2;
 
 /*** Ethernet stuff (JRB) **/
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 extern int ether_fd;
 extern u_char ether_host[6];
 #ifndef USE_DLPI
 extern struct sockaddr_nit snit;
 #endif /* USE_DLPI */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
 /*									*/
@@ -326,8 +326,7 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(keystring, value.addr, (int)value.size);
   }
   if (XrmGetResource(rDB, "ldex.xsync", "Ldex.xsync", str_type, &value) == True) { xsync = True; }
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5;
     (void)strncpy(tmp, value.addr, (int)value.size);
@@ -350,5 +349,5 @@ void read_Xoption(int *argc, char *argv[])
       exit(1);
     }
   }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 } /* end readXoption */

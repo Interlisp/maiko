@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#ifdef NOETHER
+#ifndef MAIKO_ENABLE_ETHERNET
 /* No ethernet, so have a dummy here. */
 unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */
 int main(int argc, char *argv[]) { return (0); }
@@ -247,4 +247,4 @@ int main(int argc, char *argv[]) {
   return (1);
 }
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */

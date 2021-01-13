@@ -894,13 +894,12 @@ int device_before_raid() {
 #endif
 #endif /* SUNDISPLAY */
 
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifdef ETHERINT
   if (ether_fd > 0) /* check ether is used or not */
     int_io_close(ether_fd);
 #endif
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef RS232INT
   int_io_close(RS232C_Fd);
@@ -1084,8 +1083,7 @@ int device_after_raid() {
   truecolor_after_raid();
 #endif /* TRUECOLOR */
 
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
   init_ether();
 #ifdef USE_DLPI
   if (ether_fd > 0)
@@ -1096,7 +1094,7 @@ int device_after_raid() {
       return (-1);
     }
 #endif /* USE_DLPI */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef XWINDOW
 #ifdef I_SETSIG
@@ -1111,10 +1109,9 @@ int device_after_raid() {
   FD_SET(LispWindowFd, &LispReadFds);
 #endif /* SUNDISPLAY */
 
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
   FD_SET(ether_fd, &LispReadFds);
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef XWINDOW
   (currentdsp->device.after_raid)(currentdsp);
