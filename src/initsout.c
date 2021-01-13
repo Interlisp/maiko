@@ -114,10 +114,9 @@ void init_ifpage(int sysout_size) {
     Initialize IFPAGE
    */
   InterfacePage->machinetype = KATANA; /* 3 is katana */
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
   init_ifpage_ether(); /* store ethernet ID in IF page */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
   /*InterfacePage->dl24bitaddressable = (sysout_size == 32? 0xffff : 0);*/
   InterfacePage->dl24bitaddressable = (sysout_size == 8 ? 0 : 0xffff);
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;

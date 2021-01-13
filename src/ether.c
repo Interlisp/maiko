@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/select.h>
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #include <sys/socket.h>
 #include <net/if.h>
 #include <netdb.h>
@@ -60,7 +60,7 @@
 #endif
 #include <nlist.h>
 #endif /* DOS */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #include "commondefs.h"
 #include "lispemul.h"
@@ -96,7 +96,7 @@ int ETHEREventCount = 0;
 #define PacketTypePUP 0x0200
 #define PacketType3TO10 0x0201
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifdef PKTFILTER
 /* the receiving packetfilter structure */
 /* if this is changed, be sure to get the references to it in init_ether
@@ -215,7 +215,7 @@ int ether_out = 0; /* number of packets sent */
 static struct nit_ioc nioc;
 #endif /* PKTFILTER */
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
 /*									*/
@@ -228,7 +228,7 @@ static struct nit_ioc nioc;
 
 LispPTR ether_suspend(LispPTR args[])
 {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifdef PKTFILTER
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
@@ -264,7 +264,7 @@ LispPTR ether_suspend(LispPTR args[])
   }
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (ATOM_T);
 } /* ether_suspend */
@@ -279,7 +279,7 @@ LispPTR ether_suspend(LispPTR args[])
 
 LispPTR ether_resume(LispPTR args[])
 {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
   struct strioctl si;
   if (ether_fd == -1) return (NIL);
 #ifndef PKTFILTER
@@ -311,7 +311,7 @@ LispPTR ether_resume(LispPTR args[])
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (ATOM_T);
 } /* ether_resume */
@@ -364,7 +364,7 @@ LispPTR ether_reset(LispPTR args[])
 LispPTR ether_get(LispPTR args[])
 {
   LispPTR result = NIL;
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
   LispPTR MaxByteCount;
   sigset_t signals;
 
@@ -388,7 +388,7 @@ LispPTR ether_get(LispPTR args[])
   /* enable interrupts */
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (result);
 } /* ether_get */
@@ -401,7 +401,7 @@ LispPTR ether_get(LispPTR args[])
 
 LispPTR ether_send(LispPTR args[])
 {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
   /*
    *	Send a packet.
    */
@@ -454,7 +454,7 @@ LispPTR ether_send(LispPTR args[])
     }
 #endif /* PKTFILTER */
   }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (ATOM_T);
 } /* ether_send */
@@ -475,26 +475,26 @@ LispPTR ether_setfilter(LispPTR args[])
 int estat[3];
 
 int *ether_debug() {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
   estat[0] = 0;
   if (ether_fd < 0) return (NIL);
   printf("fd %d bsize %d buf %X icb %X in %d out %d\n ", ether_fd, ether_bsize, (int)ether_buf,
          IOPage->dlethernet[3], ether_in, ether_out);
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (estat);
 } /* end ether_debug */
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 static struct timeval EtherTimeout = {0, 0};
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 /**********************************************************************
  *	check_ether()
  *	checks an incoming packet
  **********************************************************************/
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
 static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
 #endif
@@ -507,7 +507,7 @@ LispPTR check_ether() {
  *	and signal the icb and return T.
  */
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
   fd_set rfds;
   int result, fromlen;
@@ -601,7 +601,7 @@ LispPTR check_ether() {
   }
 #endif /* PKTFILTER */
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (NIL);
 } /* end check_ether */
@@ -616,7 +616,7 @@ LispPTR check_ether() {
 /************************************************************************/
 
 LispPTR get_packet() {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
   fd_set rfds;
   int result, fromlen;
@@ -692,12 +692,12 @@ LispPTR get_packet() {
     perror("Check_ether read error:\n");
 #endif /* PKTFILTER */
 
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
   return (NIL);
 } /* end get_packet */
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 /**********************************************************************
  *	ether_addr_equal(add1, add2)
  *	checks ethernet addresses equality
@@ -744,7 +744,7 @@ static void init_uid() {
   rid = getuid();
   seteuid(rid);
 }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
 /*		i n i t _ i f p a g e _ e t h e r			*/
@@ -760,13 +760,13 @@ void init_ifpage_ether() {
   InterfacePage->nshost2 = (DLword)((ether_host[4] << 8) + ether_host[5]);
 }
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 /* this needs to be a global so the name can be set by main() in Ctest */
-/* But NOETHER doesn't support NIT, so dyke it out for NOETHER */
+/* But MAIKO_ENABLE_ETHERNET doesn't support NIT, so dyke it out for MAIKO_ENABLE_ETHERNET */
 #ifndef USE_DLPI
 struct sockaddr_nit snit;
 #endif /* USE_DLPI */
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
 /*			    i n i t _ e t h e r				*/
@@ -775,7 +775,7 @@ struct sockaddr_nit snit;
 /*      								*/
 /************************************************************************/
 void init_ether() {
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 
   /* JRB - This code will have to be a bit different for SUN 4.0; the			probable
      differences are in commented-out code below
@@ -1082,7 +1082,7 @@ void init_ether() {
 
     DBPRINT(("init_ether: **** Ethernet starts ****\n"));
   }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 }
 
 #define MASKWORD1 0xffff

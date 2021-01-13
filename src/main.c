@@ -35,11 +35,11 @@
 #define R_OK 04
 #endif /* DOS */
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef USE_DLPI
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_DLPI */
-#endif               /* NOETHER */
+#endif               /* MAIKO_ENABLE_ETHERNET */
 
 #include "emlglob.h"
 #include "address.h"
@@ -219,10 +219,10 @@ LispPTR *LastStackAddr_word;
 LispPTR *NeedHardreturnCleanup_word;
 
 /*** Ethernet stuff (JRB) **/
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
 extern int ether_fd;
 extern u_char ether_host[6];
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 extern struct sockaddr_nit snit;
 
@@ -443,8 +443,7 @@ int main(int argc, char *argv[])
 
     /* Can only do this under SUNOs, for now */
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
-#ifdef NOETHER
-#else
+#ifdef MAIKO_ENABLE_ETHERNET
       int b0, b1, b2, b3, b4, b5;
 #ifdef USE_DLPI
       if (argc > ++i &&
@@ -453,7 +452,7 @@ int main(int argc, char *argv[])
       if (argc > ++i &&
           sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
                  snit.snit_ifname) == 8)
-#endif /* USE_FDLPI */
+#endif /* USE_DLPI */
       {
         ether_host[0] = b0;
         ether_host[1] = b1;
@@ -466,7 +465,7 @@ int main(int argc, char *argv[])
         ether_fd = -1;
         exit(1);
       }
-#endif /* NOETHER */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
     }
     /* diagnostic flag for big vmem write() calls */
@@ -494,9 +493,9 @@ int main(int argc, char *argv[])
 
   FD_ZERO(&LispReadFds);
 
-#ifndef NOETHER
+#ifdef MAIKO_ENABLE_ETHERNET
   init_ether(); /* modified by kiuchi Nov. 4 */
-#endif          /* NOETHER */
+#endif          /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef FORKCOMM
   /* Fork Unix was called in kickstarter; if we forked, look up the */
