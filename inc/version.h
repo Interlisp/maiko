@@ -208,7 +208,6 @@ error Must specify RELEASE to build Medley.
 	/* Set up defaults */
 #define NOETHER 1
 #define UNALIGNED_FETCH_OK
-#define HAS_GETHOSTID
 #define UNSIGNED unsigned long
 #define INT long
 
@@ -264,7 +263,6 @@ typedef unsigned char u_char;
 typedef unsigned long u_int;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
-#undef HAS_GETHOSTID
 #define USHORT unsigned
 #else
 #define USHORT unsigned short

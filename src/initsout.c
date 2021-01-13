@@ -139,10 +139,10 @@ void init_ifpage(int sysout_size) {
     *LASTVMEMFILEPAGE_word = InterfacePage->dllastvmempage;
 #endif /* BIGVM */
 
-/* unfortunately, Lisp only looks at a 16 bit serial number */
-#ifdef HAS_GETHOSTID
+  /* unfortunately, Lisp only looks at a 16 bit serial number */
+#ifndef DOS
   InterfacePage->serialnumber = 0xffff & gethostid();
-#endif /* HAS_GETHOSTID */
+#endif /* DOS */
 
 /* get user name and stuff into vmem; this is the VMEM buffer;
 This is a BCPL string -- it starts with a length count. C strings
