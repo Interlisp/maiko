@@ -11,7 +11,7 @@
 #include "version.h"
 
 /***************************************************/
-/* NS <-> EUC character code converstion program   */
+/* NS <-> EUC character code conversion program    */
 /* file name : nstables.c                          */
 /* function  : ns_euc --- NS to EUC conversion     */
 /*           : euc_ns --- EUC to NS                */

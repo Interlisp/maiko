@@ -463,7 +463,7 @@ static void int_timer_init()
   _dpmi_lockregion((void *)prev_int_1c, sizeof(prev_int_1c));
 
   /* Set up the DOS time handler. */
-  prev_int_1c = _dos_getvect(0x1c); /* get addr of currnt 1c hndlr, */
+  prev_int_1c = _dos_getvect(0x1c); /* get addr of current 1c hndlr, */
                                     /* if any*/
   _dos_setvect(0x1c, DOStimer);     /* hook our int handler to timer int */
 
@@ -858,7 +858,7 @@ void DOStimer() {
   Irq_Stk_End = 0;
   /*   _dos_setvect(0x1c, prev_int_1c);
    } else if (tick_count <= 0) { */
-  /* I'm dead, uninstal me */
+  /* I'm dead, uninstall me */
   /*   _dos_setvect(0x1c, prev_int_1c);
      tick_count = 0;
    } */

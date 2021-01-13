@@ -311,7 +311,7 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int
 
   /* This point corresponds with LP in Lisp source */
 
-  /* following for loop never exits until it finds new hash enty or same atom */
+  /* following for loop never exits until it finds new hash entry or same atom */
   for (reprobe = Atom_reprobe(hash, first_char); (hash_entry = GETWORD(AtomHT + hash)) != 0;
        hash = ((hash + reprobe) & 0xffff)) {
     atom_index = hash_entry - 1;

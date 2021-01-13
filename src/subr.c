@@ -299,7 +299,7 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
     case sb_COLOR_BASE:
       POP_SUBR_ARGS;
-      /* retun DLword offsetbetween LISPBASE and Lisp_world */
+      /* return DLword offset between LISPBASE and Lisp_world */
       TopOfStack = S_POSITIVE | (((int)Lisp_world >> 1) & 0xffff);
       break;
 

@@ -129,7 +129,7 @@
 	/********************************************************/
 #ifdef BIGVM  
 struct   hashentry
-  { /* GC hastable entry */
+  { /* GC hashtable entry */
     unsigned short count        :15;
     unsigned short stackref     :1;
     unsigned short segnum       :15;
@@ -160,7 +160,7 @@ struct  htoverflow
   };
 #else
 struct   hashentry
-  { /* GC hastable entry */
+  { /* GC hashtable entry */
     USHORT count        :6;
     USHORT stackref     :1;
     USHORT segnum       :8;

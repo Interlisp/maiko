@@ -97,7 +97,7 @@ jmp_buf BT_jumpbuf;
         Desc :		returns atom index of ivar on the given
                         FX.
                         If ivar is localvars then set *localivar
-                        1 otherwize 0.
+                        1 otherwise 0.
 
         Changed		25 Aug 1987	NMitani
 

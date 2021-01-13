@@ -59,9 +59,9 @@ extern DLword *DISP_MAX_Address;
 /************************************************************************/
 /* Osamu '90/02/08
  * This definition is moved from initdsp.c
- * Change into macro for efficiency.
- * And also DISP_MAX_Address is changed as variable
- * to avoid same calicuration every time it uses.
+ * Changed into a macro for efficiency.
+ * Also DISP_MAX_Address is changed to a variable
+ * to avoid doing the same calculation every time it is used.
  *********************************************************************/
 extern DLword *DisplayRegion68k;
 

@@ -34,7 +34,7 @@ void cause_interruptcall(register unsigned int atom_index)
   register struct definition_cell *defcell68k; /* Definition Cell PTR */
   register short pv_num;                       /* scratch for pv */
   register struct fnhead *tmp_fn;
-  int rest; /* use for arignments */
+  int rest; /* use for alignments */
 
   CURRENTFX->nopush = T;
   CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR) + 4;

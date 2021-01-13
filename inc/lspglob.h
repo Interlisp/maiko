@@ -116,13 +116,13 @@ extern LispPTR *System_Buffer_List_word;
 
 /*** The end of the addition of cache values for reclaimer by Tomtom ***/
 
-/*** cashe valuses for top level reclaimer Tomtom 15-Oct-1987 ***/
+/*** cache values for top level reclaimer Tomtom 15-Oct-1987 ***/
 extern LispPTR *GcMess_word;
 extern LispPTR *ReclaimMin_word;
 extern LispPTR *GcTime1_word;
 extern LispPTR *GcTime2_word;
 extern LispPTR *MaxTypeNumber_word;
-/*** The end of the addition of cashe values for the top level reclaimer ***/
+/*** The end of the addition of cache values for the top level reclaimer ***/
 
 /*** The addition cache for closure-caching ***/
 

@@ -32,7 +32,7 @@
 #define FAILURE2 -2
 
 /* ===========================================================================
-        IMOD64BIT computs (IMOD X Y).
+        IMOD64BIT computes (IMOD X Y).
         X is a 64-bit integer; x1 is the higher 32-bit while x0 is the lower 32-bit.
         Y is  less than 65535.
         (((ULONG_MAX % y) + 1 ) % y) is equivalent to (expt 2 32) % y
@@ -56,7 +56,7 @@ unsigned long make_verification(long unsigned int x, long unsigned int y) {
 }
 
 /* ============================================================
-        DATE_INTEGER16 takes a date string  and return an intger
+        DATE_INTEGER16 takes a date string  and return an integer
    =============================================================*/
 
 unsigned long date_integer16(const char *date) {

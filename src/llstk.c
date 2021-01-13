@@ -113,7 +113,7 @@ tryfsb:
     } else if (StkOffset_from_68K(new68k) == InterfacePage->endofstack) {
       if ((StkOffset_from_68K(new68k) > LOLOC(*GuardStackAddr_word)) &&
           ((*STACKOVERFLOW_word) == NIL))
-        at_eos = T; /* search FSB in earler STACK area by freestackblock */
+        at_eos = T; /* search FSB in earlier STACK area by freestackblock */
       else if (extendstack() != NIL) {
         new68k = (DLword *)oldfx68k;
         goto out;
@@ -230,8 +230,8 @@ int do_stackoverflow(int incallp) {
 #endif
 
   /* Don't care PC,FuncObj, */
-  /*if incall flag ON ,Don't care IVar
-       ,became resudual and it is pointed by copied FX's BLINK*/
+  /* if incall flag ON, don't care that IVar
+       became residual, and it is pointed to by copied FX's BLINK */
   oldPVar = PVar;
 
   if (*NeedHardreturnCleanup_word) { warn("HardreturnCleanup in do_stackoverflow"); }

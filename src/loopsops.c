@@ -349,7 +349,7 @@ LispPTR lcfuncall(register unsigned int atom_index, register int argnum, registe
   register struct definition_cell *defcell68k; /* Definition Cell PTR */
   register short pv_num;                       /* scratch for pv */
   register struct fnhead *tmp_fn;
-  int rest; /* use for arignments */
+  int rest; /* use for alignments */
 
   if (atom_index == 0xffffffff) error("Loops punt to nonexistent fn");
 

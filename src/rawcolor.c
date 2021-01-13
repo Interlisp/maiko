@@ -235,7 +235,7 @@ C_slowbltchar(LispPTR *args)
         src_y = (DLword)bottom;
       }
 
-      /* forground and bacground color */
+      /* foreground and background color */
 
       if (n_dd->ddcolor == NIL_PTR) {
         forecolor = PSEUDO_BLACK;
@@ -348,7 +348,7 @@ void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *d
   dest_fragtop = 0;
   dest_fragbottom = dest_frag->bmheight;
 
-  /* search fragment of bitmaps including the desitnation top. */
+  /* search fragment of bitmaps including the destination top. */
   while (dest_fragbottom <= dYOffset) {
     GetNewFragment(dest_bmlist, dest_frag, BITMAP *);
     if (dest_frag == (BITMAP *)Addr68k_from_LADDR(NIL_PTR)) return;
@@ -362,7 +362,7 @@ void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *d
 loop:
   /* height of lineBlt8 */
   if (dest_fragbottom > dest_bottom) {
-    /* this fragment inludes dest bottom. */
+    /* this fragment includes dest bottom. */
     dest_h = dest_bottom - (dest_fragtop + dest_yoffset);
   } else {
     /* remaining fragments include dest bottom. */

@@ -88,7 +88,7 @@ unsigned long VGA_colornum(DspInterface dsp)
 unsigned long VGA_possiblecolors(DspInterface dsp)
 { return (dsp->colors); }
 
-void VGA_mono_drawline(DspInterface dsp, unsigned long startX, unsiged long startY, unsigned long width, unsigned long height,
+void VGA_mono_drawline(DspInterface dsp, unsigned long startX, unsigned long startY, unsigned long width, unsigned long height,
 		       int function, unsigned long color, unsigned long thickness, int butt,
 		       unsigned long clipX, unsigned long clipY, unsigned long clipWidth, unsigned long clipHeight,
 		       LispPTR *dashing)
@@ -97,7 +97,7 @@ void VGA_mono_drawline(DspInterface dsp, unsigned long startX, unsiged long star
   _lineto_w(width, height);
 }
 
-void VGA_color_drawline(DspInterface dsp, unsigned long startX, unsiged long startY, unsigned long width, unsigned long height,
+void VGA_color_drawline(DspInterface dsp, unsigned long startX, unsigned long startY, unsigned long width, unsigned long height,
 		       int function, unsigned long color, unsigned long thickness, int butt,
 		       unsigned long clipX, unsigned long clipY, unsigned long clipWidth, unsigned long clipHeight,
 		       LispPTR *dashing)

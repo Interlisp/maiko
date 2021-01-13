@@ -158,7 +158,7 @@ struct conspage *next_conspage(void) {
       page2 = (struct conspage *)((DLword *)page1 + DLWORDSPER_PAGE);
 
       /* XXX: why is the link for page2's next here?
-       * when it was previously commented as "Doesn't exst next page"
+       * when it was previously commented as "Doesn't exist next page"
        */
       init_conspage(page2, ListpDTD->dtd_nextpage);
       init_conspage(page1, LPAGE_from_68k(page2));

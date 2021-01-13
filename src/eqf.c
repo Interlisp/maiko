@@ -39,9 +39,9 @@ op 0377  N_OP_eqq	CL:=
 ***********************************************************/
 /* differences between these operations:
 
-EQ is a strict pointer comparision, equivalent to C's ==
+EQ is a strict pointer comparison, equivalent to C's ==
 
-EQL (common lisp) does no conversions before comparision, but will
+EQL (common lisp) does no conversions before comparison, but will
         compare equal FIXPs or equal FLOATPs.
 
 CL:=  will do a numeric comparison
@@ -51,7 +51,7 @@ CL:=  will do a numeric comparison
 IL:EQUAL  is a recursive comparison which will compare 1 = 1.0
           it work like code with CL:= for the most part
 
-CL:EQUAL is a recursive comparision which uses EQL at the leaves
+CL:EQUAL is a recursive comparison which uses EQL at the leaves
 
 Interlisp operations IEQP, FEQP have no opcodes, although there
 is an unboxed FEQP.

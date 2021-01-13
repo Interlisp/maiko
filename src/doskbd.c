@@ -307,7 +307,7 @@ void EnterDosKbd(KbdInterface kbd)
     /* Don't hook in our handler if the user flagged he wants to run */
     /* without a kbd. */
     if (!nokbdflag) {
-      kbd->prev_handler = _dos_getvect(0x09); /* get addr of currnt 09 hndlr */
+      kbd->prev_handler = _dos_getvect(0x09); /* get addr of current 09 hndlr */
       _dos_setvect(0x09, kbd->device_event);  /* hook our int handler to interrupt  */
     }
   }

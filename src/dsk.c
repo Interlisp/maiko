@@ -2802,7 +2802,7 @@ static int make_directory(register char *dir)
  *
  * Value:	N/A
  *
- * Side Effect:	mentry and max_no will be replaced with the highset versioned entry
+ * Side Effect:	mentry and max_no will be replaced with the highest versioned entry
  *		and highest version number respectively.
  *
  * Description:

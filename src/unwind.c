@@ -100,7 +100,7 @@ LispPTR *N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int
 
         find the blip down in the stack.  Similar to the LISP
         SI::UNWIND-TO-BLIP, except the target is returned instead
-        of doing the unwinding.  Note that the unwider parameter
+        of doing the unwinding.  Note that the unwinder parameter
         must already be properly set by the caller (i.e. to the
         alink if necessary).
 */

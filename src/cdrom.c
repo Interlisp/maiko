@@ -179,7 +179,7 @@ static int cdrom_mikanat(LispPTR *args)
         args[1] pointer to a search key
         args[2] pointer to buffer
         args[3] size of searched data
-        args[4] nuber of items matched to the search key
+        args[4] number of items matched to the search key
 */
 {
   char key[65];

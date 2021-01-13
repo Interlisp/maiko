@@ -630,9 +630,9 @@ void start_lisp() {
 
   FastRetCALL;
 
-  /* JRB - The interrupt intitialization must be done right before */
+  /* JRB - The interrupt initialization must be done right before  */
   /*       entering the bytecode dispatch loop; interrupts get     */
-  /*       unblocked here 					     */
+  /*       unblocked here 					   */
   int_init();
 #ifdef DOS
   _dpmi_lockregion((void *)&dispatch, 32768);
