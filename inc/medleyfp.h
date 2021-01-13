@@ -27,7 +27,8 @@
     --------------------------------------------------  */
 
 #ifdef FLTINT
-volatile extern int  FP_error;
+#include <signal.h>
+extern volatile sig_atomic_t FP_error;
 
 /*  Note that a compiler may very likely move code around the arithmetic
     operation, causing this test (set by an interrupt handler) to be

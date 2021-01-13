@@ -644,7 +644,7 @@ void int_unblock() {
 /************************************************************************/
 
 /* The global used to signal floating-point errors */
-volatile int FP_error = 0;
+volatile sig_atomic_t FP_error = 0;
 
 void int_fp_service(int sig, siginfo_t *info, void *context)
 {
