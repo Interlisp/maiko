@@ -42,7 +42,7 @@
 
 #ifdef DEBUG
 /* required by DBPRINT from dbprint.h */
-extern int flushing = 0;
+int flushing = 0;
 #endif
 
 /* The following globals are used to communicate between Unix
