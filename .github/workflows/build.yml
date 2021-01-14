@@ -23,6 +23,7 @@ jobs:
 
   build-pi:
     runs-on: [self-hosted, linux, ARM]
+    if: ${{ github.repository == 'Interlisp/maiko' }}
     steps:
       - uses: actions/checkout@v2
       - name: Build
