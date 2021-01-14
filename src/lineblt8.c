@@ -51,9 +51,9 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 **************************************************************/
 /* srcw points DLword which contains the nibble processed now */
 /* offset indicates MSB in the nibble */
-/* width:before copy,make sure the nibble is inside source bitmap */
-/* width:after copy,decremented by BITSPERNIBBLE.
-       therefore,width indictes the rest bits in source bitmap */
+/* width: before copy, make sure the nibble is inside source bitmap */
+/* width: after copy, decremented by BITSPERNIBBLE.
+       therefore, width indicates the rest bits in source bitmap */
 
 #define LineBLT8(srcWptr, offset, width, dstLptr, op1, op2)                                \
   {                                                                                        \

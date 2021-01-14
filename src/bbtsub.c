@@ -1919,7 +1919,7 @@ void ccfuncall(register unsigned int atom_index, register int argnum, register i
   register struct definition_cell *defcell68k; /* Definition Cell PTR */
   register short pv_num;                       /* scratch for pv */
   register struct fnhead *tmp_fn;
-  int rest; /* use for arignments */
+  int rest; /* use for alignments */
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;

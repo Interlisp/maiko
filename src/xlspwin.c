@@ -381,7 +381,7 @@ do_ring:
   r = RING_READ(CTopKeyevent);
   w = RING_WRITE(CTopKeyevent);
 
-  if (r == w) /* event queqe FULL */
+  if (r == w) /* event queue FULL */
     goto KBnext;
 
   kbevent = (KBEVENT *)(CTopKeyevent + w);

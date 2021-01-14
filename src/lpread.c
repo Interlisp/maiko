@@ -31,7 +31,7 @@
   of all columns in the constraints and in the objectfunction
   Hash_tab : contains all columnnames on the first level of the structure
   the row information is kept under each column structure
-  in a linked list (also the objext funtion is in this structure)
+  in a linked list (also the objext function is in this structure)
   Bound information is also stored under under the column name
   First_rside : points to a linked list containing all relational operators
   and the righthandside values of the constraints

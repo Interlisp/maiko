@@ -230,7 +230,7 @@ int generic_X_keymap[] = {
     0, 132, XK_Right,
     0, 87, XK_Right,
 
-    0, 93, XK_Multi_key,   /* Expand, suyn type-4 */
+    0, 93, XK_Multi_key,   /* Expand, Sun type-4 */
     0, 93, XK_Alt_R,       /* Expand, RH Alt key  */
     0, 93, XK_Mode_switch, /* Expand, RH Alt key on PC kbd */
     /* No key defs may come here! */

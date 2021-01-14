@@ -60,7 +60,7 @@ void ufn(DLword bytecode)
   register UFN *entry68k;
   register struct fnhead *tmp_fn;
   register unsigned int arg_num; /* Num of args */
-  register int rest;             /* use for arignments */
+  register int rest;             /* use for alignments */
 
 #ifdef TRACE
   printPC();

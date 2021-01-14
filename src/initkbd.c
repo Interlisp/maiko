@@ -278,7 +278,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 #ifdef SUNDISPLAY
   keytrans = TR_UNTRANS_EVENT; /* keyboard does not encode key */
   if (ioctl(LispKbdFd, KIOCTRANS, &keytrans) == -1) {
-    fprintf(stderr, "Error at ioctl errnoo =%d\n", errno);
+    fprintf(stderr, "Error at ioctl errno =%d\n", errno);
     exit(-1);
   }
   close(LispKbdFd);
@@ -324,7 +324,7 @@ void device_before_exit() {
 
   keytrans = TR_EVENT; /* keyboard encodes key */
   if (ioctl(LispKbdFd, KIOCTRANS, &keytrans) == -1) {
-    fprintf(stderr, "Error at ioctl errnoo =%d\n", errno);
+    fprintf(stderr, "Error at ioctl errno =%d\n", errno);
     exit(-1);
   }
   close(LispKbdFd);
@@ -446,7 +446,7 @@ static int find_unused_key(KeySym *map, int minkey, int codecount, int symsperco
 
 static u_char *make_X_keymap() {
   u_char *table = (u_char *)malloc(256); /* the final result table */
-  int lisp_codes_used[256];              /* Keep track of the Lisk key #s we've used */
+  int lisp_codes_used[256];              /* Keep track of the Lisp key #s we've used */
   int last_KEYSYM = -1;
   int sym_used = 0;
   int *key_sym_pairs = generic_X_keymap;

@@ -318,7 +318,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 /* DOS version of LispVersionToUnixVersion */
 /* * * * * This is done this way because DOS can't handle the non-DOS version -- */
-/* * * * * it gived "Too many characters in a character constant" errors!        */
+/* * * * * it gave "Too many characters in a character constant" errors!        */
 #include "lispver1.h"
 #else /* DOS */
 /* NON-DOS version of the macro LispVersionToUnixVersion */

@@ -74,7 +74,7 @@ void checkfor_storagefull(register unsigned int npages) {
       case SFS_NOTSWITCHABLE:
       case SFS_FULLYSWITCHED:
         if (pagesleft < 0) {
-          while (T) { error("MP9320:Storage completly full"); }
+          while (T) { error("MP9320:Storage completely full"); }
         } else if ((pagesleft <= GUARD1STORAGEFULL) && (*STORAGEFULL_word != NIL)) {
           *STORAGEFULL_word = S_POSITIVE;
           error(

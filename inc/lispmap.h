@@ -66,7 +66,7 @@
 #define STK_SIZE	0x10000
 
 /* for PLISTSPACE */
-#define PLIS_HI			2 /* place holder, really -- keep the olde value, even though it's inconsistent with the OFFSET, because it's known by LISP, and is used as a dispatch constant. */
+#define PLIS_HI			2 /* place holder, really -- keep the old value, even though it's inconsistent with the OFFSET, because it's known by LISP, and is used as a dispatch constant. */
 #define PLIS_OFFSET 0x30000
 #define PLIS_SIZE 0x10
 
@@ -210,7 +210,7 @@
 #define PLIS_OFFSET	0x20000
 #define PLIS_SIZE	0x20000
 #else
-#define PLIS_HI			2 /* place holder, really -- keep the olde value, even though it's inconsistent with the OFFSET, because it's known by LISP, and is used as a dispatch constant. */
+#define PLIS_HI			2 /* place holder, really -- keep the old value, even though it's inconsistent with the OFFSET, because it's known by LISP, and is used as a dispatch constant. */
 #define PLIS_OFFSET 0x30000
 #define PLIS_SIZE 0x10
 #endif

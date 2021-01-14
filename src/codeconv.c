@@ -52,12 +52,12 @@ int FatcharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
     ns += *ns_ptr++;
     euc = ns_euc(ns);
     if (euc / TABLESIZE) {
-      /* 16 bit charactor */
+      /* 16 bit character */
       *euc_ptr++ = euc / TABLESIZE;
       *euc_ptr++ = euc % TABLESIZE;
       euc_len += 2;
     } else {
-      /* ASCII charactor */
+      /* ASCII character */
       *euc_ptr++ = euc % TABLESIZE;
       ++euc_len;
     }
@@ -95,12 +95,12 @@ int ThincharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
     ns = *ns_ptr++;
     euc = ns_euc(ns);
     if (euc / TABLESIZE) {
-      /* 16 bit charactor */
+      /* 16 bit character */
       *euc_ptr++ = euc / TABLESIZE;
       *euc_ptr++ = euc % TABLESIZE;
       euc_len += 2;
     } else {
-      /* ASCII charactor */
+      /* ASCII character */
       *euc_ptr++ = euc % TABLESIZE;
       ++euc_len;
     }
@@ -133,7 +133,7 @@ int EUCtoFatcharNS(unsigned char *euc_ptr, unsigned char *ns_ptr) {
   i = 0;
   while (euc = *euc_ptr++) {
     if (euc & EUCMASK) {
-      /* 16 bit charactor */
+      /* 16 bit character */
       euc *= TABLESIZE;
       euc += *euc_ptr++;
     }
@@ -168,12 +168,12 @@ int EUCstrlen(char *euc_ptr) {
 
   while (*euc_ptr)
     if (*euc_ptr & EUCMASK) {
-      /* 16 bit charactor */
+      /* 16 bit character */
       len += 2;
       *euc_ptr++;
       *euc_ptr++;
     } else {
-      /* ASCII charactor */
+      /* ASCII character */
       len++;
       *euc_ptr++;
     }

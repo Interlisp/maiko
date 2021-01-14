@@ -353,7 +353,7 @@ LispPTR flush_pty() {
 #endif
     if (size == -1) return (NIL);
 
-    /* Check free space to avoid print System Error Mesage
+    /* Check free space to avoid printing System Error Message
        to /dev/console */
     TIMEOUT(rval = statvfs("/tmp", &vfsbuf));
     if (rval != 0) return (NIL);

@@ -57,7 +57,7 @@ int keytester(char *keystring) {
   unsigned long hashedword;
   int rc; /* return code */
 
-  /* check the keys and convert them from hexdecimal strings to numbers  */
+  /* check the keys and convert them from hexadecimal strings to numbers  */
   if (keystring == NULL) return FAILURE3;
   if (read_hex(keystring, keyarray) == FAILURE3) return FAILURE3;
 

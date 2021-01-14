@@ -73,7 +73,7 @@ loop:
 
 #include "locfile.h" /* for LispStringToCString. */
 
-/* JDS fixing protoypes char *malloc(size_t); */
+/* JDS fixing prototypes char *malloc(size_t); */
 
 int NPROCS = 100;
 

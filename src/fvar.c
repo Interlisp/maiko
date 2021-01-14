@@ -281,7 +281,7 @@ void nfvlookup(struct frameex1 *apframe1, register DLword *achain,
 /* pointer to current frame extension */
 /* pointer to 1st word of the searching
    FVAR slot in CurrentFrameExtension */
-/* pointer to current function heaer */
+/* pointer to current function header */
 {
   register DLword *pfh;  /* pointer to current function header */
   register int paoffset; /* 2word offset in PVAR AREA */

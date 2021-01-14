@@ -309,7 +309,7 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
     /*	MAKEFREEBLOCK(stackptr, (DLword *)stackptr-nextblock); */
   }
   if (returner)
-    returner->fast = 0; /* since we've destroyed congituity */
+    returner->fast = 0; /* since we've destroyed contiguity */
                         /* in the stack, but that only
                            matters if there's a return. */
 }

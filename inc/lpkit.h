@@ -275,7 +275,7 @@ typedef struct _lprec
   int       eta_size;           /* The number of Eta columns */
   int       num_inv;            /* The number of real pivots */
   int       max_num_inv;        /* ## The number of real pivots between 
-				   reinvertions */
+				   reinversions */
   REAL      *eta_value;         /* eta_alloc :The Structure containing the
 				   values of Eta */
   int       *eta_row_nr;         /*  "     "  :The Structure containing the Row
@@ -326,7 +326,7 @@ typedef struct _lprec
   short     *lag_con_type;      /* NumLagrange :TRUE if constraint type EQ */
   REAL      lag_bound;		/* the lagrangian lower bound */
 
-  short     valid;		/* Has this lp pased the 'test' */
+  short     valid;		/* Has this lp passed the 'test' */
   REAL      infinite;           /* ## numerical stuff */
   REAL      epsilon;            /* ## */
   REAL      epsb;               /* ## */

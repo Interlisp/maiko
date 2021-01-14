@@ -779,9 +779,9 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
   *dp = '\0';
   if (!newdirflg && !genp) {
     /*
-     * If the last chracter in dst is a period, it have to be handled
+     * If the last character in dst is a period, it has to be handled
      * specially, because it might be used to specify that src has no
-     * extension field.  This case can be distinguish by examining the
+     * extension field.  This case can be distinguished by examining the
      * character just before the period.
      * If the specified pathname is one like "~>..", the last meta character
      * matches this case.  Thus we check newdirflg first so as not to be

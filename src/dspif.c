@@ -69,7 +69,7 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
     exit(-1);
   }
 #endif /* DOS | XWINDOW */
-} /* Now we know the Maxi-MooM capabillities of the hardware. */
+} /* Now we know the maximum capabilities of the hardware. */
 
 #ifdef DOS
 VESA_p() {

@@ -356,7 +356,7 @@ LispPTR vmem_save(char *sysout_file_name)
   vmemsize = InterfacePage->nactivepages;
 
   /*	[HH:6-Jan-89]
-          Sequnce of save image
+          Sequence of save image
           (1) Sysout image is saved to a temporary file, tempname.
           (2) if a specified file, sysout_file_name, is exist, the file is removed.
           (3) the temporary file is renamed to the specified file.

@@ -573,7 +573,7 @@ LispPTR check_ether() {
 
   if (ether_fd >= 0 && ether_bsize > 0
       /*   && select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0
-       *     -- [on '90/02/14: getsignsldata() chech this] */
+       *     -- [on '90/02/14: getsignsldata() check this] */
       && (FD_ISSET(ether_fd, &rfds))) {
     data.maxlen = sizeof(nit_buf);
     data.len = 0;

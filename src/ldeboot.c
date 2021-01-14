@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 
 #ifdef XWINDOW
   /* If X-Server exists on the host specified in -display option
-     or environment variable DISPLAY, ldex is started. Othewise
+     or environment variable DISPLAY, ldex is started. Otherwise
      ldesingle or ldemulti.
      */
   {

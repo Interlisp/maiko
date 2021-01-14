@@ -278,7 +278,7 @@ int type_num(LispPTR lispptr) {
 
 void dump_conspage(struct conspage *base, int linking)
 /* target conspage address */
-/* look for chaiing conspage ? T/NIL */
+/* look for chaining conspage ? T/NIL */
 {
   ConsCell *cell;
   int i;

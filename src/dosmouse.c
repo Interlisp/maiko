@@ -206,7 +206,7 @@ void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp)
 /*            d o s _ c u r s o r _ i n v i s s i b l e        */
 /* Since we only blit the cursor to the VESA/VGA displaybuffer */
 /* and not to the emulator displaybuffer we can make the cursor*/
-/* invisible just by updateing the area under the cursor!     */
+/* invisible just by updating the area under the cursor!       */
 /***************************************************************/
 void dos_cursor_invisible(DspInterface dsp, IOPAGE *iop)
 
@@ -459,10 +459,10 @@ void ButtonTimer() {
 
 /***************************************************************/
 /*                 T w o B u t t o n H a n d l e r             */
-/* This function is ther interrupt handler for the mouse.      */
+/* This function is the interrupt handler for the mouse.       */
 /* This function sets the state of the mouse structure and     */
-/* signals the dispatch loop to care of the matter. This       */
-/* akward solution is due to the severe braindamage in DOS.    */
+/* signals the dispatch loop to take care of the matter. This  */
+/* awkward solution is due to the severe braindamage in DOS.   */
 /***************************************************************/
 void TwoButtonHandler(void) {
   _XSTACK *stk_ptr;
@@ -584,10 +584,10 @@ void TwoButtonHandler(void) {
 
 /***************************************************************/
 /*              T h r e e B u t t o n H a n d l e r            */
-/* This function is ther interrupt handler for the mouse.      */
+/* This function is the interrupt handler for the mouse.       */
 /* This function sets the state of the mouse structure and     */
-/* signals the dispatch loop to care of the matter. This       */
-/* akward solution is due to the severe braindamage in DOS.    */
+/* signals the dispatch loop to take care of the matter. This  */
+/* awkward solution is due to the severe braindamage in DOS.   */
 /***************************************************************/
 void ThreeButtonHandler()
 

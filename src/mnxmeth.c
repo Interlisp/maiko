@@ -169,8 +169,8 @@ int gettitleheight(LispPTR medleywin)
 
 /**************************************************************/
 /* setlineattributes                                          */
-/* This function attempts to syncronize the line data in lisp */
-/* and X.                                                     */
+/* This function attempts to synchronize the line data in     */
+/* Lisp and X.                                                */
 /**************************************************************/
 void setlineattributes(Display *display, DspInterface dspif, WindowInterface wif, DISPLAYDATA *dd,
 		       LispPTR mwidth, LispPTR mdash)
@@ -606,7 +606,7 @@ int srcx, srcy, dstx, dsty, width, height, operation;
 /* Copy a drawable to a Medley bitmap. All coordinates are in X style.  */
 /* (i.e. y-coordinate assumed to be transformed)                        */
 /* Since XGetSubImage will generate an error if the drawable is outside */
-/* the rootwindow we have to get the geometry and clipp it with the     */
+/* the rootwindow we have to get the geometry and clip it with the      */
 /* geometry of the root window. (Urk!)                                  */
 /* This offcause means that anything outside the screen will have to be */
 /* ignored. (This has to be fixed. This sucks.).                        */
@@ -861,7 +861,7 @@ WindowInterface removewif(chain, wif) WindowInterface chain, wif;
 
 /************************************************************************/
 /* bubblewif                                                            */
-/* Make shure that the wif is the first wif in the chain of wifs on the */
+/* Make sure that the wif is the first wif in the chain of wifs on the  */
 /* dspif. If not, make it so.                                           */
 /* Return wif if we find wif. Return NIL if we don't find wif.          */
 /*                                                                      */
@@ -1497,13 +1497,13 @@ MNXdrawpoint(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 }
 
 /**************************************************************/
-/* MNXdrawline                                                  */
+/* MNXdrawline                                                */
 /* color not yet implemented                                  */
 /* Medleys Drawline can't handle dashing.                     */
-/* Thick lines in Medley are handled as parallellograms       */
+/* Thick lines in Medley are handled as parallelograms        */
 /* instead of rectangles.                                     */
-/* Remember that this method has an OPERATION arument in Lisp */
-/* so we have to fix that there.                              */
+/* Remember that this method has an OPERATION argument in     */
+/* Lisp so we have to fix that there.                         */
 /**************************************************************/
 MNXdrawline(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
                                  /* args[1] = x1 */
@@ -2449,7 +2449,7 @@ MNXgetwindowprop(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 {}
 
 MNXputwindowprop(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                      /* args[1] = Lispint to despatch on. */
+                                      /* args[1] = Lispint to dispatch on. */
                                       /* args[n] = args for the method. */
 {
   int method;
