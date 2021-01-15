@@ -111,13 +111,10 @@ static unsigned short sxhash(LispPTR obj) {
   }
 }
 
-#ifndef SUN3_OS3_OR_OS4_IL
 /* Rotates the 16-bit work to the left 7 bits (or to the right 9 bits) */
 static unsigned short sxhash_rotate(short unsigned int value) {
   return ((value << 7) | ((value >> 9) & 0x7f));
 }
-
-#endif
 
 static unsigned short sxhash_string(OneDArray *obj) {
   unsigned len, offset;
