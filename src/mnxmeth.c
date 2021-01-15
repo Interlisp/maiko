@@ -923,8 +923,8 @@ MNXdestroyW(LispArgs args)
 }
 
 /************************************************************************/
-/* MNXdestroyDisplay                                                      */
-/* Closeing down the screen means that we have to invalidate all window */
+/* MNXdestroyDisplay                                                    */
+/* Closing down the screen means that we have to invalidate all window  */
 /* handles. When a window is opened (in Medley) we test the windows     */
 /* handle. If it is NIL we have to reexternalize it before we open it.  */
 /*                                                                      */
@@ -1263,7 +1263,7 @@ showtitle(win) LispPTR win;
   bitmap = (BITMAP *)Cptr(dd->ddpilotbbt);
   MakeScratchImageFromBM(dspif, bitmap);
 
-  /* Clear the window of prewious gunk. */
+  /* Clear the window of previous gunk. */
   XClearWindow(dspif->handle, wif->blackframe);
 
   /* Start text flush to the border */

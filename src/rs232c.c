@@ -566,7 +566,7 @@ void check_params(int fd)
   check_parity(tos.c_cflag);
   check_oflag(tos.c_oflag);
 
-  check_cannon(&tos);
+  check_canon(&tos);
 }
 
 void check_brate(u_long cf)
@@ -589,7 +589,7 @@ void check_brate(u_long cf)
     case B9600: b = 9600; break;
     case B19200: b = 19200; break;
     case B38400: b = 384000; break;
-    default: printf("Illeagal.\n");
+    default: printf("Illegal.\n");
   }
   printf("%d bps.\n", b);
 }
@@ -603,7 +603,7 @@ void check_csize(u_long cf)
     case CS6: s = 6; break;
     case CS7: s = 7; break;
     case CS8: s = 8; break;
-    default: printf("Illeagal.\n");
+    default: printf("Illegal.\n");
   }
   printf("%d chars.\n", s);
 }
@@ -631,16 +631,16 @@ void check_parity(u_long cf)
   }
 }
 
-void check_cannon(struct termios *tos)
+void check_canon(struct termios *tos)
 {
   u_long lf;
 
   lf = tos->c_lflag;
 
   if (lf & ICANON) {
-    printf("Cannonical.\n");
+    printf("Canonical.\n");
   } else {
-    printf("Non-Cannonical.\n");
+    printf("Non-Canonical.\n");
     printf("MIN : %d  ,  TIME : %d\n", (tos->c_cc)[VMIN], (tos->c_cc)[VTIME]);
   }
 }

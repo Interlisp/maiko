@@ -221,19 +221,19 @@ Dosclearbanks ENDP
 ;;	 D O S C u r s o r V i s s i b l e
 ;; arg1: dsp	(pointer to dsp struct)
 ;; arg2: iop	(pointer to IOPAGE struct
-;; Medley's cursor has no meaningfull mask. The mask
+;; Medley's cursor has no meaningful mask. The mask
 ;;  is just the invers of the map (sigh...). The function
 ;;  f(bg, map, curs) = bg*mask + (not mask)*curs thus
 ;;  collapses to bg*(not curs) + curs. Since the medley
-;;  bitmaps have the invers meaning of the vesa bitmaps
+;;  bitmaps have the inverse meaning of the vesa bitmaps
 ;;  (ie. they are pre inverted for your convenience!)
 ;;  the expression turns out to be:
 ;;  bg*curs + (not curs)
 ;;
 ;; The general idea here is that we blit the cursor
 ;; directly to the screen instead of to the displayregion.
-;; this saves a whole bunch of time since takeing the
-;; mouse down is just a matter of updateing the screen.
+;; this saves a whole bunch of time since taking the
+;; mouse down is just a matter of updating the screen.
 ;; since this operation has to be done every charblt
 ;; we save bunches of time.	/jarl 
 ;;
@@ -300,7 +300,7 @@ DOSCursorVisible ENDP
 ;;
 ;; Bitblits the image stored in buffer to the display
 ;; buffer. Assumption: buffer and the displaybuffer
-;; are equaly large and thus left, top etc. pertains
+;; are equally large and thus left, top etc. pertains
 ;; to the same offsets.
 ;;
 ;;
@@ -406,7 +406,7 @@ startpoint:
 	mov	eax, [edx.Disp.RegWidth]
 	imul	eax, top[ebp]
 	add	eax, left[ebp]
-	sar	eax, 5		; Make it a byte address on dword boundrys.
+	sar	eax, 5		; Make it a byte address on dword boundaries.
 	sal	eax, 2
 
 	;; Set dst and src start
@@ -424,7 +424,7 @@ startpoint:
 	sar	ebx, 5
 	sub	eax, ebx
 	mov	width32[ebp], eax	; width32 is width in dwords
-	sal	eax, 2		; Make width32 a byteadr on dword boundrys.
+	sal	eax, 2		; Make width32 a byteadr on dword boundaries.
 	mov	ebx, [edx.Disp.RegWidth]
 	sar	ebx, 3
 	sub	ebx, eax
@@ -478,7 +478,7 @@ Dosbbt1 ENDP
 ;;
 ;; Bitblits the image stored in buffer to the display
 ;; buffer. ASSUMPTION: buffer and the displaybuffer
-;; are equaly large and thus left, top etc. pertains
+;; are equally large and thus left, top etc. pertains
 ;; to the same offsets.
 ;;
 ;; Medley has a packed bitmap structure. Dosbbt2 assumes
@@ -590,7 +590,7 @@ startpt:
 	mov	eax, [edx.Disp.RegWidth]
 	imul	eax, top[ebp]
 	add	eax, left[ebp]
-	sar	eax, 5		; Make it a byte address on dword boundrys.
+	sar	eax, 5		; Make it a byte address on dword boundaries.
 	sal	eax, 2
 
 	;; Calculate which bank to start in.
@@ -616,7 +616,7 @@ startpt:
 	sar	ebx, 5
 	sub	eax, ebx
 	mov	width32[ebp], eax	; width32 is width in dwords
-	sal	eax, 2		; Make width32 a byteadr on dword boundrys.
+	sal	eax, 2		; Make width32 a byteadr on dword boundaries.
 	mov	ebx, [edx.Disp.RegWidth]
 	sar	ebx, 3
 	sub	ebx, eax
@@ -709,7 +709,7 @@ Dosbbt2 ENDP
 ;;
 ;; Bitblits the image stored in buffer to the display
 ;; buffer. ASSUMPTION: buffer and the displaybuffer
-;; are equaly large and thus left, top etc. pertains
+;; are equally large and thus left, top etc. pertains
 ;; to the same offsets.
 ;;
 ;; Medley has a packed bitmap structure. Dosbbt3 assumes
@@ -745,11 +745,11 @@ Dosbbt3	PROC NEAR
 	;;; Set up the dsp in edx
 	mov	edx, dsp[ebp]
 
-	;;; Adjust left to be a byte offset at a dword boundry
-	;;; - Not needed. We shovle bytes at byte boundrys
+	;;; Adjust left to be a byte offset at a dword boundary
+	;;; - Not needed. We shove bytes at byte boundaries
 
-	;;; Adjust width to be a byte offset at a dword boundry
-	;;; - Not needed. We shovle bytes at byte boundrys
+	;;; Adjust width to be a byte offset at a dword boundary
+	;;; - Not needed. We shove bytes at byte boundaries
 
 	;;; Calculate start index for src
 	mov	eax, top[ebp]
@@ -809,9 +809,9 @@ Newline3:
 
 	;; End of bank ?
 	cmp	ax, 0
-	jge	Newline3	; No. Blitt a new line.
+	jge	Newline3	; No. Blit a new line.
 	mov	edi, esi	; Yes. Reload edi,
-	jmp	Newbank3	; and blitt a new line.
+	jmp	Newbank3	; and blit a new line.
 
 QuitThis:
 	pop edi

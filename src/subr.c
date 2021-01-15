@@ -450,7 +450,7 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
 
 #ifdef NATIVETRAN
-    /* old load native (should be superceeded) */
+    /* old load native (should be superseded) */
     case sb_OLD_COMPILE_LOAD_NATIVE:
       POP_SUBR_ARGS;
       {
@@ -688,7 +688,7 @@ void OP_subrcall(int subr_no, int argnum) {
 
     case 0222: /* Cause an interrupt to occur.  Used by */
                /* Lisp INTERRUPTED to re-set an interrupt */
-               /* when it's uninterruptable. 		*/
+               /* when it's uninterruptible. 		*/
       {
         POP_SUBR_ARGS;
         Irq_Stk_Check = Irq_Stk_End = 0;

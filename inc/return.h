@@ -36,23 +36,23 @@
 #ifndef ISC
 #define FastRetCALL							\
   {									\
-    /* Get IVar from Retunee's IVAR offset slot(BF) */ 			\
+    /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
     IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
-    /* Get FuncObj from Retunee's FNHEAD slot in FX */ 			\
+    /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
     FuncObj = (struct fnhead *)						\
 		Addr68k_from_LADDR(FX_FNHEADER);	\
-    /* Get PC from Retunee's pc slot in FX */ 				\
+    /* Get PC from Returnee's pc slot in FX */ 				\
     PC = (ByteCode *)FuncObj + CURRENTFX->pc ; 				\
   }
 #else
 #define FastRetCALL							\
   {									\
-    /* Get IVar from Retunee's IVAR offset slot(BF) */ 			\
+    /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
     IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
-    /* Get FuncObj from Retunee's FNHEAD slot in FX */ 			\
+    /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
     FuncObj = (struct fnhead *)						\
 		Addr68k_from_LADDR(FX_FNHEADER);	\
-    /* Get PC from Retunee's pc slot in FX */ 				\
+    /* Get PC from Returnee's pc slot in FX */ 				\
     PC = (ByteCode *)FuncObj + CURRENTFX->pc ; 				\
     if (!(FuncObj->byteswapped))					\
       {								\

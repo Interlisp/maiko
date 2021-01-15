@@ -181,8 +181,8 @@ void mess_reset() {
   close(cons_tty);
   close(cons_pty);
 /* Try to make /dev/console be the real console again */
-/*** This sequence sometimes cause SunOs panic on SunOS4.0(and 4.0.1).
-    TIOCCONS probelm ???
+/*** This sequence sometimes causes SunOS to panic on SunOS4.0(and 4.0.1).
+    TIOCCONS problem ???
     if ((console_fd = open("/dev/console", 0)) >= 0) {
           ioctl(console_fd, TIOCCONS, 0);
           close(console_fd);
@@ -273,7 +273,7 @@ LispPTR mess_read(LispPTR *args)
   if (size > MESSAGE_BUFFER_SIZE)
     size = MESSAGE_BUFFER_SIZE;
   else
-    logChanged = 0; /* only reset msg-pending flg if we cleaned it out! */
+    logChanged = 0; /* only reset msg-pending flag if we cleaned it out! */
   TIMEOUT(i = lseek(log_id, previous_size, SEEK_SET));
   if (i == -1) {
     OSMESSAGE_PRINT(printf("seek err\n"));
