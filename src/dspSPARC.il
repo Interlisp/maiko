@@ -155,37 +155,6 @@ done:				!		else done;
 	nop
 .end
 
-.inline	_mpy32,8
-	ba	mpy_err
-	nop
-.end
-
-.inline	_impy32,8
-	ba	impy_err
-	nop
-.end
-
-.inline	_quot32,8
-	ba	quot_err
-	nop
-.end
-
-.inline	_iquot32,8
-	ba	iquot_err
-	nop
-.end
-
-.inline	_rem32,8
-	ba	rem_err
-	nop
-.end
-
-.inline	_irem32,8
-	ba	irem_err
-	nop
-.end
-
-
 .inline	_plus32,8
 	addcc	%o0,%o1,%o0	! result = arg0 + arg1
 	bvs	plus_err

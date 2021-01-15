@@ -50,14 +50,7 @@ int N_OP_times2(int tosm1, int tos) {
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
 
-#ifdef SUN3_OS3_OR_OS4_IL
-
-  result = mpy32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  mpy_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#if defined(USE_OVERFLOW_BUILTINS)
 
   if (__builtin_smul_overflow(arg1, arg2, &result)) {
     goto doufn2;
@@ -86,14 +79,7 @@ int N_OP_itimes2(int tosm1, int tos) {
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
 
-#ifdef SUN3_OS3_OR_OS4_IL
-
-  result = impy32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  impy_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#if defined(USE_OVERFLOW_BUILTINS)
 
   if (__builtin_smul_overflow(arg1, arg2, &result)) {
     goto doufn;
@@ -129,18 +115,9 @@ int N_OP_quot(int tosm1, int tos) {
   N_GETNUMBER(tos, arg2, doufn);
   if (arg2 == 0) goto doufn2;
 
-#ifdef SUN3_OS3_OR_OS4_IL
-
-  result = quot32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  quot_err_label();
-
-#else
-
   result = arg1 / arg2; /* lmm: note: no error case!! */
   N_ARITH_SWITCH(result);
-#endif
+
 doufn2:
   ERROR_EXIT(tos);
 doufn:
@@ -156,19 +133,8 @@ int N_OP_iquot(int tosm1, int tos) {
   N_IGETNUMBER(tos, arg2, doufn);
   if (arg2 == 0) goto doufn;
 
-#ifdef SUN3_OS3_OR_OS4_IL
-
-  result = iquot32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  iquot_err_label();
-
-#else
-
   result = arg1 / arg2;
   N_ARITH_SWITCH(result);
-
-#endif
 
 doufn:
   ERROR_EXIT(tos);
@@ -191,19 +157,8 @@ int N_OP_iremainder(int tosm1, int tos) {
   N_IGETNUMBER(tos, arg2, doufn);
   if (arg2 == 0) goto doufn;
 
-#ifdef SUN3_OS3_OR_OS4_IL
-
-  result = irem32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  irem_err_label();
-
-#else
-
   result = arg1 % arg2;
   N_ARITH_SWITCH(result);
-
-#endif
 
 doufn:
   ERROR_EXIT(tos);
