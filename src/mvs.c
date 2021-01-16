@@ -80,11 +80,7 @@ newframe:
 #endif /* RESWAPPEDCODESTREAM */
 
 newpc:
-#ifdef ISC
-  opcode = (short)((unsigned char)*((char *)pc));
-#else
   opcode = (short)((unsigned char)GETBYTE((char *)pc));
-#endif
   switch (opcode) {
     case opc_RETURN:
     case opc_SLRETURN:
@@ -116,11 +112,7 @@ newpc:
 
     case opc_JUMPX: {
       register short displacement;
-#ifdef ISC
-      displacement = (short)(*((char *)pc + 1));
-#else
       displacement = (short)(GETBYTE((char *)pc + 1));
-#endif
       if (displacement >= 128) displacement -= 256;
       pc += displacement;
       goto newpc;
@@ -185,11 +177,7 @@ newframe:
 #endif /* RESWAPPEDCODESTREAM */
 
 newpc:
-#ifdef ISC
-  opcode = (short)((unsigned char)*((char *)pc));
-#else
   opcode = (short)((unsigned char)GETBYTE((char *)pc));
-#endif
   switch (opcode) {
     case opc_RETURN:
     case opc_SLRETURN:
@@ -221,11 +209,7 @@ newpc:
 
     case opc_JUMPX: {
       register short displacement;
-#ifdef ISC
-      displacement = (short)(*((char *)pc + 1));
-#else
       displacement = (short)(GETBYTE((char *)pc + 1));
-#endif
       if (displacement >= 128) displacement -= 256;
       pc += displacement;
       goto newpc;

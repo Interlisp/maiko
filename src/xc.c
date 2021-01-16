@@ -197,20 +197,15 @@ void dispatch(void) {
   InstPtr *table;
 #else
 #if defined(OPDISP) || defined(SPARCDISP)
-#ifdef ISC
   InstPtr *table;
-#else
-  register InstPtr *table;
-#endif
 #endif /* OPDISP */
 #endif /* I386 */
 
-#ifdef ISC
-#elif (DOS && OPDISP)
+#if (DOS && OPDISP)
 #else
   register LispPTR *cspcache;
   register LispPTR tscache;
-#endif /* ISC */
+#endif
 
 #ifdef sparc
   register struct state *stateptrcache = MState;
@@ -286,11 +281,7 @@ void dispatch(void) {
   UFN_CALLS;
 
 op_ufn : {
-#ifdef ISC
   UFN *entry68k;
-#else
-  register UFN *entry68k;
-#endif
   entry68k = (UFN *)GetUFNEntry(Get_BYTE_PCMAC0);
   fn_num_args = entry68k->arg_num;
   fn_opcode_size = entry68k->byte_num + 1;
