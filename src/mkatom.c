@@ -34,6 +34,7 @@
 #ifndef BYTESWAP
 #include <string.h>
 #endif
+#include <stdint.h>
 #include "lispemul.h"
 #include "adr68k.h"
 #include "lsptypes.h"
@@ -136,7 +137,7 @@ int bytecmp(const char *char1, const char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {
-      if (GETBYTE(char1++) != *(unsigned char *)(char2++)) return (0);
+      if (GETBYTE(char1++) != *(uint8_t *)(char2++)) return (0);
   }
   return (1);
 }
