@@ -121,7 +121,7 @@ int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
        configure the shell appropriately, though this may not be so important any more */
     setenv("LDESHELL", "YES", 1);
 
-    if ((termtype[0] != 0) && (strlen(termtype) < 59)) { /* set the TERM environment var */
+    if (termtype[0] != 0) { /* set the TERM environment var */
       setenv("TERM", termtype, 1);
     }
     /* Start up csh */
@@ -200,7 +200,7 @@ int fork_Unix() {
   sigset_t signals;
 
   char IOBuf[4];
-  unsigned short tmp;
+  unsigned short tmp = 0;
   char *cmdstring;
 
   /* Pipes between LISP subr and process */
@@ -282,7 +282,7 @@ int fork_Unix() {
       case 'S':
       case 'P':          /* Fork PTY shell */
         if (slot >= 0) { /* Found a free slot */
-          char termtype[32];
+          char termtype[64];
           char slavepty[32]; /* For slave pty name */
 
           if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading slave pty len");
@@ -290,7 +290,9 @@ int fork_Unix() {
 
           if (IOBuf[0] == 'P') { /* The new style, which takes term type & command to csh */
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");
+            if (tmp > 63) perror("Slave termtype length too long");
             if (SAFEREAD(LispPipeIn, termtype, tmp) < 0) perror("Slave reading termtype");
+            termtype[tmp] = '\0';
             if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) perror("Slave reading cmd length");
             if (tmp > 510)
               cmdstring = (char *)malloc(tmp + 5);
