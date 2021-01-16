@@ -15,9 +15,9 @@
 # Setup for using gcc
 #  CC = gcc $(GCC_CFLAGS)
 # Setup for using Solaris Developer Studio 12.6 cc
-#  CC = cc -m32 -funsigned-char
+#  CC = cc -m32 $(DEVSTUDIO_CFLAGS)
 
-CC = cc -m32 -funsigned-char -O2
+CC = cc -m32 $(DEVSTUDIO_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
