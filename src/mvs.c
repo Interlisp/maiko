@@ -72,12 +72,12 @@ newframe:
     fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
     pc = (ByteCode *)fnhead + (caller->pc);
   }
-#ifdef ISC
+#ifdef RESWAPPEDCODESTREAM
   if (!fnhead->byteswapped) {
     byte_swap_code_block(fnhead);
     fnhead->byteswapped = 1;
   }
-#endif /* ISC */
+#endif /* RESWAPPEDCODESTREAM */
 
 newpc:
 #ifdef ISC
@@ -177,12 +177,12 @@ newframe:
     pc = (ByteCode *)fnhead + (caller->pc);
   }
 
-#ifdef ISC
+#ifdef RESWAPPEDCODESTREAM
   if (!fnhead->byteswapped) {
     byte_swap_code_block(fnhead);
     fnhead->byteswapped = 1;
   }
-#endif /* ISC */
+#endif /* RESWAPPEDCODESTREAM */
 
 newpc:
 #ifdef ISC

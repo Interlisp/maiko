@@ -33,7 +33,7 @@
 
 
 /* FAST case return use */
-#ifndef ISC
+#ifndef RESWAPPEDCODESTREAM
 #define FastRetCALL							\
   {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
@@ -60,7 +60,7 @@
 	FuncObj->byteswapped = 1;				\
       }								\
   }
-#endif /* ISC */
+#endif /* RESWAPPEDCODESTREAM */
 
 
 
