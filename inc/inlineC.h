@@ -71,9 +71,6 @@
 #define SWAP_WORDS(x) (((unsigned int)x << 16) | (((unsigned int)x >> 16) & 0xFFFF))
 
 
-#define NATIVECHECK							\
-	{if (BCE_CURRENTFX->native) {goto gonative ;} nextop0; }
-
 #define nextop0 {goto nextopcode; }
 #define nextop1 {PCMACL += 1; nextop0; }
 #define nextop2 {PCMACL += 2; nextop0; }
@@ -375,7 +372,7 @@ register  char *buff68k;     /* pointer to BUFF */			\
 
 #define CONTEXTSWITCH	{ EXT; OP_contextsw(); RET; 			\
 			  /*CHECK_INTERRUPT;*/ CLR_IRQ;			\
-			  NATIVE_NEXTOP0; }
+			  nextop0; }
 
 #define	NOP		{ nextop1; }
 #define RESLIST(n)	{ goto op_ufn; }

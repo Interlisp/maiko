@@ -1196,7 +1196,6 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           print(get_framename((struct frameex1 *)stkptr));
           printf(" [");
           if (((FX *)stkptr)->fast) printf("fast,");
-          if (((FX *)stkptr)->native) printf("native,");
           if (((FX *)stkptr)->incall) printf("incall,");
           if (((FX *)stkptr)->validnametable) printf("V,");
           if (((FX *)stkptr)->nopush) printf("nopush,");

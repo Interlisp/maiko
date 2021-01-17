@@ -26,7 +26,6 @@
 #define  BF_MARK	0x8000u
 #define  BF_MARK32	0x80000000
 #define  FX_MARK	0xc000u
-#define  FX_MARK_NATIVE 0xc800u
 
 #define STK_GUARD	7
 #define STK_FX		6
@@ -60,7 +59,7 @@ typedef struct fnhead{
 	short		pv;	/* ?? */
 	DLword		startpc;
 			/* head of ByteCodes, DLword offset from stkmin */
-	unsigned	native		: 1;	/* native translated? */
+	unsigned	nil4		: 1;	/* not used, prev: native translated? */
 	unsigned	byteswapped	: 1;	/* code was reswapped.	 */
 	unsigned	argtype		: 2;	/* ?? */
 #ifdef BIGVM
@@ -81,7 +80,7 @@ typedef struct fnhead{
 typedef struct frameex1{
 	unsigned	flags	:3;
 	unsigned	fast	:1;
-	unsigned	native	:1;	/* This frame treats N-func */
+	unsigned	nil2	:1;	/* not used, prev: This frame treats N-func */
 	unsigned	incall	:1;
 	unsigned	validnametable	:1;
 			/* 0: look for FunctionHeader
@@ -112,7 +111,7 @@ typedef struct frameex1{
 typedef struct frameex2{
 	unsigned	flags	:3;
 	unsigned	fast	:1;
-	unsigned	native	:1;	/* This frame treats N-func */
+	unsigned	nil2	:1;	/* not used, prev: This frame treats N-func */
 	unsigned	incall	:1;
 	unsigned	validnametable	:1;
 			/* 0: look for FunctionHeader
@@ -195,7 +194,7 @@ typedef struct fnhead
 #endif /* BIGVM */
     unsigned	argtype		: 2;	/* ?? */
     unsigned	byteswapped	: 1;	/* code was reswapped.	*/
-    unsigned	native		: 1;	/* native translated? */
+    unsigned	nil4		: 1;	/* not used, prev: native translated? */
     unsigned	fvaroffset	: 8;
 			/* DLword offset from head of NameTable */
     unsigned	nlocals		:8;	/* ?? */
@@ -212,7 +211,7 @@ typedef struct frameex1{
 			/* 0: look for FunctionHeader
 			   1: look for NameTable on this FrameEx */
 	unsigned	incall	:1;
-	unsigned	native	:1;	/* This frame treats N-func */
+	unsigned	nil2	:1;	/* not used, prev: This frame treats N-func */
 	unsigned	fast	:1;
 	unsigned	flags	:3; /* hi word */
 
@@ -247,7 +246,7 @@ typedef struct frameex2{
 			/* 0: look for FunctionHeader
 			   1: look for NameTable on this FrameEx */
 	unsigned	incall	:1;
-	unsigned	native	:1;	/* This frame treats N-func */
+	unsigned	nil2	:1;	/* not used, prev: This frame treats N-func */
 	unsigned	fast	:1;
 	unsigned	flags	:3;
 
