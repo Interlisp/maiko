@@ -213,16 +213,6 @@ void dispatch(void) {
 #define MState stateptrcache
 #endif
 
-#if (defined(I386) || defined(ISC))
-  int SaveD6;
-#else
-#ifdef OPDISP
-#ifndef DOS
-  register int SaveD6;
-#endif
-#endif
-#endif
-
   /* OP_FN_COMMON arguments */
 
   DefCell *fn_defcell;
@@ -264,7 +254,6 @@ void dispatch(void) {
   asm volatile("fldcw WORD PTR CODE32:FP_noint"); /* Turn off FP interrupts */
   goto nextopcode;
 #else
-  SaveD6 = 0;
   goto setup_table;
 #endif /* ISC */
 
@@ -1138,12 +1127,6 @@ nextopcode:
   } /* switch */
 
 native_check:
-
-#ifndef DOS
-#ifdef OPDISP
-  SaveD6 = 0x000;
-#endif
-#endif /* DOS */
   goto nextopcode;
 
 /************************************************************************/
@@ -1347,8 +1330,6 @@ PopNextop2:
 #ifdef OPDISP
 setup_table:
 #ifndef ISC
-  SaveD6 = 0;
-
   {
     int i;
     for (i = 0; i < 256; i++) { table[i] = (InstPtr)op_ufn; };
