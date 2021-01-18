@@ -134,9 +134,6 @@ extern fd_set LispReadFds;
 #ifdef SUNDISPLAY
 struct inputmask LispEventMask;
 #endif /* SUNDISPLAY */
-#ifdef xXWINDOW
-struct inputmask LispEventMask;
-#endif /* XWINDOW */
 
 IOPAGE *IOPage68K;
 
@@ -286,11 +283,6 @@ void init_keyboard(int flg) /* if 0 init else re-init */
   int_io_open(LispWindowFd); /* from init_dsp, try to prevent mouse-move-no-kbd bug */
 #endif                       /*  KBINT */
   seteventmask(&LispEventMask);
-#elif xXWINDOW
-  init_Xevent();
-
-  seteventmask(&LispEventMask);
-
 #elif XWINDOW
   init_Xevent(currentdsp);
 
