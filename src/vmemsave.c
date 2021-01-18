@@ -36,9 +36,9 @@
 #define alarm(x) 1
 #endif /* DOS */
 
-#ifndef NOPIXRECT
+#if defined(SUNDISPLAY) && defined(OLD_CURSOR)
 #include <sunwindow/win_cursor.h>
-#endif /* NOPIXRECT */
+#endif
 
 #include "hdw_conf.h"
 #include "lispemul.h"
