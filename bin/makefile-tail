@@ -198,13 +198,6 @@ $(OSARCHDIR)tstsout : $(OBJECTDIR)tstsout.o $(BYTESWAPFILES)  $(REQUIRED-INCS)
 $(OSARCHDIR)setsout : $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
 	$(CC) $(CFLAGS) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)setsout
 
-
-$(OSARCHDIR)testdsp :  $(SRCDIR)testdsp.c $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
-	 $(INCDIR)lispmap.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)display.h $(INCDIR)dbprint.h
-	$(CC) $(CFLAGS) -DDEBUG -I$(INCDIR) $(SRCDIR)testdsp.c -lsuntool -lsunwindow  -lpixrect -lc -lm -o $(OSARCHDIR)testdsp
-
 #### Component files ######################################################
 
 $(OBJECTDIR)tstsout.o: $(SRCDIR)tstsout.c $(REQUIRED-INCS) 
