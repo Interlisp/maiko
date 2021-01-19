@@ -10,6 +10,8 @@
 
 #include "version.h"
 
+#include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <X11/X.h>
@@ -40,15 +42,13 @@
 #include <stropts.h>
 #endif /* OS5 */
 
-#define FALSE 0
-#define TRUE !FALSE
 #define PERCENT_OF_SCREEN 95
 #define DISPLAY_MAX 65536 * 16 * 2 /* same magic number is */
                                    /* in loadsysout.c      */
 extern DLword *Lisp_world;
-extern int Lisp_Xinitialized;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
+bool Lisp_Xinitialized = false;
 int xsync = False;
 
 int Byte_Order, Bitmap_Bit_Order, Bitmap_Pad, Default_Depth, Display_Height, Display_Width;
@@ -105,6 +105,8 @@ void init_Xevent(DspInterface dsp)
 /************************************************************************/
 void lisp_Xexit(DspInterface dsp)
 {
+  assert(Lisp_Xinitialized);
+
 #if defined(OS5) && defined(I_SETSIG)
   ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
 #endif
@@ -113,7 +115,7 @@ void lisp_Xexit(DspInterface dsp)
   XDestroyWindow(dsp->display_id, dsp->LispWindow);
   XCloseDisplay(dsp->display_id);
 
-  Lisp_Xinitialized = FALSE;
+  Lisp_Xinitialized = false;
 } /* end lisp_Xexit */
 
 /************************************************************************/
@@ -173,7 +175,9 @@ void Xevent_after_raid(DspInterface dsp)
 /************************************************************************/
 void Open_Display(DspInterface dsp)
 {
-    FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
+  assert(Lisp_Xinitialized == false);
+
+  FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
 
   /****************************************************/
@@ -192,7 +196,7 @@ void Open_Display(DspInterface dsp)
   if (dsp->ScreenBitmap.data == NULL) dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
 
   Create_LispWindow(dsp); /* Make the main window */
-  Lisp_Xinitialized = TRUE;
+  Lisp_Xinitialized = true;
   init_Xevent(dsp); /* Turn on the intrpts. */
 } /* end OpenDisplay */
 
