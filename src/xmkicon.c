@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -26,7 +27,7 @@
 XImage IconImage;
 
 extern int Bitmap_Pad, Default_Depth, Lisp_icon_width, Lisp_icon_height;
-extern char Lisp_icon[];
+extern uint8_t Lisp_icon[];
 
 extern Pixmap IconPixmap;
 extern char iconpixmapfile[1024];

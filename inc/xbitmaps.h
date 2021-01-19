@@ -11,40 +11,40 @@
 /*									*/
 /************************************************************************/
 
-
+#include <stdint.h>
 
 
 
 
 typedef struct {
 	short cubitsprepixel;	/* bits per pixel in the cursor, mostly 1 */
-	char *cuimage;		/* the image bitmap */
-	char *cumask;		/* the mask bitmap */
+	const uint8_t *cuimage;	/* the image bitmap */
+	const uint8_t *cumask;	/* the mask bitmap */
 	short cuhotspotx;	/* hot-spot X coordinate */
 	short cuhotspoty;	/* hot-spot Y coordinate */
 	short cudata;		/* ?? */
 } LISP_CURSOR;
 
-char defaultcursor_bitmap[]=
+const uint8_t defaultcursor_bitmap[]=
   {
-	  0x80, 0, 0xc0, 0, 0xe0, 0, 0xf0, 0 
+	  0x80, 0, 0xc0, 0, 0xe0, 0, 0xf0, 0
 	, 0xf8, 0, 0xfc, 0, 0xfe, 0, 0xf0, 0
 	, 0xd8, 0, 0x98, 0, 0x0c, 0, 0x0c, 0
 	, 0x06, 0, 0x06, 0, 0x03, 0, 0x03, 0
   };
 	
 LISP_CURSOR default_cursor =
-  { 
+  {
      1
    , defaultcursor_bitmap
    , defaultcursor_bitmap
    , 0
    , 15
-   , 0 
+   , 0
   };
 
 
-char waitcursor_bitmap[]=
+const uint8_t  waitcursor_bitmap[]=
   {
 	  0xFF, 0xFE, 0xC0, 0x06, 0x60, 0x1C, 0x3D, 0x78
 	, 0x1F, 0xF0, 0x0F, 0xE0, 0x06, 0xC0, 0x03, 0x80
@@ -62,7 +62,7 @@ LISP_CURSOR wait_cursor =
    , 0
   };
 	
-char horizscrollcursor_bitmap[]={
+const uint8_t horizscrollcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -92,7 +92,7 @@ LISP_CURSOR horizscroll_cursor = {
 	
 
 
-char horizthumbcursor_bitmap[]={
+const uint8_t horizthumbcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -122,7 +122,7 @@ LISP_CURSOR horizthumb_cursor = {
 	
 
 
-char scrolldowncursor_bitmap[]={
+const uint8_t scrolldowncursor_bitmap[]={
 		  0x03, 0x80
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -152,7 +152,7 @@ LISP_CURSOR scrolldown_cursor = {
 	
 
 
-char scrollleftcursor_bitmap[]={
+const uint8_t scrollleftcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -182,7 +182,7 @@ LISP_CURSOR scrollleft_cursor = {
 	
 
 
-char scrollrightcursor_bitmap[]={
+const uint8_t scrollrightcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -212,7 +212,7 @@ LISP_CURSOR scrollright_cursor = {
 	
 
 
-char scrollupcursor_bitmap[]={
+const uint8_t scrollupcursor_bitmap[]={
 		  0x01, 0x00
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -242,7 +242,7 @@ LISP_CURSOR scrollup_cursor = {
 	
 
 
-char vertscrollcursor_bitmap[]={
+const uint8_t vertscrollcursor_bitmap[]={
 		  0x01, 0x00
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -272,7 +272,7 @@ LISP_CURSOR vertscroll_cursor = {
 	
 
 
-char vertthumbcursor_bitmap[]={
+const uint8_t vertthumbcursor_bitmap[]={
 		 0x00,0x00
 		,0x00,0x1f
 		,0x00,0x00
@@ -303,7 +303,7 @@ LISP_CURSOR vertthumb_cursor = {
 int check_width = 16;
 int check_height = 16;
 
-static char check_bits[] = {  0x88, 0x88,
+static const uint8_t check_bits[] = {  0x88, 0x88,
 			      0x00, 0x00,
 			      0x22, 0x22,
 			      0x00, 0x00,
@@ -319,7 +319,7 @@ static char check_bits[] = {  0x88, 0x88,
 			      0x00, 0x00,
 			      0x22, 0x22,
 			      0x00, 0x00 };
-static char plain_bits[] =  {   0x00, 0x00,
+static const uint8_t plain_bits[] =  {   0x00, 0x00,
 				0x00, 0x00,
 				0x00, 0x00,
 				0x00, 0x00,
@@ -339,7 +339,7 @@ static char plain_bits[] =  {   0x00, 0x00,
 int Lisp_icon_width = 88;
 int Lisp_icon_height = 58;
 
-char Lisp_icon[] = 
+const uint8_t Lisp_icon[] =
   {
     0x82, 0x08, 0x20, 0x82, 0x08, 0x20, 0x82, 0x08, 0x20, 0x82, 0x08,
     0x20, 0x82, 0x08, 0x20, 0x82, 0x08, 0x20, 0x82, 0x08, 0x3f, 0xe2,
@@ -398,6 +398,6 @@ char Lisp_icon[] =
     0x02, 0x16, 0x50, 0x49, 0x08, 0x49, 0x42, 0x12, 0x02, 0x15, 0x20,
     0x02, 0x0a, 0x50, 0x84, 0xc8, 0x32, 0x21, 0xcc, 0x93, 0xc8, 0xe0,
     0x00, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00,
-    0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 
+    0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
   };
 #endif /* XBITMAPS_H */

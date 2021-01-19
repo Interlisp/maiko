@@ -74,7 +74,7 @@ void Init_XCursor() {
   cursorlist = (struct MXCURSOR *)malloc(sizeof(struct MXCURSOR));
   cursorlist->next = NULL;
   for (i = 0; i < CURSORHEIGHT; i++) cursorlist->bitmap[i] = newbm[i];
-  set_Xcursor(currentdsp, (unsigned char *)newbm, 0, 0, &(cursorlist->Xid), 1);
+  set_Xcursor(currentdsp, (uint8_t *)newbm, 0, 0, &(cursorlist->Xid), 1);
   DefineCursor(currentdsp->display_id, currentdsp->DisplayWindow, &(cursorlist->Xid));
 } /* end Init_XCursor */
 
@@ -113,9 +113,9 @@ void Set_XCursor(int x, int y)
     for (i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = newbm[i];
 #ifdef NEWXCURSOR
     /* JDS 000521 Added "15-" to fix cursor troubles at window edge */
-    set_Xcursor(currentdsp, (unsigned char *)newbm, x, 15 - y, &(clp->Xid), 1);
+    set_Xcursor(currentdsp, (uint8_t *)newbm, x, 15 - y, &(clp->Xid), 1);
 #else
-    set_Xcursor(currentdsp, (unsigned char *)newbm, 0, 0, &(clp->Xid), 1);
+    set_Xcursor(currentdsp, (uint8_t *)newbm, 0, 0, &(clp->Xid), 1);
 #endif /* NEWXCURSOR */
     clp->next = cursorlist;
     cursorlist = clp;
@@ -191,7 +191,7 @@ void init_Xcursor(Display *display, Window window)
 /*									*/
 /************************************************************************/
 
-void set_Xcursor(DspInterface dsp, unsigned char *bitmap, int hotspot_x, int hotspot_y, Cursor *return_cursor, int from_lisp)
+void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hotspot_y, Cursor *return_cursor, int from_lisp)
 {
   extern unsigned char reversedbits[];
   unsigned char image[32];
