@@ -39,11 +39,6 @@ extern volatile sig_atomic_t FP_error;
 #define FPCLEAR         FP_error = 0;
 #define FPTEST(result)  FP_error
 
-#elif defined(OS5)
-#include <ieeefp.h>
-#define FPCLEAR
-#define FPTEST(result) (!finite(result))
-
 #elif defined(DOS)
 #include <i32.h>
 #define FPCLEAR
