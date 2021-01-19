@@ -103,14 +103,12 @@ int main(int argc, char *argv[])
       XCloseDisplay(Xdisplay);
       strcpy(filetorun, LDEX);
 
-#ifdef FORKCOMM
       /* JRB - call fork_Unix here, while we're REALLY small, unless -NF is
               specified, of course... */
       for (i = 0; i < argc; i++)
         if (!strcmp(argv[i], "-NF")) break;
       if (i == argc) /* -NF not in arguments */
         fork_Unix();
-#endif /* FORKCOMM */
 
       argv[0] = filetorun;
       execvp(filetorun, argv);
@@ -181,14 +179,12 @@ int main(int argc, char *argv[])
 
 #endif /* USESUNSCREEN */
 
-#ifdef FORKCOMM
   /* JRB - call fork_Unix here, while we're REALLY small, unless -NF is
           specified, of course... */
   for (i = 0; i < argc; i++)
     if (!strcmp(argv[i], "-NF")) break;
   if (i == argc) /* -NF not in arguments */
     fork_Unix();
-#endif
 
   /* start ldemono or ldecolor */
 

@@ -496,7 +496,9 @@ int main(int argc, char *argv[])
   init_ether(); /* modified by kiuchi Nov. 4 */
 #endif          /* MAIKO_ENABLE_ETHERNET */
 
-#ifdef FORKCOMM
+#ifdef DOS
+  init_host_filesystem();
+#else
   /* Fork Unix was called in kickstarter; if we forked, look up the */
   /* pipe handles to the subprocess and set them up.		      */
 
@@ -504,20 +506,8 @@ int main(int argc, char *argv[])
   {                    /* in case we're re-starting a savevm w/open ptys */
     if (please_fork) fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
   }
-#else
-/* Fork Unix Interface subprocess before we create anything big;   */
-/* interrupts need to be blocked here so subprocess won't see them */
-/* This should actually live in the kickstarter... */
-
-#ifdef DOS
-  init_host_filesystem();
-#else
-  if (please_fork) {
-    int_block();
-    fork_Unix();
-  }
 #endif /* DOS */
-#endif /* FORKCOMM */
+
 #if defined(DOS) || defined(XWINDOW)
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */

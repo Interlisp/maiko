@@ -37,7 +37,7 @@ FPFLAGS = -f68881
 # [I remove DISPLAYBUFFER option .
 # You may run 'makeright x'.  -osamu '90/02/27]
 # NEWBITBLT for assembler version of bitblt.
-DFLAGS = -DOPDISP -DOS4 -DSUN3_OS4_IL -DOS4_TYPE4BUG -DNEWBITBLT -DLOGINT $(XFLAGS) -DFORKCOMM
+DFLAGS = -DOPDISP -DOS4 -DSUN3_OS4_IL -DOS4_TYPE4BUG -DNEWBITBLT -DLOGINT $(XFLAGS)
 LDFLAGS = -lX11 -lpixrect -lc -lm
 LDELDFLAGS = -Bstatic -lX11 -lpixrect -Bdynamic -lc -lm
 
