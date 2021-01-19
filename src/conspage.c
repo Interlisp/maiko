@@ -132,6 +132,7 @@ struct conspage *next_conspage(void) {
   init_conspage(page2, 0); /* No next page */
   init_conspage(page1, LPAGE_from_68k(page2));
 
+  priorpg = NULL;
   prior = 0;
   for (pg = (struct conspage *)Addr68k_from_LPAGE(next = ListpDTD->dtd_nextpage);
        next && (next != CONSPAGE_LAST);
