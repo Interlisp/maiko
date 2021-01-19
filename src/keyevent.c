@@ -38,8 +38,7 @@
 void Mouse_hndlr(void); /* Fields mouse events from driver        */
                         /*  (during servicing of mouse interrupt) */
 
-#elif XWINDOW
-#else
+#elif SUNDISPLAY
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>
 #include <suntool/window.h>
@@ -277,9 +276,9 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 void getsignaldata(int sig)
 {
 #ifndef DOS
-#ifndef XWINDOW
+#ifdef SUNDISPLAY
   struct inputevent event;
-#endif /* XWINDOW */
+#endif /* SUNDISPLAY */
   fd_set rfds, efds;
   u_int iflags;
   int i;
@@ -374,6 +373,7 @@ getmore:
 #endif /* DOS */
 } /* end getsignaldata */
 
+#ifdef SUNDISPLAY
 /************************************************************************/
 /*									*/
 /*			    k b _ e v e n t				*/
@@ -382,7 +382,6 @@ getmore:
 /*	occurred, 0 if one didn't occur.				*/
 /*									*/
 /************************************************************************/
-#if (!defined(XWINDOW) && !defined(DOS))
 extern int for_makeinit;
 
 int kb_event(struct inputevent *event);
@@ -499,7 +498,7 @@ int kb_event(struct inputevent *event);
   } /* if *EmRealUtilin68K end */
   return (1);
 }
-#endif /* neither XWINDOW nor DOS*/
+#endif /* SUNDISPLAY */
 
 /************************************************************************/
 /*									*/

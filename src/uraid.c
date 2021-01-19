@@ -35,11 +35,9 @@
 #include <sys/select.h>
 #endif /* DOS */
 
-#ifndef XWINDOW
 #ifdef SUNDISPLAY
 #include <sundev/kbd.h>
 #include <sundev/kbio.h>
-#endif /* SUNDISPLAY */
 #include <errno.h>
 #ifndef NOPIXRECT
 #include <sunwindow/window_hs.h>
@@ -48,12 +46,9 @@
 #include <sunwindow/win_cursor.h>
 #include <sunwindow/cms.h>
 #include <sys/mman.h>
-#ifdef SUNDISPLAY
 extern int Win_security_p;
-#endif /* SUNDISPLAY */
-
 #endif /* NOPIXRECT */
-#endif /* XWINDOW */
+#endif /* SUNDISPLAY */
 
 #ifdef OS5
 #include <stropts.h>

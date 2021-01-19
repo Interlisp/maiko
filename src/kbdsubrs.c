@@ -59,9 +59,9 @@ extern DspInterface currentdsp;
  *
  ****************************************************/
 
-#ifndef XWINDOW
+#ifdef SUNDISPLAY
 extern struct screen LispScreen;
-#endif /* XWINDOW */
+#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
 #include <X11/Xlib.h>
