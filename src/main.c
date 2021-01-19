@@ -249,7 +249,6 @@ char keystring[128] = {""};
 #define FALSE 0
 #define TRUE !FALSE
 
-int Lisp_Xinitialized = FALSE;
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */
 

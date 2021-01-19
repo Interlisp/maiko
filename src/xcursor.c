@@ -29,7 +29,7 @@
 extern IOPAGE *IOPage;
 
 extern XGCValues gcv;
-extern int Lisp_Xinitialized, Bitmap_Pad, Default_Depth;
+extern int Bitmap_Pad, Default_Depth;
 
 GC cursor_source_gc, cursor_mask_gc;
 XColor cursor_fore_xcsd, cursor_back_xcsd, xced;

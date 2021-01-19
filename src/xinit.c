@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <X11/X.h>
@@ -40,15 +41,13 @@
 #include <stropts.h>
 #endif /* OS5 */
 
-#define FALSE 0
-#define TRUE !FALSE
 #define PERCENT_OF_SCREEN 95
 #define DISPLAY_MAX 65536 * 16 * 2 /* same magic number is */
                                    /* in loadsysout.c      */
 extern DLword *Lisp_world;
-extern int Lisp_Xinitialized;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
+bool Lisp_Xinitialized = false;
 int xsync = False;
 
 int Byte_Order, Bitmap_Bit_Order, Bitmap_Pad, Default_Depth, Display_Height, Display_Width;
@@ -113,7 +112,7 @@ void lisp_Xexit(DspInterface dsp)
   XDestroyWindow(dsp->display_id, dsp->LispWindow);
   XCloseDisplay(dsp->display_id);
 
-  Lisp_Xinitialized = FALSE;
+  Lisp_Xinitialized = false;
 } /* end lisp_Xexit */
 
 /************************************************************************/
@@ -192,7 +191,7 @@ void Open_Display(DspInterface dsp)
   if (dsp->ScreenBitmap.data == NULL) dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
 
   Create_LispWindow(dsp); /* Make the main window */
-  Lisp_Xinitialized = TRUE;
+  Lisp_Xinitialized = true;
   init_Xevent(dsp); /* Turn on the intrpts. */
 } /* end OpenDisplay */
 
