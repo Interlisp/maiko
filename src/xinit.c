@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -104,6 +105,8 @@ void init_Xevent(DspInterface dsp)
 /************************************************************************/
 void lisp_Xexit(DspInterface dsp)
 {
+  assert(Lisp_Xinitialized);
+
 #if defined(OS5) && defined(I_SETSIG)
   ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
 #endif
@@ -172,7 +175,9 @@ void Xevent_after_raid(DspInterface dsp)
 /************************************************************************/
 void Open_Display(DspInterface dsp)
 {
-    FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
+  assert(Lisp_Xinitialized == false);
+
+  FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
   fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
 
   /****************************************************/
