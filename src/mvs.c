@@ -271,10 +271,7 @@ LispPTR make_value_list(int argcount, LispPTR *argarray) {
 
 void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
   int unbind;
-  LispPTR *stackptr;
-  DLword *nextblock;
-  stackptr = (LispPTR *)(Stackspace + frame->nextblock);
-  nextblock = (DLword *)stackptr;
+  LispPTR *stackptr = (LispPTR *)(Stackspace + frame->nextblock);
   for (unbind = 0; unbind < unbind_count; unbind++) {
     register int value;
     register LispPTR *lastpvar;

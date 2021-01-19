@@ -79,12 +79,9 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
   struct stat stat_buf; /* file stat buf */
   int i, vp;
 
-  int machinetype;
   char errmsg[255];
 
   int j = 0;
-
-  machinetype = 0;
 
   /* Checks for specifying the process size (phase I) */
   /* If sys_size == 0 figure out the proper size later */
@@ -221,8 +218,6 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
            ifpage.key, IFPAGE_KEYVAL);
     exit(1);
   }
-
-  machinetype = ifpage.machinetype;
 
   if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
     printf("CAUTION::not an integral number of pages.  sysout & 0x1ff = 0x%x\n",

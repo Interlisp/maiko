@@ -300,25 +300,23 @@ returNIL:	\n\
 LispPTR gcmapscan(void) {
   register GCENTRY probe;
   register GCENTRY *entry;
-  GCENTRY offset, dbgentry, dbgcontents;
+  GCENTRY offset, dbgcontents;
   register LispPTR ptr;
 
   probe = HTMAIN_ENTRY_COUNT;
 nextentry:
   while ((probe = gcscan1(probe)) != NIL) {
     entry = (GCENTRY *)HTmain + probe;
-    dbgentry = GETGC(entry);
   retry:
     if (HENTRY->collision) {
       register GCENTRY *prev;
       register GCENTRY *link;
-      LispPTR content, dbgfree;
+      LispPTR content;
 
       prev = (GCENTRY *)0;
       link = (GCENTRY *)HTcoll + GetLinkptr((content = HTLPTR->contents));
     linkloop:
       offset = ((struct htcoll *)link)->free_ptr;
-      dbgfree = ((struct htcoll *)link)->next_free;
       if (StkCntIsZero(offset)) {
         /* Reclaimable object */
         ptr = VAG2(GetSegnuminColl(offset), (probe << 1));
@@ -417,7 +415,6 @@ LispPTR gcscanstack(void) {
           register struct frameex1 *frameex;
           register struct fnhead *fnheader;
           frameex = (struct frameex1 *)basicframe;
-          scanptr = LADDR_from_68k(frameex);
           {
             register LispPTR fn_head;
 #ifdef BIGVM

@@ -1148,7 +1148,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
 {
   STKH *stkptr;
   DLword *start68k, *end68k, *orig68k;
-  DLword size, dummy;
+  DLword size;
   int sdlines = 0;
   extern IFPAGE *InterfacePage;
 
@@ -1165,7 +1165,6 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
   stkptr = (STKH *)start68k;
 
   while (((DLword *)stkptr) < end68k) {
-    dummy = LADDR_from_68k(stkptr);
     switch (STKHPTR(stkptr)->flags1) {
       case STK_GUARD:
       case STK_FSB:

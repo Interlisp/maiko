@@ -315,7 +315,6 @@ int sf(struct frameex1 *fx_addr68k) {
   ptr = Addr68k_from_LADDR(STK_OFFSET + bf->ivar);
   i = 0;
   while (ptr != (DLword *)bf) {
-    ptrhi = ptr;
     ptrlo = ptr + 1;
     printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptrlo));
     ivarindex = get_ivar_name(fx_addr68k, i++, &localivar);

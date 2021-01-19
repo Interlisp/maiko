@@ -65,7 +65,7 @@ LispPTR rpc(LispPTR *args)
   register int s, msec_until_timeout, msec_between_tries, out_length;
   register int received;
   register int port;
-  int dontblock, dest;
+  int dest;
   unsigned fromlen;
   fd_set read_descriptors;
   struct timeval pertry_timeout, total_timeout, time_waited;
@@ -110,8 +110,6 @@ LispPTR rpc(LispPTR *args)
 
   /* Open the socket; Might want to make this non-blocking */
   if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) goto handle_error;
-
-  dontblock = 1;
 
   /* The sockets that rpc controls don't block */
   fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK);

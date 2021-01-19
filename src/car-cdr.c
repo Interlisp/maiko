@@ -471,12 +471,11 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
   unsigned oldoffset = oldcell & 0xFF;
   unsigned offset = page->next_cell;
   unsigned prior = 0;
-  unsigned noffset, poffset;
+  unsigned noffset;
   ConsCell *cell;
 
   while (offset) {
     if ((offset < oldoffset) && (offset >= (oldoffset - 14))) {
-      poffset = offset;
       noffset = FREECONS(page, offset)->next_free;
       while ((noffset > offset) && (noffset < oldoffset)) {
         prior = offset;
