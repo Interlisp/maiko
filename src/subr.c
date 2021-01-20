@@ -77,10 +77,6 @@ extern LispPTR *PENDINGINTERRUPT68k;
 */
 /***********************************************************/
 
-#ifdef NATIVETRAN
-extern int *c_ret_to_dispatch;
-extern int *ret_to_dispatch;
-#endif
 extern LispPTR Uraid_mess;
 
 LispPTR subr_lisperror(); /* 0377 */
@@ -429,19 +425,8 @@ void OP_subrcall(int subr_no, int argnum) {
           break;
         }
 
-#ifdef NATIVETRAN
-        case 02: /* get an emulator address */
-        {
-          register UNSIGNED iarg;
-          if (argnum != 2) goto ret_nil;
-          switch (args[1] & 0xffff) {
-            case 00: iarg = (UNSIGNED)&c_ret_to_dispatch; break;
-            case 01: iarg = (UNSIGNED)&ret_to_dispatch; break;
-          }
-          ARITH_SWITCH(iarg, TopOfStack);
-          break;
-        }
-#endif
+        /* case 02: Used to be get an emulator address for
+         * defunct NATIVETRAN feature. */
       }
       break;
 
@@ -449,15 +434,6 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = NIL_PTR;
       break;
 
-#ifdef NATIVETRAN
-    /* old load native (should be superseded) */
-    case sb_OLD_COMPILE_LOAD_NATIVE:
-      POP_SUBR_ARGS;
-      {
-        TopOfStack = do_system_call(args[0]);
-        break;
-      };
-#endif
     case sb_DISABLEGC:
       POP_SUBR_ARGS;
       disablegc1(NIL);
@@ -481,16 +457,6 @@ void OP_subrcall(int subr_no, int argnum) {
         ARITH_SWITCH(LADDR_from_68k(iarg), TopOfStack);
         break;
       };
-
-#ifdef NATIVETRAN
-    case sb_LOAD_NATIVE_FILE:
-      POP_SUBR_ARGS;
-      /* to become OBSOLETE */
-      {
-        TopOfStack = dynamic_load_code(args);
-        break;
-      }
-#endif
 
     case sb_DSK_GETFILENAME:
       POP_SUBR_ARGS;

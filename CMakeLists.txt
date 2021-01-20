@@ -108,7 +108,6 @@ SET(BAD_SRCS
     src/imagefile.c
     src/keytst.c
     src/kbdif.c
-    src/loader.c
     src/lpdual.c
     src/lpkit.c
     src/lplexyy.c
@@ -367,7 +366,6 @@ SET(MAIKO_HDRS
     inc/mvsdefs.h
     inc/my.h
     inc/MyWindow.h
-    inc/native.h
     inc/nfsfh.h
     inc/nfswatch.h
     inc/opcodes.h

@@ -535,10 +535,6 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 
 #define MAXPNCHARS		255    /* Maximum length of PnChars */
 
-#define GET_NATIVE_ADDR(fnobject)					\
-		*((int *) ((UNSIGNED)fnobject + fnobject->startpc - 4))
-
-
 #define FALSE 0
 #define TRUE  !FALSE
 

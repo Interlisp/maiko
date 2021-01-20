@@ -79,49 +79,4 @@
 
 #define NRET	{ RET; nextop0; }
 
-
-#define RET_FROM_NATIVE							\
-{									\
-	POP;								\
-	PCMACL += 1;							\
-	table = optable;						\
-}
-
-
-#ifdef NATIVETRAN
-#define NATIVE_NEXTOP0	{						\
-		if (BCE_CURRENTFX->native)  { RET_TO_NATIVE; }		\
-		nextop0;						\
-		}
-#else
-#define NATIVE_NEXTOP0 nextop0
-#endif
-
-
-#define CALL_NATIVE(defcell, num_args)					\
-{									\
-	setivar_pvar_jmp(CSTKPTR + num_args, PVAR,			\
-		((int *)(GET_NATIVE_ADDR(defcell)))[num_args+(6+2)]);	\
-}
-
-#define CALL_NATIVE2(defcell, num_args)					\
-{									\
-	setivar_pvar_jmp(CSTKPTR + num_args, PVAR,			\
-		((int *)(GET_NATIVE_ADDR(defcell)))			\
-		[(num_args <= -6) ? ((6+2)-6) : (num_args+(6+2))]);	\
-}
-
-
-#define RET_TO_NATIVE	{						\
-	register int native_addr;					\
-	register struct fnhead *LocFuncObj = FuncObj;			\
-	if (native_addr =						\
-		((int *)(GET_NATIVE_ADDR(LocFuncObj)))			\
-		[((UNSIGNED) PCMAC - (UNSIGNED) LocFuncObj)+(6+2)])	\
-		{							\
-		HARD_PUSH(TOPOFSTACK);					\
-		setivar_pvar_jmp(IVAR, PVAR, native_addr);		\
-		};							\
-	nextop0;							\
-	}
 #endif /* TOS1DEFS_H */

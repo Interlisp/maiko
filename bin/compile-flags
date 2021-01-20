@@ -30,7 +30,6 @@ NOASM		If true, suppress any attempt to include assembler
 			SUN3_OS4_IL
 			SUN4_OS4_IL
 			OPDISP
-			NATIVETRAN
 			PROFILE
 		and enables NOASMFNCALL
 C_ONLY
@@ -101,9 +100,6 @@ ORG_FILPCORSORBAR If true, you get the pixwin version of cursor changing;
 		region.
 OLD_CURSOR	If true, uses the pixwin cursor code (e.g., win_setcursor);
 		otherwise, uses the direct-write technique.
-NATIVETRAN	If true, code to support the native-code translator is
-		included in the emulator.  This feature was never released,
-		and most such code is probably obsolete.
 OS4_TYPE4BUG	If true, includes the patches around SunOS 4.0.x's failure
 		to tell you you've got a Type-4 keyboard.
 ALLDIRSEARCH	CURRENTLY HARD DISABLED IN directory.c; looks like it 

@@ -133,27 +133,6 @@ done:				!		else done;
 
 /*
 	***************************************************************
-	Special Native Code Jump Routine.
-	***************************************************************
-*/
-
-.inline _asmgoto,4
-	jmp	%o0
-	nop
-
-.end
-
-
-/* THIS IS WRONG! asmcall(label) is supposed to do a direct call there... this is just a jump. Used by emulator<->native interface */
-
-.inline _asmcall,4
-	jmp 	%o0
-	nop
-
-.end
-
-/*
-	***************************************************************
 	Arithmetic Opcode Helpers
 	***************************************************************
 */

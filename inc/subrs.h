@@ -73,7 +73,7 @@
 #define sb_DORECLAIM	0134
 #define sb_DUMMY_135Q	0135
 #define sb_NATIVE_MEMORY_REFERENCE	0136
-#define sb_OLD_COMPILE_LOAD_NATIVE	0137
+#define sb_OLD_COMPILE_LOAD_NATIVE	0137 /* obsolete */
 #define sb_DISABLEGC    0140
 
 #define sb_COM_SETFILEINFO	0147
@@ -96,7 +96,7 @@
 #define sb_MONITOR_CONTROL	0200
 #define sb_GET_NATIVE_ADDR_FROM_LISP_PTR	0203
 #define sb_GET_LISP_PTR_FROM_NATIVE_ADDR	0204
-#define sb_LOAD_NATIVE_FILE	0205
+#define sb_LOAD_NATIVE_FILE	0205 /* obsolete */
 #define sb_SUSPEND_LISP	0206
 #define sb_NEW_BLTCHAR	0207
 #define sb_COLOR_INIT	0210

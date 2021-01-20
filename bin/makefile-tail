@@ -39,7 +39,6 @@
 #INSDIR = $(RELDIR)install.$(RELEASENAME)/
 CHKDIR = $(RELDIR)checksumdir/
 SCRPTDIR = $(RELDIR)scripts/
-NATDIR = $(RELDIR)usernative/
 
 # OSARCHDIR is the os/architecture dir, where executables all go.
 OSARCHDIR = ../$(OSARCHNAME)/
@@ -893,7 +892,6 @@ $(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $
 # Installation targets - copyprotect is ON here
 # library, sysouts, fonts on release directories not handled here.
 # userfiles are separate target explicitly (can make w/o building lde)
-#    $(NATDIR)native.h $(NATDIR)disp68K.il
 ################################################################################
 
 prerelease :
@@ -974,18 +972,6 @@ $(SCRPTDIR)medley : $(BINDIR)medley
 	rm -f $(SCRPTDIR)medley
 	cp -p $(BINDIR)medley $(SCRPTDIR)medley
 	chmod 755 $(SCRPTDIR)medley
-
-################################################################################
-# Obsolete
-################################################################################
-
-$(NATDIR)native.h : $(INCDIR)native.h
-	rm -f $(NATDIR)native.h
-	ln -s $(INCDIR)native.h $(NATDIR)native.h
-
-$(NATDIR)disp68K.il : $(SRCDIR)disp68K.il
-	rm -f $(NATDIR)disp68K.il
-	ln -s $(SRCDIR)disp68K.il $(NATDIR)disp68K.il
 
 ################################################################################
 # Miscellaneous targets

@@ -27,15 +27,6 @@
 /*									*/
 /************************************************************************/
 
-#ifdef NATIVETRAN
-#define RETD6 SaveD6 = 0x100
-#define RET_CHECK_NATIVE(x) if(x ->native) { RET_TO_NATIVE; }
-#else
-#define RETD6
-#define RET_CHECK_NATIVE(x)
-#endif
-
-
 #if ((defined(ISC) || defined(SUN3_OS3_OR_OS4_IL)) &&  !(defined(NOASMFNCALL)) )
 
 /* JDS 22 May 96 CSTKPTR >- Irq... was just >, but got overflows with last
@@ -45,9 +36,8 @@
 	EXT; if(slowreturn()) goto stackoverflow_help; RET;		\
 	Irq_Stk_Check = STK_END_COMPUTE(EndSTKP,FuncObj);		\
 	if (((UNSIGNED)(CSTKPTR) >= Irq_Stk_Check) || (Irq_Stk_End <= 0))	\
-			{ RETD6; goto check_interrupt;	}		\
+			{ goto check_interrupt;	}			\
 	Irq_Stk_End = (UNSIGNED) EndSTKP;					\
-	RET_CHECK_NATIVE(BCE_CURRENTFX);				\
  }
 
 #else
@@ -62,9 +52,8 @@
  if (alink & 1) { EXT; if(slowreturn()) goto stackoverflow_help; RET;	\
 	Irq_Stk_Check = STK_END_COMPUTE(EndSTKP,FuncObj);		\
 	if (((UNSIGNED)(CSTKPTR) >= Irq_Stk_Check) || (Irq_Stk_End <= 0))	\
-			{ RETD6; goto check_interrupt;	}		\
+			{ goto check_interrupt;	}			\
 	Irq_Stk_End = (UNSIGNED) EndSTKP;					\
-	RET_CHECK_NATIVE(BCE_CURRENTFX);				\
 	goto retxit;							\
 	};								\
  CSTKPTRL = (LispPTR *) IVAR;						\
@@ -81,9 +70,8 @@
  Irq_Stk_Check = STK_END_COMPUTE(EndSTKP,FuncObj);			\
   FNCHECKER(if (quick_stack_check()) printf("In RETURN.\n"));	\
  if (((UNSIGNED)(CSTKPTR) >= Irq_Stk_Check) || (Irq_Stk_End <= 0))		\
-		{ RETD6; goto check_interrupt;	}		\
+		{ goto check_interrupt;	}				\
  Irq_Stk_End = (UNSIGNED) EndSTKP;						\
- RET_CHECK_NATIVE(returnFX);						\
 retxit:	 {}								\
 } /* OPRETURN end */
 

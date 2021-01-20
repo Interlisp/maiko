@@ -47,42 +47,11 @@
 
 
 
-#ifdef NATIVETRAN
-#define	FN_CALL_NATIVE_CHECK(fncell, args, extra_code)			\
-{									\
-  if (fncell->native)							\
-	{								\
-	 extra_code;							\
-	 FuncObj = fncell;						\
-	 HARD_PUSH(TOPOFSTACK);						\
-	 CALL_NATIVE(fncell, args);					\
-	}								\
-}
-
-#define	FN_CALL_NATIVE_CHECK2(fncell, args, extra_code)			\
-{									\
-  if (fncell->native)							\
-	{								\
-	 extra_code;							\
-	 (UNSIGNED) PC = args;						\
-	 FuncObj = fncell;						\
-	 HARD_PUSH(TOPOFSTACK);						\
-	 CALL_NATIVE2(fncell, args);					\
-	}								\
-}
-
-#define ASM_LABEL_OF_FN_COMMON asm_label_op_fn_common()
-
-#else
 #ifdef GCC386
 #define ASM_LABEL_OF_FN_COMMON asm("fn_common:");
 #else
 #define ASM_LABEL_OF_FN_COMMON
 #endif /* GCC386 */
-
-#define FN_CALL_NATIVE_CHECK(fncell, args, extra_code)
-#define	FN_CALL_NATIVE_CHECK2(fncell, args, extra_code)
-#endif /* NATIVETRAN */
 
 
 
@@ -229,57 +198,6 @@
 
 #if (defined(SUN3_OS3_OR_OS4_IL) &&  !(defined(NOASMFNCALL)) )
 
-#ifdef NATIVETRAN
-
-#define OPFN(x, num_args_fn, fn_xna_args, fn_native)			\
-{    /* asm inlines for fn call (much care put into keeping optimizer	\
-	from moving things around). */					\
-	fn_section1();							\
-	fn_section2();							\
-	num_args_fn();							\
-	fn_native_test();						\
-	fn_section3();							\
-	fn_xna_args();							\
-	fn_section4();							\
-	fast1_dispatcher();		/* nextop0 don't work here */	\
-	fn_native();							\
-	fn_section5();							\
-			/* asm code jumps here when not ccodep */	\
-	{ fn_atom_index = Get_AtomNo_PCMAC1;				\
-	  fn_defcell = (DefCell *) GetDEFCELL68k(fn_atom_index);	\
-	  fn_num_args = x;						\
-	  fn_opcode_size = FN_OPCODE_SIZE;						\
-	  fn_apply = 0;							\
-	  goto op_fn_common;						\
-	}								\
-}
-
-#define OPFNX								\
-{    /* asm inlines for fn call (much care put into keeping optimizer	\
-	from moving things around.	*/				\
-	fnx_section1();							\
-	fn_section2();							\
-	fnx_args();							\
-	fn_native_test();						\
-	fn_section3();							\
-	fnx_xna();							\
-	fn_section4();							\
-	fast1_dispatcher();		/* nextop0 don't work here */	\
-	fnx_native();							\
-	fn_section5();							\
-	fn_atom_index = Get_AtomNo_PCMAC2;				\
-	fn_defcell = (DefCell *) GetDEFCELL68k(fn_atom_index);		\
-	fn_num_args = Get_BYTE_PCMAC1;				\
-	fn_opcode_size = FNX_OPCODE_SIZE;						\
-	fn_apply = 0;							\
-	goto op_fn_common;						\
-		/* *** these carefully arranged to satisfy optimizer */ \
-label1:	fast1_dispatcher();						\
-label2:	to_native_label();						\
-									\
-}
-#else
-
 #define OPFN(x, num_args_fn, fn_xna_args, fn_native)			\
 {    /* asm inlines for fn call (much care put into keeping optimizer	\
 	from moving things around). */					\
@@ -323,9 +241,6 @@ label1:	fast1_dispatcher();						\
 									\
 }
 
-#endif /* NATIVETRAN */
-
-
 #else
 
 #define OPFN(argcount, num_args_fn, fn_xna_args, fn_native)		\
@@ -347,7 +262,6 @@ label1:	fast1_dispatcher();						\
 	}								\
   LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR((defcell_word &= POINTERMASK));\
   BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FN_OPCODE_SIZE;\
-  FN_CALL_NATIVE_CHECK(LOCFNCELL,-argcount,{});				\
   FN_STACK_CHECK;							\
   {register UNSIGNED newivar;						\
 	newivar = (UNSIGNED) (IVARL = (DLword *)(CSTKPTR-argcount+1));	\
@@ -415,7 +329,6 @@ label1:	fast1_dispatcher();						\
 	}								\
   LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(defcell->defpointer);	\
   BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FNX_OPCODE_SIZE;\
-  FN_CALL_NATIVE_CHECK2(LOCFNCELL, - num_args, {});			\
   FN_STACK_CHECK;							\
   {register UNSIGNED newivar;						\
 	newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR-num_args+1));	\
@@ -551,7 +464,6 @@ op_fn_common:								\
 			- (UNSIGNED)FuncObj) + fn_opcode_size;	\
   FNTPRINT(("Saving PC = 0%o (0x%x).\n", 				\
 	    BCE_CURRENTFX->pc, PCMAC+fn_opcode_size)); 			\
-  FN_CALL_NATIVE_CHECK2(LOCFNCELL, -fn_num_args, N_APPLY_POP_PUSH_TEST)	\
   FN_STACK_CHECK;							\
   APPLY_POP_PUSH_TEST;							\
  {register UNSIGNED newivar;							\
@@ -622,7 +534,6 @@ op_fn_common:								\
   FNCHECKER(if (quick_stack_check()) printf("In ENVCALL.\n"));	\
   N_GETNUMBER(GET_TOS_2, num_args, op_ufn);				\
   BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + 1;\
-  FN_CALL_NATIVE_CHECK2(LOCFNCELL, -num_args, N_ENVCALL_POP_TEST);	\
   FN_STACK_CHECK;							\
   CSTKPTRL -= 2;							\
   {register UNSIGNED newivar;						\

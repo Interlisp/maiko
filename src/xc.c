@@ -213,16 +213,6 @@ void dispatch(void) {
 #define MState stateptrcache
 #endif
 
-#if (defined(I386) || defined(ISC))
-  int SaveD6;
-#else
-#ifdef OPDISP
-#ifndef DOS
-  register int SaveD6;
-#endif
-#endif
-#endif
-
   /* OP_FN_COMMON arguments */
 
   DefCell *fn_defcell;
@@ -264,7 +254,6 @@ void dispatch(void) {
   asm volatile("fldcw WORD PTR CODE32:FP_noint"); /* Turn off FP interrupts */
   goto nextopcode;
 #else
-  SaveD6 = 0;
   goto setup_table;
 #endif /* ISC */
 
@@ -345,66 +334,24 @@ nextopcode:
     case 007:
     CASE007:
       UNWIND(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
-#ifdef NATIVETRAN
-    ret_to_fn0:
-      asm("_ret_to_fn0:");
-      asm("	.globl _ret_to_fn0");
-      RET_FROM_NATIVE;
-#endif
     case 010:
     CASE010:
       FN0;
-#ifdef NATIVETRAN
-    ret_to_fn1:
-      asm("_ret_to_fn1:");
-      asm("	.globl _ret_to_fn1");
-      RET_FROM_NATIVE;
-#endif
     case 011:
     CASE011:
       FN1;
-#ifdef NATIVETRAN
-    ret_to_fn2:
-      asm("_ret_to_fn2:");
-      asm("	.globl _ret_to_fn2");
-      RET_FROM_NATIVE;
-#endif
     case 012:
     CASE012:
       FN2;
-#ifdef NATIVETRAN
-    ret_to_fn3:
-      asm("_ret_to_fn3:");
-      asm("	.globl _ret_to_fn3");
-      RET_FROM_NATIVE;
-#endif
     case 013:
     CASE013:
       FN3;
-#ifdef NATIVETRAN
-    ret_to_fn4:
-      asm("_ret_to_fn4:");
-      asm("	.globl _ret_to_fn4");
-      RET_FROM_NATIVE;
-#endif
     case 014:
     CASE014:
       FN4;
-#ifdef NATIVETRAN
-    ret_to_fnx:
-      asm("_ret_to_fnx:");
-      asm("	.globl _ret_to_fnx");
-      RET_FROM_NATIVE;
-#endif
     case 015:
     CASE015:
       FNX;
-#ifdef NATIVETRAN
-    ret_to_apply:
-      asm("_ret_to_apply:");
-      asm("	.globl _ret_to_apply");
-      RET_FROM_NATIVE;
-#endif
     case 016:
     CASE016:
       APPLY;
@@ -494,12 +441,6 @@ nextopcode:
     case 054:
     CASE054:
       EVAL;
-#ifdef NATIVETRAN
-    ret_to_envcall:
-      asm("_ret_to_envcall:");
-      asm("	.globl _ret_to_envcall");
-      RET_FROM_NATIVE;
-#endif
     case 055:
     CASE055:
       ENVCALL;
@@ -752,7 +693,7 @@ nextopcode:
       EXT;
       OP_subrcall(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
       RET;
-      NATIVE_NEXTOP0;
+      nextop0;
     };
     case 0176:
     CASE176 : { CONTEXTSWITCH; }
@@ -1027,7 +968,9 @@ nextopcode:
     case 0327:
     CASE327:
       QUOTIENT                          /* QUOTIENT */
-          case 0330 : CASE330 : IPLUS2; /* IPLUS2 only while PLUS has no float */
+    case 0330:
+    CASE330:
+      IPLUS2; /* IPLUS2 only while PLUS has no float */
     case 0331:
     CASE331:
       IDIFFERENCE; /* IDIFFERENCE only while no float */
@@ -1183,83 +1126,14 @@ nextopcode:
 
   } /* switch */
 
-#ifdef NATIVETRAN
-/************************************************************************/
-/*	 	NATIVE CODE INTERFACE 					*/
-/************************************************************************/
-
-/*		FORIEGN -> DISPATCH 					*/
-/*		Return to current frame ext				*/
-
-c_ret_to_dispatch:
-  asm("	.globl	_c_ret_to_dispatch");
-  asm("_c_ret_to_dispatch:");
-  PCMACL = (ByteCode *)FuncObj + BCE_CURRENTFX->pc;
-  goto ret_to_dispatch; /* assume optimizer will remove */
-
-/*		NATIVE -> DISPATCH 					*/
-/*		Return to current frame ext				*/
-
-ret_to_dispatch:
-  asm("	.globl	_ret_to_dispatch");
-  asm("_ret_to_dispatch:");
-  RET_FROM_NATIVE;
-  nextop0;
-
-/*		NATIVE -> DISPATCH 					*/
-/*		Execute opcode in current frame ext			*/
-
-ret_to_unimpl:
-  asm("	.globl	_ret_to_unimpl");
-  asm("_ret_to_unimpl:");
-  SaveD6 = 0x100;
-  /* HACK.  Reg. d6 is set to dispatch to native_check */
-  /* so need to do switch instead of dispatch! */
-  RET_FROM_NATIVE;
-  goto nextopcode;
-
-/*		NATIVE -> UFN(PC) 					*/
-
-ret_to_ufn:
-  asm("	.globl	_ret_to_ufn");
-  asm("_ret_to_ufn:");
-  RET_FROM_NATIVE;
-  goto op_ufn;
-
-/*		DISPATCH -> NATIVE? 					*/
-/*		Return to current frame ext?				*/
-
 native_check:
-  SaveD6 = 0;
-  NATIVE_NEXTOP0;
-
-/*		NATIVE -> TIMER						*/
-/*		Return to Execute timer interrupt			*/
-
-ret_to_timer:
-  asm("_ret_to_timer:");
-  asm("	.globl	_ret_to_timer");
-  SaveD6 = 0x100;
-  RET_FROM_NATIVE;
-  goto check_interrupt; /* assume optimizer will remove */
-
-#else
-
-native_check:
-
-#ifndef DOS
-#ifdef OPDISP
-  SaveD6 = 0x000;
-#endif
-#endif /* DOS */
   goto nextopcode;
-#endif
 
 /************************************************************************/
 /*		TIMER INTERRUPT CHECK ROUTINE				*/
 /************************************************************************/
 check_interrupt:
-#if (defined(NATIVETRAN) || defined(SUN3_OS3_OR_OS4_IL) || defined(I386) || defined(ISC))
+#if (defined(SUN3_OS3_OR_OS4_IL) || defined(I386) || defined(ISC))
   asm_label_check_interrupt();
 #endif
 
@@ -1456,8 +1330,6 @@ PopNextop2:
 #ifdef OPDISP
 setup_table:
 #ifndef ISC
-  SaveD6 = 0;
-
   {
     int i;
     for (i = 0; i < 256; i++) { table[i] = (InstPtr)op_ufn; };
