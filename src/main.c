@@ -244,8 +244,6 @@ extern int maxpages;
 extern int *Lisp_errno;
 extern int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
 
-char keystring[128] = {""};
-
 #define FALSE 0
 #define TRUE !FALSE
 
@@ -292,7 +290,6 @@ const char *helpstring =
  medley [<sysout-name>] [<options>]\n\
  -info                    Print general info about the system\n\
  -help                    Print this message\n\
- -k access-key            Your access key\n\
  -d[isplay] host:srv.scr  The host, X server and screen you want Medley on\n\
  -bw <pixels>             The Medley screen borderwidth\n\
  -g[eometry] <geom>]      The Medley screen geometry\n\
@@ -301,7 +298,7 @@ const char *helpstring =
 const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
- lde[ether] [sysout-name] [-k access-key] [<options>]\n\
+ lde[ether] [sysout-name] [<options>]\n\
  -info        Print general info about the system\n\
  -help        Print this message\n";
 #endif /* DOS */
@@ -318,7 +315,6 @@ int main(int argc, char *argv[])
   int i;
   char *envname;
   extern int TIMER_INTERVAL;
-  char keytyped[255];
   extern fd_set LispReadFds;
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
@@ -408,14 +404,6 @@ int main(int argc, char *argv[])
 
     else if (!strcmp(argv[i], "-INIT")) { /*** init sysout, no packaged */
       for_makeinit = 1;
-    } else if (!strcmp(argv[i], "-k")) { /**** security key	****/
-
-      if (argc > ++i) {
-        (void)strcpy(keystring, argv[i]);
-      } else {
-        fprintf(stderr, "Missing argument after -k\n");
-        exit(1);
-      }
     }
 #ifdef DOS
     else if ((strcmp(argv[i], "-vga") == 0) || (strcmp(argv[i], "-VGA") == 0)) {
@@ -487,8 +475,6 @@ int main(int argc, char *argv[])
     seteuid(getuid());
   }
 #endif /* DOS */
-
-  strcpy(keytyped, keystring);
 
   FD_ZERO(&LispReadFds);
 

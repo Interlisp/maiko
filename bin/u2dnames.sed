@@ -69,7 +69,6 @@ s/find\-disp/find\-dsp/g
 s/gchoverflow/gcpunt/g
 s/initdisplay/initdsp/g
 s/inlineSPARC/inlnSPARC/g
-s/newkeymaker/mkkey/g
 s/newmakeatom/mkatom/g
 s/systematoms/sysatms/g
 s/testdisplay/testdsp/g

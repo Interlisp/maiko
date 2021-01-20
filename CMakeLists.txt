@@ -106,7 +106,6 @@ SET(BAD_SRCS
     src/ejlisp.c
     src/imagefile2.c
     src/imagefile.c
-    src/keytst.c
     src/kbdif.c
     src/lpdual.c
     src/lpkit.c
@@ -187,8 +186,6 @@ SET(MAIKO_SRCS
     src/intcall.c
     src/kbdsubrs.c
     src/keyevent.c
-    src/keylib.c
-    src/keytstno.c
     src/kprint.c
     src/ldsout.c
     src/lineblt8.c
@@ -203,7 +200,6 @@ SET(MAIKO_SRCS
     src/miscn.c
     src/mkatom.c
     src/mkcell.c
-    src/mkkey.c
     src/mvs.c
     src/osmsg.c
     src/perrno.c
@@ -328,7 +324,6 @@ SET(MAIKO_HDRS
     inc/kbdsubrsdefs.h
     inc/keyboard.h
     inc/keyeventdefs.h
-    inc/keylibdefs.h
     inc/keysym.h
     inc/kprintdefs.h
     inc/ldeXdefs.h
@@ -445,10 +440,7 @@ ADD_CUSTOM_TARGET(gen-vdate
   BYPRODUCTS vdate.c
 )
 
-# keymaker  lde  ldeether  ldex  mkvdate  setsout  tstsout
-
-ADD_EXECUTABLE(keymaker src/keymaker.c)
-TARGET_LINK_LIBRARIES(keymaker maiko)
+# lde  ldeether  ldex  mkvdate  setsout  tstsout
 
 ADD_EXECUTABLE(lde src/ldeboot.c src/unixfork.c)
 TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DEFINITIONS})

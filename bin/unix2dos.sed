@@ -69,7 +69,6 @@ s/find\-disp\.lex/find\-dsp\.lex/g
 s/gchoverflow\.c/gcpunt\.c/g
 s/initdisplay\.c/initdsp\.c/g
 s/inlineSPARC\.h/inlnSPARC\.h/g
-s/newkeymaker\.c/mkkey\.c/g
 s/newmakeatom\.c/mkatom\.c/g
 s/systematoms\.h/sysatms\.h/g
 s/testdisplay\.c/testdsp\.c/g

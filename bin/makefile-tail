@@ -58,9 +58,6 @@ RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 ANSIRFLAGS = -c $(ANSIOPTFLAGS) $(DFLAGS) $(FPFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 DISPRFLAGS = -c $(DISPCFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
-KEYON  = $(OBJECTDIR)keytst.o
-KEYOFF = $(OBJECTDIR)keytstno.o
-
 OFILES = $(OBJECTDIR)arith2.o \
 	$(OBJECTDIR)arith3.o \
 	$(OBJECTDIR)arith4.o \
@@ -90,7 +87,6 @@ OFILES = $(OBJECTDIR)arith2.o \
 	$(OBJECTDIR)hardrtn.o \
 	$(OBJECTDIR)inet.o \
 	$(OBJECTDIR)intcall.o \
-	$(OBJECTDIR)keylib.o \
 	$(OBJECTDIR)lineblt8.o \
 	$(OBJECTDIR)lsthandl.o \
 	$(OBJECTDIR)llcolor.o \
@@ -164,10 +160,7 @@ SXHASHFILE = $(OBJECTDIR)sxhash.o
 
 VFILE = $(OBJECTDIR)vdate
 
-DEVFILES = $(OFILES) $(KEYOFF) $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
-	   $(DEVICES) $(GCFILES) $(SXHASHFILE) $(BITBLTFILE) $(XFILES)    \
-	   $(COLORFILES) $(LPFILES) $(DLPIFILES)
-LIBFILES = $(OFILES) $(KEYON)  $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
+LIBFILES = $(OFILES) $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
 	   $(DEVICES) $(GCFILES) $(SXHASHFILE) $(BITBLTFILE) $(XFILES)    \
 	   $(COLORFILES) $(LPFILES) $(DLPIFILES)
 EXTFILES = $(OBJECTDIR)usrsubr.o
@@ -179,16 +172,16 @@ EXTFILES = $(OBJECTDIR)usrsubr.o
 ################################################################################
 
 default	: $(OSARCHDIR)lde $(OSARCHDIR)$(LDENAME) $(OSARCHDIR)ldeether \
-	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout $(OSARCHDIR)keymaker
+	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout
 
 $(OSARCHDIR)lde: $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c $(INCDIR)unixfork.h
 	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c \
 		$(LDELDFLAGS) -o $(OSARCHDIR)lde
 
-$(OSARCHDIR)$(LDENAME) :       $(DEVFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
+$(OSARCHDIR)$(LDENAME) :       $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
 	/bin/rm -f $(VFILE).c
 	$(OSARCHDIR)mkvdate > $(VFILE).c
-	$(CC) $(CFLAGS) $(DEVFILES) $(EXTFILES) $(VFILE).c \
+	$(CC) $(CFLAGS) $(LIBFILES) $(EXTFILES) $(VFILE).c \
 		$(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
 	@ echo ""
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
@@ -212,9 +205,6 @@ $(OSARCHDIR)testdsp :  $(SRCDIR)testdsp.c $(REQUIRED-INCS) $(INCDIR)lispemul.h  
 	 $(INCDIR)adr68k.h  $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)display.h $(INCDIR)dbprint.h
 	$(CC) $(CFLAGS) -DDEBUG -I$(INCDIR) $(SRCDIR)testdsp.c -lsuntool -lsunwindow  -lpixrect -lc -lm -o $(OSARCHDIR)testdsp
-
-$(OSARCHDIR)keymaker : ../src/keymaker.c  $(REQUIRED-INCS) $(OBJECTDIR)keylib.o
-	$(CC) $(CFLAGS) -I$(INCDIR) ../src/keymaker.c $(OBJECTDIR)keylib.o -o $(OSARCHDIR)keymaker
 
 #### Component files ######################################################
 
@@ -600,15 +590,6 @@ $(OBJECTDIR)keyevent.o :  $(SRCDIR)keyevent.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 	 $(INCDIR)pilotbbt.h
 	$(CC) $(RFLAGS) $(SRCDIR)keyevent.c $(INLINE) -o $(OBJECTDIR)keyevent$(OEXT)
 
-$(OBJECTDIR)keylib.o :  $(SRCDIR)keylib.c $(REQUIRED-INCS) 
-	$(CC) $(RFLAGS) $(SRCDIR)keylib.c $(INLINE) -o $(OBJECTDIR)keylib$(OEXT)
-
-$(OBJECTDIR)keytst.o :  $(SRCDIR)keytst.c $(REQUIRED-INCS) 
-	$(CC) $(RFLAGS) $(SRCDIR)keytst.c $(INLINE) -o $(OBJECTDIR)keytst$(OEXT)
-
-$(OBJECTDIR)keytstno.o :  $(SRCDIR)keytstno.c $(REQUIRED-INCS) 
-	$(CC) $(RFLAGS) $(SRCDIR)keytstno.c $(INLINE) -o $(OBJECTDIR)keytstno$(OEXT)
-
 $(OBJECTDIR)lsthandl.o :  $(SRCDIR)lsthandl.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)emlglob.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)address.h  $(INCDIR)adr68k.h \
@@ -979,16 +960,13 @@ $(SCRPTDIR)medley : $(BINDIR)medley
 ################################################################################
 
 cleanup :
-	rm -f $(LIBFILES) $(EXTFILES) $(KEYOFF) $(OBJECTDIR)tstsout.o $(OBJECTDIR)setsout.o $(OSARCHDIR)lde $(OSARCHDIR)ldex $(OSARCHDIR)ldeether
+	rm -f $(LIBFILES) $(EXTFILES) $(OBJECTDIR)tstsout.o $(OBJECTDIR)setsout.o $(OSARCHDIR)lde $(OSARCHDIR)ldex $(OSARCHDIR)ldeether
 
 .c.o:
 	$(CC) $(RFLAGS) $*.c -o $@ $(INLINE)
 
 .c.s:
 	$(CC) -S $(CFLAGS) -I$(INCDIR) $(SRCDIR)$*.c -o $(SRCDIR)$@ $(INLINE)
-
-$(OBJECTDIR)keymaker : ../src/keymaker.c  $(REQUIRED-INCS) $(OBJECTDIR)keylib.o
-	$(CC) $(CFLAGS) -I$(INCDIR) ../src/keymaker.c $(OBJECTDIR)keylib.o -o $(OBJECTDIR)keymaker
 
 cxref :
 	cxref -c  $(DFLAGS) -I$(INCDIR) $(SRCDIR)*.c -o ../all.cxref
