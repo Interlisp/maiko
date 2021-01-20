@@ -197,7 +197,6 @@ void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hot
   unsigned char image[32];
   int i;
   Pixmap Cursor_src, Cursor_msk;
-  Screen *screen;
 
 #ifdef BYTESWAP
   if (from_lisp)
@@ -209,7 +208,6 @@ void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hot
 #endif /* BYTESWAP */
 
   XLOCK;
-  screen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
   Cursor_src = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,
 					   16, 16, 1, 0, 1); /* Has to have a depth of 1! */
   Cursor_msk = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,

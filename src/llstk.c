@@ -296,8 +296,6 @@ DLword *freestackblock(DLword n, StackWord *start68k, int align)
 {
   register int wantedsize;
   register StackWord *scanptr68k;
-  StackWord *ooscan, *oscan;
-  register StackWord *orig68k;
   register STKBLK *freeptr68k;
   register StackWord *easp68k;
   register DLword freesize;
@@ -338,8 +336,9 @@ SCAN:
       scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
       break;
     default:
-      orig68k = scanptr68k;
-
+#ifdef STACKCHECK
+      StackWord *orig68k = scanptr68k;
+#endif
       while (STKWORD(scanptr68k)->flags != STK_BF) {
         S_WARN(STKWORD(scanptr68k)->flags == STK_NOTFLG, "NOTFLG not on", scanptr68k);
         scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
@@ -382,8 +381,6 @@ FREESCAN:
   freeptr68k = (STKBLK *)scanptr68k;
   freesize = FSB_size(freeptr68k);
 FREE:
-  ooscan = oscan;
-  oscan = scanptr68k;
   scanptr68k = (StackWord *)(((DLword *)freeptr68k) + freesize);
   if (freesize == 0) error("FREESIZE = 0");
 

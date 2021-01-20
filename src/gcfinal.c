@@ -516,7 +516,6 @@ LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
 
 void printarrayblock(LispPTR base) {
   struct arrayblock *bbase, *btrailer, *ptrailer;
-  struct arrayblock *bfwd, *bbwd;
   LispPTR *addr;
 
   LispPTR pbase, nbase;
@@ -524,8 +523,6 @@ void printarrayblock(LispPTR base) {
   bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
   btrailer = (struct arrayblock *)Addr68k_from_LADDR(Trailer(base, bbase));
   ptrailer = (struct arrayblock *)Addr68k_from_LADDR(base - ARRAYBLOCKTRAILERWORDS);
-  bfwd = (struct arrayblock *)Addr68k_from_LADDR(bbase->fwd);
-  bbwd = (struct arrayblock *)Addr68k_from_LADDR(bbase->bkwd);
 
   nbase = base + 2 * bbase->arlen;
   pbase = base - 2 * ptrailer->arlen;

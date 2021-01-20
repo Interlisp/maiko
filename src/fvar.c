@@ -79,7 +79,6 @@ void nnewframe(register struct frameex1 *newpfra2, register DLword *achain, regi
   register UNSIGNED i;        /* temp for control */
   register int nametablesize; /* NameTable size of current function header. */
   register int ph;            /* alink temp, also phase */
-  struct frameex1 *onewpfra2, *oonewpfra2, *ooonewpfra2;
 
 newframe:
 #ifdef SUN3_OS3_OR_OS4_IL
@@ -123,9 +122,6 @@ newframe:
   }
 
   ph &= 0xFFFE; /* to mask off SLOW bit */
-  ooonewpfra2 = oonewpfra2;
-  oonewpfra2 = onewpfra2;
-  onewpfra2 = newpfra2;
   newpfra2 = (struct frameex1 *)(-FRAMESIZE + Stackspace + ph);
 
   {                                  /* open new block to try and conserve address register */
@@ -433,7 +429,6 @@ LispPTR native_newframe(int slot)
   register DLword *achain;            /* pointer to 1st word of the searching
                                        FVAR slot in CurrentFrameExtension */
   register int name;                  /* Atom# of target FVAR slot. */
-  struct frameex2 *onewpfra2, *oonewpfra2, *ooonewpfra2;
 
   { /* LOCAL temp regs */
     register int rslot = slot;
@@ -470,9 +465,6 @@ LispPTR native_newframe(int slot)
                               name, VALS_HI_RET(name)); */
       return (*((LispPTR *)achain) = VALS_HI_RET(name));
     }
-    ooonewpfra2 = oonewpfra2;
-    oonewpfra2 = onewpfra2;
-    onewpfra2 = newpfra2;
     newpfra2 = (struct frameex2 *)(-FRAMESIZE + Stackspace + (alink & 0xFFFE));
 
     {                                  /* open new block to try and conserve address register */

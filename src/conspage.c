@@ -193,11 +193,11 @@ ex:
 
 static ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
   ConsCell *carcell, *cdrcell;
-  unsigned int offset, prior, priorprior, ppriorprior, noffset, nprior, poffset;
+  unsigned int offset, prior, priorprior, noffset, nprior, poffset;
 
   if (pg->count < 2) return ((ConsCell *)0);
 
-  ppriorprior = priorprior = prior = nprior = 0;
+  priorprior = prior = nprior = 0;
 
   for (offset = pg->next_cell; offset; offset = FREECONS(pg, offset)->next_free) {
     if (prior) {
@@ -243,7 +243,6 @@ static ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
         return (carcell);
       }
     }
-    ppriorprior = priorprior;
     priorprior = prior;
     prior = offset;
   }

@@ -41,18 +41,17 @@ LispPTR N_OP_rplcons(register LispPTR list, register LispPTR item) {
 #ifndef NEWCDRCODING
   register struct conspage *conspage;
   register ConsCell *new_cell;
-#endif
   register ConsCell *list68k;
-
   LispPTR register page;
+#endif
 
   if (!Listp(list)) ERROR_EXIT(item);
 
+/* There are some rest Cell and "list" must be ONPAGE cdr_coded */
+#ifndef NEWCDRCODING
   page = POINTER_PAGE(list);
   list68k = (ConsCell *)Addr68k_from_LADDR(list);
 
-/* There are some rest Cell and "list" must be ONPAGE cdr_coded */
-#ifndef NEWCDRCODING
   if ((GetCONSCount(page) != 0) && (list68k->cdr_code > CDR_MAXINDIRECT)) {
     GCLOOKUP(item, ADDREF);
     GCLOOKUP(cdr(list), DELREF);
