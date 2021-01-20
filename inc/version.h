@@ -211,13 +211,11 @@ error Must specify RELEASE to build Medley.
 
 
 
-	/********************************************************/
-	/*							*/
-	/********************************************************/
-#ifdef sparc
-	/* SPARCs and MIPSs can't do unaligned word-loads */
+/* Not all platforms want to do unaligned reads, so
+ * we will disable those here. */
+#if defined(MAIKO_ARCH_SPARC)
 #undef UNALIGNED_FETCH_OK
-#endif /* SPARC */
+#endif
 
 
 
