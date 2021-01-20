@@ -11,7 +11,6 @@ RELDIR = ../RELEASE/
 MAIN = _main
 RANLIB = ranlib
 AR = ar rcv
-ANSICC = $(CC)
 
 # Compiler flags
 CLANG_CFLAGS = -std=gnu99 -fno-strict-aliasing -fwrapv
