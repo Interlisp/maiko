@@ -266,14 +266,6 @@ typedef unsigned short u_short;
 #define USHORT unsigned short
 #endif /* DOS */
 
-	/********************************************************/
-	/*							*/
-	/********************************************************/
-
-#ifdef OS4
-#define __inline__
-#endif
-
 	/****************************************************************/
 	/* 	    End of architecture-specific flag settings		*/
 	/* 	    --Start of system-specific flags		 	*/
