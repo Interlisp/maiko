@@ -207,12 +207,6 @@ void dispatch(void) {
   register LispPTR tscache;
 #endif
 
-#ifdef sparc
-  register struct state *stateptrcache = MState;
-#undef MState
-#define MState stateptrcache
-#endif
-
   /* OP_FN_COMMON arguments */
 
   DefCell *fn_defcell;
