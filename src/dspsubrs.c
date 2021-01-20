@@ -12,10 +12,9 @@
 #include "version.h"
 
 #include <stdio.h>
-#ifndef NOPIXRECT
+#ifdef SUNDISPLAY
 #include <sunwindow/window_hs.h>
-#include <pixrect/memvar.h>
-#endif /* NOPIXRECT */
+#endif
 
 #include "lispemul.h"
 #include "lsptypes.h"

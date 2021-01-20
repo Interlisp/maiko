@@ -32,7 +32,7 @@
 #include "bbtsubdefs.h"
 #include "initdspdefs.h"
 
-#ifndef NOPIXRECT
+#ifdef SUNDISPLAY
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>
 
