@@ -42,7 +42,6 @@
 int main(void) {
   long dtime;
   time(&dtime);
-  fprintf(stderr, "MDate: %ld\n", dtime);
   printf("long MDate= %ld;\n", dtime);
   return (0);
 }
@@ -57,9 +56,6 @@ int main(void) {
    * warnings about differing sized types.
    */
   gettimeofday(&time, NULL);
-  fprintf(stderr, "MDate: %ld\n", (long)time.tv_sec);
-  fprintf(stderr, "Version: %s\n", ctime(&time.tv_sec));
-
   printf("#include <time.h>\n");
   printf("time_t MDate= %ld;\n", (long)time.tv_sec);
   return (0);
