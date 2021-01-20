@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#ifndef NOPIXRECT
+#ifdef SUNDISPLAY
 #include <sys/ioctl.h>
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>

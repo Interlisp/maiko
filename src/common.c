@@ -28,10 +28,6 @@
 #include "kprintdefs.h"
 #include "uraiddefs.h"
 
-#ifndef NOPIXRECT
-#include <pixrect/pixrect_hs.h>
-#endif
-
 void stab() { DBPRINT(("Now in stab\n")); }
 
 /***************************************************************
