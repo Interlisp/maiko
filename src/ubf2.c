@@ -66,7 +66,7 @@ LispPTR N_OP_ubfloat2(int a2, int a1, int alpha) {
         return (a1);
       else
         return (a2);
-    case 8: /* rem */ ans = fmod(arg2, arg1); break;
+    case 8: /* rem */ ans = fmodf(arg2, arg1); break;
     default: ERROR_EXIT(a1);
   } /* end switch */
 
