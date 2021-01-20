@@ -44,8 +44,6 @@ ADMINFILES = mkdos mkvdate.c optck.c
 
 ETHERFILES = ldeether.OEXT
 
-KEY = keytstno.OEXT
-
 CFLAGS = -I. XFLAGS EXTRACFLAGS DEBUG
 
 LDFLAGS = DEBUG EXTRALDFLAGS XLDFLAGS
@@ -62,9 +60,9 @@ SRCFILES = $(SRCDIR)conspage.c $(SRCDIR)gcoflow.c $(SRCDIR)shift.c $(SRCDIR)dbgt
 	$(SRCDIR)array5.c $(SRCDIR)eqf.c $(SRCDIR)intcall.c $(SRCDIR)mkcell.c $(SRCDIR)ubf3.c $(SRCDIR)array6.c \
 	$(SRCDIR)ether.c $(SRCDIR)mkvdate.c $(SRCDIR)ufn.c $(SRCDIR)atom.c $(SRCDIR)findkey.c \
 	$(SRCDIR)kbdsubrs.c $(SRCDIR)mouseif.c $(SRCDIR)ufs.c $(SRCDIR)bbtsub.c $(SRCDIR)foreign.c \
-	$(SRCDIR)keyevent.c $(SRCDIR)unixcomm.c $(SRCDIR)bin.c $(SRCDIR)fp.c $(SRCDIR)keylib.c $(SRCDIR)binds.c \
+	$(SRCDIR)keyevent.c $(SRCDIR)unixcomm.c $(SRCDIR)bin.c $(SRCDIR)fp.c $(SRCDIR)binds.c \
 	$(SRCDIR)asmbbt.c $(SRCDIR)fvar.c $(SRCDIR)mvs.c $(SRCDIR)unwind.c $(SRCDIR)bitblt.c $(SRCDIR)gc.c \
-	$(SRCDIR)uraid.c $(SRCDIR)blt.c $(SRCDIR)gc2.c $(SRCDIR)kprint.c $(SRCDIR)keytstno.c $(SRCDIR)keytst.c\
+	$(SRCDIR)uraid.c $(SRCDIR)blt.c $(SRCDIR)gc2.c $(SRCDIR)kprint.c \
 	$(SRCDIR)osmsg.c usrsubr.c $(SRCDIR)byteswap.c $(SRCDIR)gcarray.c \
 	$(SRCDIR)perrno.c $(SRCDIR)ldeboot.c $(SRCDIR)ldeether.c $(SRCDIR)uutils.c $(SRCDIR)carcdr.c $(SRCDIR)gccode.c \
 	$(SRCDIR)rawcolor.c $(SRCDIR)vars3.c $(SRCDIR)gcfinal.c $(SRCDIR)ldsout.c $(SRCDIR)return.c \
@@ -93,7 +91,7 @@ OFILES = $(OBJECTDIR)conspage.OEXT $(OBJECTDIR)gcoflow.OEXT $(OBJECTDIR)shift.OE
 	$(OBJECTDIR)ether.OEXT $(OBJECTDIR)ufn.OEXT $(OBJECTDIR)atom.OEXT \
 	$(OBJECTDIR)findkey.OEXT $(OBJECTDIR)kbdsubrs.OEXT $(OBJECTDIR)mouseif.OEXT $(OBJECTDIR)ufs.OEXT \
 	$(OBJECTDIR)bbtsub.OEXT $(OBJECTDIR)foreign.OEXT $(OBJECTDIR)keyevent.OEXT \
-	$(OBJECTDIR)unixcomm.OEXT $(OBJECTDIR)bin.OEXT $(OBJECTDIR)fp.OEXT $(OBJECTDIR)keylib.OEXT \
+	$(OBJECTDIR)unixcomm.OEXT $(OBJECTDIR)bin.OEXT $(OBJECTDIR)fp.OEXT \
 	$(OBJECTDIR)binds.OEXT $(OBJECTDIR)fvar.OEXT $(OBJECTDIR)mvs.OEXT \
 	$(OBJECTDIR)unwind.OEXT $(OBJECTDIR)bitblt.OEXT $(OBJECTDIR)gc.OEXT \
 	$(OBJECTDIR)uraid.OEXT $(OBJECTDIR)blt.OEXT $(OBJECTDIR)gc2.OEXT \
@@ -104,7 +102,7 @@ OFILES = $(OBJECTDIR)conspage.OEXT $(OBJECTDIR)gcoflow.OEXT $(OBJECTDIR)shift.OE
 	$(OBJECTDIR)return.OEXT $(OBJECTDIR)vmemsave.OEXT $(OBJECTDIR)chardev.OEXT \
 	$(OBJECTDIR)gchtfind.OEXT $(OBJECTDIR)lineblt8.OEXT $(OBJECTDIR)rpc.OEXT $(OBJECTDIR)xc.OEXT \
 	$(OBJECTDIR)common.OEXT $(OBJECTDIR)gcmain3.OEXT $(OBJECTDIR)lisp2c.OEXT $(OBJECTDIR)rplcons.OEXT \
-	$(OBJECTDIR)z2.OEXT $(OBJECTDIR) $(OBJECTDIR)vdate.OEXT $(KEY) $(COLORFILES) $(ARCHFILES) EXTRAFILES
+	$(OBJECTDIR)z2.OEXT $(OBJECTDIR) $(OBJECTDIR)vdate.OEXT $(COLORFILES) $(ARCHFILES) EXTRAFILES
 
 
 HFILES = $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)arith.h $(INCDIR)cell.h $(INCDIR)dbprint.h $(INCDIR)display.h \

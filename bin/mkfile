@@ -49,8 +49,6 @@ ADMINFILES = mkdos mkvdate.c optck.c
 
 ETHERFILES = ldeether.OEXT
 
-KEY = keytstno.OEXT
-
 CFLAGS = -I. XFLAGS EXTRACFLAGS DEBUG
 
 LDFLAGS = DEBUG EXTRALDFLAGS XLDFLAGS
@@ -67,9 +65,9 @@ SRCFILES = SRCDIR/conspage.c SRCDIR/gcoflow.c SRCDIR/shift.c SRCDIR/dbgtool.c SR
 	SRCDIR/array5.c SRCDIR/eqf.c SRCDIR/intcall.c SRCDIR/mkcell.c SRCDIR/ubf3.c SRCDIR/array6.c \
 	SRCDIR/ether.c SRCDIR/mkvdate.c SRCDIR/ufn.c SRCDIR/atom.c SRCDIR/findkey.c \
 	SRCDIR/kbdsubrs.c SRCDIR/mouseif.c SRCDIR/ufs.c SRCDIR/bbtsub.c SRCDIR/foreign.c \
-	SRCDIR/keyevent.c SRCDIR/unixcomm.c SRCDIR/bin.c SRCDIR/fp.c SRCDIR/keylib.c SRCDIR/binds.c \
+	SRCDIR/keyevent.c SRCDIR/unixcomm.c SRCDIR/bin.c SRCDIR/fp.c SRCDIR/binds.c \
 	SRCDIR/asmbbt.c SRCDIR/fvar.c SRCDIR/mvs.c SRCDIR/unwind.c SRCDIR/bitblt.c SRCDIR/gc.c \
-	SRCDIR/uraid.c SRCDIR/blt.c SRCDIR/gc2.c SRCDIR/kprint.c SRCDIR/keytstno.c SRCDIR/keytst.c\
+	SRCDIR/uraid.c SRCDIR/blt.c SRCDIR/gc2.c SRCDIR/kprint.c \
 	SRCDIR/osmsg.c usrsubr.c SRCDIR/byteswap.c SRCDIR/gcarray.c \
 	SRCDIR/perrno.c SRCDIR/ldeboot.c SRCDIR/ldeether.c SRCDIR/uutils.c SRCDIR/carcdr.c SRCDIR/gccode.c \
 	SRCDIR/rawcolor.c SRCDIR/vars3.c SRCDIR/gcfinal.c SRCDIR/ldsout.c SRCDIR/return.c \
@@ -98,7 +96,7 @@ OFILES = conspage.OEXT gcoflow.OEXT shift.OEXT dbgtool.OEXT \
 	ether.OEXT ufn.OEXT atom.OEXT \
 	findkey.OEXT kbdsubrs.OEXT mouseif.OEXT ufs.OEXT \
 	bbtsub.OEXT foreign.OEXT keyevent.OEXT \
-	unixcomm.OEXT bin.OEXT fp.OEXT keylib.OEXT \
+	unixcomm.OEXT bin.OEXT fp.OEXT \
 	binds.OEXT fvar.OEXT mvs.OEXT \
 	unwind.OEXT bitblt.OEXT gc.OEXT \
 	uraid.OEXT blt.OEXT gc2.OEXT \
@@ -109,7 +107,7 @@ OFILES = conspage.OEXT gcoflow.OEXT shift.OEXT dbgtool.OEXT \
 	return.OEXT vmemsave.OEXT chardev.OEXT \
 	gchtfind.OEXT lineblt8.OEXT rpc.OEXT xc.OEXT \
 	common.OEXT gcmain3.OEXT lisp2c.OEXT rplcons.OEXT \
-	z2.OEXT vdate.OEXT $(KEY) $(COLORFILES) $(ARCHFILES) EXTRAFILES
+	z2.OEXT vdate.OEXT $(COLORFILES) $(ARCHFILES) EXTRAFILES
 
 
 HFILES = INCDIR/address.h INCDIR/adr68k.h INCDIR/arith.h INCDIR/cell.h INCDIR/dbprint.h INCDIR/display.h \

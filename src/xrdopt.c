@@ -64,8 +64,6 @@ XrmOptionDescRec opTable[] = {
     {"-it", "*icontitle", XrmoptionSepArg, (caddr_t)NULL},
     {"-iconbitmap", "*iconbitmap", XrmoptionSepArg, (caddr_t)NULL},
     {"-ibm", "*iconbitmap", XrmoptionSepArg, (caddr_t)NULL},
-    {"-key", "*key", XrmoptionSepArg, (caddr_t)NULL},
-    {"-k", "*key", XrmoptionSepArg, (caddr_t)NULL},
     {"-timer", "*timer", XrmoptionSepArg, (caddr_t)NULL},
     {"-xpages", "*maxpages", XrmoptionSepArg, (caddr_t)NULL},
     {"-m", "*memory", XrmoptionSepArg, (caddr_t)NULL},
@@ -87,12 +85,10 @@ char iconpixmapfile[1024];
 char Window_Title[255];
 char Icon_Title[255];
 
-extern char sysout_name[], keystring[];
+extern char sysout_name[];
 extern int sysout_size, for_makeinit, please_fork, Scroll_Border;
 /* diagnostic flag for sysout dumping */
 /* extern int maxpages; */
-
-extern char keystring[];
 
 int Lisp_Border = 2;
 
@@ -117,7 +113,6 @@ void print_Xusage(const char *prog)
 {
   fprintf(stderr, " %s options:\n", prog);
   fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
-  fprintf(stderr, " -k[ey] <access-key>                  -see manual for details\n");
   fprintf(stderr, " -h[elp]                              -prints this text\n");
   fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
   fprintf(stderr,
@@ -147,7 +142,7 @@ void print_lispusage(const char *prog)
   TPRINT(("TRACE: print_lisp_usage()\n"));
 
   /* Lisp Option */
-  fprintf(stderr, "lde[ether] [sysout] [-k access-key]");
+  fprintf(stderr, "lde[ether] [sysout]");
   fprintf(stderr, " [-E <ethernet-info>]");
   fprintf(stderr, "\n");
 
@@ -322,9 +317,6 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }
 
-  if (XrmGetResource(rDB, "ldex.key", "Ldex.key", str_type, &value) == True) {
-    (void)strncpy(keystring, value.addr, (int)value.size);
-  }
   if (XrmGetResource(rDB, "ldex.xsync", "Ldex.xsync", str_type, &value) == True) { xsync = True; }
 #ifdef MAIKO_ENABLE_ETHERNET
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
