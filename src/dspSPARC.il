@@ -133,49 +133,6 @@ done:				!		else done;
 
 /*
 	***************************************************************
-	Arithmetic Opcode Helpers
-	***************************************************************
-*/
-
-.inline	_sub32,8
-	subcc	%o0,%o1,%o0	! result = arg0 - arg1
-	bvs	diff_err
-	nop
-.end
-
-.inline	_isub32,8
-	subcc	%o0,%o1,%o0	! result = arg0 - arg1
-	bvs	idiff_err
-	nop
-.end
-
-.inline	_sub32n,8
-	subcc	%o0,%o1,%o0	! result = arg0 - arg1
-	bvs	diff_err2
-	nop
-.end
-
-.inline	_plus32,8
-	addcc	%o0,%o1,%o0	! result = arg0 + arg1
-	bvs	plus_err
-	nop
-.end
-
-.inline	_iplus32,8
-	addcc	%o0,%o1,%o0	! result = arg0 + arg1
-	bvs	iplus_err
-	nop
-.end
-
-.inline	_iplus32n,8
-	addcc	%o0,%o1,%o0	! result = arg0 + arg1
-	bvs	iplusn_err
-	nop
-.end
-
-
-/*
-	***************************************************************
 	Inline Assembly help for dispatcher.
 	***************************************************************
 */

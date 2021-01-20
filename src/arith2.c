@@ -37,16 +37,7 @@ LispPTR N_OP_plus2(int tosm1, int tos) {
   N_GETNUMBER(tos, arg1, doufn);
   N_GETNUMBER(tosm1, arg2, doufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = plus32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-
-doufn2:
-  plus_err_label();
-  ERROR_EXIT(tos);
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_sadd_overflow(arg1, arg2, &result)) {
     ERROR_EXIT(tos);
@@ -59,7 +50,7 @@ doufn2:
   if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);
 
-#endif /* USE_INLINE_ARITH */
+#endif
 
 doufn:
   return (N_OP_fplus2(tosm1, tos));
@@ -81,14 +72,7 @@ LispPTR N_OP_iplus2(int tosm1, int tos) {
   N_IGETNUMBER(tos, arg1, doufn);
   N_IGETNUMBER(tosm1, arg2, doufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = iplus32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  iplus_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_sadd_overflow(arg1, arg2, &result)) {
     ERROR_EXIT(tos);
@@ -102,7 +86,7 @@ dummy:
   if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
   N_ARITH_SWITCH(result);
 
-#endif /* USE_INLINE_ARITH */
+#endif
 
 doufn:
   ERROR_EXIT(tos);
@@ -122,16 +106,7 @@ LispPTR N_OP_difference(int tosm1, int tos) {
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = sub32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-
-doufn2:
-  diff_err_label();
-  ERROR_EXIT(tos);
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_ssub_overflow(arg1, arg2, &result)) {
     ERROR_EXIT(tos);
@@ -158,14 +133,7 @@ LispPTR N_OP_idifference(int tosm1, int tos) {
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = isub32(arg1, arg2);
-  N_ARITH_SWITCH(result);
-dummy:
-  idiff_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_ssub_overflow(arg1, arg2, &result)) {
     ERROR_EXIT(tos);
@@ -253,14 +221,7 @@ LispPTR N_OP_iplusn(int tos, int n) {
 
   N_IGETNUMBER(tos, arg1, do_ufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = iplus32n(arg1, n);
-  N_ARITH_SWITCH(result);
-dummy:
-  iplusn_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_sadd_overflow(arg1, n, &result)) {
     ERROR_EXIT(tos);
@@ -290,14 +251,7 @@ LispPTR N_OP_idifferencen(int tos, int n) {
 
   N_IGETNUMBER(tos, arg1, do_ufn);
 
-#ifdef USE_INLINE_ARITH
-
-  result = sub32n(arg1, n);
-  N_ARITH_SWITCH(result);
-dummy:
-  idiffn_err_label();
-
-#elif defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_ssub_overflow(arg1, n, &result)) {
     ERROR_EXIT(tos);

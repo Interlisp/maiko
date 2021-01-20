@@ -50,7 +50,7 @@ int N_OP_times2(int tosm1, int tos) {
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
 
-#if defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_smul_overflow(arg1, arg2, &result)) {
     goto doufn2;
@@ -79,7 +79,7 @@ int N_OP_itimes2(int tosm1, int tos) {
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
 
-#if defined(USE_OVERFLOW_BUILTINS)
+#ifdef USE_OVERFLOW_BUILTINS
 
   if (__builtin_smul_overflow(arg1, arg2, &result)) {
     goto doufn;
