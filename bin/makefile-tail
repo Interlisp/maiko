@@ -55,7 +55,6 @@ REQUIRED-INCS = $(INCDIR)version.h
 CFLAGS = $(OPTFLAGS) $(DFLAGS) $(FPFLAGS)
 DISPCFLAGS = $(DISPOPTFLAGS) $(DFLAGS) $(FPFLAGS)
 RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
-ANSIRFLAGS = -c $(ANSIOPTFLAGS) $(DFLAGS) $(FPFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 DISPRFLAGS = -c $(DISPCFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
 OFILES = $(OBJECTDIR)arith2.o \
@@ -835,39 +834,39 @@ $(OBJECTDIR)mnwevent.o : $(SRCDIR)mnwevent.c  $(REQUIRED-INCS) $(INCDIR)mnxdefs.
 
 $(OBJECTDIR)lpdual.o : $(SRCDIR)lpdual.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpdual.c -o $(OBJECTDIR)lpdual$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpdual.c -o $(OBJECTDIR)lpdual$(OEXT)
 
 $(OBJECTDIR)lpkit.o : $(SRCDIR)lpkit.c  $(REQUIRED-INCS) $(INCDIR)lpkit.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpkit.c -o $(OBJECTDIR)lpkit$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpkit.c -o $(OBJECTDIR)lpkit$(OEXT)
 
 $(OBJECTDIR)lplex.yy.o : $(SRCDIR)lplex.yy.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lplex.yy.c -o $(OBJECTDIR)lpdual$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lplex.yy.c -o $(OBJECTDIR)lpdual$(OEXT)
 
 $(OBJECTDIR)lpmain.o : $(SRCDIR)lpmain.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpmain.c -o $(OBJECTDIR)lpmain$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpmain.c -o $(OBJECTDIR)lpmain$(OEXT)
 
 $(OBJECTDIR)lpread.o : $(SRCDIR)lpread.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpread.c -o $(OBJECTDIR)lpread$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpread.c -o $(OBJECTDIR)lpread$(OEXT)
 
 $(OBJECTDIR)lpsolve.o : $(SRCDIR)lpsolve.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpsolve.c -o $(OBJECTDIR)lpsolve$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpsolve.c -o $(OBJECTDIR)lpsolve$(OEXT)
 
 $(OBJECTDIR)lptran.o : $(SRCDIR)lptran.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lptran.c -o $(OBJECTDIR)lptran$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lptran.c -o $(OBJECTDIR)lptran$(OEXT)
 
 $(OBJECTDIR)lpwrite.o : $(SRCDIR)lpwrite.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpwrite.c -o $(OBJECTDIR)lpwrite$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpwrite.c -o $(OBJECTDIR)lpwrite$(OEXT)
 
 $(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
-	$(ANSICC) $(ANSIRFLAGS) $(SRCDIR)lpy.tab.c -o $(OBJECTDIR)lpy.tab$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)lpy.tab.c -o $(OBJECTDIR)lpy.tab$(OEXT)
 
 ################################################################################
 # Installation targets - copyprotect is ON here
