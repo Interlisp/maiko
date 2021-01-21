@@ -27,6 +27,7 @@
 
 #ifndef DOS
 #include <pwd.h>
+#include <sys/utsname.h>
 #endif
 
 #include "lispemul.h"
@@ -208,45 +209,34 @@ LispPTR unix_username(LispPTR *args) {
 /*									*/
 /************************************************************************/
 /*
- * The code for "MACH" and "ARCH" are really not correct and it's not
- * clear what use they are. RS/6000 systems use a PowerPC processor,
- * and so did PowerBook Macintosh systems.
- * "MACH" and "ARCH" both seem to be a mix of instruction set architecture and
- * system types (rs/6000 used PowerPC).
- * The only usage seems to be checking "ARCH" == "dos" and for the existence
- * of *any* result from the call, which indicates it's an emulated system.
+ * The only usage for "ARCH" seems to be checking "ARCH" == "dos"
+ * and for the existence of *any* result from the call, which
+ * indicates it's an emulated system.
  */
 LispPTR unix_getparm(LispPTR *args) {
   char envname[20], result[128], *envvalue;
+#ifndef DOS
+  struct utsname u;
+#endif
+
   if (lisp_string_to_c_string(args[0], envname, sizeof envname)) return NIL;
 
+#ifdef DOS
   if (strcmp(envname, "MACH") == 0) {
-#if defined(sparc)
-    envvalue = "sparc";
-#elif defined(I386)
-    envvalue = "i386";
-#elif defined(DOS)
     envvalue = "386";
-#elif defined(MACOSX)
-    envvalue = "i386";
-#else
-    envvalue = "mc68020";
-#endif
-
   } else if (strcmp(envname, "ARCH") == 0) {
-#if defined(sparc)
-    envvalue = "sun4";
-#elif defined(I386)
-    envvalue = "sun386";
-#elif defined(DOS)
     envvalue = "dos";
-#elif defined(MACOSX)
-    envvalue = "i386";
+  }
 #else
-    envvalue = "sun3";
-#endif
+  if (uname(&u) == -1) return NIL;
 
-  } else if (strcmp(envname, "DISPLAY") == 0) {
+  if (strcmp(envname, "MACH") == 0) {
+    envvalue = u.machine;
+  } else if (strcmp(envname, "ARCH") == 0) {
+    envvalue = u.sysname;
+  }
+#endif
+  else if (strcmp(envname, "DISPLAY") == 0) {
 #if defined(XWINDOW)
     envvalue = "X";
 #elif defined(DISPLAYBUFFER)
