@@ -37,8 +37,6 @@ OEXT = .o
 OPTFLAGS =  -O2 -g3
 DISPOPTFLAGS =  -O2 -g3
 
-MAIN = main
-
 # Set any debugging options in DEBUGFLAGS.  E.g., to enable stack
 # checking, use -DSTACKCHECK; to enable the fn-call-time stack
 # check, use -DFNSTKCHECK.

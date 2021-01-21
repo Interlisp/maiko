@@ -34,12 +34,6 @@
 #	4. follow the instructions on {eris}<lispcore>sunloadup>howto-loadup-sunlisp.txt
 
 
-# '90/04/23 osamu: $INSDIR is defined in makeright 
-#
-#INSDIR = $(RELDIR)install.$(RELEASENAME)/
-CHKDIR = $(RELDIR)checksumdir/
-SCRPTDIR = $(RELDIR)scripts/
-
 # OSARCHDIR is the os/architecture dir, where executables all go.
 OSARCHDIR = ../$(OSARCHNAME)/
 
@@ -860,91 +854,6 @@ $(OBJECTDIR)lpwrite.o : $(SRCDIR)lpwrite.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $
 $(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(INCDIR)lispemul.h \
 			$(INCDIR)lpdefs.h $(INCDIR)lpglobl.h $(INCDIR)lpproto.h
 	$(CC) $(RFLAGS) $(SRCDIR)lpy.tab.c -o $(OBJECTDIR)lpy.tab$(OEXT)
-
-################################################################################
-# Installation targets - copyprotect is ON here
-# library, sysouts, fonts on release directories not handled here.
-# userfiles are separate target explicitly (can make w/o building lde)
-################################################################################
-
-prerelease :
-	mkdir $(RELDIR)
-	mkdir $(INSDIR)
-	mkdir $(CHKDIR)
-	mkdir $(SCRPTDIR)
-	
-
-release : $(INSDIR)$(LDENAME).o userfiles $(INSDIR)$(LDENAME) \
-	$(INSDIR)ldeether $(INSDIR)lde csumfiles scriptfiles
-
-userfiles : $(INSDIR)usrsubr.c $(INSDIR)makefile $(INSDIR)ldeether.c
-
-$(INSDIR)lde: $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c $(INCDIR)unixfork.h
-	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c \
-		$(LDELDFLAGS) -o $(INSDIR)lde
-
-$(OBJECTDIR)$(LDENAME).a :              $(LIBFILES) $(OSARCHDIR)mkvdate
-	/bin/rm -f $(VFILE).c
-	$(OSARCHDIR)mkvdate > $(VFILE).c
-	$(CC) -c $(VFILE).c -o $(VFILE).o
-	rm -f $(LDENAME).a
-	$(AR) $(OBJECTDIR)$(LDENAME).a $(LIBFILES) $(VFILE).o
-	$(RANLIB) $(OBJECTDIR)$(LDENAME).a
-	rm -f $(VFILE).o
-
-$(INSDIR)$(LDENAME).o :                 $(OBJECTDIR)$(LDENAME).a
-	ld -o $(INSDIR)$(LDENAME).o -r -u $(MAIN) $(OBJECTDIR)$(LDENAME).a
-
-$(INSDIR)$(LDENAME) : $(INSDIR)$(LDENAME).o $(INSDIR)usrsubr.o
-	$(CC) $(INSDIR)$(LDENAME).o $(INSDIR)usrsubr.o $(FPFLAGS) $(LDFLAGS)\
-		 -o $(INSDIR)$(LDENAME)
-	rm -f $(INSDIR)usrsubr.o
-
-## ldeether from release - can't tar off with root permission.
-
-$(INSDIR)ldeether :  $(INSDIR)ldeether.c $(DLPIFILES) $(REQUIRED-INCS) 
-	$(CC) $(CFLAGS) $(INSDIR)ldeether.c $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(INSDIR)ldeether
-	- suid $(INSDIR)ldeether"
-
-$(INSDIR)makefile : $(BINDIR)usermakefile-$(OSARCHNAME)
-	rm -f $(INSDIR)makefile
-	ln -s $(BINDIR)usermakefile-$(OSARCHNAME) $(INSDIR)makefile
-
-$(INSDIR)usrsubr.c : $(SRCDIR)usrsubr.c
-	rm -f $(INSDIR)usrsubr.c
-	ln -s $(SRCDIR)usrsubr.c $(INSDIR)usrsubr.c
-
-$(INSDIR)ldeether.c : $(SRCDIR)ldeether.c
-	rm -f $(INSDIR)ldeether.c
-	ln -s $(SRCDIR)ldeether.c $(INSDIR)ldeether.c
-
-csumfiles : $(CHKDIR)checksum $(CHKDIR)ldechecksum $(CHKDIR)README
-
-$(CHKDIR)README : $(BINDIR)checksum-readme
-	rm -f $(CHKDIR)README
-	ln -s $(BINDIR)checksum-readme $(CHKDIR)README
-
-$(CHKDIR)checksum : $(BINDIR)checksum
-	rm -f $(CHKDIR)checksum
-	cp -p $(BINDIR)checksum $(CHKDIR)checksum
-	chmod 755 $(CHKDIR)checksum
-
-$(CHKDIR)ldechecksum : $(BINDIR)ldechecksum
-	rm -f $(CHKDIR)ldechecksum
-	cp -p $(BINDIR)ldechecksum $(CHKDIR)ldechecksum
-	chmod 755 $(CHKDIR)ldechecksum
-
-scriptfiles : $(SCRPTDIR)install-medley $(SCRPTDIR)medley
-
-$(SCRPTDIR)install-medley : $(BINDIR)install-medley
-	rm -f $(SCRPTDIR)install-medley
-	cp -p $(BINDIR)install-medley $(SCRPTDIR)install-medley
-	chmod 755 $(SCRPTDIR)install-medley
-
-$(SCRPTDIR)medley : $(BINDIR)medley
-	rm -f $(SCRPTDIR)medley
-	cp -p $(BINDIR)medley $(SCRPTDIR)medley
-	chmod 755 $(SCRPTDIR)medley
 
 ################################################################################
 # Miscellaneous targets
