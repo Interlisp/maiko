@@ -1,4 +1,0 @@
-#! /bin/csh
-foreach f (*)
-if ( -w $f) echo $f
-end
