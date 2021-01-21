@@ -170,7 +170,6 @@ error Must specify RELEASE to build Medley.
 	/*								*/
 	/*  Defaults:	Unaligned fetches OK	UNALIGNED_FETCH_OK	*/
 	/*		fp values used with				*/
-	/*		Use asm inline arith	USE_INLINE_ARITH	*/
 	/*		pointer-wide unsigned	UNSIGNED		*/
 	/*		pointer-wide int	INT	 		*/
 	/*								*/
@@ -192,12 +191,10 @@ error Must specify RELEASE to build Medley.
 
 #ifdef SUN3_OS3_IL
 #define SUN3_OS3_OR_OS4_IL	1
-#define USE_INLINE_ARITH	1
 #endif
 
 #ifdef SUN3_OS4_IL
 #define SUN3_OS3_OR_OS4_IL	1
-#define USE_INLINE_ARITH	1
 #endif
 
 
@@ -223,6 +220,16 @@ error Must specify RELEASE to build Medley.
 	/********************************************************/
 	/*							*/
 	/********************************************************/
+#ifdef __GNUC__
+#define USE_OVERFLOW_BUILTINS
+#endif
+
+
+
+
+	/********************************************************/
+	/*							*/
+	/********************************************************/
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #define MAIKO_ENABLE_ETHERNET
@@ -231,13 +238,6 @@ error Must specify RELEASE to build Medley.
 
 
 
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
-#ifdef I386
-#define USE_INLINE_ARITH	1
-#endif /* I386 */
 
 	/********************************************************/
 	/*							*/

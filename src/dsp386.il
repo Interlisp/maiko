@@ -142,54 +142,6 @@
 	jmp	*optable(,%eax,4)
 .end
 
-
-	/////////////////////////////
-	//
-	//  Arithmetic code speedups
-	//
-	// Assume edi & esi are arguments
-	//
-	//	  ebx is result.
-	//
-	////////////////////////////////
-
-.inline Xiplus32,0
-	addl	%edi,%esi
-	jo	iplus_err
-	movl	%esi,%eax
-.end
-
-.inline Xiplus32n,0
-	leal	(%edi),%eax
-	addl	%esi,%eax
-	jo	iplusn_err
-.end
-
-
-.inline Xplus32,0
-	leal	(%edi),%eax
-	addl	%esi,%eax
-	jo	plus_err
-.end
-
-.inline Xsub32,0
-	leal	(%edi),%eax
-	subl	%esi,%eax
-	jo	diff_err
-.end
-
-.inline Xisub32,0
-	leal	(%edi),%eax
-	subl	%esi,%eax
-	jo	idiff_err
-.end
-
-.inline Xisub32n,0
-	leal	(%edi),%eax
-	subl	%esi,%eax
-	jo	idiffn_err
-.end
-
 .inline	plus_err_label,0
 plus_err:
 .end

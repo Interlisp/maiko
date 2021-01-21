@@ -483,10 +483,6 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /************************************************************************/
 
 #define ERROR_EXIT(tos)		{TopOfStack=tos; Error_Exit = 1; return(-1);}
-#ifdef ISC
-#define INLINE_ERROR_EXIT(tos,retlbl) {TopOfStack=tos; Error_Exit=1 asm("movl $-1,%0\n" retlbl ":" : "=g" (result) : "0" (result)); return(result); }
-#endif
-
 #define TIMER_EXIT(tos)		{TopOfStack=tos; Error_Exit = 1; return(-2);}
 
 

@@ -228,7 +228,6 @@ SET(MAIKO_HDRS
     inc/adr68k.h
     inc/allocmdsdefs.h
     inc/arith2defs.h
-    inc/arith2.h
     inc/arith3defs.h
     inc/arith4defs.h
     inc/arith.h

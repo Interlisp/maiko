@@ -154,29 +154,6 @@
 	}
 
 
-	/* Used in ISC asm inlines in arithmetic, to defeat optimizer.
-	   with INLINE_ERROR_EXIT, we use asm jumps to avoid having
-	   one or the other eliminated as dead code. */
-#ifdef ISC
-#define INLINE_ARITH_SWITCH(arg,retlbl)					\
-	switch(arg & 0xFFFF0000){					\
-		case 0:							\
-			result=(S_POSITIVE | arg);			\
-			break;						\
-		case 0xFFFF0000:					\
-			result=(S_NEGATIVE | (0xFFFF & arg));		\
-			break;						\
-		default:{register LispPTR *wordp;			\
-			/* arg is FIXP, call createcell */		\
-			wordp = (LispPTR *) createcell68k(TYPE_FIXP);	\
-			*((int *)wordp) = arg;				\
-			result=(LADDR_from_68k(wordp));			\
-			}						\
-	}								\
-	asm("jmp " retlbl) 
-#endif /* ISC */
-
-
 #define N_IARITH_BODY_2(a, tos, op)					\
 {									\
 register int	arg1,arg2;						\
@@ -219,24 +196,5 @@ N_ARITH_SWITCH(arg1);							\
 do_ufn:	ERROR_EXIT(a);							\
 }
 
-
-
-
-
-#ifdef I386
-
-	/*********************************************************/
-	/*							 */
-	/*  Macros for arithmetic operations, to let inline work */
-	/*							 */
-	/*********************************************************/
-
-#define iplus32(a,b) Xiplus32()
-#define plus32(a,b) Xplus32()
-#define iplus32n(a,b) Xiplus32n()
-#define sub32(a,b) Xsub32()
-#define isub32(a,b) Xisub32()
-#define sub32n(a,b) Xisub32n()
-#endif
 
 #endif /* ARITH_H */
