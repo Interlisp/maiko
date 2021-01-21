@@ -250,7 +250,7 @@ static int gettime(int casep)
       /* Unfortunately, FreeBSD does not support the timezone external variable, nor   */
       /* does gettimeofday() seem to produce the correct timezone values.	       */
       tzset();
-#if defined(FREEBSD)
+#if defined(MAIKO_OS_FREEBSD)
       time_t tv = time(NULL);
       struct tm *tm = localtime(&tv);
       return (tm->tm_gmtoff / -3600);
