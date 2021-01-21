@@ -405,12 +405,7 @@ void update_timer() {
 /* TIMER_INTERVAL usec ~ 20  per second.  This should live in some
         machine-configuration
         file somewhere - it can be changed as the -t parameter to lisp*/
-
-#ifdef sparc
-int TIMER_INTERVAL = 100000;
-#else
 int TIMER_INTERVAL = 25000;
-#endif
 
 extern int LispWindowFd;
 
