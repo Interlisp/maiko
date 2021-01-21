@@ -38,7 +38,6 @@
 #endif /* DOS */
 
 #ifdef DOS
-/* RISCOS doesn't have the BSD time functions */
 int main(void) {
   long dtime;
   time(&dtime);
