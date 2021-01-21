@@ -54,7 +54,7 @@ extern int Win_security_p;
 #include <stropts.h>
 #endif /* OS5 */
 
-#if defined(FREEBSD) || defined(MACOSX) || defined(OS5)
+#if defined(MAIKO_OS_FREEBSD) || defined(MAIKO_OS_MACOS) || defined(OS5)
 /* vfork is deprecated */
 #define vfork fork
 #endif

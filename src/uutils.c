@@ -227,7 +227,7 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "i386";
 #elif defined(DOS)
     envvalue = "386";
-#elif defined(MACOSX)
+#elif defined(MAIKO_OS_MACOS)
     envvalue = "i386";
 #else
     envvalue = "mc68020";
@@ -240,7 +240,7 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "sun386";
 #elif defined(DOS)
     envvalue = "dos";
-#elif defined(MACOSX)
+#elif defined(MAIKO_OS_MACOS)
     envvalue = "i386";
 #else
     envvalue = "sun3";
