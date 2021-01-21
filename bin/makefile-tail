@@ -187,7 +187,6 @@ $(OSARCHDIR)$(LDENAME) :       $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
 
 $(OSARCHDIR)ldeether :  $(SRCDIR)ldeether.c $(DLPIFILES)
 	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeether.c $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
-	ls -l $(OSARCHDIR)ldeether
 
 $(OSARCHDIR)mkvdate	: $(SRCDIR)mkvdate.c $(REQUIRED-INCS)
 	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)mkvdate.c -o $(OSARCHDIR)mkvdate
