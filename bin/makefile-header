@@ -7,8 +7,6 @@ INCDIR = ../inc/
 INCLUDEDIR = ../include/
 LIBDIR = ../lib
 BINDIR = ./
-RELDIR = ../RELEASE/
-MAIN = _main
 RANLIB = ranlib
 AR = ar rcv
 

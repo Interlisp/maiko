@@ -25,7 +25,6 @@
 #	   makeright multi	;  make lde for cg3,cg6
 #	   makeright x		;  make lde for X-windows
 #	   makeright color	;  make lde with color support in it.
-#	   makeright multi release ; make release version of lde for cg3,cg6
 #	   makeright init	;  make lde for loading INIT.DLINIT b/w only
 #
 # makeright multi requires directory "maiko/${osversion}.${architecture}-multi"
@@ -40,7 +39,6 @@
 #
 # Hide X shared libraries from link libraries search path.
 LD_LIBRARY_PATH=/usr/local/lib 
-RELDIR="../RELEASE/"
 
 export PATH=".:$PATH"
 
@@ -48,24 +46,7 @@ if test "$1" = ""
    then
 	display="single"
 else
-	if test "$1" = "release"
-          then
- 		case "$2" in
-		single)	display = single
-			;;
-		multi)	display = multi
-			;;
-		x)	display=x
-			;;
-		*)	makeright single release
-			makeright multi release
-			makeright x	release
-			exit
-			;;
-		esac
-	    else
-		display="$1"
-	fi
+    display="$1"
 fi
 
 if test $# -gt 0
@@ -95,23 +76,6 @@ case "$display" in
 		;;
 esac
 echo making with display $display releasename $releasename ldename $ldename
-releaseflg=0
-
-if test "$1" = "release" 
-    then
-	releaseflg=1
-	if test "$display" != single
-	   then
-		if test  ! -e usermakefile-${releasename} 
-                     then
-			ln usermakefile-${osversion}.${architecture} usermakefile-${releasename}
-		fi
-	fi
-else
-	releaseflg=0
-fi
-
-installdir=${RELDIR}install.${osversion}.${architecture}/
 
 #if($display == single ) then
 #       releasename = ${osversion}.${architecture}
@@ -134,7 +98,7 @@ echo start making lde for ${releasename}.
 # then finally do the make, including the right stuff
 # With makefile-tail merged, this should only take ONE make command....
 
-make RELEASENAME=${releasename} INSDIR=${installdir} LDENAME=${ldename} \
+make RELEASENAME=${releasename} LDENAME=${ldename} \
 			OSARCHNAME=${osversion}.${architecture} \
 			-f makefile-header -f makefile-${releasename} \
 			-f makefile-tail $*
