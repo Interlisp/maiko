@@ -124,7 +124,6 @@ SET(BAD_SRCS
     src/rawcolor.c
     src/rawrs232c.c
     src/rs232c.c
-    src/testdsp.c
     src/truecolor.c
     src/tty.c
     src/vesainit.c
