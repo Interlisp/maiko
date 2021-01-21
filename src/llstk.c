@@ -335,7 +335,7 @@ SCAN:
     case STK_FX:
       scanptr68k = (StackWord *)Addr68k_from_StkOffset(((FX *)scanptr68k)->nextblock);
       break;
-    default:
+    default: {
 #ifdef STACKCHECK
       StackWord *orig68k = scanptr68k;
 #endif
@@ -360,7 +360,7 @@ SCAN:
       /* Used to be a +=, but SunOS4/Sparc compiles it wrong */
       scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
       break;
-
+    }
   } /* end switch(scanptr68k */
 
 NEXT:
