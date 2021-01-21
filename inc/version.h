@@ -213,7 +213,7 @@ error Must specify RELEASE to build Medley.
 
 /* Not all platforms want to do unaligned reads, so
  * we will disable those here. */
-#if defined(MAIKO_ARCH_SPARC)
+#if defined(MAIKO_ARCH_SPARC) || defined(MAIKO_ARCH_ARM)
 #undef UNALIGNED_FETCH_OK
 #endif
 
@@ -228,17 +228,6 @@ error Must specify RELEASE to build Medley.
 #define MAIKO_ENABLE_ETHERNET
 #define LOCK_X_UPDATES 1
 #endif /* OS5 */
-
-
-
-
-	/********************************************************/
-	/*							*/
-	/********************************************************/
-#ifdef LINUX
-		/* LINUX, the free POSIX-compliant Unix */
-#undef UNALIGNED_FETCH_OK
-#endif /* LINUX */
 
 
 
