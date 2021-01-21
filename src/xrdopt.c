@@ -33,7 +33,6 @@
 #include "maindefs.h"
 
 XrmDatabase commandlineDB, applicationDB, serverDB, homeDB, rDB;
-int opTableEntries = 33;
 extern int LispWindowRequestedX, LispWindowRequestedY;
 extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 
@@ -190,7 +189,7 @@ void read_Xoption(int *argc, char *argv[])
   /* JDS 12/20/01: app name should always be "ldex", not what's in argv?? */
   XrmParseCommand(&commandlineDB, opTable, opTableEntries, argv[0], argc, argv);
 #endif
-  XrmParseCommand(&commandlineDB, opTable, opTableEntries, "ldex", argc, argv);
+  XrmParseCommand(&commandlineDB, opTable, sizeof(opTable) / sizeof(opTable[0]), "ldex", argc, argv);
 
   if (XrmGetResource(commandlineDB, "ldex.help", "Ldex.Help", str_type, &value) == True) {
     print_Xusage(argv[0]);
