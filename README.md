@@ -1,9 +1,10 @@
-# Maiko (part of [Medley Interlisp](https://Interlisp.org)
+# Maiko
 
 Maiko is the implementation of the Medley Interlisp virtual machine, for a
 byte-coded Lisp instruction set and some low-level functions for
 connecting with Lisp for access to display (via X11) and disk etc.
 
+Newcomers should check out the [Medley Interlisp Introduction](https://github.com/Interlisp/medley/wiki/Medley-Interlisp-Introduction).
 
 See [the Medley repository](https://github.org/Interlisp/medley) for
 * [Issues](https://github.com/Interlisp/medley/issues) (note that maiko issues are there too)
