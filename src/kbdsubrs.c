@@ -75,26 +75,25 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
                                      *		NIL -- OFF
                                      */
 {
-  if (args[0] == ATOM_T)
+  if (args[0] == ATOM_T) {
 #ifdef SUNDISPLAY
-      FD_SET(LispWindowFd, &LispReadFds);
+    FD_SET(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     enable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.enter)(currentkbd);
-/* outp( KBD_COMMAND_PORT, KBD_ENABLE); */
+    /* outp( KBD_COMMAND_PORT, KBD_ENABLE); */
 #endif /* DOS */
-
-  else if (args[0] == NIL)
+  } else if (args[0] == NIL) {
 #ifdef SUNDISPLAY
-      FD_SET(LispWindowFd, &LispReadFds);
+    FD_SET(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     disable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.exit)(currentkbd);
-/* outp( KBD_COMMAND_PORT, KBD_DISABLE); */
+    /* outp( KBD_COMMAND_PORT, KBD_DISABLE); */
 #endif /* DOS */
-  else {
+  } else {
     error("KB_enable: illegal arg \n");
     printf("KB_enable: arg = %d\n", args[0]);
   }
