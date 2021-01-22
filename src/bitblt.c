@@ -12,8 +12,7 @@
 
 #include <stdio.h>
 
-#ifndef NOPIXRECT
-#ifndef DOS
+#ifdef SUNDISPLAY
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>
 
@@ -21,7 +20,6 @@
 #include <sunwindow/cms_mono.h>
 #include <suntool/canvas.h>
 #include <sys/ioctl.h>
-#endif /* DOS */
 #include <signal.h>
 #endif
 
