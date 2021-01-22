@@ -119,29 +119,6 @@
 .end
 
 
-.inline fast0_dispatcher,0
-	leal	-1(%edi),%eax
-	xorb	$3,%al
-	movzbl	(%eax),%eax
-	jmp	*optable(,%eax,4)
-.end
-
-.inline fast1_dispatcher,0
-	movl	%edi,%eax
-	xorb	$3,%al
-	movzbl	(%eax),%eax
-	incl	%edi
-	jmp	*optable(,%eax,4)
-.end
-
-.inline fast2_dispatcher,0
-	leal	1(%edi),%eax
-	xorb	$3,%al
-	addl	$2,%edi
-	movzbl	(%eax),%eax
-	jmp	*optable(,%eax,4)
-.end
-
 .inline	plus_err_label,0
 plus_err:
 .end

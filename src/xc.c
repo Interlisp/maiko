@@ -127,8 +127,9 @@ register LispPTR *cspcache asm("di");
 register LispPTR tscache asm("bx");
 #endif /* DOS */
 
-/* Used to just be ifdef sparc, but want to be able to turn */
-/* off the inline code even on sparc machines.		    */
+/* This used to be here for including optimized dispatch
+ * for SPARC, but it has some other things in it, so we
+ * are keeping it around for now until we sort that out. */
 #ifdef SPARCDISP
 #include "inlnSPARC.h"
 #endif /* SPARCDISP */
@@ -163,13 +164,9 @@ extern int Event_Req; /* != 0 when it's time to check X events
                                                  (e.g. Suns running OpenWindows) */
 #endif                /* XWINDOW */
 
-#ifndef ISC
-#ifndef DOS
 #ifdef OPDISP
 InstPtr optable[512];
 #endif /* OPDISP */
-#endif /* DOS */
-#endif /* ISC */
 
 #ifdef PCTRACE
 /* For keeping a trace table (ring buffer) of 100 last PCs */
@@ -191,15 +188,9 @@ extern int TIMER_INTERVAL;
 void dispatch(void) {
   register InstPtr pccache;
 
-#ifdef I386
+#if defined(OPDISP)
   InstPtr *table;
-#elif DOS
-  InstPtr *table;
-#else
-#if defined(OPDISP) || defined(SPARCDISP)
-  InstPtr *table;
-#endif /* OPDISP */
-#endif /* I386 */
+#endif
 
 #if (DOS && OPDISP)
 #else
@@ -218,44 +209,15 @@ void dispatch(void) {
   RET;
   CLR_IRQ;
 
-#ifndef ISC
-#ifndef DOS
 #ifdef OPDISP
   table = optable;
 #endif
-#endif
-#endif /* ISC */
 
-#ifdef SPARCDISP
-  table = (InstPtr *)compute_dispatch_table();
-#endif
-
-#ifdef I386
-  goto setup_table;
-#else
 #ifdef OPDISP
-#ifdef ISC
-  asm("	leal optable,%%eax \n\
-		movl %%eax,%0"
-      : "=g"(table)
-      : "0"(table));
-  goto nextopcode;
-#elif (DOS && OPDISP)
-  asm("	lea eax,optable \n\
-		mov %0,%%eax"
-      : "=g"(table)
-      : "0"(table));
-  asm volatile("fldcw WORD PTR CODE32:FP_noint"); /* Turn off FP interrupts */
-  goto nextopcode;
-#else
   goto setup_table;
-#endif /* ISC */
-
 #else
   goto nextopcode;
 #endif /* OPDISP */
-
-#endif /* I386 */
 
   /* INLINE OPCODE FAIL ENTRY POINTS, CALL EXTERNAL ROUTINES HERE */
   OPCODEFAIL;
@@ -1323,805 +1285,262 @@ PopNextop2:
 
 #ifdef OPDISP
 setup_table:
-#ifndef ISC
   {
     int i;
-    for (i = 0; i < 256; i++) { table[i] = (InstPtr)op_ufn; };
+    for (i = 0; i < 256; i++) { table[i] = &&op_ufn; };
   }
   {
     int i;
-    for (i = 256; i < 512; i++) { table[i] = (InstPtr)native_check; };
+    for (i = 256; i < 512; i++) { table[i] = &&native_check; };
   }
-  table[001] = (InstPtr)case001;
-  table[002] = (InstPtr)case002;
-  table[003] = (InstPtr)case003;
-  table[004] = (InstPtr)case004;
-  table[005] = (InstPtr)case005;
-  table[006] = (InstPtr)case006;
-  table[007] = (InstPtr)case007;
-  table[010] = (InstPtr)case010;
-  table[011] = (InstPtr)case011;
-  table[012] = (InstPtr)case012;
-  table[013] = (InstPtr)case013;
-  table[014] = (InstPtr)case014;
-  table[015] = (InstPtr)case015;
-  table[016] = (InstPtr)case016;
-  table[017] = (InstPtr)case017;
-  table[020] = (InstPtr)case020;
-  table[021] = (InstPtr)case021;
-  table[022] = (InstPtr)case022;
-  table[023] = (InstPtr)case023;
-  table[024] = (InstPtr)case024;
-  table[025] = (InstPtr)case025;
-  table[026] = (InstPtr)case026;
-  table[027] = (InstPtr)case027;
-  table[030] = (InstPtr)case030;
-  table[031] = (InstPtr)case031;
-  table[032] = (InstPtr)case032;
-  table[033] = (InstPtr)case033;
-  table[034] = (InstPtr)case034;
-  table[035] = (InstPtr)case035;
-  table[036] = (InstPtr)case036;
-  table[037] = (InstPtr)case037;
-  table[040] = (InstPtr)case040;
-  table[041] = (InstPtr)case041;
-  table[042] = (InstPtr)case042;
-  table[043] = (InstPtr)case043;
-  table[044] = (InstPtr)case044;
-  table[045] = (InstPtr)case045;
-  table[046] = (InstPtr)case046;
-  table[047] = (InstPtr)case047;
+  table[001] = &&case001;
+  table[002] = &&case002;
+  table[003] = &&case003;
+  table[004] = &&case004;
+  table[005] = &&case005;
+  table[006] = &&case006;
+  table[007] = &&case007;
+  table[010] = &&case010;
+  table[011] = &&case011;
+  table[012] = &&case012;
+  table[013] = &&case013;
+  table[014] = &&case014;
+  table[015] = &&case015;
+  table[016] = &&case016;
+  table[017] = &&case017;
+  table[020] = &&case020;
+  table[021] = &&case021;
+  table[022] = &&case022;
+  table[023] = &&case023;
+  table[024] = &&case024;
+  table[025] = &&case025;
+  table[026] = &&case026;
+  table[027] = &&case027;
+  table[030] = &&case030;
+  table[031] = &&case031;
+  table[032] = &&case032;
+  table[033] = &&case033;
+  table[034] = &&case034;
+  table[035] = &&case035;
+  table[036] = &&case036;
+  table[037] = &&case037;
+  table[040] = &&case040;
+  table[041] = &&case041;
+  table[042] = &&case042;
+  table[043] = &&case043;
+  table[044] = &&case044;
+  table[045] = &&case045;
+  table[046] = &&case046;
+  table[047] = &&case047;
 
-  table[054] = (InstPtr)case054;
-  table[055] = (InstPtr)case055;
-  table[056] = (InstPtr)case056;
-  table[057] = (InstPtr)case057;
+  table[054] = &&case054;
+  table[055] = &&case055;
+  table[056] = &&case056;
+  table[057] = &&case057;
 
-  table[062] = (InstPtr)case062;
-  table[063] = (InstPtr)case063;
+  table[062] = &&case062;
+  table[063] = &&case063;
 
-  table[070] = (InstPtr)case070;
+  table[070] = &&case070;
 
-  table[072] = (InstPtr)case072;
-  table[073] = (InstPtr)case073;
-  table[074] = (InstPtr)case074;
-  table[075] = (InstPtr)case075;
+  table[072] = &&case072;
+  table[073] = &&case073;
+  table[074] = &&case074;
+  table[075] = &&case075;
 
-  table[0100] = (InstPtr)case100;
-  table[0101] = (InstPtr)case101;
-  table[0102] = (InstPtr)case102;
-  table[0103] = (InstPtr)case103;
-  table[0104] = (InstPtr)case104;
-  table[0105] = (InstPtr)case105;
-  table[0106] = (InstPtr)case106;
-  table[0107] = (InstPtr)case107;
-  table[0110] = (InstPtr)case110;
-  table[0111] = (InstPtr)case111;
-  table[0112] = (InstPtr)case112;
-  table[0113] = (InstPtr)case113;
-  table[0114] = (InstPtr)case114;
-  table[0115] = (InstPtr)case115;
-  table[0116] = (InstPtr)case116;
-  table[0117] = (InstPtr)case117;
-  table[0120] = (InstPtr)case120;
-  table[0121] = (InstPtr)case121;
-  table[0122] = (InstPtr)case122;
-  table[0123] = (InstPtr)case123;
-  table[0124] = (InstPtr)case124;
-  table[0125] = (InstPtr)case125;
-  table[0126] = (InstPtr)case126;
-  table[0127] = (InstPtr)case127;
-  table[0130] = (InstPtr)case130;
-  table[0131] = (InstPtr)case131;
-  table[0132] = (InstPtr)case132;
-  table[0133] = (InstPtr)case133;
-  table[0134] = (InstPtr)case134;
-  table[0135] = (InstPtr)case135;
-  table[0136] = (InstPtr)case136;
-  table[0137] = (InstPtr)case137;
-  table[0140] = (InstPtr)case140;
-  table[0141] = (InstPtr)case141;
-  table[0142] = (InstPtr)case142;
-  table[0143] = (InstPtr)case143;
-  table[0144] = (InstPtr)case144;
-  table[0145] = (InstPtr)case145;
-  table[0146] = (InstPtr)case146;
-  table[0147] = (InstPtr)case147;
-  table[0150] = (InstPtr)case150;
-  table[0151] = (InstPtr)case151;
-  table[0152] = (InstPtr)case152;
-  table[0153] = (InstPtr)case153;
-  table[0154] = (InstPtr)case154;
-  table[0155] = (InstPtr)case155;
-  table[0156] = (InstPtr)case156;
-  table[0157] = (InstPtr)case157;
-  table[0160] = (InstPtr)case160;
-  table[0161] = (InstPtr)case161;
-  table[0162] = (InstPtr)case162;
-  table[0163] = (InstPtr)case163;
-  table[0164] = (InstPtr)case164;
-  table[0165] = (InstPtr)case165;
-  table[0166] = (InstPtr)case166;
-  table[0167] = (InstPtr)case167;
-  table[0170] = (InstPtr)case170;
-  table[0171] = (InstPtr)case171;
-  table[0172] = (InstPtr)case172;
-  table[0173] = (InstPtr)case173;
-  table[0174] = (InstPtr)case174;
-  table[0175] = (InstPtr)case175;
-  table[0176] = (InstPtr)case176;
-  table[0177] = (InstPtr)case177;
-  table[0200] = (InstPtr)case200;
-  table[0201] = (InstPtr)case201;
-  table[0202] = (InstPtr)case202;
-  table[0203] = (InstPtr)case203;
-  table[0204] = (InstPtr)case204;
-  table[0205] = (InstPtr)case205;
-  table[0206] = (InstPtr)case206;
-  table[0207] = (InstPtr)case207;
-  table[0210] = (InstPtr)case210;
-  table[0211] = (InstPtr)case211;
-  table[0212] = (InstPtr)case212;
-  table[0213] = (InstPtr)case213;
-  table[0214] = (InstPtr)case214;
-  table[0215] = (InstPtr)case215;
-  table[0216] = (InstPtr)case216;
-  table[0217] = (InstPtr)case217;
-  table[0220] = (InstPtr)case220;
-  table[0221] = (InstPtr)case221;
-  table[0222] = (InstPtr)case222;
-  table[0223] = (InstPtr)case223;
-  table[0224] = (InstPtr)case224;
-  table[0225] = (InstPtr)case225;
-  table[0226] = (InstPtr)case226;
-  table[0227] = (InstPtr)case227;
-  table[0230] = (InstPtr)case230;
-  table[0231] = (InstPtr)case231;
-  table[0232] = (InstPtr)case232;
-  table[0233] = (InstPtr)case233;
-  table[0234] = (InstPtr)case234;
-  table[0235] = (InstPtr)case235;
-  table[0236] = (InstPtr)case236;
-  table[0237] = (InstPtr)case237;
-  table[0240] = (InstPtr)case240;
-  table[0241] = (InstPtr)case241;
-  table[0242] = (InstPtr)case242;
-  table[0243] = (InstPtr)case243;
-  table[0244] = (InstPtr)case244;
-  table[0245] = (InstPtr)case245;
-  table[0246] = (InstPtr)case246;
-  table[0247] = (InstPtr)case247;
-  table[0250] = (InstPtr)case250;
-  table[0251] = (InstPtr)case251;
-  table[0252] = (InstPtr)case252;
-  table[0253] = (InstPtr)case253;
-  table[0254] = (InstPtr)case254;
-  table[0255] = (InstPtr)case255;
-  table[0256] = (InstPtr)case256;
-  table[0257] = (InstPtr)case257;
-  table[0260] = (InstPtr)case260;
-  table[0261] = (InstPtr)case261;
-  table[0262] = (InstPtr)case262;
-  table[0263] = (InstPtr)case263;
-  table[0264] = (InstPtr)case264;
-  table[0265] = (InstPtr)case265;
-  table[0266] = (InstPtr)case266;
-  table[0267] = (InstPtr)case267;
-  table[0270] = (InstPtr)case270;
-  table[0271] = (InstPtr)case271;
-  table[0272] = (InstPtr)case272;
-  table[0273] = (InstPtr)case273;
-  table[0274] = (InstPtr)case274;
-  table[0275] = (InstPtr)case275;
-  table[0276] = (InstPtr)case276;
-  table[0277] = (InstPtr)case277;
-  table[0300] = (InstPtr)case300;
-  table[0301] = (InstPtr)case301;
-  table[0302] = (InstPtr)case302;
-  table[0303] = (InstPtr)case303;
-  table[0304] = (InstPtr)case304;
-  table[0305] = (InstPtr)case305;
-  table[0306] = (InstPtr)case306;
-  table[0307] = (InstPtr)case307;
-  table[0310] = (InstPtr)case310;
-  table[0311] = (InstPtr)case311;
-  table[0312] = (InstPtr)case312;
-  table[0313] = (InstPtr)case313;
-  table[0314] = (InstPtr)case314;
-  table[0315] = (InstPtr)case315;
-  table[0316] = (InstPtr)case316;
-  table[0317] = (InstPtr)case317;
-  table[0320] = (InstPtr)case320;
-  table[0321] = (InstPtr)case321;
-  table[0322] = (InstPtr)case322;
-  table[0323] = (InstPtr)case323;
-  table[0324] = (InstPtr)case324;
-  table[0325] = (InstPtr)case325;
-  table[0326] = (InstPtr)case326;
-  table[0327] = (InstPtr)case327;
-  table[0330] = (InstPtr)case330;
-  table[0331] = (InstPtr)case331;
-  table[0332] = (InstPtr)case332;
-  table[0333] = (InstPtr)case333;
-  table[0334] = (InstPtr)case334;
-  table[0335] = (InstPtr)case335;
-  table[0336] = (InstPtr)case336;
-  table[0337] = (InstPtr)case337;
-  table[0340] = (InstPtr)case340;
-  table[0341] = (InstPtr)case341;
-  table[0342] = (InstPtr)case342;
-  table[0343] = (InstPtr)case343;
-  table[0344] = (InstPtr)case344;
-  table[0345] = (InstPtr)case345;
-  table[0346] = (InstPtr)case346;
-  table[0347] = (InstPtr)case347;
-  table[0350] = (InstPtr)case350;
-  table[0351] = (InstPtr)case351;
-  table[0352] = (InstPtr)case352;
-  table[0353] = (InstPtr)case353;
-  table[0354] = (InstPtr)case354;
-  table[0355] = (InstPtr)case355;
-  table[0356] = (InstPtr)case356;
-  table[0357] = (InstPtr)case357;
-  table[0360] = (InstPtr)case360;
-  table[0361] = (InstPtr)case361;
-  table[0362] = (InstPtr)case362;
-  table[0363] = (InstPtr)case363;
-  table[0364] = (InstPtr)case364;
-  table[0365] = (InstPtr)case365;
-  table[0366] = (InstPtr)case366;
-  table[0367] = (InstPtr)case367;
-  table[0370] = (InstPtr)case370;
-  table[0371] = (InstPtr)case371;
-  table[0372] = (InstPtr)case372;
-  table[0373] = (InstPtr)case373;
-  table[0374] = (InstPtr)case374;
-  table[0375] = (InstPtr)case375;
-  table[0376] = (InstPtr)case376;
-  table[0377] = (InstPtr)case377;
+  table[0100] = &&case100;
+  table[0101] = &&case101;
+  table[0102] = &&case102;
+  table[0103] = &&case103;
+  table[0104] = &&case104;
+  table[0105] = &&case105;
+  table[0106] = &&case106;
+  table[0107] = &&case107;
+  table[0110] = &&case110;
+  table[0111] = &&case111;
+  table[0112] = &&case112;
+  table[0113] = &&case113;
+  table[0114] = &&case114;
+  table[0115] = &&case115;
+  table[0116] = &&case116;
+  table[0117] = &&case117;
+  table[0120] = &&case120;
+  table[0121] = &&case121;
+  table[0122] = &&case122;
+  table[0123] = &&case123;
+  table[0124] = &&case124;
+  table[0125] = &&case125;
+  table[0126] = &&case126;
+  table[0127] = &&case127;
+  table[0130] = &&case130;
+  table[0131] = &&case131;
+  table[0132] = &&case132;
+  table[0133] = &&case133;
+  table[0134] = &&case134;
+  table[0135] = &&case135;
+  table[0136] = &&case136;
+  table[0137] = &&case137;
+  table[0140] = &&case140;
+  table[0141] = &&case141;
+  table[0142] = &&case142;
+  table[0143] = &&case143;
+  table[0144] = &&case144;
+  table[0145] = &&case145;
+  table[0146] = &&case146;
+  table[0147] = &&case147;
+  table[0150] = &&case150;
+  table[0151] = &&case151;
+  table[0152] = &&case152;
+  table[0153] = &&case153;
+  table[0154] = &&case154;
+  table[0155] = &&case155;
+  table[0156] = &&case156;
+  table[0157] = &&case157;
+  table[0160] = &&case160;
+  table[0161] = &&case161;
+  table[0162] = &&case162;
+  table[0163] = &&case163;
+  table[0164] = &&case164;
+  table[0165] = &&case165;
+  table[0166] = &&case166;
+  table[0167] = &&case167;
+  table[0170] = &&case170;
+  table[0171] = &&case171;
+  table[0172] = &&case172;
+  table[0173] = &&case173;
+  table[0174] = &&case174;
+  table[0175] = &&case175;
+  table[0176] = &&case176;
+  table[0177] = &&case177;
+  table[0200] = &&case200;
+  table[0201] = &&case201;
+  table[0202] = &&case202;
+  table[0203] = &&case203;
+  table[0204] = &&case204;
+  table[0205] = &&case205;
+  table[0206] = &&case206;
+  table[0207] = &&case207;
+  table[0210] = &&case210;
+  table[0211] = &&case211;
+  table[0212] = &&case212;
+  table[0213] = &&case213;
+  table[0214] = &&case214;
+  table[0215] = &&case215;
+  table[0216] = &&case216;
+  table[0217] = &&case217;
+  table[0220] = &&case220;
+  table[0221] = &&case221;
+  table[0222] = &&case222;
+  table[0223] = &&case223;
+  table[0224] = &&case224;
+  table[0225] = &&case225;
+  table[0226] = &&case226;
+  table[0227] = &&case227;
+  table[0230] = &&case230;
+  table[0231] = &&case231;
+  table[0232] = &&case232;
+  table[0233] = &&case233;
+  table[0234] = &&case234;
+  table[0235] = &&case235;
+  table[0236] = &&case236;
+  table[0237] = &&case237;
+  table[0240] = &&case240;
+  table[0241] = &&case241;
+  table[0242] = &&case242;
+  table[0243] = &&case243;
+  table[0244] = &&case244;
+  table[0245] = &&case245;
+  table[0246] = &&case246;
+  table[0247] = &&case247;
+  table[0250] = &&case250;
+  table[0251] = &&case251;
+  table[0252] = &&case252;
+  table[0253] = &&case253;
+  table[0254] = &&case254;
+  table[0255] = &&case255;
+  table[0256] = &&case256;
+  table[0257] = &&case257;
+  table[0260] = &&case260;
+  table[0261] = &&case261;
+  table[0262] = &&case262;
+  table[0263] = &&case263;
+  table[0264] = &&case264;
+  table[0265] = &&case265;
+  table[0266] = &&case266;
+  table[0267] = &&case267;
+  table[0270] = &&case270;
+  table[0271] = &&case271;
+  table[0272] = &&case272;
+  table[0273] = &&case273;
+  table[0274] = &&case274;
+  table[0275] = &&case275;
+  table[0276] = &&case276;
+  table[0277] = &&case277;
+  table[0300] = &&case300;
+  table[0301] = &&case301;
+  table[0302] = &&case302;
+  table[0303] = &&case303;
+  table[0304] = &&case304;
+  table[0305] = &&case305;
+  table[0306] = &&case306;
+  table[0307] = &&case307;
+  table[0310] = &&case310;
+  table[0311] = &&case311;
+  table[0312] = &&case312;
+  table[0313] = &&case313;
+  table[0314] = &&case314;
+  table[0315] = &&case315;
+  table[0316] = &&case316;
+  table[0317] = &&case317;
+  table[0320] = &&case320;
+  table[0321] = &&case321;
+  table[0322] = &&case322;
+  table[0323] = &&case323;
+  table[0324] = &&case324;
+  table[0325] = &&case325;
+  table[0326] = &&case326;
+  table[0327] = &&case327;
+  table[0330] = &&case330;
+  table[0331] = &&case331;
+  table[0332] = &&case332;
+  table[0333] = &&case333;
+  table[0334] = &&case334;
+  table[0335] = &&case335;
+  table[0336] = &&case336;
+  table[0337] = &&case337;
+  table[0340] = &&case340;
+  table[0341] = &&case341;
+  table[0342] = &&case342;
+  table[0343] = &&case343;
+  table[0344] = &&case344;
+  table[0345] = &&case345;
+  table[0346] = &&case346;
+  table[0347] = &&case347;
+  table[0350] = &&case350;
+  table[0351] = &&case351;
+  table[0352] = &&case352;
+  table[0353] = &&case353;
+  table[0354] = &&case354;
+  table[0355] = &&case355;
+  table[0356] = &&case356;
+  table[0357] = &&case357;
+  table[0360] = &&case360;
+  table[0361] = &&case361;
+  table[0362] = &&case362;
+  table[0363] = &&case363;
+  table[0364] = &&case364;
+  table[0365] = &&case365;
+  table[0366] = &&case366;
+  table[0367] = &&case367;
+  table[0370] = &&case370;
+  table[0371] = &&case371;
+  table[0372] = &&case372;
+  table[0373] = &&case373;
+  table[0374] = &&case374;
+  table[0375] = &&case375;
+  table[0376] = &&case376;
+  table[0377] = &&case377;
   goto nextopcode;
-#elif GCC385
-  /* This is the optable for 386's under gcc */
-
-  asm volatile(
-      "	.data \n\
-	.align 4");
-  asm volatile(
-      "optable:	\n\
-	.long	_op000 \n\
-	.long	_op001 \n\
-	.long	_op002 \n\
-	.long	_op003 \n\
-	.long	_op004 \n\
-	.long	_op005 \n\
-	.long	_op006 \n\
-	.long	_op007 \n\
-	.long	_op010 \n\
-	.long	_op011 \n\
-	.long	_op012 \n\
-	.long	_op013 \n\
-	.long	_op014 \n\
-	.long	_op015 \n\
-	.long	_op016 \n\
-	.long	_op017 \n\
-	.long	_op020 \n\
-	.long	_op021 \n\
-	.long	_op022 \n\
-	.long	_op023 \n\
-	.long	_op024 \n\
-	.long	_op025 \n\
-	.long	_op026 \n\
-	.long	_op027 \n\
-	.long	_op030 \n\
-	.long	_op031 \n\
-	.long	_op032 \n\
-	.long	_op033 \n\
-");
-
-  asm volatile(
-      "\n\
-	.long	_op034 \n\
-	.long	_op035 \n\
-	.long	_op036 \n\
-	.long	_op037 \n\
-	.long	_op040 \n\
-	.long	_op041 \n\
-	.long	_op042 \n\
-	.long	_op043 \n\
-	.long	_op044 \n\
-	.long	_op045 \n\
-	.long	_op046 \n\
-	.long	_op047 \n\
-	.long	_op050 \n\
-	.long	_op051 \n\
-	.long	_op052 \n\
-	.long	_op053 \n\
-	.long	_op054 \n\
-	.long	_op055 \n\
-	.long	_op056 \n\
-	.long	_op057 \n\
-	.long	_op060 \n\
-	.long	_op061 \n\
-	.long	_op062 \n\
-	.long	_op063 \n\
-	.long	_op064 \n\
-	.long	_op065 \n\
-	.long	_op066 \n\
-	.long	_op067 \n\
-	.long	_op070 \n\
-	.long	_op071 \n\
-	.long	_op072 \n\
-	.long	_op073 \n\
-	.long	_op074 \n\
-	.long	_op075 \n\
-	.long	_op076 \n\
-	.long	_op077 \n\
-	.long	_op100 \n\
-	.long	_op101 \n\
-	.long	_op102 \n\
-	.long	_op103 \n\
-	.long	_op104 \n\
-	.long	_op105 \n\
-	.long	_op106 \n\
-	.long	_op107 \n\
-	.long	_op110 \n\
-	.long	_op111 \n\
-	.long	_op112 \n\
-	.long	_op113 \n\
-	.long	_op114 \n\
-	.long	_op115 \n\
-	.long	_op116 \n\
-	.long	_op117 \n\
-	.long	_op120 \n\
-	.long	_op121 \n\
-	.long	_op122 \n\
-	.long	_op123 \n\
-	.long	_op124 \n\
-	.long	_op125 \n\
-	.long	_op126 \n\
-	.long	_op127 \n\
-	.long	_op130 \n\
-	.long	_op131 \n\
-	.long	_op132 \n\
-	.long	_op133 \n\
-	.long	_op134 \n\
-	.long	_op135 \n\
-	.long	_op136 \n\
-	.long	_op137 \n\
-	.long	_op140 \n\
-	.long	_op141 \n\
-	.long	_op142 \n\
-	.long	_op143 \n\
-	.long	_op144 \n\
-	.long	_op145 \n\
-	.long	_op146 \n\
-	.long	_op147 \n\
-	.long	_op150 \n\
-	.long	_op151 \n\
-	.long	_op152 \n\
-	.long	_op153 \n\
-	.long	_op154 \n\
-	.long	_op155 \n\
-	.long	_op156 \n\
-	.long	_op157 \n\
-	.long	_op160 \n\
-	.long	_op161 \n\
-	.long	_op162 \n\
-	.long	_op163 \n\
-	.long	_op164 \n\
-	.long	_op165 \n\
-	.long	_op166 \n\
-	.long	_op167 \n\
-	.long	_op170 \n\
-	.long	_op171 \n\
-	.long	_op172 \n\
-	.long	_op173 \n\
-	.long	_op174 \n\
-	.long	_op175 \n\
-	.long	_op176 \n\
-	.long	_op177 \n\
-	.long	_op200 \n\
-	.long	_op201 \n\
-	.long	_op202 \n\
-	.long	_op203 \n\
-	.long	_op204 \n\
-	.long	_op205 \n\
-	.long	_op206 \n\
-	.long	_op207 \n\
-	.long	_op210 \n\
-	.long	_op211 \n\
-	.long	_op212 \n\
-	.long	_op213 \n\
-	.long	_op214 \n\
-	.long	_op215 \n\
-	.long	_op216 \n\
-	.long	_op217 \n\
-	.long	_op220 \n\
-	.long	_op221 \n\
-	.long	_op222 \n\
-	.long	_op223 \n\
-	.long	_op224 \n\
-	.long	_op225 \n\
-	.long	_op226 \n\
-	.long	_op227 \n\
-	.long	_op230 \n\
-	.long	_op231 \n\
-	.long	_op232 \n\
-	.long	_op233 \n\
-	.long	_op234 \n\
-	.long	_op235 \n\
-	.long	_op236 \n\
-	.long	_op237 \n\
-	.long	_op240 \n\
-	.long	_op241 \n\
-	.long	_op242 \n\
-	.long	_op243 \n\
-	.long	_op244 \n\
-	.long	_op245 \n\
-	.long	_op246 \n\
-	.long	_op247 \n\
-	.long	_op250 \n\
-	.long	_op251 \n\
-	.long	_op252 \n\
-	.long	_op253 \n\
-	.long	_op254 \n\
-	.long	_op255 \n\
-	.long	_op256 \n\
-	.long	_op257 \n\
-	.long	_op260 \n\
-	.long	_op261 \n\
-	.long	_op262 \n\
-	.long	_op263 \n\
-	.long	_op264 \n\
-	.long	_op265 \n\
-	.long	_op266 \n\
-	.long	_op267 \n\
-	.long	_op270 \n\
-	.long	_op271 \n\
-	.long	_op272 \n\
-	.long	_op273 \n\
-	.long	_op274 \n\
-	.long	_op275 \n\
-	.long	_op276 \n\
-	.long	_op277 \n\
-	.long	_op300 \n\
-	.long	_op301 \n\
-	.long	_op302 \n\
-	.long	_op303 \n\
-	.long	_op304 \n\
-	.long	_op305 \n\
-	.long	_op306 \n\
-	.long	_op307 \n\
-	.long	_op310 \n\
-	.long	_op311 \n\
-	.long	_op312 \n\
-	.long	_op313 \n\
-	.long	_op314 \n\
-	.long	_op315 \n\
-	.long	_op316 \n\
-	.long	_op317 \n\
-	.long	_op320 \n\
-	.long	_op321 \n\
-	.long	_op322 \n\
-	.long	_op323 \n\
-	.long	_op324 \n\
-	.long	_op325 \n\
-	.long	_op326 \n\
-	.long	_op327 \n\
-	.long	_op330 \n\
-	.long	_op331 \n\
-	.long	_op332 \n\
-	.long	_op333 \n\
-	.long	_op334 \n\
-	.long	_op335 \n\
-	.long	_op336 \n\
-	.long	_op337 \n\
-	.long	_op340 \n\
-	.long	_op341 \n\
-	.long	_op342 \n\
-	.long	_op343 \n\
-	.long	_op344 \n\
-	.long	_op345 \n\
-	.long	_op346 \n\
-	.long	_op347 \n\
-	.long	_op350 \n\
-	.long	_op351 \n\
-	.long	_op352 \n\
-	.long	_op353 \n\
-	.long	_op354 \n\
-	.long	_op355 \n\
-	.long	_op356 \n\
-	.long	_op357 \n\
-	.long	_op360 \n\
-	.long	_op361 \n\
-	.long	_op362 \n\
-	.long	_op363 \n\
-	.long	_op364 \n\
-	.long	_op365 \n\
-	.long	_op366 \n\
-	.long	_op367 \n\
-	.long	_op370 \n\
-	.long	_op371 \n\
-	.long	_op372 \n\
-	.long	_op373 \n\
-	.long	_op374 \n\
-	.long	_op375 \n\
-	.long	_op376 \n\
-	.long	_op377 \n\
-	 .text");
-
-#elif (DOS && OPDISP)
-  /* This is the optable for 386's under gcc & Turbo Assembler */
-
-  asm volatile("	align 4");
-  asm volatile(
-      "optable:  \n\
-        DD   _op000 \n\
-        DD   _op001 \n\
-        DD   _op002 \n\
-        DD   _op003 \n\
-        DD   _op004 \n\
-        DD   _op005 \n\
-        DD   _op006 \n\
-        DD   _op007 \n\
-        DD   _op010 \n\
-        DD   _op011 \n\
-        DD   _op012 \n\
-        DD   _op013 \n\
-        DD   _op014 \n\
-        DD   _op015 \n\
-        DD   _op016 \n\
-        DD   _op017 \n\
-        DD   _op020 \n\
-        DD   _op021 \n\
-        DD   _op022 \n\
-        DD   _op023 \n\
-        DD   _op024 \n\
-        DD   _op025 \n\
-        DD   _op026 \n\
-        DD   _op027 \n\
-        DD   _op030 \n\
-        DD   _op031 \n\
-        DD   _op032 \n\
-        DD   _op033 \n\
-");
-
-  asm volatile(
-      "\n\
-        DD   _op034 \n\
-        DD   _op035 \n\
-        DD   _op036 \n\
-        DD   _op037 \n\
-        DD   _op040 \n\
-        DD   _op041 \n\
-        DD   _op042 \n\
-        DD   _op043 \n\
-        DD   _op044 \n\
-        DD   _op045 \n\
-        DD   _op046 \n\
-        DD   _op047 \n\
-        DD   _op050 \n\
-        DD   _op051 \n\
-        DD   _op052 \n\
-        DD   _op053 \n\
-        DD   _op054 \n\
-        DD   _op055 \n\
-        DD   _op056 \n\
-        DD   _op057 \n\
-        DD   _op060 \n\
-        DD   _op061 \n\
-        DD   _op062 \n\
-        DD   _op063 \n\
-        DD   _op064 \n\
-        DD   _op065 \n\
-        DD   _op066 \n\
-        DD   _op067 \n\
-        DD   _op070 \n\
-        DD   _op071 \n\
-        DD   _op072 \n\
-        DD   _op073 \n\
-        DD   _op074 \n\
-        DD   _op075 \n\
-        DD   _op076 \n\
-        DD   _op077 \n\
-        DD   _op100 \n\
-        DD   _op101 \n\
-        DD   _op102 \n\
-        DD   _op103 \n\
-        DD   _op104 \n\
-        DD   _op105 \n\
-        DD   _op106 \n\
-        DD   _op107 \n\
-        DD   _op110 \n\
-        DD   _op111 \n\
-        DD   _op112 \n\
-        DD   _op113 \n\
-        DD   _op114 \n\
-        DD   _op115 \n\
-        DD   _op116 \n\
-        DD   _op117 \n\
-        DD   _op120 \n\
-        DD   _op121 \n\
-        DD   _op122 \n\
-        DD   _op123 \n\
-        DD   _op124 \n\
-        DD   _op125 \n\
-        DD   _op126 \n\
-        DD   _op127 \n\
-        DD   _op130 \n\
-        DD   _op131 \n\
-        DD   _op132 \n\
-        DD   _op133 \n\
-        DD   _op134 \n\
-        DD   _op135 \n\
-        DD   _op136 \n\
-        DD   _op137 \n\
-        DD   _op140 \n\
-        DD   _op141 \n\
-        DD   _op142 \n\
-        DD   _op143 \n\
-        DD   _op144 \n\
-        DD   _op145 \n\
-        DD   _op146 \n\
-        DD   _op147 \n\
-        DD   _op150 \n\
-        DD   _op151 \n\
-        DD   _op152 \n\
-        DD   _op153 \n\
-        DD   _op154 \n\
-        DD   _op155 \n\
-        DD   _op156 \n\
-        DD   _op157 \n\
-        DD   _op160 \n\
-        DD   _op161 \n\
-        DD   _op162 \n\
-        DD   _op163 \n\
-        DD   _op164 \n\
-        DD   _op165 \n\
-        DD   _op166 \n\
-        DD   _op167 \n\
-        DD   _op170 \n\
-        DD   _op171 \n\
-        DD   _op172 \n\
-        DD   _op173 \n\
-        DD   _op174 \n\
-        DD   _op175 \n\
-        DD   _op176 \n\
-        DD   _op177 \n\
-        DD   _op200 \n\
-        DD   _op201 \n\
-        DD   _op202 \n\
-        DD   _op203 \n\
-        DD   _op204 \n\
-        DD   _op205 \n\
-        DD   _op206 \n\
-        DD   _op207 \n\
-        DD   _op210 \n\
-        DD   _op211 \n\
-        DD   _op212 \n\
-        DD   _op213 \n\
-        DD   _op214 \n\
-        DD   _op215 \n\
-        DD   _op216 \n\
-        DD   _op217 \n\
-        DD   _op220 \n\
-        DD   _op221 \n\
-        DD   _op222 \n\
-        DD   _op223 \n\
-        DD   _op224 \n\
-        DD   _op225 \n\
-        DD   _op226 \n\
-        DD   _op227 \n\
-        DD   _op230 \n\
-        DD   _op231 \n\
-        DD   _op232 \n\
-        DD   _op233 \n\
-        DD   _op234 \n\
-        DD   _op235 \n\
-        DD   _op236 \n\
-        DD   _op237 \n\
-        DD   _op240 \n\
-        DD   _op241 \n\
-        DD   _op242 \n\
-        DD   _op243 \n\
-        DD   _op244 \n\
-        DD   _op245 \n\
-        DD   _op246 \n\
-        DD   _op247 \n\
-        DD   _op250 \n\
-        DD   _op251 \n\
-        DD   _op252 \n\
-        DD   _op253 \n\
-        DD   _op254 \n\
-        DD   _op255 \n\
-        DD   _op256 \n\
-        DD   _op257 \n\
-        DD   _op260 \n\
-        DD   _op261 \n\
-        DD   _op262 \n\
-        DD   _op263 \n\
-        DD   _op264 \n\
-        DD   _op265 \n\
-        DD   _op266 \n\
-        DD   _op267 \n\
-        DD   _op270 \n\
-        DD   _op271 \n\
-        DD   _op272 \n\
-        DD   _op273 \n\
-        DD   _op274 \n\
-        DD   _op275 \n\
-        DD   _op276 \n\
-        DD   _op277 \n\
-        DD   _op300 \n\
-        DD   _op301 \n\
-        DD   _op302 \n\
-        DD   _op303 \n\
-        DD   _op304 \n\
-        DD   _op305 \n\
-        DD   _op306 \n\
-        DD   _op307 \n\
-        DD   _op310 \n\
-        DD   _op311 \n\
-        DD   _op312 \n\
-        DD   _op313 \n\
-        DD   _op314 \n\
-        DD   _op315 \n\
-        DD   _op316 \n\
-        DD   _op317 \n\
-        DD   _op320 \n\
-        DD   _op321 \n\
-        DD   _op322 \n\
-        DD   _op323 \n\
-        DD   _op324 \n\
-        DD   _op325 \n\
-        DD   _op326 \n\
-        DD   _op327 \n\
-        DD   _op330 \n\
-        DD   _op331 \n\
-        DD   _op332 \n\
-        DD   _op333 \n\
-        DD   _op334 \n\
-        DD   _op335 \n\
-        DD   _op336 \n\
-        DD   _op337 \n\
-        DD   _op340 \n\
-        DD   _op341 \n\
-        DD   _op342 \n\
-        DD   _op343 \n\
-        DD   _op344 \n\
-        DD   _op345 \n\
-        DD   _op346 \n\
-        DD   _op347 \n\
-        DD   _op350 \n\
-        DD   _op351 \n\
-        DD   _op352 \n\
-        DD   _op353 \n\
-        DD   _op354 \n\
-        DD   _op355 \n\
-        DD   _op356 \n\
-        DD   _op357 \n\
-        DD   _op360 \n\
-        DD   _op361 \n\
-        DD   _op362 \n\
-        DD   _op363 \n\
-        DD   _op364 \n\
-        DD   _op365 \n\
-        DD   _op366 \n\
-        DD   _op367 \n\
-        DD   _op370 \n\
-        DD   _op371 \n\
-        DD   _op372 \n\
-        DD   _op373 \n\
-        DD   _op374 \n\
-        DD   _op375 \n\
-        DD   _op376 \n\
-        DD   _op377");
-  asm volatile(
-      "\n\
-FP_noint:	DW	003fh	;; No interrupts, round to closest, 24bit precision");
-
-#endif /* ISC */
-
 #endif /* OPDISP */
 }
 
