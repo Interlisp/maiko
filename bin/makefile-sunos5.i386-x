@@ -67,60 +67,6 @@ BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 default:	../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
 
-# Special rules to create xc.c on Sun4
-
-#run cpp to expand macros
-$(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
-	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
-	 $(INCDIR)arith.h $(INCDIR)stream.h \
-	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
-	 $(INCDIR)inln68k.h
-	$(CC) -Qproduce .i $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.i
-
-#run c compiler to produce first pass assembly
-$(OBJECTDIR)xc.s1:	$(OBJECTDIR)xc.i
-	rm -f $(OBJECTDIR)xc.s1
-	/lib/ccom - $(FPFLAGS) <$(OBJECTDIR)xc.i >$(OBJECTDIR)xc.s1
-
-#generate C program to remove dispatch loop, optimize
-$(OBJECTDIR)dsphack.c: $(SRCDIR)dsphack.lex
-	rm -f $(OBJECTDIR)dsphack.c
-	lex -t $(SRCDIR)dsphack.lex > $(OBJECTDIR)dsphack.c
-
-#uses this program to find dispatch
-$(OBJECTDIR)find-dsp.c: $(SRCDIR)find-dsp.lex
-	rm -f $(OBJECTDIR)find-dsp.c
-	lex -t $(SRCDIR)find-dsp.lex > $(OBJECTDIR)find-dsp.c
-
-$(OBJECTDIR)find-dsp: $(OBJECTDIR)find-dsp.c
-	$(CC) -o $(OBJECTDIR)find-dsp $(OBJECTDIR)find-dsp.c -ll
-
-$(OBJECTDIR)dispatch-label.c: $(OBJECTDIR)find-dsp $(OBJECTDIR)xc.s1
-	rm -f $(OBJECTDIR)dispatch-label.c
-	$(OBJECTDIR)find-dsp < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)dispatch-label.c
-
-$(OBJECTDIR)dsphack: $(OBJECTDIR)dsphack.c $(OBJECTDIR)dispatch-label.c
-	$(CC) -o $(OBJECTDIR)dsphack $(OBJECTDIR)dispatch-label.c $(OBJECTDIR)dsphack.c -ll
-	rm -f $(OBJECTDIR)dispatch-label.o $(OBJECTDIR)dsphack.o
-
-$(OBJECTDIR)xc.s2:	$(OBJECTDIR)xc.s1 $(OBJECTDIR)dsphack
-	rm -f $(OBJECTDIR)xc.s2
-	$(OBJECTDIR)dsphack < $(OBJECTDIR)xc.s1 >$(OBJECTDIR)xc.s2
-
-$(OBJECTDIR)xc.s3:	$(OBJECTDIR)xc.s2 $(INLINE)
-	rm -f $(OBJECTDIR)xc.s3
-	/usr/lib/inline -i $(INLINE) < $(OBJECTDIR)xc.s2 > $(OBJECTDIR)xc.s3
-
-#$(OBJECTDIR)xc.o: $(OBJECTDIR)xc.s3
-#	/bin/as -o $(OBJECTDIR)xc.o -O1 $(OBJECTDIR)xc.s3
-
-
-########### debugging version of xc maker
-
-
 $(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
@@ -128,4 +74,4 @@ $(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDI
 	 $(INCDIR)arith.h $(INCDIR)stream.h \
 	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
 	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h
-	$(CC)  $(DISPRFLAGS) -USPARCDISP -UOPDISP -DNOASM $(INLINE) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o
+	$(CC)  $(DISPRFLAGS) $(INLINE) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o

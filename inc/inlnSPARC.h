@@ -34,32 +34,6 @@ lispemul.h:	#define Get_BYTE(byteptr)	(((BYTECODE *)(byteptr))->code)
 lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
  */
 
-/* shuffle loads to go faster */
-#undef IVARMACRO
-#define	IVARMACRO(x) {						\
-	register LispPTR *var = (LispPTR *)IVar;		\
-								\
-	HARD_PUSH(TOPOFSTACK); 					\
-	{register unsigned char opcode;				\
-	opcode = *(unsigned char *)(PCMAC+1);			\
-	TOPOFSTACK = *(var + x); 				\
- 	PCMACL += 1;						\
-	fast_dispatcher(table, opcode);}			\
-	goto nextopcode; }
-
-#undef PVARMACRO
-#define	PVARMACRO(x) {						\
-	register LispPTR *var = (LispPTR *)PVar;		\
-								\
-	HARD_PUSH(TOPOFSTACK); 					\
-	{register unsigned char opcode;				\
-	opcode = *(unsigned char *)(PCMAC+1);			\
-	TOPOFSTACK = *(var + x); 				\
- 	PCMACL += 1;						\
-	fast_dispatcher(table, opcode);}			\
-	goto nextopcode; }
-
-
 #define NSMALLP(x) (((x) >> 17) ^ 7)
 #define NSMALLP_RANGE(x) (((x << 15) >>15) ^ x)
 

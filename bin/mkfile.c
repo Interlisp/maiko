@@ -73,7 +73,6 @@ SRCFILES = SRCDIR/conspage.c SRCDIR/gcoflow.c SRCDIR/shift.c SRCDIR/dbgtool.c SR
 	SRCDIR/rawcolor.c SRCDIR/vars3.c SRCDIR/gcfinal.c SRCDIR/ldsout.c SRCDIR/return.c \
 	SRCDIR/vmemsave.c SRCDIR/chardev.c SRCDIR/gchtfind.c SRCDIR/lineblt8.c SRCDIR/rpc.c \
 	SRCDIR/xc.c SRCDIR/common.c SRCDIR/gcmain3.c SRCDIR/lisp2c.c SRCDIR/rplcons.c SRCDIR/z2.c \
-	SRCDIR/find-dsp.l SRCDIR/dsphack.l \
 	SRCDIR/xmkicon.c SRCDIR/xbbt.c SRCDIR/xinit.c SRCDIR/xscroll.c SRCDIR/xcursor.c SRCDIR/xlspwin.c \
 	SRCDIR/xrdopt.c SRCDIR/xwinman.c \
 	SRCDIR/dosmouse.c SRCDIR/vesafns.asm SRCDIR/vesainit.c SRCDIR/vgainit.c SRCDIR/kbdif.c \

@@ -78,59 +78,6 @@ done:				!		else done;
 .end
 
 
-/* inline dispatching support */
-/* Thanks to Russ Atkinson, December 29, 1987 */
-
-/* To use in compiling XXX, cc -O2 XXX.c dispatch.il */
-
-/* The qdisp* routines depend on pc being in %o0 and table being in %o1 */
-
-.inline	_qdisp0,8
-	! qdisp0 - %o0: pc, %o1: table
-	ldub	[%o0+0],%o2	! temp = *pc
-	sll	%o2,2,%o2	! temp = temp * 4
-	ld	[%o2+%o1],%o2	! temp = table[temp]
-	jmp	%o2		! dispatch
-	nop
-.end
-
-.inline	_qdisp1,8
-	! qdisp1 - %o0: pc, %o1: table
-	ldub	[%o0+1],%o2	! temp = *pc
-	sll	%o2,2,%o2	! temp = temp * 4
-	ld	[%o2+%o1],%o2	! temp = table[temp]
-	jmp	%o2		! dispatch
-	add	%o0,1,%o0	! update the pc
-.end
-
-.inline	_qdisp2,8
-	! qdisp2 - %o0: pc, %o1: table
-	ldub	[%o0+2],%o2	! temp = *pc
-	sll	%o2,2,%o2	! temp = temp * 4
-	ld	[%o2+%o1],%o2	! temp = table[temp]
-	jmp	%o2		! dispatch
-	add	%o0,2,%o0	! update the pc
-.end
-
-.inline	_qdisp3,8
-	! qdisp3 - %o0: pc, %o1: table
-	ldub	[%o0+3],%o2	! temp = *pc
-	sll	%o2,2,%o2	! temp = temp * 4
-	ld	[%o2+%o1],%o2	! temp = table[temp]
-	jmp	%o2		! dispatch
-	add	%o0,3,%o0	! update the pc
-.end
-
-
-.inline	_fast_dispatcher,8
-	!  - %o0: table, %o1: pc
-	ldub	[%o1+0],%o1	! fetch inst byte
-	sll	%o1,2,%o1
-	ld	[%o1+%o0],%o1
-	jmp	%o1		! dispatch
-	nop
-.end
-
 /*
 	***************************************************************
 	Inline Assembly help for dispatcher.
