@@ -11,18 +11,16 @@
 #include "version.h"
 
 #include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
+
 #ifndef DOS
 #include <sys/file.h>
 #include <sys/select.h>
 #endif /* DOS */
-#ifdef SUNDISPLAY
-#include <sundev/kbd.h>
-#include <sundev/kbio.h>
-#endif /* SUNDISPLAY */
 
 #ifdef DOS
 #include <i32.h>   /* "#pragma interrupt" & '_chain_intr'*/
@@ -33,15 +31,14 @@
 #include <stk.h>
 #endif /* DOS */
 
-#include <fcntl.h>
 #ifdef SUNDISPLAY
-#ifndef DOS
+#include <sundev/kbd.h>
+#include <sundev/kbio.h>
 #include <sunwindow/window_hs.h>
 #include <sunwindow/cms.h>
 #include <sys/ioctl.h>
 #include <sunwindow/win_ioctl.h>
 #include <pixrect/pixrect_hs.h>
-#endif /* DOS */
 #endif /* SUNDISPLAY */
 
 #ifdef DOS
@@ -544,7 +541,7 @@ void keyboardtype(int fd)
     type = KB_X;
 #elif DOS
     type = KB_DOS;
-#else
+#elif SUNDISPLAY
     if (ioctl(fd, KIOCTYPE, &type) != 0) {
       error("keyboardtype:IOCTL(KIOCTYPE) fails (cont. w. type-3");
       type = KB_SUN3;

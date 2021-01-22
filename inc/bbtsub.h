@@ -11,9 +11,12 @@
 /*      Don Charnley's bitblt code to do them.          */
 /*                                                      */
 /********************************************************/
-#if (!(defined(NOPIXRECT)) && !(defined(NEWBITBLT)) && !(defined(I386)))
+#if defined(SUNDISPLAY) && \
+    !defined(NOPIXRECT) && \
+    !defined(NEWBITBLT) && \
+    !defined(I386)
 #define prropstyle 1
-#endif /* NOPIXRECT */
+#endif
 
 void bitbltsub(LispPTR *argv);
 LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h);

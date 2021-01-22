@@ -18,35 +18,20 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#ifdef SUNDISPLAY
 #ifndef NOPIXRECT
-#ifndef DOS
-#ifdef XWINDOW
-#include <sys/time.h>
-#include <pixrect/pixrect_hs.h>
-#include <sunwindow/notify.h>
-#include <sunwindow/rect.h>
-#include <sunwindow/rectlist.h>
-#include <sunwindow/pixwin.h>
-#include <sunwindow/pw_util.h>
-#include <sunwindow/win_struct.h>
-#include <sunwindow/win_environ.h>
-#include <sunwindow/cms.h>
-#include <sunwindow/win_input.h>
-#else
 #include <sunwindow/window_hs.h>
 #include <sunwindow/cms.h>
 #include <sunwindow/win_ioctl.h>
-#endif /* XWINDOW */
-/* #include <sunwindow/win_screen.h> */
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <pixrect/pixrect_hs.h>
 #include <sun/fbio.h>
 #include <sys/ioctl.h>
 #include <sys/file.h>
-#endif /* DOS */
 #include <pixrect/pr_planegroups.h>
 #endif /* NOPIXRECT */
+#endif /* SUNDISPLAY */
 
 #ifdef OS4
 #include <vfork.h>
@@ -93,8 +78,9 @@ extern DspInterfaceRec _curdsp, _coldsp;
 #define FBTYPE_SUNFAST_COLOR 12
 #endif
 
-#ifndef NOPIXRECT
+#ifdef SUNDISPLAY
 struct screen LispScreen;
+#ifndef NOPIXRECT
 struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
 struct pixrect *SrcePixRect, *DestPixRect;
 #ifdef DISPLAYBUFFER
@@ -106,6 +92,7 @@ int oldred[2], oldgreen[2], oldblue[2];
 #endif /* DEBUG */
 #endif /* DISPLAYBUFFER */
 #endif /* NOPIXRECT */
+#endif /* SUNDISPLAY */
 
 int LispWindowFd = -1;
 int FrameBufferFd = -1;
@@ -160,25 +147,23 @@ int Win_security_p;
 /************************************************************************/
 
 void init_cursor() {
+#ifdef SUNDISPLAY
 #ifndef NOPIXRECT
   CursorBitMap = mem_create(CURSORWIDTH, CURSORHEIGHT, 1);
   mpr_mdlinebytes(CursorBitMap) = CURSORWIDTH >> 3; /* 2(byte) */
 #endif                                              /* NOPIXRECT */
 
-#ifdef SUNDISPLAY
   CurrentCursor.cur_xhot = 0;
   CurrentCursor.cur_yhot = 0;
   CurrentCursor.cur_shape = CursorBitMap;
   CurrentCursor.cur_function = PIX_SRC | PIX_DST;
-#endif /* SUNDISPLAY */
 
-/*  Invisible Cursor */
+  /*  Invisible Cursor */
 
 #ifndef NOPIXRECT
   InvisibleCursorBitMap = mem_create(0, 0, 1);
 #endif /* NOPIXRECT */
 
-#ifdef SUNDISPLAY
   InvisibleCursor.cur_xhot = 0;
   InvisibleCursor.cur_yhot = 0;
   InvisibleCursor.cur_shape = InvisibleCursorBitMap;
@@ -373,10 +358,10 @@ void init_display2(DLword *display_addr, int display_max)
 #endif /* DOS */
 
   DBPRINT(("FBIOGTYPE w x h = %d x %d\n", displaywidth, displayheight));
-#if (!defined(XWINDOW) && !defined(DOS))
+#ifdef SUNDISPLAY
   DBPRINT(("   (real) type  = %d\n", my_screen.fb_type));
   DBPRINT(("   (real) bpp   = %d\n", my_screen.fb_depth));
-#endif /* XWINDOW */
+#endif /* SUNDISPLAY */
 
 #ifdef SUNDISPLAY
   /** now attempt to use the FBIOGATTR call for more information **/
@@ -558,11 +543,11 @@ void init_display2(DLword *display_addr, int display_max)
 
   DBPRINT(("after clear_display()\n"));
 
-#ifndef NOPIXRECT
+#if defined(SUNDISPLAY) && !defined(NOPIXRECT)
   /* initialize pixrect used in pilotbitblt */
   SrcePixRect = mem_point(0, 0, 1, NULL);
   DestPixRect = mem_point(0, 0, 1, NULL);
-#endif /* NOPIXRECT */
+#endif
 
   DBPRINT(("exiting init_display\n"));
 }
