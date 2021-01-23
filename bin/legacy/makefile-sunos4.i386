@@ -28,7 +28,7 @@ $(OBJECTDIR)xc.i:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  $(IN
 	 $(INCDIR)n_op_inlineC.h  $(SRCDIR)disp386i.il  \
 	 $(INCDIR)dummy_entries.h \
 	 $(INCDIR)inline386i.h  $(INCDIR)fast_disp.h  \
-	 $(INCDIR)fastinline68K.h $(INCDIR)profile.h
+	 $(INCDIR)fastinline68K.h
 	cc -c -O -Qproduce .s $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.s
 
 #run c compiler to produce first pass assembly

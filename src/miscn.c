@@ -25,7 +25,6 @@
 #include "lspglob.h"
 #include "arith.h"
 #include "subrs.h"
-#include "profile.h"
 
 #include "miscndefs.h"
 #include "commondefs.h"

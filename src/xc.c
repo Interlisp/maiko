@@ -139,7 +139,6 @@ register LispPTR tscache asm("bx");
 #endif
 
 #include "fast_dsp.h"
-#include "profile.h"
 
 /* trick now is that pccache points one ahead... */
 #define PCMAC (pccache - 1)
@@ -266,504 +265,504 @@ nextopcode:
 
   switch (Get_BYTE_PCMAC0) {
     case 000:
-    CASE000 : { goto op_ufn; } /* unused */
+    case000 : { goto op_ufn; } /* unused */
     case 001:
-    CASE001:
+    case001:
       OPCAR;
     case 002:
-    CASE002:
+    case002:
       OPCDR;
     case 003:
-    CASE003:
+    case003:
       LISTP;
     case 004:
-    CASE004:
+    case004:
       NTYPEX;
     case 005:
-    CASE005:
+    case005:
       TYPEP(Get_BYTE_PCMAC1);
     case 056:
-    CASE056:
+    case056:
     case 006:
-    CASE006:
+    case006:
       DTEST(Get_AtomNo_PCMAC1);
     case 007:
-    CASE007:
+    case007:
       UNWIND(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
     case 010:
-    CASE010:
+    case010:
       FN0;
     case 011:
-    CASE011:
+    case011:
       FN1;
     case 012:
-    CASE012:
+    case012:
       FN2;
     case 013:
-    CASE013:
+    case013:
       FN3;
     case 014:
-    CASE014:
+    case014:
       FN4;
     case 015:
-    CASE015:
+    case015:
       FNX;
     case 016:
-    CASE016:
+    case016:
       APPLY;
 
     case 017:
-    CASE017:
+    case017:
       CHECKAPPLY;
     case 020:
-    CASE020:
+    case020:
       RETURN;
 
     case 021:
-    CASE021:
+    case021:
       /* UB: left shift of negative value -4 */
       BIND;
     case 022:
-    CASE022:
+    case022:
       UNBIND;
     case 023:
-    CASE023:
+    case023:
       DUNBIND;
     case 024:
-    CASE024:
+    case024:
       RPLPTR(Get_BYTE_PCMAC1);
     case 025:
-    CASE025:
+    case025:
       GCREF(Get_BYTE_PCMAC1);
     case 026:
-    CASE026:
+    case026:
       ASSOC;
     case 027:
-    CASE027:
+    case027:
       GVAR_(Get_AtomNo_PCMAC1);
     case 030:
-    CASE030:
+    case030:
       RPLACA;
     case 031:
-    CASE031:
+    case031:
       RPLACD;
     case 032:
-    CASE032:
+    case032:
       CONS;
     case 033:
-    CASE033:
+    case033:
       CLASSOC;
     case 034:
-    CASE034:
+    case034:
       FMEMB;
     case 035:
-    CASE035:
+    case035:
       CLFMEMB;
     case 036:
-    CASE036:
+    case036:
       FINDKEY(Get_BYTE_PCMAC1);
     case 037:
-    CASE037:
+    case037:
       CREATECELL;
     case 040:
-    CASE040:
+    case040:
       BIN;
     case 041:
-    CASE041 : { goto op_ufn; } /* BOUT */
+    case041 : { goto op_ufn; } /* BOUT */
     case 042:
-    CASE042 : { goto op_ufn; } /* POPDISP - prolog only */
+    case042 : { goto op_ufn; } /* POPDISP - prolog only */
     case 043:
-    CASE043:
+    case043:
       RESTLIST(Get_BYTE_PCMAC1);
     case 044:
-    CASE044:
+    case044:
       MISCN(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
     case 045:
-    CASE045 : { goto op_ufn; } /* unused */
+    case045 : { goto op_ufn; } /* unused */
     case 046:
-    CASE046:
+    case046:
       RPLCONS;
     case 047:
-    CASE047:
+    case047:
       LISTGET;
     case 050:
-    CASE050 : { goto op_ufn; } /* unused */
+    case050 : { goto op_ufn; } /* unused */
     case 051:
-    CASE051 : { goto op_ufn; } /* unused */
+    case051 : { goto op_ufn; } /* unused */
     case 052:
-    CASE052 : { goto op_ufn; } /* unused */
+    case052 : { goto op_ufn; } /* unused */
     case 053:
-    CASE053 : { goto op_ufn; } /* unused */
+    case053 : { goto op_ufn; } /* unused */
     case 054:
-    CASE054:
+    case054:
       EVAL;
     case 055:
-    CASE055:
+    case055:
       ENVCALL;
 
-    /*  case 056 : CASE056: @ 006 */
+    /*  case 056 : case056: @ 006 */
     case 057:
-    CASE057:
+    case057:
       STKSCAN;
     case 060:
-    CASE060 : { goto op_ufn; } /* BUSBLT - DLion only */
+    case060 : { goto op_ufn; } /* BUSBLT - DLion only */
     case 061:
-    CASE061 : { goto op_ufn; } /* MISC8 - no longer used */
+    case061 : { goto op_ufn; } /* MISC8 - no longer used */
     case 062:
-    CASE062:
+    case062:
       UBFLOAT3(Get_BYTE_PCMAC1);
     case 063:
-    CASE063:
+    case063:
       TYPEMASK(Get_BYTE_PCMAC1);
     case 064:
-    CASE064 : { goto op_ufn; } /* rdprologptr */
+    case064 : { goto op_ufn; } /* rdprologptr */
     case 065:
-    CASE065 : { goto op_ufn; } /* rdprologtag */
+    case065 : { goto op_ufn; } /* rdprologtag */
     case 066:
-    CASE066 : { goto op_ufn; } /* writeptr&tag */
+    case066 : { goto op_ufn; } /* writeptr&tag */
     case 067:
-    CASE067 : { goto op_ufn; } /* writeptr&0tag */
+    case067 : { goto op_ufn; } /* writeptr&0tag */
     case 070:
-    CASE070:
+    case070:
       MISC7(Get_BYTE_PCMAC1); /* misc7 (pseudocolor, fbitmapbit) */
     case 071:
-    CASE071 : { goto op_ufn; } /* dovemisc - dove only */
+    case071 : { goto op_ufn; } /* dovemisc - dove only */
     case 072:
-    CASE072:
+    case072:
       EQLOP;
     case 073:
-    CASE073:
+    case073:
       DRAWLINE;
     case 074:
-    CASE074:
+    case074:
       STOREN(Get_BYTE_PCMAC1);
     case 075:
-    CASE075:
+    case075:
       COPYN(Get_BYTE_PCMAC1);
     case 076:
-    CASE076 : { goto op_ufn; } /* RAID */
+    case076 : { goto op_ufn; } /* RAID */
     case 077:
-    CASE077 : { goto op_ufn; } /* \RETURN */
+    case077 : { goto op_ufn; } /* \RETURN */
 
     case 0100:
-    CASE100:
+    case100:
       IVARMACRO(0);
     case 0101:
-    CASE101:
+    case101:
       IVARMACRO(1);
     case 0102:
-    CASE102:
+    case102:
       IVARMACRO(2);
     case 0103:
-    CASE103:
+    case103:
       IVARMACRO(3);
     case 0104:
-    CASE104:
+    case104:
       IVARMACRO(4);
     case 0105:
-    CASE105:
+    case105:
       IVARMACRO(5);
     case 0106:
-    CASE106:
+    case106:
       IVARMACRO(6);
     case 0107:
-    CASE107:
+    case107:
       IVARX(Get_BYTE_PCMAC1);
 
     case 0110:
-    CASE110:
+    case110:
       PVARMACRO(0);
     case 0111:
-    CASE111:
+    case111:
       PVARMACRO(1);
     case 0112:
-    CASE112:
+    case112:
       PVARMACRO(2);
     case 0113:
-    CASE113:
+    case113:
       PVARMACRO(3);
     case 0114:
-    CASE114:
+    case114:
       PVARMACRO(4);
     case 0115:
-    CASE115:
+    case115:
       PVARMACRO(5);
     case 0116:
-    CASE116:
+    case116:
       PVARMACRO(6);
 
     case 0117:
-    CASE117:
+    case117:
       PVARX(Get_BYTE_PCMAC1);
 
     case 0120:
-    CASE120:
+    case120:
       FVAR(0);
     case 0121:
-    CASE121:
+    case121:
       FVAR(2);
     case 0122:
-    CASE122:
+    case122:
       FVAR(4);
     case 0123:
-    CASE123:
+    case123:
       FVAR(6);
     case 0124:
-    CASE124:
+    case124:
       FVAR(8);
     case 0125:
-    CASE125:
+    case125:
       FVAR(10);
     case 0126:
-    CASE126:
+    case126:
       FVAR(12);
     case 0127:
-    CASE127:
+    case127:
       FVARX(Get_BYTE_PCMAC1);
 
     case 0130:
-    CASE130:
+    case130:
       PVARSETMACRO(0);
     case 0131:
-    CASE131:
+    case131:
       PVARSETMACRO(1);
     case 0132:
-    CASE132:
+    case132:
       PVARSETMACRO(2);
     case 0133:
-    CASE133:
+    case133:
       PVARSETMACRO(3);
     case 0134:
-    CASE134:
+    case134:
       PVARSETMACRO(4);
     case 0135:
-    CASE135:
+    case135:
       PVARSETMACRO(5);
     case 0136:
-    CASE136:
+    case136:
       PVARSETMACRO(6);
 
     case 0137:
-    CASE137:
+    case137:
       PVARX_(Get_BYTE_PCMAC1);
 
     case 0140:
-    CASE140:
+    case140:
       GVAR(Get_AtomNo_PCMAC1);
     case 0141:
-    CASE141:
+    case141:
       ARG0;
     case 0142:
-    CASE142:
+    case142:
       IVARX_(Get_BYTE_PCMAC1);
     case 0143:
-    CASE143:
+    case143:
       FVARX_(Get_BYTE_PCMAC1);
     case 0144:
-    CASE144:
+    case144:
       COPY;
     case 0145:
-    CASE145:
+    case145:
       MYARGCOUNT;
     case 0146:
-    CASE146:
+    case146:
       MYALINK;
 
     /******** Aconst	********/
     case 0147:
-    CASE147 : {
+    case147 : {
       PUSH(Get_AtomNo_PCMAC1);
       nextop_atom;
     }
     case 0150:
-    CASE150 : { PUSHATOM(NIL_PTR); }
+    case150 : { PUSHATOM(NIL_PTR); }
     case 0151:
-    CASE151 : { PUSHATOM(ATOM_T); }
+    case151 : { PUSHATOM(ATOM_T); }
     case 0152:
-    CASE152 : { PUSHATOM(S_POSITIVE); } /* '0 */
+    case152 : { PUSHATOM(S_POSITIVE); } /* '0 */
     case 0153:
-    CASE153 : { PUSHATOM(0xE0001); } /* '1 */
+    case153 : { PUSHATOM(0xE0001); } /* '1 */
 
     /********* SIC		********/
     case 0154:
-    CASE154 : {
+    case154 : {
       PUSH(S_POSITIVE | Get_BYTE_PCMAC1);
       nextop2;
     }
 
     /********* SNIC		********/
     case 0155:
-    CASE155 : {
+    case155 : {
       PUSH(S_NEGATIVE | 0xff00 | Get_BYTE_PCMAC1);
       nextop2;
     }
 
     /********* SICX		********/
     case 0156:
-    CASE156 : {
+    case156 : {
       PUSH(S_POSITIVE | Get_DLword_PCMAC1);
       nextop3;
     }
 
     /********* GCONST	********/
     case 0157:
-    CASE157 : {
+    case157 : {
       PUSH(Get_Pointer_PCMAC1);
       nextop_ptr;
     }
 
     case 0160:
-    CASE160 : { goto op_ufn; } /* unused */
+    case160 : { goto op_ufn; } /* unused */
     case 0161:
-    CASE161 : { goto op_ufn; } /* readflags */
+    case161 : { goto op_ufn; } /* readflags */
     case 0162:
-    CASE162 : { goto op_ufn; } /* readrp */
+    case162 : { goto op_ufn; } /* readrp */
     case 0163:
-    CASE163 : { goto op_ufn; } /* writemap */
+    case163 : { goto op_ufn; } /* writemap */
     case 0164:
-    CASE164 : { goto op_ufn; } /* readprinterport */
+    case164 : { goto op_ufn; } /* readprinterport */
     case 0165:
-    CASE165 : { goto op_ufn; } /* writeprinterport */
+    case165 : { goto op_ufn; } /* writeprinterport */
 
     case 0166:
-    CASE166:
+    case166:
       PILOTBITBLT;
     case 0167:
-    CASE167:
+    case167:
       RCLK;
     case 0170:
-    CASE170 : { goto op_ufn; } /* MISC1, dorado only */
+    case170 : { goto op_ufn; } /* MISC1, dorado only */
     case 0171:
-    CASE171 : { goto op_ufn; } /* MISC2, dorado only */
+    case171 : { goto op_ufn; } /* MISC2, dorado only */
     case 0172:
-    CASE172:
+    case172:
       RECLAIMCELL;
     case 0173:
-    CASE173:
+    case173:
       GCSCAN1;
     case 0174:
-    CASE174:
+    case174:
       GCSCAN2;
     case 0175:
-    CASE175 : {
+    case175 : {
       EXT;
       OP_subrcall(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
       RET;
       nextop0;
     };
     case 0176:
-    CASE176 : { CONTEXTSWITCH; }
+    case176 : { CONTEXTSWITCH; }
     case 0177:
-    CASE177 : { goto op_ufn; } /* RETCALL */
+    case177 : { goto op_ufn; } /* RETCALL */
 
     /* JUMP */
 
     case 0200:
-    CASE200 : { JUMPMACRO(2); }
+    case200 : { JUMPMACRO(2); }
     case 0201:
-    CASE201 : { JUMPMACRO(3); }
+    case201 : { JUMPMACRO(3); }
     case 0202:
-    CASE202 : { JUMPMACRO(4); }
+    case202 : { JUMPMACRO(4); }
     case 0203:
-    CASE203 : { JUMPMACRO(5); }
+    case203 : { JUMPMACRO(5); }
     case 0204:
-    CASE204 : { JUMPMACRO(6); }
+    case204 : { JUMPMACRO(6); }
     case 0205:
-    CASE205 : { JUMPMACRO(7); }
+    case205 : { JUMPMACRO(7); }
     case 0206:
-    CASE206 : { JUMPMACRO(8); }
+    case206 : { JUMPMACRO(8); }
     case 0207:
-    CASE207 : { JUMPMACRO(9); }
+    case207 : { JUMPMACRO(9); }
     case 0210:
-    CASE210 : { JUMPMACRO(10); }
+    case210 : { JUMPMACRO(10); }
     case 0211:
-    CASE211 : { JUMPMACRO(11); }
+    case211 : { JUMPMACRO(11); }
     case 0212:
-    CASE212 : { JUMPMACRO(12); }
+    case212 : { JUMPMACRO(12); }
     case 0213:
-    CASE213 : { JUMPMACRO(13); }
+    case213 : { JUMPMACRO(13); }
     case 0214:
-    CASE214 : { JUMPMACRO(14); }
+    case214 : { JUMPMACRO(14); }
     case 0215:
-    CASE215 : { JUMPMACRO(15); }
+    case215 : { JUMPMACRO(15); }
     case 0216:
-    CASE216 : { JUMPMACRO(16); }
+    case216 : { JUMPMACRO(16); }
     case 0217:
-    CASE217 : { JUMPMACRO(17); }
+    case217 : { JUMPMACRO(17); }
 
     /* FJUMP */
 
     case 0220:
-    CASE220 : { FJUMPMACRO(2); }
+    case220 : { FJUMPMACRO(2); }
     case 0221:
-    CASE221 : { FJUMPMACRO(3); }
+    case221 : { FJUMPMACRO(3); }
     case 0222:
-    CASE222 : { FJUMPMACRO(4); }
+    case222 : { FJUMPMACRO(4); }
     case 0223:
-    CASE223 : { FJUMPMACRO(5); }
+    case223 : { FJUMPMACRO(5); }
     case 0224:
-    CASE224 : { FJUMPMACRO(6); }
+    case224 : { FJUMPMACRO(6); }
     case 0225:
-    CASE225 : { FJUMPMACRO(7); }
+    case225 : { FJUMPMACRO(7); }
     case 0226:
-    CASE226 : { FJUMPMACRO(8); }
+    case226 : { FJUMPMACRO(8); }
     case 0227:
-    CASE227 : { FJUMPMACRO(9); }
+    case227 : { FJUMPMACRO(9); }
     case 0230:
-    CASE230 : { FJUMPMACRO(10); }
+    case230 : { FJUMPMACRO(10); }
     case 0231:
-    CASE231 : { FJUMPMACRO(11); }
+    case231 : { FJUMPMACRO(11); }
     case 0232:
-    CASE232 : { FJUMPMACRO(12); }
+    case232 : { FJUMPMACRO(12); }
     case 0233:
-    CASE233 : { FJUMPMACRO(13); }
+    case233 : { FJUMPMACRO(13); }
     case 0234:
-    CASE234 : { FJUMPMACRO(14); }
+    case234 : { FJUMPMACRO(14); }
     case 0235:
-    CASE235 : { FJUMPMACRO(15); }
+    case235 : { FJUMPMACRO(15); }
     case 0236:
-    CASE236 : { FJUMPMACRO(16); }
+    case236 : { FJUMPMACRO(16); }
     case 0237:
-    CASE237 : { FJUMPMACRO(17); }
+    case237 : { FJUMPMACRO(17); }
 
     /* TJUMP */
 
     case 0240:
-    CASE240 : { TJUMPMACRO(2); }
+    case240 : { TJUMPMACRO(2); }
     case 0241:
-    CASE241 : { TJUMPMACRO(3); }
+    case241 : { TJUMPMACRO(3); }
     case 0242:
-    CASE242 : { TJUMPMACRO(4); }
+    case242 : { TJUMPMACRO(4); }
     case 0243:
-    CASE243 : { TJUMPMACRO(5); }
+    case243 : { TJUMPMACRO(5); }
     case 0244:
-    CASE244 : { TJUMPMACRO(6); }
+    case244 : { TJUMPMACRO(6); }
     case 0245:
-    CASE245 : { TJUMPMACRO(7); }
+    case245 : { TJUMPMACRO(7); }
     case 0246:
-    CASE246 : { TJUMPMACRO(8); }
+    case246 : { TJUMPMACRO(8); }
     case 0247:
-    CASE247 : { TJUMPMACRO(9); }
+    case247 : { TJUMPMACRO(9); }
     case 0250:
-    CASE250 : { TJUMPMACRO(10); }
+    case250 : { TJUMPMACRO(10); }
     case 0251:
-    CASE251 : { TJUMPMACRO(11); }
+    case251 : { TJUMPMACRO(11); }
     case 0252:
-    CASE252 : { TJUMPMACRO(12); }
+    case252 : { TJUMPMACRO(12); }
     case 0253:
-    CASE253 : { TJUMPMACRO(13); }
+    case253 : { TJUMPMACRO(13); }
     case 0254:
-    CASE254 : { TJUMPMACRO(14); }
+    case254 : { TJUMPMACRO(14); }
     case 0255:
-    CASE255 : { TJUMPMACRO(15); }
+    case255 : { TJUMPMACRO(15); }
     case 0256:
-    CASE256 : { TJUMPMACRO(16); }
+    case256 : { TJUMPMACRO(16); }
     case 0257:
-    CASE257 : { TJUMPMACRO(17); }
+    case257 : { TJUMPMACRO(17); }
 
     /******* JUMPX ********/
     case 0260:
-    CASE260 : {
+    case260 : {
       CHECK_INTERRUPT;
       PCMACL += Get_SBYTE_PCMAC1;
       nextop0;
@@ -771,7 +770,7 @@ nextopcode:
 
     /******* JUMPXX ********/
     case 0261:
-    CASE261 : {
+    case261 : {
       CHECK_INTERRUPT;
       /* UB: left shift of negative value -1 */
       PCMACL += (Get_SBYTE_PCMAC1 << 8) | Get_BYTE_PCMAC2;
@@ -780,7 +779,7 @@ nextopcode:
 
     /******* FJumpx *******/
     case 0262:
-    CASE262 : {
+    case262 : {
       if (TOPOFSTACK != 0) { goto PopNextop2; }
       CHECK_INTERRUPT;
       POP;
@@ -791,7 +790,7 @@ nextopcode:
     /******* TJumpx *******/
 
     case 0263:
-    CASE263 : {
+    case263 : {
       if (TOPOFSTACK == 0) { goto PopNextop2; }
       CHECK_INTERRUPT;
       POP;
@@ -802,7 +801,7 @@ nextopcode:
     /******* NFJumpx *******/
 
     case 0264:
-    CASE264 : {
+    case264 : {
       if (TOPOFSTACK != 0) { goto PopNextop2; }
       CHECK_INTERRUPT;
       PCMACL += Get_SBYTE_PCMAC1;
@@ -812,7 +811,7 @@ nextopcode:
     /******* NTJumpx *******/
 
     case 0265:
-    CASE265 : {
+    case265 : {
       if (TOPOFSTACK == 0) { goto PopNextop2; }
       CHECK_INTERRUPT;
       PCMACL += Get_SBYTE_PCMAC1;
@@ -820,184 +819,184 @@ nextopcode:
     }
 
     case 0266:
-    CASE266:
+    case266:
       AREF1;
     case 0267:
-    CASE267:
+    case267:
       ASET1;
 
     case 0270:
-    CASE270:
+    case270:
       PVARSETPOPMACRO(0);
     case 0271:
-    CASE271:
+    case271:
       PVARSETPOPMACRO(1);
     case 0272:
-    CASE272:
+    case272:
       PVARSETPOPMACRO(2);
     case 0273:
-    CASE273:
+    case273:
       PVARSETPOPMACRO(3);
     case 0274:
-    CASE274:
+    case274:
       PVARSETPOPMACRO(4);
     case 0275:
-    CASE275:
+    case275:
       PVARSETPOPMACRO(5);
     case 0276:
-    CASE276:
+    case276:
       PVARSETPOPMACRO(6);
 
     case 0277:
-    CASE277 : {
+    case277 : {
       POP;
       nextop1;
     }
 
     case 0300:
-    CASE300:
+    case300:
       POPN(Get_BYTE_PCMAC1);
     case 0301:
-    CASE301:
+    case301:
       ATOMCELL_N(Get_BYTE_PCMAC1);
     case 0302:
-    CASE302:
+    case302:
       GETBASEBYTE;
     case 0303:
-    CASE303:
+    case303:
       INSTANCEP(Get_AtomNo_PCMAC1);
     case 0304:
-    CASE304:
+    case304:
       BLT;
     case 0305:
-    CASE305 : { goto op_ufn; } /* MISC10 */
+    case305 : { goto op_ufn; } /* MISC10 */
     case 0306:
-    CASE306 : { goto op_ufn; } /* P-MISC2 ??? */
+    case306 : { goto op_ufn; } /* P-MISC2 ??? */
     case 0307:
-    CASE307:
+    case307:
       PUTBASEBYTE;
     case 0310:
-    CASE310:
+    case310:
       GETBASE_N(Get_BYTE_PCMAC1);
     case 0311:
-    CASE311:
+    case311:
       GETBASEPTR_N(Get_BYTE_PCMAC1);
     case 0312:
-    CASE312:
+    case312:
       GETBITS_N_M(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
     case 0313:
-    CASE313 : { goto op_ufn; } /* unused */
+    case313 : { goto op_ufn; } /* unused */
     case 0314:
-    CASE314:
+    case314:
       CLEQUAL;
     case 0315:
-    CASE315:
+    case315:
       PUTBASE_N(Get_BYTE_PCMAC1);
     case 0316:
-    CASE316:
+    case316:
       PUTBASEPTR_N(Get_BYTE_PCMAC1);
     case 0317:
-    CASE317:
+    case317:
       PUTBITS_N_M(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
 
     case 0320:
-    CASE320:
+    case320:
       N_OP_ADDBASE;
     case 0321:
-    CASE321:
+    case321:
       N_OP_VAG2;
     case 0322:
-    CASE322:
+    case322:
       N_OP_HILOC;
     case 0323:
-    CASE323:
+    case323:
       N_OP_LOLOC;
     case 0324:
-    CASE324:
+    case324:
       PLUS2; /* PLUS */
     case 0325:
-    CASE325:
+    case325:
       DIFFERENCE; /* DIFFERENCE */
     case 0326:
-    CASE326:
+    case326:
       TIMES2; /* TIMES2 */
     case 0327:
-    CASE327:
+    case327:
       QUOTIENT                          /* QUOTIENT */
     case 0330:
-    CASE330:
+    case330:
       IPLUS2; /* IPLUS2 only while PLUS has no float */
     case 0331:
-    CASE331:
+    case331:
       IDIFFERENCE; /* IDIFFERENCE only while no float */
     case 0332:
-    CASE332:
+    case332:
       ITIMES2; /* ITIMES2 only while no float */
     case 0333:
-    CASE333:
+    case333:
       IQUOTIENT; /* IQUOTIENT */
     case 0334:
-    CASE334:
+    case334:
       IREMAINDER;
     case 0335:
-    CASE335:
+    case335:
       IPLUS_N(Get_BYTE_PCMAC1);
     case 0336:
-    CASE336:
+    case336:
       IDIFFERENCE_N(Get_BYTE_PCMAC1);
     case 0337:
-    CASE337 : { goto op_ufn; } /* BASE-< */
+    case337 : { goto op_ufn; } /* BASE-< */
     case 0340:
-    CASE340:
+    case340:
       LLSH1;
     case 0341:
-    CASE341:
+    case341:
       LLSH8;
     case 0342:
-    CASE342:
+    case342:
       LRSH1;
     case 0343:
-    CASE343:
+    case343:
       LRSH8;
     case 0344:
-    CASE344:
+    case344:
       LOGOR;
     case 0345:
-    CASE345:
+    case345:
       LOGAND;
     case 0346:
-    CASE346:
+    case346:
       LOGXOR;
     case 0347:
-    CASE347:
+    case347:
       LSH;
     case 0350:
-    CASE350:
+    case350:
       FPLUS2;
     case 0351:
-    CASE351:
+    case351:
       FDIFFERENCE;
     case 0352:
-    CASE352:
+    case352:
       FTIMES2;
     case 0353:
-    CASE353:
+    case353:
       FQUOTIENT;
     case 0354:
-    CASE354:
+    case354:
       UBFLOAT2(Get_BYTE_PCMAC1);
     case 0355:
-    CASE355:
+    case355:
       UBFLOAT1(Get_BYTE_PCMAC1);
     case 0356:
-    CASE356:
+    case356:
       AREF2;
     case 0357:
-    CASE357:
+    case357:
       ASET2;
 
     case 0360:
-    CASE360 : {
+    case360 : {
       if (TOPOFSTACK == POP_TOS_1)
         TOPOFSTACK = ATOM_T;
       else
@@ -1006,46 +1005,46 @@ nextopcode:
     }
 
     case 0361:
-    CASE361:
+    case361:
       IGREATERP; /* IGREATERP if no float */
     case 0362:
-    CASE362:
+    case362:
       FGREATERP;
     case 0363:
-    CASE363:
+    case363:
       GREATERP;
     case 0364:
-    CASE364:
+    case364:
       ILEQUAL;
     case 0365:
-    CASE365:
+    case365:
       MAKENUMBER;
     case 0366:
-    CASE366:
+    case366:
       BOXIPLUS;
     case 0367:
-    CASE367:
+    case367:
       BOXIDIFFERENCE;
     case 0370:
-    CASE370 : { goto op_ufn; } /* FLOATBLT */
+    case370 : { goto op_ufn; } /* FLOATBLT */
     case 0371:
-    CASE371 : { goto op_ufn; } /* FFTSTEP */
+    case371 : { goto op_ufn; } /* FFTSTEP */
     case 0372:
-    CASE372:
+    case372:
       MISC3(Get_BYTE_PCMAC1);
     case 0373:
-    CASE373:
+    case373:
       MISC4(Get_BYTE_PCMAC1);
     case 0374:
-    CASE374 : { goto op_ufn; } /* upctrace */
+    case374 : { goto op_ufn; } /* upctrace */
     case 0375:
-    CASE375:
+    case375:
       SWAP;
     case 0376:
-    CASE376:
+    case376:
       NOP;
     case 0377:
-    CASE377:
+    case377:
       CLARITHEQUAL;
 #ifdef OPDISP
 #ifdef ISC

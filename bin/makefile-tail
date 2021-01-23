@@ -194,7 +194,7 @@ $(OBJECTDIR)main.o : $(SRCDIR)main.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
-	 $(INCDIR)return.h $(INCDIR)debug.h $(INCDIR)profile.h
+	 $(INCDIR)return.h $(INCDIR)debug.h
 	$(CC) $(RFLAGS) $(SRCDIR)main.c $(INLINE) -o $(OBJECTDIR)main$(OEXT)
 
 $(OBJECTDIR)dbgtool.o :  $(SRCDIR)dbgtool.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -588,7 +588,7 @@ $(OBJECTDIR)loopsops.o : $(SRCDIR)loopsops.c  $(REQUIRED-INCS) $(INCDIR)lispemul
 	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)lspglob.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)ifpage.h  $(INCDIR)iopage.h \
-	 $(INCDIR)debug.h $(INCDIR)profile.h
+	 $(INCDIR)debug.h
 	$(CC) $(RFLAGS) $(SRCDIR)loopsops.c $(INLINE) -o $(OBJECTDIR)loopsops$(OEXT)
 
 $(OBJECTDIR)lowlev1.o :  $(SRCDIR)lowlev1.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -657,16 +657,14 @@ $(OBJECTDIR)subr.o :  $(SRCDIR)subr.c  $(REQUIRED-INCS) \
 	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
-	 $(INCDIR)arith.h $(INCDIR)profile.h \
-	 $(INCDIR)bbtsub.h
+	 $(INCDIR)arith.h $(INCDIR)bbtsub.h
 	$(CC) $(RFLAGS) $(SRCDIR)subr.c $(INLINE) -o $(OBJECTDIR)subr$(OEXT)
 
 $(OBJECTDIR)miscn.o : $(SRCDIR)miscn.c  $(REQUIRED-INCS) \
 	 $(INCDIR)lispemul.h  $(INCDIR)address.h  \
 	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)lspglob.h   \
-	 $(INCDIR)arith.h $(INCDIR)profile.h
+	 $(INCDIR)lspglob.h $(INCDIR)arith.h
 	$(CC) $(RFLAGS) $(SRCDIR)miscn.c $(INLINE) -o $(OBJECTDIR)miscn$(OEXT)
 
 

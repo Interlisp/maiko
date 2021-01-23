@@ -31,7 +31,7 @@ SRCFILES = ./conspage.c ./gcoflow.c ./shift.c ./dbgtool.c ./gcr.c	./llcolor.c ./
 OFILES = conspage.obj gcoflow.obj shift.obj dbgtool.obj 	gcr.obj llcolor.obj gcrcell.obj llstk.obj 	gcscan.obj loopsops.obj storage.obj 	allocmds.obj dir.obj gvar2.obj lowlev1.obj 	subr.obj arith2.obj lowlev2.obj 	subr0374.obj arith3.obj doscomm.obj 	hardrtn.obj lsthandl.obj sxhash.obj arith4.obj 	draw.obj main.obj testtool.obj array.obj 	dsk.obj inet.obj misc7.obj timer.obj 	array2.obj dspif.obj initdsp.obj miscn.obj 	typeof.obj array3.obj initkbd.obj ubf1.obj 	array4.obj dspsubrs.obj initsout.obj 	mkatom.obj ubf2.obj array5.obj eqf.obj 	intcall.obj mkcell.obj ubf3.obj array6.obj 	ether.obj ufn.obj atom.obj 	findkey.obj kbdsubrs.obj mouseif.obj ufs.obj 	bbtsub.obj foreign.obj keyevent.obj 	unixcomm.obj bin.obj fp.obj binds.obj fvar.obj mvs.obj 	unwind.obj bitblt.obj gc.obj 	uraid.obj blt.obj gc2.obj 	kprint.obj osmsg.obj usrsubr.obj byteswap.obj 	gcarray.obj perrno.obj uutils.obj 	carcdr.obj asmbbt.obj gccode.obj 	vars3.obj gcfinal.obj ldsout.obj 	return.obj vmemsave.obj chardev.obj 	gchtfind.obj lineblt8.obj rpc.obj xc.obj 	common.obj gcmain3.obj lisp2c.obj rplcons.obj 	z2.obj vdate.obj $(COLORFILES) $(ARCHFILES)
 
 
-HFILES = ../inc/address.h ../inc/adr68k.h ../inc/arith.h ../inc/cell.h ../inc/dbprint.h ../inc/display.h 	../inc/dspif.h ../inc/ifpage.h ../inc/iopage.h ../inc/lispemul.h ../inc/lispmap.h 	../inc/lsptypes.h ../inc/miscstat.h ../inc/lspglob.h ../inc/array.h ../inc/bb.h 	../inc/bitblt.h ../inc/debug.h ../inc/devconf.h ../inc/dspdata.h ../inc/ether.h 	../inc/fast_dsp.h ../inc/gcdata.h ../inc/hdw_conf.h ../inc/initatms.h ../inc/inlinec.h ../inc/keyboard.h 	../inc/lispver1.h ../inc/lispver2.h ../inc/lldsp.h ../inc/locfile.h ../inc/medleyfp.h ../inc/mouseif.h ../inc/my.h 	../inc/opcodes.h ../inc/osmsg.h ../inc/pilotbbt.h ../inc/print.h ../inc/profile.h 	../inc/return.h ../inc/stack.h ../inc/stream.h ../inc/subrs.h ../inc/timeout.h 	../inc/tos1defs.h ../inc/tosfns.h ../inc/tosret.h ../inc/vmemsave.h 	../inc/xdefs.h ../inc/xbitmaps.h ../inc/xkeymap.h
+HFILES = ../inc/address.h ../inc/adr68k.h ../inc/arith.h ../inc/cell.h ../inc/dbprint.h ../inc/display.h 	../inc/dspif.h ../inc/ifpage.h ../inc/iopage.h ../inc/lispemul.h ../inc/lispmap.h 	../inc/lsptypes.h ../inc/miscstat.h ../inc/lspglob.h ../inc/array.h ../inc/bb.h 	../inc/bitblt.h ../inc/debug.h ../inc/devconf.h ../inc/dspdata.h ../inc/ether.h 	../inc/fast_dsp.h ../inc/gcdata.h ../inc/hdw_conf.h ../inc/initatms.h ../inc/inlinec.h ../inc/keyboard.h 	../inc/lispver1.h ../inc/lispver2.h ../inc/lldsp.h ../inc/locfile.h ../inc/medleyfp.h ../inc/mouseif.h ../inc/my.h 	../inc/opcodes.h ../inc/osmsg.h ../inc/pilotbbt.h ../inc/print.h ../inc/return.h ../inc/stack.h ../inc/stream.h ../inc/subrs.h ../inc/timeout.h 	../inc/tos1defs.h ../inc/tosfns.h ../inc/tosret.h ../inc/vmemsave.h 	../inc/xdefs.h ../inc/xbitmaps.h ../inc/xkeymap.h
 
 
 
@@ -62,7 +62,7 @@ lde     : $(OFILES) mkvdate
 	$(CC) $(LDFLAGS) $(OFILES) -o $@
 
    
-./main.o  :   ../inc/lispemul.h ../inc/address.h ../inc/lsptypes.h ../inc/adr68k.h                        ../inc/stack.h ../inc/lspglob.h ../inc/lispmap.h ../inc/ifpage.h                        ../inc/iopage.h ../inc/return.h ../inc/debug.h ../inc/profile.h
+./main.o  :   ../inc/lispemul.h ../inc/address.h ../inc/lsptypes.h ../inc/adr68k.h                        ../inc/stack.h ../inc/lspglob.h ../inc/lispmap.h ../inc/ifpage.h                        ../inc/iopage.h ../inc/return.h ../inc/debug.h
 
 
       

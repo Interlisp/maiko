@@ -32,7 +32,7 @@ $(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
 	 $(INCDIR)tosfuncallmacro.h  $(INCDIR)inlinedefsC.h   \
 	 $(INCDIR)inlinedefs68K.h  \
 	 $(INCDIR)inlinedefsSPARC.h  $(INCDIR)fastdispatch.h  \
-	 $(INCDIR)fastinlinedefs68K.h $(INCDIR)profile.h
+	 $(INCDIR)fastinlinedefs68K.h
 	cc $(DISPRFLAGS) $(SRCDIR)xc.c $(INLINE) -o $(OBJECTDIR)xc.o
 
 
