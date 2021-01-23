@@ -38,7 +38,6 @@ XFLAGS = -DXWINDOW -I/usr/openwin/include
 OEXT = .o
 # OPTFLAGS is normally -g for MAKEINIT, as it needs debugging often.
 OPTFLAGS = -g3 -O
-DISPOPTFLAGS = -g3 -O
 
 # Set any debugging options in DEBUGFLAGS.  E.g., to enable stack
 # checking, use -DSTACKCHECK; to enable the fn-call-time stack
@@ -84,29 +83,3 @@ BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 
 default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
-
-# Special rules to create xc.c with GCC
-
-#run cpp to expand macros
-$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
-	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
-	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
-	 $(INCDIR)arith.h $(INCDIR)stream.h \
-	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
-	 $(INCDIR)inln68k.h
-	$(CC) -c $(DISPOPTFLAGS) $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o
-
-#$(OBJECTDIR)xc.o:	$(SRCDIR)xc.i $(INCDIR)lispemul.h  $(INCDIR)emlglob.h  $(INCDIR)address.h \
-#	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
-#	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-#	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
-#	 $(INCDIR)arith.h $(INCDIR)stream.h \
-#	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-#	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h   \
-#	 $(INCDIR)inln68k.h
-#	$(CC) -c $(DISPOPTFLAGS) $(SRCDIR)xc.i -o $(OBJECTDIR)xc.o
-
-
-
