@@ -31,7 +31,7 @@ $(OBJECTDIR)xc.s:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  $(IN
 	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
 	 $(SRCDIR)disp386i.il  \
 	 $(INCDIR)inline386i.h  $(INCDIR)fast_disp.h  \
-	 $(INCDIR)fastinline68K.h $(INCDIR)profile.h
+	 $(INCDIR)fastinline68K.h
 	cc -c -O -Qproduce .s $(DFLAGS) -I$(INCDIR) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.s
 
 #run c compiler to produce first pass assembly

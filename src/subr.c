@@ -39,7 +39,6 @@
 #include "stack.h"
 #include "arith.h"
 #include "subrs.h"
-#include "profile.h"
 #include "dbprint.h"
 #include "bbtsub.h"
 

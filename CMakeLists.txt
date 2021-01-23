@@ -356,7 +356,6 @@ SET(MAIKO_HDRS
     inc/picture.h
     inc/pilotbbt.h
     inc/print.h
-    inc/profile.h
     inc/rawrs232c.h
     inc/returndefs.h
     inc/return.h

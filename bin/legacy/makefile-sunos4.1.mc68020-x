@@ -58,6 +58,6 @@ $(OBJECTDIR)xc.o :  $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emulglobal.h  \
 	 $(INCDIR)tosfuncall.h  $(INCDIR)inlineC.h   \
 	 $(INCDIR)inline68K.h  \
 	 $(INCDIR)inlineSPARC.h  $(INCDIR)fast_disp.h  \
-	 $(INCDIR)fastinline68K.h $(INCDIR)profile.h
+	 $(INCDIR)fastinline68K.h
 	cc $(DISPRFLAGS) $(SRCDIR)xc.c $(INLINE) -o $(OBJECTDIR)xc.o
 
