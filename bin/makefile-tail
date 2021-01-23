@@ -37,19 +37,10 @@
 # OSARCHDIR is the os/architecture dir, where executables all go.
 OSARCHDIR = ../$(OSARCHNAME)/
 
-#
-#  The DISPxxx flags are for compiling files which rely on 'as' much
-#  more than the other files do.  For mc68020, it'll use optimization
-#  -O rather than -O2 which is good for the other files in the system
-#  [JDS 10-26-89] Files affected: xc, arith2, arith4, fvar.
-#
-
 REQUIRED-INCS = $(INCDIR)version.h
 
 CFLAGS = $(OPTFLAGS) $(DFLAGS) $(FPFLAGS)
-DISPCFLAGS = $(DISPOPTFLAGS) $(DFLAGS) $(FPFLAGS)
 RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
-DISPRFLAGS = -c $(DISPCFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
 OFILES = $(OBJECTDIR)arith2.o \
 	$(OBJECTDIR)arith3.o \
@@ -239,7 +230,7 @@ $(OBJECTDIR)arith2.o :  $(SRCDIR)arith2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 	 $(INCDIR)lspglob.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h \
 	 $(INCDIR)arith.h $(INCDIR)medleyfp.h $(INLINE)
-	$(CC) $(DISPRFLAGS) $(SRCDIR)arith2.c $(INLINE) -o $(OBJECTDIR)arith2$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)arith2.c $(INLINE) -o $(OBJECTDIR)arith2$(OEXT)
 
 $(OBJECTDIR)arith3.o :  $(SRCDIR)arith3.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h  $(INLINE) \
@@ -251,7 +242,7 @@ $(OBJECTDIR)arith4.o :  $(SRCDIR)arith4.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 	 $(INCDIR)lispmap.h  $(INCDIR)emlglob.h $(INLINE) \
 	 $(INCDIR)lspglob.h  $(INCDIR)lsptypes.h  $(INCDIR)address.h \
 	 $(INCDIR)adr68k.h  $(INCDIR)cell.h  $(INCDIR)arith.h $(INCDIR)medleyfp.h
-	$(CC) $(DISPRFLAGS) $(SRCDIR)arith4.c $(INLINE) -o $(OBJECTDIR)arith4$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)arith4.c $(INLINE) -o $(OBJECTDIR)arith4$(OEXT)
 
 $(OBJECTDIR)array.o :  $(SRCDIR)array.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
@@ -461,7 +452,7 @@ $(OBJECTDIR)fvar.o :  $(SRCDIR)fvar.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)stack.h  $(INCDIR)emlglob.h  $(INCDIR)lispmap.h \
 	 $(INCDIR)gcdata.h $(INCDIR)lsptypes.h
-	$(CC) $(DISPRFLAGS) $(SRCDIR)fvar.c $(INLINE) -o $(OBJECTDIR)fvar$(OEXT)
+	$(CC) $(RFLAGS) $(SRCDIR)fvar.c $(INLINE) -o $(OBJECTDIR)fvar$(OEXT)
 
 $(OBJECTDIR)gc.o :  $(SRCDIR)gc.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  $(INCDIR)gcdata.h  \
 	 $(INCDIR)lspglob.h \
@@ -769,6 +760,16 @@ $(OBJECTDIR)sxhash.o : $(SRCDIR)sxhash.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  
 
 $(OBJECTDIR)usrsubr.o : $(SRCDIR)usrsubr.c $(REQUIRED-INCS) 
 	$(CC) $(RFLAGS) $(SRCDIR)usrsubr.c $(INLINE) -o $(OBJECTDIR)usrsubr$(OEXT)
+
+$(OBJECTDIR)xc.o:	$(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
+	 $(INCDIR)address.h \
+	 $(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
+	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
+	 $(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
+	 $(INCDIR)arith.h $(INCDIR)stream.h \
+	 $(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
+	 $(INCDIR)tosfns.h  $(INCDIR)inlineC.h
+	 $(CC) $(RFLAGS) $(SRCDIR)xc.c -o $(OBJECTDIR)xc.o
 
 ########
 # X-windows-specific files

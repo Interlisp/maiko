@@ -18,7 +18,6 @@ XFLAGS = -I/opt/X11/include -DXWINDOW -DNOPIXRECT
 
 # OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
 OPTFLAGS =  -O0 -g
-DISPOPTFLAGS = -O0 -g
 FPFLAGS =
 DFLAGS = -DOLD_CURSOR \
 	-DBYTESWAP -DLOGINT  $(XFLAGS) \
@@ -34,18 +33,3 @@ BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 OBJECTDIR = ../$(RELEASENAME)/
 
 default	: ../$(OSARCHNAME)/lde 
-
-############
-#
-#      Normal compilation for xc.o without optimized dispatch loop hacks
-#
-############
-$(OBJECTDIR)xc.o:      $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
-	$(INCDIR)address.h \
-	$(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
-	$(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	$(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
-	$(INCDIR)arith.h $(INCDIR)stream.h \
-	$(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h
-	$(CC) $(DISPRFLAGS) -UOPDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o

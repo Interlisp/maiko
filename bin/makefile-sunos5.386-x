@@ -28,7 +28,6 @@ XFLAGS = -DXWINDOW -DNOPIXRECT
 OEXT = .o
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g
-DISPOPTFLAGS =  -O2 -g
 
 # Set any debugging options in DEBUGFLAGS.  E.g., to enable stack
 # checking, use -DSTACKCHECK; to enable the fn-call-time stack
@@ -63,18 +62,3 @@ BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 
 default:	../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
-
-############
-#
-#      Normal compilation for xc.o without optimized dispatch loop hacks
-#
-############
-$(OBJECTDIR)xc.o:      $(SRCDIR)xc.c $(INCDIR)lispemul.h  $(INCDIR)emlglob.h \
-	$(INCDIR)address.h \
-	$(INCDIR)adr68k.h  $(INCDIR)stack.h  $(INCDIR)lspglob.h \
-	$(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)cell.h \
-	$(INCDIR)initatms.h  $(INCDIR)gcdata.h  \
-	$(INCDIR)arith.h $(INCDIR)stream.h \
-	$(INCDIR)tos1defs.h  $(INCDIR)tosret.h \
-	$(INCDIR)tosfns.h  $(INCDIR)inlineC.h
-	$(CC) $(DISPRFLAGS) -UOPDISP  $(SRCDIR)xc.c -I$(INCDIR) -o $(OBJECTDIR)xc.o
