@@ -9,7 +9,7 @@ IF(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_ID MATCHES "GNU")
   IF(UNIX AND CMAKE_GENERATOR STREQUAL "Ninja")
     SET(CMAKE_C_FLAGS "-fdiagnostics-color=always ${CMAKE_C_FLAGS}")
   ENDIF()
-  SET(CMAKE_C_FLAGS "-fno-strict-aliasing -fwrapv ${CMAKE_C_FLAGS}")
+  SET(CMAKE_C_FLAGS "-fno-strict-aliasing ${CMAKE_C_FLAGS}")
 ENDIF()
 
 IF(CMAKE_C_COMPILER_ID MATCHES "SunPro")
