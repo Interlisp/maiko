@@ -19,17 +19,12 @@ XFLAGS = -I/usr/local/include -DXWINDOW -DNOPIXRECT
 OEXT = .o
 # OPTFLAGS is normally -O2.
 OPTFLAGS = -O1 -gdwarf-2
-FPFLAGS =
 DFLAGS = -DOLD_CURSOR \
 	-DBYTESWAP -DLOGINT  $(XFLAGS) \
 	-DRELEASE=351
 
 LDFLAGS = -L/usr/local/lib -lX11 -lc -lm -lcrypt
 LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
-
-INLINE = # $(SRCDIR)dspSPARC.il
-BITBLTFILE = # $(OBJECTDIR)bbtSPARC.o
-BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
 OBJECTDIR = ../$(RELEASENAME)/
 
