@@ -1046,15 +1046,6 @@ nextopcode:
     case 0377:
     case377:
       CLARITHEQUAL;
-#ifdef OPDISP
-#ifdef ISC
-    case 0400:
-      goto setup_table; /* to defeat optimizer, so optable exists */
-#elif (DOS && OPDISP)
-    case 0400: goto setup_table;
-#endif /* ISC */
-
-#endif /* OPDISP */
 
 #ifdef I386
     /* to defeat the damn optimizer, make it look like */
