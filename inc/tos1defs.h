@@ -35,7 +35,6 @@
 #define GET_POPPED	*CSTKPTR
 #define POP_TOS_1	*(--CSTKPTRL)
 #define TOPOFSTACK	tscache
-#define FIXTOS1		CSTKPTRL++
 #define GET_TOS_1_HI	*((DLword *)(CSTKPTR - 1))
 #define GET_TOS_1_LO	*((DLword *)(CSTKPTR - 1)+1)
 
@@ -55,7 +54,6 @@
 #define GET_POPPED	*CSTKPTR
 #define POP_TOS_1	*(--CSTKPTRL)
 #define TOPOFSTACK	tscache
-#define FIXTOS1		CSTKPTRL++
 #define GET_TOS_1_HI	GETWORD((DLword *)(CSTKPTR - 1))
 #define GET_TOS_1_LO	GETWORD((DLword *)(CSTKPTR - 1)+1)
 
