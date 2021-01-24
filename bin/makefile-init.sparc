@@ -49,10 +49,6 @@ MACHINEFLAGS = -DOS5 -DAIX -DUSE_DLPI -DNOPIXRECT \
 		-I$(OPENWINHOME)/include \
 		-DOLD_CURSOR -DLOGINT -DLOCK_X_UPDATES
 
-INLINEFLAGS =
-
-FPFLAGS =
-
 # The LDEINIT wants to have NOVERSION set, so we don't hang up on
 # any change-over in versions.
 
@@ -60,7 +56,6 @@ DFLAGS = -DINIT \
 	 $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	 $(MACHINEFLAGS) \
-	 $(INLINEFLAGS) \
 	 -DNOVERSION -DRELEASE=351 
 
 
@@ -68,18 +63,8 @@ LDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11 -lc -lm -lsocket -lnsl
 LDELDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11  -lc -lm -lsocket -lnsl
 LDEETHERLDFLAGS = -lc -lm -lsocket -lnsl
 
-# SPARC Assemble optimize check
-# DFLAGS:sh += optck.sh ; true
-
-#-Dsparc?
-INLINE = 
-
 DLPIFILES = $(OBJECTDIR)dlpi.o
 
 OBJECTDIR = ../$(RELEASENAME)/
-BYTESWAPFILES = $(OBJECTDIR)byteswap.o
-
-#RANLIB = touch
-
 
 default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether

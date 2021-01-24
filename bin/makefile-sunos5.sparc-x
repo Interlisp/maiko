@@ -45,31 +45,17 @@ DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 MACHINEFLAGS = -DOS5 -DUSE_DLPI -DNOPIXRECT \
 		-DOLD_CURSOR -DLOGINT -DLOCK_X_UPDATES
 
-INLINEFLAGS =
-
-FPFLAGS =
-
 DFLAGS = $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	 $(MACHINEFLAGS) \
-	 $(INLINEFLAGS) \
 	 -DRELEASE=351
 
 LDFLAGS = -lX11 -lc -lm -lsocket -lnsl
 LDELDFLAGS = -lX11  -lc -lm -lsocket -lnsl
 LDEETHERLDFLAGS = -lc -lm -lsocket -lnsl
 
-# SPARC Assemble optimize check
-# DFLAGS:sh += optck.sh ; true
-
-#-Dsparc?
-INLINE = 
-BITBLTFILE = $(OBJECTDIR)bbtSPARC.o
-
 DLPIFILES = $(OBJECTDIR)dlpi.o
 
 OBJECTDIR = ../$(RELEASENAME)/
-BYTESWAPFILES = $(OBJECTDIR)byteswap.o
-
 
 default:	../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether

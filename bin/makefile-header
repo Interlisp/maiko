@@ -15,10 +15,6 @@ CLANG_CFLAGS = -std=gnu99 -fno-strict-aliasing -fwrapv
 GCC_CFLAGS = -std=gnu99 -fno-strict-aliasing -fwrapv
 DEVSTUDIO_CFLAGS = -std=gnu99 -fno-strict-aliasing
 
-# for the files that need to be included in byte-swapped implementations:
-BYTESWAPFILES =
-SXHASHFILE = 
-BITBLTFILE = 
 DLPIFILES =
 
 # for files needed by X windows version
