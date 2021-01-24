@@ -40,10 +40,6 @@
 #undef NTYPEX
 #undef TYPEP
 #undef SWAP_WORDS
-/*
-#undef FN3
-#undef RETURN
-*/ 
 
 #define SWAP_WORDS(x) swapx(x)
  

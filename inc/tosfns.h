@@ -46,15 +46,6 @@
 #endif /* BIGVM */
 
 
-
-#ifdef GCC386
-#define ASM_LABEL_OF_FN_COMMON asm("fn_common:");
-#else
-#define ASM_LABEL_OF_FN_COMMON
-#endif /* GCC386 */
-
-
-
 /************************************************************************/
 /*									*/
 /*		   A P P L Y _ P O P _ P U S H _ T E S T		*/
@@ -196,53 +187,6 @@
 /******			 OPFN(x)			 ********/
 /****************************************************************/
 
-#if (defined(SUN3_OS3_OR_OS4_IL) &&  !(defined(NOASMFNCALL)) )
-
-#define OPFN(x, num_args_fn, fn_xna_args, fn_native)			\
-{    /* asm inlines for fn call (much care put into keeping optimizer	\
-	from moving things around). */					\
-	fn_section1();							\
-	fn_section2();							\
-	num_args_fn();							\
-	fn_section3();							\
-	fn_xna_args();							\
-	fn_section4();							\
-	fast1_dispatcher();		/* nextop0 don't work here */	\
-	fn_section5();							\
-			/* asm code jumps here when not ccodep */	\
-	{ fn_atom_index = Get_AtomNo_PCMAC1;				\
-	  fn_defcell = (DefCell *) GetDEFCELL68k(fn_atom_index);	\
-	  fn_num_args = x;						\
-	  fn_opcode_size = FN_OPCODE_SIZE;				\
-	  fn_apply = 0;							\
-	  goto op_fn_common;						\
-	}								\
-}
-
-#define OPFNX								\
-{    /* asm inlines for fn call (much care put into keeping optimizer	\
-	from moving things around.	*/				\
-	fnx_section1();							\
-	fn_section2();							\
-	fnx_args();							\
-	fn_section3();							\
-	fnx_xna();							\
-	fn_section4();							\
-	fast1_dispatcher();		/* nextop0 don't work here */	\
-	fn_section5();							\
-	fn_atom_index = Get_AtomNo_PCMAC2;				\
-	fn_defcell = (DefCell *) GetDEFCELL68k(fn_atom_index);		\
-	fn_num_args = Get_BYTE_PCMAC1;				\
-	fn_opcode_size = FNX_OPCODE_SIZE;				\
-	fn_apply = 0;							\
-	goto op_fn_common;						\
-		/* *** these carefully arranged to satisfy optimizer */ \
-label1:	fast1_dispatcher();						\
-									\
-}
-
-#else
-
 #define OPFN(argcount, num_args_fn, fn_xna_args, fn_native)		\
 {	 /* argcount is a number of the arguments on stack */		\
   register struct fnhead *LOCFNCELL;					\
@@ -375,8 +319,6 @@ label1:	fast1_dispatcher();						\
  FuncObj = LOCFNCELL;							\
 } /* end OPFN */
 
-#endif /* NOASMFNCALL */
-
 
 
 
@@ -436,7 +378,6 @@ op_ufn:		 use code in XC.c					\
 #define needpush NEXTBLOCK
 #define OP_FN_COMMON							\
 op_fn_common:								\
-	ASM_LABEL_OF_FN_COMMON;						\
 { register struct fnhead *LOCFNCELL;					\
   register DefCell *defcell;	/* this reg is not allocated */		\
   CClosure *closure;							\

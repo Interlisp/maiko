@@ -1079,10 +1079,6 @@ native_check:
 /*		TIMER INTERRUPT CHECK ROUTINE				*/
 /************************************************************************/
 check_interrupt:
-#if (defined(SUN3_OS3_OR_OS4_IL) || defined(I386) || defined(ISC))
-  asm_label_check_interrupt();
-#endif
-
   if ((UNSIGNED)CSTKPTR > (UNSIGNED)EndSTKP) {
     EXT;
     error("Unrecoverable Stack Overflow");

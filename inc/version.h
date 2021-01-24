@@ -186,7 +186,6 @@ error Must specify RELEASE to build Medley.
 #undef SUN4_OS4_IL
 #undef OPDISP
 #undef PROFILE
-#define NOASMFNCALL	1
 #endif
 
 #ifdef SUN3_OS3_IL
