@@ -90,12 +90,12 @@ char *atom_to_str(LispPTR atom_index) {
 } /*atom_to_str*/
 
 #define POP_SUBR_ARGS                                       \
-  {                                                         \
+  do {                                                      \
     args[0] = NIL_PTR;                                      \
     if ((arg_num = (argnum /* = (Get_BYTE(PC+2))*/)) > 0) { \
       while (arg_num > 0) PopStackTo(args[--arg_num]);      \
     }                                                       \
-  }
+  } while(0)
 
 void OP_subrcall(int subr_no, int argnum) {
   static LispPTR args[30];
@@ -110,10 +110,12 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       DSP_showdisplay(args);
       break; /* showdisplay */
+
     case sb_DSPBOUT:
       POP_SUBR_ARGS;
       DSP_dspbout(args);
       break; /*dspbout */
+
     case sb_RAID:
       POP_SUBR_ARGS;
       Uraid_mess = args[0];
@@ -130,62 +132,77 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = COM_openfile(args);
       break;
+
     case sb_COM_CLOSEFILE:
       POP_SUBR_ARGS;
       TopOfStack = COM_closefile(args);
       break;
+
     case sb_UFS_GETFILENAME:
       POP_SUBR_ARGS;
       TopOfStack = UFS_getfilename(args);
       break;
+
     case sb_UFS_DELETEFILE:
       POP_SUBR_ARGS;
       TopOfStack = UFS_deletefile(args);
       break;
+
     case sb_UFS_RENAMEFILE:
       POP_SUBR_ARGS;
       TopOfStack = UFS_renamefile(args);
       break;
+
     case sb_COM_READPAGES:
       POP_SUBR_ARGS;
       TopOfStack = COM_readpage(args);
       break;
+
     case sb_COM_WRITEPAGES:
       POP_SUBR_ARGS;
       TopOfStack = COM_writepage(args);
       break;
+
     case sb_COM_TRUNCATEFILE:
       POP_SUBR_ARGS;
       TopOfStack = COM_truncatefile(args);
       break;
+
     case sb_COM_NEXT_FILE:
       POP_SUBR_ARGS;
       TopOfStack = COM_next_file(args);
       break;
+
     case sb_COM_FINISH_FINFO:
       POP_SUBR_ARGS;
       TopOfStack = COM_finish_finfo(args);
       break;
+
     case sb_COM_GEN_FILES:
       POP_SUBR_ARGS;
       TopOfStack = COM_gen_files(args);
       break;
+
     case sb_UFS_DIRECTORYNAMEP:
       POP_SUBR_ARGS;
       TopOfStack = UFS_directorynamep(args);
       break;
+
     case sb_COM_GETFILEINFO:
       POP_SUBR_ARGS;
       TopOfStack = COM_getfileinfo(args);
       break;
+
     case sb_COM_CHANGEDIR:
       POP_SUBR_ARGS;
       TopOfStack = COM_changedir(args);
       break;
+
     case sb_COM_GETFREEBLOCK:
       POP_SUBR_ARGS;
       TopOfStack = COM_getfreeblock(args);
       break;
+
     case sb_COM_SETFILEINFO:
       POP_SUBR_ARGS;
       TopOfStack = COM_setfileinfo(args);
@@ -200,10 +217,12 @@ void OP_subrcall(int subr_no, int argnum) {
       /* don't know whether it worked or not */
       TopOfStack = NIL;
       break;
+
     case sb_GETUNIXTIME:
       POP_SUBR_ARGS;
       TopOfStack = subr_gettime(args);
       break;
+
     case sb_COPYTIMESTATS:
       POP_SUBR_ARGS;
       subr_copytimestats(args);
@@ -223,30 +242,37 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = ether_suspend(args);
       break;
+
     case sb_ETHER_RESUME:
       POP_SUBR_ARGS;
       TopOfStack = ether_resume(args);
       break;
+
     case sb_ETHER_AVAILABLE:
       POP_SUBR_ARGS;
       TopOfStack = ether_ctrlr(args);
       break;
+
     case sb_ETHER_RESET:
       POP_SUBR_ARGS;
       TopOfStack = ether_reset(args);
       break;
+
     case sb_ETHER_GET:
       POP_SUBR_ARGS;
       TopOfStack = ether_get(args);
       break;
+
     case sb_ETHER_SEND:
       POP_SUBR_ARGS;
       TopOfStack = ether_send(args);
       break;
+
     case sb_ETHER_SETFILTER:
       POP_SUBR_ARGS;
       TopOfStack = ether_setfilter(args);
       break;
+
     case sb_ETHER_CHECK:
       POP_SUBR_ARGS;
       TopOfStack = check_ether();
@@ -259,18 +285,22 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       DSP_Cursor(args, argnum);
       break;
+
     case sb_SETMOUSEXY:
       POP_SUBR_ARGS;
       DSP_SetMousePos(args);
       break;
+
     case sb_DSP_VIDEOCOLOR:
       POP_SUBR_ARGS;
       TopOfStack = DSP_VideoColor(args);
       break;
+
     case sb_DSP_SCREENWIDTH:
       POP_SUBR_ARGS;
       TopOfStack = DSP_ScreenWidth(args);
       break;
+
     case sb_DSP_SCREENHEIGHT:
       POP_SUBR_ARGS;
       TopOfStack = DSP_ScreenHight(args);
@@ -284,14 +314,17 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = cgfour_init_color_display(args[0]);
       break;
+
     case sb_COLOR_SCREENMODE:
       POP_SUBR_ARGS;
       TopOfStack = cgfour_change_screen_mode(args[0]);
       break;
+
     case sb_COLOR_MAP:
       POP_SUBR_ARGS;
       TopOfStack = cgfour_set_colormap(args);
       break;
+
     case sb_COLOR_BASE:
       POP_SUBR_ARGS;
       /* return DLword offset between LISPBASE and Lisp_world */
@@ -303,14 +336,17 @@ void OP_subrcall(int subr_no, int argnum) {
       /* \\SLOWBLTCHAR for 8BITCOLOR */
       C_slowbltchar(args);
       break;
+
     case 0215:
       POP_SUBR_ARGS;
       Uncolorize_Bitmap(args);
       break;
+
     case 0216:
       POP_SUBR_ARGS;
       Colorize_Bitmap(args);
       break;
+
     case 0217:
       POP_SUBR_ARGS;
       Draw_8BppColorLine(args);
@@ -324,32 +360,31 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       bitbltsub(args);
       break;
+
     case sb_BLTCHAR:
       POP_SUBR_ARGS; /* argnum * DLwordsperCell*/
       bltchar(args);
       break;
+
     case sb_NEW_BLTCHAR:
       POP_SUBR_ARGS;
       newbltchar(args);
       break;
+
     case sb_TEDIT_BLTCHAR:
       POP_SUBR_ARGS;
       tedit_bltchar(args);
       break;
+
     /*	case 209: JDS 4 may 91 - this is code for CHAR-FILLBUFFER?? */
     case sb_BITBLT_BITMAP:
       POP_SUBR_ARGS; /* BITBLT to a bitmap */
-      {
-        TopOfStack = bitblt_bitmap(args);
-        break;
-      }
+      TopOfStack = bitblt_bitmap(args);
       break;
+
     case 0111 /*sb_BITSHADE_BITMAP*/:
       POP_SUBR_ARGS; /* BITSHADE to a bitmap */
-      {
-        TopOfStack = bitshade_bitmap(args);
-        break;
-      }
+      TopOfStack = bitshade_bitmap(args);
       break;
 
 /**************/
@@ -368,10 +403,12 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       KB_beep(args);
       break;
+
     case sb_KEYBOARDMAP:
       POP_SUBR_ARGS;
       KB_setmp(args);
       break;
+
     case sb_KEYBOARDSTATE:
       POP_SUBR_ARGS;
       KB_enable(args);
@@ -381,6 +418,7 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = vmem_save0(args);
       break;
+
     case sb_LISPFINISH:
     case sb_LISP_FINISH:
       POP_SUBR_ARGS;
@@ -391,10 +429,12 @@ void OP_subrcall(int subr_no, int argnum) {
       } else
         lisp_finish();
       break;
+
     case sb_NEWPAGE:
       POP_SUBR_ARGS;
       TopOfStack = newpage(args[0]);
       break;
+
     case sb_DORECLAIM:
       POP_SUBR_ARGS;
       doreclaim(); /* top-level GC function */
@@ -441,15 +481,11 @@ void OP_subrcall(int subr_no, int argnum) {
 
     case sb_GET_NATIVE_ADDR_FROM_LISP_PTR:
       POP_SUBR_ARGS;
-
-      {
-        ARITH_SWITCH(Addr68k_from_LADDR(args[0]), TopOfStack);
-        break;
-      }
+      ARITH_SWITCH(Addr68k_from_LADDR(args[0]), TopOfStack);
+      break;
 
     case sb_GET_LISP_PTR_FROM_NATIVE_ADDR:
       POP_SUBR_ARGS;
-
       {
         register UNSIGNED iarg;
         N_GETNUMBER(args[0], iarg, ret_nil);
@@ -461,14 +497,17 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = DSK_getfilename(args);
       break;
+
     case sb_DSK_DELETEFILE:
       POP_SUBR_ARGS;
       TopOfStack = DSK_deletefile(args);
       break;
+
     case sb_DSK_RENAMEFILE:
       POP_SUBR_ARGS;
       TopOfStack = DSK_renamefile(args);
       break;
+
     case sb_DSK_DIRECTORYNAMEP:
       POP_SUBR_ARGS;
       TopOfStack = DSK_directorynamep(args);
@@ -500,6 +539,7 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       TopOfStack = mess_readp();
       break;
+
     case sb_MESSAGE_READ:
       POP_SUBR_ARGS;
       TopOfStack = mess_read(args);
@@ -549,13 +589,13 @@ void OP_subrcall(int subr_no, int argnum) {
       /* Suspend Maiko */
       TopOfStack = suspend_lisp(args);
       break;
+
     case sb_MONITOR_CONTROL:
       POP_SUBR_ARGS;
 /* MONITOR CONTROL STOP(0) or RESUME(1) */
 #ifdef PROFILE
       moncontrol(args[0] & 1);
 #endif /* PROFILE */
-
       break;
 
     /*****************/
@@ -568,74 +608,55 @@ void OP_subrcall(int subr_no, int argnum) {
 
     case sb_CHAR_BIN:
       POP_SUBR_ARGS; /* Char-device bin. */
-      {
-        TopOfStack = CHAR_bin(args[0], args[1]);
-        break;
-      }
+      TopOfStack = CHAR_bin(args[0], args[1]);
       break;
 
     case sb_CHAR_BOUT:
       POP_SUBR_ARGS; /* Char-device bout. */
-      {
-        TopOfStack = CHAR_bout(args[0], args[1], args[2]);
-        break;
-      }
+      TopOfStack = CHAR_bout(args[0], args[1], args[2]);
       break;
 
     case sb_CHAR_IOCTL:
       POP_SUBR_ARGS; /* Char-device IOCTL. */
-      {
-        TopOfStack = CHAR_ioctl(args);
-        break;
-      }
+      TopOfStack = CHAR_ioctl(args);
       break;
 
     case sb_CHAR_CLOSEFILE:
       POP_SUBR_ARGS; /* Char-device CLOSEFILE. */
-      {
-        TopOfStack = CHAR_closefile(args);
-        break;
-      }
+      TopOfStack = CHAR_closefile(args);
       break;
 
     case sb_CHAR_BINS:
       POP_SUBR_ARGS; /* Char-device \BINS. */
-      {
-        TopOfStack = CHAR_bins(args);
-        break;
-      }
+      TopOfStack = CHAR_bins(args);
       break;
 
     case sb_CHAR_BOUTS:
       POP_SUBR_ARGS; /* Char-device \BOUTS. */
-      {
-        TopOfStack = CHAR_bouts(args);
-        break;
-      }
+      TopOfStack = CHAR_bouts(args);
       break;
 
     case sb_TCP_OP:
       POP_SUBR_ARGS; /* TCP operations */
-      {
-        TopOfStack = subr_TCP_ops(args[0], args[1], args[2], args[3], args[4], args[5]);
-        break;
-      }
+      TopOfStack = subr_TCP_ops(args[0], args[1], args[2], args[3], args[4], args[5]);
       break;
 
 #ifdef TRUECOLOR
-    case sb_PICTURE_OP: {
+    case sb_PICTURE_OP:
       POP_SUBR_ARGS;
       TopOfStack = Picture_Op(args);
-    } break;
-    case sb_TRUE_COLOR_OP: {
+      break;
+
+    case sb_TRUE_COLOR_OP:
       POP_SUBR_ARGS;
       TopOfStack = TrueColor_Op(args);
-    } break;
+      break;
+
 #ifdef VIDEO
-    case sb_VIDEO_OP: {
+    case sb_VIDEO_OP:
       POP_SUBR_ARGS;
       TopOfStack = Video_Op(args);
-    } break;
+      break;
 #endif /* VIDEO */
 
 #endif /* TRUECOLOR */
@@ -646,21 +667,17 @@ void OP_subrcall(int subr_no, int argnum) {
 
     case sb_WITH_SYMBOL:
       POP_SUBR_ARGS; /* Symbol lookup */
-      {
-        TopOfStack = with_symbol(args[0], args[1], args[2], args[3], args[4], args[5]);
-        break;
-      }
+      TopOfStack = with_symbol(args[0], args[1], args[2], args[3], args[4], args[5]);
+      break;
 
     case 0222: /* Cause an interrupt to occur.  Used by */
                /* Lisp INTERRUPTED to re-set an interrupt */
                /* when it's uninterruptible. 		*/
-      {
-        POP_SUBR_ARGS;
-        Irq_Stk_Check = Irq_Stk_End = 0;
-        *PENDINGINTERRUPT68k = ATOM_T;
-        TopOfStack = ATOM_T;
-        break;
-      }
+      POP_SUBR_ARGS;
+      Irq_Stk_Check = Irq_Stk_End = 0;
+      *PENDINGINTERRUPT68k = ATOM_T;
+      TopOfStack = ATOM_T;
+      break;
 
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
     /*****************************************/
