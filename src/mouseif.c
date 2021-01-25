@@ -37,6 +37,7 @@ extern void ThreeButtonHandler();
 extern void TwoButtonHandler();
 #endif /* DOS */
 
+#ifdef DOS
 /*****************************************************************/
 /*                       p r o b e m o u s e                     */
 /*                                                               */
@@ -59,6 +60,7 @@ int probemouse() {
     return (regs.x.bx);
   }
 }
+#endif
 
 void make_mouse_instance(MouseInterface mouse)
 {
