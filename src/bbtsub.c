@@ -76,10 +76,10 @@ extern IOPAGE *IOPage68K;
 #include "dbprint.h"
 
 
-#if (defined(DOS) || defined(XWINDOW))
+#if !defined(SUNDISPLAY)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* DOS || WXINDOW */
+#endif /* SUNDISPLAY */
 
 #ifdef COLOR
 extern int MonoOrColor;
