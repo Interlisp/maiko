@@ -13,13 +13,14 @@ See [the Medley repository](https://github.org/Interlisp/medley) for
 
 Bug reports, feature requests, fixes and improvements, support for additional platforms and hardware are all welcome.
 
-## ## Development Platforms
+## Development Platforms
 
 We are developing on FreeBSD, Linux, MacOS, and Solaris currently
 on arm7l, arm64, PowerPC, SPARC, i386, and x86_64 hardware.
 
 
 ## Building Maiko
+
 Building requires `clang`, `make`, X11 client libraries (`libx11-dev`). For example, 
 
 ``` sh
@@ -44,6 +45,6 @@ For the new arm64 MacOS 11, you'll need https://x.org which you can get via MacP
 
 ### Building for Windows 10
 
-Windows 10 currently requires "Docker for Desktop" or WSL2 -- basically a Linux virtual machine -- and and a (Windows X-server).
+Windows 10 currently requires "Docker for Desktop" or WSL2 -- basically a Linux virtual machine -- and a (Windows X-server).
 See [Medley's README](https://github.com/Interlisp/medley/blob/master/README.md) for more.
 
