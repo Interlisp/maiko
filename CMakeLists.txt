@@ -103,7 +103,6 @@ SET(BAD_SRCS
     src/lpytab.c
     src/mnwevent.c
     src/mnxmeth.c
-    src/mouseif.c
     src/picture.c
     src/rawcolor.c
     src/rawrs232c.c
@@ -183,6 +182,7 @@ SET(MAIKO_SRCS
     src/miscn.c
     src/mkatom.c
     src/mkcell.c
+    src/mouseif.c
     src/mvs.c
     src/osmsg.c
     src/perrno.c
