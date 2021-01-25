@@ -14,7 +14,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -DXWINDOW -DNOPIXRECT
+XFLAGS = -DXWINDOW
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o

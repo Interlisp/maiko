@@ -29,7 +29,6 @@ SET(MAIKO_DEFINITIONS
 IF(TRUE)
   # Turn this into a config option.
   LIST(APPEND MAIKO_DEFINITIONS
-    "-DNOPIXRECT"
     "-DXWINDOW"
   )
 ENDIF()
