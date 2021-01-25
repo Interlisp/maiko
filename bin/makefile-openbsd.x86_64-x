@@ -13,7 +13,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/usr/X11R6/include -DXWINDOW -DNOPIXRECT
+XFLAGS = -I/usr/X11R6/include -DXWINDOW
 
 # This is to make the %$#@! Apollo cc happy
 OEXT = .o
