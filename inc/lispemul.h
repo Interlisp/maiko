@@ -23,7 +23,6 @@ typedef char  DLbyte;
 typedef unsigned int  LispPTR;
 /* 32 bit Cell Chang. 14 Jan 87 take */
 typedef DLword mds_page;  /* Top word of the MDS */
-typedef int (*CFuncPTR)();
 
 #ifdef BIGVM
 typedef struct  consstr
@@ -181,7 +180,6 @@ typedef char  DLbyte;
 typedef unsigned int  LispPTR;
 /* 32 bit Cell Chang. 14 Jan 87 take */
 typedef DLword mds_page;  /* Top word of the MDS */
-typedef int (*CFuncPTR)();
 
 #ifdef BIGVM
 typedef struct  consstr
@@ -482,11 +480,11 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /*									*/
 /************************************************************************/
 
-#define ERROR_EXIT(tos)		{TopOfStack=tos; Error_Exit = 1; return(-1);}
-#define TIMER_EXIT(tos)		{TopOfStack=tos; Error_Exit = 1; return(-2);}
+#define ERROR_EXIT(tos)		do {TopOfStack=tos; Error_Exit = 1; return(-1);} while (0)
+#define TIMER_EXIT(tos)		do {TopOfStack=tos; Error_Exit = 1; return(-2);} while (0)
 
 
-#define WARN(message,operation)	{warn(message);operation;}
+#define WARN(message,operation)	do {warn(message);operation;} while (0)
 #define NO_WOP	{}
 
 #define NIL	0	/* added 29-jan */

@@ -102,7 +102,7 @@ LispPTR N_OP_clequal(register int arg1, register int arg2) {
     if (IsNumber(arg2)) {
       return (NIL);
     } else
-      ERROR_EXIT(arg2)
+      ERROR_EXIT(arg2);
   }
 
   /* now we know both are numbers */
@@ -194,7 +194,7 @@ arg2_small:
     if (IsNumber(arg2)) {
       return (NIL);
     } else
-      ERROR_EXIT(arg2)
+      ERROR_EXIT(arg2);
   }
 
   /* now we know both are numbers */
