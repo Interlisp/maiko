@@ -32,8 +32,9 @@
 #include "debug.h"
 #include "arith.h"
 #include "bitblt.h"
-#include "bbtsub.h"
 #include "lldsp.h"
+
+#include "bbtsubdefs.h"
 
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
 #define IMAX(x, y) (((x) > (y)) ? (x) : (y))

@@ -237,7 +237,6 @@ SET(MAIKO_HDRS
     inc/array.h
     inc/bb.h
     inc/bbtsubdefs.h
-    inc/bbtsub.h
     inc/bindefs.h
     inc/bindsdefs.h
     inc/bitbltdefs.h
