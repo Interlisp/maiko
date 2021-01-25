@@ -163,10 +163,6 @@ extern int Event_Req; /* != 0 when it's time to check X events
                                                  (e.g. Suns running OpenWindows) */
 #endif                /* XWINDOW */
 
-#ifdef OPDISP
-InstPtr optable[512];
-#endif /* OPDISP */
-
 #ifdef PCTRACE
 /* For keeping a trace table (ring buffer) of 100 last PCs */
 int pc_table[100],     /* The PC */
@@ -188,7 +184,40 @@ void dispatch(void) {
   register InstPtr pccache;
 
 #if defined(OPDISP)
-  InstPtr *table;
+  static const void* optable[256] = {
+    &&op_ufn,  &&case001, &&case002, &&case003, &&case004, &&case005, &&case006, &&case007,
+    &&case010, &&case011, &&case012, &&case013, &&case014, &&case015, &&case016, &&case017,
+    &&case020, &&case021, &&case022, &&case023, &&case024, &&case025, &&case026, &&case027,
+    &&case030, &&case031, &&case032, &&case033, &&case034, &&case035, &&case036, &&case037,
+    &&case040, &&case041, &&case042, &&case043, &&case044, &&case045, &&case046, &&case047,
+    &&op_ufn,  &&op_ufn,  &&op_ufn,  &&op_ufn,  &&case054, &&case055, &&case056, &&case057,
+    &&op_ufn,  &&op_ufn,  &&case062, &&case063, &&op_ufn,  &&op_ufn,  &&op_ufn,  &&op_ufn,
+    &&case070, &&op_ufn,  &&case072, &&case073, &&case074, &&case075, &&op_ufn,  &&op_ufn,
+    &&case100, &&case101, &&case102, &&case103, &&case104, &&case105, &&case106, &&case107,
+    &&case110, &&case111, &&case112, &&case113, &&case114, &&case115, &&case116, &&case117,
+    &&case120, &&case121, &&case122, &&case123, &&case124, &&case125, &&case126, &&case127,
+    &&case130, &&case131, &&case132, &&case133, &&case134, &&case135, &&case136, &&case137,
+    &&case140, &&case141, &&case142, &&case143, &&case144, &&case145, &&case146, &&case147,
+    &&case150, &&case151, &&case152, &&case153, &&case154, &&case155, &&case156, &&case157,
+    &&case160, &&case161, &&case162, &&case163, &&case164, &&case165, &&case166, &&case167,
+    &&case170, &&case171, &&case172, &&case173, &&case174, &&case175, &&case176, &&case177,
+    &&case200, &&case201, &&case202, &&case203, &&case204, &&case205, &&case206, &&case207,
+    &&case210, &&case211, &&case212, &&case213, &&case214, &&case215, &&case216, &&case217,
+    &&case220, &&case221, &&case222, &&case223, &&case224, &&case225, &&case226, &&case227,
+    &&case230, &&case231, &&case232, &&case233, &&case234, &&case235, &&case236, &&case237,
+    &&case240, &&case241, &&case242, &&case243, &&case244, &&case245, &&case246, &&case247,
+    &&case250, &&case251, &&case252, &&case253, &&case254, &&case255, &&case256, &&case257,
+    &&case260, &&case261, &&case262, &&case263, &&case264, &&case265, &&case266, &&case267,
+    &&case270, &&case271, &&case272, &&case273, &&case274, &&case275, &&case276, &&case277,
+    &&case300, &&case301, &&case302, &&case303, &&case304, &&case305, &&case306, &&case307,
+    &&case310, &&case311, &&case312, &&case313, &&case314, &&case315, &&case316, &&case317,
+    &&case320, &&case321, &&case322, &&case323, &&case324, &&case325, &&case326, &&case327,
+    &&case330, &&case331, &&case332, &&case333, &&case334, &&case335, &&case336, &&case337,
+    &&case340, &&case341, &&case342, &&case343, &&case344, &&case345, &&case346, &&case347,
+    &&case350, &&case351, &&case352, &&case353, &&case354, &&case355, &&case356, &&case357,
+    &&case360, &&case361, &&case362, &&case363, &&case364, &&case365, &&case366, &&case367,
+    &&case370, &&case371, &&case372, &&case373, &&case374, &&case375, &&case376, &&case377,
+  };
 #endif
 
 #if (DOS && OPDISP)
@@ -208,15 +237,7 @@ void dispatch(void) {
   RET;
   CLR_IRQ;
 
-#ifdef OPDISP
-  table = optable;
-#endif
-
-#ifdef OPDISP
-  goto setup_table;
-#else
   goto nextopcode;
-#endif /* OPDISP */
 
   /* OPCODE FAIL ENTRY POINTS, CALL UFNS HERE */
   UFN_CALLS;
@@ -1069,9 +1090,6 @@ nextopcode:
 
   } /* switch */
 
-native_check:
-  goto nextopcode;
-
 /************************************************************************/
 /*		TIMER INTERRUPT CHECK ROUTINE				*/
 /************************************************************************/
@@ -1257,274 +1275,6 @@ PopNextop1:
 PopNextop2:
   POP;
   nextop2;
-
-/************************************************************************/
-/*									*/
-/*	Set up the dispatch table for use when we do assembler		*/
-/*	optimization of the dispatch-jump sequence.			*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-#ifdef OPDISP
-setup_table:
-  {
-    int i;
-    for (i = 0; i < 256; i++) { table[i] = &&op_ufn; };
-  }
-  {
-    int i;
-    for (i = 256; i < 512; i++) { table[i] = &&native_check; };
-  }
-  table[001] = &&case001;
-  table[002] = &&case002;
-  table[003] = &&case003;
-  table[004] = &&case004;
-  table[005] = &&case005;
-  table[006] = &&case006;
-  table[007] = &&case007;
-  table[010] = &&case010;
-  table[011] = &&case011;
-  table[012] = &&case012;
-  table[013] = &&case013;
-  table[014] = &&case014;
-  table[015] = &&case015;
-  table[016] = &&case016;
-  table[017] = &&case017;
-  table[020] = &&case020;
-  table[021] = &&case021;
-  table[022] = &&case022;
-  table[023] = &&case023;
-  table[024] = &&case024;
-  table[025] = &&case025;
-  table[026] = &&case026;
-  table[027] = &&case027;
-  table[030] = &&case030;
-  table[031] = &&case031;
-  table[032] = &&case032;
-  table[033] = &&case033;
-  table[034] = &&case034;
-  table[035] = &&case035;
-  table[036] = &&case036;
-  table[037] = &&case037;
-  table[040] = &&case040;
-  table[041] = &&case041;
-  table[042] = &&case042;
-  table[043] = &&case043;
-  table[044] = &&case044;
-  table[045] = &&case045;
-  table[046] = &&case046;
-  table[047] = &&case047;
-
-  table[054] = &&case054;
-  table[055] = &&case055;
-  table[056] = &&case056;
-  table[057] = &&case057;
-
-  table[062] = &&case062;
-  table[063] = &&case063;
-
-  table[070] = &&case070;
-
-  table[072] = &&case072;
-  table[073] = &&case073;
-  table[074] = &&case074;
-  table[075] = &&case075;
-
-  table[0100] = &&case100;
-  table[0101] = &&case101;
-  table[0102] = &&case102;
-  table[0103] = &&case103;
-  table[0104] = &&case104;
-  table[0105] = &&case105;
-  table[0106] = &&case106;
-  table[0107] = &&case107;
-  table[0110] = &&case110;
-  table[0111] = &&case111;
-  table[0112] = &&case112;
-  table[0113] = &&case113;
-  table[0114] = &&case114;
-  table[0115] = &&case115;
-  table[0116] = &&case116;
-  table[0117] = &&case117;
-  table[0120] = &&case120;
-  table[0121] = &&case121;
-  table[0122] = &&case122;
-  table[0123] = &&case123;
-  table[0124] = &&case124;
-  table[0125] = &&case125;
-  table[0126] = &&case126;
-  table[0127] = &&case127;
-  table[0130] = &&case130;
-  table[0131] = &&case131;
-  table[0132] = &&case132;
-  table[0133] = &&case133;
-  table[0134] = &&case134;
-  table[0135] = &&case135;
-  table[0136] = &&case136;
-  table[0137] = &&case137;
-  table[0140] = &&case140;
-  table[0141] = &&case141;
-  table[0142] = &&case142;
-  table[0143] = &&case143;
-  table[0144] = &&case144;
-  table[0145] = &&case145;
-  table[0146] = &&case146;
-  table[0147] = &&case147;
-  table[0150] = &&case150;
-  table[0151] = &&case151;
-  table[0152] = &&case152;
-  table[0153] = &&case153;
-  table[0154] = &&case154;
-  table[0155] = &&case155;
-  table[0156] = &&case156;
-  table[0157] = &&case157;
-  table[0160] = &&case160;
-  table[0161] = &&case161;
-  table[0162] = &&case162;
-  table[0163] = &&case163;
-  table[0164] = &&case164;
-  table[0165] = &&case165;
-  table[0166] = &&case166;
-  table[0167] = &&case167;
-  table[0170] = &&case170;
-  table[0171] = &&case171;
-  table[0172] = &&case172;
-  table[0173] = &&case173;
-  table[0174] = &&case174;
-  table[0175] = &&case175;
-  table[0176] = &&case176;
-  table[0177] = &&case177;
-  table[0200] = &&case200;
-  table[0201] = &&case201;
-  table[0202] = &&case202;
-  table[0203] = &&case203;
-  table[0204] = &&case204;
-  table[0205] = &&case205;
-  table[0206] = &&case206;
-  table[0207] = &&case207;
-  table[0210] = &&case210;
-  table[0211] = &&case211;
-  table[0212] = &&case212;
-  table[0213] = &&case213;
-  table[0214] = &&case214;
-  table[0215] = &&case215;
-  table[0216] = &&case216;
-  table[0217] = &&case217;
-  table[0220] = &&case220;
-  table[0221] = &&case221;
-  table[0222] = &&case222;
-  table[0223] = &&case223;
-  table[0224] = &&case224;
-  table[0225] = &&case225;
-  table[0226] = &&case226;
-  table[0227] = &&case227;
-  table[0230] = &&case230;
-  table[0231] = &&case231;
-  table[0232] = &&case232;
-  table[0233] = &&case233;
-  table[0234] = &&case234;
-  table[0235] = &&case235;
-  table[0236] = &&case236;
-  table[0237] = &&case237;
-  table[0240] = &&case240;
-  table[0241] = &&case241;
-  table[0242] = &&case242;
-  table[0243] = &&case243;
-  table[0244] = &&case244;
-  table[0245] = &&case245;
-  table[0246] = &&case246;
-  table[0247] = &&case247;
-  table[0250] = &&case250;
-  table[0251] = &&case251;
-  table[0252] = &&case252;
-  table[0253] = &&case253;
-  table[0254] = &&case254;
-  table[0255] = &&case255;
-  table[0256] = &&case256;
-  table[0257] = &&case257;
-  table[0260] = &&case260;
-  table[0261] = &&case261;
-  table[0262] = &&case262;
-  table[0263] = &&case263;
-  table[0264] = &&case264;
-  table[0265] = &&case265;
-  table[0266] = &&case266;
-  table[0267] = &&case267;
-  table[0270] = &&case270;
-  table[0271] = &&case271;
-  table[0272] = &&case272;
-  table[0273] = &&case273;
-  table[0274] = &&case274;
-  table[0275] = &&case275;
-  table[0276] = &&case276;
-  table[0277] = &&case277;
-  table[0300] = &&case300;
-  table[0301] = &&case301;
-  table[0302] = &&case302;
-  table[0303] = &&case303;
-  table[0304] = &&case304;
-  table[0305] = &&case305;
-  table[0306] = &&case306;
-  table[0307] = &&case307;
-  table[0310] = &&case310;
-  table[0311] = &&case311;
-  table[0312] = &&case312;
-  table[0313] = &&case313;
-  table[0314] = &&case314;
-  table[0315] = &&case315;
-  table[0316] = &&case316;
-  table[0317] = &&case317;
-  table[0320] = &&case320;
-  table[0321] = &&case321;
-  table[0322] = &&case322;
-  table[0323] = &&case323;
-  table[0324] = &&case324;
-  table[0325] = &&case325;
-  table[0326] = &&case326;
-  table[0327] = &&case327;
-  table[0330] = &&case330;
-  table[0331] = &&case331;
-  table[0332] = &&case332;
-  table[0333] = &&case333;
-  table[0334] = &&case334;
-  table[0335] = &&case335;
-  table[0336] = &&case336;
-  table[0337] = &&case337;
-  table[0340] = &&case340;
-  table[0341] = &&case341;
-  table[0342] = &&case342;
-  table[0343] = &&case343;
-  table[0344] = &&case344;
-  table[0345] = &&case345;
-  table[0346] = &&case346;
-  table[0347] = &&case347;
-  table[0350] = &&case350;
-  table[0351] = &&case351;
-  table[0352] = &&case352;
-  table[0353] = &&case353;
-  table[0354] = &&case354;
-  table[0355] = &&case355;
-  table[0356] = &&case356;
-  table[0357] = &&case357;
-  table[0360] = &&case360;
-  table[0361] = &&case361;
-  table[0362] = &&case362;
-  table[0363] = &&case363;
-  table[0364] = &&case364;
-  table[0365] = &&case365;
-  table[0366] = &&case366;
-  table[0367] = &&case367;
-  table[0370] = &&case370;
-  table[0371] = &&case371;
-  table[0372] = &&case372;
-  table[0373] = &&case373;
-  table[0374] = &&case374;
-  table[0375] = &&case375;
-  table[0376] = &&case376;
-  table[0377] = &&case377;
-  goto nextopcode;
-#endif /* OPDISP */
 }
 
 void do_brk(void) {}
