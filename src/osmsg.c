@@ -19,23 +19,21 @@
 
 #include "version.h"
 
-#ifndef DOS
+#include <setjmp.h> /* Needed for jmp_buf for timeout.h */
+
+#include <errno.h>
 #include <pwd.h>
+#include <stdio.h>
 #include <sys/file.h>
+#include <sys/ioctl.h>
 #include <sys/select.h>
 #include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#ifndef XWINDOW
-#include <sys/ioctl.h>
-#endif
 #include <sys/statvfs.h>
 #include <sys/time.h>
-#endif /* DOS */
+#include <sys/types.h>
+#include <unistd.h>
 
-#include <setjmp.h>
-#include <stdio.h>
-#include <errno.h>
+
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
@@ -48,6 +46,7 @@
 #include "osmsg.h"
 #include "dbprint.h"
 
+#include "commondefs.h"
 #include "osmsgdefs.h"
 
 #ifdef OS4
@@ -79,8 +78,7 @@ extern fd_set LispReadFds;
 /************************************************************************/
 
 void mess_init() {
-#ifndef XWINDOW
-#ifndef DOS
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct passwd *pwd;
   int ttyfd;
   int ptyfd, ptynum;
@@ -159,8 +157,7 @@ gotpty:
 #endif
   previous_size = 0;
   DBPRINT(("Console logging started.\n"));
-#endif /* DOS */
-#endif /* XWINDOW */
+#endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
 }
 
 /************************************************************************/
@@ -174,8 +171,7 @@ gotpty:
 /************************************************************************/
 
 void mess_reset() {
-#ifndef DOS
-#ifndef XWINDOW
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   int console_fd;
   close(log_id);
   close(cons_tty);
@@ -188,8 +184,7 @@ void mess_reset() {
           close(console_fd);
         }
 ***/
-#endif /* XWINDOW */
-#endif /* DOS */
+#endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
 }
 
 /************************************************************************/
@@ -202,8 +197,7 @@ void mess_reset() {
 /*									*/
 /************************************************************************/
 LispPTR mess_readp() {
-#ifndef DOS
-#ifndef XWINDOW
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct stat sbuf;
   int size;
   int rval;
@@ -224,8 +218,7 @@ LispPTR mess_readp() {
   * * * * * * * * * * * * * */
 
   if (logChanged) return (ATOM_T);
-#endif /* XWINDOW */
-#endif /* DOS */
+#endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
   return (NIL);
 }
 
@@ -244,9 +237,7 @@ LispPTR mess_readp() {
 LispPTR mess_read(LispPTR *args)
 /* args[0]		buffer	*/
 {
-#if defined(DOS) || defined(XWINDOW)
-  return (NIL);
-#else
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct stat sbuf;
   int size, save_size;
   char *base;
@@ -303,7 +294,9 @@ LispPTR mess_read(LispPTR *args)
   StrNCpyFromCToLisp(base, temp_buf, size);
 
   return (GetSmallp(size));
-#endif /* DOS | XWINDOW*/
+#else
+  return (NIL);
+#endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
 }
 
 /************************************************************************/
@@ -318,9 +311,7 @@ LispPTR mess_read(LispPTR *args)
 /************************************************************************/
 
 LispPTR flush_pty() {
-#if defined(DOS) || defined(XWINDOW)
-  return (NIL);
-#else
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct stat sbuf;
   char buf[MESSAGE_BUFFER_SIZE]; /* Buffer between pty and log file */
   int size;
@@ -383,5 +374,7 @@ LispPTR flush_pty() {
       return (ATOM_T);
     }
   }
-#endif /* XWINDOW | DOS */
+#else
+  return (NIL);
+#endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
 }
