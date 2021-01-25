@@ -289,7 +289,7 @@ $(OBJECTDIR)bbt68k.i : $(SRCDIR)bbt68k.s
 $(OBJECTDIR)bbtSPARC.o :  $(SRCDIR)bbtSPARC.s
 	as -P $(SRCDIR)bbtSPARC.s -o $(OBJECTDIR)bbtSPARC$(OEXT)
 
-$(OBJECTDIR)bbtsub.o :  $(SRCDIR)bbtsub.c $(INCDIR)bbtsub.h $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
+$(OBJECTDIR)bbtsub.o :  $(SRCDIR)bbtsub.c $(INCDIR)bbtsubdefs.h $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h \
 	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
 	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h $(INCDIR)dspdata.h \
@@ -325,7 +325,7 @@ $(OBJECTDIR)rawcolor.o :  $(SRCDIR)rawcolor.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 	 $(INCDIR)emlglob.h  $(INCDIR)adr68k.h  $(INCDIR)address.h \
 	 $(INCDIR)pilotbbt.h  $(INCDIR)display.h  $(INCDIR)bitblt.h \
 	 $(INCDIR)arith.h  $(INCDIR)cell.h $(INCDIR)dspdata.h $(INCDIR)debug.h \
-	 $(INCDIR)stream.h $(INCDIR)bbtsub.h
+	 $(INCDIR)stream.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)rawcolor.c -o $(OBJECTDIR)rawcolor$(OEXT)
 
 $(OBJECTDIR)llcolor.o : $(SRCDIR)llcolor.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h $(INCDIR)lispmap.h \
@@ -358,7 +358,7 @@ $(OBJECTDIR)mkcell.o :  $(SRCDIR)mkcell.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h 
 $(OBJECTDIR)draw.o :  $(SRCDIR)draw.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)my.h $(INCDIR)bbtsub.h
+	 $(INCDIR)my.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)draw.c -o $(OBJECTDIR)draw$(OEXT)
 
 $(OBJECTDIR)z2.o :  $(SRCDIR)z2.c  $(REQUIRED-INCS)  \
@@ -605,7 +605,7 @@ $(OBJECTDIR)lowlev2.o :  $(SRCDIR)lowlev2.c  $(REQUIRED-INCS) $(INCDIR)lispemul.
 $(OBJECTDIR)misc7.o :  $(SRCDIR)misc7.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
 	 $(INCDIR)lispmap.h  $(INCDIR)lsptypes.h  $(INCDIR)emlglob.h \
-	 $(INCDIR)stack.h $(INCDIR)opcodes.h $(INCDIR)display.h $(INCDIR)bbtsub.h
+	 $(INCDIR)stack.h $(INCDIR)opcodes.h $(INCDIR)display.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)misc7.c -o $(OBJECTDIR)misc7$(OEXT)
 
 $(OBJECTDIR)mvs.o :  $(SRCDIR)mvs.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
@@ -658,7 +658,7 @@ $(OBJECTDIR)subr.o :  $(SRCDIR)subr.c  $(REQUIRED-INCS) \
 	 $(INCDIR)adr68k.h $(INCDIR)subrs.h \
 	 $(INCDIR)lsptypes.h  $(INCDIR)lispmap.h  $(INCDIR)emlglob.h \
 	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
-	 $(INCDIR)arith.h $(INCDIR)bbtsub.h
+	 $(INCDIR)arith.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)subr.c -o $(OBJECTDIR)subr$(OEXT)
 
 $(OBJECTDIR)miscn.o : $(SRCDIR)miscn.c  $(REQUIRED-INCS) \

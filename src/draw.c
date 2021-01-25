@@ -32,10 +32,10 @@
 #include "emlglob.h"
 #include "adr68k.h"
 #include "bitblt.h"
-#include "bbtsub.h"
 #include "display.h"
 
 #include "drawdefs.h"
+#include "bbtsubdefs.h"
 #include "initdspdefs.h"
 
 #ifdef DISPLAYBUFFER

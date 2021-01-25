@@ -57,6 +57,7 @@
 #include "gcdata.h"
 #include "iopage.h"
 
+#include "bbtsubdefs.h"
 #include "car-cdrdefs.h"
 #include "commondefs.h"
 #include "gcarraydefs.h"
@@ -70,7 +71,6 @@ extern IOPAGE *IOPage68K;
 #include "bb.h"
 #include "bitblt.h"
 #include "pilotbbt.h"
-#include "bbtsub.h"
 #include "dspdata.h"
 #include "display.h"
 #include "dbprint.h"
