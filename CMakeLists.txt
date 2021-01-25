@@ -105,7 +105,6 @@ SET(BAD_SRCS
     src/mnwevent.c
     src/mnxmeth.c
     src/mouseif.c
-    src/optck.c
     src/picture.c
     src/rawcolor.c
     src/rawrs232c.c
