@@ -1049,23 +1049,3 @@ if ((int)(TOPOFSTACK = (LispPTR)op_name(				\
 	goto fix_tos_ufn;						\
 CSTKPTRL -= 8;								\
 nextop1;
-
-
-#ifdef SUN3_OS3_OR_OS4_IL
-
-/* need jump point for inline asm code, e.g., for IPLUS */
-
-#define OPCODEFAIL							\
-									\
-fixtos1:								\
-	fixtos1_label();						\
-	FIXTOS1;							\
-	goto op_ufn;
-
-#else
-
-/* no opcode fail point necessary */
-
-#define OPCODEFAIL
-
-#endif

@@ -218,10 +218,7 @@ void dispatch(void) {
   goto nextopcode;
 #endif /* OPDISP */
 
-  /* INLINE OPCODE FAIL ENTRY POINTS, CALL EXTERNAL ROUTINES HERE */
-  OPCODEFAIL;
   /* OPCODE FAIL ENTRY POINTS, CALL UFNS HERE */
-
   UFN_CALLS;
 
 op_ufn : {
