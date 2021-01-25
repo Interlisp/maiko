@@ -137,28 +137,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
 /************************************************************************/
 
 LispPTR check_unix_password(LispPTR *args) {
-#ifndef DOS
-  struct passwd *pwd;
-#ifndef OS5
-  char *crypt(const char *, const char *);
-#endif /* OS5 */
-  char salt[3];
-  char name[100], pass[100];
-
-  if (lisp_string_to_c_string(args[0], name, sizeof name)) { return NIL; }
-  if (lisp_string_to_c_string(args[1], pass, sizeof pass)) { return NIL; }
-
-  if ((pwd = getpwnam(name)) == 0) { return (NIL); /* can't find entry for name */ }
-  salt[0] = pwd->pw_passwd[0];
-  salt[1] = pwd->pw_passwd[1];
-  salt[2] = '\0';
-  if (strcmp((char *)crypt(pass, salt), pwd->pw_passwd) == 0)
-    return (ATOM_T);
-  else
-    return (NIL);
-#else
   return ATOM_T;
-#endif /* DOS */
 }
 
 /************************************************************************/

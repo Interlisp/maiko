@@ -22,7 +22,7 @@ OPTFLAGS = -O1 -gdwarf-2
 DFLAGS = -DBYTESWAP -DLOGINT $(XFLAGS) \
 	-DRELEASE=351
 
-LDFLAGS = -L/usr/local/lib -lX11 -lc -lm -lcrypt
+LDFLAGS = -L/usr/local/lib -lX11 -lc -lm
 LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
 
 OBJECTDIR = ../$(RELEASENAME)/
