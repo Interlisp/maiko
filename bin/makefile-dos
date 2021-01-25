@@ -2,7 +2,7 @@ AFLAGS = /T
 ARCHFILES = dosmouse.obj doskbd.obj vesafns.obj vesainit.obj vgainit.obj kbdif.obj
   
 
-ADMINFILES = makefile mkvdate.c optck.c
+ADMINFILES = makefile mkvdate.c
 
 LPFILES = lpmain.obj lpread.obj lpsolve.obj lpwrite.obj lpdual.obj lptran.obj
 
