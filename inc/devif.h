@@ -179,7 +179,7 @@ typedef struct
 /*                  D s p I n t e r f a c e                   */
 /*                                                            */
 /* Definition of the display. This structure collects all the */
-/* special knowlege needed to manipulate the screen.          */
+/* special knowledge needed to manipulate the screen.         */
 /**************************************************************/
 typedef struct
   {
