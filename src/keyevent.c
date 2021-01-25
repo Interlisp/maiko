@@ -173,6 +173,8 @@ typedef struct {
 
 /*  EmXXXX68K are already swapped, no need for GETWORD */
 
+
+#ifdef SUNDISPLAY
 #ifdef OLD_CURSOR
 #define TrackCursor(cx, cy)                          \
   {                                                  \
@@ -190,6 +192,7 @@ typedef struct {
     *EmCursorY68K = cy;                              \
   }
 #endif /* OLD_CURSOR */
+#endif /* SUNDISPLAY */
 
 /* commented out is some code that would also clobber
         Irq_Stk_Check & Irq_Stk_End to force

@@ -99,7 +99,7 @@ void DSP_Cursor(LispPTR *args, int argnum)
   extern int ScreenLocked;
   extern DLword *EmCursorX68K, *EmCursorY68K;
   extern int LastCursorX, LastCursorY;
-#if !defined(OLD_CURSOR)
+#if defined(SUNDISPLAY) && !defined(OLD_CURSOR)
   static int Init = T;
 #endif
 

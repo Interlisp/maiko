@@ -57,7 +57,7 @@ extern int DisplayRasterWidth;
 #define ShowCursor { (currentdsp->mouse_visible)(IOPage68K->dlmousex, \
 												  IOPage68K->dlmousey); }
 
-#elif OLD_CURSOR
+#elif defined(SUNDISPLAY) && defined(OLD_CURSOR)
 extern struct winlock DisplayLockArea;
 #define	HideCursor	\
 	ioctl( LispWindowFd, WINLOCKSCREEN, &DisplayLockArea)
