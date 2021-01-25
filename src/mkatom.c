@@ -31,6 +31,10 @@
 */
 /**********************************************************************/
 
+#ifndef BYTESWAP
+#include <string.h>
+#endif
+#include <stdint.h>
 #include "lispemul.h"
 #include "adr68k.h"
 #include "lsptypes.h"
@@ -128,6 +132,17 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
 
 } /* end compute_lisp_hash */
 
+#ifdef BYTESWAP
+int bytecmp(const char *char1, const char *char2, int len)
+{
+  int index;
+  for (index = 0; index < len; index++) {
+      if (GETBYTE(char1++) != *(uint8_t *)(char2++)) return (0);
+  }
+  return (1);
+}
+#endif /* BYTESWAP */
+
 /**********************************************************************/
 /*
         Func name :	compare_chars
@@ -160,16 +175,14 @@ LispPTR compare_chars(register const char *char1, register const char *char2, re
   }
 
 } /* end compare_chars */
-#ifdef BYTESWAP
-int bytecmp(const char *char1, const char *char2, int len)
-{
+
+int lispcmp(const DLword *char1, const char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
-    if (GETBYTE(char1++) != *(char2++)) return (0);
+      if (GETWORD(char1++) != GETBYTE(char2++)) return (0);
   }
   return (1);
 }
-#endif /* BYTESWAP */
 
 /**********************************************************************/
 /*
@@ -230,14 +243,6 @@ LispPTR compare_lisp_chars(register const char *char1, register const char *char
   }
 
 } /* end compare_lisp_chars */
-
-int lispcmp(const DLword *char1, const unsigned char *char2, int len) {
-  int index;
-  for (index = 0; index < len; index++) {
-      if (GETWORD(char1++) != (unsigned char)GETBYTE(char2++)) return (0);
-  }
-  return (1);
-}
 
 /**********************************************************************/
 /*
