@@ -224,38 +224,3 @@ addbase_err:							\
     asm("	movw	%ax,%bx");				\
     asm("	rorl	$16,%ebx");				\
     nextop1; }
-
-
-/***********/
-/* Fast function call */
-
-#undef FN0
-#define FN0 fast_FN0()
-
-#undef FN1
-#define FN1 fast_FN1()
-
-#undef FN2
-#define FN2 fast_FN2()
-
-#undef FN3
-#define FN3 fast_FN3()
-
-#undef FN4
-#define FN4 fast_FN4()
-
-#undef FN5
-#define FN5 fast_FN5()
-
-#undef FN6
-#define FN6 fast_FN6()
-
-#undef FN7
-#define FN7 fast_FN7()
-
-#undef FN8
-#define FN8 fast_FN8()
-
-#undef FN9
-#define FN9 fast_FN9()
-

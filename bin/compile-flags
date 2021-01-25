@@ -31,7 +31,6 @@ NOASM		If true, suppress any attempt to include assembler
 			SUN4_OS4_IL
 			OPDISP
 			PROFILE
-		and enables NOASMFNCALL
 C_ONLY
 SUN4_OS4_IL	Try assembler peephole optimizations for SPARC & SunOS4.x
 SUN3_OS3_IL	Try assembler peephole optimizations for 68K & SunOS 3.x

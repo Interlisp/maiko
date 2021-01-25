@@ -17,30 +17,9 @@
 /*									*/
 /*			t o s r e t m a c r o . h			*/
 /*									*/
-/*	Implements RETURN for the inner evaluation loop.  There are	*/
-/*	two versions--one for when hand optimization has been done,	*/
-/*	and one for the naive case.  To use the hand-optimization	*/
-/*	version, you'll need to define an inline function or macro	*/
-/*	called opreturn().  It must fall thru if alink is odd, but	*/
-/*	must handle all other cases.  You can rely on check_interrupt	*/
-/*	being a defined label.						*/
+/*	Implements RETURN for the inner evaluation loop.		*/
 /*									*/
 /************************************************************************/
-
-#if ((defined(ISC) || defined(SUN3_OS3_OR_OS4_IL)) &&  !(defined(NOASMFNCALL)) )
-
-/* JDS 22 May 96 CSTKPTR >- Irq... was just >, but got overflows with last
-   frame right against endofstack, causing 0-long free blocks, inf loops... */
-#define OPRETURN							\
-{	opreturn();							\
-	EXT; if(slowreturn()) goto stackoverflow_help; RET;		\
-	Irq_Stk_Check = STK_END_COMPUTE(EndSTKP,FuncObj);		\
-	if (((UNSIGNED)(CSTKPTR) >= Irq_Stk_Check) || (Irq_Stk_End <= 0))	\
-			{ goto check_interrupt;	}			\
-	Irq_Stk_End = (UNSIGNED) EndSTKP;					\
- }
-
-#else
 
 #define OPRETURN	{						\
  register struct frameex2 *returnFX ;					\
@@ -75,5 +54,4 @@
 retxit:	 {}								\
 } /* OPRETURN end */
 
-#endif
 #endif /* TOSRET_H */
