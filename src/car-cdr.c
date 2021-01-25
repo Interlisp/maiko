@@ -399,7 +399,7 @@ LispPTR N_OP_rplaca(register LispPTR tosm1, register LispPTR tos) {
   if (Listp(tosm1) == NIL) {
     if (tosm1 == NIL_PTR) {
       if (tos != NIL_PTR)
-        ERROR_EXIT(tos)
+        ERROR_EXIT(tos);
       else
         return (tosm1);
     } else
@@ -439,7 +439,7 @@ LispPTR N_OP_rplacd(register LispPTR tosm1, register LispPTR tos) {
   if (Listp(tosm1) == NIL) {
     if (tosm1 == NIL_PTR) {
       if (tos != NIL_PTR)
-        ERROR_EXIT(tos)
+        ERROR_EXIT(tos);
       else
         return (tosm1);
     } else
