@@ -70,16 +70,16 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
   int invert;
 #ifdef SUNDISPLAY
   return NIL;
-#endif /* SUNDISPLAY */
-
-#ifdef XWINDOW
+#elif defined(XWINDOW)
   invert = args[0] & 0xFFFF;
   lisp_Xvideocolor(invert);
   if (invert)
     return ATOM_T;
   else
     return NIL;
-#endif /* XWINDOW */
+#else
+  return NIL;
+#endif
 }
 
 extern struct cursor CurrentCursor;
