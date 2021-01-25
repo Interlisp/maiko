@@ -39,10 +39,6 @@
 
 #ifdef DOS
 #define PORT_A 0x60
-#define KBD_COMMAND_PORT 0x64
-#define KBD_ENABLE 0xAE
-#define KBD_DISABLE 0xAD
-
 #include "devif.h"
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
@@ -82,7 +78,6 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
     enable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.enter)(currentkbd);
-    /* outp( KBD_COMMAND_PORT, KBD_ENABLE); */
 #endif /* DOS */
   } else if (args[0] == NIL) {
 #ifdef SUNDISPLAY
@@ -91,7 +86,6 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
     disable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.exit)(currentkbd);
-    /* outp( KBD_COMMAND_PORT, KBD_DISABLE); */
 #endif /* DOS */
   } else {
     error("KB_enable: illegal arg \n");
