@@ -143,14 +143,10 @@ MAINFILES = $(OBJECTDIR)main.o \
 
 BYTESWAPFILES = $(OBJECTDIR)byteswap.o
 
-VFILE = $(OBJECTDIR)vdate
-
 LIBFILES = $(OFILES) $(TESTFILES) $(BYTESWAPFILES) $(MAINFILES) \
 	   $(DEVICES) $(GCFILES) $(XFILES)    \
 	   $(COLORFILES) $(LPFILES) $(DLPIFILES)
 EXTFILES = $(OBJECTDIR)usrsubr.o
-
-# execute to make /tmp/vdate.c
 
 ################################################################################
 # Development targets - copyprotect is OFF here
@@ -159,37 +155,47 @@ EXTFILES = $(OBJECTDIR)usrsubr.o
 default	: $(OSARCHDIR)lde $(OSARCHDIR)$(LDENAME) $(OSARCHDIR)ldeether \
 	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout
 
-$(OSARCHDIR)lde: $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c $(INCDIR)unixfork.h
-	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeboot.c $(SRCDIR)unixfork.c \
-		$(LDELDFLAGS) -o $(OSARCHDIR)lde
+$(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
+	$(CC) $(LDELDFLAGS) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o -o $(OSARCHDIR)lde
 
-$(OSARCHDIR)$(LDENAME) :       $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
-	/bin/rm -f $(VFILE).c
-	$(OSARCHDIR)mkvdate > $(VFILE).c
-	$(CC) $(CFLAGS) $(LIBFILES) $(EXTFILES) $(VFILE).c \
-		$(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
+$(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
+	$(CC) $(LDFLAGS) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o -o $(OSARCHDIR)$(LDENAME)
 	@ echo ""
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
 
-$(OSARCHDIR)ldeether :  $(SRCDIR)ldeether.c $(DLPIFILES)
-	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)ldeether.c $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
+$(OSARCHDIR)ldeether:  $(OBJECTDIR)ldeether.o $(DLPIFILES)
+	$(CC) $(LDEETHERLDFLAGS) $(OBJECTDIR)ldeether.o $(DLPIFILES) -o $(OSARCHDIR)ldeether
 
-$(OSARCHDIR)mkvdate	: $(SRCDIR)mkvdate.c $(REQUIRED-INCS)
-	$(CC) $(CFLAGS) -I$(INCDIR) $(SRCDIR)mkvdate.c -o $(OSARCHDIR)mkvdate
+$(OSARCHDIR)mkvdate: $(OBJECTDIR)mkvdate.o $(REQUIRED-INCS)
+	$(CC) $(LDFLAGS) $(OBJECTDIR)mkvdate.o -o $(OSARCHDIR)mkvdate
 
-$(OSARCHDIR)tstsout : $(OBJECTDIR)tstsout.o $(BYTESWAPFILES)  $(REQUIRED-INCS)
-	$(CC) $(CFLAGS) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)tstsout
+$(OSARCHDIR)tstsout: $(OBJECTDIR)tstsout.o $(BYTESWAPFILES)  $(REQUIRED-INCS)
+	$(CC) $(LDFLAGS) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)tstsout
 
-$(OSARCHDIR)setsout : $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
-	$(CC) $(CFLAGS) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)setsout
+$(OSARCHDIR)setsout: $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
+	$(CC) $(LDFLAGS) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)setsout
 
 #### Component files ######################################################
 
-$(OBJECTDIR)tstsout.o: $(SRCDIR)tstsout.c $(REQUIRED-INCS) 
-	$(CC) -c $(CFLAGS) $(SRCDIR)tstsout.c -I$(INCDIR)  -o $(OBJECTDIR)tstsout$(OEXT)
+$(OBJECTDIR)vdate.o: $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
+	/bin/rm -f $(OBJECTDIR)vdate.c
+	$(OSARCHDIR)mkvdate > $(OBJECTDIR)vdate.c
+	$(CC) $(RFLAGS) $(OBJECTDIR)vdate.c -o $(OBJECTDIR)vdate$(OEXT)
 
-$(OBJECTDIR)setsout.o: $(SRCDIR)setsout.c  $(REQUIRED-INCS) 
-	$(CC) -c $(CFLAGS) $(SRCDIR)setsout.c -I$(INCDIR)  -o $(OBJECTDIR)setsout$(OEXT)
+$(OBJECTDIR)tstsout.o: $(SRCDIR)tstsout.c $(REQUIRED-INCS)
+	$(CC) $(RFLAGS) $(SRCDIR)tstsout.c -o $(OBJECTDIR)tstsout$(OEXT)
+
+$(OBJECTDIR)setsout.o: $(SRCDIR)setsout.c  $(REQUIRED-INCS)
+	$(CC) $(RFLAGS) $(SRCDIR)setsout.c -o $(OBJECTDIR)setsout$(OEXT)
+
+$(OBJECTDIR)ldeboot.o: $(SRCDIR)ldeboot.c $(REQUIRED-INCS) $(INCDIR)unixfork.h
+	$(CC) $(RFLAGS) $(SRCDIR)ldeboot.c -o $(OBJECTDIR)ldeboot$(OEXT)
+
+$(OBJECTDIR)ldeether.o: $(SRCDIR)ldeether.c $(REQUIRED-INCS) $(INCDIR)unixfork.h
+	$(CC) $(RFLAGS) $(SRCDIR)ldeether.c -o $(OBJECTDIR)ldeether$(OEXT)
+
+$(OBJECTDIR)mkvdate.o: $(SRCDIR)mkvdate.c  $(REQUIRED-INCS)
+	$(CC) $(RFLAGS) $(SRCDIR)mkvdate.c -o $(OBJECTDIR)mkvdate$(OEXT)
 
 $(OBJECTDIR)main.o : $(SRCDIR)main.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	 $(INCDIR)emlglob.h  $(INCDIR)address.h $(INCDIR)lsptypes.h \
@@ -701,6 +707,10 @@ $(OBJECTDIR)unixcomm.o :  $(SRCDIR)unixcomm.c  $(REQUIRED-INCS) $(INCDIR)lispemu
 	 $(INCDIR)lspglob.h  $(INCDIR)cell.h  $(INCDIR)stack.h \
 	 $(INCDIR)arith.h
 	$(CC) $(RFLAGS) $(SRCDIR)unixcomm.c -o $(OBJECTDIR)unixcomm$(OEXT)
+
+$(OBJECTDIR)unixfork.o :  $(SRCDIR)unixfork.c  $(REQUIRED-INCS) \
+	 $(INCDIR)unixfork.h $(INCDIR)dbprint.h
+	$(CC) $(RFLAGS) $(SRCDIR)unixfork.c -o $(OBJECTDIR)unixfork$(OEXT)
 
 $(OBJECTDIR)uraid.o :  $(SRCDIR)uraid.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
 	 $(INCDIR)address.h  $(INCDIR)adr68k.h \
