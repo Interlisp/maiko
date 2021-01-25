@@ -56,10 +56,6 @@ Unix Interface Communications
 #include "byteswapdefs.h"
 #include "commondefs.h"
 
-#ifdef GCC386
-#include "inlinePS2.h"
-#endif /* GCC386 */
-
 static __inline__ int SAFEREAD(int f, unsigned char *b, int c) {
   int res;
 loop:
