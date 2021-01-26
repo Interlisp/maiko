@@ -24,8 +24,8 @@ DFLAGS = -DAIX \
 	-DBYTESWAP -DLOGINT  $(XFLAGS) \
 	-DRELEASE=351
 
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lcrypt
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm -lcrypt
+LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm
 
 OBJECTDIR = ../$(RELEASENAME)/
 
