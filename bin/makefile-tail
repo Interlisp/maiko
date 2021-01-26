@@ -870,7 +870,7 @@ $(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $
 ################################################################################
 
 cleanup :
-	rm -f $(LIBFILES) $(EXTFILES) $(OBJECTDIR)tstsout.o $(OBJECTDIR)setsout.o $(OSARCHDIR)lde $(OSARCHDIR)ldex $(OSARCHDIR)ldeether
+	rm -rf $(OBJECTDIR) $(OSARCHDIR)
 
 .c.o:
 	$(CC) $(RFLAGS) $*.c -o $@
