@@ -34,7 +34,7 @@
 #include "gcarraydefs.h"
 #include "gchtfinddefs.h"
 
-static char il_string[] = "INTERLISP";
+static const char il_string[] = "INTERLISP";
 #define GET_IL_ATOM(string) get_package_atom((string), (sizeof(string) - 1), il_string, 9, NIL)
 
 #define AtomValPtr(index) Addr68k_from_LADDR(*(GetVALCELL68k(index)))

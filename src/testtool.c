@@ -107,7 +107,7 @@ void print_atomname(LispPTR index)
 
 #define PACKAGES_LIMIT 255
 /** GET PACKAGE INDEX from PACKAGE FULL NAME */
-int find_package_from_name(char *packname, int len) {
+int find_package_from_name(const char *packname, int len) {
   int index;
   PACKAGE *package;
   NEWSTRINGP *namestring;
