@@ -388,7 +388,6 @@ SET(MAIKO_HDRS
     inc/vmemsavedefs.h
     inc/vmemsave.h
     inc/xbbtdefs.h
-    inc/Xbitblt.h
     inc/xbitmaps.h
     inc/xcdefs.h
     inc/xcursordefs.h
