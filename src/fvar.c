@@ -81,9 +81,6 @@ void nnewframe(register struct frameex1 *newpfra2, register DLword *achain, regi
   register int ph;            /* alink temp, also phase */
 
 newframe:
-#ifdef SUN3_OS3_OR_OS4_IL
-  newframe_setup_label();
-#endif
   /* assume that apframe1 points to the next frame to be scanned */
   ph = newpfra2->alink;
   if (ph == 0) error("alink = 0 in nnewframe");
@@ -148,9 +145,6 @@ newframe:
     nametablesize = newpfn2->ntsize;
 #endif
   }
-#ifdef SUN3_OS3_OR_OS4_IL
-  newframe_loop_label();
-#endif
 
   i = (UNSIGNED)(pindex + nametablesize);
   for (; (UNSIGNED)i > (UNSIGNED)pindex;) { /* searching in NewFuncHeader */
@@ -385,18 +379,11 @@ LispPTR N_OP_fvar_(register LispPTR tos, register int n) {
 }
 
 #ifndef BIGATOMS
-#ifdef SUN3_OS3_OR_OS4_IL
-
-#define VALS_HI_RET(x) newframe_vals_hi_ret(x)
-#define STK_HI_RET(x) newframe_stk_hi_ret(x)
-
-#else
 
 #define VALS_HI_RET(x) ((int)(x) << 17) + VALS_HI + ((unsigned short)(x) >> 15)
 
 #define STK_HI_RET(x) ((int)(x) << 16) | 1 | ((unsigned int)(x) >> 16)
 
-#endif /* SUN3_IL */
 
 #else
 
@@ -452,9 +439,6 @@ LispPTR native_newframe(int slot)
     register int alink;
 
   natnewframe:
-#ifdef SUN3_OS3_OR_OS4_IL
-    natnewframe_label();
-#endif
     /* assume that apframe1 points to the next frame to be scanned */
 
     alink = newpfra2->alink;
@@ -481,39 +465,6 @@ LispPTR native_newframe(int slot)
       nametablesize = newpfn2->ntsize;
 #endif /* 					    */
     }
-#ifdef SUN4_OS4_IL
-
-    i = (UNSIGNED)(pindex + nametablesize);
-  lookup:
-#ifdef BIGATOMS
-    pindex = (LispPTR *)name_scan2((UNSIGNED)pindex, i, name);
-#else
-    pindex = (DLword *)name_scan((UNSIGNED)pindex, i, name | (name << 16));
-#endif
-    if (!pindex) goto natnewframe;
-    {
-      {
-#else
-#ifdef SUN3_OS3_OR_OS4_IL
-
-    i = nametablesize;
-    if (--i < 0) goto natnewframe;
-
-/* **** assumes:
-        d7 = name
-        d6 = i
-        a3 = pindex
-*** */
-#ifdef BIGATOMS
-  lookup:
-    fvar_lookup_loop2();
-#else
-  lookup:
-    fvar_lookup_loop();
-#endif
-    {
-      {
-#else
 
     for (i = nametablesize; --i >= 0;) {
 /* searching in NewFuncHeader */
@@ -523,8 +474,6 @@ LispPTR native_newframe(int slot)
       if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
 #endif /* BIGATOMS    */
 
-#endif
-#endif
 
         register int fvartype;   /* probing fvar vartype */
         register int fvaroffset; /* probing fvar varoffset */
@@ -542,17 +491,9 @@ LispPTR native_newframe(int slot)
             ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
             /* ppvar points to argued Pvar */
             if (WBITSPTR(ppvar)->xMSB) /* check UNBOUND (if *ppvar is negative , unbound) */
-#ifdef SUN4_OS4_IL
-              goto lookup;
-#else
-#ifdef SUN3_OS3_OR_OS4_IL
-              goto lookup;
-#else
             {
               continue;
             }
-#endif
-#endif
             /* save High word of PVAR slot address to FVAR slot */
             /* achain points to target FVAR slot */
             return (*((LispPTR *)achain) = STK_HI_RET(LADDR_from_68k(ppvar)));
