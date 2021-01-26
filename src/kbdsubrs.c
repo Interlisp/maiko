@@ -86,7 +86,7 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
 #endif /* DOS */
   } else if (args[0] == NIL) {
 #ifdef SUNDISPLAY
-    FD_SET(LispWindowFd, &LispReadFds);
+    FD_CLR(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     disable_Xkeyboard(currentdsp);
 #elif DOS
