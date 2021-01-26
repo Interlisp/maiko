@@ -152,11 +152,6 @@ register LispPTR tscache asm("bx");
 #define PVARL PVar
 #define IVARL IVar
 
-#ifdef DOS
-extern unsigned char inchar;
-extern unsigned short kn;
-#endif
-
 #ifdef XWINDOW
 extern int Event_Req; /* != 0 when it's time to check X events
                                                  on machines that don't get them reliably

@@ -41,46 +41,6 @@
 #include <pixrect/pixrect_hs.h>
 #endif /* SUNDISPLAY */
 
-#ifdef DOS
-#define KBD_COMMAND_PORT 0x64
-#define KBD_ENABLE 0xAE
-#define KBD_DISABLE 0xAD
-#define KBD_RESET 0xF6
-
-#define PORT_8042 0x60
-#define KBD_SCAN_CODE_PORT 0x60
-
-#define KBD_resend 0xFE
-#define KBD_ack 0xFA
-#define KBD_echo_responce 0xEE
-#define KBD_failiure 0xFD
-#define KBD_prefix 0xE0
-#define KBD_pause_prefix 0xE1
-#define KBD_overflow 0x00
-
-#define INTA00 0x20 /* The 8259 port */
-#define ENDOFINTERRUPT 0x20
-
-#define PRTSC_KEY 0x37
-#define HOME_KEY 0x47
-#define UPARROW_KEY 0x48
-#define PGUP_KEY 0x49
-#define LEFTARROW_KEY 0x4b
-#define RIGHTARROW_KEY 0x4d
-#define END_KEY 0x4f
-#define DOWNARROW_KEY 0x50
-#define PGDOWN_KEY 0x51
-#define INS_KEY 0x52
-#define DEL_KEY 0x53
-
-void (*prev_int_09)(); /* keeps address of previous 09 handlr*/
-#pragma interrupt(DOSkbd)
-void DOSkbd(void); /* the flih-kbd handler INT 0x09   */
-unsigned char inchar = 0;
-
-extern int KBDEventFlg;
-#endif /* DOS */
-
 #ifdef XWINDOW
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -296,7 +256,6 @@ void init_keyboard(int flg) /* if 0 init else re-init */
     make_mouse_instance(currentmouse);
     (currentmouse->device.enter)(currentmouse, currentdsp);
   }
-/*    outp( KBD_COMMAND_PORT, KBD_RESET); Reset the kbd */
 #endif /* XWINDOW DOS */
 }
 
