@@ -4,7 +4,7 @@
 #include "cell.h"
 void print_package_name(int index);
 void print_atomname(LispPTR index);
-int find_package_from_name(char *packname, int len);
+int find_package_from_name(const char *packname, int len);
 void print_package_name(int index);
 void dump_dtd(void);
 void check_type_68k(int type, LispPTR *ptr);

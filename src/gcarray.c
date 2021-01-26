@@ -146,7 +146,7 @@ LispPTR aref1(LispPTR array, int index) {
 /*									*/
 /************************************************************************/
 
-LispPTR find_symbol(char *char_base, DLword offset, DLword length, LispPTR hashtbl, DLword fatp,
+LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR hashtbl, DLword fatp,
                     DLword lispp)
 
 /* T => the "chars" coming in are 16-bit */
@@ -253,7 +253,7 @@ retry:
 /*									*/
 /************************************************************************/
 
-LispPTR get_package_atom(char *char_base, DLword charlen, char *packname, DLword packlen,
+LispPTR get_package_atom(const char *char_base, DLword charlen, const char *packname, DLword packlen,
                          int externalp) {
   int packindex;
   PACKAGE *packaddr;
