@@ -18,23 +18,50 @@ ENDIF()
 
 INCLUDE(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(m fmod "" NEED_LIB_M)
-
-FIND_PACKAGE(X11 REQUIRED)
+IF(NEED_LIB_M)
+  SET(MAIKO_LIBRARIES m)
+ENDIF()
 
 SET(MAIKO_DEFINITIONS
     "-DRELEASE=351"
 )
 
-IF(TRUE)
-  # Turn this into a config option.
-  LIST(APPEND MAIKO_DEFINITIONS
-    "-DXWINDOW"
-  )
-ENDIF()
-
 IF(UNIX)
   LIST(APPEND MAIKO_DEFINITIONS
     "-DLOGINT"
+  )
+ENDIF()
+
+OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." ON)
+IF(MAIKO_DISPLAY_X11)
+  FIND_PACKAGE(X11 REQUIRED)
+  SET(MAIKO_DISPLAY_X11_DEFINITIONS
+    "-DXWINDOW"
+  )
+  SET(MAIKO_DISPLAY_X11_LIBRARIES X11::X11)
+  SET(MAIKO_DISPLAY_X11_SRCS
+    src/xbbt.c
+    src/xcursor.c
+    src/xinit.c
+    src/xlspwin.c
+    src/xmkicon.c
+    src/xrdopt.c
+    src/xscroll.c
+    src/xwinman.c
+  )
+  SET(MAIKO_DISPLAY_X11_HDRS
+    inc/xbbtdefs.h
+    inc/xbitmaps.h
+    inc/xcursordefs.h
+    inc/xdefs.h
+    inc/xinitdefs.h
+    inc/XKeymap.h
+    inc/xlspwindefs.h
+    inc/xmkicondefs.h
+    inc/xrdoptdefs.h
+    inc/xscrolldefs.h
+    inc/xscroll.h
+    inc/xwinmandefs.h
   )
 ENDIF()
 
@@ -204,15 +231,7 @@ SET(MAIKO_SRCS
     src/uutils.c
     src/vars3.c
     src/vmemsave.c
-    src/xbbt.c
     src/xc.c
-    src/xcursor.c
-    src/xinit.c
-    src/xlspwin.c
-    src/xmkicon.c
-    src/xrdopt.c
-    src/xscroll.c
-    src/xwinman.c
     src/z2.c
 )
 SET(MAIKO_HDRS
@@ -383,47 +402,42 @@ SET(MAIKO_HDRS
     inc/version.h
     inc/vmemsavedefs.h
     inc/vmemsave.h
-    inc/xbbtdefs.h
-    inc/xbitmaps.h
     inc/xcdefs.h
-    inc/xcursordefs.h
-    inc/xdefs.h
-    inc/xinitdefs.h
-    inc/XKeymap.h
-    inc/xlspwindefs.h
-    inc/xmkicondefs.h
-    inc/xrdoptdefs.h
-    inc/xscrolldefs.h
-    inc/xscroll.h
-    inc/xwinmandefs.h
     inc/z2defs.h
 )
-ADD_LIBRARY(maiko STATIC ${MAIKO_SRCS} ${MAIKO_HDRS})
-TARGET_COMPILE_DEFINITIONS(maiko PUBLIC ${MAIKO_DEFINITIONS})
-TARGET_INCLUDE_DIRECTORIES(maiko PUBLIC inc)
-TARGET_LINK_LIBRARIES(maiko X11::X11)
-IF(NEED_LIB_M)
-  TARGET_LINK_LIBRARIES(maiko m)
-ENDIF()
 
 ADD_CUSTOM_TARGET(gen-vdate
   COMMAND mkvdate > vdate.c
   BYPRODUCTS vdate.c
 )
 
-# lde  ldeether  ldex  mkvdate  setsout  tstsout
-
 ADD_EXECUTABLE(lde src/ldeboot.c src/unixfork.c)
 TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(lde PUBLIC inc)
-TARGET_LINK_LIBRARIES(lde X11::X11)
+IF(MAIKO_DISPLAY_X11)
+  # Tell it that the X11 launcher is available.
+  TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DISPLAY_X11_DEFINITIONS})
+  # This is needed so that it can call XOpenDisplay.
+  TARGET_LINK_LIBRARIES(lde X11::X11)
+ENDIF()
 
 ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
 TARGET_COMPILE_DEFINITIONS(ldeether PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(ldeether PUBLIC inc)
 
-ADD_EXECUTABLE(ldex src/main.c vdate.c)
-TARGET_LINK_LIBRARIES(ldex maiko)
+IF(MAIKO_DISPLAY_X11)
+  ADD_EXECUTABLE(ldex
+    src/main.c
+    vdate.c
+    ${MAIKO_SRCS}
+    ${MAIKO_HDRS}
+    ${MAIKO_DISPLAY_X11_SRCS}
+    ${MAIKO_DISPLAY_X11_HDRS}
+  )
+  TARGET_COMPILE_DEFINITIONS(ldex PUBLIC ${MAIKO_DEFINITIONS} ${MAIKO_DISPLAY_X11_DEFINITIONS})
+  TARGET_INCLUDE_DIRECTORIES(ldex PUBLIC inc)
+  TARGET_LINK_LIBRARIES(ldex ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_X11_LIBRARIES})
+ENDIF()
 
 ADD_EXECUTABLE(mkvdate src/mkvdate.c)
 TARGET_COMPILE_DEFINITIONS(mkvdate PUBLIC ${MAIKO_DEFINITIONS})
