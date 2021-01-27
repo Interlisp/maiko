@@ -64,6 +64,8 @@ extern DLword ERASE_atom;
 extern DLword PAINT_atom;
 extern DLword REPLACE_atom;
 
+extern const unsigned char reversedbits[];
+
 /**************************************************************/
 /* Xerrhandler.                                               */
 /* Utility function to make URaid the error handler for X.    */
@@ -2529,7 +2531,6 @@ MNXGrabPointer(LispArgs args)
   Pixmap bits;
   Window promptw;
   int res, i;
-  extern unsigned char reversedbits[];
   unsigned char *src;
   unsigned char srcbits[32]; /* holds the reversed bits for cursor */
 
@@ -2738,7 +2739,6 @@ MNXSetCursor(LispArgs args) /* args[0] = Medley screen */
   Cursor new_cursor;
   Window win;
   unsigned char srcbits[32]; /* hold the reversed-bits for cursor */
-  extern unsigned char reversedbits[];
   unsigned char *src;
   int i;
 

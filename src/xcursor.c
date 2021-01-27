@@ -193,7 +193,7 @@ void init_Xcursor(Display *display, Window window)
 
 void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hotspot_y, Cursor *return_cursor, int from_lisp)
 {
-  extern unsigned char reversedbits[];
+  extern const unsigned char reversedbits[];
   unsigned char image[32];
   int i;
   Pixmap Cursor_src, Cursor_msk;
