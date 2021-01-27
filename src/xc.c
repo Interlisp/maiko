@@ -108,10 +108,6 @@ extern DspInterface currentdsp;
 extern MouseInterface currentmouse;
 #endif /* DOS */
 
-#ifdef SUN3_OS3_OR_OS4_IL
-#include "inln68k.h"
-#endif
-
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
 

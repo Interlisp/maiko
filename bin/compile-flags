@@ -26,17 +26,9 @@ sun3		We're compiling for a Sun-3.
 NOASM		If true, suppress any attempt to include assembler
 		versions of things in the emulator.  In 'lispemul.c',
 		if this is true, disables:
-			SUN3_OS3_IL
-			SUN3_OS4_IL
-			SUN4_OS4_IL
 			OPDISP
 			PROFILE
 C_ONLY
-SUN4_OS4_IL	Try assembler peephole optimizations for SPARC & SunOS4.x
-SUN3_OS3_IL	Try assembler peephole optimizations for 68K & SunOS 3.x
-SUN3_OS4_IL	Try assembler peephole optimizations for 68K & SunOS 4.x
-SUN3_OS3_OR_OS4_IL Try asm optimizations for 68K & either sunOS.  This is
-		turned on whenever either of SUN3_OS3_IL or SUN3_OS4_IL is on.
 
 OPDISP		Use "fast-opcode-dispatch" macros
 
@@ -72,7 +64,7 @@ INIT		Used when compiling an emulator to build a loadup.  Use it
 		to dike out code that deals with network initialization, e.g.
 
 MYOPTRACE	Used to check the stack's validity on each opcode execution.
-		Requires NOASM, and the absence of SUN..._IL &c.
+		Requires NOASM
 
 PCTRACE		When true, compiles in a 100-long ring buffer that holds the
 		last 100 PCs, Function-blocks, and Opcodes executed. "pccounter"

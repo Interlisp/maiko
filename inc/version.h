@@ -181,24 +181,9 @@ error Must specify RELEASE to build Medley.
 
 
 #ifdef NOASM
-#undef SUN3_OS3_IL
-#undef SUN3_OS4_IL
-#undef SUN4_OS4_IL
 #undef OPDISP
 #undef PROFILE
 #endif
-
-#ifdef SUN3_OS3_IL
-#define SUN3_OS3_OR_OS4_IL	1
-#endif
-
-#ifdef SUN3_OS4_IL
-#define SUN3_OS3_OR_OS4_IL	1
-#endif
-
-
-
-
 
 	/* Set up defaults */
 #define UNALIGNED_FETCH_OK
