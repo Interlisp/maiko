@@ -708,7 +708,6 @@ void flush_display_region(int x, int y, int w, int h)
 #ifdef BYTESWAP
 void byte_swapped_displayregion(int x, int y, int w, int h)
 {
-  extern unsigned char reversedbits[];
   register unsigned int *longptr;
 
   /* Get QUAD byte aligned pointer */
