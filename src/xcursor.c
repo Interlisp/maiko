@@ -29,9 +29,8 @@
 extern IOPAGE *IOPage;
 
 extern XGCValues gcv;
-extern int Bitmap_Pad, Default_Depth;
 
-GC cursor_source_gc, cursor_mask_gc;
+GC cursor_source_gc;
 XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;
 
@@ -42,11 +41,6 @@ struct MXCURSOR {
   DLword bitmap[CURSORHEIGHT];
   Cursor Xid;
 } *cursorlist = NULL;
-
-/*
-Cursor LispCursor[2];
-int    cursor_sw;
-*/
 
 /* Hotspot X and Y values for current cursor.  SUBTRACT these from */
 /* mouse positions before reporting them upward to the sysout, and */
@@ -168,13 +162,6 @@ void init_Xcursor(Display *display, Window window)
 #endif /* AIX */
                                ,
                                &gcv);
-  cursor_mask_gc = XCreateGC(display, window,
-                             GCForeground | GCBackground | GCFunction
-#ifdef AIX
-                                 | GCPlaneMask
-#endif /* AIX */
-                             ,
-                             &gcv);
 
   XAllocNamedColor(display, Colors, "black", &cursor_fore_xcsd, &xced);
   XAllocNamedColor(display, Colors, "white", &cursor_back_xcsd, &xced);

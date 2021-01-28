@@ -69,7 +69,7 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "dbprint.h"
 #if (defined(DOS) || defined(XWINDOW))
 #include "devif.h"
-extern DspInterface currentdsp, colordsp;
+extern DspInterface currentdsp;
 extern IOPAGE *IOPage68K;
 #endif /* DOS */
 
