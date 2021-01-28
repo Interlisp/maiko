@@ -51,7 +51,7 @@ void tty_open(void)
       options.c_iflag &= ~(IMAXBEL|IXOFF|INPCK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON|IGNPAR);
       options.c_iflag |= IGNBRK;
       options.c_oflag &= ~OPOST;
-      options.c_lflag &= ~(ECHO|ECHOE|ECHOK|ECHONL|ICANON|ISIG|IEXTEN|NOFLSH|TOSTOP|PENDIN);
+      options.c_lflag &= ~(ECHO|ECHOE|ECHOK|ECHONL|ICANON|ISIG|IEXTEN|NOFLSH|TOSTOP);
       options.c_cflag &= ~(CSIZE|PARENB);
       options.c_cflag |= CS8|CREAD;
       options.c_cc[VMIN] = 1;
@@ -109,6 +109,7 @@ void tty_put(void)
 
 speed_t tty_baudtosymbol(short aBaud)
 {
+  /* This matches the constants in DLTTY where possible. */
   if (aBaud == 0) return (B50);
   if (aBaud == 1) return (B75);
   if (aBaud == 2) return (B110);
@@ -117,10 +118,13 @@ speed_t tty_baudtosymbol(short aBaud)
   if (aBaud == 5) return (B300);
   if (aBaud == 6) return (B600);
   if (aBaud == 7) return (B1200);
+  if (aBaud == 8) return (B1800);
+  /* 9 is defined to be 2000, not in POSIX */
   if (aBaud == 10) return (B2400);
+  /* 11 is defined to be 3600, not in POSIX */
   if (aBaud == 12) return (B4800);
+  /* 13 is defined to be 7200, not in POSIX */
   if (aBaud == 14) return (B9600);
-  if (aBaud == 15) return (EXTA);
   return (-1);
 }
 
