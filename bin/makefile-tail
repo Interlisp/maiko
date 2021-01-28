@@ -179,7 +179,7 @@ $(OSARCHDIR)setsout: $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
 #### Component files ######################################################
 
 $(OBJECTDIR)vdate.o: $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
-	/bin/rm -f $(OBJECTDIR)vdate.c
+	$(RM) $(OBJECTDIR)vdate.c
 	$(OSARCHDIR)mkvdate > $(OBJECTDIR)vdate.c
 	$(CC) $(RFLAGS) $(OBJECTDIR)vdate.c -o $(OBJECTDIR)vdate$(OEXT)
 
