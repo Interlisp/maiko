@@ -30,7 +30,7 @@ int Mouse_Included = FALSE;
 extern Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
     ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
 
-extern DspInterface currentdsp, colordsp;
+extern DspInterface currentdsp;
 
 extern DLword *EmCursorX68K, *EmCursorY68K;
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;

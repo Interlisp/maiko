@@ -20,8 +20,6 @@
 #include "devif.h"
 #include "xbbtdefs.h"
 
-extern DspInterface currentdsp;
-
 /************************************************************************/
 /*									*/
 /*		    c l i p p i n g _ X b i t b l t			*/

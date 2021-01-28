@@ -26,10 +26,10 @@
 
 XImage IconImage;
 
-extern int Bitmap_Pad, Default_Depth, Lisp_icon_width, Lisp_icon_height;
+extern int Bitmap_Pad, Lisp_icon_width, Lisp_icon_height;
 extern uint8_t Lisp_icon[];
 
-extern Pixmap IconPixmap;
+static Pixmap IconPixmap;
 extern char iconpixmapfile[1024];
 
 /************************************************************************/
@@ -62,7 +62,7 @@ Pixmap make_Xicon(DspInterface dsp)
     IconImage.byte_order = MSBFirst;
 #endif /* BYTESWAP */
     IconImage.bitmap_unit = 8;
-    IconImage.bitmap_pad = Bitmap_Pad;
+    IconImage.bitmap_pad = Bitmap_Pad; /* TODO: Bitmap_Pad is never initialized. */
     IconImage.depth = 1;
     IconImage.bytes_per_line = Lisp_icon_width / 8;
 #if defined(X_ICON_IN_X_BITMAP_FORMAT)

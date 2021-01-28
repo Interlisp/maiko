@@ -85,11 +85,9 @@ char Window_Title[255];
 char Icon_Title[255];
 
 extern char sysout_name[];
-extern int sysout_size, for_makeinit, please_fork, Scroll_Border;
+extern int sysout_size, for_makeinit, please_fork;
 /* diagnostic flag for sysout dumping */
 /* extern int maxpages; */
-
-int Lisp_Border = 2;
 
 /*** Ethernet stuff (JRB) **/
 #ifdef MAIKO_ENABLE_ETHERNET

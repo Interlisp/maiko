@@ -36,7 +36,7 @@ extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd46
     *EmRealUtilin68K;
 extern DLword *CTopKeyevent;
 extern LispPTR *KEYBUFFERING68k;
-extern int URaid_req, KBDEventFlg;
+extern int URaid_req;
 
 extern DLword *DisplayRegion68k;
 
@@ -50,9 +50,9 @@ extern char **save_argv;
 
 extern DspInterface currentdsp;
 
-Pixmap IconPixmap;
-GC CopyInvert_GC;
+#if 0
 extern GC cursor_source_gc;
+#endif
 XGCValues gcv;
 XEvent report;
 
@@ -317,8 +317,6 @@ void lisp_Xvideocolor(int flag)
   XUNLOCK;
 
 } /* end lisp_Xvideocolor */
-
-extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
 void set_Xmouseposition(int x, int y)
 {
