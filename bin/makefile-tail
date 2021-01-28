@@ -157,24 +157,24 @@ default	: $(OSARCHDIR)lde $(OSARCHDIR)$(LDENAME) $(OSARCHDIR)ldeether \
 	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout
 
 $(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
-	$(CC) $(LDELDFLAGS) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o -o $(OSARCHDIR)lde
+	$(CC) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o $(LDELDFLAGS) -o $(OSARCHDIR)lde
 
 $(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
-	$(CC) $(LDFLAGS) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o -o $(OSARCHDIR)$(LDENAME)
+	$(CC) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
 	@ echo ""
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
 
 $(OSARCHDIR)ldeether:  $(OBJECTDIR)ldeether.o $(DLPIFILES)
-	$(CC) $(LDEETHERLDFLAGS) $(OBJECTDIR)ldeether.o $(DLPIFILES) -o $(OSARCHDIR)ldeether
+	$(CC) $(OBJECTDIR)ldeether.o $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
 
 $(OSARCHDIR)mkvdate: $(OBJECTDIR)mkvdate.o $(REQUIRED-INCS)
-	$(CC) $(LDFLAGS) $(OBJECTDIR)mkvdate.o -o $(OSARCHDIR)mkvdate
+	$(CC) $(OBJECTDIR)mkvdate.o $(LDFLAGS) -o $(OSARCHDIR)mkvdate
 
 $(OSARCHDIR)tstsout: $(OBJECTDIR)tstsout.o $(BYTESWAPFILES)  $(REQUIRED-INCS)
-	$(CC) $(LDFLAGS) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)tstsout
+	$(CC) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)tstsout
 
 $(OSARCHDIR)setsout: $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
-	$(CC) $(LDFLAGS) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) -lc -lm -o $(OSARCHDIR)setsout
+	$(CC) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)setsout
 
 #### Component files ######################################################
 
