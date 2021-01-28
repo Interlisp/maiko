@@ -76,7 +76,6 @@ IF(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" OR
   LIST(APPEND MAIKO_DEFINITIONS
     "-DBYTESWAP"
   )
-  SET(BYTESWAP_SRCS src/byteswap.c)
 ENDIF()
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "Linux")
@@ -135,7 +134,6 @@ SET(BAD_SRCS
 )
 
 SET(MAIKO_SRCS
-    ${BYTESWAP_SRCS}
     src/allocmds.c
     src/arith2.c
     src/arith3.c
@@ -152,6 +150,7 @@ SET(MAIKO_SRCS
     src/binds.c
     src/bitblt.c
     src/blt.c
+    src/byteswap.c
     src/car-cdr.c
     src/chardev.c
     src/common.c
@@ -443,10 +442,10 @@ ADD_EXECUTABLE(mkvdate src/mkvdate.c)
 TARGET_COMPILE_DEFINITIONS(mkvdate PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(mkvdate PUBLIC inc)
 
-ADD_EXECUTABLE(setsout src/setsout.c ${BYTESWAP_SRCS})
+ADD_EXECUTABLE(setsout src/setsout.c src/byteswap.c)
 TARGET_COMPILE_DEFINITIONS(setsout PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(setsout PUBLIC inc)
 
-ADD_EXECUTABLE(tstsout src/tstsout.c ${BYTESWAP_SRCS})
+ADD_EXECUTABLE(tstsout src/tstsout.c src/byteswap.c)
 TARGET_COMPILE_DEFINITIONS(tstsout PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(tstsout PUBLIC inc)
