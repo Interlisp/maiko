@@ -412,7 +412,7 @@ void getMNWsignaldata(int fd)
 
   display = (dspif = FD_to_dspif[fd])->handle;
   screen = dspif->screen;
-  TPRINT(("TRACE: getXsignaldata()\n"));
+  TPRINT(("TRACE: getMNWsignaldata()\n"));
 
   while (XtAppPending(dspif->xtcontext)) {
     XtAppNextEvent(dspif->xtcontext, &report);
