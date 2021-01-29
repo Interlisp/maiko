@@ -126,6 +126,9 @@ gotpty:
 
   /* Get console IO */
   ioctl(ptyfd, FIOCLEX, 0);
+  /* It isn't clear which platforms this #ifndef should
+   * actually apply to. The AIX define used to apply
+   * to a number of platforms, not just AIX-actual. */
 #ifndef AIX
   if ((ioctl(ttyfd, TIOCCONS, 0)) == -1) {
     OSMESSAGE_PRINT(printf("TIOCCONS error\n"));
