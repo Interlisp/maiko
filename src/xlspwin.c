@@ -50,9 +50,6 @@ extern char **save_argv;
 
 extern DspInterface currentdsp;
 
-#if 0
-extern GC cursor_source_gc;
-#endif
 XGCValues gcv;
 XEvent report;
 
@@ -304,14 +301,6 @@ void lisp_Xvideocolor(int flag)
       event.xexpose.height = currentdsp->Visible.height;
       XSendEvent(currentdsp->display_id, currentdsp->DisplayWindow, True, 0, &event);
   }
-
-#if 0
-  /* Cursor */
-  gcv.function = GXcopy;
-  XChangeGC(currentdsp->display_id, cursor_source_gc, GCFunction, &gcv);
-  /* JDS 011213: Remember set_xcursor does 15-y val, so do it here! */
-  Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
-#endif
 
   XFlush(currentdsp->display_id);
   XUNLOCK;
