@@ -51,8 +51,6 @@ extern DLword *DisplayRegion68k;
 bool Lisp_Xinitialized = false;
 int xsync = False;
 
-int Bitmap_Pad;
-
 int LispWindowRequestedX = 0;
 int LispWindowRequestedY = 0;
 unsigned LispWindowRequestedWidth = DEF_WIN_WIDTH;
