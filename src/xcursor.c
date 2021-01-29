@@ -28,9 +28,6 @@
 
 extern IOPAGE *IOPage;
 
-extern XGCValues gcv;
-
-GC cursor_source_gc;
 XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;
 
@@ -148,20 +145,6 @@ void init_Xcursor(Display *display, Window window)
   TPRINT(("TRACE: init_Xcursor()\n"));
 
   XLOCK; /* Take no X signals during this activity (ISC 386) */
-  gcv.function = GXcopy;
-  gcv.foreground = BlackPixelOfScreen(ScreenOfDisplay(display, DefaultScreen(display)));
-  gcv.background = WhitePixelOfScreen(ScreenOfDisplay(display, DefaultScreen(display)));
-#ifdef AIX
-  gcv.plane_mask = 1;
-#endif /* AIX */
-
-  cursor_source_gc = XCreateGC(display, window,
-                               GCForeground | GCBackground | GCFunction
-#ifdef AIX
-                                   | GCPlaneMask
-#endif /* AIX */
-                               ,
-                               &gcv);
 
   XAllocNamedColor(display, Colors, "black", &cursor_fore_xcsd, &xced);
   XAllocNamedColor(display, Colors, "white", &cursor_back_xcsd, &xced);
