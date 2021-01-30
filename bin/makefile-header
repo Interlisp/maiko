@@ -9,6 +9,7 @@ LIBDIR = ../lib
 BINDIR = ./
 RANLIB = ranlib
 AR = ar rcv
+RM ?= rm -f
 
 # Compiler flags
 CLANG_CFLAGS = -std=gnu99 -fno-strict-aliasing
