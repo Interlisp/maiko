@@ -69,7 +69,6 @@
 DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
 int DisplayWidth8;
-extern DspInterfaceRec _curdsp, _coldsp;
 #endif /* DOS */
 
 /* from /usr/include/sun/fbio.h some machines don't have following def. */
