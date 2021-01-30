@@ -18,11 +18,6 @@
 /************************************************************************/
 
 
-	/* use the swapx [inline] function to swap words in a dword */
-#undef SWAP_WORDS
-#define SWAP_WORDS(x) swapx(x)
-
-
 	/* undefine these macros so we use the 386i inline code */
 #undef Get_BYTE_PCMAC0
 #undef Get_BYTE_PCMAC1

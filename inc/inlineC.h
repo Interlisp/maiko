@@ -68,7 +68,6 @@
 
 
 #define CHECK_INTERRUPT {if((UNSIGNED)CSTKPTR > Irq_Stk_Check) goto check_interrupt;} 
-#define SWAP_WORDS(x) (((unsigned int)x << 16) | (((unsigned int)x >> 16) & 0xFFFF))
 
 
 #define nextop0 {goto nextopcode; }
@@ -686,10 +685,10 @@ register LispPTR *chain;						\
 chain = (LispPTR *) (PVar + n);						\
 if(WBITSPTR(chain)->LSB){						\
 	PUSH(GetLongWord(Addr68k_from_LADDR(				\
-		POINTERMASK & SWAP_WORDS(native_newframe(n >> 1)))));	\
+		POINTERMASK & swapx(native_newframe(n >> 1)))));	\
 	nextop1;							\
     }/* if(((WBITS */							\
-PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK & SWAP_WORDS(*chain))));	\
+PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK & swapx(*chain))));	\
 nextop1;								\
 }
 
@@ -699,10 +698,10 @@ register LispPTR *chain;						\
 chain = (LispPTR *) (PVar + nn);						\
 if(WBITSPTR(chain)->LSB){						\
 	PUSH(GetLongWord(Addr68k_from_LADDR(				\
-		POINTERMASK & SWAP_WORDS(native_newframe(nn >> 1)))));	\
+		POINTERMASK & swapx(native_newframe(nn >> 1)))));	\
 	nextop2;							\
     }/* if(((WBITS */							\
-PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK & SWAP_WORDS(*chain))));	\
+PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK & swapx(*chain))));	\
 nextop2;								\
 }
 

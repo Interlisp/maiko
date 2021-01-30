@@ -39,10 +39,7 @@
 #undef LISTP
 #undef NTYPEX
 #undef TYPEP
-#undef SWAP_WORDS
 
-#define SWAP_WORDS(x) swapx(x)
- 
 #define DIFFERENCE {						\
 	TOPOFSTACK = op_difference(POP_TOS_1, TOPOFSTACK);	\
 	nextop1;						\

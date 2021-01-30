@@ -42,7 +42,7 @@
 #define SWAP_FNHEAD
 #else
 #undef SWAP_FNHEAD
-#define SWAP_FNHEAD(x) SWAP_WORDS(x)
+#define SWAP_FNHEAD(x) swapx(x)
 #endif /* BIGVM */
 
 
@@ -638,7 +638,7 @@ op_fn_common:								\
 									\
 		      case TYPE_NEWATOM:				\
 			nnewframe(CURRENTFX, &scratch, TOPOFSTACK);	\
-			work =	POINTERMASK & SWAP_WORDS(scratch);		\
+			work =	POINTERMASK & swapx(scratch);		\
 			lookuped = *((LispPTR *)			\
 				   (Addr68k_from_LADDR(work)));		\
 			if(lookuped==NOBIND_PTR) goto op_ufn;		\
