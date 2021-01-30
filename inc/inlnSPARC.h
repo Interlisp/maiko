@@ -145,7 +145,3 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg2);			\
 	TOPOFSTACK = POP_TOS_1 + arg2;				\
 	nextop1;}
-
-
-#undef SWAP_WORDS
-#define SWAP_WORDS(x) swapx(x)

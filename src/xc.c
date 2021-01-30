@@ -66,6 +66,7 @@
 #include "array6defs.h"
 #include "bitbltdefs.h"
 #include "bltdefs.h"
+#include "byteswapdefs.h"
 #include "car-cdrdefs.h"
 #include "commondefs.h"
 #include "conspagedefs.h"

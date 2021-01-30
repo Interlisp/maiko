@@ -90,14 +90,6 @@ done:				!		else done;
 	be fixed through the ifdef flats.
 */
 
-/* SWAP halves of a register */
-
-.inline	_swapx,4
-	sll	%o0,16,%o1
-	srl	%o0,16,%o0
-	or	%o0,%o1,%o0
-.end
-
 /*
 	***************************************************************
 	DIFFERENCE VERSIONS sp@ - sp@(4)  i.e. (tos-1)  -  (tos)
