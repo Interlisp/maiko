@@ -102,13 +102,19 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 
 #ifdef SUNDISPLAY
 #ifdef DISPLAYBUFFER
-  if (in_display_segment(base)) flush_display_ptrregion(base, 0, 16, 1);
+  if (in_display_segment(base)) {
+    /* NB: base + offset doesn't need WORDPTR() wrapper */
+    flush_display_ptrregion(base + offset, 0, 16, 1);
+  }
 #endif
   if (displayflg) ShowCursor;
 #endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
-  if (in_display_segment(base)) flush_display_ptrregion(base, 0, 16, 1);
+  if (in_display_segment(base)) {
+    /* NB: base + offset doesn't need WORDPTR() wrapper */
+    flush_display_ptrregion(base + offset, 0, 16, 1);
+  }
 #endif /* XWINDOW */
 
   ScreenLocked = NIL;
