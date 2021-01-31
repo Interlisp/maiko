@@ -871,7 +871,7 @@ $(OBJECTDIR)lpy.tab.o : $(SRCDIR)lpy.tab.c  $(REQUIRED-INCS) $(INCDIR)lpdefs.h $
 ################################################################################
 
 cleanup :
-	rm -rf $(OBJECTDIR) $(OSARCHDIR)
+	$(RM) -r $(OBJECTDIR) $(OSARCHDIR)
 
 .c.o:
 	$(CC) $(RFLAGS) $*.c -o $@
