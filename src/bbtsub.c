@@ -483,7 +483,6 @@ do_it_now:
 #ifdef XWINDOW
   XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
-  XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
 
@@ -841,7 +840,6 @@ do_it_now:
 #ifdef XWINDOW
   XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(dlx, dty, width, height);
-  XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
 
@@ -1091,7 +1089,6 @@ do_it_now:
 #ifdef XWINDOW
   XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(left, dty, width, height);
-  XFlush(currentdsp->display_id);
   XUNLOCK;
 #endif /* XWINDOW */
 
