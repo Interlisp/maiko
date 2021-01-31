@@ -18,7 +18,7 @@ XFLAGS = -I/opt/X11/include -DXWINDOW
 
 # OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
 OPTFLAGS =  -O0 -g
-DFLAGS = -DBYTESWAP -DLOGINT $(XFLAGS) \
+DFLAGS = -DLOGINT $(XFLAGS) \
 	-DRELEASE=351 -DNOVERSION -DINIT -DTRACE -DOPTRACE
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lm

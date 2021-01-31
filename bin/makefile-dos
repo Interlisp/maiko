@@ -6,7 +6,7 @@ ADMINFILES = makefile mkvdate.c
 
 LPFILES = lpmain.obj lpread.obj lpsolve.obj lpwrite.obj lpdual.obj lptran.obj
 
-CFLAGS = -DDOS -DBYTESWAP -DKBINT -DNOPIXRECT \
+CFLAGS = -DDOS -DKBINT -DNOPIXRECT \
 	 -DNOVERSION -DLPSOLVE -g
 
 LDFLAGS = -g graphics.lib binmode.lib mouse.lib 
