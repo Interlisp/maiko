@@ -302,7 +302,6 @@ SET(MAIKO_HDRS
     inc/initkbddefs.h
     inc/initsoutdefs.h
     inc/inlineC.h
-    inc/inln386i.h
     inc/inln68k.h
     inc/inlndos.h
     inc/inlnPS2.h

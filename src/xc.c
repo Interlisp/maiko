@@ -131,10 +131,6 @@ register LispPTR tscache asm("bx");
 #include "inlnSPARC.h"
 #endif /* SPARCDISP */
 
-#ifdef I386
-#include "inln386i.h"
-#endif
-
 #include "fast_dsp.h"
 
 /* trick now is that pccache points one ahead... */
@@ -1058,27 +1054,6 @@ nextopcode:
     case 0377:
     case377:
       CLARITHEQUAL;
-
-#ifdef I386
-    /* to defeat the damn optimizer, make it look like */
-    /* we might branch to the error labels. */
-    case 0400: goto plus_err;
-    case 0401: goto iplus_err;
-    case 0402: goto iplusn_err;
-    case 0403: goto idiff_err;
-    case 0404: goto diff_err;
-    case 0405: goto idiffn_err;
-    case 0406: goto greaterp_err;
-    case 0411: goto igreaterp_err;
-    case 0407: goto llsh8_err;
-    case 0410: goto lrsh1_err;
-    case 0414: goto lrsh8_err;
-    case 0417: goto llsh1_err;
-    case 0413: goto logor_err;
-    case 0412: goto logand_err;
-    case 0416: goto logxor_err;
-    case 0415: goto addbase_err;
-#endif
 
     default: error("should not default");
 

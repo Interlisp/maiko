@@ -614,8 +614,6 @@ typedef struct
 /*									*/
 /************************************************************************/
 
-#ifndef I386
-
 /* Get DTD pointer(68k) from typenum */
 #ifdef BIGVM
 #define GetDTD(typnum)	(DTDspace + ((typnum)<<4)+((typnum)<<1))
@@ -625,20 +623,6 @@ typedef struct
 
 /* Get all type entry */
 #define GetTypeEntry(address)      ( GETWORD(MDStypetbl+((address)>>9)) )
-
-#else
-	/* Because the 386i's code generator does better with them */
-	/* in this order (does an add, rather than mov-add) */
-	/* JDS 22-mar-90 */
-
-/* Get DTD pointer(68k) from typenum */
-#define GetDTD(typnum)	(((typnum)<<4) + DTDspace)
-
-/* Get all type entry */
-#define GetTypeEntry(address)      ( GETWORD(((address)>>9) + MDStypetbl) )
-
-#endif /* I386 */
-
 
 /* the type number is in the low 11 bits */
 #define GetTypeNumber(address)     (GetTypeEntry(address) & 0x7ff)

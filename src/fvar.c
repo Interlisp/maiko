@@ -334,18 +334,10 @@ N_OP_stkscan
 ******************************************************************************/
 
 LispPTR N_OP_stkscan(LispPTR tos) {
-#ifdef I386
-  int scratchx[3];
-  int *scratch = (int *)(0xFFFFFFFC & (3 + (UNSIGNED)scratchx));
-  *scratch = tos;
-  nnewframe(CURRENTFX, (DLword *)scratch, POINTERMASK & *scratch);
-  return (swapx(*scratch));
-#else
   int scratch;
   scratch = tos;
   nnewframe(CURRENTFX, (DLword *)&scratch, POINTERMASK & scratch);
   return (swapx(scratch));
-#endif /* I386 */
 }
 
 /**************************************************

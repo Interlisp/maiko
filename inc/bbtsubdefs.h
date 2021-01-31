@@ -14,8 +14,7 @@
 /********************************************************/
 #if defined(SUNDISPLAY) && \
     !defined(NOPIXRECT) && \
-    !defined(NEWBITBLT) && \
-    !defined(I386)
+    !defined(NEWBITBLT)
 #define prropstyle 1
 #endif
 

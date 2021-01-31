@@ -44,11 +44,7 @@
 
 /* Translate Lisp_address to 68K address	*/
 /*	Lisp_addr: word offset		*/
-#ifndef I386
 #define Addr68k_from_LADDR(Lisp_addr)	(Lisp_world + (Lisp_addr))
-#else
-#define Addr68k_from_LADDR(Lisp_addr)	((Lisp_addr) + Lisp_world)
-#endif
 
 
 /* translate LispPage to 68k address */
@@ -62,11 +58,6 @@
 #define StkOffset_from_68K(ptr68k)\
 	((LispPTR)(((UNSIGNED)(ptr68k) - (UNSIGNED)Stackspace) >>1))
 
-#ifndef I386
 #define Addr68k_from_StkOffset(stkoffset)\
 	(Stackspace + (stkoffset))
-#else
-#define Addr68k_from_StkOffset(stkoffset)\
-	( (stkoffset) + Stackspace)
-#endif
 #endif /* ADR68K_H */

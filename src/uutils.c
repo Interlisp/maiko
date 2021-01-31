@@ -202,8 +202,6 @@ LispPTR unix_getparm(LispPTR *args) {
   if (strcmp(envname, "MACH") == 0) {
 #if defined(sparc)
     envvalue = "sparc";
-#elif defined(I386)
-    envvalue = "i386";
 #elif defined(DOS)
     envvalue = "386";
 #elif defined(MAIKO_OS_MACOS)
@@ -215,8 +213,6 @@ LispPTR unix_getparm(LispPTR *args) {
   } else if (strcmp(envname, "ARCH") == 0) {
 #if defined(sparc)
     envvalue = "sun4";
-#elif defined(I386)
-    envvalue = "sun386";
 #elif defined(DOS)
     envvalue = "dos";
 #elif defined(MAIKO_OS_MACOS)
