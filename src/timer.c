@@ -787,8 +787,8 @@ static void int_panic_init() {
   panic_action.sa_flags = SA_SIGINFO;
 
   ignore_action.sa_handler = SIG_IGN;
-  sigemptyset(&panic_action.sa_mask);
-  panic_action.sa_flags = 0;
+  sigemptyset(&ignore_action.sa_mask);
+  ignore_action.sa_flags = 0;
 
   sigaction(SIGHUP, &panic_action, NULL);
   sigaction(SIGQUIT, &panic_action, NULL);
