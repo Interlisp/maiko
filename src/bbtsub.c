@@ -1268,19 +1268,6 @@ LispPTR bltchar(LispPTR *args)
   DestPixRect->pr_width = destbpl = abs(pbt->pbtdestbpl);
   SrcePixRect->pr_height = DestPixRect->pr_height = pbt->pbtheight;
 
-#ifdef I386
-  /* Need to take care of byte order, because display bank */
-  /* on the 386 is NOT bit reversed.... */
-  if (IN_DISPLAY_BANK(pbt->pbtsourcehi))
-    mpr_d(SrcePixRect)->md_flags |= MP_I386;
-  else
-    mpr_d(SrcePixRect)->md_flags &= (~MP_I386);
-  if (IN_DISPLAY_BANK(pbt->pbtdesthi))
-    mpr_d(DestPixRect)->md_flags |= MP_I386;
-  else
-    mpr_d(DestPixRect)->md_flags &= (~MP_I386);
-#endif /* I386 */
-
   mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
   mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
 
@@ -2095,19 +2082,6 @@ void tedit_bltchar(LispPTR *args)
         SrcePixRect->pr_width = srcebpl = abs(pbt->pbtsourcebpl);
         DestPixRect->pr_width = destbpl = abs(pbt->pbtdestbpl);
         SrcePixRect->pr_height = DestPixRect->pr_height = pbt->pbtheight;
-
-#ifdef I386
-        /* Need to take care of byte order, because display bank */
-        /* on the 386 is NOT bit reversed.... */
-        if (IN_DISPLAY_BANK(pbt->pbtsourcehi))
-          mpr_d(SrcePixRect)->md_flags |= MP_I386;
-        else
-          mpr_d(SrcePixRect)->md_flags &= (~MP_I386);
-        if (IN_DISPLAY_BANK(pbt->pbtdesthi))
-          mpr_d(DestPixRect)->md_flags |= MP_I386;
-        else
-          mpr_d(DestPixRect)->md_flags &= (~MP_I386);
-#endif /* I386 */
 
         mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
         mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;

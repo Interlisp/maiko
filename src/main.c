@@ -530,26 +530,10 @@ int main(int argc, char *argv[])
                             JDS -- 1/18/90 also BITBLTSUB does it now. */
   }
 
-#ifdef I386
-  /* 80387 initialization */
-  asm(".data");
-  asm(".align 4");
-  asm("__FP_trunc:");
-  asm("	.globl __FP_trunc");
-  asm(".byte 0x3f");
-  asm(".byte 0x0c");
-  asm("__FP_round:");
-  asm("	.globl	__FP_round");
-  asm(".byte 0x3f");
-  asm(".byte 0x00");
-  asm(".text");
-  asm("fldcw __FP_round");
-#elif DOS
+#ifdef DOS
   _setrealmode(0x3f); /* Don't interrupt on FP overflows */
   _getrealerror();
-#endif /* I386 */
 
-#ifdef DOS
   tzset();
 #endif
 

@@ -479,10 +479,6 @@ void init_display2(DLword *display_addr, int display_max)
   else
     ColorDisplayPixrect = pr_open("/dev/fb");
   DisplayRegionPixrect = mem_point(displaywidth, displayheight, 1, display_addr);
-#ifdef I386
-  ((struct mpr_data *)DisplayRegionPixrect->pr_data)->md_flags |= MP_I386;
-  ((struct mpr_data *)ColorDisplayPixrect->pr_data)->md_flags |= MP_I386;
-#endif
 
 #ifdef DEBUG
   pr_getcolormap(ColorDisplayPixrect, 0, 2, oldred, oldgreen, oldblue);
@@ -604,16 +600,6 @@ void display_before_exit() {
 #endif /* DOS */
 }
 
-#ifdef DISPLAYBUFFER
-
-#ifdef I386
-#define EVENADDR(ptr) (0xFFFFFFFE & (int)ptr)
-#else
-#define EVENADDR(ptr) (ptr)
-#endif
-
-#endif /* DISPLAYBUFFER */
-
 #if defined(DISPLAYBUFFER) || defined(DOS)
 /************************************************************************/
 /*									*/
@@ -647,16 +633,8 @@ in_display_segment(baseaddr)
 void flush_display_buffer() {
 #ifdef SUNDISPLAY
 #ifdef DISPLAYBUFFER
-#ifdef I386
-  bit_reverse_region(DisplayRegion68k, displaywidth, displayheight, DLWORD_PERLINE);
-#endif
-
   pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight, COPY_PIXRECT_TO_COLOR,
          DisplayRegionPixrect, 0, 0);
-
-#ifdef I386
-  bit_reverse_region(DisplayRegion68k, displaywidth, displayheight, DLWORD_PERLINE);
-#endif
 #endif /* DISPLAYBUFFER */
 #endif /* SUNDISPLAY */
 
@@ -737,18 +715,6 @@ void byte_swapped_displayregion(int x, int y, int w, int h)
 /************************************************************************/
 
 void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
-#ifdef I386
-{ /*flush_display_buffer(); */
-  int y;
-  y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
-
-  bit_reverse_region(ybase, displaywidth, h, DLWORD_PERLINE);
-  pr_rop(ColorDisplayPixrect, x, y, displaywidth, h, COPY_PIXRECT_TO_COLOR, DisplayRegionPixrect, x,
-         y);
-
-  bit_reverse_region(ybase, displaywidth, h, DLWORD_PERLINE);
-}
-#else
 {
   int y;
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
@@ -766,7 +732,6 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
   TPRINT(("Exit flush_display_lineregion\n"));
 #endif /* DOS */
 }
-#endif /* I386 */
 
 /************************************************************************/
 /*									*/
@@ -786,18 +751,14 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
 #define BITSPERWORD 16
 
 void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h)
-#ifdef I386
-{ flush_display_buffer(); }
-#else
 {
   int y, x, baseoffset;
   baseoffset = (((DLword *)ybase) - DisplayRegion68k);
   y = baseoffset / DLWORD_PERLINE;
   x = bitoffset + (BITSPERWORD * (baseoffset - (DLWORD_PERLINE * y)));
-#endif /* I386 */
 
 #if (defined(SUNDISPLAY) && defined(DISPLAYBUFFER))
-pr_rop(ColorDisplayPixrect, x, y, w, h, COPY_PIXRECT_TO_COLOR, DisplayRegionPixrect, x, y);
+  pr_rop(ColorDisplayPixrect, x, y, w, h, COPY_PIXRECT_TO_COLOR, DisplayRegionPixrect, x, y);
 #elif (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_ptrregion\n x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);
