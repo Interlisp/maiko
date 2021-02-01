@@ -31,6 +31,7 @@
 #include <sys/statvfs.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <termios.h>
 #include <unistd.h>
 
 
@@ -85,8 +86,7 @@ void mess_init() {
   int ttyfd;
   int ptyfd, ptynum;
   char *ptyname, *ttyname;
-  int temp;
-  int on = 1;
+  struct termios options;
 
   ptyname = "/dev/ptypx";
   ttyname = "/dev/ttypx";
@@ -110,21 +110,8 @@ gotpty:
   }
 
   /* Set tty parameters same as stderr */
-
-  ioctl(2, TIOCGETD, &temp); /* Line discipline */
-  ioctl(ttyfd, TIOCSETD, &temp);
-
-  ioctl(2, TIOCGETP, &temp); /* TTY parameters */
-  ioctl(ttyfd, TIOCSETP, &temp);
-
-  ioctl(2, TIOCLGET, &temp);
-  ioctl(ttyfd, TIOCLSET, &temp);
-
-  ioctl(2, TIOCGETC, &temp); /* Terminal characters */
-  ioctl(ttyfd, TIOCSETC, &temp);
-
-  ioctl(2, TIOCGLTC, &temp); /* Local special characters */
-  ioctl(ttyfd, TIOCSLTC, &temp);
+  tcgetattr(2, &options);
+  tcsetattr(ttyfd, TCSANOW, &options);
 
   /* Get console IO */
   ioctl(ptyfd, FIOCLEX, 0);
@@ -334,7 +321,7 @@ LispPTR flush_pty() {
   FD_SET(cons_pty, &rfds);
   if (select(32, &rfds, NULL, NULL, &selecttimeout) <= 0) return (NIL);
 
-  if ((cons_pty >= 0) && FD_ISSET(cons_pty, rfds))
+  if ((cons_pty >= 0) && FD_ISSET(cons_pty, &rfds))
 #else /* LOGINT */
 
   if ((cons_pty >= 0) && ((size = read(cons_pty, buf, MESSAGE_BUFFER_SIZE - 1)) > 0))
@@ -379,6 +366,7 @@ LispPTR flush_pty() {
       return (ATOM_T);
     }
   }
+  return (NIL);
 #else
   return (NIL);
 #endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
