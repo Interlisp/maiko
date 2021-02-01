@@ -19,8 +19,7 @@ XFLAGS = -I/usr/local/include -DXWINDOW
 OEXT = .o
 # OPTFLAGS is normally -O2.
 OPTFLAGS = -O1 -gdwarf-2
-DFLAGS = -DLOGINT $(XFLAGS) \
-	-DRELEASE=351
+DFLAGS = $(XFLAGS) -DRELEASE=351
 
 LDFLAGS = -L/usr/local/lib -lX11 -lc -lm
 LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
