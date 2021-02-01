@@ -137,6 +137,18 @@
 #  define MAIKO_ARCH_DETECTED 1
 #endif
 
+#if defined(__BYTE_ORDER__)
+#  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#    define BYTESWAP 1
+#  elif __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
+#    undef BYTESWAP
+#  else
+#    error "Unknown byte order"
+#  endif
+#else
+#  error "Could not detect byte order"
+#endif
+
 #ifndef MAIKO_OS_DETECTED
 #  error "Could not detect OS."
 #endif
