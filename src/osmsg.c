@@ -53,17 +53,19 @@
 #include <stropts.h>
 #endif
 
+#ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
 #define MESSAGE_BUFFER_SIZE 1024
-int cons_tty;
-int cons_pty;
+static int cons_tty;
+static int cons_pty;
 
-char logfile[100];
-int log_id;
-int previous_size;
-int logChanged; /* T if log file has changed since last READ */
+static char logfile[100];
+static int log_id;
+static int previous_size;
+static int logChanged; /* T if log file has changed since last READ */
                 /* Set by flush_pty, to avoid the stat call  */
 int LogFileFd = -1;
 extern fd_set LispReadFds;
+#endif
 
 /************************************************************************/
 /*									*/

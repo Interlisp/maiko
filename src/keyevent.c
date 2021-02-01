@@ -348,7 +348,7 @@ getmore:
       rs232c_read();
 #endif /* RS232 */
 
-#ifdef LOGINT
+#if defined(MAIKO_HANDLE_CONSOLE_MESSAGES) && defined(LOGINT)
     if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
       flush_pty();          /* move the msg(s) to the log file */
 

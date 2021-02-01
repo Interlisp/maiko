@@ -47,7 +47,7 @@ DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 
 MACHINEFLAGS = -DOS5 -DUSE_DLPI \
 		-I$(OPENWINHOME)/include \
-		-DLOGINT -DLOCK_X_UPDATES
+		-DLOCK_X_UPDATES
 
 # The LDEINIT wants to have NOVERSION set, so we don't hang up on
 # any change-over in versions.
