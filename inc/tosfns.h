@@ -545,110 +545,89 @@ op_fn_common:								\
 /******			 EVAL				 ********/
 /****************************************************************/
 #ifndef BIGATOMS
-#define EVAL								\
-  {									\
-    LispPTR scratch;							\
-    register LispPTR work;						\
-    register LispPTR lookuped; /* keep looked up value */		\
-									\
-    switch(TOPOFSTACK & SEGMASK)					\
-      {									\
-	case S_POSITIVE:						\
-	case S_NEGATIVE:  nextop1;					\
-									\
-	case ATOM_OFFSET: if( (TOPOFSTACK==NIL_PTR)			\
-			     ||(TOPOFSTACK==ATOM_T))			\
-				goto Hack_Label;			\
-			    nnewframe(CURRENTFX,&scratch,		\
-				      TOPOFSTACK & 0xffff);		\
-			    work = ((scratch & 0xffff0000)>> 16) |	\
-				   ((scratch & 0x00ff) <<16);		\
-			    lookuped = *((LispPTR *)			\
-					(Addr68k_from_LADDR(work)));	\
-			    if(lookuped==NOBIND_PTR) goto op_ufn;	\
-			    TOPOFSTACK = lookuped;			\
-		Hack_Label: nextop1;					\
-									\
-	default:  switch(GetTypeNumber(TOPOFSTACK))			\
-		    {							\
-		      case TYPE_FIXP :					\
-		      case TYPE_FLOATP :				\
-		      case TYPE_STRINGP :				\
-		      case TYPE_ONED_ARRAY :				\
-		      case TYPE_GENERAL_ARRAY :	nextop1;		\
-									\
-		      case TYPE_LISTP :					\
-			fn_atom_index = ATOM_EVALFORM;			\
-			fn_num_args = 1;				\
-			fn_opcode_size = 1;				\
-			fn_defcell = (DefCell *)			\
-				GetDEFCELL68k(ATOM_EVALFORM);		\
-			fn_apply = 0;					\
-			goto op_fn_common;				\
-									\
-		      default :	 goto op_ufn;				\
-				}					\
-									\
-  } /* end switch */							\
-									\
-}/* EVAL end */
-
+#define EVAL                                                                   \
+  {                                                                            \
+    LispPTR scratch, work, lookuped;                                           \
+    switch (TOPOFSTACK & SEGMASK) {                                            \
+    case S_POSITIVE:                                                           \
+    case S_NEGATIVE:                                                           \
+      nextop1;                                                                 \
+    case ATOM_OFFSET:                                                          \
+      if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
+        goto Hack_Label;                                                       \
+      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
+      work = POINTERMASK & swapx(scratch);                                     \
+      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      if (lookuped == NOBIND_PTR)                                              \
+        goto op_ufn;                                                           \
+      TOPOFSTACK = lookuped;                                                   \
+    Hack_Label:                                                                \
+      nextop1;                                                                 \
+    default:                                                                   \
+      switch (GetTypeNumber(TOPOFSTACK)) {                                     \
+      case TYPE_FIXP:                                                          \
+      case TYPE_FLOATP:                                                        \
+      case TYPE_STRINGP:                                                       \
+      case TYPE_ONED_ARRAY:                                                    \
+      case TYPE_GENERAL_ARRAY:                                                 \
+        nextop1;                                                               \
+      case TYPE_LISTP:                                                         \
+        fn_atom_index = ATOM_EVALFORM;                                         \
+        fn_num_args = 1;                                                       \
+        fn_opcode_size = 1;                                                    \
+        fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);                  \
+        fn_apply = 0;                                                          \
+        goto op_fn_common;                                                     \
+      default:                                                                 \
+        goto op_ufn;                                                           \
+      }                                                                        \
+    } /* end switch */                                                         \
+  }   /* EVAL end */
 #else
-
-#define EVAL								\
-  {									\
-    LispPTR scratch;							\
-    register LispPTR work;						\
-    register LispPTR lookuped; /* keep looked up value */		\
-									\
-    switch(TOPOFSTACK & SEGMASK)					\
-      {									\
-	case S_POSITIVE:						\
-	case S_NEGATIVE:  nextop1;					\
-									\
-	case ATOM_OFFSET: if( (TOPOFSTACK==NIL_PTR)			\
-			     ||(TOPOFSTACK==ATOM_T))			\
-				goto Hack_Label;			\
-			    nnewframe(CURRENTFX,&scratch,		\
-				      TOPOFSTACK & 0xffff);		\
-			    work = ((scratch & 0xffff0000)>> 16) |	\
-				   ((scratch & 0x0fff) <<16);		\
-			    lookuped = *((LispPTR *)			\
-					(Addr68k_from_LADDR(work)));	\
-			    if(lookuped==NOBIND_PTR) goto op_ufn;	\
-			    TOPOFSTACK = lookuped;			\
-		Hack_Label: nextop1;					\
-									\
-	default:  switch(GetTypeNumber(TOPOFSTACK))			\
-		    {							\
-		      case TYPE_FIXP :					\
-		      case TYPE_FLOATP :				\
-		      case TYPE_STRINGP :				\
-		      case TYPE_ONED_ARRAY :				\
-		      case TYPE_GENERAL_ARRAY :	nextop1;		\
-									\
-		      case TYPE_LISTP :					\
-			fn_atom_index = ATOM_EVALFORM;			\
-			fn_num_args = 1;				\
-			fn_opcode_size = 1;				\
-			fn_defcell = (DefCell *)			\
-				GetDEFCELL68k(ATOM_EVALFORM);		\
-			fn_apply = 0;					\
-			goto op_fn_common;				\
-									\
-		      case TYPE_NEWATOM:				\
-			nnewframe(CURRENTFX, &scratch, TOPOFSTACK);	\
-			work =	POINTERMASK & swapx(scratch);		\
-			lookuped = *((LispPTR *)			\
-				   (Addr68k_from_LADDR(work)));		\
-			if(lookuped==NOBIND_PTR) goto op_ufn;		\
-			TOPOFSTACK = lookuped;				\
-			nextop1;					\
-		      default :	 goto op_ufn;				\
-				}					\
-									\
-  } /* end switch */							\
-									\
-}/* EVAL end */
-#endif /* BIGATOMS */
-
+#define EVAL                                                                   \
+  {                                                                            \
+    LispPTR scratch, work, lookuped;                                           \
+    switch (TOPOFSTACK & SEGMASK) {                                            \
+    case S_POSITIVE:                                                           \
+    case S_NEGATIVE:                                                           \
+      nextop1;                                                                 \
+    case ATOM_OFFSET:                                                          \
+      if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
+        goto Hack_Label;                                                       \
+      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
+      work = POINTERMASK & swapx(scratch);                                     \
+      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      if (lookuped == NOBIND_PTR)                                              \
+        goto op_ufn;                                                           \
+      TOPOFSTACK = lookuped;                                                   \
+    Hack_Label:                                                                \
+      nextop1;                                                                 \
+    default:                                                                   \
+      switch (GetTypeNumber(TOPOFSTACK)) {                                     \
+      case TYPE_FIXP:                                                          \
+      case TYPE_FLOATP:                                                        \
+      case TYPE_STRINGP:                                                       \
+      case TYPE_ONED_ARRAY:                                                    \
+      case TYPE_GENERAL_ARRAY:                                                 \
+        nextop1;                                                               \
+      case TYPE_LISTP:                                                         \
+        fn_atom_index = ATOM_EVALFORM;                                         \
+        fn_num_args = 1;                                                       \
+        fn_opcode_size = 1;                                                    \
+        fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);                  \
+        fn_apply = 0;                                                          \
+        goto op_fn_common;                                                     \
+      case TYPE_NEWATOM:                                                       \
+        nnewframe(CURRENTFX, &scratch, TOPOFSTACK);                            \
+        work = POINTERMASK & swapx(scratch);                                   \
+        lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                   \
+        if (lookuped == NOBIND_PTR)                                            \
+          goto op_ufn;                                                         \
+        TOPOFSTACK = lookuped;                                                 \
+        nextop1;                                                               \
+      default:                                                                 \
+        goto op_ufn;                                                           \
+      }                                                                        \
+    } /* end switch */                                                         \
+  }   /* EVAL end */
+#endif
