@@ -54,16 +54,14 @@ char shcom[512]; /* Here because I'm suspicious of */
                  /* large allocations on the stack */
 
 
-static __inline__ ssize_t
-SAFEREAD(int f, char *b, int c)
+static __inline__ ssize_t SAFEREAD(int f, char *b, int c)
 {
   ssize_t res;
-loop:
-  res = read(f, b, c);
-  if ((res < 0)) {
-    if (errno == EINTR || errno == EAGAIN) goto loop;
-    perror("reading UnixPipeIn");
-  }
+  do {
+    res = read(f, b, c);
+    if (res >= 0) return (res);
+  } while (errno == EINTR || errno == EAGAIN);
+  perror("reading UnixPipeIn");
   return (res);
 }
 
