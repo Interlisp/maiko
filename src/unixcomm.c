@@ -78,11 +78,13 @@ int NPROCS = 100;
 /* One of these structures exists for every possible file descriptor */
 /* type field encodes kind of stream:                                */
 
-#define UJUNUSED 0    /* Unused */
-#define UJSHELL -1    /* PTY shell */
-#define UJPROCESS -2  /* random process */
-#define UJSOCKET -3   /* socket open for connections */
-#define UJSOSTREAM -4 /* connection from a UJSOCKET */
+enum UJTYPE {
+  UJUNUSED = 0,
+  UJSHELL = -1,   /* PTY shell */
+  UJPROCESS = -2, /* random process */
+  UJSOCKET = -3,  /* socket open for connections */
+  UJSOSTREAM = -4 /* connection from a UJSOCKET */
+};
 
 /* These are indexed by WRITE socket# */
 struct unixjob {
@@ -90,14 +92,14 @@ struct unixjob {
   int readsock;   /* Socket to READ from for this job. */
   int PID;        /* process ID associated with this slot */
   int status;     /* status returned by subprocess (not shell) */
-  int type;
+  enum UJTYPE type;
 };
 
 struct unixjob *UJ; /* allocated at run time */
 
 long StartTime; /* Time, for creating pipe filenames */
 
-#define valid_slot(slot) ((slot) >= 0 && (slot) < NPROCS && UJ[slot].type)
+#define valid_slot(slot) ((slot) >= 0 && (slot) < NPROCS && UJ[slot].type != UJUNUSED)
 
 char shcom[2048]; /* Here because I'm suspicious of */
                   /* large allocations on the stack */
@@ -199,6 +201,8 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
   for (slot = 0; slot < NPROCS; slot++) {
     /* If this slot has an active job */
     switch (UJ[slot].type) {
+      case UJUNUSED:
+        break;
       case UJSHELL:
         if (kill(UJ[slot].PID, SIGKILL) < 0) perror("Killing shell");
         UJ[slot].PID = 0;
@@ -524,11 +528,15 @@ LispPTR Unix_handlecomm(LispPTR *args) {
               }
             }
             break;
-        }
+          default: break;
+          }
       else
         return (ATOM_T);
 
       switch (UJ[slot].type) {
+        case UJUNUSED:
+          break;
+
         case UJSHELL:
           DBPRINT(("Kill 3 closing shell desc %d.\n", slot));
           close(slot);
@@ -637,6 +645,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       SAFEREAD(UnixPipeIn, d, 4);
 
       switch (UJ[dest].type) {
+        case UJUNUSED:
+          break;
+
         case UJSHELL:
           DBPRINT(("Kill 5 closing shell desc %d.\n", dest));
           close(dest);
@@ -886,6 +897,10 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           /* were no chars available and the other end has terminated. */
           /* Either way, signal EOF. */
           DBPRINT(("Indicating write failure from PTY desc %d.\n", slot));
+          return (NIL);
+
+        case UJUNUSED:
+        case UJSOCKET:
           return (NIL);
       }
     }
