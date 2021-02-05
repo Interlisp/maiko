@@ -56,14 +56,13 @@ Unix Interface Communications
 #include "byteswapdefs.h"
 #include "commondefs.h"
 
-static __inline__ int SAFEREAD(int f, unsigned char *b, int c) {
-  int res;
-loop:
-  res = read(f, b, c);
-  if ((res < 0)) {
-    if (errno == EINTR || errno == EAGAIN) goto loop;
-    perror("reading UnixPipeIn");
-  }
+static __inline__ ssize_t SAFEREAD(int f, unsigned char *b, int c) {
+  ssize_t res;
+  do {
+    res = read(f, b, c);
+    if (res >= 0) return (res);
+  } while (errno == EINTR || errno == EAGAIN);
+  perror("reading UnixPipeIn");
   return (res);
 }
 
