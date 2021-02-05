@@ -118,9 +118,7 @@ int find_process_slot(register int pid)
 /* Find a slot with the specified pid */
 
 {
-  register int slot;
-
-  for (slot = 0; slot < NPROCS; slot++)
+  for (int slot = 0; slot < NPROCS; slot++)
     if (UJ[slot].PID == pid) {
       DBPRINT(("find_process_slot = %d.\n", slot));
       return slot;
@@ -196,9 +194,7 @@ char *build_socket_pathname(int desc) {
 
 void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 {
-  int slot;
-
-  for (slot = 0; slot < NPROCS; slot++) {
+  for (int slot = 0; slot < NPROCS; slot++) {
     /* If this slot has an active job */
     switch (UJ[slot].type) {
       case UJUNUSED:
@@ -251,7 +247,6 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 
 int FindUnixPipes(void) {
   char *envtmp;
-  register int i;
   struct unixjob cleareduj;
 
   DBPRINT(("Entering FindUnixPipes\n"));
@@ -270,7 +265,7 @@ int FindUnixPipes(void) {
   cleareduj.PID = 0;
   cleareduj.readsock = 0;
   cleareduj.type = UJUNUSED;
-  for (i = 0; i < NPROCS; i++) UJ[i] = cleareduj;
+  for (int i = 0; i < NPROCS; i++) UJ[i] = cleareduj;
 
   DBPRINT(("NPROCS is %d; leaving FindUnixPipes\n", NPROCS));
   return (UnixPipeIn == -1 || UnixPipeOut == -1 || StartTime == -1 || UnixPID == -1);
@@ -512,10 +507,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           case UJPROCESS:
             /* First check to see it hasn't already died */
             if (UJ[slot].status == -1) {
-              int i;
               /* Kill the job */
               kill(UJ[slot].PID, SIGKILL);
-              for (i = 0; i < 10; i++) {
+              for (int i = 0; i < 10; i++) {
                 /* Waiting for the process to exit is possibly risky.
                    Sending SIGKILL is always supposed to kill
                    a process, but on very rare occurrences this doesn't
