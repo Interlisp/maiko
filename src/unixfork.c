@@ -150,7 +150,7 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
 /* fork_Unix is the secondary process spawned right after LISP is
    started, to avoid having TWO 8 mbyte images sitting around. It listens
    to the pipe LispToUnix waiting for requests, and responds on UnixToLisp.
-   The data passed through this pipe is in 4 byte packets, of the form:
+   The data passed through this pipe is in 6 byte packets, of the form:
 
    Byte 0:   Command character, one of:
                    S: Fork PTY (shell) process. This is used for CHAT windows.
@@ -167,26 +167,26 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
              Only used for W command, contains byte to write
              [For S&P, pty number]
    Byte 3:   Slot number.
+   Byte 4:   unused.
+   Byte 5:   unused.
+ 
 
-In the case of F & P commands, additional data follows the 4 byte packet.
+In the case of F & P commands, additional data follows the 6 byte packet.
 This consists of 2 bytes representing the length of the shell command
 string, and the string itself.
 
-fork_Unix will return another 4 byte packet. The bytes are the same as those
+fork_Unix will return another 6 byte packet. The bytes are the same as those
 of the packet received except:
 
-   F:        Byte 2 is job number
-             Byte 3 is 1 if successful, 0 if not
-   S:	     Byte 2 is job number
+   F, S, P:  Bytes 1, 2, 4, and 5 are the Unix process id
              Byte 3 is 1 if successful, 0 if not
    R:        Byte 2 is value of byte read from stdin, if any
              Byte 3 is 1 if successful, 2 if EOF, 0 if nothing waiting
-   W:        Bytes 0 & 1 are the Process ID of the terminated process
+   W:        Bytes 0, 1, 4, 5 are the Process ID of the terminated process
              Bytes 2 & 3 are the high & low bytes of the exit status.
    K:        Bytes 1 and 2 are the high and low bytes of the exit status
              of the process.
              Byte 3 is 1 if an exit status was available.
-   E:        Always the same
    C:        Always the same
 */
 
@@ -197,7 +197,7 @@ int fork_Unix() {
   pid_t pid;
   sigset_t signals;
 
-  char IOBuf[4];
+  char IOBuf[6]; /* XXX: signed, because slot comes from here */
   unsigned short tmp = 0;
   char *cmdstring;
 
@@ -261,17 +261,13 @@ int fork_Unix() {
 
   while (1) {
     ssize_t len;
-    len = 0;
-    while (len != 4) {
-      if ((len = SAFEREAD(LispPipeIn, IOBuf, 4)) < 0) { /* Get packet */
-        perror("Packet read by slave");
-        /*      kill_comm_processes(); */
-        exit(0);
-      }
-      if (len != 4) {
-        DBPRINT(("Input packet wrong length:  %d.\n", len));
-        exit(0);
-      }
+    len = SAFEREAD(LispPipeIn, IOBuf, 6);
+    if (len < 0) {
+      perror("Error reading packet by slave");
+      exit(0);
+    } else if (len != 6) {
+      DBPRINT(("Input packet wrong length: %d", len));
+      exit(0);
     }
     slot = IOBuf[3];
     IOBuf[3] = 1; /* Start by signalling success in return-code */
@@ -316,6 +312,8 @@ int fork_Unix() {
             /* ForkUnixShell sets the pid and standard in/out variables */
             IOBuf[1] = (pid >> 8) & 0xFF;
             IOBuf[2] = pid & 0xFF;
+            IOBuf[4] = (pid >> 16) & 0xFF;
+            IOBuf[5] = (pid >> 24) & 0xFF;
           }
         } else {
           printf("Can't get process slot for PTY shell.\n");
@@ -386,6 +384,8 @@ int fork_Unix() {
           } else {
             IOBuf[1] = (pid >> 8) & 0xFF;
             IOBuf[2] = pid & 0xFF;
+            IOBuf[4] = (pid >> 16) & 0xFF;
+            IOBuf[5] = (pid >> 24) & 0xFF;
           }
         } else {
           printf("No process slots available.\n");
@@ -409,6 +409,8 @@ int fork_Unix() {
           /* Ignore processes which are suspended but haven't exited
              (this shouldn't happen) */
           if (WIFSTOPPED(status)) break;
+          IOBuf[5] = (pid >> 24) & 0xFF;
+          IOBuf[4] = (pid >> 16) & 0xFF;
           IOBuf[3] = status >> 8;
           IOBuf[2] = status & 0xFF;
           IOBuf[1] = pid & 0xFF;
@@ -425,7 +427,7 @@ int fork_Unix() {
     } /* End of switch */
 
     /* Return the status/data packet */
-    write(LispPipeOut, IOBuf, 4);
+    write(LispPipeOut, IOBuf, 6);
   }
 }
 

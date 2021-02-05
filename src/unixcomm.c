@@ -138,15 +138,15 @@ int find_process_slot(register int pid)
 void wait_for_comm_processes(void) {
   int pid;
   int slot;
-  unsigned char d[5];
+  unsigned char d[6];
 
   memset(d, 0, sizeof(d));
   d[0] = 'W';
-  write(UnixPipeOut, d, 4);
-  SAFEREAD(UnixPipeIn, d, 4);
+  write(UnixPipeOut, d, 6);
+  SAFEREAD(UnixPipeIn, d, 6);
 
-  pid = (d[0] << 8) | d[1];
-  while ((pid != 0) && (pid != 65535)) {
+  pid = (d[0] << 8) | d[1] | (d[4] << 16) | (d[5] << 24);
+  while (pid != 0) {
     slot = find_process_slot(pid);
     /* Ignore processes that we didn't start (shouldn't happen but
        occasionally does) */
@@ -162,10 +162,10 @@ void wait_for_comm_processes(void) {
     /* Look for another stopped process. */
     memset(d, 0, sizeof(d));
     d[0] = 'W';
-    write(UnixPipeOut, d, 4);
-    SAFEREAD(UnixPipeIn, d, 4);
+    write(UnixPipeOut, d, 6);
+    SAFEREAD(UnixPipeIn, d, 6);
 
-    pid = (d[0] << 8) | d[1];
+    pid = (d[0] << 8) | d[1] | (d[4] << 16) | (d[5] << 24);
   }
 }
 
@@ -345,7 +345,7 @@ int FindAvailablePty(char *Master, char *Slave) {
 
 LispPTR Unix_handlecomm(LispPTR *args) {
   int command, dest, i, slot, sock;
-  unsigned char d[4];
+  unsigned char d[6];
   unsigned char ch;
   unsigned char buf[1];
 
@@ -386,13 +386,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       memset(d, 0, sizeof(d));
       d[0] = 'F';
       d[3] = sockFD;
-      write(UnixPipeOut, d, 4);
+      write(UnixPipeOut, d, 6);
       WriteLispStringToPipe(args[1]);
 
       DBPRINT(("Sending cmd string: %s\n", shcom));
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       /* If it worked, return job # */
       if (d[3] == 1) {
@@ -411,7 +411,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         }
         UJ[PipeFD].type = UJPROCESS;
         UJ[PipeFD].status = -1;
-        UJ[PipeFD].PID = (d[1] << 8) | d[2];
+        UJ[PipeFD].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
         UJ[PipeFD].readsock = 0;
         close(sockFD);
         unlink(PipeName);
@@ -586,7 +586,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[1] = SlavePTY[0];
       d[2] = SlavePTY[1];
       d[3] = slot;
-      write(UnixPipeOut, d, 4);
+      d[4] = '\0';
+      d[5] = '\0';
+      write(UnixPipeOut, d, 6);
 
       len = strlen(SlavePTY) + 1;
       write(UnixPipeOut, &len, 2);
@@ -598,7 +600,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       }
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       /* If successful, return job # */
       DBPRINT(("Pipe/fork result = %d.\n", d[3]));
@@ -607,7 +609,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         fcntl(Master, F_SETFL, fcntl(Master, F_GETFL, 0) | O_NONBLOCK);
 
         UJ[slot].type = UJSHELL; /* so we can find them */
-        UJ[slot].PID = (d[1] << 8) | d[2];
+        UJ[slot].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
         printf("Shell job %d, PID = %d\n", slot, UJ[slot].PID);
         UJ[slot].status = -1;
         DBPRINT(("Forked pty in slot %d.\n", slot));
@@ -615,7 +617,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       } else {
         printf("Fork failed.\n");
         fflush(stdout);
-        printf("d = %d, %d, %d, %d\n", d[0], d[1], d[2], d[3]);
+        printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
         close(Master);
         return (NIL);
       }
@@ -633,10 +635,10 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[1] = dest;
 
       d[3] = 1;
-      write(UnixPipeOut, d, 4);
+      write(UnixPipeOut, d, 6);
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       switch (UJ[dest].type) {
         case UJUNUSED:
