@@ -79,7 +79,7 @@ loop:
 
 /* Creates a PTY connection to a csh */
 
-int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
+static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
 {
   int PID, SlaveFD;
   struct termios tio;
