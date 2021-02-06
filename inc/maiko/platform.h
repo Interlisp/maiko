@@ -145,6 +145,10 @@
 #  else
 #    error "Unknown byte order"
 #  endif
+#elif __BIG_ENDIAN__ == 1
+#    undef BYTESWAP
+#elif __LITTLE_ENDIAN__ == 1
+#    define BYTESWAP 1
 #else
 #  error "Could not detect byte order"
 #endif
