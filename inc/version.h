@@ -204,7 +204,13 @@ error Must specify RELEASE to build Medley.
 	/********************************************************/
 	/*							*/
 	/********************************************************/
-#ifdef __GNUC__
+#ifndef __has_builtin
+#define __has_builtin(x) 0
+#endif
+
+#if __has_builtin(__builtin_sadd_overflow) && \
+  __has_builtin(__builtin_ssub_overflow) && \
+  __has_builtin(__builtin_smul_overflow)
 #define USE_OVERFLOW_BUILTINS
 #endif
 
