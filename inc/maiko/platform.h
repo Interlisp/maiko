@@ -137,6 +137,9 @@
 #  define MAIKO_ARCH_DETECTED 1
 #endif
 
+/* Modern GNU C, Clang, Sun Studio  provide __BYTE_ORDER__
+ * Older GNU C (ca. 4.0.1) provides __BIG_ENDIAN__/__LITTLE_ENDIAN__
+ */
 #if defined(__BYTE_ORDER__)
 #  if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 #    define BYTESWAP 1
@@ -145,6 +148,10 @@
 #  else
 #    error "Unknown byte order"
 #  endif
+#elif __BIG_ENDIAN__ == 1
+#    undef BYTESWAP
+#elif __LITTLE_ENDIAN__ == 1
+#    define BYTESWAP 1
 #else
 #  error "Could not detect byte order"
 #endif

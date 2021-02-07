@@ -1,0 +1,30 @@
+# Options for MacOS, x86 processor, X windows
+
+CC = cc $(GCC_CFLAGS)
+OEXT=.o
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+
+XFLAGS = -I/usr/X11/include -DXWINDOW
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g
+DEBUGFLAGS = # -DDEBUG -DOPTRACE
+DFLAGS = $(DEBUGFLAGS) $(XFLAGS) \
+	-DRELEASE=351
+
+LDFLAGS = -L/usr/X11/lib -lX11 -lm
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lm
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
