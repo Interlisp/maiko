@@ -54,7 +54,7 @@ char shcom[512]; /* Here because I'm suspicious of */
                  /* large allocations on the stack */
 
 
-static __inline__ ssize_t SAFEREAD(int f, char *b, int c)
+static inline ssize_t SAFEREAD(int f, char *b, int c)
 {
   ssize_t res;
   do {

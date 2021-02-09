@@ -56,7 +56,7 @@ Unix Interface Communications
 #include "byteswapdefs.h"
 #include "commondefs.h"
 
-static __inline__ ssize_t SAFEREAD(int f, unsigned char *b, int c) {
+static inline ssize_t SAFEREAD(int f, unsigned char *b, int c) {
   ssize_t res;
   do {
     res = read(f, b, c);
