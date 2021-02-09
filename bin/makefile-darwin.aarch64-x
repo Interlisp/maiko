@@ -13,15 +13,15 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/opt/local/include -DXWINDOW
+XFLAGS = -I/opt/X11/include -DXWINDOW
 
 # OPTFLAGS is normally -O2.
-OPTFLAGS =  -O1 -g
+OPTFLAGS =  -O2
 DEBUGFLAGS = # -DDEBUG -DOPTRACE
 DFLAGS = $(DEBUGFLAGS) $(XFLAGS) -DRELEASE=351
 
-LDFLAGS = -L/opt/local/lib -lX11 -lm
-LDELDFLAGS =  -L/opt/local/lib -lX11 -lm
+LDFLAGS = -L/opt/X11/lib -lX11 -lm
+LDELDFLAGS =  -L/opt/X11/lib -lX11 -lm
 
 OBJECTDIR = ../$(RELEASENAME)/
 
