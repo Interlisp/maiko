@@ -56,14 +56,13 @@ Unix Interface Communications
 #include "byteswapdefs.h"
 #include "commondefs.h"
 
-static __inline__ int SAFEREAD(int f, unsigned char *b, int c) {
-  int res;
-loop:
-  res = read(f, b, c);
-  if ((res < 0)) {
-    if (errno == EINTR || errno == EAGAIN) goto loop;
-    perror("reading UnixPipeIn");
-  }
+static inline ssize_t SAFEREAD(int f, unsigned char *b, int c) {
+  ssize_t res;
+  do {
+    res = read(f, b, c);
+    if (res >= 0) return (res);
+  } while (errno == EINTR || errno == EAGAIN);
+  perror("reading UnixPipeIn");
   return (res);
 }
 
@@ -79,11 +78,13 @@ int NPROCS = 100;
 /* One of these structures exists for every possible file descriptor */
 /* type field encodes kind of stream:                                */
 
-#define UJUNUSED 0    /* Unused */
-#define UJSHELL -1    /* PTY shell */
-#define UJPROCESS -2  /* random process */
-#define UJSOCKET -3   /* socket open for connections */
-#define UJSOSTREAM -4 /* connection from a UJSOCKET */
+enum UJTYPE {
+  UJUNUSED = 0,
+  UJSHELL = -1,   /* PTY shell */
+  UJPROCESS = -2, /* random process */
+  UJSOCKET = -3,  /* socket open for connections */
+  UJSOSTREAM = -4 /* connection from a UJSOCKET */
+};
 
 /* These are indexed by WRITE socket# */
 struct unixjob {
@@ -91,14 +92,14 @@ struct unixjob {
   int readsock;   /* Socket to READ from for this job. */
   int PID;        /* process ID associated with this slot */
   int status;     /* status returned by subprocess (not shell) */
-  int type;
+  enum UJTYPE type;
 };
 
 struct unixjob *UJ; /* allocated at run time */
 
 long StartTime; /* Time, for creating pipe filenames */
 
-#define valid_slot(slot) ((slot) >= 0 && (slot) < NPROCS && UJ[slot].type)
+#define valid_slot(slot) ((slot) >= 0 && (slot) < NPROCS && UJ[slot].type != UJUNUSED)
 
 char shcom[2048]; /* Here because I'm suspicious of */
                   /* large allocations on the stack */
@@ -117,9 +118,7 @@ int find_process_slot(register int pid)
 /* Find a slot with the specified pid */
 
 {
-  register int slot;
-
-  for (slot = 0; slot < NPROCS; slot++)
+  for (int slot = 0; slot < NPROCS; slot++)
     if (UJ[slot].PID == pid) {
       DBPRINT(("find_process_slot = %d.\n", slot));
       return slot;
@@ -139,15 +138,15 @@ int find_process_slot(register int pid)
 void wait_for_comm_processes(void) {
   int pid;
   int slot;
-  unsigned char d[5];
+  unsigned char d[6];
 
   memset(d, 0, sizeof(d));
   d[0] = 'W';
-  write(UnixPipeOut, d, 4);
-  SAFEREAD(UnixPipeIn, d, 4);
+  write(UnixPipeOut, d, 6);
+  SAFEREAD(UnixPipeIn, d, 6);
 
-  pid = (d[0] << 8) | d[1];
-  while ((pid != 0) && (pid != 65535)) {
+  pid = (d[0] << 8) | d[1] | (d[4] << 16) | (d[5] << 24);
+  while (pid != 0) {
     slot = find_process_slot(pid);
     /* Ignore processes that we didn't start (shouldn't happen but
        occasionally does) */
@@ -163,10 +162,10 @@ void wait_for_comm_processes(void) {
     /* Look for another stopped process. */
     memset(d, 0, sizeof(d));
     d[0] = 'W';
-    write(UnixPipeOut, d, 4);
-    SAFEREAD(UnixPipeIn, d, 4);
+    write(UnixPipeOut, d, 6);
+    SAFEREAD(UnixPipeIn, d, 6);
 
-    pid = (d[0] << 8) | d[1];
+    pid = (d[0] << 8) | d[1] | (d[4] << 16) | (d[5] << 24);
   }
 }
 
@@ -195,11 +194,11 @@ char *build_socket_pathname(int desc) {
 
 void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 {
-  int slot;
-
-  for (slot = 0; slot < NPROCS; slot++) {
+  for (int slot = 0; slot < NPROCS; slot++) {
     /* If this slot has an active job */
     switch (UJ[slot].type) {
+      case UJUNUSED:
+        break;
       case UJSHELL:
         if (kill(UJ[slot].PID, SIGKILL) < 0) perror("Killing shell");
         UJ[slot].PID = 0;
@@ -248,7 +247,6 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 
 int FindUnixPipes(void) {
   char *envtmp;
-  register int i;
   struct unixjob cleareduj;
 
   DBPRINT(("Entering FindUnixPipes\n"));
@@ -267,7 +265,7 @@ int FindUnixPipes(void) {
   cleareduj.PID = 0;
   cleareduj.readsock = 0;
   cleareduj.type = UJUNUSED;
-  for (i = 0; i < NPROCS; i++) UJ[i] = cleareduj;
+  for (int i = 0; i < NPROCS; i++) UJ[i] = cleareduj;
 
   DBPRINT(("NPROCS is %d; leaving FindUnixPipes\n", NPROCS));
   return (UnixPipeIn == -1 || UnixPipeOut == -1 || StartTime == -1 || UnixPID == -1);
@@ -347,7 +345,7 @@ int FindAvailablePty(char *Master, char *Slave) {
 
 LispPTR Unix_handlecomm(LispPTR *args) {
   int command, dest, i, slot, sock;
-  unsigned char d[4];
+  unsigned char d[6];
   unsigned char ch;
   unsigned char buf[1];
 
@@ -388,13 +386,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       memset(d, 0, sizeof(d));
       d[0] = 'F';
       d[3] = sockFD;
-      write(UnixPipeOut, d, 4);
+      write(UnixPipeOut, d, 6);
       WriteLispStringToPipe(args[1]);
 
       DBPRINT(("Sending cmd string: %s\n", shcom));
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       /* If it worked, return job # */
       if (d[3] == 1) {
@@ -413,7 +411,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         }
         UJ[PipeFD].type = UJPROCESS;
         UJ[PipeFD].status = -1;
-        UJ[PipeFD].PID = (d[1] << 8) | d[2];
+        UJ[PipeFD].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
         UJ[PipeFD].readsock = 0;
         close(sockFD);
         unlink(PipeName);
@@ -509,10 +507,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           case UJPROCESS:
             /* First check to see it hasn't already died */
             if (UJ[slot].status == -1) {
-              int i;
               /* Kill the job */
               kill(UJ[slot].PID, SIGKILL);
-              for (i = 0; i < 10; i++) {
+              for (int i = 0; i < 10; i++) {
                 /* Waiting for the process to exit is possibly risky.
                    Sending SIGKILL is always supposed to kill
                    a process, but on very rare occurrences this doesn't
@@ -525,11 +522,15 @@ LispPTR Unix_handlecomm(LispPTR *args) {
               }
             }
             break;
-        }
+          default: break;
+          }
       else
         return (ATOM_T);
 
       switch (UJ[slot].type) {
+        case UJUNUSED:
+          break;
+
         case UJSHELL:
           DBPRINT(("Kill 3 closing shell desc %d.\n", slot));
           close(slot);
@@ -585,7 +586,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[1] = SlavePTY[0];
       d[2] = SlavePTY[1];
       d[3] = slot;
-      write(UnixPipeOut, d, 4);
+      d[4] = '\0';
+      d[5] = '\0';
+      write(UnixPipeOut, d, 6);
 
       len = strlen(SlavePTY) + 1;
       write(UnixPipeOut, &len, 2);
@@ -597,7 +600,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       }
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       /* If successful, return job # */
       DBPRINT(("Pipe/fork result = %d.\n", d[3]));
@@ -606,7 +609,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         fcntl(Master, F_SETFL, fcntl(Master, F_GETFL, 0) | O_NONBLOCK);
 
         UJ[slot].type = UJSHELL; /* so we can find them */
-        UJ[slot].PID = (d[1] << 8) | d[2];
+        UJ[slot].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
         printf("Shell job %d, PID = %d\n", slot, UJ[slot].PID);
         UJ[slot].status = -1;
         DBPRINT(("Forked pty in slot %d.\n", slot));
@@ -614,7 +617,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       } else {
         printf("Fork failed.\n");
         fflush(stdout);
-        printf("d = %d, %d, %d, %d\n", d[0], d[1], d[2], d[3]);
+        printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
         close(Master);
         return (NIL);
       }
@@ -632,12 +635,15 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[1] = dest;
 
       d[3] = 1;
-      write(UnixPipeOut, d, 4);
+      write(UnixPipeOut, d, 6);
 
       /* Get status */
-      SAFEREAD(UnixPipeIn, d, 4);
+      SAFEREAD(UnixPipeIn, d, 6);
 
       switch (UJ[dest].type) {
+        case UJUNUSED:
+          break;
+
         case UJSHELL:
           DBPRINT(("Kill 5 closing shell desc %d.\n", dest));
           close(dest);
@@ -887,6 +893,10 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           /* were no chars available and the other end has terminated. */
           /* Either way, signal EOF. */
           DBPRINT(("Indicating write failure from PTY desc %d.\n", slot));
+          return (NIL);
+
+        case UJUNUSED:
+        case UJSOCKET:
           return (NIL);
       }
     }
