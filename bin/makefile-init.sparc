@@ -34,8 +34,6 @@ XFILES = $(OBJECTDIR)xlspwin.o \
 
 XFLAGS = -DXWINDOW -I/usr/openwin/include
 
-# This is to make the %$#@! Apollo cc happy
-OEXT = .o
 # OPTFLAGS is normally -g for MAKEINIT, as it needs debugging often.
 OPTFLAGS = -g3 -O
 

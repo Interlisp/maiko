@@ -1,7 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
 CC = clang -m32 $(CLANG_CFLAGS)
-OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
