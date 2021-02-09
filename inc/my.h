@@ -69,7 +69,7 @@
 		}							\
 	}
 
-__inline__ static LispPTR
+static inline LispPTR
 aref_switch(int type, LispPTR tos, LispPTR baseL, int index)
 {								  
   LispPTR result;
