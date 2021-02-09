@@ -24,8 +24,6 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 
 XFLAGS = -DXWINDOW
 
-# This is to make the %$#@! Apollo cc happy
-OEXT = .o
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
 

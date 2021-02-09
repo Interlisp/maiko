@@ -1,7 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
 CC = cc $(GCC_CFLAGS)
-OEXT=.o
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
