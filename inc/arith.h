@@ -25,26 +25,6 @@
 #define GetSmallp(x)	((0xFFFF0000 & x) ? (((0xFFFF0000 & x)==0xFFFF0000) ? (S_NEGATIVE | (0xFFFF & x)) : error("Not Smallp data") ) : (S_POSITIVE | (0xFFFF & x)))
 
 
-/* arg sour is Lisp address, arg dest is a box to store the number */
-#define	GetNumber(sour, dest){		\
-		switch(SEGMASK & sour){\
-		case S_POSITIVE:		\
-			dest = 0xFFFF & sour;	\
-			break;			\
-		case S_NEGATIVE:		\
-			dest = 0xFFFF0000 | sour;	\
-			break;			\
-		default:			\
-			if(GetTypeNumber( sour ) != TYPE_FIXP){	\
-				ufn(0xFF & (*PC));	\
-				return;		\
-			}			\
-			dest = *((int *)Addr68k_from_LADDR(sour));	\
-		}				\
-	}
-
-
-
 #define FIXP_VALUE(dest) *((int *)Addr68k_from_LADDR(dest))
 
 #define FLOATP_VALUE(dest) *((float *)Addr68k_from_LADDR(dest))
