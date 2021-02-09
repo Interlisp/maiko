@@ -50,9 +50,7 @@
 /*									*/
 /************************************************************************/
 /* I consider that there is no case the variable named \GCDISABLED is set to T */
-/* #define Make_MDSentry(page,pattern)  GETWORD((DLword *)MDStypetbl+(page>>1)) = (DLword)pattern */
-
-static void __inline__ Make_MDSentry(UNSIGNED page, DLword pattern) {
+static inline void Make_MDSentry(UNSIGNED page, DLword pattern) {
   GETWORD((DLword *)MDStypetbl + (page >> 1)) = (DLword)pattern;
 }
 
