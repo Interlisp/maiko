@@ -77,7 +77,6 @@ ENDIF()
 SET(BAD_SRCS
     src/atom.c
     src/chatter.c
-    src/Cldeetr.c
     src/codeconv.c
     src/codetbl.c
     src/doscomm.c
