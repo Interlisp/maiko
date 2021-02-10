@@ -76,8 +76,6 @@ ENDIF()
 # These don't build on Linux. Some are for SunOS and DOS. Others ... ?
 SET(BAD_SRCS
     src/atom.c
-    src/cdaudio.c
-    src/cdrom.c
     src/chatter.c
     src/Cldeetr.c
     src/codeconv.c
@@ -233,7 +231,6 @@ SET(MAIKO_HDRS
     inc/bltdefs.h
     inc/byteswapdefs.h
     inc/car-cdrdefs.h
-    inc/cdrom.h
     inc/cell.h
     inc/chardevdefs.h
     inc/commondefs.h

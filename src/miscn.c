@@ -155,11 +155,6 @@ int OP_miscn(int misc_index, int arg_count) {
       break;
 #endif /* JLISP */
 
-#ifdef CDROM
-    case miscn_CDAUDIO: result = cdaudio(args); break;
-    case miscn_CDROM: result = cdrom(args); break;
-#endif /* CDROM */
-
     case /* miscn_CALL_C*/ 014:
       /* result = call_c_fn(args); */
       result = 0;
