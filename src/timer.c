@@ -463,7 +463,7 @@ static void int_timer_init()
   _dos_setvect(0x1c, DOStimer);     /* hook our int handler to timer int */
 
 #else
-  struct itimerval timert, tmpt;
+  struct itimerval timert;
   struct sigaction timer_action;
 
   timer_action.sa_handler = int_timer_service;
@@ -477,11 +477,7 @@ static void int_timer_init()
   /* then attach a timer to it and turn it loose */
   timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
   timert.it_interval.tv_usec = timert.it_value.tv_usec = TIMER_INTERVAL;
-
-  timerclear(&tmpt.it_value);
-  timerclear(&tmpt.it_interval);
-  setitimer(ITIMER_VIRTUAL, &timert, &tmpt);
-  getitimer(ITIMER_VIRTUAL, &tmpt);
+  setitimer(ITIMER_VIRTUAL, &timert, NULL);
 
   DBPRINT(("Timer interval set to %d usec\n", timert.it_value.tv_usec));
 #endif /* DOS */
