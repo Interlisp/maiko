@@ -184,10 +184,6 @@
 /* for EJLISP */
 #define miscn_EJLISP			060
 
-/* for CD-ROM */
-#define miscn_CDAUDIO			070
-#define miscn_CDROM			071
-
 /* Assigned USER SUBR numbers */
 #define user_subr_DUMMY	012
 #define user_subr_SAMPLE_USER_SUBR	00
