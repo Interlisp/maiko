@@ -135,7 +135,7 @@ static struct timeval SelectTimeout = {0, 0};
 #endif /* DOS */
 
 #ifdef XWINDOW
-extern int Event_Req;
+extern volatile sig_atomic_t Event_Req;
 #endif /* XWINDOW */
 
 extern MISCSTATS *MiscStats;

@@ -90,7 +90,7 @@ int TIMEOUT_TIME; /* For file system timeout */
 #ifdef XWINDOW
 #define FALSE 0
 #define TRUE !FALSE
-int Event_Req = FALSE;
+volatile sig_atomic_t Event_Req = FALSE;
 #endif /* XWINDOW */
 
 static int gettime(int casep);
