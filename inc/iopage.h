@@ -1,3 +1,5 @@
+#ifndef IOPAGE_H
+#define IOPAGE_H 1
 /* $Id: iopage.h,v 1.2 1999/01/03 02:06:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -9,8 +11,6 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-#ifndef IOPAGE_DEFINED
-#define IOPAGE_DEFINED	(1)
 #ifndef BYTESWAP
 /* Normal definition, for big-endian machines */
 typedef struct iopage {

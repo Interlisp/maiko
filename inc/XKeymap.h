@@ -1,3 +1,6 @@
+#ifndef XKEYMAP_H
+#define XKEYMAP_H 1
+
 /* $Id: XKeymap.h,v 1.2 1999/01/03 02:05:48 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
 
@@ -252,3 +255,5 @@ int generic_X_keymap[] = {
     -1, -1, -1};
 
 #endif /* XWINDOW */
+
+#endif

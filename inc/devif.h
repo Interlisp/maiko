@@ -1,3 +1,5 @@
+#ifndef DEVIF_H
+#define DEVIF_H 1
 /* $Id: devif.h,v 1.2 1999/01/03 02:05:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -9,10 +11,6 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
-#ifndef __DEVIF__
-#define  __DEVIF__ 1
-
 
 typedef void (*PFV)();		/* Pointer to Function returning Void */
 typedef int (*PFI)();		/* Pointer to Function returning Int */
@@ -300,5 +298,5 @@ typedef struct
 #define MINKEYEVENT	2	/* leave 2 words for read,write offsets */
 #define NUMBEROFKEYEVENTS 383
 
-#endif /* __DEVIF__ */
+#endif
 

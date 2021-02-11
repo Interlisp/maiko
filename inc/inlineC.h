@@ -1,3 +1,6 @@
+#ifndef INLINEC_H
+#define INLINEC_H 1
+
 /* $Id: inlineC.h,v 1.3 1999/01/03 02:06:02 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
 
@@ -1181,3 +1184,5 @@
     CSTKPTRL -= 8;                                                                                 \
     nextop1;                                                                                       \
   } while (0)
+
+#endif

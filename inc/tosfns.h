@@ -1,3 +1,6 @@
+#ifndef TOSFNS_H
+#define TOSFNS_H 1
+
 /* $Id: tosfns.h,v 1.2 1999/01/03 02:06:28 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved
  */
 
@@ -617,4 +620,6 @@
       }                                                                        \
     } /* end switch */                                                         \
   } while (0)   /* EVAL end */
+#endif
+
 #endif

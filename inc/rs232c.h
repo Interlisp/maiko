@@ -1,3 +1,6 @@
+#ifndef RS232C_H
+#define RS232C_H 1
+
 /* $Id: rs232c.h,v 1.2 1999/01/03 02:06:22 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -165,3 +168,5 @@ typedef struct {
 } RS232C_ENCAPSULATION;
 
 extern DLword *Lisp_world;
+
+#endif

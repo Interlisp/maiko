@@ -1,3 +1,6 @@
+#ifndef LISPMAP_H
+#define LISPMAP_H 1
+
 /* $Id: lispmap.h,v 1.3 1999/01/03 02:06:08 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -381,3 +384,5 @@
 #define D_PNHI		010
 #define D_DEFSHI	012
 #define D_VALSHI	014
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef KEYSYM_H
+#define KEYSYM_H 1
+
 /* $Id: keysym.h,v 1.2 1999/01/03 02:06:07 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -126,3 +129,5 @@
 #define  KEY_PROPS		109
 #define  KEY_PRSC		110
 #define  KEY_OPEN		111
+
+#endif

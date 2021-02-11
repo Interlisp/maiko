@@ -1,3 +1,6 @@
+#ifndef LPKIT_H
+#define LPKIT_H 1
+
 /* $Id: lpkit.h,v 1.2 1999/01/03 02:06:14 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /*
@@ -528,10 +531,4 @@ void invert(void);
 extern jmp_buf LP_jmpbuf;
 extern int SolveCount;
 
-
-
-
-
-
-
-
+#endif

@@ -1,3 +1,6 @@
+#ifndef DISPLAY_H
+#define DISPLAY_H 1
+
 /* $Id: display.h,v 1.2 1999/01/03 02:05:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -81,4 +84,6 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSI
 
 #ifdef BYTESWAP
 void byte_swapped_displayregion(int x, int y, int w, int h);
+#endif
+
 #endif
