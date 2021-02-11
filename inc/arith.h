@@ -30,19 +30,19 @@
 #define FLOATP_VALUE(dest) *((float *)Addr68k_from_LADDR(dest))
 
 #define N_GETNUMBER(sour, dest, label)                        \
-  {                                                           \
+  do {                                                        \
     dest = sour; /* access memory once */                     \
     switch (SEGMASK & dest) {                                 \
       case S_POSITIVE: dest = 0xFFFF & (dest); break;         \
       case S_NEGATIVE: dest = 0xFFFF0000 | (dest); break;     \
       default:                                                \
-        if (GetTypeNumber(dest) != TYPE_FIXP) { goto label; } \
+        if (GetTypeNumber(dest) != TYPE_FIXP) goto label;     \
         dest = FIXP_VALUE(dest);                              \
     }                                                         \
-  }
+  } while (0)
 
 #define N_IGETNUMBER(sour, dest, label)                                                   \
-  {                                                                                       \
+  do {                                                                                    \
     dest = sour; /* access memory once */                                                 \
     switch (SEGMASK & dest) {                                                             \
       case S_POSITIVE: dest = 0xFFFF & dest; break;                                       \
@@ -60,21 +60,23 @@
         }                                                                                 \
         break;                                                                            \
     }                                                                                     \
-  }
+  } while (0)
 
-#define ARITH_SWITCH(arg, result)                                        \
-  switch ((int)arg & 0xFFFF0000) {                                       \
-    case 0: result = (S_POSITIVE | (int)arg); break;                     \
-    case 0xFFFF0000: result = (S_NEGATIVE | (0xFFFF & (int)arg)); break; \
-    default: {                                                           \
-      register LispPTR *wordp;                                           \
-      /* arg is FIXP, call createcell */                                 \
-      wordp = (LispPTR *)createcell68k(TYPE_FIXP);                       \
-      *((int *)wordp) = (int)arg;                                        \
-      result = (LADDR_from_68k(wordp));                                  \
-      break;                                                             \
-    }                                                                    \
-  }
+#define ARITH_SWITCH(arg, result)                                          \
+  do {                                                                     \
+    switch ((int)arg & 0xFFFF0000) {                                       \
+      case 0: result = (S_POSITIVE | (int)arg); break;                     \
+      case 0xFFFF0000: result = (S_NEGATIVE | (0xFFFF & (int)arg)); break; \
+      default: {                                                           \
+        register LispPTR *wordp;                                           \
+        /* arg is FIXP, call createcell */                                 \
+        wordp = (LispPTR *)createcell68k(TYPE_FIXP);                       \
+        *((int *)wordp) = (int)arg;                                        \
+        result = (LADDR_from_68k(wordp));                                  \
+        break;                                                             \
+      }                                                                    \
+    }                                                                      \
+  } while (0)
 
 /* *******
         NEED to See if this is faster than the N_ARITH_SWITCH macro
@@ -100,21 +102,23 @@
         }
 ****** */
 
-#define N_ARITH_SWITCH(arg)                                \
-  switch (arg & 0xFFFF0000) {                              \
-    case 0: return (S_POSITIVE | arg);                     \
-    case 0xFFFF0000: return (S_NEGATIVE | (0xFFFF & arg)); \
-    default: {                                             \
-      register LispPTR *fixpp;                             \
-      /* arg is FIXP, call createcell */                   \
-      fixpp = (LispPTR *)createcell68k(TYPE_FIXP);         \
-      *((int *)fixpp) = arg;                               \
-      return (LADDR_from_68k(fixpp));                      \
-    }                                                      \
-  }
+#define N_ARITH_SWITCH(arg)                                  \
+  do {                                                       \
+    switch (arg & 0xFFFF0000) {                              \
+      case 0: return (S_POSITIVE | arg);                     \
+      case 0xFFFF0000: return (S_NEGATIVE | (0xFFFF & arg)); \
+      default: {                                             \
+        register LispPTR *fixpp;                             \
+        /* arg is FIXP, call createcell */                   \
+        fixpp = (LispPTR *)createcell68k(TYPE_FIXP);         \
+        *((int *)fixpp) = arg;                               \
+        return (LADDR_from_68k(fixpp));                      \
+      }                                                      \
+    }                                                        \
+  } while (0)
 
 #define N_IARITH_BODY_2(a, tos, op)  \
-  {                                  \
+  do {                               \
     register int arg1, arg2;         \
                                      \
     N_IGETNUMBER(a, arg1, do_ufn);   \
@@ -126,10 +130,10 @@
                                      \
   do_ufn:                            \
     ERROR_EXIT(tos);                 \
-  }
+  } while (0)
 
 #define N_ARITH_BODY_1(a, n, op)  \
-  {                               \
+  do {                            \
     register int arg1;            \
                                   \
     N_GETNUMBER(a, arg1, do_ufn); \
@@ -140,10 +144,10 @@
                                   \
   do_ufn:                         \
     ERROR_EXIT(a);                \
-  }
+  } while (0)
 
 #define N_ARITH_BODY_1_UNSIGNED(a, n, op) \
-  {                                       \
+  do {                                    \
     register unsigned int arg1;           \
                                           \
     N_GETNUMBER(a, arg1, do_ufn);         \
@@ -154,6 +158,6 @@
                                           \
   do_ufn:                                 \
     ERROR_EXIT(a);                        \
-  }
+  } while (0)
 
 #endif /* ARITH_H */

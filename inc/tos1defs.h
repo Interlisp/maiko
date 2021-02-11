@@ -28,10 +28,10 @@
 
 #define HARD_PUSH(x) *(CSTKPTRL++) = x
 #define PUSH(x)            \
-  {                        \
+  do {                     \
     HARD_PUSH(TOPOFSTACK); \
     TOPOFSTACK = x;        \
-  }
+  } while (0)
 #define POP TOPOFSTACK = *(--CSTKPTRL)
 #define GET_TOS_1 *(CSTKPTR - 1)
 #define GET_TOS_2 *(CSTKPTR - 2)
@@ -51,10 +51,10 @@
 
 #define HARD_PUSH(x) *(CSTKPTRL++) = x
 #define PUSH(x)            \
-  {                        \
+  do {                     \
     HARD_PUSH(TOPOFSTACK); \
     TOPOFSTACK = x;        \
-  }
+  } while (0)
 #define POP TOPOFSTACK = *(--CSTKPTRL)
 #define GET_TOS_1 *(CSTKPTR - 1)
 #define GET_TOS_2 *(CSTKPTR - 2)
@@ -69,28 +69,28 @@
 /* OPCODE interface routines */
 
 #define StackPtrSave \
-  { CurrentStackPTR = (DLword *)(CSTKPTR - 1); }
+  do { CurrentStackPTR = (DLword *)(CSTKPTR - 1); } while (0)
 #define StackPtrRestore \
-  { CSTKPTRL = ((LispPTR *)CurrentStackPTR) + 1; }
+  do { CSTKPTRL = ((LispPTR *)CurrentStackPTR) + 1; } while (0)
 
 #define EXT                  \
-  {                          \
+  do {                       \
     PC = pccache - 1;        \
     TopOfStack = TOPOFSTACK; \
     StackPtrSave;            \
-  }
+  } while (0)
 
 #define RET                  \
-  {                          \
+  do {                       \
     pccache = PC + 1;        \
     StackPtrRestore;         \
     TOPOFSTACK = TopOfStack; \
-  }
+  } while (0)
 
 #define NRET \
-  {          \
+  do {       \
     RET;     \
     nextop0; \
-  }
+  } while (0)
 
 #endif /* TOS1DEFS_H */

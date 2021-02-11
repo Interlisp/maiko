@@ -41,7 +41,7 @@ typedef struct closure_type {
   unsigned env_ptr : 28; /* LispPTR to environment */
 } Closure;
 
-#else /* not BIGVM */
+#else  /* not BIGVM */
 typedef struct consstr {
   unsigned cdr_code : 8;
   unsigned car_field : 24;
@@ -146,14 +146,14 @@ typedef struct lbits {
 } LBITS;
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)               \
-  {                                                            \
+  do {                                                         \
     if (bitvalue)                                              \
       *((DLword *)(base68k) + (((u_short)(offset)) >> 4)) |=   \
           1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD);    \
     else                                                       \
       *((DLword *)(base68k) + (((u_short)(offset)) >> 4)) &=   \
           ~(1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD)); \
-  }
+  } while (0)
 
 #else
 /*** Byte-swapped structure declarations, for 80386 ***/
@@ -185,7 +185,7 @@ typedef struct closure_type {
   unsigned env_ptr : 28; /* LispPTR to environment */
   unsigned nil2 : 4;
 } Closure;
-#else /* BIGVM */
+#else  /* BIGVM */
 typedef struct consstr {
   unsigned car_field : 24;
   unsigned cdr_code : 8;
@@ -295,7 +295,7 @@ typedef struct lbits {
 } LBITS;
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)                                             \
-  {                                                                                          \
+  do {                                                                                       \
     UNSIGNED real68kbase;                                                                    \
     real68kbase = 2 ^ ((UNSIGNED)(base68k));                                                 \
     if (bitvalue)                                                                            \
@@ -304,7 +304,7 @@ typedef struct lbits {
     else                                                                                     \
       (*(DLword *)(2 ^ (UNSIGNED)((DLword *)(real68kbase) + (((u_short)(offset)) >> 4)))) &= \
           ~(1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD));                               \
-  }
+  } while (0)
 
 #endif /* BYTESWAP */
 
@@ -368,40 +368,40 @@ PopCStack:
 #define PopCStack	{TopOfStack = *((LispPTR *)(--CurrentStackPTR)); --CurrentStackPTR;}
 *****************************************************/
 #define PopCStack                                 \
-  {                                               \
+  do {                                            \
     TopOfStack = *((LispPTR *)(CurrentStackPTR)); \
     CurrentStackPTR -= 2;                         \
-  }
+  } while (0)
 
 /****************************************************
 PopStackTo:  CSTK -> Place
 #define PopStackTo(Place)	{Place= *((LispPTR *)(--CurrentStackPTR)); CurrentStackPTR--; }
 *****************************************************/
 #define PopStackTo(Place)                    \
-  {                                          \
+  do {                                       \
     Place = *((LispPTR *)(CurrentStackPTR)); \
     CurrentStackPTR -= 2;                    \
-  }
+  } while (0)
 
 /****************************************************
 PushCStack:
 #define PushCStack	{*((int *)(++CurrentStackPTR)) = TopOfStack; ++CurrentStackPTR;}
 *****************************************************/
 #define PushCStack                                \
-  {                                               \
+  do {                                            \
     CurrentStackPTR += 2;                         \
     *((LispPTR *)(CurrentStackPTR)) = TopOfStack; \
-  }
+  } while (0)
 
 /****************************************************
 PushStack:
 #define PushStack(x)	{*((LispPTR *)(++CurrentStackPTR))=x;CurrentStackPTR++;}
 *****************************************************/
 #define PushStack(x)                     \
-  {                                      \
+  do {                                   \
     CurrentStackPTR += 2;                \
     *((LispPTR *)(CurrentStackPTR)) = x; \
-  }
+  } while (0)
 
 /****************************************************
 SmashStack:
@@ -422,13 +422,13 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
         then upnt to contextsw and immediately return
 **********************************************************/
 #define DOSTACKOVERFLOW(argnum, bytenum) \
-  {                                      \
+  do {                                   \
     if (do_stackoverflow(T)) {           \
       PushStack(S_POSITIVE | argnum);    \
       contextsw(SubovFXP, bytenum, 1);   \
       return;                            \
     }                                    \
-  }
+  } while (0)
 
 /************************************************************************/
 /*									*/
@@ -488,7 +488,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 #define STKLIM 0x1FFFF
 #define FRAMESIZE 10 /* size of frameex1: 10 words */
 #define FNHEADSIZE 8 /* size of fnhead: 8 words */
-#define BFSIZE 2 /* size of basic frame pointer: 2 words */
+#define BFSIZE 2     /* size of basic frame pointer: 2 words */
 
 #define BITSPER_DLWORD 16
 #define BITSPER_CELL 32
