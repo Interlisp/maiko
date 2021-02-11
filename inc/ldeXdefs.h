@@ -1,3 +1,6 @@
+#ifndef LDEXDEFS_H
+#define LDEXDEFS_H 1
+
 /* $Id: ldeXdefs.h,v 1.2 1999/01/03 02:06:07 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 /* * * * * X defs for all files in Medley * * * * */
@@ -12,9 +15,6 @@
 /************************************************************************/
 
 
-#ifndef __LDEXDEF__
-
-#define __LDEXDEF__ 1
 #include <signal.h>
 #ifdef LOCK_X_UPDATES
 #define XLOCK { XLocked++; /* printf("L"); fflush(stdout);*/}
@@ -34,5 +34,6 @@
 extern int XLocked;
 extern int XNeedSignal;
 /* this is !0 if we're locked; it should be 0 or larger always */
+
 #endif
 

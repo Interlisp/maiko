@@ -1,3 +1,6 @@
+#ifndef LSPGLOB_H
+#define LSPGLOB_H 1
+
 /* $Id: lspglob.h,v 1.2 1999/01/03 02:06:15 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
@@ -168,3 +171,5 @@ extern int UnixPID;
 
 /* Atom index for IL:\MVLIST, for the VALUES opcode */
 extern LispPTR MVLIST_index;
+
+#endif
