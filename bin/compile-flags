@@ -18,8 +18,6 @@ NOPIXRECT	Used to suppress pixrect/pixwin options when they're not
 
 AIX		True if compiling for AIX
 sparc		True if we're compiling on a SPARC machine.
-mc68020		True if we're compiling on a Motorola 680x0 machine.
-sun3		We're compiling for a Sun-3.
 
 NOASM		If true, suppress any attempt to include assembler
 		versions of things in the emulator.  In 'lispemul.c',
@@ -54,8 +52,6 @@ PROFILE		If true, the profiling control code is enabled.  You must
 CHECK
 FSBCHECK	If true, you see a trace of large free stack blocks when
 		the stack is manipulated; was used for debugging stack code.
-FSMESSAGE	If true, prints a message telling you about the hard links
-		it makes (in support of version numbering), as it makes them.
 
 WINDOW
 INIT		Used when compiling an emulator to build a loadup.  Use it
@@ -119,13 +115,7 @@ FLTINT		If true, use the floating-point exception interrupts to detect
 		the condition code from each operation.  For SPARCs, it's not
 		clear that the interrupt trick works, because of code re-
 		arrangement by the C compiler.
-BUFFER		Used (apparently) only in testdisplay.c to decide if it should
-		read the sysout directly, or buffer each page.
 
-IFPAGE_DEFINED	Used in .h files to prevent redefinition of Interface page.
-IOPAGE_DEFINED	" for IO page definition.
-NOWAY		Used to dike out C definitions of RPLACA and RPLACD in the
-		file car-cdrmacro.h
 XWINDOW		True if compiling for an X-windows emulator.
 
 BIGATOMS	True if this emulator will support 3-byte symbols, instead of
