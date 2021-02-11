@@ -2,10 +2,10 @@
  */
 
 /************************************************************************/
-/*									*/
-/*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
-/*	Manufactured in the United States of America.			*/
-/*									*/
+/*                                                                      */
+/*      (C) Copyright 1989-92 Venue. All Rights Reserved.               */
+/*      Manufactured in the United States of America.                   */
+/*                                                                      */
 /************************************************************************/
 
 /*
@@ -14,12 +14,12 @@
 */
 
 /************************************************************************/
-/*									*/
-/*	    Macros for fetching bytes & words PC-relative		*/
-/*									*/
-/*	These are this way so that they can be redefined for the 386i,	*/
-/*	where it makes a difference in speed if you know in advance.	*/
-/*									*/
+/*                                                                      */
+/*          Macros for fetching bytes & words PC-relative               */
+/*                                                                      */
+/*      These are this way so that they can be redefined for the 386i,  */
+/*      where it makes a difference in speed if you know in advance.    */
+/*                                                                      */
 /************************************************************************/
 
 #define Get_BYTE_PCMAC0 Get_BYTE(PCMAC)
@@ -65,151 +65,155 @@
 #define nextop_ptr nextop4
 #endif /* BIGATOMS */
 
-#define CHECK_INTERRUPT                                          \
-  {                                                              \
-    if ((UNSIGNED)CSTKPTR > Irq_Stk_Check) goto check_interrupt; \
-  }
+#define CHECK_INTERRUPT \
+  if ((UNSIGNED)CSTKPTR > Irq_Stk_Check) goto check_interrupt
 
-#define nextop0 \
-  { goto nextopcode; }
+#define nextop0 goto nextopcode
 #define nextop1  \
-  {              \
+  do {           \
     PCMACL += 1; \
     nextop0;     \
-  }
+  } while (0)
 #define nextop2  \
-  {              \
+  do {           \
     PCMACL += 2; \
     nextop0;     \
-  }
+  } while (0)
 #define nextop3  \
-  {              \
+  do {           \
     PCMACL += 3; \
     nextop0;     \
-  }
+  } while (0)
 #define nextop4  \
-  {              \
+  do {           \
     PCMACL += 4; \
     nextop0;     \
-  }
+  } while (0)
 #define nextop5  \
-  {              \
+  do {           \
     PCMACL += 5; \
     nextop0;     \
-  }
+  } while (0)
 
-#define OPCAR                                                                                   \
-  if (Listp(TOPOFSTACK)) {                                                                      \
-    register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                 \
-    if (DATUM68K->cdr_code == CDR_INDIRECT) {                                                   \
-      TOPOFSTACK = ((LispPTR)((ConsCell *)Addr68k_from_LADDR(DATUM68K->car_field))->car_field); \
-      nextop1;                                                                                  \
-    } else {                                                                                    \
-      TOPOFSTACK = ((LispPTR)DATUM68K->car_field);                                              \
-      nextop1;                                                                                  \
-    }                                                                                           \
-  } else if (TOPOFSTACK == NIL_PTR) {                                                           \
-    nextop1;                                                                                    \
-  } else if (TOPOFSTACK == ATOM_T) {                                                            \
-    nextop1;                                                                                    \
-  } else {                                                                                      \
-    goto op_ufn;                                                                                \
-  } /* end of OPCAR */
-
-#ifdef NEWCDRCODING
-#define OPCDR                                                                                     \
-  if (Listp(TOPOFSTACK)) {                                                                        \
-    register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                   \
-    register int CDRCODEX = DATUM68K->cdr_code;                                                   \
-    if (CDRCODEX == CDR_NIL) {                                                                    \
-      /* cdr-nil */                                                                               \
-      TOPOFSTACK = (NIL_PTR);                                                                     \
+#define OPCAR                                                                                     \
+  do {                                                                                            \
+    if (Listp(TOPOFSTACK)) {                                                                      \
+      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                 \
+      if (DATUM68K->cdr_code == CDR_INDIRECT) {                                                   \
+        TOPOFSTACK = ((LispPTR)((ConsCell *)Addr68k_from_LADDR(DATUM68K->car_field))->car_field); \
+        nextop1;                                                                                  \
+      } else {                                                                                    \
+        TOPOFSTACK = ((LispPTR)DATUM68K->car_field);                                              \
+        nextop1;                                                                                  \
+      }                                                                                           \
+    } else if (TOPOFSTACK == NIL_PTR) {                                                           \
       nextop1;                                                                                    \
-    } else if (CDRCODEX > CDR_ONPAGE) {                                                           \
-      /* cdr-samepage */                                                                          \
-      TOPOFSTACK = ((TOPOFSTACK) + ((CDRCODEX & 7) << 1));                                        \
-      nextop1;                                                                                    \
-    } else if (CDRCODEX == CDR_INDIRECT) { /* CDRCODEX < CDR_ONPAGE */                            \
-      /* cdr-indirect */                                                                          \
-      TOPOFSTACK = (cdr((LispPTR)(DATUM68K->car_field)));                                         \
+    } else if (TOPOFSTACK == ATOM_T) {                                                            \
       nextop1;                                                                                    \
     } else {                                                                                      \
-      /* cdr-differentpage */                                                                     \
-      TOPOFSTACK = ((ConsCell *)(Addr68k_from_LADDR((TOPOFSTACK) + (CDRCODEX << 1))))->car_field; \
-      nextop1;                                                                                    \
+      goto op_ufn;                                                                                \
     }                                                                                             \
-  } else if (TOPOFSTACK == NIL_PTR) {                                                             \
-    nextop1;                                                                                      \
-  } else {                                                                                        \
-    goto op_ufn;                                                                                  \
-  } /* end of OPCDR */
+  } while (0) /* end of OPCAR */
+
+#ifdef NEWCDRCODING
+#define OPCDR                                                                              \
+  do {                                                                                     \
+    if (Listp(TOPOFSTACK)) {                                                               \
+      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));          \
+      register int CDRCODEX = DATUM68K->cdr_code;                                          \
+      if (CDRCODEX == CDR_NIL) {                                                           \
+        /* cdr-nil */                                                                      \
+        TOPOFSTACK = (NIL_PTR);                                                            \
+        nextop1;                                                                           \
+      } else if (CDRCODEX > CDR_ONPAGE) {                                                  \
+        /* cdr-samepage */                                                                 \
+        TOPOFSTACK = ((TOPOFSTACK) + ((CDRCODEX & 7) << 1));                               \
+        nextop1;                                                                           \
+      } else if (CDRCODEX == CDR_INDIRECT) { /* CDRCODEX < CDR_ONPAGE */                   \
+        /* cdr-indirect */                                                                 \
+        TOPOFSTACK = (cdr((LispPTR)(DATUM68K->car_field)));                                \
+        nextop1;                                                                           \
+      } else {                                                                             \
+        /* cdr-differentpage */                                                            \
+        TOPOFSTACK =                                                                       \
+            ((ConsCell *)(Addr68k_from_LADDR((TOPOFSTACK) + (CDRCODEX << 1))))->car_field; \
+        nextop1;                                                                           \
+      }                                                                                    \
+    } else if (TOPOFSTACK == NIL_PTR) {                                                    \
+      nextop1;                                                                             \
+    } else {                                                                               \
+      goto op_ufn;                                                                         \
+    }                                                                                      \
+  } while (0) /* end of OPCDR */
 #else
-#define OPCDR                                                                                \
-  if (Listp(TOPOFSTACK)) {                                                                   \
-    register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));              \
-    register int CDRCODEX = DATUM68K->cdr_code;                                              \
-    if (CDRCODEX == CDR_NIL) {                                                               \
-      /* cdr-nil */                                                                          \
-      TOPOFSTACK = (NIL_PTR);                                                                \
-      nextop1;                                                                               \
-    } else if (CDRCODEX > CDR_ONPAGE) {                                                      \
-      /* cdr-samepage */                                                                     \
-      TOPOFSTACK = (POINTER_PAGEBASE(TOPOFSTACK) + ((CDRCODEX & 127) << 1));                 \
-      nextop1;                                                                               \
-    } else if (CDRCODEX == CDR_INDIRECT) { /* CDRCODEX < CDR_ONPAGE */                       \
-      /* cdr-indirect */                                                                     \
-      TOPOFSTACK = (cdr((LispPTR)(DATUM68K->car_field)));                                    \
-      nextop1;                                                                               \
-    } else {                                                                                 \
-      /* cdr-differentpage */                                                                \
-      TOPOFSTACK =                                                                           \
-          ((ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(TOPOFSTACK) + (CDRCODEX << 1)))) \
-              ->car_field;                                                                   \
-      nextop1;                                                                               \
-    }                                                                                        \
-  } else if (TOPOFSTACK == NIL_PTR) {                                                        \
-    nextop1;                                                                                 \
-  } else {                                                                                   \
-    goto op_ufn;                                                                             \
-  }    /* end of OPCDR */
-#endif /* NEWCDRCODING */
+#define OPCDR                                                                                  \
+  do {                                                                                         \
+    if (Listp(TOPOFSTACK)) {                                                                   \
+      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));              \
+      register int CDRCODEX = DATUM68K->cdr_code;                                              \
+      if (CDRCODEX == CDR_NIL) {                                                               \
+        /* cdr-nil */                                                                          \
+        TOPOFSTACK = (NIL_PTR);                                                                \
+        nextop1;                                                                               \
+      } else if (CDRCODEX > CDR_ONPAGE) {                                                      \
+        /* cdr-samepage */                                                                     \
+        TOPOFSTACK = (POINTER_PAGEBASE(TOPOFSTACK) + ((CDRCODEX & 127) << 1));                 \
+        nextop1;                                                                               \
+      } else if (CDRCODEX == CDR_INDIRECT) { /* CDRCODEX < CDR_ONPAGE */                       \
+        /* cdr-indirect */                                                                     \
+        TOPOFSTACK = (cdr((LispPTR)(DATUM68K->car_field)));                                    \
+        nextop1;                                                                               \
+      } else {                                                                                 \
+        /* cdr-differentpage */                                                                \
+        TOPOFSTACK =                                                                           \
+            ((ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(TOPOFSTACK) + (CDRCODEX << 1)))) \
+                ->car_field;                                                                   \
+        nextop1;                                                                               \
+      }                                                                                        \
+    } else if (TOPOFSTACK == NIL_PTR) {                                                        \
+      nextop1;                                                                                 \
+    } else {                                                                                   \
+      goto op_ufn;                                                                             \
+    }                                                                                          \
+  } while (0) /* end of OPCDR */
+#endif        /* NEWCDRCODING */
 
 #define IVARMACRO(x) \
-  {                  \
+  do {               \
     PUSH(IVAR[x]);   \
     nextop1;         \
-  }
+  } while (0)
 #define PVARMACRO(x) \
-  {                  \
+  do {               \
     PUSH(PVAR[x]);   \
     nextop1;         \
-  }
+  } while (0)
 #define PVARSETMACRO(x)   \
-  {                       \
+  do {                    \
     PVAR[x] = TOPOFSTACK; \
     nextop1;              \
-  }
+  } while (0)
 #define PVARSETPOPMACRO(x) \
-  {                        \
+  do {                     \
     PVAR[x] = TOPOFSTACK;  \
     POP;                   \
     nextop1;               \
-  }
+  } while (0)
 #define PUSHATOM(x) \
-  {                 \
+  do {              \
     PUSH(x);        \
     nextop1;        \
-  }
+  } while (0)
 
 #define JUMPMACRO(x) \
-  {                  \
+  do {               \
     CHECK_INTERRUPT; \
     PCMACL += x;     \
     nextop0;         \
-  }
+  } while (0)
 
 #define FJUMPMACRO(x)                         \
-  {                                           \
+  do {                                        \
     if (TOPOFSTACK != 0) { goto PopNextop1; } \
     {                                         \
       CHECK_INTERRUPT;                        \
@@ -217,9 +221,9 @@
       PCMACL += x;                            \
       nextop0;                                \
     }                                         \
-  }
+  } while (0)
 #define TJUMPMACRO(x)                         \
-  {                                           \
+  do {                                        \
     if (TOPOFSTACK == 0) { goto PopNextop1; } \
     {                                         \
       CHECK_INTERRUPT;                        \
@@ -227,22 +231,22 @@
       PCMACL += x;                            \
       nextop0;                                \
     }                                         \
-  }
+  } while (0)
 
 #define GETBASE_N(N)                                                                          \
-  {                                                                                           \
+  do {                                                                                        \
     TOPOFSTACK =                                                                              \
         (S_POSITIVE | GETWORD((DLword *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + N))); \
     nextop2;                                                                                  \
-  }
+  } while (0)
 
 #define GETBASEPTR_N(N)                                                                            \
-  {                                                                                                \
+  do {                                                                                             \
     TOPOFSTACK = (POINTERMASK & *((LispPTR *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + N))); \
     nextop2;                                                                                       \
-  }
+  } while (0)
 #define PUTBASEBYTE                                                                    \
-  {                                                                                    \
+  do {                                                                                 \
     register int byteoffset;                                                           \
     register char *p_data;                                                             \
     if (((SEGMASK & TOPOFSTACK) != S_POSITIVE) || ((unsigned short)TOPOFSTACK >= 256)) \
@@ -253,7 +257,7 @@
       case S_NEGATIVE: byteoffset |= 0xFFFF0000; break;                                \
       default:                                                                         \
         goto op_ufn;                                                                   \
-        /***	if( GetTypeNumber(byteoffset) == TYPE_FIXP )                              \
+        /***      if( GetTypeNumber(byteoffset) == TYPE_FIXP )                         \
                         byteoffset = *((int *)Addr68k_from_LADDR(byteoffset));         \
                 else                                                                   \
                         goto op_ufn; ***/                                              \
@@ -262,10 +266,10 @@
     p_data = (char *)Addr68k_from_LADDR(POINTERMASK & (POP_TOS_1)) + byteoffset;       \
     GETBYTE(p_data) = 0xFF & TOPOFSTACK;                                               \
     nextop1;                                                                           \
-  }
+  } while (0)
 
 #define GETBASEBYTE                                                                                \
-  {                                                                                                \
+  do {                                                                                             \
     switch ((SEGMASK & TOPOFSTACK)) {                                                              \
       case S_POSITIVE: TOPOFSTACK &= 0x0000FFFF; break;                                            \
       case S_NEGATIVE: TOPOFSTACK |= 0xFFFF0000; break;                                            \
@@ -279,57 +283,57 @@
         (0xFF & (GETBYTE((char *)Addr68k_from_LADDR((POINTERMASK & (POP_TOS_1))) + TOPOFSTACK))) | \
         S_POSITIVE;                                                                                \
     nextop1;                                                                                       \
-  }
+  } while (0)
 
 #define PUTBASEPTR_N(n)                                      \
-  {                                                          \
+  do {                                                       \
     register int base;                                       \
     base = POINTERMASK & POP_TOS_1;                          \
     *((LispPTR *)Addr68k_from_LADDR(base + n)) = TOPOFSTACK; \
     TOPOFSTACK = base;                                       \
     nextop2;                                                 \
-  }
+  } while (0)
 
 #define PUTBASE_N(n)                                                         \
-  {                                                                          \
+  do {                                                                       \
     register int base;                                                       \
     if (GetHiWord(TOPOFSTACK) != (S_POSITIVE >> 16)) goto op_ufn;            \
     base = POINTERMASK & POP_TOS_1;                                          \
     GETWORD((DLword *)Addr68k_from_LADDR(base + n)) = GetLoWord(TOPOFSTACK); \
     TOPOFSTACK = base;                                                       \
     nextop2;                                                                 \
-  }
+  } while (0)
 
 #define PVARX(x)                           \
-  {                                        \
+  do {                                     \
     PUSH(GetLongWord((DLword *)PVAR + x)); \
     nextop2;                               \
-  }
+  } while (0)
 #define PVARX_(x)                                    \
-  {                                                  \
+  do {                                               \
     *((LispPTR *)((DLword *)PVAR + x)) = TOPOFSTACK; \
     nextop2;                                         \
-  }
+  } while (0)
 #define IVARX(x)                           \
-  {                                        \
+  do {                                     \
     PUSH(GetLongWord((DLword *)IVAR + x)); \
     nextop2;                               \
-  }
+  } while (0)
 #define IVARX_(x)                                    \
-  {                                                  \
+  do {                                               \
     *((LispPTR *)((DLword *)IVAR + x)) = TOPOFSTACK; \
     nextop2;                                         \
-  }
+  } while (0)
 
 #ifndef BIGATOMS
 #define GVAR(x)                               \
-  {                                           \
+  do {                                        \
     PUSH(GetLongWord(Valspace + ((x) << 1))); \
     nextop_atom;                              \
-  }
+  } while (0)
 #elif defined(BIGVM)
 #define GVAR(x)                                                                  \
-  {                                                                              \
+  do {                                                                           \
     register int tx = x;                                                         \
     if (tx & SEGMASK) {                                                          \
       PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET)));        \
@@ -337,10 +341,10 @@
       PUSH(GetLongWord((LispPTR *)AtomSpace + (tx * 5) + NEWATOM_VALUE_PTROFF)); \
                                                                                  \
     nextop_atom;                                                                 \
-  }
+  } while (0)
 #else
 #define GVAR(x)                                                           \
-  {                                                                       \
+  do {                                                                    \
     register int tx = x;                                                  \
     if (tx & SEGMASK) {                                                   \
       PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET))); \
@@ -348,23 +352,23 @@
       PUSH(GetLongWord(Valspace + ((tx) << 1)));                          \
                                                                           \
     nextop_atom;                                                          \
-  }
+  } while (0)
 #endif /* BIGATOMS */
 
 #define COPY               \
-  {                        \
+  do {                     \
     HARD_PUSH(TOPOFSTACK); \
     nextop1;               \
-  }
+  } while (0)
 
 #define SWAP                \
-  {                         \
+  do {                      \
     register LispPTR temp;  \
     temp = GET_TOS_1;       \
     GET_TOS_1 = TOPOFSTACK; \
     TOPOFSTACK = temp;      \
     nextop1;                \
-  }
+  } while (0)
 
 /*********************************************/
 /* Note: No matter how smart it seems, don't */
@@ -373,47 +377,47 @@
 /* full, 32-bit pointers from 16-bit ints.   */
 /*********************************************/
 #define N_OP_VAG2                                             \
-  {                                                           \
+  do {                                                        \
     TOPOFSTACK = ((GET_TOS_1 << 16) | (0xFFFF & TOPOFSTACK)); \
     CSTKPTRL--;                                               \
     nextop1;                                                  \
-  }
+  } while (0)
 
 #define FN0 \
-  { OPFN(0, fn0_args, fn0_xna, fn0_native); }
+  do { OPFN(0, fn0_args, fn0_xna, fn0_native); } while (0)
 #define FN1 \
-  { OPFN(1, fn1_args, fn1_xna, fn1_native); }
+  do { OPFN(1, fn1_args, fn1_xna, fn1_native); } while (0)
 #define FN2 \
-  { OPFN(2, fn2_args, fn2_xna, fn2_native); }
+  do { OPFN(2, fn2_args, fn2_xna, fn2_native); } while (0)
 #define FN3 \
-  { OPFN(3, fn3_args, fn3_xna, fn3_native); }
+  do { OPFN(3, fn3_args, fn3_xna, fn3_native); } while (0)
 #define FN4 \
-  { OPFN(4, fn4_args, fn4_xna, fn4_native); }
+  do { OPFN(4, fn4_args, fn4_xna, fn4_native); } while (0)
 #define FNX  \
-  {          \
+  do {       \
     OPFNX;   \
     nextop0; \
-  }
+  } while (0)
 #define ENVCALL \
-  {             \
+  do {          \
     OP_ENVCALL; \
     nextop0;    \
-  }
+  } while (0)
 #define RETURN \
-  {            \
+  do {         \
     OPRETURN;  \
     nextop0;   \
-  }
+  } while (0)
 #define APPLY \
-  { OPAPPLY; }
+  do { OPAPPLY; } while (0)
 #define CHECKAPPLY \
-  {                \
+  do {             \
     OPCHECKAPPLY;  \
     nextop1;       \
-  }
+  } while (0)
 
 #define BIN                                                                                  \
-  {                                                                                          \
+  do {                                                                                       \
     register Stream *stream68k; /* stream instance on TOS */                                 \
     register char *buff68k;     /* pointer to BUFF */                                        \
                                                                                              \
@@ -429,67 +433,66 @@
       nextop1;                                                                               \
     } else                                                                                   \
       goto op_ufn;                                                                           \
-  }
+  } while (0)
 
 #ifdef RECLAIMINC
 #define RECLAIMCELL                         \
-  {                                         \
+  do {                                      \
     TOPOFSTACK = gcreclaimcell(TOPOFSTACK); \
     nextop1;                                \
-  }
+  } while (0)
 #else
-#define RECLAIMCELL \
-  { goto op_ufn; }
+#define RECLAIMCELL goto op_ufn
 #endif
 
 #define GCSCAN1                                    \
-  {                                                \
+  do {                                             \
     TOPOFSTACK = gcscan1(TOPOFSTACK & 0xffff);     \
     if (TOPOFSTACK) { TOPOFSTACK |= S_POSITIVE; }; \
     nextop1;                                       \
-  }
+  } while (0)
 
 #define GCSCAN2                                    \
-  {                                                \
+  do {                                             \
     TOPOFSTACK = gcscan2(TOPOFSTACK & 0xffff);     \
     if (TOPOFSTACK) { TOPOFSTACK |= S_POSITIVE; }; \
     nextop1;                                       \
-  }
+  } while (0)
 
 #define CONTEXTSWITCH             \
-  {                               \
+  do {                            \
     EXT;                          \
     OP_contextsw();               \
     RET;                          \
     /*CHECK_INTERRUPT;*/ CLR_IRQ; \
     nextop0;                      \
-  }
+  } while (0)
 
 #define NOP \
-  { nextop1; }
-#define RESLIST(n) \
-  { goto op_ufn; }
+  do { nextop1; } while (0)
+
+#define RESLIST(n) goto op_ufn
 
 #define FINDKEY(x)                            \
-  {                                           \
+  do {                                        \
     TOPOFSTACK = N_OP_findkey(TOPOFSTACK, x); \
     nextop2;                                  \
-  }
+  } while (0)
 
 #define RPLPTR(n)                                       \
-  {                                                     \
+  do {                                                  \
     TOPOFSTACK = N_OP_rplptr(POP_TOS_1, TOPOFSTACK, n); \
     nextop2;                                            \
-  }
+  } while (0)
 
 #define GVAR_(atom_index)               \
-  {                                     \
+  do {                                  \
     N_OP_gvar_(TOPOFSTACK, atom_index); \
     nextop_atom;                        \
-  }
+  } while (0)
 
 #define BIND                                                    \
-  {                                                             \
+  do {                                                          \
     register int byte = Get_BYTE_PCMAC1;                        \
     register unsigned n1;                                       \
     register unsigned n2;                                       \
@@ -507,10 +510,10 @@
     }                                                           \
     TOPOFSTACK = ((~(n1 + n2)) << 16) | (Get_BYTE_PCMAC2 << 1); \
     nextop3;                                                    \
-  }
+  } while (0)
 
 #define UNBIND                                                  \
-  {                                                             \
+  do {                                                          \
     register int num;                                           \
     register LispPTR *ppvar;                                    \
     register int i;                                             \
@@ -522,10 +525,10 @@
     ppvar = (LispPTR *)((DLword *)PVAR + 2 + GetLoWord(value)); \
     for (i = num; --i >= 0;) { *--ppvar = 0xffffffff; }         \
     nextop1;                                                    \
-  }
+  } while (0)
 
 #define DUNBIND                                                          \
-  {                                                                      \
+  do {                                                                   \
     register int num;                                                    \
     register LispPTR *ppvar;                                             \
     register int i;                                                      \
@@ -546,31 +549,31 @@
     }                                                                    \
     POP;                                                                 \
     nextop1;                                                             \
-  }
+  } while (0)
 
 #define N_OP_HILOC                                   \
-  {                                                  \
+  do {                                               \
     TOPOFSTACK = GetHiWord(TOPOFSTACK) | S_POSITIVE; \
     nextop1;                                         \
-  }
+  } while (0)
 #define N_OP_LOLOC                                   \
-  {                                                  \
+  do {                                               \
     TOPOFSTACK = GetLoWord(TOPOFSTACK) | S_POSITIVE; \
     nextop1;                                         \
-  }
+  } while (0)
 
 #define GETBITS_N_M(a, b)                                                                        \
-  {                                                                                              \
+  do {                                                                                           \
     register int temp, bb = b;                                                                   \
     temp = 0xF & bb;                                                                             \
     TOPOFSTACK = S_POSITIVE | (((GETWORD(Addr68k_from_LADDR(POINTERMASK & (TOPOFSTACK + a)))) >> \
                                 (16 - ((0xF & (bb >> 4)) + temp + 1))) &                         \
                                n_mask_array[temp]);                                              \
     nextop3;                                                                                     \
-  }
+  } while (0)
 
 #define PUTBITS_N_M(a, b)                                                                \
-  {                                                                                      \
+  do {                                                                                   \
     int base;                                                                            \
     register int bb = b;                                                                 \
     register DLword *pword;                                                              \
@@ -584,22 +587,22 @@
     GETWORD(pword) = ((TOPOFSTACK << shift_size) & fmask) | (GETWORD(pword) & (~fmask)); \
     TOPOFSTACK = base;                                                                   \
     nextop3;                                                                             \
-  }
+  } while (0)
 
 #define CONS                                       \
-  {                                                \
+  do {                                             \
     TOPOFSTACK = N_OP_cons(POP_TOS_1, TOPOFSTACK); \
     nextop1;                                       \
-  }
+  } while (0)
 
 #define MYALINK                                                     \
-  {                                                                 \
+  do {                                                              \
     PUSH((((CURRENTFX->alink) & 0xfffe) - FRAMESIZE) | S_POSITIVE); \
     nextop1;                                                        \
-  }
+  } while (0)
 
 #define MYARGCOUNT                                                \
-  {                                                               \
+  do {                                                            \
     register UNSIGNED arg_num;                                    \
     if ((CURRENTFX->alink & 1) == 0)                              \
       arg_num = (UNSIGNED)((LispPTR *)(CURRENTFX)-1);             \
@@ -607,64 +610,64 @@
       arg_num = (UNSIGNED)(Stackspace + CURRENTFX->blink);        \
     PUSH((DLword)((arg_num - (UNSIGNED)IVar) >> 2) | S_POSITIVE); \
     nextop1;                                                      \
-  }
+  } while (0)
 
 #define RCLK                            \
-  {                                     \
+  do {                                  \
     TOPOFSTACK = N_OP_rclk(TOPOFSTACK); \
     nextop1;                            \
-  }
+  } while (0)
 
 #define LISTP                                                                  \
-  {                                                                            \
+  do {                                                                         \
     if ((DLword)GetTypeNumber(TOPOFSTACK) != TYPE_LISTP) TOPOFSTACK = NIL_PTR; \
     nextop1;                                                                   \
-  }
+  } while (0)
 
 #define NTYPEX                                                     \
-  {                                                                \
+  do {                                                             \
     TOPOFSTACK = S_POSITIVE | (DLword)(GetTypeNumber(TOPOFSTACK)); \
     nextop1;                                                       \
-  }
+  } while (0)
 
 #define TYPEP(n)                                                      \
-  {                                                                   \
+  do {                                                                \
     if ((DLword)GetTypeNumber(TOPOFSTACK) != n) TOPOFSTACK = NIL_PTR; \
     nextop2;                                                          \
-  }
+  } while (0)
 
 #define TYPEMASK(n)                                                                         \
-  {                                                                                         \
+  do {                                                                                      \
     if ((((DLword)GetTypeEntry(TOPOFSTACK)) & ((DLword)n << 8)) == 0) TOPOFSTACK = NIL_PTR; \
     nextop2;                                                                                \
-  }
+  } while (0)
 
 #define INSTANCEP(atom_index)                            \
-  {                                                      \
+  do {                                                   \
     TOPOFSTACK = N_OP_instancep(TOPOFSTACK, atom_index); \
     nextop_atom;                                         \
-  }
+  } while (0)
 
 #define STOREN(n)                             \
-  {                                           \
+  do {                                        \
     *(CSTKPTR - ((n + 2) >> 1)) = TOPOFSTACK; \
     nextop2;                                  \
-  }
+  } while (0)
 
 #define COPYN(n)                       \
-  {                                    \
+  do {                                 \
     PUSH(*(CSTKPTR - ((n + 2) >> 1))); \
     nextop2;                           \
-  }
+  } while (0)
 
 #define POPN(n)                            \
-  {                                        \
+  do {                                     \
     TOPOFSTACK = *(CSTKPTRL -= ((n) + 1)); \
     nextop2;                               \
-  }
+  } while (0)
 
 #define CLARITHEQUAL                            \
-  {                                             \
+  do {                                          \
     register int arg2;                          \
     SV;                                         \
     arg2 = POP_TOS_1;                           \
@@ -679,12 +682,12 @@
       }                                         \
     }                                           \
     N_OP_POPPED_CALL_2(N_OP_eqq, arg2);         \
-  }
+  } while (0)
 
 #define S_CHARACTER 0x70000
 
 #define AREF1                                                                                      \
-  {                                                                                                \
+  do {                                                                                             \
     LispPTR arrayarg;                                                                              \
     register LispPTR baseL;                                                                        \
     register int index;                                                                            \
@@ -757,11 +760,11 @@
     } /* end switch typenumber */                                                                  \
   aref_ufn:                                                                                        \
     N_OP_POPPED_CALL_2(N_OP_aref1, arrayarg);                                                      \
-  }
+  } while (0)
 
 #ifdef BIGVM
 #define DTEST(n)                                                                                   \
-  {                                                                                                \
+  do {                                                                                             \
     register int atom_index;                                                                       \
     register struct dtd *dtd68k;                                                                   \
     atom_index = n;                                                                                \
@@ -770,10 +773,10 @@
       if (dtd68k->dtd_supertype == 0) { goto op_ufn; }                                             \
     }                                                                                              \
     nextop_atom;                                                                                   \
-  }
+  } while (0)
 #else /* BIGVM */
 #define DTEST(n)                                                               \
-  {                                                                            \
+  do {                                                                         \
     register int atom_index;                                                   \
     register struct dtd *dtd68k;                                               \
     atom_index = n;                                                            \
@@ -783,11 +786,11 @@
       if (dtd68k->dtd_supertype == 0) { goto op_ufn; }                         \
     }                                                                          \
     nextop_atom;                                                               \
-  }
+  } while (0)
 #endif /* BIGVM */
 
 #define FVAR(n)                                                                           \
-  {                                                                                       \
+  do {                                                                                    \
     register LispPTR *chain;                                                              \
     chain = (LispPTR *)(PVar + n);                                                        \
     if (WBITSPTR(chain)->LSB) {                                                           \
@@ -796,10 +799,10 @@
     } /* if(((WBITS */                                                                    \
     PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                    \
     nextop1;                                                                              \
-  }
+  } while (0)
 
 #define FVARX(n)                                                                           \
-  {                                                                                        \
+  do {                                                                                     \
     register int nn = n;                                                                   \
     register LispPTR *chain;                                                               \
     chain = (LispPTR *)(PVar + nn);                                                        \
@@ -809,31 +812,31 @@
     } /* if(((WBITS */                                                                     \
     PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                     \
     nextop2;                                                                               \
-  }
+  } while (0)
 
-/* ********************************************************************	*/
+/* ********************************************************************      */
 /* THE FOLLOWING WAS IN n_op_inlinedefsC.h */
-/* ********************************************************************	*/
+/* ********************************************************************      */
 
 #define GCREF(n)                          \
-  {                                       \
+  do {                                    \
     GCLOOKUPV(TOPOFSTACK, n, TOPOFSTACK); \
     nextop2;                              \
-  }
+  } while (0)
 
 #ifndef BIGATOMS
 #define ATOMCELL_N(n)                                    \
-  {                                                      \
+  do {                                                   \
     if ((unsigned int)TOPOFSTACK >> 16) { goto op_ufn; } \
     TOPOFSTACK = (n << 16) + (TOPOFSTACK << 1);          \
     nextop2;                                             \
-  }
+  } while (0)
 #elif defined(BIGVM)
 #define ATOMCELL_N(n)                                                                             \
-  {                                                                                               \
+  do {                                                                                            \
     register int nn = n;                                                                          \
-    if (0 == ((unsigned int)(TOPOFSTACK &= POINTERMASK) &                                         \
-              SEGMASK)) { /* old-symbol case; just add cell-number arg */                         \
+    if (0 == ((unsigned int)(TOPOFSTACK &= POINTERMASK) & SEGMASK)) {                             \
+      /* old-symbol case; just add cell-number arg */                                             \
       switch (nn) {                                                                               \
         case PLIS_HI: /* PLIST entry for symbol */                                                \
           TOPOFSTACK = (ATOMS_HI << 16) + (10 * (unsigned int)TOPOFSTACK) + NEWATOM_PLIST_OFFSET; \
@@ -850,9 +853,8 @@
         default: goto op_ufn;                                                                     \
       }                                                                                           \
       nextop2;                                                                                    \
-    } else if (TYPE_NEWATOM ==                                                                    \
-               GetTypeNumber(                                                                     \
-                   TOPOFSTACK)) { /* NEW-symbol case; it's an offset from the main ptr */         \
+    } else if (TYPE_NEWATOM == GetTypeNumber(TOPOFSTACK)) {                                       \
+      /* NEW-symbol case; it's an offset from the main ptr */                                     \
       switch (nn) {                                                                               \
         case PLIS_HI: /* PLIST entry for symbol */                                                \
           TOPOFSTACK = TOPOFSTACK + NEWATOM_PLIST_OFFSET;                                         \
@@ -871,196 +873,141 @@
       nextop2;                                                                                    \
     } else                                                                                        \
       goto op_ufn;                                                                                \
-  }
-#else /* 	 */
+  } while (0)
+#else /*        */
 
-#define ATOMCELL_N(n)                                                                           \
-  {                                                                                             \
-    register int nn = n;                                                                        \
-    if (0 ==                                                                                    \
-        ((unsigned int)TOPOFSTACK & SEGMASK)) { /* old-symbol case; just add cell-number arg */ \
-      TOPOFSTACK = (nn << 16) + (TOPOFSTACK << 1);                                              \
-      nextop2;                                                                                  \
-    } else if (TYPE_NEWATOM ==                                                                  \
-               GetTypeNumber(                                                                   \
-                   TOPOFSTACK)) { /* NEW-symbol case; it's an offset from the main ptr */       \
-      switch (nn) {                                                                             \
-        case PLIS_HI: /* PLIST entry for symbol */                                              \
-          TOPOFSTACK = TOPOFSTACK + NEWATOM_PLIST_OFFSET;                                       \
-          break;                                                                                \
-        case PNP_HI: /* PNAME entry for symbol */                                               \
-          TOPOFSTACK = TOPOFSTACK + NEWATOM_PNAME_OFFSET;                                       \
-          break;                                                                                \
-        case VALS_HI: /* VALUE cell for symbol */                                               \
-          TOPOFSTACK = TOPOFSTACK + NEWATOM_VALUE_OFFSET;                                       \
-          break;                                                                                \
-        case DEFS_HI: /* DEFINITION for symbol */                                               \
-          TOPOFSTACK = TOPOFSTACK + NEWATOM_DEFN_OFFSET;                                        \
-          break;                                                                                \
-        default: goto op_ufn;                                                                   \
-      }                                                                                         \
-      nextop2;                                                                                  \
-    } else                                                                                      \
-      goto op_ufn;                                                                              \
-  }
+#define ATOMCELL_N(n)                                         \
+  do {                                                        \
+    register int nn = n;                                      \
+    if (0 == ((unsigned int)TOPOFSTACK & SEGMASK)) {          \
+      /* old-symbol case; just add cell-number arg */         \
+      TOPOFSTACK = (nn << 16) + (TOPOFSTACK << 1);            \
+      nextop2;                                                \
+    } else if (TYPE_NEWATOM == GetTypeNumber(TOPOFSTACK)) {   \
+      /* NEW-symbol case; it's an offset from the main ptr */ \
+      switch (nn) {                                           \
+        case PLIS_HI: /* PLIST entry for symbol */            \
+          TOPOFSTACK = TOPOFSTACK + NEWATOM_PLIST_OFFSET;     \
+          break;                                              \
+        case PNP_HI: /* PNAME entry for symbol */             \
+          TOPOFSTACK = TOPOFSTACK + NEWATOM_PNAME_OFFSET;     \
+          break;                                              \
+        case VALS_HI: /* VALUE cell for symbol */             \
+          TOPOFSTACK = TOPOFSTACK + NEWATOM_VALUE_OFFSET;     \
+          break;                                              \
+        case DEFS_HI: /* DEFINITION for symbol */             \
+          TOPOFSTACK = TOPOFSTACK + NEWATOM_DEFN_OFFSET;      \
+          break;                                              \
+        default: goto op_ufn;                                 \
+      }                                                       \
+      nextop2;                                                \
+    } else                                                    \
+      goto op_ufn;                                            \
+  } while (0)
 #endif /* BIGATOMS */
 
-#define DIFFERENCE \
-  { N_OP_CALL_2(N_OP_difference); }
-#define LOGOR \
-  { N_OP_CALL_2(N_OP_logor); }
-#define LOGAND \
-  { N_OP_CALL_2(N_OP_logand); }
-#define LOGXOR \
-  { N_OP_CALL_2(N_OP_logxor); }
-#define PLUS2 \
-  { N_OP_CALL_2(N_OP_plus2); }
-#define QUOTIENT \
-  { N_OP_CALL_2(N_OP_quot); }
-#define TIMES2 \
-  { N_OP_CALL_2(N_OP_times2); }
-#define GREATERP \
-  { N_OP_CALL_2(N_OP_greaterp); }
-#define IDIFFERENCE \
-  { N_OP_CALL_2(N_OP_idifference); }
-#define IPLUS2 \
-  { N_OP_CALL_2(N_OP_iplus2); }
-#define IQUOTIENT \
-  { N_OP_CALL_2(N_OP_iquot); }
-#define ITIMES2 \
-  { N_OP_CALL_2(N_OP_itimes2); }
-#define IGREATERP \
-  { N_OP_CALL_2(N_OP_igreaterp); }
-#define IREMAINDER \
-  { N_OP_CALL_2(N_OP_iremainder); }
-#define IPLUS_N(n) \
-  { N_OP_CALL_1d(N_OP_iplusn, n) }
-#define IDIFFERENCE_N(n) \
-  { N_OP_CALL_1d(N_OP_idifferencen, n); }
-#define BOXIPLUS \
-  { N_OP_CALL_2(N_OP_boxiplus); }
-#define BOXIDIFFERENCE \
-  { N_OP_CALL_2(N_OP_boxidiff); }
-#define FPLUS2 \
-  { N_OP_CALL_2(N_OP_fplus2); }
-#define FDIFFERENCE \
-  { N_OP_CALL_2(N_OP_fdifference); }
-#define FTIMES2 \
-  { N_OP_CALL_2(N_OP_ftimes2); }
-#define FQUOTIENT \
-  { N_OP_CALL_2(N_OP_fquotient); }
-#define FGREATERP \
-  { N_OP_CALL_2(N_OP_fgreaterp); }
-#define UBFLOAT1(n) \
-  { N_OP_UNBOXED_CALL_1d(N_OP_ubfloat1, n); }
-#define UBFLOAT2(n) \
-  { N_OP_UNBOXED_CALL_2d(N_OP_ubfloat2, n); }
-#define UBFLOAT3(n) \
-  { N_OP_UNBOXED_CALL_3d(N_OP_ubfloat3, n); }
-#define LRSH1 \
-  { N_OP_CALL_1(N_OP_lrsh1); }
-#define LRSH8 \
-  { N_OP_CALL_1(N_OP_lrsh8); }
-#define LLSH1 \
-  { N_OP_CALL_1(N_OP_llsh1); }
-#define LLSH8 \
-  { N_OP_CALL_1(N_OP_llsh8); }
-#define LSH \
-  { N_OP_CALL_2(N_OP_lsh); }
-#define RPLACA \
-  { N_OP_CALL_2(N_OP_rplaca); }
-#define RPLACD \
-  { N_OP_CALL_2(N_OP_rplacd); }
-#define RPLCONS \
-  { N_OP_CALL_2(N_OP_rplcons); }
-#define MAKENUMBER \
-  { N_OP_CALL_2(N_OP_makenumber); }
-#define EQLOP \
-  { N_OP_CALL_2(N_OP_eqlop); }
-#define CLEQUAL \
-  { N_OP_CALL_2(N_OP_clequal); }
-#define ILEQUAL \
-  { N_OP_CALL_2(N_OP_equal); }
-#define CLFMEMB \
-  { N_OP_CALL_exception_2(N_OP_clfmemb); }
-#define CLASSOC \
-  { N_OP_CALL_exception_2(N_OP_classoc); }
-#define FMEMB \
-  { N_OP_CALL_exception_2(N_OP_fmemb); }
-#define ASSOC \
-  { N_OP_CALL_exception_2(N_OP_assoc); }
-#define ARG0 \
-  { N_OP_CALL_1(N_OP_arg0); }
-#define LISTGET \
-  { N_OP_CALL_exception_2C(N_OP_listget); }
-#define DRAWLINE \
-  { N_OP_CALL_9(N_OP_drawline); }
-#define N_OP_ADDBASE \
-  { N_OP_CALL_2(N_OP_addbase); }
+#define DIFFERENCE N_OP_CALL_2(N_OP_difference)
+#define LOGOR N_OP_CALL_2(N_OP_logor)
+#define LOGAND N_OP_CALL_2(N_OP_logand)
+#define LOGXOR N_OP_CALL_2(N_OP_logxor)
+#define PLUS2 N_OP_CALL_2(N_OP_plus2)
+#define QUOTIENT N_OP_CALL_2(N_OP_quot)
+#define TIMES2 N_OP_CALL_2(N_OP_times2)
+#define GREATERP N_OP_CALL_2(N_OP_greaterp)
+#define IDIFFERENCE N_OP_CALL_2(N_OP_idifference)
+#define IPLUS2 N_OP_CALL_2(N_OP_iplus2)
+#define IQUOTIENT N_OP_CALL_2(N_OP_iquot)
+#define ITIMES2 N_OP_CALL_2(N_OP_itimes2)
+#define IGREATERP N_OP_CALL_2(N_OP_igreaterp)
+#define IREMAINDER N_OP_CALL_2(N_OP_iremainder)
+#define IPLUS_N(n) N_OP_CALL_1d(N_OP_iplusn, n)
+#define IDIFFERENCE_N(n) N_OP_CALL_1d(N_OP_idifferencen, n)
+#define BOXIPLUS N_OP_CALL_2(N_OP_boxiplus)
+#define BOXIDIFFERENCE N_OP_CALL_2(N_OP_boxidiff)
+#define FPLUS2 N_OP_CALL_2(N_OP_fplus2)
+#define FDIFFERENCE N_OP_CALL_2(N_OP_fdifference)
+#define FTIMES2 N_OP_CALL_2(N_OP_ftimes2)
+#define FQUOTIENT N_OP_CALL_2(N_OP_fquotient)
+#define FGREATERP N_OP_CALL_2(N_OP_fgreaterp)
+#define UBFLOAT1(n) N_OP_UNBOXED_CALL_1d(N_OP_ubfloat1, n)
+#define UBFLOAT2(n) N_OP_UNBOXED_CALL_2d(N_OP_ubfloat2, n)
+#define UBFLOAT3(n) N_OP_UNBOXED_CALL_3d(N_OP_ubfloat3, n)
+#define LRSH1 N_OP_CALL_1(N_OP_lrsh1)
+#define LRSH8 N_OP_CALL_1(N_OP_lrsh8)
+#define LLSH1 N_OP_CALL_1(N_OP_llsh1)
+#define LLSH8 N_OP_CALL_1(N_OP_llsh8)
+#define LSH N_OP_CALL_2(N_OP_lsh)
+#define RPLACA N_OP_CALL_2(N_OP_rplaca)
+#define RPLACD N_OP_CALL_2(N_OP_rplacd)
+#define RPLCONS N_OP_CALL_2(N_OP_rplcons)
+#define MAKENUMBER N_OP_CALL_2(N_OP_makenumber)
+#define EQLOP N_OP_CALL_2(N_OP_eqlop)
+#define CLEQUAL N_OP_CALL_2(N_OP_clequal)
+#define ILEQUAL N_OP_CALL_2(N_OP_equal)
+#define CLFMEMB N_OP_CALL_exception_2(N_OP_clfmemb)
+#define CLASSOC N_OP_CALL_exception_2(N_OP_classoc)
+#define FMEMB N_OP_CALL_exception_2(N_OP_fmemb)
+#define ASSOC N_OP_CALL_exception_2(N_OP_assoc)
+#define ARG0 N_OP_CALL_1(N_OP_arg0)
+#define LISTGET N_OP_CALL_exception_2C(N_OP_listget)
+#define DRAWLINE N_OP_CALL_9(N_OP_drawline)
+#define N_OP_ADDBASE N_OP_CALL_2(N_OP_addbase)
 
 #define UNWIND(n, m)                                                                           \
-  {                                                                                            \
+  do {                                                                                         \
     if ((CSTKPTRL = N_OP_unwind(CSTKPTR, TOPOFSTACK, n, m)) == (LispPTR *)-1) goto unwind_err; \
     POP;                                                                                       \
     nextop3;                                                                                   \
-  }
+  } while (0)
 
 #define STKSCAN                            \
-  {                                        \
+  do {                                     \
     TOPOFSTACK = N_OP_stkscan(TOPOFSTACK); \
     nextop1;                               \
-  }
+  } while (0)
 
 #define FVARX_(n)                           \
-  {                                         \
+  do {                                      \
     TOPOFSTACK = N_OP_fvar_(TOPOFSTACK, n); \
     nextop2;                                \
-  }
+  } while (0)
 
-#define BLT \
-  { N_OP_CALL_3(N_OP_blt); }
+#define BLT N_OP_CALL_3(N_OP_blt)
 
 #define PILOTBITBLT                                       \
-  {                                                       \
+  do {                                                    \
     TOPOFSTACK = N_OP_pilotbitblt(POP_TOS_1, TOPOFSTACK); \
     nextop1;                                              \
-  }
+  } while (0)
 
-#define CREATECELL \
-  { N_OP_CALL_1(N_OP_createcell); }
+#define CREATECELL N_OP_CALL_1(N_OP_createcell)
 
 #define RESTLIST(n)                                       \
-  {                                                       \
+  do {                                                    \
     TOPOFSTACK = N_OP_restlist(POP_TOS_1, TOPOFSTACK, n); \
     nextop2;                                              \
-  }
+  } while (0)
 
-#define ASET1 \
-  { N_OP_CALL_3(N_OP_aset1); }
-#define ASET2 \
-  { N_OP_CALL_4(N_OP_aset2); }
-#define MISC3(n) \
-  { N_OP_CALL_3d(N_OP_misc3, n); }
-#define MISC4(n) \
-  { N_OP_CALL_4d(N_OP_misc4, n); }
-#define MISC7(n) \
-  { N_OP_CALL_7d(N_OP_misc7, n); }
-#define AREF2 \
-  { N_OP_CALL_3(N_OP_aref2); }
-#define MISCN(index, args)                           \
-  {                                                  \
-    EXT;                                             \
-    if (OP_miscn(index, args)) {                     \
-      RET;                                           \
-      /*	PUSH(S_POSITIVE | (index << 8) | args);		*/ \
-      goto op_ufn;                                   \
-    }                                                \
-    RET;                                             \
-    nextop0;                                         \
-  }
+#define ASET1 N_OP_CALL_3(N_OP_aset1)
+#define ASET2 N_OP_CALL_4(N_OP_aset2)
+#define MISC3(n) N_OP_CALL_3d(N_OP_misc3, n)
+#define MISC4(n) N_OP_CALL_4d(N_OP_misc4, n)
+#define MISC7(n) N_OP_CALL_7d(N_OP_misc7, n)
+#define AREF2 N_OP_CALL_3(N_OP_aref2)
+#define MISCN(index, args)                          \
+  do {                                              \
+    EXT;                                            \
+    if (OP_miscn(index, args)) {                    \
+      RET;                                          \
+      /* PUSH(S_POSITIVE | (index << 8) | args); */ \
+      goto op_ufn;                                  \
+    }                                               \
+    RET;                                            \
+    nextop0;                                        \
+  } while (0)
 
 /* ******************************************************************** */
-/*	Call Interface where -1 indicates an error return		*/
+/*      Call Interface where -1 indicates an error return               */
 /* ******************************************************************** */
 
 /* SV need do no work */
@@ -1069,8 +1016,8 @@
 /* UFN_CALLS are inserted in xc.c. Note that only ufn_2 calls have decremented the stack at the time
  * the UFN is called */
 
-/* ufn_x	there are x args from the Lisp stack
-   ufn_xd	there are x args from the Lisp stack &
+/* ufn_x      there are x args from the Lisp stack
+   ufn_xd      there are x args from the Lisp stack &
                 some from the code stream.
 */
 #define UFN_CALLS                        \
@@ -1111,93 +1058,126 @@
   Error_Exit = 0;                        \
   goto op_ufn;
 
-#define N_OP_CALL_1(op_name)                                                  \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK)) < 0) goto fix_tos_ufn; \
-  nextop1;
+#define N_OP_CALL_1(op_name)                                                    \
+  do {                                                                          \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK)) < 0) goto fix_tos_ufn; \
+    nextop1;                                                                    \
+  } while (0)
 
-#define N_OP_CALL_1d(op_name, n)                                                 \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK, n)) < 0) goto fix_tos_ufn; \
-  nextop2;
+#define N_OP_CALL_1d(op_name, n)                                                   \
+  do {                                                                             \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK, n)) < 0) goto fix_tos_ufn; \
+    nextop2;                                                                       \
+  } while (0)
 
 #define N_OP_UNBOXED_CALL_1d(op_name, n) \
-  TOPOFSTACK = op_name(TOPOFSTACK, n);   \
-  if (Error_Exit) goto fix_tos_ufn;      \
-  nextop2;
+  do {                                   \
+    TOPOFSTACK = op_name(TOPOFSTACK, n); \
+    if (Error_Exit) goto fix_tos_ufn;    \
+    nextop2;                             \
+  } while (0)
 
-#define N_OP_CALL_2(op_name)                                                       \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto ufn_2; \
-  nextop1;
+#define N_OP_CALL_2(op_name)                                                         \
+  do {                                                                               \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto ufn_2; \
+    nextop1;                                                                         \
+  } while (0)
 
-#define N_OP_POPPED_CALL_2(op_name, popped_arg)                                     \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(popped_arg, TOPOFSTACK)) < 0) goto ufn_2; \
-  nextop1;
+#define N_OP_POPPED_CALL_2(op_name, popped_arg)                                       \
+  do {                                                                                \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(popped_arg, TOPOFSTACK)) < 0) goto ufn_2; \
+    nextop1;                                                                          \
+  } while (0)
 
-#define N_OP_CALL_2d(op_name, n)                                                       \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, n)) < 0) goto ufn_2d; \
-  nextop2;
+#define N_OP_CALL_2d(op_name, n)                                                         \
+  do {                                                                                   \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, n)) < 0) goto ufn_2d; \
+    nextop2;                                                                             \
+  } while (0)
 
-#define N_OP_UNBOXED_CALL_2d(op_name, n)          \
-  TOPOFSTACK = op_name(POP_TOS_1, TOPOFSTACK, n); \
-  if (Error_Exit) goto ufn_2d;                    \
-  nextop2;
+#define N_OP_UNBOXED_CALL_2d(op_name, n)            \
+  do {                                              \
+    TOPOFSTACK = op_name(POP_TOS_1, TOPOFSTACK, n); \
+    if (Error_Exit) goto ufn_2d;                    \
+    nextop2;                                        \
+  } while (0)
 
-#define N_OP_CALL_2d2(op_name, a, b)                                                       \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, a, b)) < 0) goto ufn_2d2; \
-  nextop3;
+#define N_OP_CALL_2d2(op_name, a, b)                                                         \
+  do {                                                                                       \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, a, b)) < 0) goto ufn_2d2; \
+    nextop3;                                                                                 \
+  } while (0)
 
-#define N_OP_CALL_exception_2(op_name)                                                   \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2; \
-  nextop1;
+#define N_OP_CALL_exception_2(op_name)                                                     \
+  do {                                                                                     \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2; \
+    nextop1;                                                                               \
+  } while (0)
 
-#define N_OP_CALL_exception_2C(op_name)                                                   \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2C; \
-  nextop1;
+#define N_OP_CALL_exception_2C(op_name)                                                     \
+  do {                                                                                      \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2C; \
+    nextop1;                                                                                \
+  } while (0)
 
-#define N_OP_CALL_3(op_name)                                                                \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK)) < 0) \
-    goto fix_tos_ufn;                                                                       \
-  CSTKPTRL -= 2;                                                                            \
-  nextop1;
+#define N_OP_CALL_3(op_name)                                                                  \
+  do {                                                                                        \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK)) < 0) \
+      goto fix_tos_ufn;                                                                       \
+    CSTKPTRL -= 2;                                                                            \
+    nextop1;                                                                                  \
+  } while (0)
 
-#define N_OP_CALL_3d(op_name, n)                                                               \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0) \
-    goto fix_tos_ufn;                                                                          \
-  CSTKPTRL -= 2;                                                                               \
-  nextop2;
+#define N_OP_CALL_3d(op_name, n)                                                                 \
+  do {                                                                                           \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0) \
+      goto fix_tos_ufn;                                                                          \
+    CSTKPTRL -= 2;                                                                               \
+    nextop2;                                                                                     \
+  } while (0)
 
-#define N_OP_UNBOXED_CALL_3d(op_name, n)                               \
-  TOPOFSTACK = op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n); \
-  if (Error_Exit) goto fix_tos_ufn;                                    \
-  CSTKPTRL -= 2;                                                       \
-  nextop2;
+#define N_OP_UNBOXED_CALL_3d(op_name, n)                                 \
+  do {                                                                   \
+    TOPOFSTACK = op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n); \
+    if (Error_Exit) goto fix_tos_ufn;                                    \
+    CSTKPTRL -= 2;                                                       \
+    nextop2;                                                             \
+  } while (0)
+#define N_OP_CALL_4(op_name)                                                                \
+  do {                                                                                      \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
+                                            TOPOFSTACK)) < 0)                               \
+      goto fix_tos_ufn;                                                                     \
+    CSTKPTRL -= 3;                                                                          \
+    nextop1;                                                                                \
+  } while (0)
 
-#define N_OP_CALL_4(op_name)                                                                       \
-  if ((int)(TOPOFSTACK =                                                                           \
-                (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK)) < 0) \
-    goto fix_tos_ufn;                                                                              \
-  CSTKPTRL -= 3;                                                                                   \
-  nextop1;
+#define N_OP_CALL_4d(op_name, n)                                                            \
+  do {                                                                                      \
+    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
+                                            TOPOFSTACK, n)) < 0)                            \
+      goto fix_tos_ufn;                                                                     \
+    CSTKPTRL -= 3;                                                                          \
+    nextop2;                                                                                \
+  } while (0)
 
-#define N_OP_CALL_4d(op_name, n)                                                          \
-  if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
-                                          TOPOFSTACK, n)) < 0)                            \
-    goto fix_tos_ufn;                                                                     \
-  CSTKPTRL -= 3;                                                                          \
-  nextop2;
+#define N_OP_CALL_7d(op_name, n)                                                                   \
+  do {                                                                                             \
+    if ((int)(TOPOFSTACK =                                                                         \
+                  (LispPTR)op_name(*(CSTKPTR - 6), *(CSTKPTR - 5), *(CSTKPTR - 4), *(CSTKPTR - 3), \
+                                   *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0)            \
+      goto fix_tos_ufn;                                                                            \
+    CSTKPTRL -= 6;                                                                                 \
+    nextop2;                                                                                       \
+  } while (0)
 
-#define N_OP_CALL_7d(op_name, n)                                                                 \
-  if ((int)(TOPOFSTACK =                                                                         \
-                (LispPTR)op_name(*(CSTKPTR - 6), *(CSTKPTR - 5), *(CSTKPTR - 4), *(CSTKPTR - 3), \
-                                 *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0)            \
-    goto fix_tos_ufn;                                                                            \
-  CSTKPTRL -= 6;                                                                                 \
-  nextop2;
-
-#define N_OP_CALL_9(op_name)                                                                     \
-  if ((int)(TOPOFSTACK =                                                                         \
-                (LispPTR)op_name(*(CSTKPTR - 8), *(CSTKPTR - 7), *(CSTKPTR - 6), *(CSTKPTR - 5), \
-                                 *(CSTKPTR - 4), *(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
-                                 TOPOFSTACK /*, fix_tos_ufn*/)) < 0)                             \
-    goto fix_tos_ufn;                                                                            \
-  CSTKPTRL -= 8;                                                                                 \
-  nextop1;
+#define N_OP_CALL_9(op_name)                                                                       \
+  do {                                                                                             \
+    if ((int)(TOPOFSTACK =                                                                         \
+                  (LispPTR)op_name(*(CSTKPTR - 8), *(CSTKPTR - 7), *(CSTKPTR - 6), *(CSTKPTR - 5), \
+                                   *(CSTKPTR - 4), *(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
+                                   TOPOFSTACK /*, fix_tos_ufn*/)) < 0)                             \
+      goto fix_tos_ufn;                                                                            \
+    CSTKPTRL -= 8;                                                                                 \
+    nextop1;                                                                                       \
+  } while (0)

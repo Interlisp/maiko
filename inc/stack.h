@@ -431,6 +431,6 @@ typedef struct stackp {
 
 #define STK_END_COMPUTE(stk_end, fnobj) ((UNSIGNED)(stk_end)-STK_MIN(fnobj))
 
-#define CLR_IRQ \
-  { Irq_Stk_Check = STK_END_COMPUTE((Irq_Stk_End = (UNSIGNED)EndSTKP), FuncObj); }
+#define CLR_IRQ	\
+  Irq_Stk_Check = STK_END_COMPUTE((Irq_Stk_End = (UNSIGNED) EndSTKP), FuncObj)
 #endif

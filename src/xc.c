@@ -230,7 +230,7 @@ void dispatch(void) {
   goto nextopcode;
 
   /* OPCODE FAIL ENTRY POINTS, CALL UFNS HERE */
-  UFN_CALLS;
+  UFN_CALLS
 
 op_ufn : {
   UFN *entry68k;
@@ -241,11 +241,11 @@ op_ufn : {
   fn_defcell = (DefCell *)GetDEFCELL68k(fn_atom_index);
   fn_apply = 2 + entry68k->byte_num; /* code for UFN entry */
   goto op_fn_common;
-};
+}
 
   /* FUNCTION CALL TAIL ROUTINE */
 
-  OP_FN_COMMON;
+  OP_FN_COMMON
 
 /* DISPATCH "LOOP" */
 
@@ -930,7 +930,7 @@ nextopcode:
       TIMES2; /* TIMES2 */
     case 0327:
     case327:
-      QUOTIENT                          /* QUOTIENT */
+      QUOTIENT;                          /* QUOTIENT */
     case 0330:
     case330:
       IPLUS2; /* IPLUS2 only while PLUS has no float */

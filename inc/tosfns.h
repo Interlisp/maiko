@@ -17,7 +17,7 @@
 #if 0
 #define FN_STACK_CHECK                                                           \
   if ((UNSIGNED)CSTKPTR >= (Irq_Stk_Check = (Irq_Stk_End - STK_MIN(LOCFNCELL)))) \
-    goto check_interrupt;
+    goto check_interrupt
 #else
 /* JDS 13 Feb 98 -- with Irq_Stk_Chk being unsigned, need to revise */
 /* the test; if Irq_Stk_Chk == 0, can't just do the subtraction now */
@@ -26,7 +26,7 @@
 #define FN_STACK_CHECK                                                            \
   if ((Irq_Stk_End == 0) ||                                                       \
       ((UNSIGNED)CSTKPTR > (Irq_Stk_Check = (Irq_Stk_End - STK_MIN(LOCFNCELL))))) \
-    goto check_interrupt;
+    goto check_interrupt
 #endif /* 0 */
 
 /****************************************************************/
@@ -66,7 +66,7 @@
 
 #ifdef BIGATOMS
 #define APPLY_POP_PUSH_TEST                                \
-  {                                                        \
+  do {                                                     \
     switch (fn_apply) {                                    \
       case 0: break; /* do nothing */                      \
       case 1:                                              \
@@ -80,17 +80,17 @@
       case 5: {                                            \
         unsigned int atm = Get_AtomNo_PCMAC1;              \
         if (atm & SEGMASK)                                 \
-          PUSH(atm) /* new atom */                         \
+          PUSH(atm); /* new atom */			   \
         else                                               \
           PUSH(S_POSITIVE | atm); /* old atom as SMALLP*/  \
       } break;                                             \
       default: error("Storage error: invalid UFN entry");  \
     }                                                      \
     if (needpush) PUSH(fn_atom_index);                     \
-  }
+  } while (0)
 #else /* not big atoms */
 #define APPLY_POP_PUSH_TEST                                \
-  {                                                        \
+  do {                                                     \
     switch (fn_apply) {                                    \
       case 0: break; /* do nothing */                      \
       case 1:                                              \
@@ -104,28 +104,28 @@
       default: error("Storage error: invalid UFN entry");  \
     }                                                      \
     if (needpush) PUSH(fn_atom_index);                     \
-  }
+  } while (0)
 
 #endif /* BIGATOMS */
 
 #define N_APPLY_POP_PUSH_TEST         \
-  {                                   \
+  do {                                   \
     APPLY_POP_PUSH_TEST;              \
     native_closure_env = closure_env; \
-  }
+  } while (0)
 
 #define N_ENVCALL_POP_TEST            \
-  {                                   \
+  do {                                   \
     CSTKPTRL -= 2;                    \
     native_closure_env = closure_env; \
-  }
+  } while (0)
 
 /****************************************************************/
 /******			 OPAPPLY			 ********/
 /****************************************************************/
 #ifndef BIGATOMS
 #define OPAPPLY                                                        \
-  {                                                                    \
+  do {                                                                    \
     if (GET_TOS_1_HI == SPOS_HI) {                                     \
       fn_num_args = GET_TOS_1_LO;                                      \
       fn_opcode_size = 1;                                              \
@@ -146,10 +146,10 @@
       }                                                                \
     }                                                                  \
     goto op_ufn;                                                       \
-  } /* OPAPPLY */
+  } while (0) /* OPAPPLY */
 #else
 #define OPAPPLY                                                                                    \
-  {                                                                                                \
+  do {                                                                                                \
     if (GET_TOS_1_HI == SPOS_HI) {                                                                 \
       fn_num_args = GET_TOS_1_LO;                                                                  \
       fn_opcode_size = 1;                                                                          \
@@ -171,7 +171,7 @@
         } /* end of switch */                                                                      \
     }                                                                                              \
     goto op_ufn;                                                                                   \
-  }    /* OPAPPLY */
+  } while (0)    /* OPAPPLY */
 #endif /* BIGATOMS */
 
 /****************************************************************/
@@ -179,7 +179,7 @@
 /****************************************************************/
 
 #define OPFN(argcount, num_args_fn, fn_xna_args, fn_native)                            \
-  { /* argcount is a number of the arguments on stack */                               \
+  do { /* argcount is a number of the arguments on stack */                               \
     register struct fnhead *LOCFNCELL;                                                 \
     register int defcell_word;                                                         \
     register int NEXTBLOCK;                                                            \
@@ -242,11 +242,11 @@
     PCMACL = (ByteCode *)LOCFNCELL + LOCFNCELL->startpc + 1;                           \
     FuncObj = LOCFNCELL;                                                               \
     nextop0;                                                                           \
-  } /* end OPFN */
+  } while (0) /* end OPFN */
 
 /*************** OPFNX *************/
 #define OPFNX                                                                          \
-  {                                                                                    \
+  do {                                                                                    \
     register struct fnhead *LOCFNCELL;                                                 \
     register DefCell *defcell; /* this reg is not allocated */                         \
     register int NEXTBLOCK;                                                            \
@@ -309,30 +309,30 @@
     CSTKPTRL += 1;                                                                     \
     PCMACL = (ByteCode *)LOCFNCELL + LOCFNCELL->startpc + 1;                           \
     FuncObj = LOCFNCELL;                                                               \
-  } /* end OPFN */
+  } while (0) /* end OPFNX */
 
 /****************************************************************/
 /******			 OPCHECKAPPLY			 ********/
 /****************************************************************/
 #ifdef BIGATOMS
 #define OPCHECKAPPLY                                                                        \
-  {                                                                                         \
+  do {                                                                                         \
     register DefCell *defcell;                                                              \
     defcell = (DefCell *)GetDEFCELL68k(TOPOFSTACK & POINTERMASK);                           \
     if (!(defcell->ccodep &&                                                                \
           (((TOPOFSTACK & SEGMASK) == 0) || (GetTypeNumber(TOPOFSTACK) == TYPE_NEWATOM)) && \
           ((defcell->argtype == 0) || (defcell->argtype == 2))))                            \
       goto op_ufn;                                                                          \
-  }
+  } while (0)
 #else
 #define OPCHECKAPPLY                                              \
-  {                                                               \
+  do {                                                               \
     register DefCell *defcell;                                    \
     defcell = (DefCell *)GetDEFCELL68k(TOPOFSTACK & POINTERMASK); \
     if (!(defcell->ccodep && ((TOPOFSTACK & SEGMASK) == 0)) &&    \
         ((defcell->argtype == 0) || (defcell->argtype == 2)))     \
       goto op_ufn;                                                \
-  }
+  } while (0)
 #endif /* BIGATOMS */
 
 /****************************************************************/
@@ -448,7 +448,7 @@
 /************************************************************************/
 
 #define OP_ENVCALL                                                        \
-  {                                                                       \
+  do {                                                                    \
     register struct fnhead *LOCFNCELL;                                    \
     register int NEXTBLOCK;                                               \
     register LispPTR closure_env = TOPOFSTACK;                            \
@@ -507,7 +507,7 @@
     PCMACL = (ByteCode *)LOCFNCELL + LOCFNCELL->startpc + 1;              \
     FuncObj = LOCFNCELL;                                                  \
     SWAPPED_FN_CHECK;                                                     \
-  } /* end OP_ENVCALL */
+  } while (0) /* end OP_ENVCALL */
 
 /***************************/
 /*								*/
@@ -517,11 +517,13 @@
 /*	(Only in on ISC, now.								*/
 /********************************************************/
 #ifdef RESWAPPEDCODESTREAM
-#define SWAPPED_FN_CHECK           \
-  if (!FuncObj->byteswapped) {     \
-    byte_swap_code_block(FuncObj); \
-    FuncObj->byteswapped = 1;      \
-  }
+#define SWAPPED_FN_CHECK             \
+  do                                 \
+    if (!FuncObj->byteswapped) {     \
+      byte_swap_code_block(FuncObj); \
+      FuncObj->byteswapped = 1;      \
+    }                                \
+  while (0)
 #else
 #define SWAPPED_FN_CHECK
 #endif /* RESWAPPEDCODESTREAM */
@@ -530,78 +532,89 @@
 /******			 EVAL				 ********/
 /****************************************************************/
 #ifndef BIGATOMS
-#define EVAL                                                                    \
-  {                                                                             \
-    LispPTR scratch, work, lookuped;                                            \
-    switch (TOPOFSTACK & SEGMASK) {                                             \
-      case S_POSITIVE:                                                          \
-      case S_NEGATIVE: nextop1;                                                 \
-      case ATOM_OFFSET:                                                         \
-        if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T)) goto Hack_Label; \
-        nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                    \
-        work = POINTERMASK & swapx(scratch);                                    \
-        lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                    \
-        if (lookuped == NOBIND_PTR) goto op_ufn;                                \
-        TOPOFSTACK = lookuped;                                                  \
-      Hack_Label:                                                               \
-        nextop1;                                                                \
-      default:                                                                  \
-        switch (GetTypeNumber(TOPOFSTACK)) {                                    \
-          case TYPE_FIXP:                                                       \
-          case TYPE_FLOATP:                                                     \
-          case TYPE_STRINGP:                                                    \
-          case TYPE_ONED_ARRAY:                                                 \
-          case TYPE_GENERAL_ARRAY: nextop1;                                     \
-          case TYPE_LISTP:                                                      \
-            fn_atom_index = ATOM_EVALFORM;                                      \
-            fn_num_args = 1;                                                    \
-            fn_opcode_size = 1;                                                 \
-            fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);               \
-            fn_apply = 0;                                                       \
-            goto op_fn_common;                                                  \
-          default: goto op_ufn;                                                 \
-        }                                                                       \
-    } /* end switch */                                                          \
-  }   /* EVAL end */
+#define EVAL                                                                   \
+  do {                                                                         \
+    LispPTR scratch, work, lookuped;                                           \
+    switch (TOPOFSTACK & SEGMASK) {                                            \
+    case S_POSITIVE:                                                           \
+    case S_NEGATIVE:                                                           \
+      nextop1;                                                                 \
+    case ATOM_OFFSET:                                                          \
+      if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
+        goto Hack_Label;                                                       \
+      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
+      work = POINTERMASK & swapx(scratch);                                     \
+      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      if (lookuped == NOBIND_PTR)                                              \
+        goto op_ufn;                                                           \
+      TOPOFSTACK = lookuped;                                                   \
+    Hack_Label:                                                                \
+      nextop1;                                                                 \
+    default:                                                                   \
+      switch (GetTypeNumber(TOPOFSTACK)) {                                     \
+      case TYPE_FIXP:                                                          \
+      case TYPE_FLOATP:                                                        \
+      case TYPE_STRINGP:                                                       \
+      case TYPE_ONED_ARRAY:                                                    \
+      case TYPE_GENERAL_ARRAY:                                                 \
+        nextop1;                                                               \
+      case TYPE_LISTP:                                                         \
+        fn_atom_index = ATOM_EVALFORM;                                         \
+        fn_num_args = 1;                                                       \
+        fn_opcode_size = 1;                                                    \
+        fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);                  \
+        fn_apply = 0;                                                          \
+        goto op_fn_common;                                                     \
+      default:                                                                 \
+        goto op_ufn;                                                           \
+      }                                                                        \
+    } /* end switch */                                                         \
+  } while (0)   /* EVAL end */
 #else
-#define EVAL                                                                    \
-  {                                                                             \
-    LispPTR scratch, work, lookuped;                                            \
-    switch (TOPOFSTACK & SEGMASK) {                                             \
-      case S_POSITIVE:                                                          \
-      case S_NEGATIVE: nextop1;                                                 \
-      case ATOM_OFFSET:                                                         \
-        if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T)) goto Hack_Label; \
-        nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                    \
-        work = POINTERMASK & swapx(scratch);                                    \
-        lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                    \
-        if (lookuped == NOBIND_PTR) goto op_ufn;                                \
-        TOPOFSTACK = lookuped;                                                  \
-      Hack_Label:                                                               \
-        nextop1;                                                                \
-      default:                                                                  \
-        switch (GetTypeNumber(TOPOFSTACK)) {                                    \
-          case TYPE_FIXP:                                                       \
-          case TYPE_FLOATP:                                                     \
-          case TYPE_STRINGP:                                                    \
-          case TYPE_ONED_ARRAY:                                                 \
-          case TYPE_GENERAL_ARRAY: nextop1;                                     \
-          case TYPE_LISTP:                                                      \
-            fn_atom_index = ATOM_EVALFORM;                                      \
-            fn_num_args = 1;                                                    \
-            fn_opcode_size = 1;                                                 \
-            fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);               \
-            fn_apply = 0;                                                       \
-            goto op_fn_common;                                                  \
-          case TYPE_NEWATOM:                                                    \
-            nnewframe(CURRENTFX, &scratch, TOPOFSTACK);                         \
-            work = POINTERMASK & swapx(scratch);                                \
-            lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                \
-            if (lookuped == NOBIND_PTR) goto op_ufn;                            \
-            TOPOFSTACK = lookuped;                                              \
-            nextop1;                                                            \
-          default: goto op_ufn;                                                 \
-        }                                                                       \
-    } /* end switch */                                                          \
-  }   /* EVAL end */
+#define EVAL                                                                   \
+  do {                                                                         \
+    LispPTR scratch, work, lookuped;                                           \
+    switch (TOPOFSTACK & SEGMASK) {                                            \
+    case S_POSITIVE:                                                           \
+    case S_NEGATIVE:                                                           \
+      nextop1;                                                                 \
+    case ATOM_OFFSET:                                                          \
+      if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
+        goto Hack_Label;                                                       \
+      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
+      work = POINTERMASK & swapx(scratch);                                     \
+      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      if (lookuped == NOBIND_PTR)                                              \
+        goto op_ufn;                                                           \
+      TOPOFSTACK = lookuped;                                                   \
+    Hack_Label:                                                                \
+      nextop1;                                                                 \
+    default:                                                                   \
+      switch (GetTypeNumber(TOPOFSTACK)) {                                     \
+      case TYPE_FIXP:                                                          \
+      case TYPE_FLOATP:                                                        \
+      case TYPE_STRINGP:                                                       \
+      case TYPE_ONED_ARRAY:                                                    \
+      case TYPE_GENERAL_ARRAY:                                                 \
+        nextop1;                                                               \
+      case TYPE_LISTP:                                                         \
+        fn_atom_index = ATOM_EVALFORM;                                         \
+        fn_num_args = 1;                                                       \
+        fn_opcode_size = 1;                                                    \
+        fn_defcell = (DefCell *)GetDEFCELL68k(ATOM_EVALFORM);                  \
+        fn_apply = 0;                                                          \
+        goto op_fn_common;                                                     \
+      case TYPE_NEWATOM:                                                       \
+        nnewframe(CURRENTFX, &scratch, TOPOFSTACK);                            \
+        work = POINTERMASK & swapx(scratch);                                   \
+        lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                   \
+        if (lookuped == NOBIND_PTR)                                            \
+          goto op_ufn;                                                         \
+        TOPOFSTACK = lookuped;                                                 \
+        nextop1;                                                               \
+      default:                                                                 \
+        goto op_ufn;                                                           \
+      }                                                                        \
+    } /* end switch */                                                         \
+  } while (0)   /* EVAL end */
 #endif
