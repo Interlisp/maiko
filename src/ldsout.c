@@ -2,11 +2,11 @@
  */
 
 /************************************************************************/
-/*									*/
-/*	(C) Copyright 1989, 1990, 1990, 1991, 1992, 1993, 1994, 1998 Venue.	*/
-/*	    All Rights Reserved.		*/
-/*	Manufactured in the United States of America.			*/
-/*									*/
+/*                                                                      */
+/*  (C) Copyright 1989, 1990, 1990, 1991, 1992, 1993, 1994, 1998 Venue. */
+/*  All Rights Reserved.                                                */
+/*  Manufactured in the United States of America.                       */
+/*                                                                      */
 /************************************************************************/
 
 #include "version.h"
@@ -40,16 +40,15 @@
 #define MAX_EXPLICIT_SYSOUTSIZE 256 /* Max possible sysout size is 64Mb */
 #define MBYTE 0x100000              /* 1 Mbyte */
 
-/* Flag for indication whether process space
-  is going to expand or not */
+/* Flag for indication whether process space is going to expand or not */
 int Storage_expanded; /*  T or NIL */
 
 /************************************************************************/
-/*									*/
-/*			s y s o u t _ l o a d e r			*/
-/*									*/
-/*	Load the sysout file into memory.				*/
-/*									*/
+/*                                                                      */
+/*                       s y s o u t _ l o a d e r                      */
+/*                                                                      */
+/*      Load the sysout file into memory.                               */
+/*                                                                      */
 /************************************************************************/
 #if defined(DOS) || defined(XWINDOW)
 #include "devif.h"
@@ -58,8 +57,7 @@ extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
 /* sys_size is sysout size in megabytes */
-int sysout_loader(const char * sysout_file_name, int sys_size)
-{
+int sysout_loader(const char *sysout_file_name, int sys_size) {
   int sysout; /* SysoutFile descriptor */
 
   IFPAGE ifpage; /* IFPAGE */
@@ -138,8 +136,9 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
     exit(-1);
   }
 #endif /* NOVERSION */
-  if (sys_size == 0) /* use default or the previous one */
-  {
+
+  /* use default or the previous one */
+  if (sys_size == 0) {
     if (ifpage.process_size == 0)        /* Pure LISP.SYSOUT */
       sys_size = DEFAULT_MAX_SYSOUTSIZE; /* default for pure SYSOUT */
     else
@@ -221,7 +220,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
 
   if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
     printf("CAUTION::not an integral number of pages.  sysout & 0x1ff = 0x%x\n",
-          (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
+           (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
 
   if (ifpage.nactivepages != (sysout_size / 2)) {
     printf("sysout_loader:IFPAGE says sysout size is %d\n", ifpage.nactivepages);
@@ -244,7 +243,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
     exit(-1);
   }
 
-/* read FPTOVP */
+  /* read FPTOVP */
 
 #ifdef BIGVM
   /* fptovp is now in cells, not words */
@@ -256,7 +255,8 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
   }
 
 #ifdef BYTESWAP
-  word_swap_page((unsigned short *)fptovp, (sysout_size / 2) + 1); /* So space to swap is twice as big, too. */
+  /* So space to swap is twice as big, too. */
+  word_swap_page((unsigned short *)fptovp, (sysout_size / 2) + 1);
 #endif /* BYTESWAP */
 
 #else
