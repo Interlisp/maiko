@@ -30,7 +30,6 @@
 #include "dbprint.h"
 
 #include "xrdoptdefs.h"
-#include "maindefs.h"
 
 XrmDatabase commandlineDB, applicationDB, serverDB, homeDB, rDB;
 extern int LispWindowRequestedX, LispWindowRequestedY;
@@ -111,6 +110,7 @@ void print_Xusage(const char *prog)
   fprintf(stderr, " %s options:\n", prog);
   fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
   fprintf(stderr, " -h[elp]                              -prints this text\n");
+  fprintf(stderr, " -info                                -prints configuration info\n");
   fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
   fprintf(stderr,
           " -g[eometry] <geom>                   -size & placement for the medley window on your X "
@@ -163,16 +163,12 @@ void read_Xoption(int *argc, char *argv[])
 
   /**********************************************/
   /*                                            */
-  /*  Take care of -help & -info flags, which   */
-  /*  aren't handled correctly by the X code.   */
+  /*  Take care of -help flag, which            */
+  /*  isn't handled correctly by the X code.    */
   /*                                            */
   /**********************************************/
 
   for (i = 1; i < *argc; i++) {
-    if (argv[i] && ((strcmp(argv[i], "-info") == 0) || (strcmp(argv[i], "-INFO") == 0))) {
-      print_info_lines();
-    }
-
     if (argv[i] && ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-HELP") == 0))) {
       print_Xusage(argv[0]);
       exit(0);
