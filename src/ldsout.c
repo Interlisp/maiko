@@ -66,9 +66,9 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
 
 #ifdef BIGVM
   /* 1 "cell" per page for 256MB in 512 byte pages */
-  unsigned int fptovp[0x80000]; /* FPTOVP */
+  unsigned int *fptovp;
 #else
-  DLword fptovp[0x10000]; /* FPTOVP */
+  DLword *fptovp; /* FPTOVP */
 #endif                /* BIGVM */
   long fptovp_offset; /* FPTOVP start offset */
 
@@ -221,7 +221,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
 
   if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
     printf("CAUTION::not an integral number of pages.  sysout & 0x1ff = 0x%x\n",
-	   (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
+          (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
 
   if (ifpage.nactivepages != (sysout_size / 2)) {
     printf("sysout_loader:IFPAGE says sysout size is %d\n", ifpage.nactivepages);
@@ -248,19 +248,23 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
 
 #ifdef BIGVM
   /* fptovp is now in cells, not words */
+  fptovp = malloc(sysout_size * 2 + 4);
   if (read(sysout, fptovp, sysout_size * 2) == -1) {
     perror("sysout_loader: can't read FPTOVP");
+    free(fptovp);
     exit(-1);
   }
 
 #ifdef BYTESWAP
   word_swap_page((unsigned short *)fptovp, (sysout_size / 2) + 1); /* So space to swap is twice as big, too. */
-#endif                                           /* BYTESWAP */
+#endif /* BYTESWAP */
 
 #else
 
+  fptovp = malloc(sysout_size + 2);
   if (read(sysout, fptovp, sysout_size) == -1) {
     perror("sysout_loader: can't read FPTOVP");
+    free(fptovp);
     exit(-1);
   }
 
@@ -303,6 +307,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
     if (GETPAGEOK(fptovp, i) != 0177777) {
       if (lseek(sysout, i * BYTESPER_PAGE, SEEK_SET) == -1) {
         perror("sysout_loader: can't seek sysout file");
+        free(fptovp);
         exit(-1);
       };
       lispworld_offset = GETFPTOVP(fptovp, i) * BYTESPER_PAGE;
@@ -315,6 +320,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
           int j;
           for (j = 0; j < 10; j++) printf(" %d: 0x%x  ", j, GETFPTOVP(fptovp, j));
         }
+        free(fptovp);
         exit(-1);
       };
 #ifdef BYTESWAP
@@ -322,7 +328,7 @@ int sysout_loader(const char * sysout_file_name, int sys_size)
 #endif
     };
   }
-
+  free(fptovp);
   DBPRINT(("sysout file is read completely.\n"));
 
 #if (defined(DISPLAYBUFFER) || defined(XWINDOW) || defined(DOS))
