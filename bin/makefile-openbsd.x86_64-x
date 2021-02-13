@@ -1,6 +1,6 @@
 # Options for OpenBSD, Intel x86_64 and X-Window
 
-CC = clang -m64 $(CLANG_CFLAGS)
+CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

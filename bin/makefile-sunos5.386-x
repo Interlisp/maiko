@@ -10,7 +10,7 @@
 #*									*/
 #************************************************************************/
 
-CC = clang -m32 $(CLANG_CFLAGS)
+CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
