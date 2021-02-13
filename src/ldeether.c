@@ -19,11 +19,13 @@ int main(int argc, char *argv[]) { return (0); }
 
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #ifdef USE_DLPI
 #include <sys/stream.h>
 #include <sys/stropts.h>
 #include <sys/pfmod.h>
+#include "dlpidefs.h"
 
 #if defined(SVR4) && !defined(OS5)
 char *devices[] = {"emd0", "emd1", "emd2", "emd3", "emd4", 0};
