@@ -1,5 +1,6 @@
 #ifndef CHARDEVDEFS_H
 #define CHARDEVDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR CHAR_openfile(LispPTR *args);
 LispPTR CHAR_closefile(LispPTR *args);
 LispPTR CHAR_ioctl(LispPTR *args);

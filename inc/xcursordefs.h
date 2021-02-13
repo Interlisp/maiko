@@ -1,8 +1,9 @@
 #ifndef XCURSORDEFS_H
 #define XCURSORDEFS_H 1
-#include <stdint.h>
-#include <X11/Xlib.h>
-#include "devif.h"
+#include <X11/X.h>     /* for Cursor, Window */
+#include <X11/Xlib.h>  /* for Display */
+#include <stdint.h>    /* for uint8_t */
+#include "devif.h"     /* for DspInterface */
 void Init_XCursor(void);
 void Set_XCursor(int x, int y);
 void init_Xcursor(Display *display, Window window);

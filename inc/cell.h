@@ -20,6 +20,8 @@
 
 */
 /**********************************************************************/
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "version.h" /* for BIGVM, NEWCDRCODING, BIGATOMS */
 
 /*  CONS CELL (LISTP) definitions moved to lispemulater.h */
 

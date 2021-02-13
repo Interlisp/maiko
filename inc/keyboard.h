@@ -2,10 +2,7 @@
 #define KEYBOARD_H 1
 /* $Id: keyboard.h,v 1.2 1999/01/03 02:06:06 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
 /** Header File for K/B MOUSE */
-
-
 
 /************************************************************************/
 /*									*/
@@ -13,7 +10,7 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
+#include "lispemul.h" /* for DLword */
 
 #define	MOUSE_LEFT	13
 #define	MOUSE_MIDDLE	15

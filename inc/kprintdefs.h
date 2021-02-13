@@ -1,5 +1,6 @@
 #ifndef KPRINTDEFS_H
 #define KPRINTDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 void prindatum(LispPTR x);
 LispPTR print(LispPTR x);
 void print_NEWstring(LispPTR x);

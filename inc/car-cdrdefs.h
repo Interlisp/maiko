@@ -1,6 +1,7 @@
 #ifndef CAR_CDRDEFS_H
 #define CAR_CDRDEFS_H 1
-#include "cell.h"
+#include "cell.h" /* for ConsCell */
+#include "lispemul.h" /* for LispPTR */
 LispPTR car(register LispPTR datum);
 LispPTR cdr(register LispPTR datum);
 LispPTR rplaca(register LispPTR x, register LispPTR y);

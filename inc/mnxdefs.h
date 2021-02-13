@@ -2,10 +2,6 @@
 #define MNXDEFS_H 1
 /* $Id: mnxdefs.h,v 1.2 1999/01/03 02:06:17 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989, 1990, 1990, 1991, 1992, 1993, 1994, 1995 Venue.	*/
@@ -13,10 +9,10 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
-
+#include <X11/X.h> /* for Pixmap */
+#include <X11/Intrinsic.h> /* for Widget */
+#include <X11/Xlib.h> /* for */
 #ifdef XTK
-#include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Xaw/Form.h>
 #include <X11/Xaw/Box.h>
@@ -25,6 +21,8 @@
 #include <X11/Xmu/Converters.h>
 #include <X11/Xaw/Scrollbar.h>
 #endif /* XTK */
+
+#include "lispemul.h" /* for LispPTR */
 
 typedef void (*PFV)();		/* Pointer to Function returning Void */
 typedef int (*PFI)();		/* Pointer to Function returning Int */

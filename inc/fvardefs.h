@@ -1,5 +1,7 @@
 #ifndef FVARDEFS_H
 #define FVARDEFS_H 1
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "stack.h" /* for fnhead, frameex1 */
 LispPTR N_OP_fvarn(register int n);
 LispPTR N_OP_stkscan(LispPTR tos);
 LispPTR N_OP_fvar_(register LispPTR tos, register int n);

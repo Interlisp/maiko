@@ -1,5 +1,6 @@
 #ifndef KEYEVENTDEFS_H
 #define KEYEVENTDEFS_H 1
+#include <sys/types.h>
 void getsignaldata(int sig);
 void kb_trans(u_short keycode, u_short upflg);
 void taking_mouse_down(void);

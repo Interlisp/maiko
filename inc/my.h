@@ -10,15 +10,16 @@
 /*									*/
 /************************************************************************/
 
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "adr68k.h" /* for Addr68k_from_LADDR */
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "lispmap.h" /* for S_NEGATIVE, S_POSITIVE */
+#include "lsptypes.h" /* for GETWORD */
 
 #define S_CHARACTER 0x70000
 #ifdef BIGVM

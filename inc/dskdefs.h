@@ -1,5 +1,6 @@
 #ifndef DSKDEFS_H
 #define DSKDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 #ifdef DOS
 void separate_host(char *lfname, char *host, char *drive);
 #else

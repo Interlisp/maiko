@@ -5,8 +5,6 @@
 
 /* * * * * X defs for all files in Medley * * * * */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
@@ -14,8 +12,6 @@
 /*									*/
 /************************************************************************/
 
-
-#include <signal.h>
 #ifdef LOCK_X_UPDATES
 #define XLOCK { XLocked++; /* printf("L"); fflush(stdout);*/}
 #define XUNLOCK					\

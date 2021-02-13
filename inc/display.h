@@ -3,19 +3,16 @@
 
 /* $Id: display.h,v 1.2 1999/01/03 02:05:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-94 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "lispemul.h" /* for DLword */
+#include "version.h" /* for UNSIGNED */
 
 #define BCPLDISPLAY	stdout
-
 
 #define	CURSORWIDTH	16
 #define	CURSORHEIGHT	16

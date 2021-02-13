@@ -2,8 +2,6 @@
 #define LSPTYPES_H 1
 /*  @(#) lsptypes.h Version 1.4 (12/29/94). copyright Venue   */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
@@ -19,6 +17,8 @@
 
 */
 /**********************************************************************/
+#include "version.h" /* for BIGVM, BIGATOMS */
+#include "lispemul.h" /* for LispPTR, DLword */
 
 /************************************************************************/
 /*									*/

@@ -1,5 +1,6 @@
 #ifndef TIMERDEFS_H
 #define TIMERDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 void update_miscstats(void);
 void init_miscstats(void);
 LispPTR subr_gettime(LispPTR args[]);

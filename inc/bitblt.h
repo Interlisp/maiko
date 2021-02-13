@@ -10,8 +10,6 @@
  *
  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	Copyright 1989, 1990 Venue, Fuji Xerox Co., Ltd, Xerox Corp.	*/
@@ -20,8 +18,7 @@
 /*	Agreement dated 18-August-1989 for support of Medley.		*/
 /*									*/
 /************************************************************************/
-
-
+#include "lispemul.h" /* for DLword */
 
 #define	REPLACE	0
 #define	PAINT	2

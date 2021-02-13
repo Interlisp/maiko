@@ -2,8 +2,6 @@
 #define GCDATA_H 1
 /* $Id: gc.h,v 1.3 2001/12/24 01:08:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*                                                                      */
 /*      (C) Copyright 1989-94 Venue. All Rights Reserved.               */
@@ -19,6 +17,9 @@
  
 */
 /**********************************************************************/
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "version.h" /* for USHORT */
+
 #define ADDREF  0       /* for gclookup routine. */
 #define DELREF  1       /* for gclookup routine. */
 #define STKREF  2       /* for gclookup routine. */

@@ -17,6 +17,7 @@
 #include <X11/Xutil.h>
 
 #include "lispemul.h"
+#include "miscstat.h"
 #include "devif.h"
 #include "xdefs.h"
 #include "xscroll.h"

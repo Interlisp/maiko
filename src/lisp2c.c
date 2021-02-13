@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include <stdio.h> /* for sprintf */
+#include <stdlib.h>
 
 #include "lispemul.h"
 #include "lspglob.h"

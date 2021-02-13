@@ -1,6 +1,7 @@
 #ifndef LLSTKDEFS_H
 #define LLSTKDEFS_H 1
-#include "stack.h"
+#include "lispemul.h" /* for DLword */
+#include "stack.h" /* for FX, StackWord, Bframe */
 int do_stackoverflow(int incallp);
 DLword *freestackblock(DLword n, StackWord *start68k, int align);
 void decusecount68k(register FX *frame68k);

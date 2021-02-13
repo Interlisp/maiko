@@ -1,5 +1,6 @@
 #ifndef LISP2CDEFS_H
 #define LISP2CDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 int LispStringP(LispPTR object);
 int LispStringLength(LispPTR lispstring);
 void LispStringToCStr(LispPTR lispstring, char *cstring);

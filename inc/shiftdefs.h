@@ -1,5 +1,6 @@
 #ifndef SHIFTDEFS_H
 #define SHIFTDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR N_OP_llsh1(int a);
 LispPTR N_OP_llsh8(int a);
 LispPTR N_OP_lrsh1(int a);

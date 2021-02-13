@@ -3,8 +3,6 @@
 
 /* $Id: lspglob.h,v 1.2 1999/01/03 02:06:15 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
@@ -27,6 +25,11 @@
 					Changed : Jul 02 1987 take
 */
 /**********************************************************************/
+#include "version.h" /* for BIGVM */
+#include "ifpage.h" /* for IFPAGE */
+#include "iopage.h" /* for IOPAGE */
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "miscstat.h" /* for MISCSTAT */
 
  extern  DLword *Atomspace; 		/* ATOMSPACE */
  extern  DLword *Stackspace;		/* STACKSPACE*/

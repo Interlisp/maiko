@@ -1,5 +1,6 @@
 #ifndef LOOPSOPSDEFS_H
 #define LOOPSOPSDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum);
 LispPTR LCinit(void);
 LispPTR LCFetchMethod(register LispPTR class, register LispPTR selector);

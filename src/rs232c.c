@@ -9,9 +9,15 @@
 /************************************************************************/
 
 #include "version.h"
-#include "rs232c.h"
-#include "lspglob.h"
+
+#include <fcntl.h>
+#include <sgtty.h>
+#include <stdio.h>
 #include <sys/select.h>
+
+#include "lspglob.h"
+#include "rs232c.h"
+
 /*
  * Lisp Interface
  */

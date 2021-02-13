@@ -1,5 +1,6 @@
 #ifndef GCFINALDEFS_H
 #define GCFINALDEFS_H 1
+#include "lispemul.h" /* for LispPTR, DLword */
 void printarrayblock(LispPTR base);
 int integerlength(unsigned int n);
 LispPTR findptrsbuffer(LispPTR ptr);

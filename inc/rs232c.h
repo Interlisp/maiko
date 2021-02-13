@@ -12,13 +12,7 @@
 /*									*/
 /************************************************************************/
 
-#include<stdio.h>
-#include<fcntl.h>
-#include<sgtty.h>
-
-#include "lispemul.h"
-#include "adr68k.h"
-#include "lispmap.h" 
+#include "lispemul.h" /* for LispPTR, DLword, DLbyte */
 
 /* 
  RS232C Buffer Status
