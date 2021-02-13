@@ -2250,8 +2250,8 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   register int dskp, rval, *buf;
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
   char name[MAXNAMLEN + 1], file[MAXPATHLEN], ver[VERSIONLEN];
-  char drive[2];
 #ifdef DOS
+  char drive[2];
   struct diskfree_t sfsbuf;
 #else
   struct statvfs sfsbuf;
@@ -2501,7 +2501,10 @@ int unpack_filename(char *file, char *dir, char *name, char *ver, int checkp)
 int true_name(register char *path)
 {
   char dir[MAXPATHLEN];
-  char name[MAXNAMLEN], drive[1];
+  char name[MAXNAMLEN];
+#ifdef DOS
+  char drive[1];
+#endif
   register char *sp, *cp;
   register int type, c;
 
@@ -3056,8 +3059,10 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   register FileName *svarray;
   register DIR *dirp;
   register struct dirent *dp;
+  /* Used in commented out code below:
   register int rval;
   struct stat sbuf;
+  */
 
   /*
    * First of all, prepare a lower cased file name for the case insensitive

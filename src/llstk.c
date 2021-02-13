@@ -215,12 +215,10 @@ out:
 */
 /******************************************************************/
 int do_stackoverflow(int incallp) {
-  register DLword *next68k;
   DLword newfx;
   DLword savenext;
   DLword *oldPVar;
   int movedistance;
-  LispPTR moveframe(register FX * oldfx68k);
 #ifdef STACKCHECK
   LispPTR stackcontents;
   LispPTR TopIVAR;
@@ -431,7 +429,7 @@ void decusecount68k(register FX *frame68k) {
   DLword *alink68k;
   register Bframe *blink68k;
   DLword *clink68k;
-  register DLword *ivar68k;
+  /*** register DLword *ivar68k; */
   register int size;
 
   if (FX_INVALIDP(frame68k)) return;
@@ -1038,14 +1036,11 @@ void check_BF(Bframe *bf68k) {
 /************************************************************************/
 
 int check_stack_rooms(FX *fx68k) {
-  int size;
-  DLword *freeptr68k, *endstk68k;
+  DLword *freeptr68k;
 
   CHECK_FX(fx68k);
   freeptr68k = Addr68k_from_StkOffset(fx68k->nextblock);
   if (!FSBP(freeptr68k)) error("check_stack_rooms:  nextblock doesn't point to an FSB");
-  /*endstk68k=freeptr68k + FSB_size(freeptr68k);
-  size=((UNSIGNED)endstk68k - (UNSIGNED)CurrentStackPTR) >> 1;*/
   return (FSB_size(freeptr68k));
 
 } /* end check_stack_rooms */

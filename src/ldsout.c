@@ -52,7 +52,6 @@ int Storage_expanded; /*  T or NIL */
 /************************************************************************/
 #if defined(DOS) || defined(XWINDOW)
 #include "devif.h"
-static char *metersyms = "-\\|/";
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
@@ -75,11 +74,9 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 
   unsigned sysout_size; /* sysout size in page */
   struct stat stat_buf; /* file stat buf */
-  int i, vp;
+  int i;
 
   char errmsg[255];
-
-  int j = 0;
 
   /* Checks for specifying the process size (phase I) */
   /* If sys_size == 0 figure out the proper size later */
@@ -300,7 +297,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
     }
     _settextposition((short)0, (short)0);
     if ((i & 0xf) == 0) {
-      for (j = 0; j < (columns * i) / (sysout_size >> 1); j++) putchar(' ');
+      for (int j = 0; j < (columns * i) / (sysout_size >> 1); j++) putchar(' ');
       printf("-=(%2d%%)=-\n", (100 * i) / (sysout_size >> 1));
     }
 #endif /* DOS */
@@ -316,9 +313,8 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
         printf("               offset was 0x%lx (0x%x pages).\n", lispworld_offset,
                GETFPTOVP(fptovp, i));
         perror("read() error was");
-        {
-          int j;
-          for (j = 0; j < 10; j++) printf(" %d: 0x%x  ", j, GETFPTOVP(fptovp, j));
+        for (int j = 0; j < 10; j++) {
+          printf(" %d: 0x%x  ", j, GETFPTOVP(fptovp, j));
         }
         free(fptovp);
         exit(-1);
