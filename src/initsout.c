@@ -47,6 +47,10 @@
 #include "mkcelldefs.h"
 #include "testtooldefs.h"
 
+#ifdef MAIKO_ENABLE_ETHERNET
+#include "etherdefs.h"
+#endif
+
 /********** definitions for bitblt. add by osamu **********/
 DLword TEXTURE_atom;
 DLword MERGE_atom;
