@@ -85,6 +85,9 @@ extern int Win_security_p;
 #include "testtooldefs.h"
 #include "timerdefs.h"
 #include "vmemsavedefs.h"
+#ifdef MAIKO_ENABLE_ETHERNET
+#include "etherdefs.h"
+#endif
 
 #ifdef DOS
 #define vfork() printf("No forking around here.\n")
