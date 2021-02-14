@@ -285,14 +285,6 @@ typedef struct
 #define mid(a, b, c) max( min( b, max( a, c ), min( a, max( b, c ))))
 #endif /* mid */
 
-#ifndef FALSE
-#define FALSE 0
-#endif /* FALSE */
-
-#ifndef TRUE
-#define TRUE  !FALSE
-#endif /* TRUE */
-
 #define MINKEYEVENT	2	/* leave 2 words for read,write offsets */
 #define NUMBEROFKEYEVENTS 383
 

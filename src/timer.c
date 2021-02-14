@@ -88,8 +88,6 @@ extern DspInterface currentdsp;
 int TIMEOUT_TIME; /* For file system timeout */
 
 #ifdef XWINDOW
-#define FALSE 0
-#define TRUE !FALSE
 volatile sig_atomic_t Event_Req = FALSE;
 #endif /* XWINDOW */
 

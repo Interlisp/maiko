@@ -26,11 +26,6 @@
 #include "adr68k.h"
 #include "cell.h"
 
-#ifndef FALSE
-#define FALSE 0
-#define TRUE !FALSE
-#endif /* FALSE */
-
 extern XEvent report;
 
 extern DLword *CTopMNWEvent;
