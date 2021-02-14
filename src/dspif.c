@@ -13,6 +13,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "lispemul.h"
 #include "dbprint.h"
 #include "devif.h"

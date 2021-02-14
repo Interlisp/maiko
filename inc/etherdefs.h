@@ -1,5 +1,6 @@
 #ifndef ETHERDEFS_H
 #define ETHERDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR ether_suspend(LispPTR args[]);
 LispPTR ether_resume(LispPTR args[]);
 LispPTR ether_ctrlr(LispPTR args[]);

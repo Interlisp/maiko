@@ -2,14 +2,13 @@
 #define RAWRS232C_H 1
 /* $Id: rawrs232c.h,v 1.2 1999/01/03 02:06:22 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-96 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "lispemul.h" /* for LispPTR */
 
 typedef struct raw232cparam {
 LispPTR BauRate;

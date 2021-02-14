@@ -1,5 +1,6 @@
 #ifndef URAIDDEFS_H
 #define URAIDDEFS_H 1
+#include "lispemul.h" /* for LispPTR, DLword */
 LispPTR parse_atomstring(char *string);
 void uraid_commclear(void);
 void copy_region(const DLword *src, DLword *dst, int width, int h);

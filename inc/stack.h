@@ -8,6 +8,8 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "lispemul.h" /* for LispPTR, DLword, FRAMESIZE, DLWORDSPER_CELL */
+#include "version.h" /* for BIGVM, UNSIGNED */
 
 /* ContextSW frame number */
 #define CurrentFXP 0

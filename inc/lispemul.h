@@ -9,6 +9,7 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "version.h" /* for BIGVM, BIGATOMS, UNSIGNED, UNALIGNED_FETCH_OK */
 
 #ifndef BYTESWAP
 /*** Normal byte-order type decls */
@@ -329,15 +330,6 @@ extern struct state MachineState;
 #define Scratch_CSTK (MState->scratch_cstk)
 #define Error_Exit (MState->errorexit)
 
-/* Typedef for IFPAGE */
-#include "ifpage.h"
-
-/* Typedef for IOPAGE */
-#include "iopage.h"
-
-/* Typedef for MISCSTAT */
-#include "miscstat.h"
-
 /****************************************************
  MakeAddr:
         base:	DLword*
@@ -442,8 +434,6 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /************************************************************************/
 /*  All external functions defined in xxx.c now declared in xxxdefs.h   */
 
-#include <stdlib.h>
-
 /************************************************************************/
 /*									*/
 /*		E R R O R   &   T I M E R   P U N T   C A S E S		*/
@@ -519,8 +509,10 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 
 #define MAXPNCHARS 255 /* Maximum length of PnChars */
 
+#ifndef FALSE
 #define FALSE 0
 #define TRUE !FALSE
+#endif
 
 typedef unsigned int boolean;
 

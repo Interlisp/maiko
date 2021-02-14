@@ -21,7 +21,7 @@
 #include <setjmp.h>
 #include <signal.h>
 #include <stdio.h>
-
+#include <stdlib.h>
 #ifndef DOS
 #include <dirent.h>
 #include <string.h>

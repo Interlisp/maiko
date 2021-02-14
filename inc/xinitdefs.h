@@ -1,5 +1,6 @@
 #ifndef XINITDEFS_H
 #define XINITDEFS_H 1
+#include "devif.h" /* for DspInterface */
 void init_Xevent(DspInterface dsp);
 void lisp_Xexit(DspInterface dsp);
 void Xevent_before_raid(DspInterface dsp);

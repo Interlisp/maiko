@@ -2,25 +2,20 @@
 #define TIMEOUT_H 1
 /* $Id: timeout.h,v 1.2 1999/01/03 02:06:27 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-98 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "setjmp.h" /* for jmp_buf */
 
 extern jmp_buf jmpbuf;
-
-
-
 
 /*** TIMEOUT_TIME is changeable by UNIX env var LDEFILETIMEOUT. 
 #define	TIMEOUT_TIME	10 **/
 
 extern	int	TIMEOUT_TIME;
-
 
 #define	SETJMP(x)	\
   {				\

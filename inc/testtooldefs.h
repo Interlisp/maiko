@@ -1,7 +1,8 @@
 #ifndef TESTTOOLDEFS_H
 #define TESTTOOLDEFS_H 1
-#include "stack.h"
-#include "cell.h"
+#include "lispemul.h" /* for LispPTR, DLword, DLbyte */
+#include "cell.h" /* for conspage */
+#include "stack.h" /* for frameex1, FX, Bframe, fnhead */
 void print_package_name(int index);
 void print_atomname(LispPTR index);
 int find_package_from_name(const char *packname, int len);

@@ -1,5 +1,6 @@
 #ifndef UFSDEFS_H
 #define UFSDEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR UFS_getfilename(LispPTR *args);
 LispPTR UFS_deletefile(LispPTR *args);
 LispPTR UFS_renamefile(LispPTR *args);

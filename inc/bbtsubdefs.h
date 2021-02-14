@@ -12,6 +12,8 @@
 /*      Don Charnley's bitblt code to do them.          */
 /*                                                      */
 /********************************************************/
+#include "lispemul.h" /* for LispPTR, DLword */
+
 #if defined(SUNDISPLAY) && \
     !defined(NOPIXRECT) && \
     !defined(NEWBITBLT)

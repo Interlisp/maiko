@@ -2,8 +2,6 @@
 #define DEVIF_H 1
 /* $Id: devif.h,v 1.2 1999/01/03 02:05:57 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989, 1990, 1990, 1991, 1992, 1993, 1994, 1995 Venue.	*/
@@ -11,6 +9,7 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "lispemul.h" /* for LispPTR, DLword */
 
 typedef void (*PFV)();		/* Pointer to Function returning Void */
 typedef int (*PFI)();		/* Pointer to Function returning Int */
@@ -22,7 +21,6 @@ typedef unsigned long (*PFUL)(); /* Pointer to Function returning an unsigned lo
 #ifdef XWINDOW
 #include <X11/Xlib.h>
 #endif /* XWINDOW */
-
 
 typedef struct
   {

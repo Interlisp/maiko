@@ -18,6 +18,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef SUNDISPLAY
 #include <sys/ioctl.h>

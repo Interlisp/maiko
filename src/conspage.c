@@ -14,6 +14,7 @@
  *  @file conspage.c
  */
 
+#include <stddef.h>
 #include "lispemul.h"
 #include "address.h"
 #include "adr68k.h"

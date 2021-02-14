@@ -1,5 +1,7 @@
 #ifndef INITDSPDEFS_H
 #define INITDSPDEFS_H 1
+#include "lispemul.h" /* for DLword */
+#include "version.h" /* for UNSIGNED */
 void init_cursor(void);
 void set_cursor(void);
 void clear_display(void);

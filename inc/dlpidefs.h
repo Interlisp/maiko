@@ -1,5 +1,6 @@
 #ifndef DLPIDEFS_H
 #define DLPIDEFS_H 1
+#include <sys/types.h> /* for u_char, u_long */
 int setup_dlpi_dev(char *device);
 void flush_dlpi(int fd);
 int dlpi_devtype(int fd);

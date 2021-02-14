@@ -2,15 +2,12 @@
 #define LLDSP_H 1
 /* $Id: lldsp.h,v 1.2 1999/01/03 02:06:09 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
 
 /***************************************************************/
 /*
@@ -22,6 +19,9 @@
 
 */
 /***************************************************************/
+#include "lispemul.h" /* for LispPTR, DLword */
+#include "version.h" /* for BIGVM */
+
 #ifndef BYTESWAP
 #ifdef BIGVM
 typedef struct {

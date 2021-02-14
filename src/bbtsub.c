@@ -25,6 +25,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifdef XWINDOW
 #ifndef DOS

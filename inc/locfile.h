@@ -2,16 +2,13 @@
 #define LOCFILE_H 1
 /* $Id: locfile.h,v 1.2 1999/01/03 02:06:13 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-94 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
+#include "lispemul.h" /* for DLword */
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
 

@@ -2,15 +2,14 @@
 #define STREAM_H 1
 /* $Id: stream.h,v 1.2 1999/01/03 02:06:23 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
-
-
 /************************************************************************/
 /*									*/
 /*	(C) Copyright 1989-92 Venue. All Rights Reserved.		*/
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-
+#include "version.h" /* for BIGVM */
+#include "lispemul.h" /* for LispPTR, DLword, DLbyte */
 
 #ifndef BYTESWAP
 	/********************************/

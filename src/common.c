@@ -12,6 +12,7 @@
 #include "version.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <setjmp.h>
 #include <fcntl.h>
 #include <string.h> /* for memset */

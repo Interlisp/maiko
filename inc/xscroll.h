@@ -7,7 +7,7 @@
 /* Scrolling functions implemented in xscroll.c				*/
 /*									*/
 /************************************************************************/
-
+#include "devif.h" /* for DspInterface */
 void Scroll(DspInterface dsp, int newX, int newY);
 void JumpScrollVer(DspInterface dsp, int y);
 void JumpScrollHor(DspInterface dsp, int x);

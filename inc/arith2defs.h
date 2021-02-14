@@ -1,5 +1,6 @@
 #ifndef ARITH2DEFS_H
 #define ARITH2DEFS_H 1
+#include "lispemul.h" /* for LispPTR */
 LispPTR N_OP_plus2(int tosm1, int tos);
 LispPTR N_OP_iplus2(int tosm1, int tos);
 LispPTR N_OP_difference(int tosm1, int tos);

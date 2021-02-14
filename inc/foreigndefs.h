@@ -1,6 +1,6 @@
 #ifndef FOREIGNDEFS_H
 #define FOREIGNDEFS_H 1
-
+#include "lispemul.h" /* for LispPTR */
 LispPTR call_c_fn(LispPTR *args);
 LispPTR smashing_c_fn(LispPTR *args);
 int Mdld_link(LispPTR *args);
@@ -14,5 +14,4 @@ int c_malloc(LispPTR *args);
 int c_free(LispPTR *args);
 int put_c_basebyte(LispPTR *args);
 int get_c_basebyte(LispPTR *args);
-
 #endif /* FOREIGNDEFS_H */
