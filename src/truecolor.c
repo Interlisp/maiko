@@ -24,9 +24,6 @@
 
 #include "picture.h"
 
-#define FALSE 0
-#define TRUE !FALSE
-
 #define COLOR_INIT 0
 #define COLOR_OVERLAYREGION 1
 #define COLOR_VIDEOREGION 2

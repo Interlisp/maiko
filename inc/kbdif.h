@@ -31,10 +31,4 @@ typedef struct {
   int	device_locked;
 #endif /* DOS */
 } KbdInterfaceRec, *KbdInterface;
-
-
-#ifndef TRUE
-#define FALSE 0
-#define TRUE  !FALSE
-#endif /* TRUE */
 #endif /* KBDIF_H */

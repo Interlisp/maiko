@@ -243,9 +243,6 @@ extern int maxpages;
 extern int *Lisp_errno;
 extern int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
 
-#define FALSE 0
-#define TRUE !FALSE
-
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */
 

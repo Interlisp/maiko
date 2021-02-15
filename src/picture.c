@@ -23,9 +23,6 @@
 #include "adr68k.h"
 #include "lspglob.h"
 
-#define FALSE 0
-#define TRUE !FALSE
-
 #include "picture.h"
 
 #define min(x, y) (((x) > (y)) ? (y) : (x))
