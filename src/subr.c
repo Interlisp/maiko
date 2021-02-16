@@ -515,9 +515,7 @@ void OP_subrcall(int subr_no, int argnum) {
     /* Communications with Unix Subprocess */
 
     case sb_UNIX_HANDLECOMM: POP_SUBR_ARGS;
-#ifndef DOS
       TopOfStack = Unix_handlecomm(args);
-#endif /* DOS */
       break;
 
     /*

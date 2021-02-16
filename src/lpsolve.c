@@ -16,15 +16,8 @@
 
 #include "lispemul.h"
 
-#ifdef DOS
-#include "devif.h"
-#endif /* DOS */
-
 extern int KBDEventFlg;
 extern int *KEYBUFFERING68k;
-#ifdef DOS
-extern MouseInterface currentmouse;
-#endif /* DOS */
 
 /* Globals used by solver */
 short JustInverted;
@@ -942,10 +935,6 @@ int milpsolve(sstate *st, REAL *upbo, REAL *lowbo, short *sbasis, short *slower,
     return (TIMEOUT); /* Time out every 100 LP solves */
   else if ((KBDEventFlg > 0) && *KEYBUFFERING68k == ATOM_T)
     return (TIMEOUT); /* Time out on key/mouse clicks */
-#ifdef DOS
-  else if (currentmouse->Cursor.Moved)
-    return (TIMEOUT); /* Time out if mouse moves in DOS */
-#endif                /* DOS */
 
   if (Break_bb) return (BREAK_BB);
   Level++;

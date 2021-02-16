@@ -25,15 +25,9 @@
 #include <sys/types.h>
 #include <time.h>
 
-#ifndef DOS
 #include <pwd.h>
 #include <sys/param.h>
 #include <unistd.h>
-#else /* DOS */
-#include <i32.h>
-#define MAXPATHLEN 128
-#define R_OK 04
-#endif /* DOS */
 
 #ifdef MAIKO_ENABLE_ETHERNET
 #ifndef USE_DLPI
@@ -256,30 +250,7 @@ extern DspInterface currentdsp;
 extern time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
-#ifdef DOS
-extern void dispatch();
-
-int dosdisplaymode = 0;
-int twobuttonflag = FALSE;
-int eurokbd = TRUE; /* Assume eurokbd by default. */
-const char *helpstring =
-    "\n\
-medley [sysout-name] [<options>] ...\n\
-Where <options> are:\n\
- sysout-name  The filename of your sysout.(see manual.)\n\
- -m <size>    Virtual memory size in  Mega Bytes(from 8 to 32)\n\
- -vga         Use standard VGA 640x480 screen resolution\n\
- -vesa102     Use VESA 800x600 screen resolution\n\
- -vesa104     Use VESA 1024x768 screen resolution\n\
- -2button     Force two button mouse handling\n\
- -3button     Force three button mouse handling\n\
- -noeurokbd   Force old style kbd handling (for 2.0 and earlier sysouts)\n\
- -eurokbd     Force new style kbd handling (for 2.01 and later sysouts)\n\
- -nokbd       Turn the kbd handling off (for debugging only)\n\
- -nomouse     Turn the mouse handling off (for debugging only)\n\
- -info        Print general info about the system\n\
- -help        Print this message\n";
-#elif XWINDOW
+#if   XWINDOW
 const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
@@ -360,11 +331,7 @@ int main(int argc, char *argv[])
     strncpy(sysout_name, envname, MAXPATHLEN);
   } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
     strncpy(sysout_name, envname, MAXPATHLEN);
-#ifdef DOS
-  else if (!makepathname("lisp.vm", sysout_name)
-#else
   else if (!makepathname("~/lisp.virtualmem", sysout_name)
-#endif /* DOS */
            || access(sysout_name, R_OK)) {
     fprintf(stderr, "Couldn't find a sysout to run;\n");
     fprintf(stderr, "%s", helpstring);
@@ -401,28 +368,6 @@ int main(int argc, char *argv[])
     else if (!strcmp(argv[i], "-INIT")) { /*** init sysout, no packaged */
       for_makeinit = 1;
     }
-#ifdef DOS
-    else if ((strcmp(argv[i], "-vga") == 0) || (strcmp(argv[i], "-VGA") == 0)) {
-      dosdisplaymode = 1;
-    } else if ((strcmp(argv[i], "-vesa102") == 0) || (strcmp(argv[i], "-VESA102") == 0)) {
-      dosdisplaymode = 0x102;
-    } else if ((strcmp(argv[i], "-vesa104") == 0) || (strcmp(argv[i], "-VESA104") == 0)) {
-      dosdisplaymode = 0x104;
-    } else if ((strcmp(argv[i], "-2button") == 0) || (strcmp(argv[i], "-2BUTTON") == 0)) {
-      twobuttonflag = TRUE;
-    } else if ((strcmp(argv[i], "-3button") == 0) || (strcmp(argv[i], "-3BUTTON") == 0)) {
-      twobuttonflag = FALSE;
-    } else if ((strcmp(argv[i], "-noeurokbd") == 0) || (strcmp(argv[i], "-NOEUROKBD") == 0)) {
-      eurokbd = FALSE;
-    } else if ((strcmp(argv[i], "-eurokbd") == 0) || (strcmp(argv[i], "-EUROKBD") == 0)) {
-      eurokbd = TRUE;
-    } else if ((strcmp(argv[i], "-nokbd") == 0) || (strcmp(argv[i], "-NOKBD") == 0)) {
-      nokbdflag = TRUE;
-    } else if ((strcmp(argv[i], "-nomouse") == 0) || (strcmp(argv[i], "-NOMOUSE") == 0)) {
-      nomouseflag = TRUE;
-    }
-
-#endif /* DOS */
 
     /* Can only do this under SUNOs, for now */
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
@@ -463,14 +408,10 @@ int main(int argc, char *argv[])
   }
 
 /* Sanity checks. */
-#ifdef DOS
-  probemouse(); /* See if the mouse is connected. */
-#else
   if (getuid() != geteuid()) {
     fprintf(stderr, "Effective user is not real user.  Setting euid to uid.\n");
     seteuid(getuid());
   }
-#endif /* DOS */
 
   FD_ZERO(&LispReadFds);
 
@@ -478,9 +419,6 @@ int main(int argc, char *argv[])
   init_ether(); /* modified by kiuchi Nov. 4 */
 #endif          /* MAIKO_ENABLE_ETHERNET */
 
-#ifdef DOS
-  init_host_filesystem();
-#else
   /* Fork Unix was called in kickstarter; if we forked, look up the */
   /* pipe handles to the subprocess and set them up.		      */
 
@@ -488,7 +426,6 @@ int main(int argc, char *argv[])
   {                    /* in case we're re-starting a savevm w/open ptys */
     if (please_fork) fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
   }
-#endif /* DOS */
 
 #if defined(DOS) || defined(XWINDOW)
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
@@ -526,13 +463,6 @@ int main(int argc, char *argv[])
                          you used the proper switches when building LDE.
                             JDS -- 1/18/90 also BITBLTSUB does it now. */
   }
-
-#ifdef DOS
-  _setrealmode(0x3f); /* Don't interrupt on FP overflows */
-  _getrealerror();
-
-  tzset();
-#endif
 
 #ifdef OS5
   tzset();
@@ -589,9 +519,6 @@ void start_lisp() {
   /*       entering the bytecode dispatch loop; interrupts get     */
   /*       unblocked here 					   */
   int_init();
-#ifdef DOS
-  _dpmi_lockregion((void *)&dispatch, 32768);
-#endif /* DOS */
   dispatch();
 }
 
@@ -638,18 +565,12 @@ int makepathname(char *src, char *dst)
       ERRSETJMP(0);
       if (*(base + 1) == '/') {
 /* path is "~/foo" */
-#ifdef DOS
-        pwd = 0;
-#else
         TIMEOUT(pwd = getpwuid(getuid()));
-#endif /* DOS */
         if (pwd == NULL) {
           *Lisp_errno = errno;
           return (0);
         }
-#ifndef DOS
         sprintf(dst, "%s%s", pwd->pw_dir, base + 1);
-#endif
         return (1);
       } else {
         /* path is "~foo/" */
@@ -659,16 +580,12 @@ int makepathname(char *src, char *dst)
           len = (UNSIGNED)cp - (UNSIGNED)base - 1;
           strncpy(name, base + 1, len);
           name[len] = '\0';
-#ifndef DOS
           TIMEOUT(pwd = getpwnam(name));
-#endif /* DOS */
           if (pwd == NULL) {
             *Lisp_errno = errno;
             return (0);
           }
-#ifndef DOS
           sprintf(dst, "%s%s", pwd->pw_dir, cp);
-#endif /* DOS */
           return (1);
         }
       }

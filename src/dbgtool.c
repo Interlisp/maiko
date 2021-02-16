@@ -67,18 +67,6 @@ extern int URaid_ArrMAXIndex;
 int BT_lines;
 int BT_temp;
 jmp_buf BT_jumpbuf;
-#ifdef DOS
-#define BTMAXLINE 24
-/* DOS has a 25-line screen, and getchar discards ESC for some reason */
-#define BT_morep                                              \
-  if ((BT_temp != '!') && (++BT_lines > BTMAXLINE)) {         \
-    printf("Press Return(Esc & Ret to quit, ! don't stop):"); \
-    BT_temp = getch();                                        \
-    fflush(stdin);                                            \
-    BT_lines = 0;                                             \
-    if (BT_temp == 27) longjmp(BT_jumpbuf, 1);                \
-  }
-#else /* DOS */
 #define BTMAXLINE 30
 #define BT_morep                                  \
   if (++BT_lines > BTMAXLINE) {                   \
@@ -88,7 +76,6 @@ jmp_buf BT_jumpbuf;
     BT_lines = 0;                                 \
     if (BT_temp == 27) longjmp(BT_jumpbuf, 1);    \
   }
-#endif /* DOS */
 
 /***************************************************************/
 /*

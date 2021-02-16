@@ -33,18 +33,8 @@
 #include <stdio.h>
 #include <time.h>
 
-#ifndef DOS
 #include <sys/time.h>
-#endif /* DOS */
 
-#ifdef DOS
-int main(void) {
-  long dtime;
-  time(&dtime);
-  printf("long MDate= %ld;\n", dtime);
-  return (0);
-}
-#else
 /* Version for every other Unix */
 int main(void) {
   struct timeval time;
@@ -60,4 +50,3 @@ int main(void) {
   return (0);
 }
 
-#endif /* DOS */

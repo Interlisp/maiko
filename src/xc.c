@@ -24,13 +24,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#ifdef DOS
-#include <i32.h> /* Defines "#pragma interrupt"  */
-#include <stk.h> /* _XSTACK struct definition    */
-#include <dos.h> /* Defines REGS & other structs */
-#else            /* DOS */
 #include <sys/time.h>
-#endif /* DOS */
 
 #include "lispemul.h"
 #include "emlglob.h"
@@ -100,15 +94,6 @@
 #include "vars3defs.h"
 #include "z2defs.h"
 
-#ifdef DOS
-#include "iopage.h"
-extern IOPAGE *IOPage68K;
-#include "devif.h"
-extern KbdInterface currentkbd;
-extern DspInterface currentdsp;
-extern MouseInterface currentmouse;
-#endif /* DOS */
-
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
 
@@ -117,11 +102,6 @@ register InstPtr pccache asm("si");
 register LispPTR *cspcache asm("di");
 register LispPTR tscache asm("bx");
 #include "inlnPS2.h"
-#elif (DOS && OPDISP)
-#include "inlndos.h"
-register InstPtr pccache asm("si");
-register LispPTR *cspcache asm("di");
-register LispPTR tscache asm("bx");
 #endif /* DOS */
 
 /* This used to be here for including optimized dispatch
@@ -210,11 +190,8 @@ void dispatch(void) {
   };
 #endif
 
-#if (DOS && OPDISP)
-#else
   register LispPTR *cspcache;
   register LispPTR tscache;
-#endif
 
   /* OP_FN_COMMON arguments */
 
@@ -1151,49 +1128,10 @@ check_interrupt:
           }
         }
 
-#ifdef DOS
-        if (currentkbd->URaid == TRUE) {
-          currentkbd->URaid = NIL;
-          (currentkbd->device.exit)(currentkbd); /* Install the original handler */
-          error("Call URaid by User Interrupt");
-        } else if (currentmouse->Cursor.Moved) {
-          union REGS regs;
-
-          currentdsp->device.locked++;
-
-          /* Remove the mouse from the old place on the screen */
-          (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
-
-          /* Find the new delta */
-          regs.w.eax = 0x000B; /* Function 0xB = get delta mickeys */
-          int86(0x33, &regs, &regs);
-          currentmouse->Cursor.New.x += (short)regs.w.ecx;
-          currentmouse->Cursor.New.y += (short)regs.w.edx;
-
-          if (currentmouse->Cursor.New.x < 0)
-            currentmouse->Cursor.New.x = 0;
-          else if (currentmouse->Cursor.New.x > (currentdsp->Display.width - 1))
-            currentmouse->Cursor.New.x = currentdsp->Display.width - 1;
-
-          if (currentmouse->Cursor.New.y < 0)
-            currentmouse->Cursor.New.y = 0;
-          else if (currentmouse->Cursor.New.y > (currentdsp->Display.height - 1))
-            currentmouse->Cursor.New.y = currentdsp->Display.height - 1;
-
-          IOPage68K->dlmousex = IOPage68K->dlcursorx = currentmouse->Cursor.New.x;
-          IOPage68K->dlmousey = IOPage68K->dlcursory = currentmouse->Cursor.New.y;
-
-          /* Paint the mouse back up on the screen on the new place */
-          (currentdsp->mouse_visible)(currentmouse->Cursor.New.x, currentmouse->Cursor.New.y);
-          currentmouse->Cursor.Moved = FALSE;
-          currentdsp->device.locked--;
-        }
-#else
         if (URaid_req == T) {
           URaid_req = NIL;
           error("Call URaid by User Interrupt");
         }
-#endif /* DOS */
         else if ((KBDEventFlg > 0) && (*KEYBUFFERING68k == ATOM_T)) {
           *KEYBUFFERING68k = ATOM_STARTED;
           cause_interruptcall(DOBUFFEREDTRANSITION_index);

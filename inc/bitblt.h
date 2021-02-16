@@ -49,12 +49,7 @@ extern int DisplayRasterWidth;
 #define	MOUSEYH	((int)*EmMouseY68K + YDELTA)
 
 
-#ifdef DOS
-#define HideCursor { (currentdsp->mouse_invisible)(currentdsp, IOPage68K); }
-#define ShowCursor { (currentdsp->mouse_visible)(IOPage68K->dlmousex, \
-												  IOPage68K->dlmousey); }
-
-#elif defined(SUNDISPLAY) && defined(OLD_CURSOR)
+#if   defined(SUNDISPLAY) && defined(OLD_CURSOR)
 extern struct winlock DisplayLockArea;
 #define	HideCursor	\
 	ioctl( LispWindowFd, WINLOCKSCREEN, &DisplayLockArea)
@@ -82,14 +77,7 @@ extern DLword *EmCursorX68K,*EmCursorY68K;
 
 /* Macro for locking and unlocking screen to prevent multiple updates */
 
-#ifdef DOS
-#define LOCKSCREEN currentdsp->device.locked++;
-#define UNLOCKSCREEN currentdsp->device.locked--;
-
-#else
-
 #define LOCKSCREEN ScreenLocked = T;
 #define UNLOCKSCREEN ScreenLocked = NIL;
 
-#endif /* DOS */
 #endif /* BITBLT_H */

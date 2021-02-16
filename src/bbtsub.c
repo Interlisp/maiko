@@ -28,9 +28,7 @@
 #include <stdlib.h>
 
 #ifdef XWINDOW
-#ifndef DOS
 #include <sys/ioctl.h>
-#endif /* DOS */
 #include <sys/types.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -453,11 +451,7 @@ void bitbltsub(LispPTR *argv) {
   }
 
 do_it_now:
-#ifdef DOS
-  currentdsp->device.locked++;
-#else
   ScreenLocked = T;
-#endif /* DOS */
 
 #ifdef REALCURSOR
   displayflg |= n_new_cursorin(dstbase, dx, dty, w, h);
@@ -489,23 +483,11 @@ do_it_now:
   XUNLOCK;
 #endif /* XWINDOW */
 
-#ifdef DOS
-  /* Copy the changed section of display bank to the frame buffer */
-  if (in_display_segment(dstbase)) {
-    /*      DBPRINT(("bltsub: x %d, y %d, w %d, h %d.\n",dx, dty, w,h)); */
-    flush_display_region(dx, dty, w, h);
-  }
-#endif /* DOS */
-
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
 
-#ifdef DOS
-  currentdsp->device.locked--;
-#else
   ScreenLocked = NIL;
-#endif /* DOS */
 
 } /* end of bitbltsub */
 
@@ -846,14 +828,6 @@ do_it_now:
   XUNLOCK;
 #endif /* XWINDOW */
 
-#ifdef DOS
-  /* Copy the changed section of display bank to the frame buffer */
-  if (in_display_segment(dstbase)) {
-    /*      DBPRINT(("bltsub: x %d, y %d, w %d, h %d.\n",dx, dty, w,h)); */
-    flush_display_region(dlx, dty, width, height);
-  }
-#endif /* DOS */
-
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
@@ -1095,14 +1069,6 @@ do_it_now:
   XUNLOCK;
 #endif /* XWINDOW */
 
-#ifdef DOS
-  /* Copy the changed section of display bank to the frame buffer */
-  if (in_display_segment(dstbase)) {
-    /*      DBPRINT(("bltsub: x %d, y %d, w %d, h %d.\n",dx, dty, w,h)); */
-    flush_display_region(left, dty, width, height);
-  }
-#endif /* DOS */
-
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
 #endif /*  REALCURSOR */
@@ -1227,10 +1193,6 @@ void bltchar(LispPTR *args)
   XUNLOCK;
 #endif /* XWINDOW */
 
-#ifdef DOS
-  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-#endif /* DOS */
-
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
 #endif /* REALCURSOR */
@@ -1320,10 +1282,6 @@ LispPTR bltchar(LispPTR *args)
     flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
   XUNLOCK;
 #endif /* XWINDOW */
-
-#ifdef DOS
-  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-#endif /* DOS */
 
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
@@ -1535,9 +1493,6 @@ void newbltchar(LispPTR *args) {
 #ifdef XWINDOW
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
-#ifdef DOS
-  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-#endif /* DOS */
 
 #ifdef REALCURSOR
   if (displayflg) ShowCursor;
@@ -1678,11 +1633,6 @@ LispPTR newbltchar(LispPTR *args) {
       if (in_display_segment(dstbase))
         flush_display_lineregion(left, dstbase, (right - left), pbt->pbtheight);
 #endif /* XWINDOW */
-
-#ifdef DOS
-      if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-      if (displayflg) ShowCursor;
-#endif /* DOS */
 
       ScreenLocked = NIL;
 

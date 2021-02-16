@@ -44,10 +44,6 @@ extern DLword *DISP_MAX_Address;
 #define DISPLAYBUFFER
 #endif /* XWINDOW */
 
-#ifdef DOS
-#define DISPLAYBUFFER
-#endif /* DOS */
-
 #ifdef DISPLAYBUFFER
 /************************************************************************/
 /*									*/

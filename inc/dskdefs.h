@@ -1,11 +1,7 @@
 #ifndef DSKDEFS_H
 #define DSKDEFS_H 1
 #include "lispemul.h" /* for LispPTR */
-#ifdef DOS
-void separate_host(char *lfname, char *host, char *drive);
-#else
 void separate_host(char *lfname, char *host);
-#endif
 LispPTR COM_openfile(register LispPTR *args);
 LispPTR COM_closefile(register LispPTR *args);
 LispPTR DSK_getfilename(register LispPTR *args);

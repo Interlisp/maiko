@@ -27,13 +27,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifndef DOS
 #include <sys/file.h>
 #include <sys/param.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <sys/select.h>
-#endif /* DOS */
 
 #ifdef SUNDISPLAY
 #include <sundev/kbd.h>
@@ -89,19 +87,10 @@ extern int Win_security_p;
 #include "etherdefs.h"
 #endif
 
-#ifdef DOS
-#define vfork() printf("No forking around here.\n")
-#endif /* DOS */
-
 #if defined(DOS) || defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
-
-#ifdef DOS
-extern MouseInterface currentmouse;
-extern KbdInterface currentkbd;
-#endif /* DOS */
 
 #ifdef COLOR
 extern int MonoOrColor;
@@ -175,41 +164,6 @@ DLword *HideColorDisp68k;
 extern int Inited_Color;
 #endif /* COLOR */
 
-#ifdef DOS
-char *URaid_summary1 =
-    "\n-- Stack display commands\n\
-c\t\t\tChecks all user stack contents\n\
-f number\t\tDisplays stack frame for that frame number (decimal)\n\
-k type\t\t\tChanges the type of stack link following. (a|c)\n\
-l [type]\t\tBack Trace for specified type stack. (k|m|r|g|p|u|<null>)\n\
-<CR>\t\t\tDisplay next frame.\n";
-
-char *URaid_summary2 =
-    "\n-- Memory display commands\n\
-a litatom\t\tDisplays the top-level value of the litatom\n\
-B Xaddress\t\tPrint the contents of the arrayblock at that address.\n\
-d litatom\t\tDisplays the definition cell for the litatom\n\
-M\t\t\tDisplays TOS,CSP,PVAR,IVAR,PC\n\
-m func1 func2\t\tMOVD func1 to func2\n\
-O Xaddress\t\tDisplays the object with that address\n\
-t Xaddress\t\tDisplays the type of this object\n\
-p litatom\t\tDisplays the property list of the litatom\n\
-w\t\t\tDisplays the current function-name and PC\n\
-x Xaddress [xnum]\tHex-Dump xnum (16-bit) words starting at Xaddress\n\
-@ litatom val\t\tSets TOPVAL of litatom to Decimal-val\n\
-< Xaddress Xval\t\tSets the (16-bit) word at the address to Xval\n";
-
-char *URaid_summary3 =
-    "\n-- Continue or exit commands\n\
-e\t\t\tExit to DOS\n\
-h\t\t\tDo a HARDRESET\n\
-q\t\t\tReturns from URAID with NO change\n\
-<<Misc>>\ns\t\t\tInvoke Shell\n\
-v filename\t\tSave the virtual memory on the filename(Not Bootable)\n\
-( [num]\t\t\tSets Print level\n\
-!\t\t\tPrints the error message passed from the emulator\n\
-?\t\t\tDisplay this summary";
-#else
 char *URaid_summary =
     "---URAID command summary---\n\
 \n-- Stack display commands\n\
@@ -241,7 +195,6 @@ v filename\t\tSaves the virtual memory on the filename (Not Bootable)\n\
 ( [num]\t\t\tSets the print level\n\
 !\t\t\tDisplays the error message passed from the emulator\n\
 ?\t\t\tDisplays this summary";
-#endif /* DOS */
 
 #define ADD_RANGEP(address)                           \
   if (((address) < 0) || (POINTERMASK < (address))) { \
@@ -372,9 +325,7 @@ LispPTR uraid_commands() {
   int num, address, val;
   LispPTR index;
   DefCell *defcell68k;
-#ifndef DOS
   int status;
-#endif /* DOS */
 
   if (URaid_argnum == -1) {
     /* disp next FX */
@@ -388,11 +339,6 @@ LispPTR uraid_commands() {
   }
   switch (URaid_comm) {
 /*** Displaying STACK stuff */
-#ifdef DOS
-    case '1': printf("%s\n", URaid_summary1); break;
-    case '2': printf("%s\n", URaid_summary2); break;
-    case '3': printf("%s\n", URaid_summary3); break;
-#endif /* DOS */
     case 'c': stack_check(0); break;
     case 'C': all_stack_dump(0, 0, T); break;
     case 'f':                /**if((URaid_arg1[0] < '0') || (URaid_arg1[0] > '9')){
@@ -766,11 +712,7 @@ LispPTR uraid_commands() {
       fflush(stdin);
       break;
     case 'e': /* exit to UNIX */
-#ifdef DOS
-      printf("Exit to DOS?[confirm](Y or N)<");
-#else  /* DOS */
       printf("Exit to UNIX?[confirm](Y or N)<");
-#endif /* DOS */
       {
         int c;
         c = getchar();
@@ -787,10 +729,8 @@ LispPTR uraid_commands() {
 
         default: break;
       }
-#ifndef DOS
       (void)wait(&status);
 /* system("/bin/sh -i"); */
-#endif /* DOS */
       return (T);
     /* break; */
     case 'v':
@@ -827,13 +767,7 @@ LispPTR uraid_commands() {
       printf("PrintLevel is set to %d.", num);
       break;
     case '?':
-#ifdef DOS
-      printf(
-          " 1: <<Displaying the Stack>>\n 2: <<Displaying memory contents>>\n 3: <<Return or "
-          "Exit>>\n");
-#else
       printf("%s\n", URaid_summary);
-#endif /* DOS */
       break;
     case '!': printf("Error message is: %s\n", URaid_errmess); break;
 
@@ -997,10 +931,6 @@ int device_before_raid() {
 #if defined(XWINDOW) || defined(DOS)
   (currentdsp->cleardisplay)(currentdsp);
   (currentdsp->device.before_raid)(currentdsp);
-#ifdef DOS
-  (currentmouse->device.before_raid)(currentmouse);
-  (currentkbd->device.before_raid)(currentkbd);
-#endif /* DOS */
 #endif /* XWINDOW || DOS */
 
   return (0);
@@ -1114,11 +1044,6 @@ int device_after_raid() {
 #ifdef XWINDOW
   (currentdsp->device.after_raid)(currentdsp);
   FD_SET(ConnectionNumber(currentdsp->display_id), &LispReadFds);
-  flush_display_buffer();
-#elif DOS
-  (currentdsp->device.after_raid)(currentdsp);
-  (currentmouse->device.after_raid)(currentmouse, currentdsp);
-  (currentkbd->device.after_raid)(currentkbd);
   flush_display_buffer();
 #endif /* XWINDOW | DOS */
 

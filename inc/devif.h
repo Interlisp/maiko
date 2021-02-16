@@ -154,19 +154,6 @@ typedef struct
   {
     DevRec device;
     PFV device_event;		/* Event handler for the keyboard. */
-#ifdef DOS
-    u_char KeyMap[0x80];	/* The key translation table. Use the keycode you
-				   get from the keyboard as an index. The value
-				   gives the lispkeycode.*/
-    unsigned char lastbyte;	/* Last byte that we got from the keyboard. */
-    unsigned int keyeventsize;	/* The sizeof() one kbd event */
-    unsigned int maxkeyevent;	/* Offset to the end of the ringbuffer. */
-    int eurokbd;		/* Keep tabs of the euro-ness of the kbd */
-    PFV prev_handler;		/* The previous keyboard handler.
-				   Keep this around
-				   to restore when we exit Medley */
-    int	URaid;			/* Put this in a better place later.. /jarl */
-#endif /* DOS */
   } KbdInterfaceRec, *KbdInterface;
 
 
@@ -221,20 +208,7 @@ typedef struct
     unsigned long oldstate; /* Keep the old state around */
     unsigned long graphicsmode; /* Magic cookie used to set the state. */
     unsigned long numberofbanks;
-#ifdef DOS
-    unsigned long BytesPerLine;
-    unsigned long DisplayStartAddr;
-    unsigned long DisplaySegSize;
-    unsigned long DisplaySegMagnitude;
-    unsigned long LinesPerBank;
-    unsigned short LastLineLen[32];     /* length of last line fragment per bank */
-    unsigned short LinesInBank[32];     /* True # of full lines in this bank */
-					/* # of lines we can do with the full-line dumpline */
-					/* for sure. */
-    unsigned short LinesBeforeBank[32]; /* Scan lines before start of this bank. */
-
-    void (* SwitchBank)(); /* Method to switch the bank (see vesa standard) */
-#elif XWINDOW
+#if   XWINDOW
     char *identifier;
     int BitGravity;
     Display *display_id;

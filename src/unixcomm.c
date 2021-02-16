@@ -7,7 +7,6 @@ Unix Interface Communications
 */
 
 /* Don't compile this at all under DOS. */
-#ifndef DOS
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE /* Needed for ptsname on glibc systems. */
@@ -929,4 +928,3 @@ void WriteLispStringToPipe(LispPTR lispstr) {
   write(UnixPipeOut, shcom, len);
 }
 
-#endif /* DOS */

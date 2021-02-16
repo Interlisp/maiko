@@ -46,13 +46,6 @@
 extern int kbd_for_makeinit;
 #endif
 
-#ifdef DOS
-#include "devif.h"
-#include "iopage.h"
-extern DspInterface currentdsp;
-extern IOPAGE *IOPage68K;
-#endif
-
 extern int LispWindowFd;
 extern int ScreenLocked;
 
@@ -105,11 +98,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
   sx = pbt->pbtsourcebit;
   backwardflg = pbt->pbtbackward;
 /* if displayflg != 0 then source or destination is DisplayBitMap */
-#ifdef DOS
-  currentdsp->device.locked++;
-#else
   ScreenLocked = T;
-#endif /* DOS */
 
 #if SUNDISPLAY || DOS
   displayflg = cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (dx >> 4)), w, h, backwardflg) ||
@@ -129,9 +118,6 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 
 #ifdef SUNDISPLAY
   if (displayflg) HideCursor;
-#elif DOS
-  if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
-  ;
 #endif /* SUNDISPLAY / DOS */
 
   new_bitblt_code
@@ -145,20 +131,13 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
           if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif
   if (displayflg) ShowCursor;
-#elif DOS
-      flush_display_lineregion(dx, dstbase, w, h);
-  if (displayflg) (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
 #endif /* SUNDISPLAY / DOS */
 
 #ifdef XWINDOW
   flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
 
-#ifdef DOS
-  currentdsp->device.locked--;
-#else
   ScreenLocked = NIL;
-#endif /* DOS */
 
   return (pilot_bt_tbl);
 
