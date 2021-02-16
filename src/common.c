@@ -91,7 +91,6 @@ int error(const char *cp) {
   fflush(stdout); fflush(stderr);
   URaid_currentFX = URMAXFXNUM + 1;
   memset(URaid_FXarray, 0, URMAXFXNUM * 4);
-#ifndef DOS
   {
     int stat = fcntl(fileno(stdin), F_GETFL, 0);
     if (stat != O_RDONLY && stat != O_RDWR)
@@ -100,7 +99,6 @@ int error(const char *cp) {
         exit(0);
       }
   }
-#endif /* DOS */
 uraidloop:
   if (setjmp(BT_jumpbuf) == 1) goto uraidloop;
   if (setjmp(SD_jumpbuf) == 1) goto uraidloop;

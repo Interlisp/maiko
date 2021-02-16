@@ -60,10 +60,6 @@
 #include "xcursordefs.h"
 #endif
 
-#ifdef DOS
-#define getpagesize() 512
-#endif /* DOS */
-
 #if defined(XWINDOW) || defined(DOS)
 #include "devif.h"
 DLword *DisplayRegion68k_end_addr;
@@ -225,11 +221,6 @@ void clear_display() {
 
 #endif /* SUNDISPLAY */
 
-#ifdef DOS
-  TPRINT(("Enter Clear_display\n"));
-  (currentdsp->cleardisplay)(currentdsp);
-  TPRINT(("Exit Clear_display\n"));
-#endif /* DOS */
 }
 
 #else /* COLOR */
@@ -524,11 +515,7 @@ void init_display2(DLword *display_addr, int display_max)
   DBPRINT(("after mem_point\n"));
 #endif /* SUNDISPLAY */
 
-#ifdef DOS
-  (currentdsp->cleardisplay)(currentdsp);
-#else  /* DOS */
   clear_display();
-#endif /* DOS */
 
   DBPRINT(("after clear_display()\n"));
 
@@ -636,11 +623,6 @@ void flush_display_buffer() {
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
                                  currentdsp->Visible.y, currentdsp->Visible.width,
                                  currentdsp->Visible.height);
-#elif DOS
-  TPRINT(("Enter flush_display_buffer\n"));
-  (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, 0, 0, currentdsp->Display.width,
-                                 currentdsp->Display.height);
-  TPRINT(("Exit flush_display_buffer\n"));
 #endif /* DOS */
 }
 

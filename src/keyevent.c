@@ -20,25 +20,11 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <string.h>
-#ifndef DOS
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <sys/time.h>
-#else
-#include <time.h>
-#endif /* DOS */
-#ifdef DOS
-
-#include <i32.h> /* Defines "#pragma interrupt"  */
-#include <dos.h> /* Defines REGS & other structs */
-#include <stk.h> /* _XSTACK struct definition    */
-#pragma interrupt(Mouse_hndlr)
-
-void Mouse_hndlr(void); /* Fields mouse events from driver        */
-                        /*  (during servicing of mouse interrupt) */
-
-#elif SUNDISPLAY
+#if   SUNDISPLAY
 #include <sunwindow/window_hs.h>
 #include <sunwindow/win_ioctl.h>
 #include <suntool/window.h>
@@ -134,9 +120,7 @@ extern int ether_fd;
 
 extern DLword *DisplayRegion68k;
 
-#ifndef DOS
 static struct timeval SelectTimeout = {0, 0};
-#endif /* DOS */
 
 #ifdef XWINDOW
 extern volatile sig_atomic_t Event_Req;
@@ -282,7 +266,6 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 
 void getsignaldata(int sig)
 {
-#ifndef DOS
 #ifdef SUNDISPLAY
   struct inputevent event;
 #endif /* SUNDISPLAY */
@@ -377,7 +360,6 @@ getmore:
     }
   }
 /* #endif */
-#endif /* DOS */
 } /* end getsignaldata */
 
 #ifdef SUNDISPLAY
@@ -580,9 +562,6 @@ void taking_mouse_down() {
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
-#ifdef DOS
-  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
-#else
   if (!DisplayInitialized) return;
 
   /* restore saved image */
@@ -599,7 +578,6 @@ void taking_mouse_down() {
 #ifdef DISPLAYBUFFER
   flush_display_region(dx, (LastCursorY), w, h);
 #endif /* DISPLAYBUFFER */
-#endif /* DOS */
 }
 #else
 
@@ -733,9 +711,6 @@ void copy_cursor(int newx, int newy)
 /* I'll make it MACRO */
 void taking_mouse_up(int newx, int newy)
 {
-#ifdef DOS
-  (currentdsp->mouse_visible)(newx, newy);
-#else
   if (!DisplayInitialized) return;
   /* save hidden bitmap */
   cursor_hidden_bitmap(newx, newy);
@@ -745,7 +720,6 @@ void taking_mouse_up(int newx, int newy)
 #endif
   LastCursorX = newx;
   LastCursorY = newy;
-#endif
 }
 
 /* store bitmap image inside rect. which specified by x,y */

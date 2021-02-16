@@ -15,10 +15,6 @@
 
 typedef struct {
   u_char KeyMap[0x80];
-#ifdef DOS
-  u_char lastbyte;
-  void	(*prev_handler)();
-#endif /* DOS */
   void	(* sync_device)();	/* Make reality and emulator coincide with each other */
   void	(* enter_device)();
   void	(* exit_device)();
@@ -26,9 +22,5 @@ typedef struct {
   void	(* before_raid)();
   void	(* after_raid)();
   int	lispkeycode;
-#ifdef DOS
-  int	device_active;
-  int	device_locked;
-#endif /* DOS */
 } KbdInterfaceRec, *KbdInterface;
 #endif /* KBDIF_H */

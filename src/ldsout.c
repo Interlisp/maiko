@@ -153,16 +153,10 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
               "\nsysout loader: Error, secondary space in use. You can't specify size.\nProcess "
               "size = %d\nSys size = %d\n",
               ifpage.process_size, sys_size);
-#ifdef DOS
-      /* Note that we have an initialized display by now. */
-      /* Hence we have to observe the display protocol. */
-      VESA_errorexit(tmp);
-#else
       fprintf(stderr, "sysout_loader: You can't specify the process size.\n");
       fprintf(stderr, "Because, secondary space is already used.\n");
       fprintf(stderr, "(size is %d, you specified %d.)\n", ifpage.process_size, sys_size);
       exit(-1);
-#endif /* DOS */
     }
     /*Can use this sys_size as the process size */
     /* The sys_size should be same as the previous one */
@@ -279,28 +273,6 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
   /* read sysout file to lispworld */
 
   for (i = 0; i < (sysout_size / 2); i++) {
-#ifdef DOS
-    /* Dial that floats from left to right on the top line of the */
-    /* displaty. Dial shows % of sysout loaded by digits and */
-    /* position. */
-    int columns;
-    switch (currentdsp->graphicsmode) {
-      case 0x104:
-        columns = 120; /* 131 - 10 */
-        break;
-      case 0x102:
-        columns = 69; /* 79 - 10 */
-        break;
-      default:
-        columns = 69; /* 79 - 10 */
-        break;
-    }
-    _settextposition((short)0, (short)0);
-    if ((i & 0xf) == 0) {
-      for (int j = 0; j < (columns * i) / (sysout_size >> 1); j++) putchar(' ');
-      printf("-=(%2d%%)=-\n", (100 * i) / (sysout_size >> 1));
-    }
-#endif /* DOS */
     if (GETPAGEOK(fptovp, i) != 0177777) {
       if (lseek(sysout, i * BYTESPER_PAGE, SEEK_SET) == -1) {
         perror("sysout_loader: can't seek sysout file");

@@ -1,9 +1,6 @@
 #ifndef DIRDEFS_H
 #define DIRDEFS_H 1
 #include "lispemul.h" /* for LispPTR */
-#ifdef DOS
-int make_old_version(char *old, char *file);
-#endif
 #ifdef FSDEBUG
 void print_finfo(FINFO *fp);
 #endif

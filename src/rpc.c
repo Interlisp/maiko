@@ -18,7 +18,6 @@
 /*									*/
 /************************************************************************/
 
-#ifndef DOS
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -30,7 +29,6 @@
 #include <netdb.h>
 #include <errno.h>
 #include <string.h> /* for memset/memcpy */
-#endif              /* DOS */
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"
@@ -48,7 +46,6 @@
 
 LispPTR rpc(LispPTR *args)
 {
-#ifndef DOS
   /* Arguments are:
      args[0]:Destination Address; hostname or internet address are both supported.
      args[1]:Remote port for this program.
@@ -194,5 +191,4 @@ getbuf:
  */
 handle_error:
   return (NIL_PTR);
-#endif /* DOS */
 }

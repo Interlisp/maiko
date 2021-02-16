@@ -312,16 +312,8 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
  * They might be lost in the course of the conversion.
  *
  */
-#ifdef DOS
-
-/* DOS version of LispVersionToUnixVersion */
-/* * * * * This is done this way because DOS can't handle the non-DOS version -- */
-/* * * * * it gave "Too many characters in a character constant" errors!        */
-#include "lispver1.h"
-#else /* DOS */
 /* NON-DOS version of the macro LispVersionToUnixVersion */
 #include "lispver2.h"
-#endif /* DOS */
 
 
 /*		
@@ -501,13 +493,9 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
         (((varray)->version_no == LASTVERSIONARRAY)? 1 : 0)
 
 
-#ifdef DOS
-#define OnlyVersionlessP(varray) 0
-#else
-#define OnlyVersionlessP(varray)							 \
+#define OnlyVersionlessP(varray)							\
         (((varray)->version_no == 0 && ((varray) + 1)->version_no == LASTVERSIONARRAY) ? \
 	 1 : 0)
-#endif /* DOS */
 
 /* An argument of AddDotNoExtension must be LispVersion convention */
 /* Like "foo/fee.fee;3" or "/foo/foo;3" */
@@ -622,20 +610,12 @@ extern	int	errno;
 /*  DRIVESEP = OS-specific drive separator character. */
 /*    (only used with DOS as of 3/93)         */
 /********************************************************/
-#ifdef DOS
-#define DIRSEP '\\'
-#define DIRSEPSTR "\\"
-#define DRIVESEP ':'
-#define UNIXDIRSEP '/'
-#define MAXNAMLEN _MAX_PATH
-#else
 #define DIRSEPSTR "/"
 #define DIRSEP '/'
 #define UNIXDIRSEP '/'
 /* system includes may already define MAXNAMLEN */
 #if !defined(MAXNAMLEN)
 #define MAXNAMLEN NAME_MAX
-#endif
 #endif
 
 #endif /* LOCFILE_H */

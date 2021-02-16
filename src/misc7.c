@@ -12,9 +12,7 @@
 /*	misc7.c
  */
 #include <stdio.h>
-#ifndef DOS
 #include <sys/ioctl.h>
-#endif /* DOS */
 #include "lispemul.h"
 #include "lspglob.h"
 #include "adr68k.h"
