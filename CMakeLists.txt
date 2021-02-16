@@ -79,13 +79,9 @@ SET(BAD_SRCS
     src/chatter.c
     src/codeconv.c
     src/codetbl.c
-    src/doscomm.c
-    src/doskbd.c
-    src/dosmouse.c
     src/ejlisp.c
     src/imagefile2.c
     src/imagefile.c
-    src/kbdif.c
     src/lpdual.c
     src/lpkit.c
     src/lplexyy.c
@@ -102,8 +98,6 @@ SET(BAD_SRCS
     src/rawrs232c.c
     src/rs232c.c
     src/truecolor.c
-    src/vesainit.c
-    src/vgainit.c
 )
 
 SET(MAIKO_SRCS
@@ -175,7 +169,6 @@ SET(MAIKO_SRCS
     src/miscn.c
     src/mkatom.c
     src/mkcell.c
-    src/mouseif.c
     src/mvs.c
     src/osmsg.c
     src/perrno.c
@@ -280,12 +273,10 @@ SET(MAIKO_HDRS
     inc/initsoutdefs.h
     inc/inlineC.h
     inc/inln68k.h
-    inc/inlndos.h
     inc/inlnPS2.h
     inc/inlnSPARC.h
     inc/intcalldefs.h
     inc/iopage.h
-    inc/kbdif.h
     inc/kbdsubrsdefs.h
     inc/keyboard.h
     inc/keyeventdefs.h
@@ -297,7 +288,6 @@ SET(MAIKO_HDRS
     inc/lisp2cdefs.h
     inc/lispemul.h
     inc/lispmap.h
-    inc/lispver1.h
     inc/lispver2.h
     inc/llcolordefs.h
     inc/lldsp.h
