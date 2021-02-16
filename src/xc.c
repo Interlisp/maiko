@@ -102,7 +102,7 @@ register InstPtr pccache asm("si");
 register LispPTR *cspcache asm("di");
 register LispPTR tscache asm("bx");
 #include "inlnPS2.h"
-#endif /* DOS */
+#endif /* GCC386 */
 
 /* This used to be here for including optimized dispatch
  * for SPARC, but it has some other things in it, so we

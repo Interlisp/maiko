@@ -36,7 +36,7 @@
 #include "devif.h"
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
-#endif /* DOS */
+#endif /* XWINDOW */
 
 /****************************************************
  *
@@ -66,13 +66,13 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
     FD_SET(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     enable_Xkeyboard(currentdsp);
-#endif /* DOS */
+#endif /* SUNDISPLAY, XWINDOW */
   } else if (args[0] == NIL) {
 #ifdef SUNDISPLAY
     FD_CLR(LispWindowFd, &LispReadFds);
 #elif XWINDOW
     disable_Xkeyboard(currentdsp);
-#endif /* DOS */
+#endif /* SUNDISPLAY, XWINDOW */
   } else {
     error("KB_enable: illegal arg \n");
     printf("KB_enable: arg = %d\n", args[0]);
@@ -121,7 +121,7 @@ void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
 
 #elif XWINDOW
   if (args[0] == ATOM_T) beep_Xkeyboard(currentdsp);
-#endif /* SUNDISPLAY, XWINDOW, DOS */
+#endif /* SUNDISPLAY, XWINDOW */
 }
 
 /****************************************************

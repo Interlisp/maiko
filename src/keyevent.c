@@ -30,7 +30,7 @@
 #include <suntool/window.h>
 #include <ctype.h>
 #include <sundev/kbio.h>
-#endif /* DOS */
+#endif /* SUNDISPLAY */
 
 #include "lispemul.h"
 #include "lspglob.h"
@@ -57,11 +57,11 @@
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 #include "dbprint.h"
-#if (defined(DOS) || defined(XWINDOW))
+#if defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
 extern IOPAGE *IOPage68K;
-#endif /* DOS */
+#endif /* XWINDOW */
 
 /* for contextsw */
 #define AS_OPCODE 1

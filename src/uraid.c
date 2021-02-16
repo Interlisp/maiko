@@ -87,10 +87,10 @@ extern int Win_security_p;
 #include "etherdefs.h"
 #endif
 
-#if defined(DOS) || defined(XWINDOW)
+#if defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* DOS || XWINDOW */
+#endif /* XWINDOW */
 
 #ifdef COLOR
 extern int MonoOrColor;
@@ -126,7 +126,7 @@ x Xaddress [xnum]       Hex-Dump xnum word(16-bits) starting at Xaddress
 @ litatom val           Sets TOPVAL of litatom to Decimal-val
 < Xaddress val          Sets the word(16-bits) at the address to val
 <<Return or Exit>>
-e                       Exit to UNIX / DOS
+e                       Exit to UNIX
 h                       Context switch to HARDRESET
 q                       Returns from URAID with NO-change
 <<Misc>>
@@ -928,10 +928,10 @@ int device_before_raid() {
 
 #endif /* SUNDISPLAY */
 
-#if defined(XWINDOW) || defined(DOS)
+#if defined(XWINDOW)
   (currentdsp->cleardisplay)(currentdsp);
   (currentdsp->device.before_raid)(currentdsp);
-#endif /* XWINDOW || DOS */
+#endif /* XWINDOW */
 
   return (0);
 }
@@ -1045,7 +1045,7 @@ int device_after_raid() {
   (currentdsp->device.after_raid)(currentdsp);
   FD_SET(ConnectionNumber(currentdsp->display_id), &LispReadFds);
   flush_display_buffer();
-#endif /* XWINDOW | DOS */
+#endif /* XWINDOW */
 
   int_unblock();
   *EmKbdAd068K = *EmRealUtilin68K = *EmKbdAd168K = *EmKbdAd268K = *EmKbdAd368K = *EmKbdAd468K =

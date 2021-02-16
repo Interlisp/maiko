@@ -66,7 +66,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
-#if defined(SUNDISPLAY) || defined(DOS)
+#if defined(SUNDISPLAY)
   int displayflg;
 #endif
   int sx, dx, w, h, srcbpl, dstbpl, backwardflg;
@@ -100,7 +100,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 /* if displayflg != 0 then source or destination is DisplayBitMap */
   ScreenLocked = T;
 
-#if SUNDISPLAY || DOS
+#if SUNDISPLAY
   displayflg = cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (dx >> 4)), w, h, backwardflg) ||
                cursorin(pbt->pbtsourcehi, (pbt->pbtsourcelo + (sx >> 4)), w, h, backwardflg);
 #endif /* SUNDISPLAY */
@@ -118,7 +118,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 
 #ifdef SUNDISPLAY
   if (displayflg) HideCursor;
-#endif /* SUNDISPLAY / DOS */
+#endif /* SUNDISPLAY */
 
   new_bitblt_code
 
@@ -131,7 +131,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
           if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif
   if (displayflg) ShowCursor;
-#endif /* SUNDISPLAY / DOS */
+#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   flush_display_lineregion(dx, dstbase, w, h);

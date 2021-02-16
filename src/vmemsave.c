@@ -308,7 +308,7 @@ LispPTR vmem_save(char *sysout_file_name)
     EmCursorBitMap68K= NullCursor;*/
 #endif /* OLD_CURSOR */
 
-#endif /* SUNDISPLAY || DOS */
+#endif /* SUNDISPLAY */
 
   /* set FPTOVP */
   fptovp = FPtoVP + 1;

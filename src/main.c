@@ -242,10 +242,10 @@ int sysout_size = 0;    /* ditto */
 
 int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
 
-#if defined(DOS) || defined(XWINDOW)
+#if defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* DOS || XWINDOW */
+#endif /* XWINDOW */
 
 extern time_t MDate;
 extern int nokbdflag;
@@ -261,14 +261,14 @@ const char *helpstring =
  -bw <pixels>             The Medley screen borderwidth\n\
  -g[eometry] <geom>]      The Medley screen geometry\n\
  -sc[reen] <w>x<h>]       The Medley screen geometry\n";
-#else  /* not DOS, not XWINDOW */
+#else  /* not XWINDOW */
 const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
  lde[ether] [sysout-name] [<options>]\n\
  -info        Print general info about the system\n\
  -help        Print this message\n";
-#endif /* DOS */
+#endif /* XWINDOW */
 
 /************************************************************************/
 /*									*/
@@ -427,9 +427,9 @@ int main(int argc, char *argv[])
     if (please_fork) fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
   }
 
-#if defined(DOS) || defined(XWINDOW)
+#if defined(XWINDOW)
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
-#endif                                       /* DOS || XWINDOW */
+#endif                                       /* XWINDOW */
 
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);

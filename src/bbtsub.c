@@ -99,7 +99,7 @@ extern int MonoOrColor;
 /*  take care of cursor movement & hiding  */
 /*  (during bitblts to screen) ourselves.  */
 /*******************************************/
-#if defined(SUNDISPLAY) || defined(DOS)
+#if defined(SUNDISPLAY)
 #define REALCURSOR
 #else
 #undef REALCURSOR
