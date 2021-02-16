@@ -50,10 +50,10 @@ int Storage_expanded; /*  T or NIL */
 /*      Load the sysout file into memory.                               */
 /*                                                                      */
 /************************************************************************/
-#if defined(DOS) || defined(XWINDOW)
+#if defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* DOS || XWINDOW */
+#endif /* XWINDOW */
 
 /* sys_size is sysout size in megabytes */
 int sysout_loader(const char *sysout_file_name, int sys_size) {
@@ -299,11 +299,11 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
   free(fptovp);
   DBPRINT(("sysout file is read completely.\n"));
 
-#if (defined(DISPLAYBUFFER) || defined(XWINDOW) || defined(DOS))
+#if defined(DISPLAYBUFFER) || defined(XWINDOW)
   TPRINT(("Flushing display buffer...\n"));
   flush_display_buffer();
   TPRINT(("After Flushing display buffer\n"));
-#endif /* DISPLAYBUFFER || XWINDOW || DOS */
+#endif /* DISPLAYBUFFER || XWINDOW */
 
   close(sysout);
   return (sys_size);

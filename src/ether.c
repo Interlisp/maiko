@@ -58,7 +58,7 @@
 #include <sys/mbuf.h>
 #endif
 #include <nlist.h>
-#endif /* DOS */
+#endif
 
 #include "commondefs.h"
 #include "lispemul.h"

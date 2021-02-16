@@ -40,7 +40,7 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
     fprintf(stderr, "Can't open display.");
     exit(-1);
   }
-#endif /* DOS | XWINDOW */
+#endif /* XWINDOW */
 } /* Now we know the maximum capabilities of the hardware. */
 
 /*********************************************************************/

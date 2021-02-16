@@ -226,7 +226,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 #elif XWINDOW
   init_Xevent(currentdsp);
 
-#endif /* XWINDOW DOS */
+#endif /* SUNDISPLAY, XWINDOW */
 }
 
 /*  ----------------------------------------------------------------*/
@@ -247,7 +247,7 @@ void device_before_exit() {
   }
   close(LispKbdFd);
 
-#endif /* SUNDISPLAY DOS*/
+#endif /* SUNDISPLAY */
   display_before_exit();
 }
 
@@ -307,7 +307,7 @@ void seteventmask(struct inputmask *eventmask)
 #define KB_DEC3100 (9 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 #define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
-#define KB_DOS (12 + MIN_KEYTYPE)
+#define KB_DOS (12 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 
 /* KB_SUN4 not defined in older OS versions */
 #ifndef KB_SUN4

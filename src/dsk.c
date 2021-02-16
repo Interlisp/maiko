@@ -2493,8 +2493,7 @@ static int make_directory(register char *dir)
 /*	Read thru DIR and gather all files that match FILE into		*/
 /*	VARRAY.  DIR's case must match existing directory's, but	*/
 /*	FILE name matching is case-insensitive.  For UNIX, the 		*/
-/*	versionless file is marked with a version# of 0; for DOS,	*/
-/*	version 0 is the back-up copy of the file.			*/
+/*	versionless file is marked with a version# of 0			*/
 /*									*/
 /************************************************************************/
 
