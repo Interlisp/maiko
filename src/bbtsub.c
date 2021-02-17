@@ -76,6 +76,16 @@ extern IOPAGE *IOPage68K;
 #include "display.h"
 #include "dbprint.h"
 
+#ifdef INIT
+#include "initkbddefs.h"
+extern int  kbd_for_makeinit;
+
+#define init_kbd_startup   \
+  if (!kbd_for_makeinit) { \
+    init_keyboard(0);      \
+    kbd_for_makeinit = 1;  \
+  };
+#endif
 
 #if !defined(SUNDISPLAY)
 #include "devif.h"
@@ -278,12 +288,6 @@ extern int ScreenLocked; /* for mouse tracking */
   (SRCTYPE == INVERT_atom ? (OPERATION == ERASE_atom ? 0 : 1) /*  SRCTYPE == INPUT, TEXTURE */ \
                           : (OPERATION == ERASE_atom ? 1 : 0))
 
-#define init_kbd_startup   \
-  if (!kbd_for_makeinit) { \
-    init_keyboard(0);      \
-    kbd_for_makeinit = 1;  \
-  };
-
 extern struct pixrect *SrcePixRect, *DestPixRect, *TexturePixRect;
 extern struct pixrect *BlackTexturePixRect, *WhiteTexturePixRect;
 extern DLword TEXTURE_atom;
@@ -293,8 +297,6 @@ extern DLword INVERT_atom;
 extern DLword ERASE_atom;
 extern DLword PAINT_atom;
 extern DLword REPLACE_atom;
-
-extern int kbd_for_makeinit; /*** FOR INIT ***/
 
 /************************************************************************/
 /*                                                                      */

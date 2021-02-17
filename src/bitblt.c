@@ -41,6 +41,11 @@
 #include "bitbltdefs.h"
 #include "initdspdefs.h"
 
+#if defined(INIT)
+#include "initkbddefs.h"
+extern int kbd_for_makeinit;
+#endif
+
 #ifdef DOS
 #include "devif.h"
 #include "iopage.h"
@@ -50,7 +55,6 @@ extern IOPAGE *IOPage68K;
 
 extern int LispWindowFd;
 extern int ScreenLocked;
-extern int kbd_for_makeinit;
 
 #ifdef COLOR
 extern int MonoOrColor;
