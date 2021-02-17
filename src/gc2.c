@@ -22,6 +22,7 @@
 */
 /**********************************************************************/
 
+#include <stdio.h>
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lsptypes.h"
@@ -29,7 +30,7 @@
 #include "emlglob.h"
 #include "address.h"
 #include "adr68k.h"
-
+#include "testtooldefs.h"
 #include "gc2defs.h"
 #include "gcscandefs.h"
 

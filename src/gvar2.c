@@ -18,7 +18,7 @@
 #include "emlglob.h"
 #include "cell.h"
 #include "dbprint.h"
-
+#include "commondefs.h"
 #include "gvar2defs.h"
 #include "gchtfinddefs.h"
 

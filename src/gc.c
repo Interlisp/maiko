@@ -15,7 +15,7 @@
 #include "lsptypes.h"
 #include "emlglob.h"
 #include "gcdata.h"
-
+#include "testtooldefs.h"
 #include "gcdefs.h"
 #include "gchtfinddefs.h"
 
