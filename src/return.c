@@ -39,7 +39,7 @@
 #include "initatms.h"
 #include "cell.h"
 #include "return.h"
-
+#include "testtooldefs.h"
 #include "returndefs.h"
 #include "commondefs.h"
 
