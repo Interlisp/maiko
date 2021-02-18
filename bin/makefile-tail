@@ -33,10 +33,6 @@
 #	3. makeright -e init
 #	4. follow the instructions on {eris}<lispcore>sunloadup>howto-loadup-sunlisp.txt
 
-
-# OSARCHDIR is the os/architecture dir, where executables all go.
-OSARCHDIR = ../$(OSARCHNAME)/
-
 REQUIRED-INCS = $(INCDIR)version.h $(INCDIR)maiko/platform.h
 
 CFLAGS = $(OPTFLAGS) $(DFLAGS)
