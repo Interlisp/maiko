@@ -149,9 +149,6 @@ EXTFILES = $(OBJECTDIR)usrsubr.o
 # Development targets - copyprotect is OFF here
 ################################################################################
 
-default: $(OSARCHDIR)lde $(OSARCHDIR)$(LDENAME) $(OSARCHDIR)ldeether \
-	$(OSARCHDIR)tstsout $(OSARCHDIR)setsout
-
 $(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
 	$(CC) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o $(LDELDFLAGS) -o $(OSARCHDIR)lde
 

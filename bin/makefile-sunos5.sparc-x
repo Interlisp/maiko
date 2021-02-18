@@ -55,4 +55,4 @@ DLPIFILES = $(OBJECTDIR)dlpi.o
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default:	../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+default:	../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether ../$(OSARCHNAME)/ldex

@@ -24,4 +24,4 @@ LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default	: ../$(OSARCHNAME)/lde 
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
