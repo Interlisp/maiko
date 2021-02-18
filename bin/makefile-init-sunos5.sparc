@@ -18,24 +18,22 @@
 
 # Options for SPARC under Solaris-2 operating system, X windows.
 
-CC = gcc
+CC = cc -m32 $(DEVSTUDIO_CFLAGS)
 
-XFILES = $(OBJECTDIR)xlspwin.o \
-        $(OBJECTDIR)xbbt.o \
-	$(OBJECTDIR)xmkicon.o \
-	$(OBJECTDIR)xrdopt.o \
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
 	$(OBJECTDIR)xscroll.o \
 	$(OBJECTDIR)xcursor.o \
-	$(OBJECTDIR)xwinman.o \
-	$(OBJECTDIR)dspif.o \
-	$(OBJECTDIR)kbdif.o \
-	$(OBJECTDIR)xinit.o
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
 
-
-XFLAGS = -DXWINDOW -I/usr/openwin/include
+XFLAGS = -DXWINDOW
 
 # OPTFLAGS is normally -g for MAKEINIT, as it needs debugging often.
-OPTFLAGS = -g3 -O
+OPTFLAGS = -g3 -O0
 
 # Set any debugging options in DEBUGFLAGS.  E.g., to enable stack
 # checking, use -DSTACKCHECK; to enable the fn-call-time stack
@@ -43,9 +41,7 @@ OPTFLAGS = -g3 -O
 
 DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 
-MACHINEFLAGS = -DOS5 -DUSE_DLPI \
-		-I$(OPENWINHOME)/include \
-		-DLOCK_X_UPDATES
+MACHINEFLAGS = -DOS5 -DUSE_DLPI -DLOCK_X_UPDATES
 
 # The LDEINIT wants to have NOVERSION set, so we don't hang up on
 # any change-over in versions.
@@ -57,12 +53,12 @@ DFLAGS = -DINIT \
 	 -DNOVERSION -DRELEASE=351 
 
 
-LDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11 -lc -lm -lsocket -lnsl
-LDELDFLAGS = -R$(OPENWINHOME)/lib -L$(OPENWINHOME)/lib -lX11  -lc -lm -lsocket -lnsl
+LDFLAGS = -lX11 -lc -lm -lsocket -lnsl
+LDELDFLAGS = -lX11  -lc -lm -lsocket -lnsl
 LDEETHERLDFLAGS = -lc -lm -lsocket -lnsl
 
 DLPIFILES = $(OBJECTDIR)dlpi.o
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldeether
+default	: ../$(OSARCHNAME)/ldeinit

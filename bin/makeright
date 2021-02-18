@@ -59,7 +59,7 @@ osversion=`osversion`
 echo "making so far for ${osversion} on ${architecture}."
 case "$display" in
 	init)	display=single
-		releasename=init.${architecture}
+		releasename=init-${osversion}.${architecture}
 		ldename=ldeinit
 		;;
 	single)	releasename=${osversion}.${architecture}
