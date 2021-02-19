@@ -32,3 +32,5 @@ LDFLAGS =
 LDELDFLAGS =
 LDEETHERLDFLAGS =
 
+# OSARCHDIR is the os/architecture dir, where executables all go.
+OSARCHDIR = ../$(OSARCHNAME)/
