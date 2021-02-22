@@ -31,7 +31,6 @@
 
 #include "xrdoptdefs.h"
 
-XrmDatabase commandlineDB, applicationDB, serverDB, homeDB, rDB;
 extern int LispWindowRequestedX, LispWindowRequestedY;
 extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 
@@ -40,38 +39,38 @@ extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 extern int xsync;
 
-XrmOptionDescRec opTable[] = {
-    {"-help", "*help", XrmoptionIsArg, (caddr_t)NULL},
-    {"-h", "*help", XrmoptionIsArg, (caddr_t)NULL},
-    {"-sysout", "*sysout", XrmoptionSepArg, (caddr_t)NULL},
-    {"-display", "*display", XrmoptionSepArg, (caddr_t)NULL},
-    {"-d", "*display", XrmoptionSepArg, (caddr_t)NULL},
-    {"-borderWidth", "*borderWidth", XrmoptionSepArg, (caddr_t)NULL},
-    {"-bw", "*borderWidth", XrmoptionSepArg, (caddr_t)NULL},
-    {"-screen", "*screen", XrmoptionSepArg, (caddr_t)NULL},
-    {"-sc", "*screen", XrmoptionSepArg, (caddr_t)NULL},
-    {"-geometry", "*geometry", XrmoptionSepArg, (caddr_t)NULL},
-    {"-g", "*geometry", XrmoptionSepArg, (caddr_t)NULL},
-    {"-foreground", "*foreground", XrmoptionSepArg, (caddr_t)NULL},
-    {"-fg", "*foreground", XrmoptionSepArg, (caddr_t)NULL},
-    {"-background", "*background", XrmoptionSepArg, (caddr_t)NULL},
-    {"-bg", "*background", XrmoptionSepArg, (caddr_t)NULL},
-    {"-title", "*title", XrmoptionSepArg, (caddr_t)NULL},
-    {"-t", "*title", XrmoptionSepArg, (caddr_t)NULL},
-    {"-icontitle", "*icontitle", XrmoptionSepArg, (caddr_t)NULL},
-    {"-it", "*icontitle", XrmoptionSepArg, (caddr_t)NULL},
-    {"-iconbitmap", "*iconbitmap", XrmoptionSepArg, (caddr_t)NULL},
-    {"-ibm", "*iconbitmap", XrmoptionSepArg, (caddr_t)NULL},
-    {"-timer", "*timer", XrmoptionSepArg, (caddr_t)NULL},
-    {"-xpages", "*maxpages", XrmoptionSepArg, (caddr_t)NULL},
-    {"-m", "*memory", XrmoptionSepArg, (caddr_t)NULL},
-    {"-NF", "*NoFork", XrmoptionIsArg, (caddr_t)NULL},
-    {"-NoFork", "*NoFork", XrmoptionIsArg, (caddr_t)NULL},
-    {"-INIT", "*Init", XrmoptionIsArg, (caddr_t)NULL},
-    {"-EtherNet", "*EtherNet", XrmoptionSepArg, (caddr_t)NULL},
-    {"-E", "*EtherNet", XrmoptionSepArg, (caddr_t)NULL},
-    {"-autorepeat", "*autorepeat", XrmoptionSepArg, (caddr_t)NULL},
-    {"-xsync", "*xsync", XrmoptionIsArg, (caddr_t)NULL},
+static XrmOptionDescRec opTable[] = {
+    {"-help", "*help", XrmoptionIsArg, (XPointer)NULL},
+    {"-h", "*help", XrmoptionIsArg, (XPointer)NULL},
+    {"-sysout", "*sysout", XrmoptionSepArg, (XPointer)NULL},
+    {"-display", "*display", XrmoptionSepArg, (XPointer)NULL},
+    {"-d", "*display", XrmoptionSepArg, (XPointer)NULL},
+    {"-borderWidth", "*borderWidth", XrmoptionSepArg, (XPointer)NULL},
+    {"-bw", "*borderWidth", XrmoptionSepArg, (XPointer)NULL},
+    {"-screen", "*screen", XrmoptionSepArg, (XPointer)NULL},
+    {"-sc", "*screen", XrmoptionSepArg, (XPointer)NULL},
+    {"-geometry", "*geometry", XrmoptionSepArg, (XPointer)NULL},
+    {"-g", "*geometry", XrmoptionSepArg, (XPointer)NULL},
+    {"-foreground", "*foreground", XrmoptionSepArg, (XPointer)NULL},
+    {"-fg", "*foreground", XrmoptionSepArg, (XPointer)NULL},
+    {"-background", "*background", XrmoptionSepArg, (XPointer)NULL},
+    {"-bg", "*background", XrmoptionSepArg, (XPointer)NULL},
+    {"-title", "*title", XrmoptionSepArg, (XPointer)NULL},
+    {"-t", "*title", XrmoptionSepArg, (XPointer)NULL},
+    {"-icontitle", "*icontitle", XrmoptionSepArg, (XPointer)NULL},
+    {"-it", "*icontitle", XrmoptionSepArg, (XPointer)NULL},
+    {"-iconbitmap", "*iconbitmap", XrmoptionSepArg, (XPointer)NULL},
+    {"-ibm", "*iconbitmap", XrmoptionSepArg, (XPointer)NULL},
+    {"-timer", "*timer", XrmoptionSepArg, (XPointer)NULL},
+    {"-xpages", "*maxpages", XrmoptionSepArg, (XPointer)NULL},
+    {"-m", "*memory", XrmoptionSepArg, (XPointer)NULL},
+    {"-NF", "*NoFork", XrmoptionIsArg, (XPointer)NULL},
+    {"-NoFork", "*NoFork", XrmoptionIsArg, (XPointer)NULL},
+    {"-INIT", "*Init", XrmoptionIsArg, (XPointer)NULL},
+    {"-EtherNet", "*EtherNet", XrmoptionSepArg, (XPointer)NULL},
+    {"-E", "*EtherNet", XrmoptionSepArg, (XPointer)NULL},
+    {"-autorepeat", "*autorepeat", XrmoptionSepArg, (XPointer)NULL},
+    {"-xsync", "*xsync", XrmoptionIsArg, (XPointer)NULL},
 };
 /* autorepeat is a global setting for X, not anything that
  Medley has to be concerned with. Item kept for historical
@@ -128,25 +127,6 @@ void print_Xusage(const char *prog)
 
 /************************************************************************/
 /*									*/
-/*			p r i n t _ l i s p u s a g e			*/
-/*									*/
-/*	Print out command-line usage info if user enters wrong stuff.	*/
-/*									*/
-/************************************************************************/
-
-void print_lispusage(const char *prog)
-{
-  TPRINT(("TRACE: print_lisp_usage()\n"));
-
-  /* Lisp Option */
-  fprintf(stderr, "lde[ether] [sysout]");
-  fprintf(stderr, " [-E <ethernet-info>]");
-  fprintf(stderr, "\n");
-
-} /* end print_lisp_usage() */
-
-/************************************************************************/
-/*									*/
 /*			r e a d _ X o p t i o n				*/
 /*									*/
 /*	Parse command-line options related to X windows.		*/
@@ -156,6 +136,7 @@ void print_lispusage(const char *prog)
 void read_Xoption(int *argc, char *argv[])
 {
   int bitmask;
+  XrmDatabase commandlineDB, applicationDB, serverDB, rDB;
   XrmValue value;
   char *str_type[30], tmp[1024], *envname;
   Display *xdisplay;
