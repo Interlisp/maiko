@@ -136,7 +136,7 @@ void print_Xusage(const char *prog)
 void read_Xoption(int *argc, char *argv[])
 {
   int bitmask;
-  XrmDatabase commandlineDB, applicationDB, serverDB, rDB;
+  XrmDatabase commandlineDB = NULL, applicationDB, serverDB, rDB = NULL;
   XrmValue value;
   char *str_type[30], tmp[1024], *envname;
   Display *xdisplay;
