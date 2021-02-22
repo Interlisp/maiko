@@ -275,14 +275,16 @@ int FindUnixPipes(void) {
 /*									*/
 /*		    F i n d A v a i l a b l e P t y			*/
 /*									*/
-/*	Given strings Master and Slave, fill them with path names	*/
-/*	to the master and slave psuedoterminals.			*/
+/*	Fill string Slave with the path name to the slave		*/
+/*	pseudo-terminal.						*/
+/*									*/
+/*	Return the fd for the master psuedo-terminal.			*/
 /*									*/
 /*	This uses POSIX pseudoterminals.				*/
 /*									*/
 /************************************************************************/
 
-int FindAvailablePty(char *Master, char *Slave) {
+static int FindAvailablePty(char *Slave) {
   int res;
 
   res = posix_openpt(O_RDWR);
@@ -569,12 +571,11 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 4:
     case 11: /* Fork PTY process */
     {
-      char MasterFD[20], SlavePTY[32];
-      int Master, slot;
+      char SlavePTY[32];
+      int Master;
       unsigned short len;
 
-      Master = FindAvailablePty(MasterFD, SlavePTY);
-      slot = Master;
+      Master = FindAvailablePty(SlavePTY);
       DBPRINT(("Fork Shell; Master PTY = %d. Slave=%c%c.\n", Master, SlavePTY[0], SlavePTY[1]));
       if (Master < 0) {
         printf("Open of lisp side of PTY failed.\n");
@@ -585,7 +586,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       d[0] = (command == 4) ? 'S' : 'P';
       d[1] = SlavePTY[0];
       d[2] = SlavePTY[1];
-      d[3] = slot;
+      d[3] = Master;
       d[4] = '\0';
       d[5] = '\0';
       write(UnixPipeOut, d, 6);
@@ -608,12 +609,12 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         /* Set up the IO not to block */
         fcntl(Master, F_SETFL, fcntl(Master, F_GETFL, 0) | O_NONBLOCK);
 
-        UJ[slot].type = UJSHELL; /* so we can find them */
-        UJ[slot].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
-        printf("Shell job %d, PID = %d\n", slot, UJ[slot].PID);
-        UJ[slot].status = -1;
-        DBPRINT(("Forked pty in slot %d.\n", slot));
-        return (GetSmallp(slot));
+        UJ[Master].type = UJSHELL; /* so we can find them */
+        UJ[Master].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
+        printf("Shell job %d, PID = %d\n", Master, UJ[Master].PID);
+        UJ[Master].status = -1;
+        DBPRINT(("Forked pty in slot %d.\n", Master));
+        return (GetSmallp(Master));
       } else {
         printf("Fork failed.\n");
         fflush(stdout);
