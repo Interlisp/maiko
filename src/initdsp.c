@@ -68,7 +68,6 @@
 #include "devif.h"
 DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
-int DisplayWidth8;
 #endif /* DOS */
 
 /* from /usr/include/sun/fbio.h some machines don't have following def. */
@@ -125,7 +124,6 @@ extern int MonoOrColor;
 
 #ifdef XWINDOW
 DLword *DisplayRegion68k_end_addr;
-int LispDisplayWidth, LispDisplayHeight;
 extern int *Xdisplay; /* DAANGER -jarl nilsson 27-apr-92 */
 #endif                /* XWINDOW */
 
@@ -351,10 +349,6 @@ void init_display2(DLword *display_addr, int display_max)
   if ((displaywidth * displayheight) > display_max) { displayheight = display_max / displaywidth; }
   DISP_MAX_Address = DisplayRegion68k + DisplayRasterWidth * displayheight;
   DBPRINT(("FBIOGTYPE w x h = %d x %d\n", displaywidth, displayheight));
-
-#ifdef DOS
-  DisplayWidth8 = displaywidth / 8;
-#endif /* DOS */
 
   DBPRINT(("FBIOGTYPE w x h = %d x %d\n", displaywidth, displayheight));
 #ifdef SUNDISPLAY
