@@ -6,7 +6,6 @@ void wait_for_comm_processes(void);
 char *build_socket_pathname(int desc);
 void close_unix_descriptors(void);
 int FindUnixPipes(void);
-int FindAvailablePty(char *Master, char *Slave);
 void WriteLispStringToPipe(LispPTR lispstr);
 LispPTR Unix_handlecomm(LispPTR *args);
 void WriteLispStringToPipe(LispPTR lispstr);
