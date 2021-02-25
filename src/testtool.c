@@ -42,6 +42,7 @@
 
 */
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
@@ -322,7 +323,7 @@ void trace_listpDTD(void) {
 void a68k(LispPTR lispptr) {
   DLword *val;
   val = Addr68k_from_LADDR(lispptr);
-  printf("68k: 0x%x (%d)\n", val, val);
+  printf("68k: %p (%"PRIuPTR")\n", (void *)val, (uintptr_t)val);
 }
 
 /************************************************************************/
@@ -358,7 +359,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   fnobj = (struct fnhead *)Addr68k_from_LADDR(fnblockaddr);
 
   printf("***DUMP Func Obj << ");
-  printf("start at 0x%x lisp address(0x%x 68k)\n", LADDR_from_68k(fnobj), fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), fnobj);
 
   print(fnobj->framename);
   putchar('\n');
@@ -377,7 +378,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   for (i = 20; i < (fnobj->startpc); i += 2) {
     int word;
     word = (int)(0xffff & (GETWORD((DLword *)(scratch + i))));
-    printf(" 0x%x(0x%x 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), scratch + i, word, word);
+    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), scratch + i, word, word);
   }
 
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
@@ -813,7 +814,7 @@ void doko(void) {
   printf(" At ");
   print_atomname(FuncObj->framename);
   putchar('\n');
-  printf("   PC cnt = 0%o\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
+  printf("   PC cnt = 0%"PRIoPTR"\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
 }
 
 /**** dump specified area (in 32 bit width) ***/
@@ -881,7 +882,7 @@ void dump_bf(Bframe *bf) {
   }
 
 printflags:
-  printf("\n %x : %x %x ", LADDR_from_68k(bf), *bf, *(bf + 1));
+  printf("\n %x : %x %x ", LADDR_from_68k(bf), *(DLword *)bf, *((DLword *)bf + 1));
   putchar('[');
   if (BFRAMEPTR(bf)->residual) printf("Residual, ");
   if (BFRAMEPTR(bf)->padding) printf("Padded, ");
