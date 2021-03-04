@@ -33,7 +33,7 @@ $ cd maiko/bin
 $ ./makeright x
 ```
 
-* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../ostype.cputype` (with .o files in `..ostype.cputype-x`. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while MacOS 11 on (new) Mac will use `darwin.aarch64`.
+* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../ostype.cputype` (with .o files in `..ostype.cputype-x`. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while MacOS 11 on a (new M1) Mac will use `darwin.aarch64`.
 * If you prefer using `gcc` over `clang`, you will need to edit the makefile fragment for your configuration (`makefile-ostype.cputype-x`) and comment out the line (with a #) that defines `CC` for `clang` and uncomment the line (delete the #) for the line that defines `CC` for `gcc`.
 * There is a cmake configuration (TBD To Be Described here).
 
