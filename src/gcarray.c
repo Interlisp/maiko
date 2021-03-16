@@ -278,7 +278,7 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
     packindex = find_package_from_name(packname, packlen);
 
   if (packindex < 0) {
-    printf("getting package index is failed \n");
+    printf("getting package index failed %s:%s\n", packname, char_base);
     return (0xffffffff);
   }
 
