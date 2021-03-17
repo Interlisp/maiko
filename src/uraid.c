@@ -243,10 +243,10 @@ v filename\t\tSaves the virtual memory on the filename (Not Bootable)\n\
 ?\t\t\tDisplays this summary";
 #endif /* DOS */
 
-#define ADD_RANGEP(address)                       \
-  if ((address < 0) || (POINTERMASK < address)) { \
-    printf("Address out of range.\n");            \
-    return (T);                                   \
+#define ADD_RANGEP(address)                           \
+  if (((address) < 0) || (POINTERMASK < (address))) { \
+    printf("Address out of range.\n");                \
+    return (T);                                       \
   }
 
 #define URMAXCOMM 512

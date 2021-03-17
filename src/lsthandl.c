@@ -87,7 +87,7 @@ LispPTR fmemb(register LispPTR item, register LispPTR list) {
     if (GetTypeNumber(parm) != TYPE_LISTP) {      \
       SAVE_ERROR_EXIT2(tcstk, tos);               \
     } else                                        \
-      dest = cadr(parm);                          \
+      (dest) = cadr(parm);                        \
   }
 
 LispPTR N_OP_listget(register LispPTR plist, register LispPTR tos) {

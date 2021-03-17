@@ -203,13 +203,13 @@
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
       register UNSIGNED newivar;                                                       \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - argcount + 1));                \
+      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - (argcount) + 1));              \
       BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
       register int RESTARGS;                                                           \
-      RESTARGS = argcount - LOCFNCELL->na;                                             \
+      RESTARGS = (argcount) - LOCFNCELL->na;                                           \
       while (RESTARGS < 0) {                                                           \
         HARD_PUSH(NIL_PTR);                                                            \
         RESTARGS++;                                                                    \

@@ -72,8 +72,8 @@
 #define Boundp(frame_field) ((frame_field == 0) ? 1 : 0)
 #endif /* NEVER */
 
-#define min(a, b) ((a > b) ? b : a)
-#define Trailer(ldatum, datum68) (ldatum + 2 * (datum68->arlen - ARRAYBLOCKTRAILERCELLS))
+#define min(a, b) (((a) > (b)) ? (b) : (a))
+#define Trailer(ldatum, datum68) ((ldatum) + 2 * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
 #define BucketIndex(n) min(integerlength(n), MAXBUCKETINDEX)
 #define FreeBlockChainN(n) ((POINTERMASK & *FreeBlockBuckets_word) + 2 * BucketIndex(n))
 

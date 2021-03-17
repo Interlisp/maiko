@@ -71,9 +71,9 @@
     midpunt = LOLOC(LADDR_from_68k(CURRENTFX));			\
     PVar=(DLword *)							\
 	    Addr68k_from_StkOffset(					\
-			(GETWORD(((DLword *)InterfacePage) +fxnum)))	\
+                        (GETWORD(((DLword *)InterfacePage) + (fxnum)))) \
 		+ FRAMESIZE; 						\
-    GETWORD(((DLword *)InterfacePage) +fxnum) = midpunt ;		\
+    GETWORD(((DLword *)InterfacePage) + (fxnum)) = midpunt ;		\
   }
 
 

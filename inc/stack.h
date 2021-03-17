@@ -301,13 +301,13 @@ typedef struct stackp {
 #define DUMMYBF(fx) (((DLword *)(fx)) - DLWORDSPER_CELL)
 #define SLOWP(fx) (((FXBLOCK *)(fx))->slowp)
 #define FASTP(fx) (!SLOWP(fx))
-#define SET_FASTP_NIL(fx68k)                                     \
-  {                                                              \
-    if (FASTP(fx68k)) {                                          \
-      ((FX *)fx68k)->blink = StkOffset_from_68K(DUMMYBF(fx68k)); \
-      ((FX *)fx68k)->clink = ((FX *)fx68k)->alink;               \
-      SLOWP(fx68k) = T;                                          \
-    }                                                            \
+#define SET_FASTP_NIL(fx68k)                                       \
+  {                                                                \
+    if (FASTP(fx68k)) {                                            \
+      ((FX *)(fx68k))->blink = StkOffset_from_68K(DUMMYBF(fx68k)); \
+      ((FX *)(fx68k))->clink = ((FX *)(fx68k))->alink;             \
+      SLOWP(fx68k) = T;                                            \
+    }                                                              \
   }
 
 #define GETALINK(fx) ((((fx)->alink) & 0xfffe) - FRAMESIZE)
@@ -354,10 +354,10 @@ typedef struct stackp {
 #define SWAP_FNHEAD(x) swapx(x)
 #endif /* BIGVM */
 
-#define GETNAMETABLE(fx)                                                                      \
-  ((struct fnhead *)Addr68k_from_LADDR(                                                       \
-      SWAP_FNHEAD(                                                                            \
-          ((((FX2 *)fx)->validnametable) ? ((FX2 *)fx)->nametable : ((FX2 *)fx)->fnheader)) & \
+#define GETNAMETABLE(fx)                                                                          \
+  ((struct fnhead *)Addr68k_from_LADDR(                                                           \
+      SWAP_FNHEAD(                                                                                \
+        ((((FX2 *)(fx))->validnametable) ? ((FX2 *)(fx))->nametable : ((FX2 *)(fx))->fnheader)) & \
       POINTERMASK))
 
 #define MAKEFREEBLOCK(ptr68k, size)                                   \
@@ -429,7 +429,7 @@ typedef struct stackp {
 
 #endif /* STACKCHECK */
 
-#define STK_MIN(fnobj) ((fnobj->stkmin /* NOT NEEDED in stkmin +STK_SAFE */) << 1)
+#define STK_MIN(fnobj) (((fnobj)->stkmin /* NOT NEEDED in stkmin +STK_SAFE */) << 1)
 
 #define STK_END_COMPUTE(stk_end, fnobj) ((UNSIGNED)(stk_end)-STK_MIN(fnobj))
 

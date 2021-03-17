@@ -31,13 +31,13 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 /***************************************************************
         Macro:WriteLongW
 **************************************************************/
-#define WriteLongW(srcpattern, destptr, op1, op2)                                    \
-  {                                                                                  \
-    register int cnt;                                                                \
-    register u_char *des, *src;                                                      \
-    for (cnt = 0, des = (u_char *)destptr, src = (u_char *)(&(srcpattern)); cnt < 4; \
-         cnt++, des++, src++)                                                        \
-      (*des) op1(*src);                                                              \
+#define WriteLongW(srcpattern, destptr, op1, op2)                                      \
+  {                                                                                    \
+    register int cnt;                                                                  \
+    register u_char *des, *src;                                                        \
+    for (cnt = 0, des = (u_char *)(destptr), src = (u_char *)(&(srcpattern)); cnt < 4; \
+         cnt++, des++, src++)                                                          \
+      (*des) op1(*src);                                                                \
   }
 
 /***************************************************************
@@ -104,14 +104,14 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
       case 1:                                                                              \
       case 2:                                                                              \
       case 3:                                                                              \
-        destc = (u_char *)dstLptr;                                                         \
-        while (width--) {                                                                  \
-          if (BitMaskArray[mod = (offset % 16)] & *srcw)                                   \
+        destc = (u_char *)(dstLptr);                                                       \
+        while ((width)--) {                                                                \
+          if (BitMaskArray[mod = ((offset) % 16)] & *srcw)                                 \
             (*destc++) op1(color1);                                                        \
           else                                                                             \
             (*destc++) op1(color0);                                                        \
           if (mod == 15) srcw++;                                                           \
-          offset++;                                                                        \
+          (offset)++;                                                                      \
         } /* WHILE END */                                                                  \
         break;                                                                             \
       default:; /* error */                                                                \

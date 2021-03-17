@@ -97,16 +97,16 @@ struct state {
 
 /***** Get_DLword(ptr) ptr is char* ***/
 #ifndef UNALIGNED_FETCH_OK
-#define Get_DLword(ptr) ((Get_BYTE(ptr) << 8) | Get_BYTE(ptr + 1))
+#define Get_DLword(ptr) ((Get_BYTE(ptr) << 8) | Get_BYTE((ptr) + 1))
 #else
 #define Get_DLword(ptr) *(((DLword *)WORDPTR(ptr)))
 #endif
 
 #ifdef BIGVM
 #define Get_Pointer(ptr) \
-  ((Get_BYTE(ptr) << 24) | (Get_BYTE(ptr + 1) << 16) | (Get_BYTE(ptr + 2) << 8) | Get_BYTE(ptr + 3))
+  ((Get_BYTE(ptr) << 24) | (Get_BYTE((ptr) + 1) << 16) | (Get_BYTE((ptr) + 2) << 8) | Get_BYTE((ptr) + 3))
 #else
-#define Get_Pointer(ptr) ((Get_BYTE(ptr) << 16) | (Get_BYTE(ptr + 1) << 8) | Get_BYTE(ptr + 2))
+#define Get_Pointer(ptr) ((Get_BYTE(ptr) << 16) | (Get_BYTE((ptr) + 1) << 8) | Get_BYTE((ptr) + 2))
 #endif /* BIGVM */
 
 #define Get_code_BYTE Get_BYTE
@@ -241,11 +241,11 @@ struct state {
 
 /* Fetching 2 bytes to make a word -- always do it the hard way */
 /* if we're byte-swapped:  You can't rely on byte ordering!!    */
-#define Get_DLword(ptr) ((Get_BYTE(ptr) << 8) | Get_BYTE(ptr + 1))
+#define Get_DLword(ptr) ((Get_BYTE(ptr) << 8) | Get_BYTE((ptr) + 1))
 
 #ifdef BIGVM
 #define Get_Pointer(ptr) \
-  ((Get_BYTE(ptr) << 24) | (Get_BYTE(ptr + 1) << 16) | (Get_BYTE(ptr + 2) << 8) | Get_BYTE(ptr + 3))
+  ((Get_BYTE(ptr) << 24) | (Get_BYTE((ptr) + 1) << 16) | (Get_BYTE((ptr) + 2) << 8) | Get_BYTE((ptr) + 3))
 #else
 #define Get_Pointer(ptr) ((Get_BYTE(ptr) << 16) | (Get_BYTE(ptr + 1) << 8) | Get_BYTE(ptr + 2))
 #endif /* BIGVM */
@@ -336,7 +336,7 @@ extern struct state MachineState;
         offset:	word offset from base
         return:	DLword*
 ****************************************************/
-#define MakeAddr(base, offset) ((DLword *)(base + (int)offset))
+#define MakeAddr(base, offset) ((DLword *)((base) + (int)(offset)))
 
 /****************************************************
 GetHiWord:
@@ -369,10 +369,10 @@ PopCStack:
 PopStackTo:  CSTK -> Place
 #define PopStackTo(Place)	{Place= *((LispPTR *)(--CurrentStackPTR)); CurrentStackPTR--; }
 *****************************************************/
-#define PopStackTo(Place)                    \
-  do {                                       \
-    Place = *((LispPTR *)(CurrentStackPTR)); \
-    CurrentStackPTR -= 2;                    \
+#define PopStackTo(Place)                      \
+  do {                                         \
+    (Place) = *((LispPTR *)(CurrentStackPTR)); \
+    CurrentStackPTR -= 2;                      \
   } while (0)
 
 /****************************************************
@@ -399,7 +399,7 @@ PushStack:
 SmashStack:
 #define SmashStack(x)	(*((LispPTR *)(CurrentStackPTR-1))=x)
 *****************************************************/
-#define SmashStack(x) (*((LispPTR *)(CurrentStackPTR)) = x)
+#define SmashStack(x) (*((LispPTR *)(CurrentStackPTR)) = (x))
 
 /*********************************************************
 Get_BYTE(byteptr)	byteptr: pointer to  8 bit data
@@ -416,7 +416,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 #define DOSTACKOVERFLOW(argnum, bytenum) \
   do {                                   \
     if (do_stackoverflow(T)) {           \
-      PushStack(S_POSITIVE | argnum);    \
+      PushStack(S_POSITIVE | (argnum));  \
       contextsw(SubovFXP, bytenum, 1);   \
       return;                            \
     }                                    \
@@ -505,7 +505,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 #define SFS_ARRAYSWITCHED 3
 #define SFS_FULLYSWITCHED 4
 
-#define AtomHTSIZE 256 * DLWORDSPER_PAGE
+#define AtomHTSIZE (256 * DLWORDSPER_PAGE)
 
 #define MAXPNCHARS 255 /* Maximum length of PnChars */
 
@@ -586,7 +586,7 @@ typedef struct newatom {
 
 #ifdef BIGVM
 #define GETFPTOVP(b, o) b[o]
-#define GETPAGEOK(b, o) (b[o] >> 16)
+#define GETPAGEOK(b, o) ((b)[o] >> 16)
 #else
 #define GETFPTOVP GETWORDBASEWORD
 #define GETPAGEOK GETWORDBASEWORD

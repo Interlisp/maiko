@@ -43,8 +43,9 @@
 #endif /* OS5 */
 
 #define PERCENT_OF_SCREEN 95
-#define DISPLAY_MAX 65536 * 16 * 2 /* same magic number is */
-                                   /* in loadsysout.c      */
+/* DISPLAY_MAX same magic number is in ldsout.c */
+#define DISPLAY_MAX (65536 * 16 * 2)
+
 extern DLword *Lisp_world;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;

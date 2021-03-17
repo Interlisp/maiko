@@ -545,22 +545,22 @@ typedef struct {
   LispPTR CUDATA;
 } CURSOR;
 
-#define CursorClippingX(posx, width)                     \
-  {                                                      \
-    if (displaywidth < (posx + HARD_CURSORWIDTH)) {      \
-      LastCursorClippingX = width = displaywidth - posx; \
-    } else {                                             \
-      LastCursorClippingX = width = HARD_CURSORWIDTH;    \
-    }                                                    \
+#define CursorClippingX(posx, width)                         \
+  {                                                          \
+    if (displaywidth < ((posx) + HARD_CURSORWIDTH)) {        \
+      LastCursorClippingX = (width) = displaywidth - (posx); \
+    } else {                                                 \
+      LastCursorClippingX = (width) = HARD_CURSORWIDTH;      \
+    }                                                        \
   }
 
-#define CursorClippingY(posy, height)                      \
-  {                                                        \
-    if (displayheight < (posy + HARD_CURSORHEIGHT)) {      \
-      LastCursorClippingY = height = displayheight - posy; \
-    } else {                                               \
-      LastCursorClippingY = height = HARD_CURSORHEIGHT;    \
-    }                                                      \
+#define CursorClippingY(posy, height)                          \
+  {                                                            \
+    if (displayheight < ((posy) + HARD_CURSORHEIGHT)) {        \
+      LastCursorClippingY = (height) = displayheight - (posy); \
+    } else {                                                   \
+      LastCursorClippingY = (height) = HARD_CURSORHEIGHT;      \
+    }                                                          \
   }
 
 extern int displaywidth, displayheight;

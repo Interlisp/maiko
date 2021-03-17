@@ -48,7 +48,7 @@
 
 
 /* translate LispPage to 68k address */
-#define Addr68k_from_LPAGE(Lisp_page)	(Addr68k_from_LADDR((Lisp_page << 8) ))
+#define Addr68k_from_LPAGE(Lisp_page)	(Addr68k_from_LADDR(((Lisp_page) << 8) ))
 
 
 

@@ -2830,10 +2830,10 @@ static int make_directory(register char *dir)
 #define FindHighestVersion(varray, mentry, max_no)                                        \
   {                                                                                       \
     register FileName *centry;                                                            \
-    for (centry = varray, max_no = 0; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no > max_no) {                                                  \
-        max_no = centry->version_no;                                                      \
-        mentry = centry;                                                                  \
+    for (centry = (varray), (max_no) = 0; centry->version_no != LASTVERSIONARRAY; centry++) { \
+      if (centry->version_no > (max_no)) {                                                  \
+        (max_no) = centry->version_no;                                                      \
+        (mentry) = centry;                                                                  \
       }                                                                                   \
     }                                                                                     \
   }
@@ -2878,10 +2878,10 @@ static int make_directory(register char *dir)
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
   {                                                                                                \
     register FileName *centry;                                                                     \
-    for (centry = varray, min_no = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no < min_no && centry->version_no != 0) {                                \
-        min_no = centry->version_no;                                                               \
-        mentry = centry;                                                                           \
+    for (centry = (varray), (min_no) = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
+      if (centry->version_no < (min_no) && centry->version_no != 0) {                                \
+        (min_no) = centry->version_no;                                                               \
+        (mentry) = centry;                                                                           \
       }                                                                                            \
     }                                                                                              \
   }
@@ -2915,10 +2915,10 @@ static int make_directory(register char *dir)
   {                                                                         \
     register FileName *centry;                                              \
                                                                             \
-    sentry = (FileName *)NULL;                                              \
+    (sentry) = (FileName *)NULL;                                              \
     for (centry = varray; centry->version_no != LASTVERSIONARRAY; centry++) \
-      if (centry->version_no == ver_no) {                                   \
-        sentry = centry;                                                    \
+      if (centry->version_no == (ver_no)) {                                   \
+        (sentry) = centry;                                                    \
         break;                                                              \
       }                                                                     \
   }

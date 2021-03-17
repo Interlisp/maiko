@@ -74,7 +74,7 @@
 #define Boundp(frame_field) ((frame_field) == 0)
 #define Stkref(ptr) REC_GCLOOKUP(ptr, STKREF)
 #define GcreclaimLp(ptr) \
-  while ((ptr = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
+  while (((ptr) = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
 #define HTLPTR ((struct htlinkptr *)(entry))
 #define HENTRY ((struct hashentry *)(entry))
 #define HTMAIN_ENTRY_COUNT (HTMAIN_SIZE >> 1)

@@ -91,16 +91,16 @@
 #endif /* NEWCDRCODING */
 
 #define TODO_LIMIT 1000
-#define ADD_TO_DO(ptr, offset)                             \
-  if (do_count < TODO_LIMIT) {                             \
-    if (ptr & 0xF0000000) error("illegal ptr in addtodo"); \
-    to_do[do_count] = (ptr);                               \
-    to_do_offset[do_count] = offset;                       \
-    todo_uses++;                                           \
-    /*REC_GCLOOKUP((ptr), ADDREF);*/                       \
-    do_count++;                                            \
-  } else { /* error("GC missing some to-do's"); */         \
-    todo_misses++;                                         \
+#define ADD_TO_DO(ptr, offset)                               \
+  if (do_count < TODO_LIMIT) {                               \
+    if ((ptr) & 0xF0000000) error("illegal ptr in addtodo"); \
+    to_do[do_count] = (ptr);                                 \
+    to_do_offset[do_count] = offset;                         \
+    todo_uses++;                                             \
+    /*REC_GCLOOKUP((ptr), ADDREF);*/                         \
+    do_count++;                                              \
+  } else { /* error("GC missing some to-do's"); */           \
+    todo_misses++;                                           \
   }
 
 unsigned todo_uses = 0;
