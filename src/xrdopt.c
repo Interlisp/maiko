@@ -17,6 +17,7 @@
 #include <sys/file.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <limits.h>
 #ifdef MAIKO_ENABLE_ETHERNET
 #ifndef USE_DLPI
 #include <net/nit.h> /* needed for Ethernet stuff below */
@@ -173,11 +174,11 @@ void read_Xoption(int *argc, char *argv[])
   sysout_name[0] = '\0';
   if (*argc == 2) /* There was probably a sysoutarg */
   {
-    (void)strcpy(sysout_name, argv[1]);
+    (void)strncpy(sysout_name, argv[1], PATH_MAX - 1);
   } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
-    strcpy(sysout_name, envname);
+    strncpy(sysout_name, envname, PATH_MAX - 1);
   } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
-    strcpy(sysout_name, envname);
+    strncpy(sysout_name, envname, PATH_MAX - 1);
   else {
     envname = getenv("HOME");
     (void)strcat(sysout_name, envname);
