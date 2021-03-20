@@ -66,8 +66,8 @@ extern DLword *DISP_MAX_Address;
 extern DLword *DisplayRegion68k;
 
 #define in_display_segment(baseaddr)  \
-            (((DisplayRegion68k <= baseaddr) && \
-	      (baseaddr <=DISP_MAX_Address)) ? T :NIL )
+    (((DisplayRegion68k <= (baseaddr)) &&               \
+      ((baseaddr) <= DISP_MAX_Address)) ? T : NIL )
 #endif
 
 #ifdef XWINDOW

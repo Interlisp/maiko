@@ -140,7 +140,7 @@
 #define  B_src_word_in_postloop  src32lbit >= dst32lbit
 
 /*   VARIABLES   */
-#define  F_num_loop  ((dst32lbit + w) >> 5) - 1
+#define  F_num_loop  (((dst32lbit + w) >> 5) - 1)
 #define  B_num_loop  ((w - dst32rbit - 1) > 0) ? ((w - dst32rbit - 1) >> 5) : 0
 #define  F_preloop_mask  ((dst32lbit) ? (~(0xFFFFFFFF << (32 - dst32lbit))) : 0xFFFFFFFF)
 #define  F_postloop_mask  0xFFFFFFFF << (31 - dst32rbit)

@@ -46,15 +46,15 @@
 #include "commondefs.h"
 #include "gchtfinddefs.h"
 
-#define min(a, b) ((a > b) ? b : a)
+#define min(a, b) (((a) > (b)) ? (b) : (a))
 
 #define ENDOFX 0
 #define GCONST 111
 
-#define Reprobefn(bits, index) (((bits ^ ((bits) >> 8)) & min(63, index)) | 1)
-#define Fn16bits(a, b) ((a + b) & 0x0ffff)
+#define Reprobefn(bits, index) ((((bits) ^ ((bits) >> 8)) & min(63, index)) | 1)
+#define Fn16bits(a, b) (((a) + (b)) & 0x0ffff)
 #define Hashingbits(item) (HILOC(item) ^ (((LOLOC(item) & 0x1fff) << 3) ^ (LOLOC(item) >> 9)))
-#define Getikvalue(base, index) (*(LispPTR *)Addr68k_from_LADDR(base + (index << 1)))
+#define Getikvalue(base, index) (*(LispPTR *)Addr68k_from_LADDR((base) + ((index) << 1)))
 
 #ifndef BYTESWAP
 typedef struct implicit_key_hash_table {

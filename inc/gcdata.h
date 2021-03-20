@@ -48,7 +48,7 @@
    /* IncAllocCnt is called only when *Reclaim_cnt_word != NIL */
 
 #define IncAllocCnt(n) {\
-	if ((*Reclaim_cnt_word -= n) <= S_POSITIVE) {\
+	if ((*Reclaim_cnt_word -= (n)) <= S_POSITIVE) { \
 		/* time for GC */\
 		Irq_Stk_Check = Irq_Stk_End = 0;\
 		*Reclaim_cnt_word = S_POSITIVE;\
@@ -57,35 +57,35 @@
 
    /* DecAllocCnt only called when *Reclaim_cnt_word != NIL */
 
-#define DecAllocCnt(n) { *Reclaim_cnt_word += n; }
+#define DecAllocCnt(n) { *Reclaim_cnt_word += (n); }
 
-#define FreeLink(link) {\
-	GETGC(link) = 0;\
-	GETGC(link+1) = GETGC(HTcoll);\
-	GETGC(HTcoll) = (link - HTcoll);\
+#define FreeLink(link) {                        \
+	GETGC(link) = 0;                        \
+	GETGC((link)+1) = GETGC(HTcoll);        \
+	GETGC(HTcoll) = ((link) - HTcoll);      \
 }
 
 
   /* Given the contents of an HTMAIN or HTCOLL entry,
 	 get the link pointer (i.e., turn off the low bit) */
-#define GetLinkptr(entry)       (entry & 0x0fffffffe)
+#define GetLinkptr(entry)       ((entry) & 0x0fffffffe)
 
 
 #define DelLink(link, prev, entry) {                                    \
-  if (prev != (GCENTRY *)0)                                             \
+  if ((prev) != (GCENTRY *)0)                                           \
     {                                                                   \
-      GETGC((GCENTRY *)prev + 1) = GETGC((GCENTRY *)link + 1);          \
+      GETGC((GCENTRY *)(prev) + 1) = GETGC((GCENTRY *)(link) + 1);      \
     }                                                                   \
   else                                                                  \
     {                                                                   \
-      GETGC((GCENTRY *)entry) = GETGC((GCENTRY *)link + 1) | 1;         \
+      GETGC((GCENTRY *)(entry)) = GETGC((GCENTRY *)(link) + 1) | 1;     \
     }                                                                   \
-  FreeLink((GCENTRY *)link);                                            \
-  link = (GCENTRY *)(HTcoll + GetLinkptr(GETGC((GCENTRY *)entry)));     \
-  if (GETGC((GCENTRY *)link + 1) == 0)                                  \
+  FreeLink((GCENTRY *)(link));                                          \
+  (link) = (GCENTRY *)(HTcoll + GetLinkptr(GETGC((GCENTRY *)(entry)))); \
+  if (GETGC((GCENTRY *)(link) + 1) == 0)                                \
     {                                                                   \
-      GETGC((GCENTRY *)entry) = GETGC((GCENTRY *)link);                 \
-      FreeLink((GCENTRY *)link);                                        \
+      GETGC((GCENTRY *)(entry)) = GETGC((GCENTRY *)(link));             \
+      FreeLink((GCENTRY *)(link));                                      \
     }                                                                   \
 }
 
@@ -104,18 +104,18 @@
 #define GCLOOKUPV(ptr, case, val) {                                          \
 	if (RefCntP(ptr)) {                                                  \
 		if (*Reclaim_cnt_word != NIL)                                \
-		  val = htfind(ptr, case);                                   \
+                  (val) = htfind((ptr), (case));                             \
 		else                                                         \
-		  val = rec_htfind(ptr, case);                               \
-	} else val = NIL;                                                    \
+                  (val) = rec_htfind((ptr), (case));                         \
+	} else (val) = NIL;                                                  \
 }
 
 #define REC_GCLOOKUP(ptr, case) { if (RefCntP(ptr)) rec_htfind(ptr, case); }
 #define REC_GCLOOKUPV(ptr, case, val) {                                      \
 	if (RefCntP(ptr))                                                    \
-	  val = rec_htfind(ptr, case);                                       \
+          (val) = rec_htfind((ptr), (case));                                 \
 	else                                                                 \
-	  val = NIL;                                                         \
+          (val) = NIL;                                                       \
 }
 
 #define FRPLPTR(old , new) { \

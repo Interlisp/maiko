@@ -211,7 +211,7 @@
 #define JUMPMACRO(x) \
   do {               \
     CHECK_INTERRUPT; \
-    PCMACL += x;     \
+    PCMACL += (x);   \
     nextop0;         \
   } while (0)
 
@@ -221,7 +221,7 @@
     {                                         \
       CHECK_INTERRUPT;                        \
       POP;                                    \
-      PCMACL += x;                            \
+      PCMACL += (x);                          \
       nextop0;                                \
     }                                         \
   } while (0)
@@ -231,7 +231,7 @@
     {                                         \
       CHECK_INTERRUPT;                        \
       POP;                                    \
-      PCMACL += x;                            \
+      PCMACL += (x);                          \
       nextop0;                                \
     }                                         \
   } while (0)
@@ -239,13 +239,13 @@
 #define GETBASE_N(N)                                                                          \
   do {                                                                                        \
     TOPOFSTACK =                                                                              \
-        (S_POSITIVE | GETWORD((DLword *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + N))); \
+      (S_POSITIVE | GETWORD((DLword *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + (N)))); \
     nextop2;                                                                                  \
   } while (0)
 
 #define GETBASEPTR_N(N)                                                                            \
   do {                                                                                             \
-    TOPOFSTACK = (POINTERMASK & *((LispPTR *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + N))); \
+    TOPOFSTACK = (POINTERMASK & *((LispPTR *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + (N)))); \
     nextop2;                                                                                       \
   } while (0)
 #define PUTBASEBYTE                                                                    \
@@ -288,44 +288,44 @@
     nextop1;                                                                                       \
   } while (0)
 
-#define PUTBASEPTR_N(n)                                      \
-  do {                                                       \
-    register int base;                                       \
-    base = POINTERMASK & POP_TOS_1;                          \
-    *((LispPTR *)Addr68k_from_LADDR(base + n)) = TOPOFSTACK; \
-    TOPOFSTACK = base;                                       \
-    nextop2;                                                 \
+#define PUTBASEPTR_N(n)                                        \
+  do {                                                         \
+    register int base;                                         \
+    base = POINTERMASK & POP_TOS_1;                            \
+    *((LispPTR *)Addr68k_from_LADDR(base + (n))) = TOPOFSTACK; \
+    TOPOFSTACK = base;                                         \
+    nextop2;                                                   \
   } while (0)
 
-#define PUTBASE_N(n)                                                         \
-  do {                                                                       \
-    register int base;                                                       \
-    if (GetHiWord(TOPOFSTACK) != (S_POSITIVE >> 16)) goto op_ufn;            \
-    base = POINTERMASK & POP_TOS_1;                                          \
-    GETWORD((DLword *)Addr68k_from_LADDR(base + n)) = GetLoWord(TOPOFSTACK); \
-    TOPOFSTACK = base;                                                       \
-    nextop2;                                                                 \
+#define PUTBASE_N(n)                                                           \
+  do {                                                                         \
+    register int base;                                                         \
+    if (GetHiWord(TOPOFSTACK) != (S_POSITIVE >> 16)) goto op_ufn;              \
+    base = POINTERMASK & POP_TOS_1;                                            \
+    GETWORD((DLword *)Addr68k_from_LADDR(base + (n))) = GetLoWord(TOPOFSTACK); \
+    TOPOFSTACK = base;                                                         \
+    nextop2;                                                                   \
   } while (0)
 
-#define PVARX(x)                           \
-  do {                                     \
-    PUSH(GetLongWord((DLword *)PVAR + x)); \
-    nextop2;                               \
+#define PVARX(x)                             \
+  do {                                       \
+    PUSH(GetLongWord((DLword *)PVAR + (x))); \
+    nextop2;                                 \
   } while (0)
-#define PVARX_(x)                                    \
-  do {                                               \
-    *((LispPTR *)((DLword *)PVAR + x)) = TOPOFSTACK; \
-    nextop2;                                         \
+#define PVARX_(x)                                      \
+  do {                                                 \
+    *((LispPTR *)((DLword *)PVAR + (x))) = TOPOFSTACK; \
+    nextop2;                                           \
   } while (0)
-#define IVARX(x)                           \
-  do {                                     \
-    PUSH(GetLongWord((DLword *)IVAR + x)); \
-    nextop2;                               \
+#define IVARX(x)                             \
+  do {                                       \
+    PUSH(GetLongWord((DLword *)IVAR + (x))); \
+    nextop2;                                 \
   } while (0)
-#define IVARX_(x)                                    \
-  do {                                               \
-    *((LispPTR *)((DLword *)IVAR + x)) = TOPOFSTACK; \
-    nextop2;                                         \
+#define IVARX_(x)                                      \
+  do {                                                 \
+    *((LispPTR *)((DLword *)IVAR + (x))) = TOPOFSTACK; \
+    nextop2;                                           \
   } while (0)
 
 #ifndef BIGATOMS
@@ -565,14 +565,14 @@
     nextop1;                                         \
   } while (0)
 
-#define GETBITS_N_M(a, b)                                                                        \
-  do {                                                                                           \
-    register int temp, bb = b;                                                                   \
-    temp = 0xF & bb;                                                                             \
-    TOPOFSTACK = S_POSITIVE | (((GETWORD(Addr68k_from_LADDR(POINTERMASK & (TOPOFSTACK + a)))) >> \
-                                (16 - ((0xF & (bb >> 4)) + temp + 1))) &                         \
-                               n_mask_array[temp]);                                              \
-    nextop3;                                                                                     \
+#define GETBITS_N_M(a, b)                                                                          \
+  do {                                                                                             \
+    register int temp, bb = b;                                                                     \
+    temp = 0xF & bb;                                                                               \
+    TOPOFSTACK = S_POSITIVE | (((GETWORD(Addr68k_from_LADDR(POINTERMASK & (TOPOFSTACK + (a))))) >> \
+                                (16 - ((0xF & (bb >> 4)) + temp + 1))) &                           \
+                               n_mask_array[temp]);                                                \
+    nextop3;                                                                                       \
   } while (0)
 
 #define PUTBITS_N_M(a, b)                                                                \
@@ -583,7 +583,7 @@
     register int shift_size, field_size, fmask;                                          \
     if ((SEGMASK & TOPOFSTACK) != S_POSITIVE) { goto op_ufn; };                          \
     base = POINTERMASK & POP_TOS_1;                                                      \
-    pword = (DLword *)Addr68k_from_LADDR(base + a);                                      \
+    pword = (DLword *)Addr68k_from_LADDR(base + (a));                                    \
     field_size = 0xF & bb;                                                               \
     shift_size = 15 - (0xF & (bb >> 4)) - field_size;                                    \
     fmask = n_mask_array[field_size] << shift_size;                                      \
@@ -633,16 +633,16 @@
     nextop1;                                                       \
   } while (0)
 
-#define TYPEP(n)                                                      \
-  do {                                                                \
-    if ((DLword)GetTypeNumber(TOPOFSTACK) != n) TOPOFSTACK = NIL_PTR; \
-    nextop2;                                                          \
+#define TYPEP(n)                                                        \
+  do {                                                                  \
+    if ((DLword)GetTypeNumber(TOPOFSTACK) != (n)) TOPOFSTACK = NIL_PTR; \
+    nextop2;                                                            \
   } while (0)
 
-#define TYPEMASK(n)                                                                         \
-  do {                                                                                      \
-    if ((((DLword)GetTypeEntry(TOPOFSTACK)) & ((DLword)n << 8)) == 0) TOPOFSTACK = NIL_PTR; \
-    nextop2;                                                                                \
+#define TYPEMASK(n)                                                                           \
+  do {                                                                                        \
+    if ((((DLword)GetTypeEntry(TOPOFSTACK)) & ((DLword)(n) << 8)) == 0) TOPOFSTACK = NIL_PTR; \
+    nextop2;                                                                                  \
   } while (0)
 
 #define INSTANCEP(atom_index)                            \
@@ -651,16 +651,16 @@
     nextop_atom;                                         \
   } while (0)
 
-#define STOREN(n)                             \
-  do {                                        \
-    *(CSTKPTR - ((n + 2) >> 1)) = TOPOFSTACK; \
-    nextop2;                                  \
+#define STOREN(n)                               \
+  do {                                          \
+    *(CSTKPTR - (((n) + 2) >> 1)) = TOPOFSTACK; \
+    nextop2;                                    \
   } while (0)
 
-#define COPYN(n)                       \
-  do {                                 \
-    PUSH(*(CSTKPTR - ((n + 2) >> 1))); \
-    nextop2;                           \
+#define COPYN(n)                         \
+  do {                                   \
+    PUSH(*(CSTKPTR - (((n) + 2) >> 1))); \
+    nextop2;                             \
   } while (0)
 
 #define POPN(n)                            \
@@ -792,16 +792,16 @@
   } while (0)
 #endif /* BIGVM */
 
-#define FVAR(n)                                                                           \
-  do {                                                                                    \
-    register LispPTR *chain;                                                              \
-    chain = (LispPTR *)(PVar + n);                                                        \
-    if (WBITSPTR(chain)->LSB) {                                                           \
-      PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe(n >> 1))))); \
-      nextop1;                                                                            \
-    } /* if(((WBITS */                                                                    \
-    PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                    \
-    nextop1;                                                                              \
+#define FVAR(n)                                                                             \
+  do {                                                                                      \
+    register LispPTR *chain;                                                                \
+    chain = (LispPTR *)(PVar + (n));                                                        \
+    if (WBITSPTR(chain)->LSB) {                                                             \
+      PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe((n) >> 1))))); \
+      nextop1;                                                                              \
+    } /* if(((WBITS */                                                                      \
+    PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                      \
+    nextop1;                                                                                \
   } while (0)
 
 #define FVARX(n)                                                                           \

@@ -29,7 +29,7 @@
 /* On 68010,68000 This Macro does not effect */
 
 #ifdef NEWCDRCODING
-#define CARFIELD(x) ((int)x & 0x0fffffff)
+#define CARFIELD(x) ((int)(x) & 0x0fffffff)
 
 /* CDR-Codes defs */
 #define CDR_ONPAGE 8
@@ -124,7 +124,7 @@ typedef struct freec {
 
 #endif /* BYTESWAP */
 
-#define FREECONS(page, offset) ((freecons *)((DLword *)page + offset))
+#define FREECONS(page, offset) ((freecons *)((DLword *)(page) + (offset)))
 
 /************************************************************************/
 /*									*/
@@ -375,20 +375,20 @@ struct cadr_cell {
 
 #else
 /* Good for old LITATOMS and new NEW-ATOMs */
-#define GetDEFCELL68k(index)                                                               \
-  (((index & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_DEFN_OFFSET) \
+#define GetDEFCELL68k(index)                                                                 \
+  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_DEFN_OFFSET) \
                             : GetDEFCELLlitatom(index))
 
-#define GetVALCELL68k(index)                                                                \
-  (((index & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_VALUE_OFFSET) \
+#define GetVALCELL68k(index)                                                                  \
+  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_VALUE_OFFSET) \
                             : GetVALCELLlitatom(index))
 
-#define GetPnameCell(index)                                                                 \
-  (((index & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PNAME_OFFSET) \
+#define GetPnameCell(index)                                                                   \
+  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PNAME_OFFSET) \
                             : GetPnameCelllitatom(index))
 
-#define GetPropCell(index)                                                                  \
-  (((index & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PLIST_OFFSET) \
+#define GetPropCell(index)                                                                    \
+  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PLIST_OFFSET) \
                             : GetPropCelllitatom(index))
 
 /* Good only for old-style LITATOMS */
@@ -420,6 +420,6 @@ struct cadr_cell {
     if (GetTypeNumber(parm) != TYPE_LISTP) { \
       ERROR_EXIT(tos);                       \
     } else                                   \
-      dest = cadr(parm);                     \
+      (dest) = cadr(parm);                   \
   }
 #endif

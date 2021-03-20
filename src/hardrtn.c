@@ -41,7 +41,7 @@
 #define MAKE_FXCOPY(fx68k)                                                                   \
   {                                                                                          \
     BEFORE_CONTEXTSW;                                                                        \
-    if ((fx68k = (FX *)make_FXcopy(fx68k)) == 0) { return (1); /* Whole space exhausted */ } \
+    if (((fx68k) = (FX *)make_FXcopy(fx68k)) == 0) { return (1); /* Whole space exhausted */ } \
     AFTER_CONTEXTSW;                                                                         \
     CHECK_FX(fx68k);                                                                         \
   }

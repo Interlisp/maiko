@@ -10,20 +10,20 @@
 /************************************************************************/
 
 #define MAX_SMALL 65535  /* == 0x0000FFFF  */
-#define MIN_SMALL -65536 /* == 0xFFFF0000  */
+#define MIN_SMALL (-65536) /* == 0xFFFF0000  */
 
 #define MAX_FIXP 2147483647  /* == 0x7FFFFFFF  */
-#define MIN_FIXP -2147483648 /* == 0x80000000  */
+#define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
 #define GetSmalldata(x)          \
-  (((SEGMASK & x) == S_POSITIVE) \
-       ? (0xFFFF & x)            \
-       : (((SEGMASK & x) == S_NEGATIVE) ? (0xFFFF0000 | x) : error("Not smallp address")))
+  (((SEGMASK & (x)) == S_POSITIVE)            \
+       ? (0xFFFF & (x))            \
+       : (((SEGMASK & (x)) == S_NEGATIVE) ? (0xFFFF0000 | (x)) : error("Not smallp address")))
 
 #define GetSmallp(x)                                                                  \
-  ((0xFFFF0000 & x) ? (((0xFFFF0000 & x) == 0xFFFF0000) ? (S_NEGATIVE | (0xFFFF & x)) \
+  ((0xFFFF0000 & (x)) ? (((0xFFFF0000 & (x)) == 0xFFFF0000) ? (S_NEGATIVE | (0xFFFF & (x))) \
                                                         : error("Not Smallp data"))   \
-                    : (S_POSITIVE | (0xFFFF & x)))
+                    : (S_POSITIVE | (0xFFFF & (x))))
 
 #define FIXP_VALUE(dest) *((int *)Addr68k_from_LADDR(dest))
 
@@ -31,32 +31,34 @@
 
 #define N_GETNUMBER(sour, dest, label)                        \
   do {                                                        \
-    dest = sour; /* access memory once */                     \
-    switch (SEGMASK & dest) {                                 \
-      case S_POSITIVE: dest = 0xFFFF & (dest); break;         \
-      case S_NEGATIVE: dest = 0xFFFF0000 | (dest); break;     \
+    (dest) = (sour); /* access memory once */                 \
+    switch (SEGMASK & (dest)) {                               \
+      case S_POSITIVE: (dest) = 0xFFFF & (dest); break;       \
+      case S_NEGATIVE: (dest) = 0xFFFF0000 | (dest); break;   \
       default:                                                \
+        /* NOLINTNEXTLINE(bugprone-macro-parentheses) */      \
         if (GetTypeNumber(dest) != TYPE_FIXP) goto label;     \
-        dest = FIXP_VALUE(dest);                              \
+        (dest) = FIXP_VALUE(dest);                            \
     }                                                         \
   } while (0)
 
 #define N_IGETNUMBER(sour, dest, label)                                                   \
   do {                                                                                    \
-    dest = sour; /* access memory once */                                                 \
-    switch (SEGMASK & dest) {                                                             \
-      case S_POSITIVE: dest = 0xFFFF & dest; break;                                       \
-      case S_NEGATIVE: dest = 0xFFFF0000 | dest; break;                                   \
+    (dest) = (sour); /* access memory once */                                             \
+    switch (SEGMASK & (dest)) {                                                           \
+      case S_POSITIVE: (dest) = 0xFFFF & (dest); break;                                   \
+      case S_NEGATIVE: (dest) = 0xFFFF0000 | (dest); break;                               \
       default:                                                                            \
         switch (GetTypeNumber(dest)) {                                                    \
-          case TYPE_FIXP: dest = FIXP_VALUE(dest); break;                                 \
+          case TYPE_FIXP: (dest) = FIXP_VALUE(dest); break;               \
           case TYPE_FLOATP: {                                                             \
             register float temp;                                                          \
             temp = FLOATP_VALUE(dest);                                                    \
+            /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                              \
             if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) goto label; \
-            dest = (int)temp;                                                             \
+            (dest) = (int)temp;                                                           \
           } break;                                                                        \
-          default: goto label;                                                            \
+          default: goto label; /* NOLINT(bugprone-macro-parentheses) */                   \
         }                                                                                 \
         break;                                                                            \
     }                                                                                     \
@@ -64,15 +66,15 @@
 
 #define ARITH_SWITCH(arg, result)                                          \
   do {                                                                     \
-    switch ((int)arg & 0xFFFF0000) {                                       \
-      case 0: result = (S_POSITIVE | (int)arg); break;                     \
-      case 0xFFFF0000: result = (S_NEGATIVE | (0xFFFF & (int)arg)); break; \
+    switch ((int)(arg) & 0xFFFF0000) {                                     \
+      case 0: (result) = (S_POSITIVE | (int)(arg)); break;                 \
+      case 0xFFFF0000: (result) = (S_NEGATIVE | (0xFFFF & (int)(arg))); break; \
       default: {                                                           \
         register LispPTR *wordp;                                           \
         /* arg is FIXP, call createcell */                                 \
         wordp = (LispPTR *)createcell68k(TYPE_FIXP);                       \
-        *((int *)wordp) = (int)arg;                                        \
-        result = (LADDR_from_68k(wordp));                                  \
+        *((int *)wordp) = (int)(arg);                                      \
+        (result) = (LADDR_from_68k(wordp));                                \
         break;                                                             \
       }                                                                    \
     }                                                                      \
@@ -104,9 +106,9 @@
 
 #define N_ARITH_SWITCH(arg)                                  \
   do {                                                       \
-    switch (arg & 0xFFFF0000) {                              \
-      case 0: return (S_POSITIVE | arg);                     \
-      case 0xFFFF0000: return (S_NEGATIVE | (0xFFFF & arg)); \
+    switch ((arg) & 0xFFFF0000) {                              \
+      case 0: return (S_POSITIVE | (arg));                     \
+      case 0xFFFF0000: return (S_NEGATIVE | (0xFFFF & (arg))); \
       default: {                                             \
         register LispPTR *fixpp;                             \
         /* arg is FIXP, call createcell */                   \

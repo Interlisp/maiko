@@ -249,29 +249,29 @@ extern int ScreenLocked; /* for mouse tracking */
                                        (EQ Operation (QUOTE ERASE))) 0)
                                   (T 1))))))
 *****************************************************************/
-#define PixOperationLisp(SRCTYPE, OPERATION)                                                     \
-  (SRCTYPE == INVERT_atom                                                                        \
-       ? (OPERATION == REPLACE_atom                                                              \
-              ? PIX_NOT(PIX_SRC)                                                                 \
-              : (OPERATION == PAINT_atom                                                         \
-                     ? PIX_NOT(PIX_SRC) | PIX_DST                                                \
-                     : (OPERATION == ERASE_atom                                                  \
-                            ? PIX_SRC & PIX_DST                                                  \
-                            : (OPERATION == INVERT_atom ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR)))) \
-       : /*  SRCTYPE == INPUT, TEXTURE */                                                        \
-       (OPERATION == REPLACE_atom                                                                \
-            ? PIX_SRC                                                                            \
-            : (OPERATION == PAINT_atom                                                           \
-                   ? PIX_SRC | PIX_DST                                                           \
-                   : (OPERATION == ERASE_atom                                                    \
-                          ? PIX_NOT(PIX_SRC) & PIX_DST                                           \
-                          : (OPERATION == INVERT_atom ? PIX_SRC ^ PIX_DST : ERROR)))))
+#define PixOperationLisp(SRCTYPE, OPERATION)                                                       \
+  ((SRCTYPE) == INVERT_atom                                                                        \
+       ? ((OPERATION) == REPLACE_atom                                                              \
+              ? PIX_NOT(PIX_SRC)                                                                   \
+              : ((OPERATION) == PAINT_atom                                                         \
+                     ? PIX_NOT(PIX_SRC) | PIX_DST                                                  \
+                     : ((OPERATION) == ERASE_atom                                                  \
+                            ? PIX_SRC & PIX_DST                                                    \
+                            : ((OPERATION) == INVERT_atom ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR)))) \
+       : /*  SRCTYPE == INPUT, TEXTURE */                                                          \
+       ((OPERATION) == REPLACE_atom                                                                \
+            ? PIX_SRC                                                                              \
+            : ((OPERATION) == PAINT_atom                                                           \
+                   ? PIX_SRC | PIX_DST                                                             \
+                   : ((OPERATION) == ERASE_atom                                                    \
+                          ? PIX_NOT(PIX_SRC) & PIX_DST                                             \
+                          : ((OPERATION) == INVERT_atom ? PIX_SRC ^ PIX_DST : ERROR)))))
 
-#define bbop(SRCTYPE, OPERATION)              \
-  (OPERATION == PAINT_atom                    \
-       ? op_fn_or                             \
-       : (OPERATION == ERASE_atom ? op_fn_and \
-                                  : (OPERATION == INVERT_atom ? op_fn_xor : op_repl_src)))
+#define bbop(SRCTYPE, OPERATION)                \
+  ((OPERATION) == PAINT_atom                    \
+       ? op_fn_or                               \
+       : ((OPERATION) == ERASE_atom ? op_fn_and \
+                                    : ((OPERATION) == INVERT_atom ? op_fn_xor : op_repl_src)))
 
 /********************************************************/
 /*                                                      */
@@ -284,9 +284,9 @@ extern int ScreenLocked; /* for mouse tracking */
 /*                                                      */
 /********************************************************/
 
-#define bbsrc_type(SRCTYPE, OPERATION)                                                         \
-  (SRCTYPE == INVERT_atom ? (OPERATION == ERASE_atom ? 0 : 1) /*  SRCTYPE == INPUT, TEXTURE */ \
-                          : (OPERATION == ERASE_atom ? 1 : 0))
+#define bbsrc_type(SRCTYPE, OPERATION)                                                             \
+  ((SRCTYPE) == INVERT_atom ? ((OPERATION) == ERASE_atom ? 0 : 1) /*  SRCTYPE == INPUT, TEXTURE */ \
+                          : ((OPERATION) == ERASE_atom ? 1 : 0))
 
 extern struct pixrect *SrcePixRect, *DestPixRect, *TexturePixRect;
 extern struct pixrect *BlackTexturePixRect, *WhiteTexturePixRect;

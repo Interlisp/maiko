@@ -29,8 +29,8 @@
 /**********************************************************************/
 
 /* NOTE: These MACRO should be used for the pointers in LISP SYSOUT */
-#define LLSH(datum , n)		((datum )<< n)
-#define LRSH(datum , n)		((datum) >> n)
+#define LLSH(datum, n)			((datum) << (n))
+#define LRSH(datum, n)			((datum) >> (n))
 
 #define HILOC(ptr)			(LRSH(((unsigned int)(ptr) & SEGMASK),16))
 #define LOLOC(ptr)			((unsigned int)(ptr) & 0x0ffff)

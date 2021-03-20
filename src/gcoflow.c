@@ -44,12 +44,12 @@
 #define HTBIGENTRYSIZE 4
 #define WORDSPERPAGE 256
 #define MAXTYPENUMBER INIT_TYPENUM
-#define Oddp(num) (((num % 2) != 0) ? 1 : 0)
-#define Evenp(num, prim) (((num % prim) == 0) ? 1 : 0)
+#define Oddp(num) ((((num) % 2) != 0) ? 1 : 0)
+#define Evenp(num, prim) ((((num) % (prim)) == 0) ? 1 : 0)
 #define Increment_Allocation_Count(n) \
   if (*Reclaim_cnt_word != NIL) {     \
-    if (*Reclaim_cnt_word > n)        \
-      (*Reclaim_cnt_word) -= n;       \
+    if (*Reclaim_cnt_word > (n))      \
+      (*Reclaim_cnt_word) -= (n);     \
     else {                            \
       *Reclaim_cnt_word = NIL;        \
       doreclaim();                    \
