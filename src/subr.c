@@ -29,7 +29,6 @@
 /***********************************************************/
 
 #include <stdio.h>
-#include <time.h>
 #include "lispemul.h"
 #include "address.h"
 #include "adr68k.h"
@@ -780,20 +779,6 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
     }
 #endif /* LPSOLVE */
-  case sb_YIELD: {
-      struct timespec rqts = {0, 833333};
-      unsigned sleepnanos;
-      POP_SUBR_ARGS;
-      N_GETNUMBER(args[0], sleepnanos, ret_nil);
-      if (sleepnanos > 999999999) {
-          TopOfStack = NIL;
-          break;
-      }
-      rqts.tv_nsec = sleepnanos;
-      nanosleep(&rqts, NULL);
-      TopOfStack = ATOM_T;
-      break;
-  }
     default: {
       char errtext[200];
       sprintf(errtext, "OP_subrcall: Invalid alpha byte 0%o", ((*(PC + 1)) & 0xff));
