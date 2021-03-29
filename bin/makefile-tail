@@ -485,9 +485,11 @@ $(OBJECTDIR)dspif.o: $(SRCDIR)dspif.c $(REQUIRED-INCS) \
 	$(INCDIR)devif.h $(INCDIR)dspifdefs.h $(INCDIR)xinitdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)dspif.c -o $(OBJECTDIR)dspif.o
 
-$(OBJECTDIR)ether.o :  $(SRCDIR)ether.c  $(REQUIRED-INCS) $(INCDIR)lispemul.h  \
-	 $(INCDIR)lspglob.h  $(INCDIR)adr68k.h \
-	 $(INCDIR)ether.h
+$(OBJECTDIR)ether.o: $(SRCDIR)ether.c $(REQUIRED-INCS) \
+	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
+	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether.c -o $(OBJECTDIR)ether.o
 
 $(OBJECTDIR)findkey.o: $(SRCDIR)findkey.c $(REQUIRED-INCS) \
