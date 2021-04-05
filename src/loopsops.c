@@ -58,7 +58,7 @@ static const char il_string[] = "INTERLISP";
 #define METH_CACHE_INDEX(CLASS, SELECTOR) (1023 & ((CLASS) ^ (SELECTOR)))
 #define IV_CACHE_INDEX(VARLIST, IV) (1023 & ((VARLIST) ^ (IV)))
 
-#define LC_TYPEP(obj, typeATOM) (DTD_FROM_LADDR((obj)) == typeATOM)
+#define LC_TYPEP(obj, typeATOM) (DTD_FROM_LADDR((obj)) == (typeATOM))
 
 #define INSTANCEP(obj) (LC_TYPEP((obj), atom_instance))
 #define CLASSP(obj) (LC_TYPEP((obj), atom_class))
@@ -80,10 +80,10 @@ static const char il_string[] = "INTERLISP";
 #define GET_IV_INDEX(objptr, iv, dest, otherwise)                 \
   {                                                               \
     register struct LCIVCacheEntry *ce;                           \
-    register LispPTR iNames = objptr->iNames;                     \
+    register LispPTR iNames = (objptr)->iNames;                   \
                                                                   \
     ce = &(LCIVCache[IV_CACHE_INDEX(iNames, iv)]);                \
-    if (ce->iNames == iNames && ce->iv == iv) {                   \
+    if (ce->iNames == iNames && ce->iv == (iv)) {                 \
       (dest) = POSINT_FROM_SMALLP(ce->index);                     \
     } else {                                                      \
       if (!Listp(iNames)) {                                       \
@@ -91,8 +91,8 @@ static const char il_string[] = "INTERLISP";
       } else {                                                    \
         register int i = 0;                                       \
         while (1) {                                               \
-          if (car(iNames) == iv) {                                \
-            ce->iNames = objptr->iNames;                          \
+          if (car(iNames) == (iv)) {                              \
+            ce->iNames = (objptr)->iNames;                        \
             ce->iv = iv;                                          \
             ce->index = SMALLP_FROM_POSINT(i);                    \
             (dest) = i;                                           \

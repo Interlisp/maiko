@@ -56,7 +56,7 @@
 #ifdef BIGVM
 #define HTSTKBIT 0x10000 /* = 512 */
 #define HTENDS ((struct hashentry *)htlptr)
-#define GetStkCnt(entry1) (entry1 >> 16)
+#define GetStkCnt(entry1) ((entry1) >> 16)
 #else
 #define HTSTKBIT 0x200 /* = 512 */
 #define HTENDS ((struct hashentry *)htlptr)

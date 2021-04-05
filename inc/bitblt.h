@@ -27,16 +27,16 @@
 #define	ERROR	PIX_SRC
 
 #define PixOperation( SRCTYPE, OPERATION )	\
-	( SRCTYPE == ERASE ? \
-		(OPERATION == REPLACE ? PIX_NOT(PIX_SRC) : \
-		(OPERATION == PAINT   ? PIX_NOT(PIX_SRC) | PIX_DST : \
-		(OPERATION == ERASE   ? PIX_NOT(PIX_SRC) & PIX_DST : \
-		(OPERATION == INVERT  ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR)))) : \
+        ( (SRCTYPE) == ERASE ?                                 \
+		((OPERATION) == REPLACE ? PIX_NOT(PIX_SRC) : \
+		((OPERATION) == PAINT   ? PIX_NOT(PIX_SRC) | PIX_DST : \
+		((OPERATION) == ERASE   ? PIX_NOT(PIX_SRC) & PIX_DST : \
+		((OPERATION) == INVERT  ? PIX_NOT(PIX_SRC) ^ PIX_DST : ERROR)))) : \
 	/*  SRCTYPE == INPUT */ \
-		(OPERATION == REPLACE ? PIX_SRC : \
-		(OPERATION == PAINT   ? PIX_SRC | PIX_DST : \
-		(OPERATION == ERASE   ? PIX_SRC & PIX_DST : \
-		(OPERATION == INVERT  ? PIX_SRC ^ PIX_DST : ERROR)))))
+		((OPERATION) == REPLACE ? PIX_SRC : \
+		((OPERATION) == PAINT   ? PIX_SRC | PIX_DST : \
+		((OPERATION) == ERASE   ? PIX_SRC & PIX_DST : \
+		((OPERATION) == INVERT  ? PIX_SRC ^ PIX_DST : ERROR)))))
 
 
 extern DLword	*EmMouseX68K, *EmMouseY68K;

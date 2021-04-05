@@ -77,14 +77,14 @@ extern int Dummy_errno;
     separate_version(tname, tver, 0);                \
                                                      \
     if ((pp = (char *)strrchr(tname, '.')) == NULL) { \
-      *text = '\0';                                  \
+      *(text) = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \
       strcpy(text, pp + 1);                          \
     }                                                \
                                                      \
     if ((pp = (char *)strrchr(pname, '.')) == NULL) { \
-      *pext = '\0';                                  \
+      *(pext) = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \
       strcpy(pext, pp + 1);                          \
@@ -104,9 +104,9 @@ extern int Dummy_errno;
     SetupMatch(tname, pname, text, pext, tver);                                               \
                                                                                               \
     if (match_pattern(tname, pname) && match_pattern(text, pext) && match_pattern(tver, ver)) \
-      goto matchtag;                                                                          \
+      goto matchtag; /* NOLINT(bugprone-macro-parentheses) */                                 \
     else                                                                                      \
-      goto unmatchtag;                                                                        \
+      goto unmatchtag; /* NOLINT(bugprone-macro-parentheses) */                               \
   }
 
 #define MatchP_Case(target, name, ver, matchtag, unmatchtag)                                  \
@@ -120,9 +120,9 @@ extern int Dummy_errno;
     SetupMatch(tname, pname, text, pext, tver);                                               \
                                                                                               \
     if (match_pattern(tname, pname) && match_pattern(text, pext) && match_pattern(tver, ver)) \
-      goto matchtag;                                                                          \
+      goto matchtag; /* NOLINT(bugprone-macro-parentheses) */                                 \
     else                                                                                      \
-      goto unmatchtag;                                                                        \
+      goto unmatchtag; /* NOLINT(bugprone-macro-parentheses) */                               \
   }
 
 /*
@@ -292,13 +292,13 @@ int MAXFINFO;
 #define AllocFinfo(fp)                                                   \
   {                                                                      \
     if (FreeFinfoList != (FINFO *)NULL) {                                \
-      fp = FreeFinfoList;                                                \
-      FreeFinfoList = fp->next;                                          \
-    } else if ((fp = (FINFO *)calloc(1, sizeof(FINFO))) == NULL) {       \
-      fp = (FINFO *)NULL;                                                \
-    } else if ((fp->prop = (FPROP *)calloc(1, sizeof(FPROP))) == NULL) { \
+      (fp) = FreeFinfoList;                                                \
+      FreeFinfoList = (fp)->next;                                          \
+    } else if (((fp) = (FINFO *)calloc(1, sizeof(FINFO))) == NULL) {       \
+      (fp) = (FINFO *)NULL;                                                \
+    } else if (((fp)->prop = (FPROP *)calloc(1, sizeof(FPROP))) == NULL) { \
       free(fp);                                                          \
-      fp = (FINFO *)NULL;                                                \
+      (fp) = (FINFO *)NULL;                                                \
     }                                                                    \
   }
 

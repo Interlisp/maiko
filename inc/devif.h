@@ -271,7 +271,7 @@ typedef struct
 }
 #endif /* XWINDOW */
 
-#define OUTER_SB_WIDTH(dsp) (dsp->ScrollBarWidth + 2*(dsp->InternalBorderWidth))
+#define OUTER_SB_WIDTH(dsp) ((dsp)->ScrollBarWidth + 2*((dsp)->InternalBorderWidth))
 
 #ifndef min
 #define min( a, b ) (((a)<(b))?(a):(b))

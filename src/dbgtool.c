@@ -777,7 +777,7 @@ void nts(struct frameex1 *fxp) {
 #define VARTYPE_PVAR (2)
 #define VARTYPE_IVAR (0)
 
-#define VAROFFSET(X) (X & 0xFFFFFFF)
+#define VAROFFSET(X) ((X) & 0xFFFFFFF)
 
 void nt1(LispPTR *start, int size, char *str) {
   LispPTR *endp, *entry2p;

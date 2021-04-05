@@ -17,8 +17,8 @@
 #include "dbprint.h"
 #include "devif.h"
 
-MouseInterfaceRec _curmouse;
-MouseInterface currentmouse = &_curmouse;
+MouseInterfaceRec curmouse;
+MouseInterface currentmouse = &curmouse;
 
 #ifdef DOS
 #include <dos.h>

@@ -36,12 +36,12 @@
 extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 
-#define	ToLispTime(x)	((int)x + 29969152)
+#define	ToLispTime(x)	((int)(x) + 29969152)
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */
 			/* - 61200 == - 17hours */
 
-#define	ToUnixTime(x)	((int)x - 29969152)
+#define	ToUnixTime(x)	((int)(x) - 29969152)
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */
 
@@ -92,7 +92,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 		lf_base = ((char *)(Addr68k_from_LADDR(lf_arrayp->base)))  	\
 		       + ((int)(lf_arrayp->offset));			\
 		strncpy(C, lf_base, lf_length);				\
-		C[lf_length] = '\0';					\
+		(C)[lf_length] = '\0';					\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
@@ -121,7 +121,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 		lf_base = ((char *)(Addr68k_from_LADDR(lf_arrayp->base)))  	\
 		       + ((int)(lf_arrayp->offset));			\
 		StrNCpyFromLispToC(C , lf_base , lf_length );		\
-		C[lf_length] = '\0';					\
+		(C)[lf_length] = '\0';					\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
@@ -153,16 +153,16 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
   {									\
     OneDArray	*lf_arrayp;						\
     lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(LispString));		\
-    switch(lf_arrayp->typenumber)						\
+    switch(lf_arrayp->typenumber)					\
       {									\
 	case THIN_CHAR_TYPENUMBER:					\
-		Length = lf_arrayp->fillpointer;				\
-		FatP = 0;						\
+        	(Length) = lf_arrayp->fillpointer;			\
+		(FatP) = 0;						\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
-		Length = lf_arrayp->fillpointer * 2;			\
-		FatP = 1;						\
+            	(Length) = lf_arrayp->fillpointer * 2;			\
+            	(FatP) = 1;                                             \
 		break;							\
 	default:							\
 		error("LispStringLength: Not a character array.\n");	\
@@ -183,24 +183,24 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
   {				\
 	LispPTR	*lf_naddress;				  \
 	lf_naddress = (LispPTR *)(Addr68k_from_LADDR(lstringp));		  \
-	cstringp  = (char *)(Addr68k_from_LADDR(((OneDArray *)lf_naddress)->base));  \
+	(cstringp) = (char *)(Addr68k_from_LADDR(((OneDArray *)lf_naddress)->base)); \
   }
 
 #ifndef min
-#define min(a, b) ((a <= b)?a:b)
+#define min(a, b) (((a) <= (b))?(a):(b))
 #endif /* min */
 
 #define	LispNumToCInt(Lisp)					\
-		( ((Lisp & SEGMASK) == S_POSITIVE) ?		\
-		(Lisp & 0xFFFF) : (*((int *)(Addr68k_from_LADDR(Lisp)))) )
+	( (((Lisp) & SEGMASK) == S_POSITIVE) ?                  \
+          ((Lisp) & 0xFFFF) : (*((int *)(Addr68k_from_LADDR(Lisp)))) )
 
 #define	UPLOWDIFF	0x20
 
 #define	DOWNCASE(name){						\
 								\
-	char	*lf_cp;					\
+	char	*lf_cp;						\
 								\
-	for(lf_cp = name; *lf_cp!='\0'; ++lf_cp)				\
+	for(lf_cp = (name); *lf_cp!='\0'; ++lf_cp)                      \
 	  if((*lf_cp >= 'A') && (*lf_cp <= 'Z')) *lf_cp += UPLOWDIFF;	\
 }
 
@@ -208,7 +208,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 								\
 	char	*lf_cp;					\
 								\
-	for(lf_cp = name; *lf_cp!='\0'; ++lf_cp)				\
+	for(lf_cp = (name); *lf_cp!='\0'; ++lf_cp)                      \
 	  if((*lf_cp >= 'a') && (*lf_cp <= 'z')) *lf_cp -= UPLOWDIFF;	\
 }
 
@@ -219,16 +219,16 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	TIMEOUT(lf_result = stat(name, &lf_statbuf));		\
 	if (lf_result < 0) {					\
 		*Lisp_errno = errno;				\
-		type = 0;					\
+		(type) = 0;					\
 	} else {  						\
 		switch (lf_statbuf.st_mode & S_IFMT) {		\
 								\
 		      case S_IFDIR:				\
-			type = -1;				\
+                        (type) = -1;				\
 			break;					\
 								\
 		      case S_IFREG:				\
-			type = 1;				\
+                        (type) = 1;				\
 			break;					\
 								\
 		      default:					\
@@ -236,7 +236,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 			 * Should we deal with the other	\
 			 * types?				\
 			 */					\
-			type = 0;				\
+                        (type) = 0;				\
 			break;					\
 		}						\
 	}							\
@@ -272,20 +272,21 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 		}
 
 #define	STREQ(name1, name2)(	\
-		(*name1 == *name2) && (strcmp(name1, name2) == 0)	\
-		)
+                (*(name1) == *(name2)) && (strcmp(name1, name2) == 0)   \
+                )
 
-#define	SPECIALFILEMARK		-1
+#define	SPECIALFILEMARK		(-1)
 
 #define NumericStringP(str, truetag, falsetag) {			\
 	char	*lfn_cp;						\
 									\
-	if (*str == '\0') goto falsetag;				\
+        /* NOLINTNEXTLINE(bugprone-macro-parentheses) */		\
+	if (*(str) == '\0') goto falsetag;				\
 									\
 	for(lfn_cp = str; *lfn_cp!='\0'; ++lfn_cp)			\
 	  if(*lfn_cp < '0' || '9' < *lfn_cp)				\
-	    goto falsetag;						\
-	goto truetag;							\
+	    goto falsetag; /* NOLINT(bugprone-macro-parentheses) */	\
+	goto truetag;	/* NOLINT(bugprone-macro-parentheses) */	\
 }
 
 /*		
@@ -392,16 +393,16 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 										\
 		      NO:							\
 			/* Dealt with as version 1 unless vlessp */		\
-			if (!vlessp) strcat(pathname, ";1");			\
+			if (!(vlessp)) strcat(pathname, ";1");                  \
 		      CONT:							\
-			lf_cp--;	/* Just for label */				\
+			lf_cp--;	/* Just for label */			\
 		} else {							\
 			/* Dealt with as version 1 unless vlessp. */		\
-			if (!vlessp) strcat(pathname, ";1");			\
+                        if (!(vlessp)) strcat(pathname, ";1");                  \
 		}								\
 	} else {								\
 		/* Dealt with as version 1 unless vlessp. */			\
-		if (!vlessp) strcat(pathname, ";1");				\
+                if (!(vlessp)) strcat(pathname, ";1");                          \
 	}									\
 }
 
@@ -444,7 +445,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 		}							\
 	}								\
 	if (lf_cp1 == (lf_cp2 - 1)) {						\
-		if (lf_cp1 == dir) {					\
+                if (lf_cp1 == (dir)) {					\
 			/* dir is a root directory. */			\
 			strcpy(fname, "/");				\
 			strcat(fname, name);				\
@@ -479,7 +480,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
  */
 
 #define ConcNameAndVersion(name, ver, rname){				\
-	if (*ver != '\0') {						\
+	if (*(ver) != '\0') {						\
 		strcpy(rname, name);					\
 		strcat(rname, ".~");					\
 		strcat(rname, ver);					\
@@ -493,18 +494,18 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 #define	MAXVERSION		999999999
 
-#define	LASTVERSIONARRAY	-1
+#define	LASTVERSIONARRAY	(-1)
 #define	VERSIONARRAYLENGTH	200
 
 #define NoFileP(varray)						\
-	((varray->version_no == LASTVERSIONARRAY)? 1 : 0)
+        (((varray)->version_no == LASTVERSIONARRAY)? 1 : 0)
 
 
 #ifdef DOS
 #define OnlyVersionlessP(varray) 0
 #else
-#define OnlyVersionlessP(varray)							\
-	((varray->version_no == 0 && (varray + 1)->version_no == LASTVERSIONARRAY) ?	\
+#define OnlyVersionlessP(varray)							 \
+        (((varray)->version_no == 0 && ((varray) + 1)->version_no == LASTVERSIONARRAY) ? \
 	 1 : 0)
 #endif /* DOS */
 

@@ -38,20 +38,20 @@
 /*									*/
 /************************************************************************/
 #define	N_MakeFloat(arg, dest, tos){					\
-	switch (SEGMASK & (LispPTR)arg) {				\
+	switch (SEGMASK & (LispPTR)(arg)) {				\
 	case S_POSITIVE:						\
-		dest = (float)(0xFFFF & (LispPTR)arg);			\
+		(dest) = (float)(0xFFFF & (LispPTR)(arg));		\
 		break;							\
 	case S_NEGATIVE:						\
-		dest = (float)((int)(0xFFFF0000 | (LispPTR)arg));		\
+		(dest) = (float)((int)(0xFFFF0000 | (LispPTR)(arg)));	\
 		break;							\
 	default:							\
 		switch (GetTypeNumber(arg)) {				\
 		  case TYPE_FLOATP: 					\
-		    dest = *((float *)Addr68k_from_LADDR(arg));		\
+		    (dest) = *((float *)Addr68k_from_LADDR(arg));	\
 		    break; 						\
 		  case TYPE_FIXP: 					\
-		    dest = (float)(*((int *)Addr68k_from_LADDR(arg)));	\
+		    (dest) = (float)(*((int *)Addr68k_from_LADDR(arg)));\
 		    break;						\
 		  default: ERROR_EXIT(tos);				\
 		}							\
@@ -61,11 +61,11 @@
 
 
 #define	N_GetPos(arg, dest, tos){					\
-	if ((arg & SEGMASK) == S_POSITIVE)				\
-		dest = arg & 0xFFFF;					\
+	if (((arg) & SEGMASK) == S_POSITIVE)				\
+		(dest) = (arg) & 0xFFFF;				\
 	else	{							\
 	if (GetTypeNumber(arg) != TYPE_FIXP) ERROR_EXIT(tos);		\
-	if ((dest = *((int *)Addr68k_from_LADDR(arg))) & 0x80000000)	\
+	if (((dest) = *((int *)Addr68k_from_LADDR(arg))) & 0x80000000)	\
 		ERROR_EXIT(tos);					\
 		}							\
 	}

@@ -24,12 +24,12 @@
 #include "gcrdefs.h"
 #include "storagedefs.h"
 
-#define Evenp(num, prim) ((num % prim) == 0)
+#define Evenp(num, prim) (((num) % (prim)) == 0)
 #ifdef BIGVM
 /* HTCOLLMAX should be in half-entries, not in words */
-#define HTCOLLMAX (HTCOLL_SIZE / DLWORDSPER_CELL) - 16
+#define HTCOLLMAX ((HTCOLL_SIZE / DLWORDSPER_CELL) - 16)
 #else
-#define HTCOLLMAX HTCOLL_SIZE - 16
+#define HTCOLLMAX (HTCOLL_SIZE - 16)
 #endif /* BIGVM */
 
 /* GetLink gets a new entry from the GC collision table */
@@ -43,10 +43,10 @@
         return (NIL);                                              \
       };                                                           \
       GETGC((GCENTRY *)HTcoll + 1) = linkoff + 2;                  \
-      var = (GCENTRY *)(HTcoll + linkoff);                         \
+      (var) = (GCENTRY *)(HTcoll + linkoff);                       \
     } else {                                                       \
       GETGC(HTcoll) = GETGC((GCENTRY *)(HTcoll + linkoff + 1));    \
-      var = (GCENTRY *)(HTcoll + linkoff);                         \
+      (var) = (GCENTRY *)(HTcoll + linkoff);                       \
     }                                                              \
   }
 
@@ -82,20 +82,20 @@
  * NewEntry is never called in the course of the reclamation.
  * Thus STKREF case is not needed.
  */
-#define NewEntry(entry, hiptr, casep, ptr)                            \
-  {                                                                   \
-    switch (casep) {                                                  \
-      case ADDREF:                                                    \
-        GETGC(entry) = hiptr | (2 << HTCNTSHIFT); /* set count = 2 */ \
-        IncAllocCnt(1);                                               \
-        return NIL; /* not new 0 entry */                             \
-      case DELREF:                                                    \
-        GETGC(entry) = hiptr; /* set count = 0 */                     \
-        IncAllocCnt(1);                                               \
-        return ptr; /* new 0 entry */                                 \
-      default: error("GC error: new entry touches stack bit");        \
-        return NIL; /* NOT REACHED */                                 \
-    }                                                                 \
+#define NewEntry(entry, hiptr, casep, ptr)                              \
+  {                                                                     \
+    switch (casep) {                                                    \
+      case ADDREF:                                                      \
+        GETGC(entry) = (hiptr) | (2 << HTCNTSHIFT); /* set count = 2 */ \
+        IncAllocCnt(1);                                                 \
+        return NIL; /* not new 0 entry */                               \
+      case DELREF:                                                      \
+        GETGC(entry) = hiptr; /* set count = 0 */                       \
+        IncAllocCnt(1);                                                 \
+        return ptr; /* new 0 entry */                                   \
+      default: error("GC error: new entry touches stack bit");          \
+        return NIL; /* NOT REACHED */                                   \
+    }                                                                   \
   }
 
 /*
@@ -106,13 +106,13 @@
   {                                                                     \
     switch (casep) {                                                    \
       case ADDREF:                                                      \
-        GETGC(entry) = hiptr | (2 << HTCNTSHIFT); /* set count = 2 */   \
+        GETGC(entry) = (hiptr) | (2 << HTCNTSHIFT); /* set count = 2 */ \
         return NIL;                               /* not new 0 entry */ \
       case DELREF:                                                      \
         GETGC(entry) = hiptr; /* set count = 0 */                       \
         return ptr;           /* new 0 entry */                         \
       case STKREF:            /* set refcnt to 1, stack bit to 1 */     \
-        GETGC(entry) = hiptr | (1 << HTCNTSHIFT) | HTSTKMASK;           \
+        GETGC(entry) = (hiptr) | (1 << HTCNTSHIFT) | HTSTKMASK;         \
         return NIL;                                                     \
       default: error("GC error: new entry when turning off stack bit"); \
         return NIL; /* NOT REACHED */                                   \
@@ -134,29 +134,29 @@
  */
 #define ModEntry(entry, contents, ptr, casep, remove)                                       \
   {                                                                                         \
-    if ((contents & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */              \
+    if (((contents) & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */            \
       modify_big_reference_count(entry, casep, ptr);                                        \
       return NIL;                                                                           \
     }                                                                                       \
     switch (casep) {                                                                        \
       case ADDREF:                                                                          \
-        contents += (1 << HTCNTSHIFT);                                                      \
-        if ((contents & HTCNTMASK) == HTCNTMASK) { /* overflow */                           \
+        (contents) += (1 << HTCNTSHIFT);                                                    \
+        if (((contents) & HTCNTMASK) == HTCNTMASK) { /* overflow */                         \
           GETGC(entry) = contents;                                                          \
           enter_big_reference_count(ptr);                                                   \
           return NIL;                                                                       \
         }                                                                                   \
-        if ((contents & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) {                               \
+        if (((contents) & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) {                             \
           DecAllocCnt(1);                                                                   \
-          goto remove;                                                                      \
+          goto remove; /* NOLINT(bugprone-macro-parentheses) */                             \
         }                                                                                   \
         break;                                                                              \
       case DELREF:                                                                          \
-        if ((contents >> HTCNTSHIFT) == 0) error("attempt to decrement 0 reference count"); \
-        contents -= (1 << HTCNTSHIFT);                                                      \
-        if ((contents & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) {                               \
+        if (((contents) >> HTCNTSHIFT) == 0) error("attempt to decrement 0 reference count"); \
+        (contents) -= (1 << HTCNTSHIFT);			                            \
+        if (((contents) & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) {                             \
           DecAllocCnt(1);                                                                   \
-          goto remove;                                                                      \
+          goto remove; /* NOLINT(bugprone-macro-parentheses) */                             \
         }                                                                                   \
         break;                                                                              \
       default: error("GC error: mod entry touches stack bit");                              \
@@ -171,14 +171,14 @@
  */
 #define RecModEntry(entry, contents, ptr, casep, remove)                                    \
   {                                                                                         \
-    if ((contents & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */              \
+    if (((contents) & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */            \
       modify_big_reference_count(entry, casep, ptr);                                        \
       return NIL;                                                                           \
     }                                                                                       \
     switch (casep) {                                                                        \
       case ADDREF:                                                                          \
-        contents += (1 << HTCNTSHIFT);                                                      \
-        if ((contents & HTCNTMASK) == HTCNTMASK) {                                          \
+        (contents) += (1 << HTCNTSHIFT);                                                    \
+        if (((contents) & HTCNTMASK) == HTCNTMASK) {                                        \
           /* overflow */                                                                    \
           GETGC(entry) = contents;                                                          \
           enter_big_reference_count(ptr);                                                   \
@@ -186,11 +186,11 @@
         }                                                                                   \
         break; /* check for possibly deleting entry */                                      \
       case DELREF:                                                                          \
-        if ((contents >> HTCNTSHIFT) == 0) error("attempt to decrement 0 reference count"); \
-        contents -= (1 << HTCNTSHIFT);                                                      \
+        if (((contents) >> HTCNTSHIFT) == 0) error("attempt to decrement 0 reference count"); \
+        (contents) -= (1 << HTCNTSHIFT);                                                    \
         break;                                                                              \
       case STKREF:                                                                          \
-        GETGC(entry) = contents | HTSTKMASK;                                                \
+        GETGC(entry) = (contents) | HTSTKMASK;                                              \
         return NIL;                                                                         \
         /*                                                                                  \
                 case UNSTKREF:                                                              \
@@ -198,7 +198,8 @@
                         break;                                                              \
         */                                                                                  \
     }                                                                                       \
-    if ((contents & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) goto remove;                        \
+    /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                                        \
+    if (((contents) & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) goto remove;                      \
     GETGC(entry) = contents;                                                                \
     return NIL;                                                                             \
   }

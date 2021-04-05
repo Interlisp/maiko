@@ -42,9 +42,11 @@
 
 */
 #include <stdint.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <setjmp.h>
+#include <string.h>
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -57,7 +59,9 @@
 #include "debug.h"
 #include "dbprint.h"
 #include "tosfns.h"
+#include "array.h"
 
+#include "commondefs.h"
 #include "testtooldefs.h"
 #include "dbgtooldefs.h"
 #include "gcarraydefs.h"
@@ -106,16 +110,17 @@ void print_atomname(LispPTR index)
 /*									*/
 /************************************************************************/
 
-#define PACKAGES_LIMIT 255
-/** GET PACKAGE INDEX from PACKAGE FULL NAME */
 int find_package_from_name(const char *packname, int len) {
   int index;
   PACKAGE *package;
   NEWSTRINGP *namestring;
   DLword len2;
   char *pname;
+  struct arrayheader *pi_array;
 
-  for (index = 1; index <= PACKAGES_LIMIT; index++) {
+  /* assumes the *PACKAGE-FROM-INDEX* array is simple with no offset */
+  pi_array = (struct arrayheader *)Addr68k_from_LADDR(*Package_from_Index_word);
+  for (index = 1; index < pi_array->totalsize; index++) {
     package = (PACKAGE *)Addr68k_from_LADDR(aref1(*Package_from_Index_word, index));
     namestring = (NEWSTRINGP *)Addr68k_from_LADDR(package->NAME);
     pname = (char *)Addr68k_from_LADDR(namestring->base);
@@ -322,7 +327,7 @@ void trace_listpDTD(void) {
 void a68k(LispPTR lispptr) {
   DLword *val;
   val = Addr68k_from_LADDR(lispptr);
-  printf("68k: 0x%x (%d)\n", val, val);
+  printf("68k: %p (%"PRIuPTR")\n", (void *)val, (uintptr_t)val);
 }
 
 /************************************************************************/
@@ -358,7 +363,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   fnobj = (struct fnhead *)Addr68k_from_LADDR(fnblockaddr);
 
   printf("***DUMP Func Obj << ");
-  printf("start at 0x%x lisp address(0x%x 68k)\n", LADDR_from_68k(fnobj), fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), fnobj);
 
   print(fnobj->framename);
   putchar('\n');
@@ -377,7 +382,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   for (i = 20; i < (fnobj->startpc); i += 2) {
     int word;
     word = (int)(0xffff & (GETWORD((DLword *)(scratch + i))));
-    printf(" 0x%x(0x%x 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), scratch + i, word, word);
+    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), scratch + i, word, word);
   }
 
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
@@ -813,7 +818,7 @@ void doko(void) {
   printf(" At ");
   print_atomname(FuncObj->framename);
   putchar('\n');
-  printf("   PC cnt = 0%o\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
+  printf("   PC cnt = 0%"PRIoPTR"\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
 }
 
 /**** dump specified area (in 32 bit width) ***/
@@ -847,18 +852,6 @@ void printPC(void) {
   printf("PC: O%o ", pc);
 }
 
-/***************************/
-int countchar(char *string) {
-  int cnt = 0;
-
-  while (*string != '\0') {
-    string++;
-    cnt++;
-  }
-
-  return (cnt);
-}
-
 void dump_bf(Bframe *bf) {
   DLword *ptr;
   printf("\n*** Basic Frame");
@@ -881,7 +874,7 @@ void dump_bf(Bframe *bf) {
   }
 
 printflags:
-  printf("\n %x : %x %x ", LADDR_from_68k(bf), *bf, *(bf + 1));
+  printf("\n %x : %x %x ", LADDR_from_68k(bf), *(DLword *)bf, *((DLword *)bf + 1));
   putchar('[');
   if (BFRAMEPTR(bf)->residual) printf("Residual, ");
   if (BFRAMEPTR(bf)->padding) printf("Padded, ");
@@ -1024,10 +1017,8 @@ FX *get_nextFX(FX *fx) {
 
 } /* get_nextFX end */
 
-int MAKEATOM(char *string) {
-  int length;
-  length = countchar(string);
-  return (make_atom(string, 0, length, 0));
+LispPTR MAKEATOM(char *string) {
+    return (make_atom(string, 0, strlen(string), 0));
 }
 
 /************************************************************************/
@@ -1040,8 +1031,11 @@ int MAKEATOM(char *string) {
 /************************************************************************/
 
 LispPTR *MakeAtom68k(char *string) {
-  int index;
-  index = make_atom(string, 0, countchar(string), 0);
+  LispPTR index;
+  index = make_atom(string, 0, strlen(string), 0);
+  if (index == 0xffffffff) {
+      error("MakeAtom68k: no such atom found");
+  }
 #ifdef BIGVM
   index = (ATOMS_HI << 16) + (index * 10) + NEWATOM_VALUE_OFFSET;
 #else
@@ -1068,44 +1062,6 @@ void GETTOPVAL(char *string) {
     print(*cell68k);
   } else
     printf("'%s': no such symbol.\n", string);
-}
-
-/************************************************************************/
-/*									*/
-/*				S _ T O P V A L				*/
-/*									*/
-/*	Given a string that's an atom name minus the initial \,		*/
-/*	print the atom's top-level value.  This is here because		*/
-/*	DBX won't put \'s in strings you type.				*/
-/*									*/
-/************************************************************************/
-
-void S_TOPVAL(char *string) {
-  int index;
-  LispPTR *cell68k;
-  int length;
-  char dummy[256];
-
-  dummy[0] = '\\';
-  for (length = 1; *string != '\0'; length++, string++) { dummy[length] = *string; }
-
-  index = make_atom(dummy, 0, length, 0);
-  cell68k = (LispPTR *)GetVALCELL68k(index);
-  print(*cell68k);
-}
-
-/***************/
-int S_MAKEATOM(char *string) {
-  int index = 0;
-  int length;
-  char dummy[256];
-
-  dummy[0] = '\\';
-  for (length = 1; *string != '\0'; length++, string++) { dummy[length] = *string; }
-
-  index = make_atom(dummy, 0, length, 0);
-  printf("#Atomindex : %d\n", index);
-  return (index);
 }
 
 /****************************************************************************/
