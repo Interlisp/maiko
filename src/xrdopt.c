@@ -174,11 +174,11 @@ void read_Xoption(int *argc, char *argv[])
   sysout_name[0] = '\0';
   if (*argc == 2) /* There was probably a sysoutarg */
   {
-    (void)strncpy(sysout_name, argv[1], PATH_MAX - 1);
+    (void)strlcpy(sysout_name, argv[1], PATH_MAX);
   } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
-    strncpy(sysout_name, envname, PATH_MAX - 1);
+    strlcpy(sysout_name, envname, PATH_MAX);
   } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
-    strncpy(sysout_name, envname, PATH_MAX - 1);
+    strlcpy(sysout_name, envname, PATH_MAX);
   else {
     envname = getenv("HOME");
     (void)strcat(sysout_name, envname);
