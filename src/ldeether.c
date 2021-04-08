@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) { return (0); }
 #include <string.h>
 #include <unistd.h>
 
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 #include <sys/stream.h>
 #include <sys/stropts.h>
 #include <sys/pfmod.h>
@@ -53,14 +53,14 @@ char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "i
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
 #include <sys/ioctl.h>
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 #include <net/nit.h>
 #ifdef OS4
 #include <stropts.h>
 #include <net/nit_if.h>
 #include <net/nit_pf.h>
 #endif /* OS4 */
-#endif /* USE_DLPI */
+#endif /* USE_NIT */
 
 #include <nlist.h>
 #include <fcntl.h>
@@ -75,7 +75,7 @@ char filetorun[30] = "lde";
 int main(int argc, char *argv[]) {
   char Earg[30], Ename[30], **newargv;
   int i;
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
 #endif /* USE_DLPI */
@@ -97,7 +97,7 @@ int main(int argc, char *argv[]) {
   */
 
   if (!geteuid()) {
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
     /* Use DLPI to connect to the ethernet.  This code is stolen
        from NFSWATCH4.3
     */
@@ -127,13 +127,10 @@ int main(int argc, char *argv[]) {
 
       fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_NONBLOCK);
 
-#else
-/*    N O T   D L P I   C O D E   */
-
+#elif defined(USE_NIT)
 #ifndef OS4
     if ((ether_fd = socket(AF_NIT, SOCK_RAW, NITPROTO_RAW)) >= 0) {
 #else  /* OS4 */
-
     if ((ether_fd = open("/dev/nit", O_RDWR)) >= 0) {
 #endif /* OS4 */
 
@@ -230,10 +227,10 @@ int main(int argc, char *argv[]) {
   /* then if the net is active, spit out the ether info */
   if (ether_fd > 0) {
     newargv[i++] = "-E";
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
     sprintf(Earg, "%d:%x:%x:%x:%x:%x:%x", ether_fd, ether_host[0], ether_host[1], ether_host[2],
             ether_host[3], ether_host[4], ether_host[5]);
-#else
+#elif defined(USE_NIT)
     sprintf(Earg, "%d:%x:%x:%x:%x:%x:%x:%s", ether_fd, ether_host[0], ether_host[1], ether_host[2],
             ether_host[3], ether_host[4], ether_host[5], Ename);
 #endif /* USE_DLPI */

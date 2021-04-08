@@ -36,7 +36,7 @@
 #endif /* DOS */
 
 #ifdef MAIKO_ENABLE_ETHERNET
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_DLPI */
 #endif               /* MAIKO_ENABLE_ETHERNET */
@@ -428,7 +428,7 @@ int main(int argc, char *argv[])
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
 #ifdef MAIKO_ENABLE_ETHERNET
       int b0, b1, b2, b3, b4, b5;
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
       if (argc > ++i &&
           sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
 #else

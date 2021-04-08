@@ -19,9 +19,9 @@
 #include <unistd.h>
 #include <limits.h>
 #ifdef MAIKO_ENABLE_ETHERNET
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 #include <net/nit.h> /* needed for Ethernet stuff below */
-#endif               /* USE_DLPI */
+#endif               /* USE_NIT */
 #endif               /* MAIKO_ENABLE_ETHERNET */
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -92,9 +92,9 @@ extern int sysout_size, for_makeinit, please_fork;
 #ifdef MAIKO_ENABLE_ETHERNET
 extern int ether_fd;
 extern u_char ether_host[6];
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 extern struct sockaddr_nit snit;
-#endif /* USE_DLPI */
+#endif /* USE_NIT */
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
@@ -297,12 +297,12 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5;
     (void)strncpy(tmp, value.addr, (int)value.size);
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
     if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
-#else
+#elif defined(USE_NIT)
     if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
                snit.snit_ifname) == 8)
-#endif /* USE_DLPI */
+#endif /* USE_NIT */
     {
       ether_host[0] = b0;
       ether_host[1] = b1;

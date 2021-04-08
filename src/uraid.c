@@ -1083,7 +1083,7 @@ int device_after_raid() {
 
 #ifdef MAIKO_ENABLE_ETHERNET
   init_ether();
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
   if (ether_fd > 0)
     if (ioctl(ether_fd, I_SETSIG, S_INPUT) != 0) {
       perror("after-uraid: I_SETSIG for ether failed:\n");
