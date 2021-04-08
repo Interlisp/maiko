@@ -45,7 +45,7 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <sys/time.h>
 #endif /* DOS */
 
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 #include <stropts.h>
 extern int ether_fd;
 #endif
@@ -546,7 +546,7 @@ static void int_io_init() {
     perror("ioctl on X fd - SETSIG for input handling failed");
 #endif
 
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
   DBPRINT(("INIT ETHER:  Doing I_SETSIG.\n"));
   if (ether_fd > 0)
     if (ioctl(ether_fd, I_SETSIG, S_INPUT) != 0) {

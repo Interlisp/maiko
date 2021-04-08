@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 #define PKTFILTER 1
 #define NIOCSFLAGS SBIOCSFLAGS
 #endif
@@ -34,9 +34,9 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/if_ether.h>
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 #include "dlpidefs.h"
-#else
+#elif defined(USE_NIT)
 #include <net/nit.h>
 #endif
 
@@ -55,7 +55,7 @@
 #endif /* OS4 */
 #endif /* PKTFILTER */
 
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 #include <sys/mbuf.h>
 #endif
 #include <nlist.h>
@@ -73,7 +73,7 @@
 #include "dbprint.h"
 #include "etherdefs.h"
 
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 #define NIOCSETF PFIOCSETF
 #endif
 
@@ -245,7 +245,7 @@ LispPTR ether_suspend(LispPTR args[])
 
 /* The trick here is to install a packet filter */
 /* that rejects all packets, I think... 	*/
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 
   si.ic_cmd = PFIOCSETF;
   si.ic_timout = -1;
@@ -257,7 +257,7 @@ LispPTR ether_suspend(LispPTR args[])
     return (NIL);
   }
 
-#else
+#elif defined(USE_NIT)
   if (ioctl(ether_fd, NIOCSETF, &nopf) != 0) {
     perror("ether_suspend: NIOCSETF failed\n");
     return (NIL);
@@ -291,7 +291,7 @@ LispPTR ether_resume(LispPTR args[])
 #else /* PKTFILTER */
 
 /* Install a packet filter that accepts all packets we want */
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 
   si.ic_cmd = PFIOCSETF;
   si.ic_timout = -1;
@@ -303,7 +303,7 @@ LispPTR ether_resume(LispPTR args[])
     return (NIL);
   }
 
-#else
+#elif defined(USE_NIT)
   if (ioctl(ether_fd, NIOCSETF, &goodpf) != 0) {
     perror("ether_resume: NIOCSETF failed\n");
     return (NIL);
@@ -763,9 +763,9 @@ void init_ifpage_ether() {
 #ifdef MAIKO_ENABLE_ETHERNET
 /* this needs to be a global so the name can be set by main() in Ctest */
 /* But MAIKO_ENABLE_ETHERNET doesn't support NIT, so dyke it out for MAIKO_ENABLE_ETHERNET */
-#ifndef USE_DLPI
+#if defined(USE_NIT)
 struct sockaddr_nit snit;
-#endif /* USE_DLPI */
+#endif /* USE_NIT */
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
@@ -793,7 +793,7 @@ void init_ether() {
    if it's already open here, it was opened by ldeether and
    all the appropriate stuff was done to it there.
 */
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
     /* Use DLPI to connect to the ethernet.  This code is stolen
        from NFSWATCH4.3
     */
@@ -832,9 +832,7 @@ void init_ether() {
       }
       seteuid(getuid());
     }
-#else
-/*    N O T   D L P I   C O D E   */
-
+#elif defined(USE_NIT)
 #ifndef OS4
     if (getuid() != geteuid()) {
       if ((ether_fd = socket(AF_NIT, SOCK_RAW, NITPROTO_RAW)) >= 0) {
@@ -995,7 +993,7 @@ void init_ether() {
 
 /* first and foremost, flush out ether_fd's buffers and filter it */
 /* install packetfilter that rejects everything */
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 
   si.ic_cmd = PFIOCSETF;
   si.ic_timout = -1;
@@ -1009,7 +1007,7 @@ void init_ether() {
     return;
   }
 
-#else
+#elif defined(USE_NIT)
         if (ioctl(ether_fd, NIOCSETF, &nopf) != 0) {
           perror("init_ether: nopf NIOCSETF failed:\n");
 
@@ -1028,9 +1026,9 @@ void init_ether() {
 /* then throw away everything that's currently buffered there;
         this descriptor may have been open since ldeether ran, with
         no filtering; a busy net will have stuffed it full */
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
   if (ioctl(ether_fd, I_FLUSH, (char *)FLUSHR) < 0) { perror("init_ether I_FLUSH"); }
-#else
+#elif defined(USE_NIT)
         {
           FD_SET(ether_fd, &rfds);
           while (select(32, &rfds, NULL, NULL, &EtherTimeout) > 0)
@@ -1044,7 +1042,7 @@ void init_ether() {
   goodpf.Pf_Filter[11] = (DLword)((ether_host[2] << 8) + ether_host[3]);
   goodpf.Pf_Filter[14] = (DLword)((ether_host[4] << 8) + ether_host[5]);
 /* and set up the packetfilter */
-#ifdef USE_DLPI
+#if defined(USE_DLPI)
 
   si.ic_cmd = PFIOCSETF;
   si.ic_timout = -1;
@@ -1066,7 +1064,7 @@ void init_ether() {
           return;
         }
 #endif /* USE_DLPI */
-#ifndef USE_DLPI
+#if defined(USE_NIT)
   DBPRINT(("INIT ETHER:  Doing I_SETSIG.\n"));
   if (ioctl(ether_fd, I_SETSIG, S_INPUT) != 0) {
     perror("init_ether: I_SETSIG failed:\n");
@@ -1074,7 +1072,7 @@ void init_ether() {
     ether_fd = -1;
     return;
   }
-#endif /* USE_DLPI */
+#endif /* USE_NIT */
 #endif /* PKTFILTER */
 
     if (ether_fd < 0) error ("ether_fd is -1, but enet opened??");
