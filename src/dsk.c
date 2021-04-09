@@ -53,9 +53,6 @@
 #include "commondefs.h"
 #include "ufsdefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif /* GCC386 */
 
 extern int *Lisp_errno;
 extern int Dummy_errno;

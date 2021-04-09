@@ -61,9 +61,6 @@
 #include "perrnodefs.h"
 #include "ufsdefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif
 
 /* Error return values from VMEMSAVE */
 #define COMPLETESYSOUT NIL

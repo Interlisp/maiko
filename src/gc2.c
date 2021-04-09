@@ -34,9 +34,6 @@
 #include "gc2defs.h"
 #include "gcscandefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif /* GCC386 */
 
 /**********************************************************************/
 /*

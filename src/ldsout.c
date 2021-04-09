@@ -30,9 +30,6 @@
 #include "byteswapdefs.h"
 #include "initdspdefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif /* GCC386 */
 
 #define IFPAGE_ADDRESS 512
 #define DEFAULT_MAX_SYSOUTSIZE 64 /* in Mbyte */

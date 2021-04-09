@@ -112,12 +112,7 @@ extern MouseInterface currentmouse;
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
 
-#ifdef GCC386
-register InstPtr pccache asm("si");
-register LispPTR *cspcache asm("di");
-register LispPTR tscache asm("bx");
-#include "inlnPS2.h"
-#elif (DOS && OPDISP)
+#if   (DOS && OPDISP)
 #include "inlndos.h"
 register InstPtr pccache asm("si");
 register LispPTR *cspcache asm("di");
