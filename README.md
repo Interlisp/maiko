@@ -6,7 +6,7 @@ connecting with Lisp for access to display (via X11) and disk etc.
 
 For an overview, see [Medley Interlisp Introduction](https://github.com/Interlisp/medley/wiki/Medley-Interlisp-Introduction).
 
-See [the Medley repository](https://github.org/Interlisp/medley) for
+See [the Medley repository](https://github.com/Interlisp/medley) for
 * [Issues](https://github.com/Interlisp/medley/issues) (note that maiko issues are there too)
 * [Discussions](https://github.com/Interlisp/medley/discussions) (Q&A, announcements, etc)
 * [Medley's README](https://github.com/Interlisp/medley/blob/master/README.md)
