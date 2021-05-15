@@ -275,23 +275,17 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
   int unbind;
   LispPTR *stack_pointer = (LispPTR *)(Stackspace + frame->nextblock);
   for (unbind = 0; unbind < unbind_count; unbind++) {
-    register LispPTR value;
+    register int num;
     register LispPTR *ppvar;
-    register DLword num;
-    register DLword i;
-    
-    /* now, stack_pointer points the latter part in slot */
-    for (; !(*--stack_pointer & 0x80000000);)
-      ; /* scan (until MSB == 1) */
+    register int i;
+    register LispPTR value;
 
+    for (; (((int)*--(stack_pointer)) >= 0);)
+      ;                               
     value = *stack_pointer;
-    num = (DLword) ~(value >> 16);
+    num = (~value) >> 16;             
     ppvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
-
-    value = 0xffffffff;
-    for (i = 0; i < num; i++) { *--ppvar = value; }
-
-    /* MAKEFREEBLOCK(stack_pointer, (DLword *)stack_pointer-nextblock); */
+    for (i = num; --i >= 0;) { *--ppvar = 0xffffffff; }         
   }
   if (returner)
     returner->fast = 0; /* since we've destroyed contiguity */
