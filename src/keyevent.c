@@ -291,7 +291,7 @@ void getsignaldata(int sig)
   int i;
 
 #ifdef XWINDOW
-#if defined(sun)
+#if defined(sun) || defined(__CYGWIN__)
   if (Event_Req) {
     if (!XLocked++)
       getXsignaldata(currentdsp);
