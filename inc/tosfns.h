@@ -223,22 +223,10 @@
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
     {                                                                                  \
-      register int result;                                                             \
-      result = LOCFNCELL->pv;                                                          \
-      if (result >= 0) {                                                               \
-        register LispPTR unboundval;                                                   \
-        unboundval = (LispPTR)0xffffffff;                                              \
+      for (int pv = LOCFNCELL->pv; pv >= 0; pv--) {                                    \
+        const LispPTR unboundval = 0xffffffff;                                         \
         HARD_PUSH(unboundval);                                                         \
         HARD_PUSH(unboundval);                                                         \
-        if (result > 0) {                                                              \
-          HARD_PUSH(unboundval);                                                       \
-          HARD_PUSH(unboundval);                                                       \
-          result -= 1;                                                                 \
-          for (; --result >= 0;) {                                                     \
-            HARD_PUSH(unboundval);                                                     \
-            HARD_PUSH(unboundval);                                                     \
-          }                                                                            \
-        }                                                                              \
       }                                                                                \
     }                                                                                  \
     CSTKPTRL += 1;                                                                     \
@@ -291,22 +279,10 @@
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
     {                                                                                  \
-      register int result;                                                             \
-      result = LOCFNCELL->pv;                                                          \
-      if (result >= 0) {                                                               \
-        register LispPTR unboundval;                                                   \
-        unboundval = (LispPTR)0xffffffff;                                              \
+      for (int pv = LOCFNCELL->pv; pv >= 0; pv--) {                                    \
+        const LispPTR unboundval = 0xffffffff;                                         \
         HARD_PUSH(unboundval);                                                         \
         HARD_PUSH(unboundval);                                                         \
-        if (result > 0) {                                                              \
-          HARD_PUSH(unboundval);                                                       \
-          HARD_PUSH(unboundval);                                                       \
-          result -= 1;                                                                 \
-          for (; --result >= 0;) {                                                     \
-            HARD_PUSH(unboundval);                                                     \
-            HARD_PUSH(unboundval);                                                     \
-          }                                                                            \
-        }                                                                              \
       }                                                                                \
     }                                                                                  \
     CSTKPTRL += 1;                                                                     \
