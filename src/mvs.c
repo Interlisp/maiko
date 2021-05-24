@@ -100,9 +100,14 @@ newpc:
         /* BUT 3's not enough for big atoms, so add diff between FN op size & MISCN op size */
         if (caller == immediate_caller) PC = pc + (FN_OPCODE_SIZE - 3);
 #endif /* BIGATOMS */
-
-        else
+        else {
           caller->pc = (UNSIGNED)pc + FN_OPCODE_SIZE - (UNSIGNED)fnhead;
+	  /* skip over FN opcode when we get there */
+	  prevcaller->fast = 0;
+	  caller->mvscase = 1;
+	  caller->nopush = 1;
+	}
+	
         return (make_value_list(arg_count, args));
       }
       break;
@@ -287,8 +292,8 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
     ppvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
     for (i = num; --i >= 0;) { *--ppvar = 0xffffffff; }         
   }
-  if (returner)
-    returner->fast = 0; /* since we've destroyed contiguity */
+  /* if (returner)	
+    returner->fast = 0; since we've destroyed contiguity */
                         /* in the stack, but that only
                            matters if there's a return. */
 }
