@@ -78,7 +78,7 @@ typedef struct fnhead {
 typedef struct frameex1 {
   unsigned flags : 3;
   unsigned fast : 1;
-  unsigned nil2 : 1; /* not used, prev: This frame treats N-func */
+  unsigned mvscase : 1; /* was not used, prev: This frame treats N-func */
   unsigned incall : 1;
   unsigned validnametable : 1;
   /* 0: look for FunctionHeader
@@ -109,7 +109,7 @@ typedef struct frameex1 {
 typedef struct frameex2 {
   unsigned flags : 3;
   unsigned fast : 1;
-  unsigned nil2 : 1; /* not used, prev: This frame treats N-func */
+  unsigned mvscase : 1; /* not used, prev: This frame treats N-func */
   unsigned incall : 1;
   unsigned validnametable : 1;
   /* 0: look for FunctionHeader
@@ -200,7 +200,7 @@ typedef struct frameex1 {
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
   unsigned incall : 1;
-  unsigned nil2 : 1; /* not used, prev: This frame treats N-func */
+  unsigned mvscase : 1; /* not used, prev: This frame treats N-func */
   unsigned fast : 1;
   unsigned flags : 3; /* hi word */
 
@@ -235,7 +235,7 @@ typedef struct frameex2 {
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
   unsigned incall : 1;
-  unsigned nil2 : 1; /* not used, prev: This frame treats N-func */
+  unsigned mvscase : 1; /* not used, prev: This frame treats N-func */
   unsigned fast : 1;
   unsigned flags : 3;
 

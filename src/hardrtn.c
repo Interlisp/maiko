@@ -211,8 +211,13 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
     } else {
       if (CURRENTFX->nopush) {
         CURRENTFX->nopush = NIL;
-        CurrentStackPTR = next68k - 2;
-        TopOfStack = *((LispPTR *)CurrentStackPTR);
+        if (CURRENTFX->mvscase) {
+	  CurrentStackPTR = next68k;
+	  CURRENTFX->mvscase = NIL;
+	} else {
+	  CurrentStackPTR = next68k - 2;
+	  TopOfStack = *((LispPTR *)CurrentStackPTR);
+	}
         CurrentStackPTR -= 2;
 
       } else
