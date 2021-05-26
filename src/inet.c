@@ -14,7 +14,6 @@
 #include <stdio.h>
 #include <string.h> /* for mem... fns */
 
-#ifndef DOS
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -26,7 +25,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-#endif /* DOS */
 
 #if (defined(OS5) || defined(__CYGWIN__)) && !defined(O_ASYNC)
 /* Cygwin and Solaris don't define O_ASYNC, yet still define FASYNC. */
@@ -78,7 +76,6 @@ fd_set LispIOFds;
 
 LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, LispPTR bufaddr, LispPTR maxlen)
 {
-#ifndef DOS
   int sock, len, buflen, res;
   unsigned ures;
   char namestring[100];
@@ -335,5 +332,4 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     default: return (NIL); break;
   }
-#endif /* DOS */
 }

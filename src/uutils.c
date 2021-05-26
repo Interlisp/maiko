@@ -25,9 +25,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#ifndef DOS
 #include <pwd.h>
-#endif
 
 #include "lispemul.h"
 #include "adr68k.h"
@@ -115,9 +113,6 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
         register char *dp;
         for (i = 0, dp = C; i < length + 1; i++) {
           int ch = *dp++;
-#ifdef DOS
-          if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
-#endif /* DOS */
           GETBYTE(base++) = ch;
         }
       }
@@ -149,12 +144,10 @@ LispPTR check_unix_password(LispPTR *args) {
 /************************************************************************/
 
 LispPTR unix_username(LispPTR *args) {
-#ifndef DOS
   struct passwd *pwd;
 
   if ((pwd = getpwuid(getuid())) == NULL) return NIL;
   if (c_string_to_lisp_string(pwd->pw_name, args[0])) return NIL;
-#endif /* DOS */
   return ATOM_T;
 }
 
@@ -202,8 +195,6 @@ LispPTR unix_getparm(LispPTR *args) {
   if (strcmp(envname, "MACH") == 0) {
 #if defined(sparc)
     envvalue = "sparc";
-#elif defined(DOS)
-    envvalue = "386";
 #elif defined(MAIKO_OS_MACOS)
     envvalue = "i386";
 #else
@@ -213,8 +204,6 @@ LispPTR unix_getparm(LispPTR *args) {
   } else if (strcmp(envname, "ARCH") == 0) {
 #if defined(sparc)
     envvalue = "sun4";
-#elif defined(DOS)
-    envvalue = "dos";
 #elif defined(MAIKO_OS_MACOS)
     envvalue = "i386";
 #else
@@ -230,7 +219,6 @@ LispPTR unix_getparm(LispPTR *args) {
     envvalue = "DIRECT";
 #endif
   }
-#ifndef DOS
   else if (strcmp(envname, "HOSTNAME") == 0) {
     if (gethostname(result, sizeof result)) return NIL;
     envvalue = result;
@@ -246,7 +234,6 @@ LispPTR unix_getparm(LispPTR *args) {
     snprintf(result, sizeof(result), "%lx", gethostid());
     envvalue = result;
   }
-#endif /* DOS */
   else
     return NIL;
 
@@ -280,12 +267,10 @@ LispPTR unix_getenv(LispPTR *args) {
 /************************************************************************/
 
 LispPTR unix_fullname(LispPTR *args) {
-#ifndef DOS
   struct passwd *pwd;
 
   if ((pwd = getpwuid(getuid())) == NULL) return NIL;
   if (c_string_to_lisp_string(pwd->pw_gecos, args[0])) return NIL;
-#endif /* DOS */
   return ATOM_T;
 }
 
@@ -301,7 +286,6 @@ extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUti
 extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 
 LispPTR suspend_lisp(LispPTR *args) {
-#ifndef DOS
   extern DLword *CTopKeyevent;
   extern LispPTR *KEYBUFFERING68k;
 
@@ -355,6 +339,5 @@ LispPTR suspend_lisp(LispPTR *args) {
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
   else
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
-#endif /* DOS, which doesn't support suspend-lisp */
   return ATOM_T;
 }

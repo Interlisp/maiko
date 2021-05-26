@@ -21,7 +21,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <ctype.h>
-#ifndef DOS
 #include <sys/file.h>
 #include <signal.h>
 #include <errno.h>
@@ -59,7 +58,6 @@
 #include <sys/mbuf.h>
 #endif
 #include <nlist.h>
-#endif /* DOS */
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 #include "commondefs.h"

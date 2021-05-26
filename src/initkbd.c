@@ -17,19 +17,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#ifndef DOS
 #include <sys/file.h>
 #include <sys/select.h>
-#endif /* DOS */
-
-#ifdef DOS
-#include <i32.h>   /* "#pragma interrupt" & '_chain_intr'*/
-#include <dos.h>   /* defines REGS & other structs       */
-#include <stdio.h> /* define NULL                        */
-#include <conio.h>
-#include <time.h>
-#include <stk.h>
-#endif /* DOS */
 
 #ifdef SUNDISPLAY
 #include <sundev/kbd.h>
@@ -70,12 +59,6 @@
 extern DspInterface currentdsp;
 #endif /* XWINDOW */
 
-#ifdef DOS
-#include "devif.h"
-extern MouseInterface currentmouse;
-extern KbdInterface currentkbd;
-extern DspInterface currentdsp;
-#endif /* DOS */
 #ifdef SUNDISPLAY
 extern struct screen LispScreen;
 #endif /* SUNDISPLAY */
@@ -243,20 +226,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 #elif XWINDOW
   init_Xevent(currentdsp);
 
-#elif DOS
-  if (flg == 0) { /* Install the handlers ONLY when we */
-    /* init the kbd the init the kbd the */
-    /* first time. */
-
-    /* turn on kbd */
-    make_kbd_instance(currentkbd);
-    (currentkbd->device.enter)(currentkbd);
-
-    /* turn on mouse */
-    make_mouse_instance(currentmouse);
-    (currentmouse->device.enter)(currentmouse, currentdsp);
-  }
-#endif /* XWINDOW DOS */
+#endif /* SUNDISPLAY, XWINDOW */
 }
 
 /*  ----------------------------------------------------------------*/
@@ -277,10 +247,7 @@ void device_before_exit() {
   }
   close(LispKbdFd);
 
-#elif DOS
-  (currentmouse->device.exit)(currentmouse, currentdsp);
-  (currentkbd->device.exit)(currentkbd);
-#endif /* SUNDISPLAY DOS*/
+#endif /* SUNDISPLAY */
   display_before_exit();
 }
 
@@ -340,7 +307,7 @@ void seteventmask(struct inputmask *eventmask)
 #define KB_DEC3100 (9 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 #define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
-#define KB_DOS (12 + MIN_KEYTYPE)
+#define KB_DOS (12 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 
 /* KB_SUN4 not defined in older OS versions */
 #ifndef KB_SUN4
@@ -498,8 +465,6 @@ void keyboardtype(int fd)
   if ((key = getenv("LDEKBDTYPE")) == 0) {
 #ifdef XWINDOW
     type = KB_X;
-#elif DOS
-    type = KB_DOS;
 #elif SUNDISPLAY
     if (ioctl(fd, KIOCTYPE, &type) != 0) {
       error("keyboardtype:IOCTL(KIOCTYPE) fails (cont. w. type-3");
@@ -557,12 +522,6 @@ void keyboardtype(int fd)
       break;
 #endif /* XWINDOW */
 
-#ifdef DOS
-    case KB_DOS:
-      SUNLispKeyMap = DOSLispKeyMap_101;
-      InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
-      break;
-#endif /* DOS */
     default: {
       char errmsg[200];
       sprintf(errmsg, "Unsupported keyboard type: %d", type);

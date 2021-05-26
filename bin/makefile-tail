@@ -485,14 +485,6 @@ $(OBJECTDIR)dspif.o: $(SRCDIR)dspif.c $(REQUIRED-INCS) \
 	$(INCDIR)devif.h $(INCDIR)dspifdefs.h $(INCDIR)xinitdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)dspif.c -o $(OBJECTDIR)dspif.o
 
-$(OBJECTDIR)kbdif.o: $(SRCDIR)kbdif.c $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)dbprint.h $(INCDIR)devif.h
-	$(CC) $(RFLAGS) $(SRCDIR)kbdif.c -o $(OBJECTDIR)kbdif.o
-
-$(OBJECTDIR)mouseif.o: $(SRCDIR)mouseif.c $(REQUIRED-INCS) $(INCDIR)lispemul.h \
-	$(INCDIR)dbprint.h $(INCDIR)devif.h
-	$(CC) $(RFLAGS) $(SRCDIR)mouseif.c -o $(OBJECTDIR)mouseif.o
-
 $(OBJECTDIR)ether.o: $(SRCDIR)ether.c $(REQUIRED-INCS) \
 	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \

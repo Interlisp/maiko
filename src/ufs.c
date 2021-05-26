@@ -19,21 +19,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifndef DOS
 #include <dirent.h>
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/time.h>
-#else /* DOS */
-#include <dos.h>
-#include <i32.h> /* "#pragma interrupt" & '_chain_intr'*/
-#include <io.h>
-#include <stk.h> /* _XSTACK struct definition          */
-
-#define MAXPATHLEN _MAX_PATH
-#define MAXNAMLEN _MAX_PATH
-#define alarm(x) 1
-#endif /* DOS */
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -59,72 +48,9 @@ int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. 
 
 /* Used to limit DOS filenames to 8.3 format */
 
-#ifdef DOS
-#define NameValid extensionp ? (extlen < 3) : (namelen < 8)
-#define CountNameChars \
-  { extensionp ? extlen++ : namelen++; }
-
-#else
 /* Other file systems don't care */
 #define NameValid 1
 #define CountNameChars
-#endif /* DOS */
-
-#ifdef DOS
-
-void (*prev_int_24)(); /* keeps address of previous 24 handlr*/
-#pragma interrupt(Int24)
-
-/*
- * Name:  Int24
- *
- * Description:   Bypass the "Abort, Retry, Fail?" message that
- *        DOS issues.
- *
- */
-void Int24(void) {
-  unsigned deverr, errcode;
-
-  union REGS regs;
-  _XSTACK *stk;
-  stk = (_XSTACK *)_get_stk_frame(); /* get ptr to the V86 _XSTACK frame   */
-  deverr = stk->eax;
-
-  if ((deverr & 0x00008000) == 0) /* is a disk error                    */
-  {
-    stk->eax = _HARDERR_FAIL;
-    stk->opts |= _STK_NOINT;  /* set _STK_NOINT to prevent V86 call */
-    _chain_intr(prev_int_24); /* call previous int 24 handlr, if any*/
-                              /* (pts to 'ret' if no prev installed)*/
-  }
-}
-
-/*
- * Name:  init_host_filesystem
- *
- * Description: Initialize the hosts filesystem by installing
- *        the "critical error handler".
- */
-init_host_filesystem() {
-  prev_int_24 = _dos_getvect(0x24); /* get addr of current handler, if any */
-  _dos_setvect(0x24, Int24);        /* hook our int handler to interrupt   */
-  _dpmi_lockregion((void *)prev_int_24, sizeof(prev_int_24));
-  _dpmi_lockregion((void *)&Int24, 4096);
-}
-
-/*
- * Name:  exit_host_filesystem
- *
- * Description: Cleanup the filesystem specific patches.
- *
- */
-exit_host_filesystem() {
-  _dos_setvect(0x24, prev_int_24); /* unhook our handlr, install previous*/
-  _dpmi_unlockregion((void *)prev_int_24, sizeof(prev_int_24));
-  _dpmi_unlockregion((void *)&Int24, 4096);
-}
-
-#endif /* DOS */
 
 /*
  * Name:	UFS_getfilename
@@ -172,11 +98,7 @@ LispPTR UFS_getfilename(LispPTR *args)
  * Thus we don't need to convert a version field.  Third argument for
  * unixpathname specifies it.
  */
-#ifdef DOS
-  if (unixpathname(lfname, file, 0, 0, 0, 0, 0) == 0) return (NIL);
-#else
   if (unixpathname(lfname, file, 0, 0) == 0) return (NIL);
-#endif /* DOS */
 
   switch (args[1]) {
     case RECOG_OLD:
@@ -254,11 +176,7 @@ LispPTR UFS_deletefile(LispPTR *args)
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 
-#ifdef DOS
-  if (unixpathname(fbuf, file, 0, 0, 0, 0, 0) == 0) return (NIL);
-#else
   if (unixpathname(fbuf, file, 0, 0) == 0) return (NIL);
-#endif /* DOS */
 
   /*
    * On UNIX device, all we have to do is just to unlink the file.
@@ -312,17 +230,9 @@ LispPTR UFS_renamefile(LispPTR *args)
   if (len > MAXPATHLEN) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
-#ifdef DOS
-  if (unixpathname(fbuf, src, 0, 0, 0, 0, 0) == 0) return (NIL);
-#else
   if (unixpathname(fbuf, src, 0, 0) == 0) return (NIL);
-#endif /* DOS */
   LispStringToCString(args[1], fbuf, MAXPATHLEN);
-#ifdef DOS
-  if (unixpathname(fbuf, dst, 0, 0, 0, 0, 0) == 0) return (NIL);
-#else
   if (unixpathname(fbuf, dst, 0, 0) == 0) return (NIL);
-#endif /* DOS */
 
   TIMEOUT(rval = rename(src, dst));
   if (rval == -1) {
@@ -384,11 +294,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
   LispStringToCString(args[0], dirname, MAXPATHLEN);
 
 /* Convert Xerox Lisp file naming convention to Unix one. */
-#ifdef DOS
-  if (unixpathname(dirname, fullname, 0, 0, 0, 0, 0) == 0) return (NIL);
-#else
   if (unixpathname(dirname, fullname, 0, 0) == 0) return (NIL);
-#endif /* DOS */
 
   TIMEOUT(rval = stat(fullname, &sbuf));
   if (rval == -1) {
@@ -447,11 +353,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
  * UNIX trail directory delimiter '/'.
  *
  */
-#ifdef DOS
-int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
-#else
 int unixpathname(char *src, char *dst, int versionp, int genp)
-#endif /* DOS */
 {
   register char *cp, *dp, *np;
   register int newdirflg;
@@ -460,20 +362,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
   char ver1[VERSIONLEN], ver2[VERSIONLEN];
   struct passwd *pwd;
 
-#ifdef DOS
-  char *rp;
-  int namelen = 0, extlen = 0; /* lengths of name & extension */
-  int extensionp = 0;          /* T if we're in the extension */
-  int version = 1;             /* version # for this file */
-#endif                         /* DOS */
-
 /* If there's a drive letter, it and a colon come first */
-#ifdef DOS
-  if (drive && (*drive)) {
-    *dst++ = *drive;
-    *dst++ = DRIVESEP;
-  }
-#endif /* DOS */
 
   /*
    * The UNIX root directory is represented as "<" in Xerox Lisp generic
@@ -492,11 +381,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  * because the quotation mark which quotes the semicolon might be lost
  * in the course of the following conversion.
  */
-#ifdef DOS
-  if (versionp) LispVersionToUnixVersion(lfname, version) else version = -1;
-#else
   if (versionp) LispVersionToUnixVersion(lfname);
-#endif /* DOS */
 
   cp = lfname;
   dp = dst;
@@ -516,11 +401,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
              * user's current working directory.
              */
             if (getcwd(dst, MAXPATHLEN) == 0) return (0);
-#ifdef DOS
-            dp = max(strrchr(dst, '/'), strrchr(dst, DIRSEP));
-#else
             dp = strrchr(dst, '/');
-#endif /* DOS */
 
             dp++;
             if (*(cp + 2) == '\0')
@@ -532,10 +413,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
             *dp++ = DIRSEP;
           }
           break;
-#ifdef DOS
-        case '/':
-        case DIRSEP:
-#endif
         case '>':
           /* ".>" means the user's current working directory. */
           if (getcwd(dst, MAXPATHLEN) == 0) return (0);
@@ -560,7 +437,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
           break;
       }
       break;
-#ifndef DOS
     case '~':
       if (*(cp + 1) == '>' || *(cp + 1) == '\0') {
         /* "~>" or "~" means the user's home directory. */
@@ -606,30 +482,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
       }
       break;
 
-#else
-    /* For DOS, ignore ~> or ~/ or ~ */
-    case '~':
-      if (*(cp + 1) == '>' || *(cp + 1) == '\0') {
-        /* "~>" or "~" means the user's home directory. */
-
-        *dp++ = DIRSEP;
-        if (*(cp + 1) == '\0')
-          cp++;
-        else
-          cp += 2;
-      } else {
-        /*
-         * In this case, we assume some user's home directory
-         * is specified in the form "~username".
-         */
-        for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
-        *dp++ = DIRSEP;
-
-        if (*cp == '>') cp++;
-      }
-      break;
-
-#endif /* DOS */
     default:
       *dp++ = '/'; /* Insert the initial directory delimiter. */
       break;
@@ -725,9 +577,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
       }
     } else {
       switch (*cp) {
-#ifdef DOS
-        case '/': /* in DOS, must xlate / also. */
-#endif            /* DOS */
         case '>':
           /*
            * Xerox Lisp directory delimiter '>' is translated into
@@ -737,10 +586,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
           dp++;
           cp++;
           newdirflg = 1; /* Turn on the new directory flag. */
-#ifdef DOS
-          namelen = extlen = 0;
-          rp = dp; /* remember where raw filename starts */
-#endif             /* DOS */
           break;
 
         case '\'':
@@ -751,21 +596,8 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  * So only we have to do is to skip the quotation mark
  * and copy the next character.
  */
-#ifdef DOS
-          if (NameValid) *dp++ = *(cp + 1);
-          CountNameChars;
-#endif /* DOS */
           cp += 2;
           break;
-#ifdef DOS
-        case '.': /* start of extension, if not already */
-          if (!extensionp)
-            *dp++ = *cp++;
-          else
-            cp++;
-          extensionp = 1;
-          break;
-#endif /* DOS */
         default:
           if (NameValid)
             *dp++ = *cp++;
@@ -808,12 +640,6 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
         *(dp - 1) = '\0';
       }
     }
-#ifdef DOS
-    if (version >= 0)
-      sprintf(ver2, "%d", version);
-    else
-      *ver2 = '\0';
-#endif /* DOS */
     ConcNameAndVersion(fbuf2, ver2, dst);
   }
   return (1);
@@ -867,14 +693,6 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     return (1);
   }
 
-#ifdef DOS
-  /* Split off the drive, if there is one. */
-  if (fullname[1] == DRIVESEP) {
-    *lispname++ = *fullname++;
-    *lispname++ = *fullname++;
-  }
-#endif
-  
   if (!dirp) {
     /*
      * The characters which are dealt with specially (i.e. are quoted)
@@ -945,16 +763,11 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     switch (*cp) {
       case '>':
       case ';':
-#ifndef DOS
       case '\'':
-#endif /* DOS */
         *dp++ = '\'';
         *dp++ = *cp++;
         break;
 
-#ifdef DOS
-      case '/':
-#endif
       case DIRSEP:
         *dp++ = '>';
         cp++;
@@ -996,12 +809,6 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   i = 1;
   while (*cp) {
     switch (*cp) {
-#ifdef DOS
-      case DIRSEP:
-        *dp++ = '/';
-        cp++;
-        break;
-#endif
       case '>':
       case ';':
       case '\'':

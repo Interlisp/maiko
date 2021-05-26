@@ -233,15 +233,7 @@ error Must specify RELEASE to build Medley.
 	/*							*/
 	/********************************************************/
 
-#ifdef DOS
-typedef unsigned char u_char;
-typedef unsigned long u_int;
-typedef unsigned short u_short;
-#undef UNALIGNED_FETCH_OK
-#define USHORT unsigned
-#else
 #define USHORT unsigned short
-#endif /* DOS */
 
 	/****************************************************************/
 	/* 	    End of architecture-specific flag settings		*/

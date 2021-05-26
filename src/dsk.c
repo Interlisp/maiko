@@ -19,21 +19,11 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#ifndef DOS
 #include <dirent.h>
 #include <pwd.h>
 #include <sys/param.h>
 #include <sys/statvfs.h>
 #include <sys/time.h>
-#else /* DOS */
-#include <direct.h>
-#include <dos.h>
-#include <time.h>
-#include <io.h>
-#define MAXPATHLEN _MAX_PATH
-#define MAXNAMLEM _MAX_PATH
-#define alarm(x) 0
-#endif /* DOS */
 
 #include "lispemul.h"
 #include "lispmap.h"
@@ -85,30 +75,6 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache);
 
-#ifdef DOS
-static void separate_drive(char *lfname, char *drive)
-{
-  register char *cp;
-
-  cp = lfname;
-
-  /* Check if there's a drive specified. */
-
-  if (*(cp + 1) == DRIVESEP) {
-    *drive = *cp; /* copy the drive letter, if there is one */
-    cp++;
-    cp++;       /* Move to the real `<`/ */
-    while (*cp) /* Move the rest to the left to cover. */
-    {
-      *(cp - 2) = *cp;
-      cp++;
-    }
-    *(cp - 2) = '\0';
-  } else
-    *drive = '\0'; /* no drive */
-}
-#endif /* DOS */
-
 /*
  * Name:	separate_host
  *
@@ -131,11 +97,7 @@ static void separate_drive(char *lfname, char *drive)
  *
  */
 
-#ifdef DOS
-void separate_host(char *lfname, char *host, char *drive)
-#else
 void separate_host(char *lfname, char *host)
-#endif /* DOS */
 {
   register char *cp;
   register size_t diff;
@@ -146,16 +108,6 @@ void separate_host(char *lfname, char *host)
   *host = '\0';
 
   cp++; /* Now, *cp == '<' or drive letter. */
-#ifdef DOS
-  /* Check if there's a drive specified. */
-
-  if (*(cp + 1) == DRIVESEP) {
-    *drive = *cp; /* copy the drive letter, if there is one */
-    cp++;
-    cp++; /* Move to the real `<`/ */
-  } else
-    *drive = '\0'; /* no drive */
-#endif             /* DOS */
 
   if (*(cp + 1) == '\0') {
     /* Root directory is specified. */
@@ -164,9 +116,6 @@ void separate_host(char *lfname, char *host)
   } else {
     diff = cp - lfname;
     if (*cp == '<' || *cp == DIRSEP
-#ifdef DOS
-        || *cp == UNIXDIRSEP
-#endif /* DOS */
         ) {
       /*
        * Skip the initial directory delimiter.
@@ -224,11 +173,6 @@ LispPTR COM_openfile(register LispPTR *args)
   char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
   register int fatp, dskp, rval, fd, link_check_flg, flags, *bufp;
   struct stat sbuf;
-#ifdef DOS
-  char drive[1]; /* Drive designator */
-  int extlen;    /* length of the raw file extension */
-  char rawname[MAXNAMLEN];
-#endif /* DOS */
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[5]));
 
@@ -245,11 +189,7 @@ LispPTR COM_openfile(register LispPTR *args)
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
-#ifdef DOS
-  separate_host(lfname, host, drive);
-#else
   separate_host(lfname, host);
-#endif /* DOS */
   UPCASE(host);
 
   if (strcmp(host, "DSK") == 0)
@@ -263,11 +203,7 @@ LispPTR COM_openfile(register LispPTR *args)
  * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
  * convert a version field.
  */
-#ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
-#else
   unixpathname(lfname, file, dskp, 0);
-#endif
 
   /*
    * Set up the flags argument for open system call.
@@ -469,14 +405,6 @@ LispPTR COM_openfile(register LispPTR *args)
  * The subjective file has already existed.  We don't need
  * to maintain a version.
  */
-#ifdef DOS
-      if (args[1] == RECOG_NEW) {
-        char old[MAXPATHLEN];
-        make_old_version(old, file);
-        unlink(old);
-        rename(file, old); /* make old version */
-      }
-#endif /* DOS */
     }
   }
 
@@ -559,138 +487,6 @@ LispPTR COM_openfile(register LispPTR *args)
 
 LispPTR COM_closefile(register LispPTR *args)
 {
-#ifdef DOS
-
-  register int fd, dskp, rval;
-  time_t cdate;
-  char lfname[MAXPATHLEN + 5], host[MAXNAMLEN];
-  char file[MAXPATHLEN], dir[MAXPATHLEN], name[MAXNAMLEN + 1];
-  char ver[VERSIONLEN], drive[1];
-  struct find_t dirp;
-  int dp;
-  struct stat sbuf;
-  ino_t ino;
-  int extlen;
-  char rawname[MAXNAMLEN];
-
-  ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
-
-  LispStringLength(args[0], rval, dskp);
-
-  /*
-   * Because of the version number convention, Lisp pathname might
-   * be shorter than UNIX one.  For THIN string, the difference
-   * is 2 bytes, for FAT string, 4 bytes.  Add 1 byte for NULL
-   * terminating character.
-   */
-  rval = dskp ? rval + 4 + 1 : rval + 2 + 1;
-  /* Add five for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) FileNameTooLong(NIL);
-
-  LispStringToCString(args[0], lfname, MAXPATHLEN);
-
-  separate_host(lfname, host, drive);
-
-  UPCASE(host);
-  if (strcmp(host, "DSK") == 0)
-    dskp = 1;
-  else if (strcmp(host, "UNIX") == 0)
-    dskp = 0;
-  else
-    return (NIL);
-
-  /*
-   * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
-   * convert a version field.
-   */
-  dskp ? unixpathname(lfname, file, 1, 0, drive, &extlen, rawname)
-       : unixpathname(lfname, file, 0, 0, drive, &extlen, rawname);
-  fd = LispNumToCInt(args[1]);
-  cdate = (time_t)LispNumToCInt(args[2]);
-  if (!dskp) {
-    TIMEOUT(rval = fstat(fd, &sbuf));
-    if (rval == -1) {
-      *Lisp_errno = errno;
-      return (NIL);
-    }
-  }
-
-  if (cdate == 0) {
-    /* Just close. */
-    TIMEOUT(rval = close(fd));
-    if (rval == -1) {
-      if (!dskp && errno == EPERM && (sbuf.st_mode & S_IFREG) == 0) {
-        /*
-         * On {UNIX} device, closing a special file we are not
-         * the owner of it.  Although I don't think close fails
-         * because of EPERM, in honor of Medley 1.1 code, I put
-         * this segment here.
-         */
-        return (ATOM_T);
-      } else {
-        *Lisp_errno = errno;
-        return (NIL);
-      }
-    } else {
-      return (ATOM_T);
-    }
-  }
-
-  if (!unpack_filename(file, dir, name, ver, 1)) return (NIL);
-
-  if (dskp) {
-    /*
-     * On {DSK}, we have to make sure dir is case sensitively existing
-     * directory.
-     */
-    if (true_name(dir) != -1) return (NIL);
-
-    /*
-     * There is a very troublesome problem here.  The file name Lisp
-     * recognizes is not always the same as the name which COM_openfile
-     * used to open the file.  Sometimes COM_openfile uses the versionless
-     * file name to open a file, although Lisp always recognizes with
-     * *versioned* file name.
-     * Thus, we compare i-node number of the requested file with ones of all
-     * of files on the directory.   This is time spending implementation.
-     * More clean up work is needed.
-     */
-    TIMEOUT(rval = fstat(fd, &sbuf));
-    if (rval != 0) {
-      *Lisp_errno = errno;
-      return (NIL);
-    }
-    ino = sbuf.st_ino;
-    TIMEOUT(rval = _dos_findfirst(dir, _A_SUBDIR, &dirp));
-    if (rval < 0) {
-      *Lisp_errno = errno;
-      return (NIL);
-    }
-
-    for (; rval == 0; S_TOUT(rval = _dos_findnext(&dirp))) {
-      sprintf(file, "%s\\%s", dir, dirp.name);
-    }
-  }
-#ifndef DOS /* effectively NEVER, since we're in an ifdef DOS */
-  time[0].tv_sec = (long)sbuf.st_atime;
-  time[0].tv_usec = 0L;
-  time[1].tv_sec = (long)ToUnixTime(cdate);
-  time[1].tv_usec = 0L;
-#endif /* DOS */
-  TIMEOUT(rval = close(fd));
-  if (rval == -1) {
-    *Lisp_errno = errno;
-    return (NIL);
-  }
-#ifndef DOS
-  TIMEOUT(rval = utimes(file, time));
-  if (rval != 0) {
-    *Lisp_errno = errno;
-    return (NIL);
-  }
-#endif /* DOS, internal */
-#else  /* UNIX version of CLOSEFILE */
   register int fd, fatp, dskp, rval;
   time_t cdate;
   char lfname[MAXPATHLEN + 5], host[MAXNAMLEN];
@@ -823,8 +619,6 @@ LispPTR COM_closefile(register LispPTR *args)
     return (NIL);
   }
 
-#endif /* DOS */
-
   return (ATOM_T);
 }
 
@@ -863,10 +657,6 @@ LispPTR DSK_getfilename(register LispPTR *args)
   char dir[MAXPATHLEN];
   char name[MAXNAMLEN];
   char ver[VERSIONLEN];
-#ifdef DOS
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen; /* len of extension, for making backup filename */
-#endif        /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
@@ -883,20 +673,12 @@ LispPTR DSK_getfilename(register LispPTR *args)
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
-#ifdef DOS
-  separate_drive(lfname, drive);
-#endif
-
 /*
  * Convert a Lisp file name to UNIX one.  This is a DSK device method.
  * Thus we have to convert a version field too.  Third argument for
  * unixpathname specifies it.
  */
-#ifdef DOS
-  if (unixpathname(lfname, file, 1, 0, drive, &extlen, rawname) == 0) return (NIL);
-#else
   if (unixpathname(lfname, file, 1, 0) == 0) return (NIL);
-#endif
 
   if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
 
@@ -942,9 +724,6 @@ LispPTR DSK_getfilename(register LispPTR *args)
           strcpy(vname, aname);
           dirp = 1;
         } else {
-#ifdef DOS
-          strcpy(vname, aname);
-#endif
           dirp = 0;
         }
       }
@@ -982,9 +761,6 @@ LispPTR DSK_getfilename(register LispPTR *args)
           strcpy(vname, aname);
           dirp = 1;
         } else {
-#ifdef DOS
-          strcpy(vname, aname);
-#endif
           dirp = 0;
         }
       }
@@ -1094,16 +870,6 @@ LispPTR DSK_getfilename(register LispPTR *args)
  * format.  We have to convert it back to Lisp format.  The version field
  * have to be converted.  The fourth argument for lisppathname specifies it.
  */
-#ifdef DOS
-  /* For DOS, have to assure we use the name asked for, not the */
-  /* faked-up oversion-0 name, so reported names match. */
-  {
-    char dver[VERSIONLEN];
-    separate_version(vname, dver, 0);
-    ConcDirAndName(dir, name, aname);
-    ConcNameAndVersion(aname, dver, vname);
-  }
-#endif /* DOS */
 
   if (lisppathname(vname, lfname, dirp, (dirp ? 0 : 1)) == 0) return (NIL);
 
@@ -1144,10 +910,6 @@ LispPTR DSK_deletefile(register LispPTR *args)
   char dir[MAXPATHLEN], ver[VERSIONLEN];
   int rval, fatp;
   register FileName *varray;
-#ifdef DOS
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen; /* len of extension, for making backup filename */
-#endif        /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
@@ -1163,12 +925,7 @@ LispPTR DSK_deletefile(register LispPTR *args)
   if (rval > MAXPATHLEN) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
-#ifdef DOS
-  separate_drive(fbuf, drive);
-  unixpathname(fbuf, file, 1, 0, drive, &extlen, rawname);
-#else
   unixpathname(fbuf, file, 1, 0);
-#endif
 
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
   if (get_version_array(dir, fbuf, VersionArray, &VArrayInfo) == 0) return (NIL);
@@ -1292,11 +1049,6 @@ LispPTR DSK_renamefile(register LispPTR *args)
   int rval, fatp;
   register int need_maintain_flg;
   register FileName *varray;
-#ifdef DOS
-  char drive1[1], drive2[1];
-  int extlen1, extlen2; /* len of extension */
-  char rawname1[MAXNAMLEN], rawname2[MAXNAMLEN];
-#endif /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
@@ -1316,20 +1068,10 @@ LispPTR DSK_renamefile(register LispPTR *args)
   if (rval > MAXPATHLEN) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
-#ifdef DOS
-  separate_drive(fbuf, drive1);
-  unixpathname(fbuf, src, 1, 0, drive1, &extlen1, rawname1);
-#else  /* DOS */
   unixpathname(fbuf, src, 1, 0);
-#endif /* DOS */
 
   LispStringToCString(args[1], fbuf, MAXPATHLEN);
-#ifdef DOS
-  separate_drive(fbuf, drive2);
-  unixpathname(fbuf, dst, 1, 0, drive2, &extlen2, rawname2);
-#else  /* DOS */
   unixpathname(fbuf, dst, 1, 0);
-#endif /* DOS */
 
   if (unpack_filename(dst, dir, fbuf, ver, 1) == 0) return (NIL);
   /*
@@ -1515,10 +1257,6 @@ LispPTR DSK_directorynamep(register LispPTR *args)
   char fullname[MAXPATHLEN];
   register int len, fatp;
   register char *base;
-#ifdef DOS
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen; /* len of extension, for making backup filename */
-#endif        /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
@@ -1537,12 +1275,7 @@ LispPTR DSK_directorynamep(register LispPTR *args)
   LispStringToCString(args[0], dirname, MAXPATHLEN);
 
 /* Convert Xerox Lisp file naming convention to Unix one. */
-#ifdef DOS
-  separate_drive(dirname, drive);
-  if (unixpathname(dirname, fullname, 1, 0, drive, 0, 0) == 0) return (NIL);
-#else  /* DOS*/
   if (unixpathname(dirname, fullname, 1, 0) == 0) return (NIL);
-#endif /* DOS */
 
   if (true_name(fullname) != -1) return (NIL);
 
@@ -1598,18 +1331,12 @@ LispPTR COM_getfileinfo(register LispPTR *args)
 {
   register int dskp, rval;
   register unsigned *bufp;
-#ifndef DOS
   register struct passwd *pwd;
-#endif
   register char *base;
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
   char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
   struct stat sbuf;
   LispPTR laddr;
-#ifdef DOS
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen; /* len of extension, for making backup filename */
-#endif        /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
@@ -1626,11 +1353,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
   if (rval > MAXPATHLEN + 5) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
-#ifdef DOS
-  separate_host(lfname, host, drive);
-#else
   separate_host(lfname, host);
-#endif
 
   UPCASE(host);
   if (strcmp(host, "DSK") == 0)
@@ -1644,11 +1367,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
  * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
  * convert a version field.
  */
-#ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
-#else  /* DOS */
   unixpathname(lfname, file, dskp, 0);
-#endif /* DOS */
 
   /*
    * The file name which has been passed from Lisp is sometimes different
@@ -1701,7 +1420,6 @@ LispPTR COM_getfileinfo(register LispPTR *args)
       return (ATOM_T);
 
     case AUTHOR:
-#ifndef DOS
       TIMEOUT(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) {
         /*
@@ -1718,7 +1436,6 @@ LispPTR COM_getfileinfo(register LispPTR *args)
 #else
       StrNCpyFromCToLisp(base, pwd->pw_name, rval);
 #endif /* BYTESWAP */
-#endif /* DOS */
       return (GetSmallp(rval));
 
     case ALL:
@@ -1746,7 +1463,6 @@ LispPTR COM_getfileinfo(register LispPTR *args)
       laddr = cdr(car(cdr(cdr(cdr(args[2])))));
       bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
       *bufp = sbuf.st_mode;
-#ifndef DOS
       TIMEOUT(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) { return (GetSmallp(0)); }
       laddr = cdr(car(cdr(cdr(cdr(cdr(args[2]))))));
@@ -1757,7 +1473,6 @@ LispPTR COM_getfileinfo(register LispPTR *args)
 #else
       StrNCpyFromCToLisp(base, pwd->pw_name, rval);
 #endif /* BYTESWAP	 */
-#endif /* DOS */
       return (GetSmallp(rval));
 
     default: return (NIL);
@@ -1799,12 +1514,7 @@ LispPTR COM_setfileinfo(register LispPTR *args)
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
   char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
   struct stat sbuf;
-#ifndef DOS
   struct timeval time[2];
-#else
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen;
-#endif /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
@@ -1822,11 +1532,7 @@ LispPTR COM_setfileinfo(register LispPTR *args)
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
-#ifdef DOS
-  separate_host(lfname, host, drive);
-#else
   separate_host(lfname, host);
-#endif /* DOS */
   UPCASE(host);
   if (strcmp(host, "DSK") == 0)
     dskp = 1;
@@ -1839,11 +1545,7 @@ LispPTR COM_setfileinfo(register LispPTR *args)
  * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
  * convert a version field.
  */
-#ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
-#else  /* DOS */
   unixpathname(lfname, file, dskp, 0);
-#endif /* DOS */
 
   /*
    * The file name which has been passed from Lisp is sometimes different
@@ -1868,14 +1570,12 @@ LispPTR COM_setfileinfo(register LispPTR *args)
         *Lisp_errno = errno;
         return (NIL);
       }
-#ifndef DOS
       date = LispNumToCInt(args[2]);
       time[0].tv_sec = (long)sbuf.st_atime;
       time[0].tv_usec = 0L;
       time[1].tv_sec = (long)ToUnixTime(date);
       time[1].tv_usec = 0L;
       TIMEOUT(rval = utimes(file, time));
-#endif /* DOS */
       if (rval != 0) {
         *Lisp_errno = errno;
         return (NIL);
@@ -2103,11 +1803,7 @@ LispPTR COM_truncatefile(register LispPTR *args)
     return (ATOM_T);
   }
   if ((off_t)length != sbuf.st_size) {
-#ifdef DOS
-    TIMEOUT(rval = chsize(fd, (off_t)length));
-#else
     TIMEOUT(rval = ftruncate(fd, (off_t)length));
-#endif /* DOS */
     if (rval != 0) {
       *Lisp_errno = errno;
       return (NIL);
@@ -2117,9 +1813,7 @@ LispPTR COM_truncatefile(register LispPTR *args)
  * TRUNCATEFILE FDEV method is invoked from FORCEOUTPUT Lisp function.
  * Thus we have to sync the file state here.
  */
-#ifndef DOS
     TIMEOUT(rval = fsync(fd));
-#endif
 
     if (rval != 0) {
       *Lisp_errno = errno;
@@ -2150,10 +1844,6 @@ LispPTR COM_changedir(register LispPTR *args)
 {
   register int dskp, rval;
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
-#ifdef DOS
-  char drive[1], rawname[MAXNAMLEN];
-  int extlen;
-#endif /* DOS */
 
   ERRSETJMP(NIL);
   Lisp_errno = &Dummy_errno;
@@ -2170,11 +1860,7 @@ LispPTR COM_changedir(register LispPTR *args)
   if (rval > MAXPATHLEN + 5) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
-#ifdef DOS
-  separate_host(lfname, host, drive);
-#else
   separate_host(lfname, host);
-#endif /* DOS */
   UPCASE(host);
   if (strcmp(host, "DSK") == 0)
     dskp = 1;
@@ -2183,11 +1869,7 @@ LispPTR COM_changedir(register LispPTR *args)
   else
     return (NIL);
 
-#ifdef DOS
-  if (!unixpathname(lfname, dir, 0, 0, drive, 0, 0)) return (NIL);
-#else  /* DOS */
   if (!unixpathname(lfname, dir, 0, 0)) return (NIL);
-#endif /* DOS */
 
   if (dskp) {
     /*
@@ -2199,15 +1881,6 @@ LispPTR COM_changedir(register LispPTR *args)
 
   TIMEOUT(rval = chdir(dir));
   if (rval != 0) return (NIL);
-#ifdef DOS
-  if (*drive) {
-    if (*drive <= 'Z')
-      rval = _chdrive(*drive - ('A' - 1));
-    else
-      rval = _chdrive(*drive - ('a' - 1));
-    if (rval != 0) return (NIL);
-  }
-#endif /* DOS */
   return (ATOM_T);
 }
 
@@ -2250,12 +1923,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   register int dskp, rval, *buf;
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
   char name[MAXNAMLEN + 1], file[MAXPATHLEN], ver[VERSIONLEN];
-#ifdef DOS
-  char drive[2];
-  struct diskfree_t sfsbuf;
-#else
   struct statvfs sfsbuf;
-#endif
 
   ERRSETJMP(NIL);
   Lisp_errno = &Dummy_errno;
@@ -2270,11 +1938,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
   buf = (int *)(Addr68k_from_LADDR(args[1]));
-#ifdef DOS
-  separate_host(lfname, host, drive);
-#else
   separate_host(lfname, host);
-#endif /* DOS */
   UPCASE(host);
   if (strcmp(host, "DSK") == 0)
     dskp = 1;
@@ -2283,11 +1947,7 @@ LispPTR COM_getfreeblock(register LispPTR *args)
   else
     return (NIL);
 
-#ifdef DOS
-  if (!unixpathname(lfname, file, 0, 0, drive, 0, 0)) return (NIL);
-#else  /* DOS */
   if (!unixpathname(lfname, file, 0, 0)) return (NIL);
-#endif /* DOS */
 
   if (!unpack_filename(file, dir, name, ver, 0)) return (NIL);
 
@@ -2304,30 +1964,12 @@ LispPTR COM_getfreeblock(register LispPTR *args)
  * we check the available block size, using the directory on which the file
  * will be exist.
  */
-#ifdef DOS
-  /* For DOS, we have to use either the disk drive the file
-     will be on, or the default drive. */
-
-  if (drive[0]) {
-    drive[1] = 0;
-    UPCASE(drive);
-    if (_dos_getdiskfree((unsigned)drive[0] - (int)'@', &sfsbuf))
-      return (NIL); /* call failed, so name is invalid */
-
-    *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
-  } else {
-    if (_dos_getdiskfree(0, &sfsbuf)) return (NIL); /* call failed, so name is invalid */
-
-    *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
-  }
-#else
   TIMEOUT(rval = statvfs(dir, &sfsbuf));
   if (rval != 0) {
     *Lisp_errno = errno;
     return (NIL);
   }
   *buf = sfsbuf.f_bavail;
-#endif /* DOS */
   return (ATOM_T);
 }
 
@@ -2451,17 +2093,7 @@ int unpack_filename(char *file, char *dir, char *name, char *ver, int checkp)
 {
   register char *cp;
 
-#ifdef DOS
-  if ((cp = (char *)max((UNSIGNED)strrchr(file, DIRSEP), (UNSIGNED)strrchr(file, UNIXDIRSEP))) == 0)
-    return (0);
-
-  if (file[1] == DRIVESEP) { /* There's a drive spec; copy it and ignore it from here on. */
-    *dir++ = *file++;
-    *dir++ = *file++;
-  }
-#else  /* DOS */
   if ((cp = (char *)strrchr(file, UNIXDIRSEP)) == NULL) return (0);
-#endif /* DOS */
 
   if (cp == file) {
     /* File is on a root directory. */
@@ -2502,23 +2134,11 @@ int true_name(register char *path)
 {
   char dir[MAXPATHLEN];
   char name[MAXNAMLEN];
-#ifdef DOS
-  char drive[1];
-#endif
   register char *sp, *cp;
   register int type, c;
 
   if (strcmp(path, "/") == 0) return (-1);
 
-#ifdef DOS
-  if (*(path + 1) == DRIVESEP) {
-    drive[0] = *path;
-    dir[0] = drive[0]; /* but copy it to the working dir string */
-    dir[1] = DRIVESEP;
-    dir[2] = '\0';
-    cp = path + 3; /* skip the drive spec & 1st dir delimiter */
-  } else {
-#endif           /* DOS */
     *dir = '\0'; /*
                   * locate_file does not accept the directory with
                   * the trail delimiter.  Thus, for the root
@@ -2526,9 +2146,6 @@ int true_name(register char *path)
                   * as directory.
                   */
     cp = path + 1;
-#ifdef DOS
-  }
-#endif /* DOS */
        /* If all there was was the root /, succeed easily */
   if (strcmp((cp - 1), DIRSEPSTR) == 0) return (-1);
 
@@ -2589,24 +2206,6 @@ int true_name(register char *path)
 
 static int locate_file(char *dir, char *name)
 {
-#ifdef DOS
-  char path[MAXPATHLEN];
-  char nb1[MAXNAMLEN], nb2[MAXNAMLEN];
-  register int type, len;
-  struct find_t dirp;
-  struct direct *dp;
-
-  /* First of all, recognize as if. */
-  sprintf(path, "%s\\%s", dir, name);
-  DIR_OR_FILE_P(path, type);
-  if (type != 0) {
-    strcpy(dir, path);
-    return (type);
-  }
-
-  return (0);
-
-#else  /* UNIX code follows */
 
   char path[MAXPATHLEN];
   char nb1[MAXNAMLEN], nb2[MAXNAMLEN];
@@ -2669,7 +2268,6 @@ static int locate_file(char *dir, char *name)
     }
   TIMEOUT(closedir(dirp));
   return (0);
-#endif /* DOS */
 }
 
 /*
@@ -2700,21 +2298,11 @@ static int make_directory(register char *dir)
   dp = dir_buf;
   cp = dir;
 
-#ifdef DOS
-  if (DRIVESEP == *(cp + 1)) {
-    *dp++ - *cp++; /* copy the drive letter and colon */
-    *dp++ = *cp++;
-  }
-#endif /* DOS */
-
   *dp++ = DIRSEP; /* For a root directory. */
   cp++;           /* Skip a root directory in dir. */
 
   for (;;) {
     switch (*cp) {
-#ifdef DOS
-      case DIRSEP:
-#endif
       case '/':
       case '\0':
         *dp = '\0';
@@ -2727,11 +2315,7 @@ static int make_directory(register char *dir)
          * existing or not.
          */
         if (maked) {
-#ifdef DOS
-          TIMEOUT(rval = mkdir(dir_buf));
-#else
           TIMEOUT(rval = mkdir(dir_buf, 0777));
-#endif /* DOS */
           if (rval == -1) {
             *Lisp_errno = errno;
             return (0);
@@ -2768,11 +2352,7 @@ static int make_directory(register char *dir)
 /*
  * Should handle other cases. (special file).
  */
-#ifdef DOS
-              TIMEOUT(rval = mkdir(dir_buf));
-#else
               TIMEOUT(rval = mkdir(dir_buf, 0777));
-#endif /* DOS */
               if (rval == -1) {
                 *Lisp_errno = errno;
                 return (0);
@@ -2815,18 +2395,6 @@ static int make_directory(register char *dir)
  * !OnlyVersionlessP(varray)).
  *
  */
-#ifdef DOS
-#define FindHighestVersion(varray, mentry, max_no)                                         \
-  {                                                                                        \
-    register FileName *centry;                                                             \
-    for (centry = varray, max_no = -1; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no > max_no) {                                                   \
-        max_no = centry->version_no;                                                       \
-        mentry = centry;                                                                   \
-      }                                                                                    \
-    }                                                                                      \
-  }
-#else
 #define FindHighestVersion(varray, mentry, max_no)                                        \
   {                                                                                       \
     register FileName *centry;                                                            \
@@ -2837,7 +2405,6 @@ static int make_directory(register char *dir)
       }                                                                                   \
     }                                                                                     \
   }
-#endif /* DOS */
 
 /*
  * Name:	FindLowestVersion
@@ -2863,18 +2430,6 @@ static int make_directory(register char *dir)
  * !OnlyVersionlessP(varray)).
  *
  */
-#ifdef DOS
-#define FindLowestVersion(varray, mentry, min_no)                                                  \
-  {                                                                                                \
-    register FileName *centry;                                                                     \
-    for (centry = varray, min_no = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no < min_no) {                                                           \
-        min_no = centry->version_no;                                                               \
-        mentry = centry;                                                                           \
-      }                                                                                            \
-    }                                                                                              \
-  }
-#else
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
   {                                                                                                \
     register FileName *centry;                                                                     \
@@ -2885,7 +2440,6 @@ static int make_directory(register char *dir)
       }                                                                                            \
     }                                                                                              \
   }
-#endif /* DOS */
 
 /*
  * Name:	FindSpecifiedVersion
@@ -2939,119 +2493,12 @@ static int make_directory(register char *dir)
 /*	Read thru DIR and gather all files that match FILE into		*/
 /*	VARRAY.  DIR's case must match existing directory's, but	*/
 /*	FILE name matching is case-insensitive.  For UNIX, the 		*/
-/*	versionless file is marked with a version# of 0; for DOS,	*/
-/*	version 0 is the back-up copy of the file.			*/
+/*	versionless file is marked with a version# of 0			*/
 /*									*/
 /************************************************************************/
 
 static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache)
 {
-#ifdef DOS
-
-  char lcased_file[MAXPATHLEN];
-  char old_file[MAXPATHLEN];
-  char name[MAXNAMLEN];
-  char ver[VERSIONLEN];
-  register FileName *svarray;
-  struct find_t dirp;
-  register struct direct *dp;
-  register int rval, drive = 0, isslash = 0;
-  struct stat sbuf;
-  int res;
-
-  /*
-   * First of all, prepare a lower cased file name for the case insensitive
-   * search.  Also we have to separate file name from its version field.
-   */
-  if (dir[1] == DRIVESEP) drive = dir[0];
-
-  if (strcmp(dir, "\\") == 0)
-    isslash = 1;
-  else if (drive && (strcmp(dir + 2, "\\") == 0))
-    isslash = 1;
-
-  if (!isslash)
-    strcpy(lcased_file, dir); /* Only add the dir if it's real */
-  else if (drive) {
-    lcased_file[0] = drive;
-    lcased_file[1] = DRIVESEP;
-    lcased_file[2] = '\0';
-  } else
-    *lcased_file = '\0';
-
-  /*  strcpy(lcased_file, dir);   removed when above code added 3/4/93 */
-  strcat(lcased_file, DIRSEPSTR);
-  strcat(lcased_file, file);
-  separate_version(lcased_file, ver, 1);
-  DOWNCASE(lcased_file);
-
-  /*************************************************/
-  /* First, look up the backup version of the file */
-  /*************************************************/
-
-  /* First, make the "backup-file-name" for this file */
-
-  make_old_version(old_file, lcased_file);
-
-  svarray = varray;
-
-  TIMEOUT(res = _dos_findfirst(old_file, _A_NORMAL | _A_SUBDIR, &dirp));
-  if (res == 0) {
-    strcpy(name, dirp.name);
-    strcpy(svarray->name, name);
-    svarray->version_no = 0;
-    svarray++;
-  }
-
-  /*******************************/
-  /* Now look up the file itself */
-  /*******************************/
-
-  TIMEOUT(res = _dos_findfirst(lcased_file, _A_NORMAL | _A_SUBDIR, &dirp));
-  /*    if (res != 0)
-        {
-          *Lisp_errno = errno;
-          return(0);
-        }
-  */
-  for (; res == 0; S_TOUT(res = _dos_findnext(&dirp))) {
-    strcpy(name, dirp.name);
-    separate_version(name, ver, 1);
-    DOWNCASE(name);
-
-    strcpy(svarray->name, dirp.name);
-    if (*ver == '\0') {
-      /* Versionless file */
-      svarray->version_no = 1;
-    } else {
-      /*
-       * separator_version guarantees ver is a numeric
-       * string.
-       */
-      svarray->version_no = atoi(ver);
-    }
-    svarray++;
-  }
-
-  /*
-   * The last entry of varray is indicated by setting LASTVERSIONARRAY into
-   * version_no field.
-   */
-  svarray->version_no = LASTVERSIONARRAY;
-
-  /*
-   * If more than one files have been stored in varray, we store the name
-   * without version in the last marker entry.
-   */
-  if (!NoFileP(varray)) {
-    strcpy(name, varray->name);
-    separate_version(name, ver, 1);
-    strcpy(svarray->name, name);
-  }
-
-  return (1);
-
-#else
   /* UNIX version-array builder */
   char lcased_file[MAXNAMLEN];
   char name[MAXNAMLEN];
@@ -3153,7 +2600,6 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   */
   TIMEOUT(closedir(dirp));
   return (1);
-#endif /* DOS */
 }
 
 /*
@@ -3214,7 +2660,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
  * If forcep, we link the versionless file to the version
  * 1 file.
  */
-#ifndef DOS
       get_versionless(varray, vless, dir);
       ConcNameAndVersion(vless, "1", fname);
       TIMEOUT(rval = link(vless, fname));
@@ -3222,7 +2667,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
         *Lisp_errno = errno;
         return (0);
       }
-#endif /* DOS */
     }
     return (1);
   }
@@ -3244,7 +2688,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
  * The versionless file should have the same case name as the old
  * file.
  */
-#ifndef DOS
     strcpy(fname, entry->name);
     separate_version(fname, ver, 1);
     ConcDirAndName(dir, fname, vless);
@@ -3253,7 +2696,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
       *Lisp_errno = errno;
       return (0);
     }
-#endif /* DOS */
     return (1);
   }
 
@@ -3271,14 +2713,12 @@ static int maintain_version(char *file, FileName *varray, int forcep)
  * The old file should have the same case name as the versionless
  * file.
  */
-#ifndef DOS
     ConcNameAndVersion(vless, ver, old_file);
     TIMEOUT(rval = link(vless, old_file));
     if (rval == -1) {
       *Lisp_errno = errno;
       return (0);
     }
-#endif /* DOS */
     return (1);
   }
 
@@ -3306,7 +2746,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
  * The versionless file should have the same case name as the old
  * file.
  */
-#ifndef DOS
     strcpy(fname, entry->name);
     separate_version(fname, ver, 1);
     ConcDirAndName(dir, fname, vless);
@@ -3315,7 +2754,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
       *Lisp_errno = errno;
       return (0);
     }
-#endif /* DOS */
     return (1);
   }
 }
@@ -3345,9 +2783,6 @@ static int maintain_version(char *file, FileName *varray, int forcep)
 
 static int get_versionless(FileName *varray, char *file, char *dir)
 {
-#ifdef DOS
-  return (0);
-#endif /* DOS */
   if (NoFileP(varray)) return (0);
 
   while (varray->version_no != LASTVERSIONARRAY) {
@@ -3904,14 +3339,12 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
   strcpy(name, afile);
   separate_version(name, ver, 1);
 
-#ifndef DOS
   if (NoFileP(varray)) {
     /*
      * If there is no file with such name, "new" file is always
      * recognized.
      */
     if (*ver == '\0' || strcmp(ver, "1") == 0)
-#endif /* DOS */
     {
       /*
        * If version is not specified or 1 is specified,
@@ -3922,7 +3355,6 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       ConcDirAndName(dir, name, afile);
       return (1);
     }
-#ifndef DOS
     else {
       /*
        * A version other than 1 is specified.  "New" file
@@ -4143,7 +3575,6 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       }
     }
   }
-#endif /* DOS */
 }
 
 /*
