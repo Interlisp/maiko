@@ -24,9 +24,6 @@
 #include "commondefs.h"
 #include "gchtfinddefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif
 
 #define MaskShift(x) (((x) << 16) & SEGMASK)
 

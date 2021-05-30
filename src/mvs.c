@@ -33,9 +33,6 @@
 #include "car-cdrdefs.h"
 #include "conspagedefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif /* GCC386 */
 
 /* to optionally swap the fnhead field of a frame */
 #ifdef BIGVM

@@ -49,9 +49,6 @@
 #include "commondefs.h"
 #include "mkcelldefs.h"
 
-#ifdef GCC386
-#include "inlnPS2.h"
-#endif
 
 #define TCPhostlookup 0
 #define TCPservicelookup 1
