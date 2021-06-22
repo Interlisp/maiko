@@ -32,22 +32,24 @@
 
 #include <unistd.h>
 #include <signal.h>
+#include "xwinmandefs.h"
+
 extern int XLocked;
 extern int XNeedSignal;
 /* this is !0 if we're locked; it should be 0 or larger always */
 
 #define XLOCK do { XLocked++; /* printf("L"); fflush(stdout);*/} while (0)
-#define XUNLOCK					\
+#define XUNLOCK(dsp)					\
   do { XLocked--;/* printf("U"); fflush(stdout);*/	\
     if (XNeedSignal)				\
       {						\
 	XNeedSignal = 0;			\
-	kill(getpid(), SIGPOLL);		\
+	getXsignaldata(dsp);			\
       };					\
   } while (0)
 #else
 #define XLOCK
-#define XUNLOCK
+#define XUNLOCK(dsp)
 #endif	/* LOCK_X_UPDATES */
 
 #endif /* XDEFS_H */

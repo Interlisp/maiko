@@ -411,7 +411,7 @@ static u_char *make_X_keymap() {
   XDisplayKeycodes(currentdsp->display_id, &minkey, &maxkey);
   codecount = maxkey + 1 - minkey;
   mapping = XGetKeyboardMapping(currentdsp->display_id, minkey, codecount, &symspercode);
-  XUNLOCK;
+  XUNLOCK(currentdsp);
 
   for (; *key_sym_pairs != -1;) {
     int reusable = *key_sym_pairs++, code = *key_sym_pairs++, sym = *key_sym_pairs++, xcode;

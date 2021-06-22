@@ -14,12 +14,12 @@
 
 #ifdef LOCK_X_UPDATES
 #define XLOCK { XLocked++; /* printf("L"); fflush(stdout);*/}
-#define XUNLOCK					\
+#define XUNLOCK(dsp)                           \
   { XLocked--;/* printf("U"); fflush(stdout);*/	\
     if (XNeedSignal)				\
       {						\
 	XNeedSignal = 0;			\
-	kill(getpid(), SIGPOLL);		\
+	getXsignaldata(dsp);			\
       };						\
   }
 #else

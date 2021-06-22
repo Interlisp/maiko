@@ -140,7 +140,7 @@ void Xevent_before_raid(DspInterface dsp)
 
   XLOCK;
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 } /* end Xevent_before_raid */
 
 /************************************************************************/
@@ -158,7 +158,7 @@ void Xevent_after_raid(DspInterface dsp)
                           dsp->Visible.height);
   XLOCK;
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 
 } /* end Xevent_after_raid */
 
