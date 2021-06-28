@@ -484,9 +484,7 @@ do_it_now:
 #endif
 
 #ifdef XWINDOW
-  XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
-  XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS
@@ -841,9 +839,7 @@ do_it_now:
 #endif
 
 #ifdef XWINDOW
-  XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(dlx, dty, width, height);
-  XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS
@@ -1090,9 +1086,7 @@ do_it_now:
 #endif
 
 #ifdef XWINDOW
-  XLOCK;
   if (in_display_segment(dstbase)) flush_display_region(left, dty, width, height);
-  XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS
@@ -1222,9 +1216,7 @@ void bltchar(LispPTR *args)
 #endif
 
 #ifdef XWINDOW
-  XLOCK;
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-  XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS
@@ -1315,10 +1307,8 @@ LispPTR bltchar(LispPTR *args)
 #endif
 
 #ifdef XWINDOW
-  XLOCK;
   if (in_display_segment(dstbase))
     flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
-  XUNLOCK;
 #endif /* XWINDOW */
 
 #ifdef DOS

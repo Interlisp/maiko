@@ -83,7 +83,7 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
 
   XSetWindowBackgroundPixmap(event->display, window, dsp->GravityOnPixmap);
   XClearWindow(event->display, window);
-  XUNLOCK;
+  XUNLOCK(dsp);
 } /* end Set_BitGravity */
 
 static void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWinHeight)
@@ -137,7 +137,7 @@ static void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int
   XMoveResizeWindow(dsp->display_id, dsp->SWGrav, Col2, Row3, GravSize, GravSize);
   Scroll(dsp, dsp->Visible.x, dsp->Visible.y);
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 } /* end lisp_Xconfigure */
 
 void enable_Xkeyboard(DspInterface dsp)
@@ -145,7 +145,7 @@ void enable_Xkeyboard(DspInterface dsp)
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 }
 
 void disable_Xkeyboard(DspInterface dsp)
@@ -153,7 +153,7 @@ void disable_Xkeyboard(DspInterface dsp)
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->DisableEventMask);
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 }
 
 void beep_Xkeyboard(DspInterface dsp)
@@ -165,7 +165,7 @@ void beep_Xkeyboard(DspInterface dsp)
   XLOCK;
   XBell(dsp->display_id, (int)50);
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 
 } /* end beep_Xkeyboard */
 
@@ -241,7 +241,7 @@ void getXsignaldata(DspInterface dsp)
           (dsp->bitblt_to_screen)(dsp, 0, report.xexpose.x + dsp->Visible.x,
                                   report.xexpose.y + dsp->Visible.y, report.xexpose.width,
                                   report.xexpose.height);
-          XUNLOCK;
+          XUNLOCK(dsp);
           break;
         default: break;
       }
@@ -266,14 +266,14 @@ void getXsignaldata(DspInterface dsp)
         case ButtonPress:
           switch (report.xbutton.button) {
             case Button1:
-              DefineCursor(dsp->display_id, dsp->HorScrollBar, &ScrollLeftCursor);
+              DefineCursor(dsp, dsp->HorScrollBar, &ScrollLeftCursor);
               ScrollLeft(dsp);
               break;
             case Button2:
-              DefineCursor(dsp->display_id, dsp->HorScrollBar, &HorizThumbCursor);
+              DefineCursor(dsp, dsp->HorScrollBar, &HorizThumbCursor);
               break;
             case Button3:
-              DefineCursor(dsp->display_id, dsp->HorScrollBar, &ScrollRightCursor);
+              DefineCursor(dsp, dsp->HorScrollBar, &ScrollRightCursor);
               ScrollRight(dsp);
               break;
             default: break;
@@ -282,14 +282,14 @@ void getXsignaldata(DspInterface dsp)
         case ButtonRelease:
           switch (report.xbutton.button) {
             case Button1:
-              DefineCursor(dsp->display_id, report.xany.window, &HorizScrollCursor);
+              DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
               break;
             case Button2:
               JumpScrollHor(dsp, report.xbutton.x);
-              DefineCursor(dsp->display_id, report.xany.window, &HorizScrollCursor);
+              DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
               break;
             case Button3:
-              DefineCursor(dsp->display_id, report.xany.window, &HorizScrollCursor);
+              DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
               break;
             default: break;
           } /* end switch */
@@ -300,14 +300,14 @@ void getXsignaldata(DspInterface dsp)
         case ButtonPress:
           switch (report.xbutton.button) {
             case Button1:
-              DefineCursor(dsp->display_id, report.xany.window, &ScrollUpCursor);
+              DefineCursor(dsp, report.xany.window, &ScrollUpCursor);
               ScrollUp(dsp);
               break;
             case Button2:
-              DefineCursor(dsp->display_id, report.xany.window, &VertThumbCursor);
+              DefineCursor(dsp, report.xany.window, &VertThumbCursor);
               break;
             case Button3:
-              DefineCursor(dsp->display_id, report.xany.window, &ScrollDownCursor);
+              DefineCursor(dsp, report.xany.window, &ScrollDownCursor);
               ScrollDown(dsp);
               break;
             default: break;
@@ -316,14 +316,14 @@ void getXsignaldata(DspInterface dsp)
         case ButtonRelease:
           switch (report.xbutton.button) {
             case Button1:
-              DefineCursor(dsp->display_id, report.xany.window, &VertScrollCursor);
+              DefineCursor(dsp, report.xany.window, &VertScrollCursor);
               break;
             case Button3:
-              DefineCursor(dsp->display_id, report.xany.window, &VertScrollCursor);
+              DefineCursor(dsp, report.xany.window, &VertScrollCursor);
               break;
             case Button2:
               JumpScrollVer(dsp, report.xbutton.y);
-              DefineCursor(dsp->display_id, report.xany.window, &VertScrollCursor);
+              DefineCursor(dsp, report.xany.window, &VertScrollCursor);
               break;
             default: break;
           } /* end switch */

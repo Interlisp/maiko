@@ -53,7 +53,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
               x - dsp->Visible.x, y - dsp->Visible.y, w, h);
     XFlush(dsp->display_id);
-    XUNLOCK;
+    XUNLOCK(dsp);
     return (1);
   }
 
@@ -80,7 +80,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
               x - dsp->Visible.x, y - dsp->Visible.y, w, h);
     XFlush(dsp->display_id);
-    XUNLOCK;
+    XUNLOCK(dsp);
   }
   return (1);
 

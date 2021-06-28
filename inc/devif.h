@@ -264,11 +264,12 @@ typedef struct
 
 
 #ifdef XWINDOW
-#define DefineCursor(display, window, mycursor) { \
-	XLOCK;\
-	XDefineCursor( display, window, *(mycursor) );\
-	XUNLOCK;\
-}
+#define DefineCursor(dsp, window, mycursor)                     \
+  do {								\
+    XLOCK;                                                      \
+    XDefineCursor((dsp)->display_id, window, *(mycursor) );     \
+    XUNLOCK(dsp);                                               \
+  } while (0)
 #endif /* XWINDOW */
 
 #define OUTER_SB_WIDTH(dsp) ((dsp)->ScrollBarWidth + 2*((dsp)->InternalBorderWidth))

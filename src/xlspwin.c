@@ -140,7 +140,7 @@ void Create_LispWindow(DspInterface dsp)
                    save_argc, &szhint, &Lisp_WMhints, &xclasshint);
 
   XSelectInput(dsp->display_id, dsp->LispWindow, dsp->EnableEventMask);
-  init_Xcursor(dsp->display_id, dsp->LispWindow);
+  init_Xcursor(dsp);
 
   dsp->DisplayWindow = XCreateSimpleWindow(dsp->display_id, dsp->LispWindow, 0, 0,
                                            dsp->Visible.width, dsp->Visible.height, 0,
@@ -195,7 +195,7 @@ void Create_LispWindow(DspInterface dsp)
                                           dsp->ScrollBarWidth,          /* width */
                                           dsp->Visible.height, dsp->InternalBorderWidth,
                                           BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
-  DefineCursor(dsp->display_id, dsp->VerScrollBar, &VertScrollCursor);
+  DefineCursor(dsp, dsp->VerScrollBar, &VertScrollCursor);
   XMapWindow(dsp->display_id, dsp->VerScrollBar);
 
   dsp->HorScrollBar = XCreateSimpleWindow(dsp->display_id, dsp->LispWindow,
@@ -203,7 +203,7 @@ void Create_LispWindow(DspInterface dsp)
                                           dsp->Visible.width,                /* width */
                                           dsp->ScrollBarWidth, dsp->InternalBorderWidth,
                                           BlackPixelOfScreen(screen), WhitePixelOfScreen(screen));
-  DefineCursor(dsp->display_id, dsp->HorScrollBar, &HorizScrollCursor);
+  DefineCursor(dsp, dsp->HorScrollBar, &HorizScrollCursor);
   XChangeWindowAttributes(dsp->display_id, dsp->HorScrollBar, CWOverrideRedirect,
                           &Lisp_SetWinAttributes);
   XMapWindow(dsp->display_id, dsp->HorScrollBar);
@@ -237,7 +237,7 @@ void Create_LispWindow(DspInterface dsp)
                                     GravSize, dsp->InternalBorderWidth, BlackPixelOfScreen(screen),
                                     WhitePixelOfScreen(screen));
   XSetWindowBackgroundPixmap(dsp->display_id, dsp->NWGrav, dsp->GravityOnPixmap);
-  DefineCursor(dsp->display_id, dsp->NWGrav, &DefaultCursor);
+  DefineCursor(dsp, dsp->NWGrav, &DefaultCursor);
   XChangeWindowAttributes(dsp->display_id, dsp->NWGrav, CWOverrideRedirect, &Lisp_SetWinAttributes);
   XClearWindow(dsp->display_id, dsp->NWGrav);
   XMapWindow(dsp->display_id, dsp->NWGrav);
@@ -246,7 +246,7 @@ void Create_LispWindow(DspInterface dsp)
                                     GravSize, dsp->InternalBorderWidth, BlackPixelOfScreen(screen),
                                     WhitePixelOfScreen(screen));
   XSetWindowBackgroundPixmap(dsp->display_id, dsp->SEGrav, dsp->GravityOffPixmap);
-  DefineCursor(dsp->display_id, dsp->SEGrav, &DefaultCursor);
+  DefineCursor(dsp, dsp->SEGrav, &DefaultCursor);
   XChangeWindowAttributes(dsp->display_id, dsp->SEGrav, CWOverrideRedirect, &Lisp_SetWinAttributes);
   XClearWindow(dsp->display_id, dsp->NWGrav);
   XMapWindow(dsp->display_id, dsp->SEGrav);
@@ -255,7 +255,7 @@ void Create_LispWindow(DspInterface dsp)
                                     GravSize, dsp->InternalBorderWidth, BlackPixelOfScreen(screen),
                                     WhitePixelOfScreen(screen));
   XSetWindowBackgroundPixmap(dsp->display_id, dsp->SWGrav, dsp->GravityOffPixmap);
-  DefineCursor(dsp->display_id, dsp->SWGrav, &DefaultCursor);
+  DefineCursor(dsp, dsp->SWGrav, &DefaultCursor);
   XClearWindow(dsp->display_id, dsp->NWGrav);
   XMapWindow(dsp->display_id, dsp->SWGrav);
 
@@ -263,16 +263,16 @@ void Create_LispWindow(DspInterface dsp)
                                     GravSize, dsp->InternalBorderWidth, BlackPixelOfScreen(screen),
                                     WhitePixelOfScreen(screen));
   XSetWindowBackgroundPixmap(dsp->display_id, dsp->NEGrav, dsp->GravityOffPixmap);
-  DefineCursor(dsp->display_id, dsp->NEGrav, &DefaultCursor);
+  DefineCursor(dsp, dsp->NEGrav, &DefaultCursor);
   XClearWindow(dsp->display_id, dsp->NWGrav);
   XMapWindow(dsp->display_id, dsp->NEGrav);
 
-  /* DefineCursor( dsp->display_id, dsp->DisplayWindow, &WaitCursor ); */
+  /* DefineCursor( dsp, dsp->DisplayWindow, &WaitCursor ); */
 
   XLOCK;
   XMapWindow(dsp->display_id, dsp->LispWindow);
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 }
 
 void lisp_Xvideocolor(int flag)
@@ -303,7 +303,7 @@ void lisp_Xvideocolor(int flag)
   }
 
   XFlush(currentdsp->display_id);
-  XUNLOCK;
+  XUNLOCK(currentdsp);
 
 } /* end lisp_Xvideocolor */
 
@@ -322,7 +322,7 @@ void set_Xmouseposition(int x, int y)
     XWarpPointer(currentdsp->display_id, (Window)NULL, currentdsp->DisplayWindow, 0, 0, 0, 0,
                  dest_x, dest_y);
     XFlush(currentdsp->display_id);
-    XUNLOCK;
+    XUNLOCK(currentdsp);
   }
 } /* end set_Xmouseposition */
 
