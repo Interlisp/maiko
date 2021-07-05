@@ -20,6 +20,7 @@
 /*									*/
 /************************************************************************/
 
+#include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -141,7 +142,7 @@ register LispPTR tscache asm("bx");
 #define IVARL IVar
 
 #ifdef XWINDOW
-extern int Event_Req; /* != 0 when it's time to check X events
+extern volatile sig_atomic_t Event_Req;       /* != 0 when it's time to check X events
                                                  on machines that don't get them reliably
                                                  (e.g. Suns running OpenWindows) */
 #endif                /* XWINDOW */
