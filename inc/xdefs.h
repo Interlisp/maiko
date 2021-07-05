@@ -34,9 +34,9 @@
 #include <signal.h>
 #include "xwinmandefs.h"
 
-extern int XLocked;
-extern int XNeedSignal;
 /* this is !0 if we're locked; it should be 0 or larger always */
+extern volatile sig_atomic_t XLocked;
+extern volatile sig_atomic_t XNeedSignal;
 
 #define XLOCK do { XLocked++; /* printf("L"); fflush(stdout);*/} while (0)
 #define XUNLOCK(dsp)					\

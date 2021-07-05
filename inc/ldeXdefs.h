@@ -27,9 +27,9 @@
 #define XUNLOCK
 #endif	/* LOCK_X_UPDATES */
 
-extern int XLocked;
-extern int XNeedSignal;
-/* this is !0 if we're locked; it should be 0 or larger always */
+#include <signal.h>
+extern volatile sig_atomic_t XLocked;
+extern volatile sig_atomic_t XNeedSignal;
 
 #endif
 

@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <assert.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -62,7 +63,8 @@ unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 Colormap Colors;
 
-int XLocked = 0; /* non-zero while doing X ops, to avoid signals */
+volatile sig_atomic_t XLocked = 0; /* non-zero while doing X ops, to avoid signals */
+volatile sig_atomic_t XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 extern fd_set LispReadFds;
 
 /************************************************************************/
