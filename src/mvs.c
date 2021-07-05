@@ -28,6 +28,7 @@
 #include "lsptypes.h"
 #include "opcodes.h"
 #include "cell.h"
+#include "byteswapdefs.h"
 
 #include "mvsdefs.h"
 #include "car-cdrdefs.h"
