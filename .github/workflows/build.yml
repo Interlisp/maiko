@@ -21,14 +21,17 @@ jobs:
         working-directory: bin
         run: ./makeright x
 
-  build-pi:
-    runs-on: [self-hosted, linux, ARM]
-    if: ${{ github.repository == 'Interlisp/maiko' }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build
-        working-directory: bin
-        run: ./makeright x
+#
+# Commented out because the RPi is not online at this time (6 July 2021)
+#
+#  build-pi:
+#    runs-on: [self-hosted, linux, ARM]
+#    if: ${{ github.repository == 'Interlisp/maiko' }}
+#    steps:
+#      - uses: actions/checkout@v2
+#      - name: Build
+#        working-directory: bin
+#        run: ./makeright x
 
   build-cmake:
     runs-on: ${{ matrix.os }}
