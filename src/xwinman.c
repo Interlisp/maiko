@@ -237,11 +237,9 @@ void getXsignaldata(DspInterface dsp)
         case EnterNotify: Mouse_Included = TRUE; break;
         case LeaveNotify: Mouse_Included = FALSE; break;
         case Expose:
-          XLOCK;
           (dsp->bitblt_to_screen)(dsp, 0, report.xexpose.x + dsp->Visible.x,
                                   report.xexpose.y + dsp->Visible.y, report.xexpose.width,
                                   report.xexpose.height);
-          XUNLOCK(dsp);
           break;
         default: break;
       }
