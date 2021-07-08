@@ -38,14 +38,15 @@
 extern volatile sig_atomic_t XLocked;
 extern volatile sig_atomic_t XNeedSignal;
 
-#define XLOCK do { XLocked++; /* printf("L"); fflush(stdout);*/} while (0)
-#define XUNLOCK(dsp)					\
-  do { XLocked--;/* printf("U"); fflush(stdout);*/	\
-    if (XNeedSignal)				\
+#define XLOCK do { XLocked++; } while (0)
+#define XUNLOCK(dsp)				\
+  do { 						\
+    if (XLocked == 1 && XNeedSignal)		\
       {						\
 	XNeedSignal = 0;			\
 	getXsignaldata(dsp);			\
       };					\
+    XLocked--;					\
   } while (0)
 #else
 #define XLOCK
