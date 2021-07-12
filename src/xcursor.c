@@ -66,7 +66,7 @@ void Init_XCursor() {
   cursorlist->next = NULL;
   for (i = 0; i < CURSORHEIGHT; i++) cursorlist->bitmap[i] = newbm[i];
   set_Xcursor(currentdsp, (uint8_t *)newbm, 0, 0, &(cursorlist->Xid), 1);
-  DefineCursor(currentdsp->display_id, currentdsp->DisplayWindow, &(cursorlist->Xid));
+  DefineCursor(currentdsp, currentdsp->DisplayWindow, &(cursorlist->Xid));
 } /* end Init_XCursor */
 
 /************************************************************************/
@@ -120,8 +120,8 @@ void Set_XCursor(int x, int y)
     clp->next = cursorlist;
     cursorlist = clp;
   }
-  DefineCursor(currentdsp->display_id, currentdsp->DisplayWindow, &(clp->Xid));
-  XUNLOCK; /* Signals OK now */
+  DefineCursor(currentdsp, currentdsp->DisplayWindow, &(clp->Xid));
+  XUNLOCK(currentdsp); /* Signals OK now */
 
 #ifdef NEWXCURSOR
   /* Save the hotspot for later position reporting/setting */
@@ -140,16 +140,16 @@ void Set_XCursor(int x, int y)
 /*									*/
 /************************************************************************/
 
-void init_Xcursor(Display *display, Window window)
+void init_Xcursor(DspInterface dsp)
 {
   TPRINT(("TRACE: init_Xcursor()\n"));
 
   XLOCK; /* Take no X signals during this activity (ISC 386) */
 
-  XAllocNamedColor(display, Colors, "black", &cursor_fore_xcsd, &xced);
-  XAllocNamedColor(display, Colors, "white", &cursor_back_xcsd, &xced);
+  XAllocNamedColor(dsp->display_id, Colors, "black", &cursor_fore_xcsd, &xced);
+  XAllocNamedColor(dsp->display_id, Colors, "white", &cursor_back_xcsd, &xced);
 
-  XUNLOCK; /* OK to take signals again */
+  XUNLOCK(dsp); /* OK to take signals again */
 
 } /* end init_Xcursor */
 
@@ -190,6 +190,6 @@ void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hot
   XFreePixmap(dsp->display_id, Cursor_msk);
 
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 
 } /* end set_Xcursor */

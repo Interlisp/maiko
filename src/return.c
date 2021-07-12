@@ -168,7 +168,8 @@ void contextsw(register DLword fxnum, register DLword bytenum, register DLword f
     CHECKFX;
     if (EndSTKP < CurrentStackPTR) error("contextsw:Illegal ESP");
 #endif
-    FastRetCALL return;
+    FastRetCALL;
+    return;
   }
 
 } /* end contextsw */

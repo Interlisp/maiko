@@ -35,7 +35,7 @@
 /* FAST case return use */
 #ifndef RESWAPPEDCODESTREAM
 #define FastRetCALL							\
-  {									\
+  do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
     IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
@@ -43,10 +43,10 @@
 		Addr68k_from_LADDR(FX_FNHEADER);	\
     /* Get PC from Returnee's pc slot in FX */ 				\
     PC = (ByteCode *)FuncObj + CURRENTFX->pc ; 				\
-  }
+  } while (0)
 #else
 #define FastRetCALL							\
-  {									\
+  do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
     IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
@@ -59,7 +59,7 @@
 	byte_swap_code_block(FuncObj);				\
 	FuncObj->byteswapped = 1;				\
       }								\
-  }
+  } while (0)
 #endif /* RESWAPPEDCODESTREAM */
 
 

@@ -11,6 +11,7 @@
 #include "version.h"
 
 #include <assert.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -62,7 +63,8 @@ unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 Colormap Colors;
 
-int XLocked = 0; /* non-zero while doing X ops, to avoid signals */
+volatile sig_atomic_t XLocked = 0; /* non-zero while doing X ops, to avoid signals */
+volatile sig_atomic_t XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 extern fd_set LispReadFds;
 
 /************************************************************************/
@@ -140,7 +142,7 @@ void Xevent_before_raid(DspInterface dsp)
 
   XLOCK;
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 } /* end Xevent_before_raid */
 
 /************************************************************************/
@@ -158,7 +160,7 @@ void Xevent_after_raid(DspInterface dsp)
                           dsp->Visible.height);
   XLOCK;
   XFlush(dsp->display_id);
-  XUNLOCK;
+  XUNLOCK(dsp);
 
 } /* end Xevent_after_raid */
 

@@ -77,7 +77,7 @@ typedef struct
 						, White_Pixel ); \
 			XLOCK;					\
 			XFlush( display ); 	\
-			XUNLOCK;		\
+			XUNLOCK( display );                 \
 			(child_win)->parent = parent_win; \
 			if( (child_win)->after_create ) \
 			    ((child_win)->after_create)(parent_win,child_win);\
@@ -96,7 +96,7 @@ typedef struct
 					, (window)->width 					\
 					, (window)->height ); 				\
 			XFlush( display ); 							\
-			XUNLOCK;									\
+			XUNLOCK( display );                               \
 			if( (window)->after_resize ) 				\
 				((window)->after_resize)( window ); 	\
 		} \
@@ -106,7 +106,7 @@ typedef struct
 		XLOCK;													\
 		XDefineCursor( display, (window)->win, *(mycursor) ); \
 		XFlush( display ); 	 \
-		XUNLOCK;										\
+		XUNLOCK( display );            \
 		(window)->cursor = mycursor; \
 }
 

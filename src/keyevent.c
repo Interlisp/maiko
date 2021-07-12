@@ -121,10 +121,11 @@ extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUti
 extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 extern u_char *SUNLispKeyMap;
 extern int LispWindowFd;
-extern int RS232C_Fd, RS232C_remain_data, XLocked;
+extern int RS232C_Fd, RS232C_remain_data;
 extern fd_set LispIOFds;
 fd_set LispReadFds;
-int XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
+extern volatile sig_atomic_t XLocked;
+extern volatile sig_atomic_t XNeedSignal;
 
 extern int LogFileFd;
 
