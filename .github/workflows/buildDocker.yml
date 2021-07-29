@@ -27,7 +27,6 @@ jobs:
         run: |
           # Name of the Docker Image. 
           DOCKER_IMAGE=${{ secrets.DOCKER_USERNAME }}/${GITHUB_REPOSITORY#*/}
-          # DOCKER_IMAGE=billstumbo/${GITHUB_REPOSITORY#*/}
           VERSION=latest
           SHORTREF=${GITHUB_SHA::8}
 
