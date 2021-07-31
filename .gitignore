@@ -5,6 +5,7 @@
 \#*#
 .DS_Store
 # build directories
+build/**
 *.386-x/**
 *.386/**
 *.ppc-x/**
