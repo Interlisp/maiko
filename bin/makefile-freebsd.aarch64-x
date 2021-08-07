@@ -1,4 +1,4 @@
-# Options for FreeBSD, , ARMv7 and X-Window
+# Options for FreeBSD, ARMv7 and X-Windows
 
 CC = clang -m64 $(CLANG_CFLAGS)
 

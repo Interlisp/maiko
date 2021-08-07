@@ -1,4 +1,4 @@
-# Options for FreeBSD, Intel x86_64 and X-Windows
+# Options for FreeBSD, ARMv7 and X-Windows
 
 CC = clang -m64 $(CLANG_CFLAGS)
 
@@ -15,13 +15,13 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 
 XFLAGS = -I/usr/local/include -DXWINDOW -DLOCK_X_UPDATES
 
-# OPTFLAGS is normally -O2.
-OPTFLAGS = -O2 -g
-DFLAGS = $(XFLAGS) -DRELEASE=351
+# OPTFLAGS is normally -O0 for init
+OPTFLAGS = -O0 -g
+DFLAGS = $(XFLAGS) -DRELEASE=351 -DNOVERSION -DINIT
 
 LDFLAGS = -L/usr/local/lib -lX11 -lc -lm
 LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
+default	: ../$(OSARCHNAME)/ldeinit
