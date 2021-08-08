@@ -1,0 +1,27 @@
+# Options for FreeBSD, Intel x86_64 and X-Windows
+
+CC = clang -m64 $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+
+XFLAGS = -I/usr/local/include -DXWINDOW -DLOCK_X_UPDATES
+
+# OPTFLAGS is normally -O0 for init
+OPTFLAGS = -O0 -g
+DFLAGS = $(XFLAGS) -DRELEASE=351 -DNOVERSION -DINIT
+
+LDFLAGS = -L/usr/local/lib -lX11 -lc -lm
+LDELDFLAGS =  -L/usr/local/lib -lX11 -lc -lm
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/ldeinit
