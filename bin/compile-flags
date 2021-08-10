@@ -128,5 +128,4 @@ bitbltsub.c:#ifdef GETBASE
 testdisplay.c:#ifdef NOTUSED
 uraid.c:#ifdef ETHERINT
 bitblt.c:#ifndef COLOR
-bitbltsub.c:#ifndef prropstyle
 lispmap.h:#ifdef MEDLEY
