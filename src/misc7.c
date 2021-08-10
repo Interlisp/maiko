@@ -32,15 +32,6 @@
 #include "bbtsubdefs.h"
 #include "initdspdefs.h"
 
-#ifdef SUNDISPLAY
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-
-#include <suntool/sunview.h>
-#include <signal.h>
-#include <sunwindow/cms_mono.h>
-#include <suntool/canvas.h>
-#endif
 
 /*************************************************/
 /*  Possible operation fields for FBITMAPBIT     */
@@ -78,9 +69,6 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   DBPRINT(("MISC7 args OK.\n"));
 
   displayflg = n_new_cursorin(base, x, (heightminus1 - y), 1, 1);
-#ifdef SUNDISPLAY
-  if (displayflg) HideCursor;
-#endif /* SUNDISPLAY */
 
 /* Bitmaps use a positive integer coordinate system with the lower left
    corner pixel at coordinate (0, 0). Storage is allocated in 16-bit words
@@ -100,15 +88,6 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   default: GETWORDBASEWORD(base, offset) = bmdata | bmmask;
   };
 
-#ifdef SUNDISPLAY
-#ifdef DISPLAYBUFFER
-  if (in_display_segment(base)) {
-    /* NB: base + offset doesn't need WORDPTR() wrapper */
-    flush_display_ptrregion(base + offset, 0, 16, 1);
-  }
-#endif
-  if (displayflg) ShowCursor;
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   if (in_display_segment(base)) {

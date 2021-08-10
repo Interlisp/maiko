@@ -12,15 +12,6 @@
 
 #include <stdio.h>
 
-#if defined(COLOR) && !defined(NOPIXRECT)
-#include <sunwindow/window_hs.h>
-#include <sunwindow/cms.h>
-#include <sunwindow/win_ioctl.h>
-#include <pixrect/pixrect_hs.h>
-#include <sun/fbio.h>
-#include <pixrect/pr_planegroups.h>
-#include <sys/mman.h>
-#endif /* COLOR && !NOPIXRECT */
 
 #include <sys/ioctl.h>
 #include <sys/types.h>

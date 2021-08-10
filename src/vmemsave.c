@@ -36,9 +36,6 @@
 #define alarm(x) 1
 #endif /* DOS */
 
-#if defined(SUNDISPLAY) && defined(OLD_CURSOR)
-#include <sunwindow/win_cursor.h>
-#endif
 
 #include "hdw_conf.h"
 #include "lispemul.h"
@@ -316,9 +313,6 @@ LispPTR vmem_save(char *sysout_file_name)
   register int i;
   char tempname[MAXPATHLEN];
   register int rval;
-#ifdef SUNDISPLAY
-  /* DLword *bmptr; */
-#endif
 #ifndef DOS
   extern int ScreenLocked;
   extern DLword *EmCursorX68K;
@@ -329,17 +323,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
 /* remove cursor image from screen */
 
-#ifdef SUNDISPLAY
-#ifdef OLD_CURSOR
-  win_setcursor(LispWindowFd, &InvisibleCursor);
-#else
-  ScreenLocked = T;
-  taking_mouse_down();
-/*	bmptr = EmCursorBitMap68K;
-    EmCursorBitMap68K= NullCursor;*/
-#endif /* OLD_CURSOR */
-
-#elif DOS
+#if   DOS
   /*  For DOS, must also take the mouse cursor away (it's  */
   /*  written into the display-region bitmap).	     */
   currentdsp->device.locked++;
@@ -512,17 +496,7 @@ LispPTR vmem_save(char *sysout_file_name)
   }
 
 /* restore cursor image to screen */
-#ifdef SUNDISPLAY
-#ifdef OLD_CURSOR
-  win_setcursor(LispWindowFd, &CurrentCursor);
-#else
-  ScreenLocked = T;
-  /*EmCursorBitMap68K = bmptr ;*/
-  taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
-  ScreenLocked = NIL;
-#endif /* OLD_CURSOR */
-
-#elif DOS
+#if   DOS
   /* Must also put the mouse back. */
   (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
   currentdsp->device.locked--;

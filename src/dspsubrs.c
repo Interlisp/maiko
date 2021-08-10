@@ -12,9 +12,6 @@
 #include "version.h"
 
 #include <stdio.h>
-#ifdef SUNDISPLAY
-#include <sunwindow/window_hs.h>
-#endif
 
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -68,9 +65,7 @@ void DSP_showdisplay(LispPTR *args)
 LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
 {
   int invert;
-#ifdef SUNDISPLAY
-  return NIL;
-#elif defined(XWINDOW)
+#if   defined(XWINDOW)
   invert = args[0] & 0xFFFF;
   lisp_Xvideocolor(invert);
   if (invert)
@@ -99,50 +94,7 @@ void DSP_Cursor(LispPTR *args, int argnum)
   extern int ScreenLocked;
   extern DLword *EmCursorX68K, *EmCursorY68K;
   extern int LastCursorX, LastCursorY;
-#if defined(SUNDISPLAY) && !defined(OLD_CURSOR)
-  static int Init = T;
-#endif
 
-#ifdef SUNDISPLAY
-  if (argnum == 2) {
-    CurrentCursor.cur_xhot = args[0] & 0xffff;
-    CurrentCursor.cur_yhot = args[1] & 0xffff;
-  };
-
-#ifdef OLD_CURSOR
-  win_setcursor(LispWindowFd, &CurrentCursor);
-#else
-#ifndef INIT
-  ScreenLocked = T;
-  if (!Init) {
-    taking_mouse_down();
-    taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
-  } else {
-    Init = NIL;
-    cursor_hidden_bitmap(0, 0);
-    taking_mouse_up(0, 0);
-    *EmCursorX68K = LastCursorX = 0;
-    *EmCursorY68K = LastCursorY = 0;
-  }
-
-  ScreenLocked = NIL;
-#else
-  /* Init specific lde only */
-  ScreenLocked = T;
-  if (!Init) {
-    taking_mouse_down();
-    taking_mouse_up(0, 0);
-  } else {
-    Init = NIL;
-    cursor_hidden_bitmap(0, 0);
-    taking_mouse_up(0, 0);
-  }
-
-  ScreenLocked = NIL;
-#endif /* INIT */
-
-#endif
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   /* For X-Windows, set the cursor to the given location. */
@@ -161,32 +113,6 @@ void DSP_Cursor(LispPTR *args, int argnum)
   */
 void DSP_SetMousePos(register LispPTR *args)
 {
-#ifdef SUNDISPLAY
-#ifdef OLD_CURSOR
-  register int x, y;
-  x = GetSmalldata(args[0]);
-  y = GetSmalldata(args[1]); /* debug */
-  win_setmouseposition(LispWindowFd, GetSmalldata(args[0]), GetSmalldata(args[1]));
-#else
-  extern int ScreenLocked;
-  extern DLword *EmCursorX68K, *EmCursorY68K, *EmMouseX68K, *EmMouseY68K;
-  register int x, y;
-  ScreenLocked = T;
-  x = GetSmalldata(args[0]);
-  y = GetSmalldata(args[1]);
-  /* for Suntool's invisible cursor */
-  win_setmouseposition(LispWindowFd, x, y);
-  /* for REAL cursor image */
-  taking_mouse_down();
-  taking_mouse_up(x, y);
-
-#ifndef INIT
-  *EmMouseX68K = x;
-  *EmMouseY68K = y;
-#endif
-  ScreenLocked = NIL;
-#endif
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   if (Mouse_Included)
@@ -251,25 +177,6 @@ void flip_cursor() {
 
 #endif
 
-#ifdef SUNDISPLAY
-#ifdef OLD_CURSOR
-
-  win_setcursor(LispWindowFd, &CurrentCursor);
-#else
-  ScreenLocked = T;
-  taking_mouse_down();
-#ifndef INIT
-  taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
-#else
-  if (!for_makeinit)
-    taking_mouse_up(*EmCursorX68K, *EmCursorY68K);
-  else
-    taking_mouse_up(0, 0);
-#endif /* INIT */
-
-  ScreenLocked = NIL;
-#endif
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   /* JDS 011213: 15- cur y, as function does same! */

@@ -20,11 +20,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef SUNDISPLAY
-#include <sys/ioctl.h>
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-#endif
 
 #include "lispemul.h"
 #include "lspglob.h"
@@ -133,17 +128,6 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
   if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
 
-#ifdef SUNDISPLAY
-#ifndef DISPLAYBUFFER
-    HideCursor; /** Figure out how to be smart later **/
-#else           /* DISPLAYBUFFER */
-#ifndef OLD_CURSOR
-    HideCursor;
-#endif /* OLD_CURSOR */
-
-#endif /* DISPLAYBUFFER */
-
-#endif /* SUNDISPLAY */
 
   delta &= 0xFFFF;
   op &= 3;
@@ -277,17 +261,6 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
   if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
 
-#ifdef SUNDISPLAY
-#ifndef DISPLAYBUFFER
-    ShowCursor; /** figure how to be smart later **/
-#else
-#ifndef OLD_CURSOR
-    ShowCursor;
-#endif /* OLD_CURSOR */
-
-#endif /* DISPLAYBUFFER */
-
-#endif /* SUNDISPLAY */
 
 #ifdef DISPLAYBUFFER
 #ifdef COLOR
@@ -304,9 +277,6 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
         ((int)(temp_e = (DLword *)(dataptr - DisplayRegion68k)) >= 0) &&
         ((DLword *)dataptr < DisplayRegion68k_end_addr)) {
       int start_x, start_y, end_x, end_y, w, h;
-#if defined(SUNDISPLAY) && defined(OLD_CURSOR)
-      int displayflg;
-#endif
 
       start_y = (int)temp_s / DisplayRasterWidth;
       start_x = ((int)temp_s % DisplayRasterWidth) * BITSPER_DLWORD;
@@ -320,18 +290,6 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
       if (start_x > end_x) start_x = end_x;
       if (start_y > end_y) start_y = end_y;
 
-#if defined(SUNDISPLAY) && !defined(BYTESWAP)
-#ifdef OLD_CURSOR
-      if ((displayflg = n_new_cursorin_CG6(start_x, start_y, w, h))) HideCursor;
-#endif /* OLD_CURSOR */
-
-      pr_rop(ColorDisplayPixrect, start_x, start_y, w, h, PIX_SRC, DisplayRegionPixrect, start_x,
-             start_y);
-#ifdef OLD_CURSOR
-      if (displayflg) ShowCursor;
-#endif /* OLD_CURSOR */
-
-#endif /* SUNDISPLAY */
 
 #if defined(XWINDOW) || defined(BYTESWAP)
       flush_display_region(start_x, start_y, w, h);

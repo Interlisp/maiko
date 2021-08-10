@@ -12,16 +12,6 @@
 
 #include <stdio.h>
 
-#ifdef SUNDISPLAY
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-
-#include <suntool/sunview.h>
-#include <sunwindow/cms_mono.h>
-#include <suntool/canvas.h>
-#include <sys/ioctl.h>
-#include <signal.h>
-#endif
 
 #ifdef XWINDOW
 #define DISPLAYBUFFER
@@ -127,25 +117,14 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
   num_gray = ((TEXTUREBBT *)pbt)->pbtgrayheightlessone + 1;
   curr_gray_line = ((TEXTUREBBT *)pbt)->pbtgrayoffset;
 
-#ifdef SUNDISPLAY
-  if (displayflg) HideCursor;
-#elif DOS
+#if   DOS
   if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
   ;
 #endif /* SUNDISPLAY / DOS */
 
   new_bitblt_code
 
-#ifdef SUNDISPLAY
-#ifdef DISPLAYBUFFER
-#ifdef COLOR
-      if (MonoOrColor == MONO_SCREEN)
-#endif /* COLOR */
-
-          if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-#endif
-  if (displayflg) ShowCursor;
-#elif DOS
+#if   DOS
       flush_display_lineregion(dx, dstbase, w, h);
   if (displayflg) (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
 #endif /* SUNDISPLAY / DOS */

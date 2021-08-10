@@ -37,12 +37,6 @@
 #include "xdefs.h"
 #endif /* XWINDOW */
 
-#ifdef SUNDISPLAY
-#ifndef NOPIXRECT
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-#endif /* NOPIXRECT */
-#endif /* SUNDISPLAY */
 
 #include "lispemul.h"
 #include "lspglob.h"
@@ -87,10 +81,8 @@ extern int  kbd_for_makeinit;
   };
 #endif
 
-#if !defined(SUNDISPLAY)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* SUNDISPLAY */
 
 #ifdef COLOR
 extern int MonoOrColor;
@@ -1138,7 +1130,6 @@ bad_arg:
 /*                                                                      */
 /*                                                                      */
 /************************************************************************/
-#ifndef prropstyle
 /********************************************************/
 /*             Non-PIXRECT version of the code          */
 /********************************************************/
@@ -1230,98 +1221,6 @@ void bltchar(LispPTR *args)
   UNLOCKSCREEN;
 }
 
-#else
-/* prropstyle */
-
-LispPTR bltchar(LispPTR *args)
-/*      args[0] :       PILOTBBT
- *      args[1] :       DISPLAYDATA
- *      args[2] :       CHAR8CODE
- *      args[3] :       CURX
- *      args[4] :       LEFT
- *      args[5] :       RIGHT
- */
-{
-  register PILOTBBT *pbt;
-  register DISPLAYDATA *dspdata;
-  int x, y, destbpl, srcebpl, srcebit, distance;
-  int base;
-  register int displayflg;
-  unsigned int pix_op;
-  DLword *dstbase;
-
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(((BLTC *)args)->pilotbbt);
-  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTC *)args)->displaydata);
-
-  (mpr_d(SrcePixRect))->md_image =
-      (short *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
-
-  dstbase = (mpr_d(DestPixRect))->md_image =
-      (short *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
-
-  SrcePixRect->pr_width = srcebpl = abs(pbt->pbtsourcebpl);
-  DestPixRect->pr_width = destbpl = abs(pbt->pbtdestbpl);
-  SrcePixRect->pr_height = DestPixRect->pr_height = pbt->pbtheight;
-
-  mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
-  mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
-
-  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + ((BLTC *)args)->char8code));
-  srcebit = base + ((BLTC *)args)->left - ((BLTC *)args)->curx;
-
-#ifdef REALCURSOR
-  /* if displayflg != 0 then source or destination is DisplayBitMap
-   * Now we consider about only destination
-   */
-  displayflg = old_cursorin(pbt->pbtdesthi, pbt->pbtdestlo, ((BLTC *)args)->left, (((BLTC *)args)->right - ((BLTC *)args)->left),
-                            pbt->pbtheight, y, pbt->pbtbackward);
-#endif /* REALCURSOR */
-
-  /**** for DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG *****/
-  /*      displayflg = T;                                         */
-  /**** for DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG DEBUG *****/
-
-  pix_op = PixOperation(pbt->pbtsourcetype, pbt->pbtoperation);
-
-  LOCKSCREEN;
-
-#ifdef REALCURSOR
-  if (displayflg) HideCursor;
-#endif /* REALCURSOR */
-
-  if (pr_rop(DestPixRect, ((BLTC *)args)->left, 0, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight, pix_op,
-             SrcePixRect, srcebit, 0) != 0)
-    error("pilotbitblt: pr_rop failed\n");
-
-#ifdef DISPLAYBUFFER
-#ifdef COLOR
-  if (MonoOrColor == MONO_SCREEN)
-#endif /* COLOR */
-
-    if (in_display_segment(dstbase)) {
-      /*          DBPRINT(("bltchar pix:  x %x, y %d, w %d, h %d.\n", ((BLTC *)args)->left, dstbase,
-       * (((BLTC *)args)->right - ((BLTC *)args)->left),pbt->pbtheight));
-      */
-      flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
-    }
-#endif
-
-#ifdef XWINDOW
-  if (in_display_segment(dstbase))
-    flush_display_lineregion(((BLTC *)args)->left, dstbase, (((BLTC *)args)->right - ((BLTC *)args)->left), pbt->pbtheight);
-#endif /* XWINDOW */
-
-#ifdef DOS
-  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-#endif /* DOS */
-
-#ifdef REALCURSOR
-  if (displayflg) ShowCursor;
-#endif /* REALCURSOR */
-
-  ScreenLocked = NIL;
-}
-#endif
 
 /************************************************************************/
 /*                                                                      */
@@ -1408,7 +1307,6 @@ LispPTR BLTCHAR_index;       /* Atom # for \PUNTBLTCHAR punt fn */
 LispPTR TEDIT_BLTCHAR_index; /* if NIL ,TEDIT is not yet loaded */
 
 
-#ifndef prropstyle
 
 /************************************************************************/
 /*                                                                      */
@@ -1537,150 +1435,6 @@ void newbltchar(LispPTR *args) {
 
 } /* end of newbltchar */
 
-#else /* prropstyle */
-
-/************************************************************************/
-/*                                                                      */
-/*                          n e w b l t c h a r                                 */
-/*                           (PIXRECT version)                          */
-/*                                                                      */
-/************************************************************************/
-
-LispPTR newbltchar(LispPTR *args) {
-  register DISPLAYDATA *displaydata68k;
-
-  register int right, left, curx;
-  register PILOTBBT *pbt;
-  register int lmargin, rmargin, xoff;
-  int displayflg; /* T if cursor needs to be taken down */
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTARG *)args)->displaydata);
-
-  if ((displaydata68k->ddcharset & 0xFFFF) != ((BLTARG *)args)->charset) {
-    /* Currently, this has BUG, so I can't call it */
-    /*if(changecharset_display(displaydata68k,((BLTARG *)args)->charset) ==-1)*/
-    { PUNT_TO_BLTCHAR; }
-  }
-
-  if (displaydata68k->ddslowprintingcase) { PUNT_TO_BLTCHAR; /** \SLOWBLTCHAR--return;**/ }
-
-  FGetNum(displaydata68k->ddxposition, curx);
-  FGetNum(displaydata68k->ddrightmargin, rmargin);
-  FGetNum(displaydata68k->ddleftmargin, lmargin);
-  FGetNum(displaydata68k->ddxoffset, xoff);
-
-  right =
-      curx +
-      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
-
-  if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
-  if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
-  {
-    register int newpos;
-    newpos = curx +
-             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
-
-    if ((0 <= newpos) && (newpos < 65536))
-      (displaydata68k->ddxposition) = (LispPTR)(S_POSITIVE | newpos);
-    else if (-65537 < newpos)
-      (displaydata68k->ddxposition) = (LispPTR)(S_NEGATIVE | (0xffff & newpos));
-    else {
-      PUNT_TO_BLTCHAR;
-    }
-  }
-
-  curx += xoff;
-  right += xoff;
-  if (right > (int)(displaydata68k->ddclippingright)) right = displaydata68k->ddclippingright;
-
-  if (curx > (int)(displaydata68k->ddclippingleft))
-    left = curx;
-  else
-    left = displaydata68k->ddclippingleft;
-
-  if (left < right) {
-    pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
-    if (pbt->pbtheight != 0) {
-      /****** OLD bltchar *****/
-      register int destbpl, srcebpl, sourcebit;
-      DLword *dstbase;
-      int base, y;
-
-      (mpr_d(SrcePixRect))->md_image =
-          (short *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
-
-      dstbase = (mpr_d(DestPixRect))->md_image =
-          (short *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
-
-      SrcePixRect->pr_width = srcebpl = abs(pbt->pbtsourcebpl);
-      DestPixRect->pr_width = destbpl = abs(pbt->pbtdestbpl);
-      SrcePixRect->pr_height = DestPixRect->pr_height = pbt->pbtheight;
-
-      mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
-      mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
-
-      base = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((BLTARG *)args)->char8code);
-      sourcebit = base + left - curx;
-
-      LOCKSCREEN;
-
-#ifdef SUNDISPLAY
-      if (displayflg = old_cursorin(pbt->pbtdesthi, pbt->pbtdestlo, left, (right - left),
-                                    pbt->pbtheight, y, pbt->pbtbackward)) {
-        HideCursor;
-        if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,
-                   PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect, sourcebit,
-                   0) != 0)
-          error("pilotbitblt: pr_rop failed\n");
-/* Save SHOWCURSOR 'til after paint to screen */
-#ifndef DISPLAYBUFFER
-        ShowCursor;
-#endif
-      } /* display case */
-      else {
-        if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,
-                   PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect, sourcebit,
-                   0) != 0)
-          error("pilotbitblt: pr_rop failed\n");
-
-      } /* else */
-
-#ifdef DISPLAYBUFFER
-#ifdef COLOR
-      if (MonoOrColor == MONO_SCREEN)
-#endif /* COLOR */
-
-        if (in_display_segment(dstbase)) {
-          /*               DBPRINT(("newbltchar:  x %d, y 0x%x, w %d, h %d.\n", left, dstbase,
-           * (right - left), pbt->pbtheight)); */
-
-          flush_display_lineregion(left, dstbase, (right - left), pbt->pbtheight);
-          if (displayflg) ShowCursor; /* because hide is done earlier */
-        }
-#endif
-#endif /* SUNDISPLAY */
-
-#ifdef XWINDOW
-      if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,
-                 PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect, sourcebit,
-                 0) != 0)
-        error("pilotbitblt: pr_rop failed\n");
-
-      if (in_display_segment(dstbase))
-        flush_display_lineregion(left, dstbase, (right - left), pbt->pbtheight);
-#endif /* XWINDOW */
-
-#ifdef DOS
-      if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
-      if (displayflg) ShowCursor;
-#endif /* DOS */
-
-      ScreenLocked = NIL;
-
-      /****** OLD bltchar *****/
-    }
-  }
-} /* newbltchar */
-#endif
 
 /******************************************************************/
 #ifndef BYTESWAP
@@ -1978,7 +1732,6 @@ void ccfuncall(register unsigned int atom_index, register int argnum, register i
 /*                                                              */
 /****************************************************************/
 
-#ifndef prropstyle
 /***************************/
 /*   Non-PIXRECT version   */
 /***************************/
@@ -2036,67 +1789,6 @@ void tedit_bltchar(LispPTR *args)
 #undef backwardflg
 
 } /* end tedit_bltchar */
-#else
-
-/* pr_op style */
-/**********************/
-/*   PIXRECT version  */
-/**********************/
-
-void tedit_bltchar(LispPTR *args)
-{
-  register DISPLAYDATA *displaydata68k;
-  register int left, right;
-  register PILOTBBT *pbt;
-  register int imagewidth, newx;
-  register displayflg;
-
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((TBLTARG *)args)->displaydata);
-  if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {
-    /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
-    { PUNT_TO_TEDIT_BLTCHAR; }
-  }
-  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
-  newx = ((TBLTARG *)args)->current_x + imagewidth;
-  left = IMAX(0, ((TBLTARG *)args)->current_x);
-  right = IMIN(newx, ((TBLTARG *)args)->clipright);
-  LOCKSCREEN;
-
-  if (left < right) {
-    pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
-    if (pbt->pbtheight) {
-      (mpr_d(SrcePixRect))->md_image =
-          (short *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
-
-      (mpr_d(DestPixRect))->md_image =
-          (short *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
-      {
-        register int srcebpl, destbpl;
-        SrcePixRect->pr_width = srcebpl = abs(pbt->pbtsourcebpl);
-        DestPixRect->pr_width = destbpl = abs(pbt->pbtdestbpl);
-        SrcePixRect->pr_height = DestPixRect->pr_height = pbt->pbtheight;
-
-        mpr_mdlinebytes(DestPixRect) = (destbpl + 7) >> 3;
-        mpr_mdlinebytes(SrcePixRect) = (srcebpl + 7) >> 3;
-      }
-
-      pbt->pbtwidth = IMIN(imagewidth, (right - left));
-      pbt->pbtsourcebit =
-          GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((TBLTARG *)args)->char8code);
-
-      if (pr_rop(DestPixRect, left, 0, pbt->pbtwidth, pbt->pbtheight,
-                 PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect,
-                 pbt->pbtsourcebit, 0) != 0)
-        error("pilotbitblt: pr_rop failed\n");
-
-    } /* if pbt->pbtheight */
-  }   /* if left<right */
-
-  UNLOCKSCREEN;
-
-} /* end tedit_bltchar */
-
-#endif
 
 #if defined(REALCURSOR) || defined(SUNDISPLAY)
 #ifndef COLOR

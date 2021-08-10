@@ -35,20 +35,6 @@
 #include <sys/select.h>
 #endif /* DOS */
 
-#ifdef SUNDISPLAY
-#include <sundev/kbd.h>
-#include <sundev/kbio.h>
-#include <errno.h>
-#ifndef NOPIXRECT
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-#include <pixrect/pixrect_hs.h>
-#include <sunwindow/win_cursor.h>
-#include <sunwindow/cms.h>
-#include <sys/mman.h>
-extern int Win_security_p;
-#endif /* NOPIXRECT */
-#endif /* SUNDISPLAY */
 
 #ifdef OS5
 #include <stropts.h>
@@ -149,17 +135,10 @@ v filename              Save the virtual memory on the filename(Not Bootable)
 
 */
 /************************************************************************/
-#ifndef NOPIXRECT
-extern int black, white;
-extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
-#endif /* NOPIXRECT */
 
 extern int DisplayRasterWidth;
 extern unsigned int LispWindowFd, LispKbdFd;
 extern fd_set LispReadFds;
-#ifndef NOPIXRECT
-extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
-#endif /* NOPIXRECT */
 extern struct cursor CurrentCursor, InvisibleCursor;
 extern struct screen LispScreen;
 extern int displaywidth, displayheight;
@@ -861,17 +840,8 @@ LispPTR uraid_commands() {
 extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif
 
-#ifdef SUNDISPLAY
-#define SV_ACQUIRE "/bin/sunview1/sv_acquire"
-#define SV_RELEASE "/bin/sunview1/sv_release"
-#endif /* SUNDISPLAY */
 
 int device_before_raid() {
-#ifdef SUNDISPLAY
-  int size;
-  int keytrans;
-  union wait status;
-#endif /* SUNDISPLAY */
 #ifdef XWINDOW
   sigset_t signals;
 #endif
@@ -885,12 +855,6 @@ int device_before_raid() {
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
 #endif
 
-#ifdef SUNDISPLAY
-  win_setcursor(LispWindowFd, &InvisibleCursor);
-#ifdef KBINT
-  int_io_close(LispWindowFd);
-#endif
-#endif /* SUNDISPLAY */
 
 #ifdef MAIKO_ENABLE_ETHERNET
 #ifdef ETHERINT
@@ -903,96 +867,6 @@ int device_before_raid() {
   int_io_close(RS232C_Fd);
 #endif
 
-#ifdef SUNDISPLAY
-  mess_reset(); /* turn off console-msg handling */
-
-#ifdef FX_AR_124
-  /* For AR 124. Type4 driver bug?? by m.matsuda */
-  {
-    long i;
-    for (i = 0; i < 900000; i++)
-      ;
-  }
-#endif /*  FX_AR_124 */
-
-  if ((LispKbdFd = open(LispScreen.scr_kbdname, O_RDWR)) == -1) {
-    fprintf(stderr, "can't open %s\n", LispScreen.scr_kbdname);
-    return (-1);
-  }
-
-  keytrans = TR_EVENT; /* keyboard encodes key */
-  if (ioctl(LispKbdFd, KIOCTRANS, &keytrans) == -1) {
-    fprintf(stderr, "Error at ioctl errno =%d\n", errno);
-    return (-1);
-  }
-  close(LispKbdFd);
-  close(LispWindowFd);
-
-#ifdef TRUECOLOR
-  truecolor_before_raid();
-#endif /* TRUECOLOR */
-
-#ifndef DISPLAYBUFFER
-  size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
-
-  if ((HideDisp68k = malloc(size)) == 0) {
-    printf("can't malloc hide space\n");
-    return (-1);
-  }
-
-  copy_region(DisplayRegion68k, HideDisp68k, DisplayRasterWidth, displayheight);
-#endif /* DISPLAYBUFFER */
-
-#ifdef COLOR
-  save_colormap();
-
-#ifndef DISPLAYBUFFER
-  if (Inited_Color) {
-#else
-  if (MonoOrColor == COLOR_SCREEN) {
-#endif /* DISPLAYBUFFER */
-
-    /* save color image */
-    size =
-        ((displaywidth * displayheight + (getpagesize() - 1)) & -getpagesize()); /* 8 bit depth */
-    if ((HideColorDisp68k = malloc(size)) == 0) {
-      printf("can't malloc hide space\n");
-      return (-1);
-    }
-    copy_region(ColorDisplayRegion68k, HideColorDisp68k, DisplayRasterWidth * 8, displayheight);
-  }    /* end if(MonoOrColor) */
-#endif /* COLOR */
-
-  clear_display();
-
-#ifdef DISPLAYBUFFER
-  pr_close(ColorDisplayPixrect);
-  close(FrameBufferFd);
-#endif
-
-  if (Win_security_p) {
-    switch (vfork()) {
-      case -1: /* Error */ (void)fprintf(stderr, "display_before_exit: Fork failed.\n"); exit(1);
-
-      case 0: /* Child */
-        (void)execl(SV_RELEASE, "sv_release", NULL);
-        /* should not return */
-        (void)fprintf(stderr, "display_before_exit: exec for sv_release failed\n");
-        exit(1);
-
-      default: /* Parent */
-        /* do nothing */
-        break;
-    }
-    (void)wait(&status); /* child dies after changing 16 */
-
-    if (status.w_retcode != 0) {
-      (void)fprintf(stderr, "device_before_raid: failed to set ownership of win devices\n");
-      exit(1);
-    }
-  }
-
-#endif /* SUNDISPLAY */
 
 #if defined(XWINDOW) || defined(DOS)
   (currentdsp->cleardisplay)(currentdsp);
@@ -1103,9 +977,6 @@ int device_after_raid() {
 
   int_init();
 
-#ifdef SUNDISPLAY
-  FD_SET(LispWindowFd, &LispReadFds);
-#endif /* SUNDISPLAY */
 
 #ifdef MAIKO_ENABLE_ETHERNET
   FD_SET(ether_fd, &LispReadFds);
@@ -1145,107 +1016,6 @@ int device_after_raid() {
 
 static int re_init_display(int lisp_display_addr, int display_max)
 {
-#ifdef SUNDISPLAY
-  int mmapstat, size;
-  struct pixrect *ColorFb;
-  extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
-  extern int DisplayType;
-
-  union wait status;
-
-  if (Win_security_p) {
-    switch (vfork()) {
-      case -1: /* Error */ (void)fprintf(stderr, "re_init_display: Fork failed.\n"); exit(1);
-
-      case 0: /* Child */
-        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", NULL);
-        /* should not return */
-        (void)fprintf(stderr, "re_init_display: exec for sv_acquire failed\n");
-        exit(1);
-
-      default: /* Parent */
-        /* do nothing */
-        break;
-    }
-    (void)wait(&status); /* child dies after changing 6 */
-
-    if (status.w_retcode != 0) {
-      (void)fprintf(stderr, "re_init_display: failed to set ownership of win devices\n");
-      exit(1);
-    }
-  }
-
-  mess_init();
-  if ((LispWindowFd = win_screennew(&LispScreen)) == -1) {
-    fprintf(stderr, "init_display: can't create LispWindow\n");
-    return (-1);
-  } else {
-#ifdef KBINT
-    int_io_open(LispWindowFd);
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
-
-#ifdef FX_AR_124
-    /* For AR 124. Type4 driver bug?? by m.matsuda */
-    {
-      long i;
-      for (i = 0; i < 900000; i++)
-        ;
-    }
-#endif /* FX_AR_124 */
-
-#endif
-  }
-
-#ifndef DISPLAYBUFFER
-  /* for CGFOUR dev */
-  if (DisplayType == SUN4COLOR) {
-    ColorFb = pr_open("/dev/fb");
-    pr_set_plane_group(ColorFb, PIXPG_OVERLAY_ENABLE);
-    pr_rop(ColorFb, 0, 0, ColorFb->pr_width, ColorFb->pr_height, PIX_SET, 0, 0, 0);
-    pr_set_plane_group(ColorFb, PIXPG_OVERLAY);
-  }
-#else  /* DISPLAYBUFFER is T */
-/*  ColorDisplayPixrect = pr_open("/dev/fb");
-    pr_putcolormap(ColorDisplayPixrect, 1, 1, &black, &black, &black);
-    pr_putcolormap(ColorDisplayPixrect, 0, 1, &white, &white, &white);
-    pr_putcolormap(ColorDisplayPixrect, 255, 1, &black, &black, &black);
-    pr_putcolormap(ColorDisplayPixrect,
-                   (1<<ColorDisplayPixrect->pr_depth)-1, 1,
-                   &black, &black, &black);
-***/
-#endif /* DISPLAYBUFFER */
-
-  init_cursor();
-
-#ifndef DISPLAYBUFFER
-  size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
-  mmapstat = (int)mmap(DisplayRegion68k, size, PROT_READ | PROT_WRITE,
-#ifdef OS4
-                       MAP_FIXED |
-#endif /* OS4 */
-
-                           MAP_SHARED,
-                       FrameBufferFd, 0);
-
-  if (mmapstat == -1) {
-    fprintf(stderr, "re_init_display: ERROR at mmap system call\n");
-    fprintf(stderr, "errno = %d\n\n", errno);
-    return (0);
-  }
-
-  copy_region(HideDisp68k, DisplayRegion68k, DisplayRasterWidth, displayheight);
-
-  free(HideDisp68k);
-#endif /* DISPLAYBUFFER */
-
-#ifdef DISPLAYBUFFER
-  ColorDisplayPixrect = pr_open("/dev/fb");
-  flush_display_buffer();
-/*     refresh_CG6; */
-
-#endif /* DISPLAYBUFFER */
-
-#endif /* SUNDISPLAY */
 
   return (0);
 }
@@ -1254,163 +1024,6 @@ static int re_init_display(int lisp_display_addr, int display_max)
 
 static int re_init_display(int lisp_display_addr, int display_max)
 {
-#ifdef SUNDISPLAY
-  int mmapstat, size;
-  struct pixrect *ColorFb;
-  struct pixrect *color_source;
-  extern int DisplayType;
-  union wait status;
-
-  if (Win_security_p) {
-    switch (vfork()) {
-      case -1: /* Error */ (void)fprintf(stderr, "re_init_display: Fork failed.\n"); exit(1);
-
-      case 0: /* Child */
-        (void)execl(SV_ACQUIRE, "sv_acquire", "0", "256", "250", NULL);
-        /* should not return */
-        (void)fprintf(stderr, "re_init_display: exec for sv_acquire failed\n");
-        exit(1);
-
-      default: /* Parent */
-        /* do nothing */
-        break;
-    }
-    (void)wait(&status); /* child dies after changing 6 */
-
-    if (status.w_retcode != 0) {
-      (void)fprintf(stderr, "re_init_display: failed to set ownership of win devices\n");
-      exit(1);
-    }
-  }
-
-  mess_init();
-  if ((LispWindowFd = win_screennew(&LispScreen)) == -1) {
-    fprintf(stderr, "init_display: can't create LispWindow\n");
-    return (-1);
-  } else {
-#ifdef KBINT
-    int_io_open(LispWindowFd);
-    fcntl(LispWindowFd, F_SETFL, fcntl(LispWindowFd, F_GETFL, 0) | O_NONBLOCK);
-#endif
-  }
-
-#ifdef DISPLAYBUFFER
-  if ((FrameBufferFd = open(LispScreen.scr_fbname, 2)) == -1) {
-    perror("init_display: can't open FrameBuffer\n");
-    exit(-1);
-  }
-#endif /* DISPLAYBUFFER */
-
-  restore_colormap();
-
-  if (MonoOrColor == MONO_SCREEN) {
-#ifndef DISPLAYBUFFER
-    /* for CGFOUR dev */
-    if (DisplayType == SUN4COLOR) {
-      ColorFb = pr_open("/dev/fb");
-      pr_set_plane_group(ColorFb, PIXPG_OVERLAY_ENABLE);
-      pr_rop(ColorFb, 0, 0, ColorFb->pr_width, ColorFb->pr_height, PIX_SET, 0, 0, 0);
-      pr_set_plane_group(ColorFb, PIXPG_OVERLAY);
-    }
-#else  /* DISPLAYBUFFER is T */
-/*  ColorDisplayPixrect = pr_open("/dev/fb");
-    pr_putcolormap(ColorDisplayPixrect, 1, 1, &black, &black, &black);
-    pr_putcolormap(ColorDisplayPixrect, 0, 1, &white, &white, &white);
-    pr_putcolormap(ColorDisplayPixrect, 255, 1, &black, &black, &black);
-    pr_putcolormap(ColorDisplayPixrect,
-                   (1<<ColorDisplayPixrect->pr_depth)-1, 1,
-                   &black, &black, &black);
-***/
-#endif /* DISPLAYBUFFER */
-
-    init_cursor();
-
-#ifndef DISPLAYBUFFER
-    size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
-
-    mmapstat = (int)mmap(DisplayRegion68k, size, PROT_READ | PROT_WRITE,
-#ifdef OS4
-                         MAP_FIXED |
-#endif /* OS4 */
-
-                             MAP_SHARED,
-                         FrameBufferFd, 0);
-    if (Inited_Color)
-      mmapstat = (int)mmap(ColorDisplayRegion68k, Dispcolorsize, PROT_READ | PROT_WRITE,
-#ifdef OS4
-                           MAP_FIXED |
-#endif /* OS4 */
-
-                               MAP_SHARED,
-                           FrameBufferFd, 0x40000);
-
-    if (mmapstat == -1) {
-      fprintf(stderr, "re_init_display: ERROR at mmap system call\n");
-      fprintf(stderr, "errno = %d\n\n", errno);
-      return (0);
-    }
-    /* restore mono image */
-    copy_region(HideDisp68k, DisplayRegion68k, DisplayRasterWidth, displayheight);
-
-    free(HideDisp68k);
-
-    if (Inited_Color) { /* restore color image */
-      copy_region(HideColorDisp68k, ColorDisplayRegion68k, DisplayRasterWidth * 8, displayheight);
-      free(HideColorDisp68k);
-    } /* end if( Inited_Color ) */
-#endif /* DISPLAYBUFFER */
-
-#ifdef DISPLAYBUFFER
-    ColorDisplayPixrect = pr_open("/dev/fb");
-    flush_display_buffer();
-/*     refresh_CG6; */
-#endif /* DISPLAYBUFFER */
-
-  } else { /* MonoOrColor is COLOR_SCREEN */
-    ColorFb = pr_open("/dev/fb");
-#ifdef DISPLAYBUFFER
-    ColorDisplayPixrect = ColorFb;
-#endif /* DISPLAYBUFFER */
-
-    color_source = mem_point(displaywidth, displayheight, 8, ColorDisplayRegion68k);
-    pr_rop(ColorFb, 0, 0, displaywidth, displayheight, PIX_SRC, color_source, 0, 0);
-#ifndef DISPLAYBUFFER
-    pr_set_plane_group(ColorFb, PIXPG_OVERLAY_ENABLE);
-    pr_rop(ColorFb, 0, 0, ColorFb->pr_width, ColorFb->pr_height, PIX_CLR, 0, 0, 0);
-#endif /* DISPLAYBUFFER */
-
-    pr_set_plane_group(ColorFb, PIXPG_8BIT_COLOR);
-    init_cursor();
-    mmapstat = (int)mmap(ColorDisplayRegion68k, Dispcolorsize, PROT_READ | PROT_WRITE,
-#ifdef OS4
-                         MAP_FIXED |
-#endif
-                             MAP_SHARED,
-                         FrameBufferFd, 0x40000);
-    if (mmapstat == -1) {
-      perror("cgfour_init_color_display: ERROR at mmap system call\n");
-      error(
-          "cgfour_init_color_display: ERROR at mmap system call\n You may be able to continue by "
-          "typing 'q'");
-      /*                  printf("MMAP FAIL:BMBASE=0x%x\nNATIVE:= 0x%x\nLISPBASEN:= 0x%x\n",
-                              color_bitmapbase,ColorDisplayRegion68k,Lisp_world);
-      */
-      return (NIL);
-    } /* end if(mmapstat) */
-
-#ifndef DISPLAYBUFFER
-    /* restore mono image */
-    copy_region(HideDisp68k, DisplayRegion68k, DisplayRasterWidth, displayheight);
-
-    free(HideDisp68k);
-#endif /* DISPLAYBUFFER */
-
-    /* restore coloe image */
-    copy_region(HideColorDisp68k, ColorDisplayRegion68k, DisplayRasterWidth * 8, displayheight);
-
-    free(HideColorDisp68k);
-  } /* end if(MonoOrColor) */
-#endif /* SUNDISPLAY */
 
   return (0);
 }
