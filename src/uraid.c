@@ -135,17 +135,10 @@ v filename              Save the virtual memory on the filename(Not Bootable)
 
 */
 /************************************************************************/
-#ifndef NOPIXRECT
-extern int black, white;
-extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
-#endif /* NOPIXRECT */
 
 extern int DisplayRasterWidth;
 extern unsigned int LispWindowFd, LispKbdFd;
 extern fd_set LispReadFds;
-#ifndef NOPIXRECT
-extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
-#endif /* NOPIXRECT */
 extern struct cursor CurrentCursor, InvisibleCursor;
 extern struct screen LispScreen;
 extern int displaywidth, displayheight;
