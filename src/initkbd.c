@@ -31,15 +31,6 @@
 #include <stk.h>
 #endif /* DOS */
 
-#ifdef SUNDISPLAY
-#include <sundev/kbd.h>
-#include <sundev/kbio.h>
-#include <sunwindow/window_hs.h>
-#include <sunwindow/cms.h>
-#include <sys/ioctl.h>
-#include <sunwindow/win_ioctl.h>
-#include <pixrect/pixrect_hs.h>
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
 #include <X11/Xlib.h>
@@ -76,9 +67,6 @@ extern MouseInterface currentmouse;
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 #endif /* DOS */
-#ifdef SUNDISPLAY
-extern struct screen LispScreen;
-#endif /* SUNDISPLAY */
 
 extern int LispWindowFd;
 int LispKbdFd = -1;
@@ -88,9 +76,6 @@ int DebugKBD = NIL;
 FILE *KBlog;
 
 extern fd_set LispReadFds;
-#ifdef SUNDISPLAY
-struct inputmask LispEventMask;
-#endif /* SUNDISPLAY */
 
 IOPAGE *IOPage68K;
 
@@ -214,33 +199,13 @@ u_char DOSLispKeyMap_101[0x80] = {
 
 void init_keyboard(int flg) /* if 0 init else re-init */
 {
-#ifdef SUNDISPLAY
-  int keytrans;
-#endif
 
   set_kbd_iopointers();
 
-#ifdef SUNDISPLAY
-  if ((LispKbdFd = open(LispScreen.scr_kbdname, O_RDWR)) == -1) {
-    fprintf(stderr, "can't open %s\n", LispScreen.scr_kbdname);
-    exit(-1);
-  }
-#endif /* SUNDISPLAY */
 
   if (flg == 0) { keyboardtype(LispKbdFd); }
 
-#ifdef SUNDISPLAY
-  keytrans = TR_UNTRANS_EVENT; /* keyboard does not encode key */
-  if (ioctl(LispKbdFd, KIOCTRANS, &keytrans) == -1) {
-    fprintf(stderr, "Error at ioctl errno =%d\n", errno);
-    exit(-1);
-  }
-  close(LispKbdFd);
-#ifdef KBINT
-  int_io_open(LispWindowFd); /* from init_dsp, try to prevent mouse-move-no-kbd bug */
-#endif                       /*  KBINT */
-  seteventmask(&LispEventMask);
-#elif XWINDOW
+#if   XWINDOW
   init_Xevent(currentdsp);
 
 #elif DOS
@@ -262,22 +227,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 /*  ----------------------------------------------------------------*/
 
 void device_before_exit() {
-#ifdef SUNDISPLAY
-  int keytrans;
-
-  if ((LispKbdFd = open(LispScreen.scr_kbdname, O_RDWR)) == -1) {
-    fprintf(stderr, "can't open %s\n", LispScreen.scr_kbdname);
-    exit(-1);
-  }
-
-  keytrans = TR_EVENT; /* keyboard encodes key */
-  if (ioctl(LispKbdFd, KIOCTRANS, &keytrans) == -1) {
-    fprintf(stderr, "Error at ioctl errno =%d\n", errno);
-    exit(-1);
-  }
-  close(LispKbdFd);
-
-#elif DOS
+#if   DOS
   (currentmouse->device.exit)(currentmouse, currentdsp);
   (currentkbd->device.exit)(currentkbd);
 #endif /* SUNDISPLAY DOS*/
@@ -315,24 +265,6 @@ void set_kbd_iopointers() {
 
 /*  ----------------------------------------------------------------*/
 
-#ifdef SUNDISPLAY
-void seteventmask(struct inputmask *eventmask)
-{
-  input_imnull(eventmask);
-  eventmask->im_flags |= IM_ASCII | IM_NEGASCII | IM_NEGEVENT;
-
-  win_setinputcodebit(eventmask, MS_LEFT);
-  win_setinputcodebit(eventmask, MS_MIDDLE);
-  win_setinputcodebit(eventmask, MS_RIGHT);
-  win_setinputcodebit(eventmask, LOC_MOVE);
-  win_unsetinputcodebit(eventmask, LOC_STILL);
-  win_unsetinputcodebit(eventmask, LOC_MOVEWHILEBUTDOWN);
-  win_unsetinputcodebit(eventmask, LOC_WINENTER);
-  win_unsetinputcodebit(eventmask, LOC_WINEXIT);
-
-  win_setinputmask(LispWindowFd, eventmask, eventmask, WIN_NULLLINK);
-}
-#endif /* SUNDISPLAY */
 
 #define MIN_KEYTYPE 3
 #define KB_AS3000J (7 + MIN_KEYTYPE)
@@ -500,11 +432,6 @@ void keyboardtype(int fd)
     type = KB_X;
 #elif DOS
     type = KB_DOS;
-#elif SUNDISPLAY
-    if (ioctl(fd, KIOCTYPE, &type) != 0) {
-      error("keyboardtype:IOCTL(KIOCTYPE) fails (cont. w. type-3");
-      type = KB_SUN3;
-    } /* otherwise, type is set */
 #endif /* XWINDOW */
   } /* if end */
   else {

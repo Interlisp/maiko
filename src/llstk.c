@@ -482,9 +482,6 @@ extern struct cursor CurrentCursor;
 void flip_cursorbar(int n)
 {
   GETWORD(EmCursorBitMap68K + n) = ~(GETWORD(EmCursorBitMap68K + n));
-#ifdef SUNDISPLAY
-  win_setcursor(LispWindowFd, &CurrentCursor);
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
   /* JDS 011213 When using current_hot_y, remember fn does 15-it! */

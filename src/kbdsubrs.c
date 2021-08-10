@@ -22,11 +22,6 @@
 #include <sys/select.h>
 #endif /* DOS */
 
-#ifdef SUNDISPLAY
-#include <sundev/kbd.h>
-#include <sundev/kbio.h>
-#include <sunwindow/window_hs.h>
-#endif /* SUNDISPLAY */
 
 #include "lispemul.h"
 
@@ -55,9 +50,6 @@ extern DspInterface currentdsp;
  *
  ****************************************************/
 
-#ifdef SUNDISPLAY
-extern struct screen LispScreen;
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
 #include <X11/Xlib.h>
@@ -72,17 +64,13 @@ void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
                                      */
 {
   if (args[0] == ATOM_T) {
-#ifdef SUNDISPLAY
-    FD_SET(LispWindowFd, &LispReadFds);
-#elif XWINDOW
+#if   XWINDOW
     enable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.enter)(currentkbd);
 #endif /* DOS */
   } else if (args[0] == NIL) {
-#ifdef SUNDISPLAY
-    FD_CLR(LispWindowFd, &LispReadFds);
-#elif XWINDOW
+#if   XWINDOW
     disable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.exit)(currentkbd);
@@ -116,28 +104,7 @@ void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
                                    * args[1] :	frequency
                                    */
 {
-#ifdef SUNDISPLAY
-  int keycommand;
-
-  /*	belltime.tv_usec = args[1] & 0xffff;
-          win_bell(LispWindowFd, belltime, 0);
-  */
-  if ((LispKbdFd = open(LispScreen.scr_kbdname, O_RDWR)) == -1)
-    fprintf(stderr, "can't open %s, errno=%d\n", LispScreen.scr_kbdname, errno);
-
-  if (args[0] == ATOM_T) {
-    keycommand = KBD_CMD_BELL; /* Turn on the bell */
-    if (ioctl(LispKbdFd, KIOCCMD, &keycommand) == -1)
-      fprintf(stderr, "Error at ioctl errno =%d\n", errno);
-  } else {
-    keycommand = KBD_CMD_NOBELL; /* Turn off the bell */
-    if (ioctl(LispKbdFd, KIOCCMD, &keycommand) == -1)
-      fprintf(stderr, "Error at ioctl errno =%d\n", errno);
-  }
-
-  close(LispKbdFd);
-
-#elif XWINDOW
+#if   XWINDOW
   if (args[0] == ATOM_T) beep_Xkeyboard(currentdsp);
 #elif DOS
   if (args[0] == ATOM_T) {

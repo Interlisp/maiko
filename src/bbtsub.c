@@ -37,12 +37,6 @@
 #include "xdefs.h"
 #endif /* XWINDOW */
 
-#ifdef SUNDISPLAY
-#ifndef NOPIXRECT
-#include <sunwindow/window_hs.h>
-#include <sunwindow/win_ioctl.h>
-#endif /* NOPIXRECT */
-#endif /* SUNDISPLAY */
 
 #include "lispemul.h"
 #include "lspglob.h"
@@ -87,10 +81,8 @@ extern int  kbd_for_makeinit;
   };
 #endif
 
-#if !defined(SUNDISPLAY)
 #include "devif.h"
 extern DspInterface currentdsp;
-#endif /* SUNDISPLAY */
 
 #ifdef COLOR
 extern int MonoOrColor;
@@ -1623,41 +1615,6 @@ LispPTR newbltchar(LispPTR *args) {
 
       LOCKSCREEN;
 
-#ifdef SUNDISPLAY
-      if (displayflg = old_cursorin(pbt->pbtdesthi, pbt->pbtdestlo, left, (right - left),
-                                    pbt->pbtheight, y, pbt->pbtbackward)) {
-        HideCursor;
-        if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,
-                   PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect, sourcebit,
-                   0) != 0)
-          error("pilotbitblt: pr_rop failed\n");
-/* Save SHOWCURSOR 'til after paint to screen */
-#ifndef DISPLAYBUFFER
-        ShowCursor;
-#endif
-      } /* display case */
-      else {
-        if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,
-                   PixOperation(pbt->pbtsourcetype, pbt->pbtoperation), SrcePixRect, sourcebit,
-                   0) != 0)
-          error("pilotbitblt: pr_rop failed\n");
-
-      } /* else */
-
-#ifdef DISPLAYBUFFER
-#ifdef COLOR
-      if (MonoOrColor == MONO_SCREEN)
-#endif /* COLOR */
-
-        if (in_display_segment(dstbase)) {
-          /*               DBPRINT(("newbltchar:  x %d, y 0x%x, w %d, h %d.\n", left, dstbase,
-           * (right - left), pbt->pbtheight)); */
-
-          flush_display_lineregion(left, dstbase, (right - left), pbt->pbtheight);
-          if (displayflg) ShowCursor; /* because hide is done earlier */
-        }
-#endif
-#endif /* SUNDISPLAY */
 
 #ifdef XWINDOW
       if (pr_rop(DestPixRect, left, 0, (right - left), pbt->pbtheight,

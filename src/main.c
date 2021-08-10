@@ -517,9 +517,6 @@ int main(int argc, char *argv[])
 
   /* Get OS message to ~/lisp.log and print the message to prompt window */
   if (!for_makeinit) {
-#ifdef SUNDISPLAY
-    mess_init();
-#endif /* SUNDISPLAY */
 
     init_keyboard(0); /* can't turn on the keyboard yet or you will die
                          in makeinit.  Pilotbitblt will turn it on if
