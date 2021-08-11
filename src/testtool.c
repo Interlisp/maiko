@@ -1241,8 +1241,6 @@ void dtd_chain(DLword type) {
 
 } /*  dtd_chain end **/
 
-#ifdef DTDDEBUG
-
 void check_dtd_chain(DLword type)
 {
   register LispPTR next, onext;
@@ -1269,8 +1267,6 @@ void check_dtd_chain(DLword type)
     next &= POINTERMASK;
   }
 }
-
-#endif
 
 /************************************************************************/
 /*									*/
