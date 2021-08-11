@@ -41,6 +41,9 @@
 #include "allocmdsdefs.h"
 #include "commondefs.h"
 #include "gchtfinddefs.h"
+#ifdef DTDDEBUG
+#include "testtooldefs.h"
+#endif
 
 static LispPTR oldoldfree;
 static LispPTR oldfree;
