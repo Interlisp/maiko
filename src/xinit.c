@@ -324,9 +324,11 @@ DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int heig
       dsp->ScreenBitmap.bitmap_bit_order = MSBFirst;
       dsp->ScreenBitmap.bitmap_pad = 32;
       dsp->ScreenBitmap.depth = 1;
+      dsp->ScreenBitmap.bits_per_pixel = 1;
       dsp->ScreenBitmap.bytes_per_line =
           ((dsp->Display.width + (BITSPER_DLWORD - 1)) / BITSPER_DLWORD) * (BITSPER_DLWORD / 8);
       break;
   }
+  XInitImage(&dsp->ScreenBitmap);
   return (dsp);
 }
