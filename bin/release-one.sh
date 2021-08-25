@@ -4,7 +4,7 @@
 
 tag=$1
 if [ -z "$tag" ] ; then
-    tag=nightly-`date +%y%m%d`
+    tag=maiko-`date +%y%m%d`
 fi
 
 cd ../maiko/bin
@@ -15,10 +15,10 @@ osarch=`osversion`.`machinetype`
 ./makeright init
 
 cd ../..
+mkdir -p maiko/build
+echo making $tag-$osarch.tgz
 
-echo making maiko-$tag-$osarch.tgz
-
-tar cfz maiko/build/maiko-$tag-$osarch.tgz   \
+tar cfz maiko/build/$tag-$osarch.tgz   \
     maiko/bin/osversion			     \
     maiko/bin/machinetype		     \
     maiko/bin/config.guess		     \
@@ -26,4 +26,5 @@ tar cfz maiko/build/maiko-$tag-$osarch.tgz   \
     maiko/$osarch/lde*
 
 echo uploading
-gh release upload --clobber $tag tmp/maiko-$tag-$osarch.tgz
+cd maiko
+gh release upload --clobber $tag build/$tag-$osarch.tgz
