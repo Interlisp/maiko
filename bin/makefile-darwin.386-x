@@ -13,7 +13,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/opt/X11/include -DXWINDOW
+XFLAGS = -I/opt/X11/include -DXWINDOW -DLOCK_X_UPDATES
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g

@@ -30,7 +30,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xrdopt.o \
 	$(OBJECTDIR)xwinman.o
 
-XFLAGS = -DXWINDOW
+XFLAGS = -DXWINDOW -DLOCK_X_UPDATES
 
 # OPTFLAGS is normally -g for MAKEINIT, as it needs debugging often.
 OPTFLAGS = -g3 -O0
