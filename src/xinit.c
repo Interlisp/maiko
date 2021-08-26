@@ -108,13 +108,15 @@ void lisp_Xexit(DspInterface dsp)
 {
   assert(Lisp_Xinitialized);
 
-#if defined(OS5) && defined(I_SETSIG)
+#if defined(I_SETSIG)
   ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
 #endif
 
+  XLOCK;
   XDestroySubwindows(dsp->display_id, dsp->LispWindow);
   XDestroyWindow(dsp->display_id, dsp->LispWindow);
   XCloseDisplay(dsp->display_id);
+  XUNLOCK(dsp);
 
   Lisp_Xinitialized = false;
 } /* end lisp_Xexit */
