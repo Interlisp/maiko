@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Start Maiko release from maiko/bin
+#     startrelease [tag]
+# tag defaults to maiko-YYMMDD
+
+case `gh version` in
+    "gh version 1.*" | "gh version 2.*" )
+    # ok
+    ;;
+    "*")
+	echo github command line interface 'gh'
+	echo not installed or wrong version
+	exit 1
+	;;
+esac
+
+tag=$1
+if [ -z "$tag" ] ; then
+    tag=maiko-`date +%y%m%d`
+fi
+
+gh release create $tag -p -t $tag -n "See release notes in medley repo"
+
+echo Now run ./release-one $tag
+echo in maiko/bin on every os/machine. When done, edit the release in your
+echo browser and uncheck the "prerelease" box		

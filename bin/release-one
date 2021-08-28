@@ -1,8 +1,19 @@
 #!/bin/sh
 # Make and release maiko for one os / arch
 
+case `gh version` in
+    "gh version 1.*" | "gh version 2.*" )
+    # ok
+    ;;
+    "*")
+	echo github command line interface 'gh'
+	echo not installed or wrong version
+	exit 1
+	;;
+esac
+
 if [ ! -x ../../maiko/bin/machinetype ] ; then
-    echo run from MAIKODIR/bin
+    echo run from maiko/bin
     exit 1
 fi
 
@@ -22,7 +33,7 @@ cd ../..
 mkdir -p maiko/build
 echo making $tag-$osarch.tgz
 
-tar cfz maiko/build/$tag-$osarch.tgz   \
+tar cfz maiko/build/$tag-$osarch.tgz         \
     maiko/bin/osversion                      \
     maiko/bin/machinetype                    \
     maiko/bin/config.guess                   \
