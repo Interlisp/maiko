@@ -16,6 +16,19 @@ IF(CMAKE_C_COMPILER_ID MATCHES "SunPro")
   SET(CMAKE_C_FLAGS "-fno-strict-aliasing ${CMAKE_C_FLAGS}")
 ENDIF()
 
+find_program(
+    CLANG_TIDY_EXE
+    NAMES "clang-tidy" "clang-tidy12" "clang-tidy11" "clang-tidy10"
+    DOC "Path to clang-tidy executable"
+)
+
+IF (CLANG_TIDY_EXE)
+# There are many many warnings for strcpy instances to deal with,
+# but suppress it for now so that other issues are more obvious
+#
+   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy -header-filter=.*)
+ENDIF()
+
 INCLUDE(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(m fmod "" NEED_LIB_M)
 IF(NEED_LIB_M)
