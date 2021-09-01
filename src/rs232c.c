@@ -253,7 +253,7 @@ rs232c_read() {
       }
     } else {
       /*
-       * SIGIO handler getsignaldata and the successive
+       * SIGIO handler, process_io_events, and the successive
        * rs232c_read has been called before Lisp prepares
        * the next buffer.  Turn on RS232C_remain_data to
        * specify to read the remaining data after.

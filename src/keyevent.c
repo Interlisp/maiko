@@ -133,10 +133,6 @@ extern DLword *DisplayRegion68k;
 static struct timeval SelectTimeout = {0, 0};
 #endif /* DOS */
 
-#ifdef XWINDOW
-extern volatile sig_atomic_t Event_Req;
-#endif /* XWINDOW */
-
 extern MISCSTATS *MiscStats;
 LispPTR *LASTUSERACTION68k;
 LispPTR *CLastUserActionCell68k;
@@ -187,7 +183,7 @@ LispPTR *MOUSECHORDTICKS68k;
 /**NEW GLOBAL***-> will be moved***/
 LispPTR *KEYBOARDEVENTQUEUE68k;
 LispPTR *KEYBUFFERING68k;
-int KBDEventFlg = NIL;
+int KBDEventFlg = 0;
 DLword *CTopKeyevent;
 
 LispPTR DOBUFFEREDTRANSITION_index;
@@ -213,20 +209,12 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 
 /************************************************************************/
 /*									*/
-/*			G E T S I G N A L D A T A			*/
+/*			p r o c e s s _ i o _ e v e n t s		*/
 /*									*/
-/*	Handler for the SIGIO interrupt, which happens			*/
-/*		1. When a key transition happens			*/
-/*		2. On mouse moves					*/
-/*		3. When TCP input becomes available.			*/
-/*		4. When a NIT ethernet packet becomes available.	*/
-/*		5. When a console/log/stderr msg needs to be printed.	*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
-/*									*/
+/*	Periodically, or After a SIGIO interrupt which happens		*/
+/*		1. When TCP input becomes available.			*/
+/*		2. When a NIT ethernet packet becomes available.	*/
+/*		3. When a console/log/stderr msg needs to be printed.	*/
 /*									*/
 /*									*/
 /*	Statics:  LispReadFds	A 32-bit vector with a 1 for each	*/
@@ -256,49 +244,16 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void getsignaldata(int sig)
+void process_io_events()
 {
 #ifndef DOS
-  fd_set rfds, efds;
+  fd_set rfds;
   u_int iflags;
   int i;
 
-#ifdef XWINDOW
-#if defined(sun)
-  if (Event_Req) {
-    if (!XLocked++)
-      getXsignaldata(currentdsp);
-    else
-      XNeedSignal = 1;
-    Event_Req = FALSE;
-    XLocked--;
-  }
-#endif
-#endif /* XWINDOW */
-
-  /* #ifndef KBINT */
-  /* FD_COPY would be preferred but uses deprecated bcopy() on macOS.  Why? */
   memcpy(&rfds, &LispReadFds, sizeof(rfds));
-  memcpy(&efds, &LispReadFds, sizeof(efds));
 
-/* label and ifs not needed if only keyboard on SIGIO */
-getmore:
-  if (select(32, &rfds, NULL, &efds, &SelectTimeout) >= 0)
-  {
-      /* need to print out fd sets...
-    DBPRINT(("SIGIO: fd mask(r/e) = 0x%x/0x%x.\n", rfds, efds));
-      */
-
-
-#ifdef XWINDOW
-    if (FD_ISSET(ConnectionNumber(currentdsp->display_id), &rfds)) {
-      if (!XLocked)
-        getXsignaldata(currentdsp);
-      else
-        XNeedSignal = 1;
-    }
-
-#endif /* XWINDOW */
+  if (select(32, &rfds, NULL, NULL, &SelectTimeout) > 0) {
 
 #ifdef MAIKO_ENABLE_ETHERNET
     if (ether_fd >= 0 && FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
@@ -338,7 +293,7 @@ getmore:
   }
 /* #endif */
 #endif /* DOS */
-} /* end getsignaldata */
+} /* end process_io_events */
 
 
 /************************************************************************/

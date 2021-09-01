@@ -13,7 +13,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/opt/X11/include -DXWINDOW -DLOCK_X_UPDATES
+XFLAGS = -I/opt/X11/include -DXWINDOW
 
 # OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
 OPTFLAGS =  -O0 -g

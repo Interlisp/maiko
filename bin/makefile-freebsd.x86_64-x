@@ -13,7 +13,7 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xwinman.o
 
 
-XFLAGS = -I/usr/local/include -DXWINDOW -DLOCK_X_UPDATES
+XFLAGS = -I/usr/local/include -DXWINDOW
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS = -O2 -g
