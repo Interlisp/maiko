@@ -460,7 +460,7 @@ static void int_timer_init()
 
   timer_action.sa_handler = int_timer_service;
   sigemptyset(&timer_action.sa_mask);
-  timer_action.sa_flags = 0;
+  timer_action.sa_flags = SA_RESTART;
 
   if (sigaction(SIGVTALRM, &timer_action, NULL) == -1) {
     perror("sigaction: SIGVTALRM");
