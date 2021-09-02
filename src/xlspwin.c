@@ -340,8 +340,8 @@ void DoRing() {
   KBEVENT *kbevent;
 
   TPRINT(("TRACE: DoRing()\n"));
-
 do_ring:
+  /* DEL is not generally present on a Mac X keyboard, Ctrl-shift-ESC would be 18496 */
   if (((*EmKbdAd268K) & 2113) == 0) { /*Ctrl-shift-NEXT*/
     error("******  EMERGENCY Interrupt ******");
     *EmKbdAd268K = KB_ALLUP;          /*reset*/

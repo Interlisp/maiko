@@ -171,7 +171,7 @@ void beep_Xkeyboard(DspInterface dsp)
 
 /************************************************************************/
 /*									*/
-/*		    g e t X s i g n a l d a t a				*/
+/*		    p r o c e s s _ X e v e n t s			*/
 /*									*/
 /*  Take X key/mouse events and turn them into Lisp events		*/
 /*									*/
@@ -179,7 +179,7 @@ void beep_Xkeyboard(DspInterface dsp)
 
 extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
-void getXsignaldata(DspInterface dsp)
+void process_Xevents(DspInterface dsp)
 {
   XEvent report;
 
@@ -193,8 +193,6 @@ void getXsignaldata(DspInterface dsp)
               (short)((report.xmotion.x + dsp->Visible.x) & 0xFFFF) - Current_Hot_X;
           *EmCursorY68K = (*((DLword *)EmMouseY68K)) =
               (short)((report.xmotion.y + dsp->Visible.y) & 0xFFFF) - Current_Hot_Y;
-          DoRing();
-          if ((KBDEventFlg) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
           break;
         case KeyPress:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
@@ -342,4 +340,4 @@ void getXsignaldata(DspInterface dsp)
       Set_BitGravity(&report.xbutton, dsp, dsp->NWGrav, NorthWestGravity);
     XFlush(dsp->display_id);
   } /* end while */
-} /* end getXsignaldata() */
+} /* end process_Xevents */
