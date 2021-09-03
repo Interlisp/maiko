@@ -26,7 +26,7 @@ IF (CLANG_TIDY_EXE)
 # There are many many warnings for strcpy instances to deal with,
 # but suppress it for now so that other issues are more obvious
 #
-   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy -header-filter=.*)
+   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
 ENDIF()
 
 INCLUDE(CheckLibraryExists)
