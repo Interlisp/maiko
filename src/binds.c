@@ -33,7 +33,7 @@ LispPTR *N_OP_bind(register LispPTR *stack_pointer, register LispPTR tos, int by
   register int n1;         /* # slots to bind to NIL (0, 0) */
   register int n2;         /* # slots to bind to value in stack */
   register LispPTR *ppvar; /* pointer to argued slot in Pvar area */
-  register int i;          /* temporary for control */
+  register unsigned i;          /* temporary for control */
 
 #ifdef TRACE
   printPC();
