@@ -223,7 +223,6 @@ error Must specify RELEASE to build Medley.
 #ifdef OS5
 		/* Solaris, sort of SYSV-ish, but not really */
 #define MAIKO_ENABLE_ETHERNET
-#define LOCK_X_UPDATES 1
 #endif /* OS5 */
 
 

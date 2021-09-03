@@ -99,6 +99,7 @@
 #include "ubf3defs.h"
 #include "unwinddefs.h"
 #include "vars3defs.h"
+#include "xwinmandefs.h"
 #include "z2defs.h"
 
 #ifdef DOS
@@ -108,6 +109,8 @@ extern IOPAGE *IOPage68K;
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 extern MouseInterface currentmouse;
+#else
+extern DspInterface currentdsp;
 #endif /* DOS */
 
 typedef struct conspage ConsPage;
@@ -141,11 +144,8 @@ register LispPTR tscache asm("bx");
 #define PVARL PVar
 #define IVARL IVar
 
-#ifdef XWINDOW
-extern volatile sig_atomic_t Event_Req;       /* != 0 when it's time to check X events
-                                                 on machines that don't get them reliably
-                                                 (e.g. Suns running OpenWindows) */
-#endif                /* XWINDOW */
+/* used by SIGIO signal handler to indicate I/O may be possible */
+extern volatile sig_atomic_t IO_Signalled;
 
 #ifdef PCTRACE
 /* For keeping a trace table (ring buffer) of 100 last PCs */
@@ -1112,17 +1112,22 @@ check_interrupt:
       Irq_Stk_End = (UNSIGNED)EndSTKP;
     }
 
-    /* Check for an IRQ request */
+    /* This is a good time to process keyboard/mouse and ethernet I/O
+     * X events are not managed in the async/SIGIO code while
+     * raw ethernet, serial port, and socket connections are.
+     * If the system is configured with SIGIO handling we have a hint
+     * that allows us to cheaply skip if there's nothing to do
+     */
+    process_Xevents(currentdsp);
+
+    if (IO_Signalled) {
+      IO_Signalled = FALSE;
+      process_io_events();
+    }
 
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
       if (StkOffset_from_68K(CSTKPTR) > InterfacePage->stackbase) {
         /* Interrupts not Disabled */
-        /* XXX: what on earth is this code trying to accomplish by calling
-           getsignaldata
-        */
-#if !defined(KBINT) || defined(OS4)
-        getsignaldata(0);
-#endif
         EXT;
         update_timer();
 

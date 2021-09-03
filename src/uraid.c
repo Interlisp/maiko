@@ -777,10 +777,6 @@ LispPTR uraid_commands() {
         printf("VMEMSAVE: v filename (it's NOT bootable)\n");
         return (T);
       }
-#ifndef DISPLAYBUFFER
-      copy_region(HideDisp68k, DisplayRegion68k, DisplayRasterWidth, displayheight);
-#endif /* DISPLAYBUFFER */
-
       if (vmem_save(URaid_arg1) != NIL) {
 #ifndef DISPLAYBUFFER
         clear_display();
@@ -979,7 +975,7 @@ int device_after_raid() {
 
 
 #ifdef MAIKO_ENABLE_ETHERNET
-  FD_SET(ether_fd, &LispReadFds);
+  if (ether_fd > 0) FD_SET(ether_fd, &LispReadFds);
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef XWINDOW

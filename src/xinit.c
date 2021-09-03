@@ -30,6 +30,7 @@
 #include "adr68k.h"
 #include "xinitdefs.h"
 #include "dspifdefs.h"
+#include "timerdefs.h"
 #include "xbbtdefs.h"
 #include "xlspwindefs.h"
 #include "xwinmandefs.h"
@@ -65,7 +66,6 @@ Colormap Colors;
 
 volatile sig_atomic_t XLocked = 0; /* non-zero while doing X ops, to avoid signals */
 volatile sig_atomic_t XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
-extern fd_set LispReadFds;
 
 /************************************************************************/
 /*									*/
@@ -108,13 +108,11 @@ void lisp_Xexit(DspInterface dsp)
 {
   assert(Lisp_Xinitialized);
 
-#if defined(OS5) && defined(I_SETSIG)
-  ioctl(ConnectionNumber(dsp->display_id), I_SETSIG, 0); /* so no interrupts happen during */
-#endif
-
+  XLOCK;
   XDestroySubwindows(dsp->display_id, dsp->LispWindow);
   XDestroyWindow(dsp->display_id, dsp->LispWindow);
   XCloseDisplay(dsp->display_id);
+  XUNLOCK(dsp);
 
   Lisp_Xinitialized = false;
 } /* end lisp_Xexit */
@@ -178,9 +176,6 @@ void Open_Display(DspInterface dsp)
 {
   assert(Lisp_Xinitialized == false);
 
-  FD_SET(ConnectionNumber(dsp->display_id), &LispReadFds);
-  fcntl(ConnectionNumber(dsp->display_id), F_SETOWN, getpid());
-
   /****************************************************/
   /* If debugging, set the X connection so that	*/
   /* we run synchronized--so a debugger can		*/
@@ -198,7 +193,7 @@ void Open_Display(DspInterface dsp)
 
   Create_LispWindow(dsp); /* Make the main window */
   Lisp_Xinitialized = true;
-  init_Xevent(dsp); /* Turn on the intrpts. */
+  init_Xevent(dsp); /* Turn on the event reporting */
 } /* end OpenDisplay */
 
 /*********************************************************************/

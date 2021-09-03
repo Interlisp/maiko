@@ -41,7 +41,7 @@ OPTFLAGS = -g3 -O0
 
 DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 
-MACHINEFLAGS = -DOS5 -DUSE_DLPI -DLOCK_X_UPDATES
+MACHINEFLAGS = -DOS5 -DUSE_DLPI
 
 # The LDEINIT wants to have NOVERSION set, so we don't hang up on
 # any change-over in versions.

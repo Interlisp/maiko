@@ -36,7 +36,6 @@ DEBUGFLAGS = # -DSTACKCHECK -DFNSTKCHECK
 DFLAGS = $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	-DOS5 \
-	-DLOCK_X_UPDATES   \
 	-DRELEASE=351
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lsocket -lnsl
