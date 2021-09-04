@@ -99,7 +99,9 @@ int main(int argc, char **argv) {
     printf("setsysout version sysout-name\n");
     return (-1);
   }
-  if ((version = atoi(argv[1])) == 0) {
+  errno = 0;
+  version = (int)strtol(argv[1], (char **)NULL, 10);
+  if (errno || version <= 0) {
     printf("version must be an integer > 0.\n");
     return (-1);
   }

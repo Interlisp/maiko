@@ -329,7 +329,7 @@ void print_finfo(FINFO *fp)
   if (fp != (FINFO *)NULL) {
     do {
       printf("%s -> ", fp->lname);
-      printf("%d\n", fp->version);
+      printf("%u\n", fp->version);
       fp = fp->next;
     } while (fp != (FINFO *)NULL && fp != sp);
 
@@ -685,7 +685,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       if (*fver == '\0')
         nextp->version = 0;
       else
-        nextp->version = atoi(fver);
+        nextp->version = strtoul(fver, (char **)NULL, 10);
       nextp->ino = sbuf.st_ino;
       nextp->prop->length = (unsigned)sbuf.st_size;
       nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
@@ -948,7 +948,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       if (*fver == '\0')
         nextp->version = 0;
       else
-        nextp->version = atoi(fver);
+        nextp->version = strtoul(fver, (char **)NULL, 10);
       nextp->ino = sbuf.st_ino;
       n++;
     }
@@ -1399,7 +1399,7 @@ static int trim_finfo(FINFO **fp)
            * Versionless is not linked to any versioned
            * file.
            */
-          sprintf(ver, ";%d", mp->version + 1);
+          sprintf(ver, ";%u", mp->version + 1);
           strcat(sp->lname, ver);
           sp->lname_len = strlen(sp->lname);
           pnum = ++num;
@@ -1527,7 +1527,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
            * Versionless is not linked to any versioned
            * file.
            */
-          sprintf(ver, ";%d", mp->version + 1);
+          sprintf(ver, ";%u", mp->version + 1);
           strcat(sp->lname, ver);
           sp->lname_len = strlen(sp->lname);
           /*
@@ -1709,7 +1709,7 @@ static int trim_finfo_version(FINFO **fp, int rver)
            * file.
            */
           if (mp->version + 1 == rver) {
-            sprintf(ver, ";%d", rver);
+            sprintf(ver, ";%u", rver);
             strcat(sp->lname, ver);
             sp->lname_len = strlen(sp->lname);
             /*
@@ -2111,7 +2111,7 @@ LispPTR COM_gen_files(register LispPTR *args)
 
     if (*ver != '\0') {
       highestp = 0;
-      version = atoi(ver);
+      version = strtoul(ver, (char **)NULL, 10);
       if (version > 0) strcpy(ver, "*");
     } else {
       version = 0;

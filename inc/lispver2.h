@@ -8,7 +8,7 @@
 									\
 	register char	*lv_cp;						\
 	register char	*lv_vp;						\
-	register int	lv_ver;						\
+	register unsigned lv_ver;					\
 	char		lv_ver_buf[VERSIONLEN];				\
 									\
 	lv_cp = pathname;						\
@@ -48,12 +48,12 @@
 			/*						\
 			 * Convert the remaining field to digit.	\
 			 */						\
-			lv_ver = atoi(lv_vp + 1);				\
-			if (lv_ver == 0) {					\
+			lv_ver = strtoul(lv_vp + 1, (char **)NULL, 10); \
+			if (lv_ver == 0) {				\
 				/* versionless */			\
 				*lv_vp = 0;				\
 			} else {					\
-				sprintf(lv_ver_buf, ".~%d~", lv_ver);		\
+				sprintf(lv_ver_buf, ".~%u~", lv_ver);	\
 				*lv_vp = 0;				\
 				strcat(pathname, lv_ver_buf);		\
 			}						\
@@ -61,7 +61,7 @@
 									\
 		      NO:						\
 			strcpy(lv_ver_buf, lv_vp + 1);			\
-			strcat(lv_ver_buf, "~");				\
+			strcat(lv_ver_buf, "~");			\
 			*lv_vp++ = '.';					\
 			*lv_vp++ = '~';					\
 			*lv_vp = 0;					\
