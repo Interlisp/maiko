@@ -247,14 +247,35 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
 
 int FindUnixPipes(void) {
   char *envtmp;
+  int inttmp;
   struct unixjob cleareduj;
 
   DBPRINT(("Entering FindUnixPipes\n"));
   UnixPipeIn = UnixPipeOut = StartTime = UnixPID = -1;
-  if ((envtmp = getenv("LDEPIPEIN"))) UnixPipeIn = atoi(envtmp);
-  if ((envtmp = getenv("LDEPIPEOUT"))) UnixPipeOut = atoi(envtmp);
-  if ((envtmp = getenv("LDESTARTTIME"))) StartTime = atoi(envtmp);
-  if ((envtmp = getenv("LDEUNIXPID"))) UnixPID = atoi(envtmp);
+  if ((envtmp = getenv("LDEPIPEIN"))) {
+    errno = 0;
+    inttmp = (int)strtol(envtmp, (char **)NULL, 10);
+    if (errno == 0)
+      UnixPipeIn = inttmp;
+  }
+  if ((envtmp = getenv("LDEPIPEOUT"))) {
+    errno = 0;
+    inttmp = (int)strtol(envtmp, (char **)NULL, 10);
+    if (errno == 0)
+      UnixPipeOut = inttmp;
+  }
+  if ((envtmp = getenv("LDESTARTTIME"))) {
+    errno = 0;
+    inttmp = (int)strtol(envtmp, (char **)NULL, 10);
+    if (errno == 0)
+      StartTime = inttmp;
+  }
+  if ((envtmp = getenv("LDEUNIXPID"))) {
+    errno = 0;
+    inttmp = (int)strtol(envtmp, (char **)NULL, 10);
+    if (errno == 0)
+      UnixPID = inttmp;
+  }
 
 /* This is a good place to initialize stuff like the UJ table */
   NPROCS = sysconf(_SC_OPEN_MAX);

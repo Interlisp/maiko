@@ -39,7 +39,7 @@
 	NumericStringP(vp, YES, NO);					\
        NO: *vp = 0;							\
        YES:								\
-	if ((*vp)) ver = atoi(vp);					\
+	if ((*vp)) ver = strtol(vp, (char **)NULL, 10);                \
 	else ver = -1;							\
       }									\
       else ver = -1;							\

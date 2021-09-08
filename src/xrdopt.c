@@ -11,6 +11,7 @@
 
 #include "version.h"
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -287,7 +288,10 @@ void read_Xoption(int *argc, char *argv[])
   */
   if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
     (void)strncpy(tmp, value.addr, (int)value.size);
-    sysout_size = atoi(tmp);
+    errno = 0;
+    i = (int)strtol(tmp, (char **)NULL, 10);
+    if (errno == 0 && i > 0)
+      sysout_size = i;
   }
 
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }
