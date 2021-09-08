@@ -312,6 +312,7 @@ int main(int argc, char *argv[])
   char *envname;
   extern int TIMER_INTERVAL;
   extern fd_set LispReadFds;
+  int tmpint;
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
     perror("Name of executable not found.");
@@ -377,18 +378,32 @@ int main(int argc, char *argv[])
     /* -t and -m are undocumented and somewhat dangerous... */
 
     if (!strcmp(argv[i], "-t")) { /**** timer interval	****/
-      if (argc > ++i)
-        TIMER_INTERVAL = atoi(argv[i]);
-      else {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 0) {
+          TIMER_INTERVAL = tmpint;
+        } else {
+          fprintf(stderr, "Bad value for -t (integer > 0)\n");
+          exit(1);
+        }
+      } else {
         fprintf(stderr, "Missing argument after -t\n");
         exit(1);
       }
     }
 
     else if (!strcmp(argv[i], "-m")) { /**** sysout size	****/
-      if (argc > ++i)
-        sysout_size = atoi(argv[i]);
-      else {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 0) {
+          sysout_size = tmpint;
+        } else {
+          fprintf(stderr, "Bad value for -m (integer > 0)\n");
+          exit(1);
+        }
+      } else {
         fprintf(stderr, "Missing argument after -m\n");
         exit(1);
       }
@@ -453,9 +468,16 @@ int main(int argc, char *argv[])
     }
     /* diagnostic flag for big vmem write() calls */
     else if (!strcmp(argv[i], "-xpages")) {
-      if (argc > ++i)
-        maxpages = atoi(argv[i]);
-      else {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 0) {
+          maxpages = tmpint;
+        } else {
+          fprintf(stderr, "Bad value for -xpages (integer > 0)\n");
+          exit(1);
+        }
+      } else {
         fprintf(stderr, "Missing argument after -xpages\n");
         exit(1);
       }

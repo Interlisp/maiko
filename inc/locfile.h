@@ -385,9 +385,9 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 			*(start - 1) = ';';					\
 			*start = '\0';						\
 			*end = '\0';						\
-			/* call ato i to eliminate leading 0s. */		\
-			ver_no = atoi(start + 1);				\
-			sprintf(ver_buf, "%d", ver_no);				\
+			/* call strtoul() to eliminate leading 0s. */		\
+			ver_no = strtoul(start + 1, (char **)NULL, 10);		\
+			sprintf(ver_buf, "%u", ver_no);				\
 			strcat(pathname, ver_buf);				\
 			goto CONT;						\
 										\
@@ -494,7 +494,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 #define	MAXVERSION		999999999
 
-#define	LASTVERSIONARRAY	(-1)
+#define	LASTVERSIONARRAY	((unsigned) -1)
 #define	VERSIONARRAYLENGTH	200
 
 #define NoFileP(varray)						\

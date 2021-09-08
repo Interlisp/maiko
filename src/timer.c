@@ -18,6 +18,7 @@
 
 #include "version.h"
 
+#include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
 #include <signal.h>
@@ -85,7 +86,7 @@ extern DspInterface currentdsp;
  *	to get Alto time.
  */
 
-int TIMEOUT_TIME; /* For file system timeout */
+int TIMEOUT_TIME = 10; /* For file system timeout, seconds, default 10 */
 
 volatile sig_atomic_t IO_Signalled = FALSE;
 
@@ -710,13 +711,12 @@ static void int_file_init() {
   }
 
   /* Set Timeout period */
-  if ((envtime = getenv("LDEFILETIMEOUT")) == NULL) {
-    TIMEOUT_TIME = 10;
-  } else {
-    if ((timeout_time = atoi(envtime)) > 0)
+  envtime = getenv("LDEFILETIMEOUT");
+  if (envtime != NULL) {
+    errno = 0;
+    timeout_time = (int)strtol(envtime, (char **)NULL, 10);
+    if (errno == 0 && timeout_time > 0)
       TIMEOUT_TIME = timeout_time;
-    else
-      TIMEOUT_TIME = 10;
   }
   DBPRINT(("File timeout interrupts enabled\n"));
 }
