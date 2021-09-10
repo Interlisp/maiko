@@ -2502,8 +2502,8 @@ int true_name(register char *path)
 #ifdef DOS
   char drive[1];
 #endif
-  register char *sp, *cp;
-  register int type, c;
+  register char c, *sp, *cp;
+  register int type;
 
   if (strcmp(path, "/") == 0) return (-1);
 
