@@ -19,6 +19,7 @@
 /************************************************************************/
 /************************************************************************/
 
+#include <errno.h>
 #include <fcntl.h>
 #include <signal.h>
 #include <stdio.h>
@@ -349,6 +350,7 @@ unsigned int uGetTN(unsigned int address) {
 
 LispPTR uraid_commands() {
   int num, address, val;
+  char *endpointer;
   LispPTR index;
   DefCell *defcell68k;
 #ifndef DOS
@@ -383,7 +385,9 @@ LispPTR uraid_commands() {
         printf("DUMP-STACK: f decimal-FXnumber\n");
         return (T);
       }
-      if (sscanf(URaid_arg1, "%d", &num) <= 0) { /* com read fails */
+      errno = 0;
+      num = strtoul(URaid_arg1, &endpointer, 10);
+      if (errno != 0 || *endpointer != '\0') { /* com read fails */
         printf("Illegal argument, not decimal number\n");
         return (T);
       }
@@ -511,7 +515,9 @@ LispPTR uraid_commands() {
         printf("PRINT-INSTANCE: O HEX-LispAddress\n");
         return (T);
       }
-      if (sscanf(URaid_arg1, "%x", &objaddr) <= 0) {
+      errno = 0;
+      objaddr = strtoul(URaid_arg1, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
         return (T);
       }
@@ -524,7 +530,9 @@ LispPTR uraid_commands() {
       }
 
       /**HEXNUMP(URaid_arg1,"Not Address");**/
-      if (sscanf(URaid_arg1, "%x", &address) <= 0) {
+      errno = 0;
+      address = strtoul(URaid_arg1, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
         return (T);
       }
@@ -609,17 +617,21 @@ LispPTR uraid_commands() {
         printf("HEX-DUMP: x Xaddress [Xnum]\n");
         return (T);
       }
-      if (sscanf(URaid_arg1, "%x", &address) <= 0) { /* arg1 not HEX */
+      errno = 0;
+      address = strtoul(URaid_arg1, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
         return (T);
       }
-      switch (sscanf(URaid_arg2, "%x", &num)) {
-        case -1: /* Use defaultval for word-num */ num = XDUMPW; break;
-        case 0: /* Illegal number */
+      if (URaid_arg2[0] == '\0') {
+        num = XDUMPW;
+      } else {
+        errno = 0;
+        num = strtol(URaid_arg2, &endpointer, 16);
+        if (errno != 0 || *endpointer != '\0') {
           printf("Arg(Xnum) not Xnum\n");
           return (T);
-        /* break; */
-        default: break;
+        }
       }
       if (num < 0) {
         printf("Dump words num should be positive\n");
@@ -657,7 +669,9 @@ LispPTR uraid_commands() {
       } else if (*URaid_arg2 == 'T')
         val = ATOM_T;
       else {
-        if (sscanf(URaid_arg2, "%d", &val) == -1) {
+        errno = 0;
+        val = strtol(URaid_arg2, &endpointer, 10);
+        if (errno != 0 || *endpointer != '\0') {
           printf(" Bad value\n");
           return (T);
         } else {
@@ -691,11 +705,15 @@ LispPTR uraid_commands() {
       HEXNUMP(URaid_arg2,"Not Proper Value");
       ***/
 
-      if (sscanf(URaid_arg1, "%x", &address) <= 0) {
+      errno = 0;
+      address = strtol(URaid_arg1, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
         return (T);
       }
-      if (sscanf(URaid_arg2, "%x", &val) <= 0) {
+      errno = 0;
+      val = strtol(URaid_arg2, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xval) not Xaddress\n");
         return (T);
       }
@@ -791,13 +809,14 @@ LispPTR uraid_commands() {
     case '(':
       if (URaid_argnum == 1)
         num = 2;
-
-      else if ((URaid_arg1[0] < '0') || (URaid_arg1[0] > '9')) {
-        printf("Illegal argument, not number\n");
-        return (T);
-      } else
-        sscanf(URaid_arg1, "%d", &num);
-
+      else {
+        errno = 0;
+        num = strtoul(URaid_arg1, &endpointer, 10);
+        if (errno != 0 || *endpointer != '\0') { 
+          printf("Illegal argument, not number\n");
+          return (T);
+        }
+      }
       PrintMaxLevel = num;
       printf("PrintLevel is set to %d.", num);
       break;
