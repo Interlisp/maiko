@@ -1,0 +1,36 @@
+#!/bin/sh
+# This script is just a placeholder until we get GitHub
+# Actions to do releases 
+
+# Start Maiko release from maiko/bin
+#     startrelease [tag]
+# tag defaults to maiko-YYMMDD
+
+tag=$1
+if [ -z "$tag" ] ; then
+    tag=maiko-`date +%y%m%d`
+fi
+
+if ! command -v gh >/dev/null ; then
+    echo "It seems like 'gh', the GitHub Command Line Interface is"
+    echo "not installed. You can start a release using the"
+    echo "web interface at"
+    echo "https://github.com/Interlisp/maiko/releases/new"
+    echo "Make up a tag (or use  $tag)"
+    echo "and run './release-one tag' (or manually upload if"
+    echo "no 'gh' is installed) on every os/machine you want"
+    echo "this release to work for"
+    exit 0
+fi
+
+# Now for the only thing this script is actually doing
+
+gh release create $tag -p -t $tag -n "See release notes in medley repo"
+
+
+echo "Now run "
+echo ./release-one $tag
+echo "in maiko/bin on every os/machine you want this release"
+echo "to work for. When done, edit the release in your"
+echo "browser and uncheck the prerelease box	"
+
