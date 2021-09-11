@@ -490,7 +490,10 @@ int main(int argc, char *argv[])
 #else
   if (getuid() != geteuid()) {
     fprintf(stderr, "Effective user is not real user.  Setting euid to uid.\n");
-    seteuid(getuid());
+    if (seteuid(getuid()) == -1) {
+      fprintf(stderr, "Unable to reset effective user id to real user id\n");
+      exit(1);
+    }
   }
 #endif /* DOS */
 
@@ -624,7 +627,6 @@ void start_lisp() {
 
 int makepathname(char *src, char *dst)
 {
-  register int len;
   register char *base, *cp;
   register struct passwd *pwd;
   char name[MAXPATHLEN];
@@ -675,7 +677,7 @@ int makepathname(char *src, char *dst)
         if ((cp = (char *)strchr(base + 1, '/')) == 0)
           return (0);
         else {
-          len = (UNSIGNED)cp - (UNSIGNED)base - 1;
+          size_t len = cp - base - 1;
           strncpy(name, base + 1, len);
           name[len] = '\0';
 #ifndef DOS
