@@ -71,7 +71,7 @@
 	}
 
 static inline LispPTR
-aref_switch(int type, LispPTR tos, LispPTR baseL, int index)
+aref_switch(unsigned type, LispPTR tos, LispPTR baseL, int index)
 {								  
   LispPTR result;
   DLword *wordp;

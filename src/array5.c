@@ -41,7 +41,6 @@
 LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 #define REG
   LispPTR baseL;
-  int type;
   int arindex, temp;
   LispArray *arrayblk;
   int j;
@@ -59,9 +58,6 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   arindex *= j;
   arindex += temp;
 
-  /*  setup typenumber  */
-  type = 0xFF & arrayblk->typenumber;
-
   /*  disp on type  */
-  return (aref_switch(type, inx1, baseL, arindex));
+  return (aref_switch(arrayblk->typenumber, inx1, baseL, arindex));
 } /*  end N_OP_aref2()  */
