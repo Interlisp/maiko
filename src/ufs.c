@@ -156,7 +156,8 @@ exit_host_filesystem() {
 LispPTR UFS_getfilename(LispPTR *args)
 {
   register char *base;
-  register int len, rval;
+  size_t len;
+  register int rval;
   char lfname[MAXPATHLEN], file[MAXPATHLEN];
 
   ERRSETJMP(NIL);
@@ -369,7 +370,8 @@ LispPTR UFS_directorynamep(LispPTR *args)
 {
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
-  register int len, rval;
+  size_t len;
+  register int rval;
   register char *base;
   struct stat sbuf;
 
