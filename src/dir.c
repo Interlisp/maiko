@@ -1602,7 +1602,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
  * Name:	trim_finfo_version
  *
  * Argument:	FINFO	**fp	Linked list of the numerated FINFO structures.
- *		int	rver	Requested version number.
+ *		unsigned rver	Requested version number.
  *
  * Value:	Returns the total number of files still remaining in **fp.
  *
@@ -1614,7 +1614,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
  * are got rid of.
  */
 
-static int trim_finfo_version(FINFO **fp, int rver)
+static int trim_finfo_version(FINFO **fp, unsigned rver)
 {
   register FINFO *tp, *sp, *mp, *cp, *pp, *vp;
   register int num, pnum;
@@ -1840,7 +1840,8 @@ static FINFO **prepare_sort_buf(register FINFO *fp, register int n)
 
 static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
 {
-  register int res, v1, v2;
+  register int res;
+  unsigned v1, v2;
 
   if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) return (res);
 
@@ -2032,7 +2033,8 @@ LispPTR COM_gen_files(register LispPTR *args)
 #ifdef DOS
   char drive[1];
 #endif
-  int dskp, count, highestp, propp, fid, version;
+  int dskp, count, highestp, fid;
+  unsigned propp, version;
   register char *cp;
   FINFO *fp;
   int dsk_filecmp(), unix_filecmp();
@@ -2193,7 +2195,8 @@ LispPTR COM_next_file(register LispPTR *args)
   register char *base;
   register DFINFO *dfp;
   register UFSGFS *gfsp;
-  int finfoid, propp;
+  int finfoid;
+  unsigned propp;
 
   ERRSETJMP(-1);
   Lisp_errno = &Dummy_errno;
