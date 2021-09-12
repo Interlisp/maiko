@@ -851,7 +851,8 @@ LispPTR COM_closefile(register LispPTR *args)
 LispPTR DSK_getfilename(register LispPTR *args)
 {
   register char *base;
-  register int len, dirp, rval;
+  size_t len, rval;
+  register int dirp;
   int fatp;
   char lfname[MAXPATHLEN];
   char aname[MAXNAMLEN];
@@ -1510,7 +1511,8 @@ LispPTR DSK_directorynamep(register LispPTR *args)
 {
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
-  register int len, fatp;
+  size_t len;
+  register int fatp;
   register char *base;
 #ifdef DOS
   char drive[1], rawname[MAXNAMLEN];
@@ -1697,7 +1699,8 @@ LispPTR COM_getfileinfo(register LispPTR *args)
       *bufp = sbuf.st_mode;
       return (ATOM_T);
 
-    case AUTHOR:
+    case AUTHOR: {
+      size_t rval;
 #ifndef DOS
       TIMEOUT(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) {
@@ -1717,8 +1720,9 @@ LispPTR COM_getfileinfo(register LispPTR *args)
 #endif /* BYTESWAP */
 #endif /* DOS */
       return (GetSmallp(rval));
-
-    case ALL:
+    }
+    case ALL: {
+      size_t rval;
       /*
        * The format of the buffer which has been allocated by Lisp
        * is as follows.
@@ -1756,7 +1760,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
 #endif /* BYTESWAP	 */
 #endif /* DOS */
       return (GetSmallp(rval));
-
+    }
     default: return (NIL);
   }
 }
@@ -3395,7 +3399,8 @@ static int get_versionless(FileName *varray, char *file, char *dir)
 
 static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p)
 {
-  register int rval, max_no, found;
+  register int rval, found;
+  unsigned max_no;
   ino_t vless_ino;
   struct stat sbuf;
   char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
