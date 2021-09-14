@@ -63,6 +63,9 @@
 #include "unixcommdefs.h"
 #include "uutilsdefs.h"
 #include "vmemsavedefs.h"
+#ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
+#include "foreigndefs.h"
+#endif
 
 extern LispPTR *PENDINGINTERRUPT68k;
 
@@ -683,7 +686,7 @@ void OP_subrcall(int subr_no, int argnum) {
     /*****************************************/
     /*  foreign-function-call support subrs  */
     /*****************************************/
-    case sb_CALL_C_FN: {
+    case sb_CALL_C_FUNCTION: {
       POP_SUBR_ARGS;
       TopOfStack = call_c_fn(args); /* args[0]=fnaddr, args[1]=fn type */
       break;
@@ -718,27 +721,27 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = Mdld_function_executable_p(args);
       break;
     }
-    case sb_DLD_LIST_UNDEFINED_SYM: {
+    case sb_DLD_LIST_UNDEFINED_SYMBOLS: {
       POP_SUBR_ARGS;
       TopOfStack = Mdld_list_undefined_sym();
       break;
     }
-    case sb_MALLOC: {
+    case sb_C_MALLOC: {
       POP_SUBR_ARGS;
       TopOfStack = c_malloc(args);
       break;
     }
-    case sb_FREE: {
+    case sb_C_FREE: {
       POP_SUBR_ARGS;
       TopOfStack = c_free(args);
       break;
     }
-    case sb_PUT_C_BASEBYTE: {
+    case sb_C_PUTBASEBYTE: {
       POP_SUBR_ARGS;
       TopOfStack = put_c_basebyte(args);
       break;
     }
-    case sb_GET_C_BASEBYTE: {
+    case sb_C_GETBASEBYTE: {
       POP_SUBR_ARGS;
       TopOfStack = get_c_basebyte(args);
       break;
