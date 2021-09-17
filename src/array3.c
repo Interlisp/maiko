@@ -33,7 +33,7 @@
 /***	N_OP_aref1   -- op 266   (array index)   ***/
 LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {
   register LispPTR baseL;
-  register int type, index;
+  register int index;
   register OneDArray *arrayblk;
 
   /*  verify array  */
@@ -45,12 +45,9 @@ LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {
   if (index >= arrayblk->totalsize) ERROR_EXIT(inx);
   index += arrayblk->offset;
 
-  /*  setup typenumber  */
-  type = 0xFF & arrayblk->typenumber;
-
   /*  setup base  */
   baseL = arrayblk->base;
 
   /*  disp on type  */
-  return (aref_switch(type, inx, baseL, index));
+  return (aref_switch(arrayblk->typenumber, inx, baseL, index));
 } /*  end N_OP_aref1()  */

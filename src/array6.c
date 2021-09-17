@@ -26,7 +26,6 @@
 
 /***	N_OP_aset2   -- op 357   (new-value array index0 index1)   ***/
 LispPTR N_OP_aset2(register LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
-  register int type;
   register LispArray *arrayblk;
   register LispPTR base;
   register int new;
@@ -46,11 +45,8 @@ LispPTR N_OP_aset2(register LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPT
   index *= j;
   index += temp;
 
-  /*  setup typenumber  */
-  type = 0xFF & arrayblk->typenumber;
-
   /*  disp on type  */
-  aset_switch(type, inx1);
+  aset_switch(arrayblk->typenumber, inx1);
 
 doufn:
   ERROR_EXIT(inx1);

@@ -114,7 +114,7 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
         register size_t i;
         register char *dp;
         for (i = 0, dp = C; i < length + 1; i++) {
-          int ch = *dp++;
+          char ch = *dp++;
 #ifdef DOS
           if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
 #endif /* DOS */

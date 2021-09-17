@@ -42,7 +42,6 @@
 /************************************************************************/
 
 LispPTR N_OP_aset1(register LispPTR data, LispPTR arrayarg, register int inx) {
-  register int type;
   register OneDArray *arrayblk;
   register LispPTR base;
   register int new;
@@ -57,14 +56,11 @@ LispPTR N_OP_aset1(register LispPTR data, LispPTR arrayarg, register int inx) {
   if (index >= arrayblk->totalsize) ERROR_EXIT(inx);
   index += arrayblk->offset;
 
-  /*  setup typenumber  */
-  type = 0xFF & arrayblk->typenumber;
-
   /*  setup base  */
   base = arrayblk->base;
 
   /*  disp on type  */
-  aset_switch(type, inx);
+  aset_switch(arrayblk->typenumber, inx);
 
 doufn:
   ERROR_EXIT(inx);
