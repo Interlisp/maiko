@@ -340,17 +340,17 @@ void OP_subrcall(int subr_no, int argnum) {
       C_slowbltchar(args);
       break;
 
-    case 0215:
+    case sb_UNCOLORIZE_BITMAP:
       POP_SUBR_ARGS;
       Uncolorize_Bitmap(args);
       break;
 
-    case 0216:
+    case sb_COLORIZE_BITMAP:
       POP_SUBR_ARGS;
       Colorize_Bitmap(args);
       break;
 
-    case 0217:
+    case sb_COLOR_8BPPDRAWLINE:
       POP_SUBR_ARGS;
       Draw_8BppColorLine(args);
       break;
