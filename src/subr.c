@@ -673,7 +673,7 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = with_symbol(args[0], args[1], args[2], args[3], args[4], args[5]);
       break;
 
-    case 0222: /* Cause an interrupt to occur.  Used by */
+    case sb_CAUSE_INTERRUPT: /* Cause an interrupt to occur.  Used by */
                /* Lisp INTERRUPTED to re-set an interrupt */
                /* when it's uninterruptible. 		*/
       POP_SUBR_ARGS;
