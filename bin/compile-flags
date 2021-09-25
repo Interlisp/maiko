@@ -124,6 +124,17 @@ BIGATOMS	True if this emulator will support 3-byte symbols, instead of
 NEWBITBLT	True if we want to use assembler BITBLT code, rather than
 		have code created inline by macro calls.
 
+USE_DLPI	True if the ethernet API is via the SysV Data Link Provider
+		Interface.  Solaris uses DLPI.
+
+USE_NIT		True if the ethernet API is via the Network Interface Tap.
+		SunOS uses NIT.
+
+PKTFILTER	True if the ethernet packets are to be filtered before being
+		passed to the Lisp ethernet handler.  Available on Sun systems
+		for both the NIT and DLPI cases.
+
+
 bitbltsub.c:#ifdef GETBASE
 testdisplay.c:#ifdef NOTUSED
 uraid.c:#ifdef ETHERINT
