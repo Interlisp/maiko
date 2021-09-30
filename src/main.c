@@ -210,7 +210,8 @@ int UnixPipeIn;
 int UnixPipeOut;
 int UnixPID;
 int please_fork = 1;
-
+/* disable X11 scroll bars if requested */
+int noscroll = 0;
 /*** STACK handle staff(Takeshi) **/
 LispPTR *STACKOVERFLOW_word;
 LispPTR *GuardStackAddr_word;

@@ -51,6 +51,7 @@
 extern DLword *Lisp_world;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
+extern int noscroll;
 bool Lisp_Xinitialized = false;
 int xsync = False;
 
@@ -86,15 +87,16 @@ void init_Xevent(DspInterface dsp)
 
   XSelectInput(dsp->display_id, dsp->LispWindow, dsp->EnableEventMask);
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
-  XSelectInput(dsp->display_id, dsp->HorScrollBar, BarMask);
-  XSelectInput(dsp->display_id, dsp->VerScrollBar, BarMask);
-  XSelectInput(dsp->display_id, dsp->HorScrollButton, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->VerScrollButton, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->NEGrav, GravMask);
-  XSelectInput(dsp->display_id, dsp->SEGrav, GravMask);
-  XSelectInput(dsp->display_id, dsp->SWGrav, GravMask);
-  XSelectInput(dsp->display_id, dsp->NWGrav, GravMask);
-
+  if (noscroll == 0) {
+    XSelectInput(dsp->display_id, dsp->HorScrollBar, BarMask);
+    XSelectInput(dsp->display_id, dsp->VerScrollBar, BarMask);
+    XSelectInput(dsp->display_id, dsp->HorScrollButton, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->VerScrollButton, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->NEGrav, GravMask);
+    XSelectInput(dsp->display_id, dsp->SEGrav, GravMask);
+    XSelectInput(dsp->display_id, dsp->SWGrav, GravMask);
+    XSelectInput(dsp->display_id, dsp->NWGrav, GravMask);
+  }
 } /*end init_Xevent */
 
 /************************************************************************/
@@ -237,8 +239,13 @@ DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int heig
   Xscreen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
 
   /* Set the scrollbar and border widths */
-  dsp->ScrollBarWidth = SCROLL_WIDTH;
-  dsp->InternalBorderWidth = DEF_BDRWIDE;
+  if (noscroll == 0) {
+    dsp->ScrollBarWidth = SCROLL_WIDTH;
+    dsp->InternalBorderWidth = DEF_BDRWIDE;
+  } else {
+    dsp->ScrollBarWidth = 0;
+    dsp->InternalBorderWidth = 0;
+  }
 
   dsp->Visible.x = LispDisplayRequestedX;
   dsp->Visible.y = LispDisplayRequestedY;

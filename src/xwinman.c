@@ -30,7 +30,7 @@ int Mouse_Included = FALSE;
 
 extern Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
     ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
-
+extern int noscroll;
 extern DspInterface currentdsp;
 
 extern DLword *EmCursorX68K, *EmCursorY68K;
@@ -109,33 +109,35 @@ static void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int
   XLOCK;
   XMoveResizeWindow(dsp->display_id, dsp->DisplayWindow, 0, 0, dsp->Visible.width,
                     dsp->Visible.height);
-  /* Scroll bars */
-  XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - dsp->InternalBorderWidth, /* y */
-                    dsp->ScrollBarWidth,   /* width */
-                    dsp->Visible.height); /* height */
-  XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - dsp->InternalBorderWidth, Row2, /* y */
-                    dsp->Visible.width,  /* width */
-                    dsp->ScrollBarWidth); /* height */
+  if (noscroll == 0) {
+    /* Scroll bars */
+    XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - dsp->InternalBorderWidth, /* y */
+                      dsp->ScrollBarWidth,   /* width */
+                      dsp->Visible.height); /* height */
+    XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - dsp->InternalBorderWidth, Row2, /* y */
+                      dsp->Visible.width,  /* width */
+                      dsp->ScrollBarWidth); /* height */
 
-  /* Scroll buttons */
-  XMoveResizeWindow(
-      dsp->display_id, dsp->HorScrollButton,
-      (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width),         /* x */
-      0 - dsp->InternalBorderWidth,                                                /* y */
-      (int)((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
-      dsp->ScrollBarWidth);                                                        /* height */
-  XMoveResizeWindow(
-      dsp->display_id, dsp->VerScrollButton, 0 - dsp->InternalBorderWidth,             /* x */
-      (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height),           /* y */
-      dsp->ScrollBarWidth,                                                             /* width */
-      (int)((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
+    /* Scroll buttons */
+    XMoveResizeWindow(
+                      dsp->display_id, dsp->HorScrollButton,
+                      (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width),         /* x */
+                      0 - dsp->InternalBorderWidth,                                                /* y */
+                      (int)((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
+                      dsp->ScrollBarWidth);                                                        /* height */
+    XMoveResizeWindow(
+                      dsp->display_id, dsp->VerScrollButton, 0 - dsp->InternalBorderWidth,             /* x */
+                      (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height),           /* y */
+                      dsp->ScrollBarWidth,                                                             /* width */
+                      (int)((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
 
-  /* Gravity windows */
-  XMoveResizeWindow(dsp->display_id, dsp->NWGrav, Col2, Row2, GravSize, GravSize);
-  XMoveResizeWindow(dsp->display_id, dsp->NEGrav, Col3, Row2, GravSize, GravSize);
-  XMoveResizeWindow(dsp->display_id, dsp->SEGrav, Col3, Row3, GravSize, GravSize);
-  XMoveResizeWindow(dsp->display_id, dsp->SWGrav, Col2, Row3, GravSize, GravSize);
-  Scroll(dsp, dsp->Visible.x, dsp->Visible.y);
+    /* Gravity windows */
+    XMoveResizeWindow(dsp->display_id, dsp->NWGrav, Col2, Row2, GravSize, GravSize);
+    XMoveResizeWindow(dsp->display_id, dsp->NEGrav, Col3, Row2, GravSize, GravSize);
+    XMoveResizeWindow(dsp->display_id, dsp->SEGrav, Col3, Row3, GravSize, GravSize);
+    XMoveResizeWindow(dsp->display_id, dsp->SWGrav, Col2, Row3, GravSize, GravSize);
+    Scroll(dsp, dsp->Visible.x, dsp->Visible.y);
+  }
   XFlush(dsp->display_id);
   XUNLOCK(dsp);
 } /* end lisp_Xconfigure */

@@ -68,6 +68,7 @@ static XrmOptionDescRec opTable[] = {
     {"-m", "*memory", XrmoptionSepArg, (XPointer)NULL},
     {"-NF", "*NoFork", XrmoptionIsArg, (XPointer)NULL},
     {"-NoFork", "*NoFork", XrmoptionIsArg, (XPointer)NULL},
+    {"-noscroll", "*noscroll", XrmoptionIsArg, (XPointer) NULL},
     {"-INIT", "*Init", XrmoptionIsArg, (XPointer)NULL},
     {"-EtherNet", "*EtherNet", XrmoptionSepArg, (XPointer)NULL},
     {"-E", "*EtherNet", XrmoptionSepArg, (XPointer)NULL},
@@ -85,7 +86,7 @@ char Window_Title[255];
 char Icon_Title[255];
 
 extern char sysout_name[];
-extern int sysout_size, for_makeinit, please_fork;
+extern int sysout_size, for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
 /* extern int maxpages; */
 
@@ -173,8 +174,7 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   sysout_name[0] = '\0';
-  if (*argc == 2) /* There was probably a sysoutarg */
-  {
+  if (*argc == 2) { /* There was probably a sysoutarg */
     (void)strncpy(sysout_name, argv[1], PATH_MAX - 1);
   } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
     strncpy(sysout_name, envname, PATH_MAX - 1);
@@ -184,8 +184,9 @@ void read_Xoption(int *argc, char *argv[])
     envname = getenv("HOME");
     (void)strcat(sysout_name, envname);
     (void)strcat(sysout_name, "/lisp.virtualmem");
-
-    if (access(sysout_name, R_OK) != 0) { (void)strcat(sysout_name, ""); }
+  }
+  if (access(sysout_name, R_OK) != 0) {
+    sysout_name[0] = '\0';
   }
 
   /* In order to access other DB's we have to open the main display now */
@@ -276,6 +277,10 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.NoFork", "Ldex.NoFork", str_type, &value) == True) {
     please_fork = 0;
+  }
+
+  if (XrmGetResource(rDB, "ldex.noscroll", "Ldex.noscroll", str_type, &value) == True) {
+    noscroll = 1;
   }
 
   /*    if (XrmGetResource(rDB,
