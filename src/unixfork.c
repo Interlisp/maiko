@@ -75,76 +75,78 @@ static inline ssize_t SAFEREAD(int f, char *b, int c)
 /*									*/
 /************************************************************************/
 
-/* Creates a PTY connection to a csh */
+/* Creates a PTY connection to a shell */
 
 static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellarg)
 {
   int PID, SlaveFD;
   struct termios tio;
+  char *argvec[4] = {NULL, NULL, NULL, NULL};
+  char *shell = NULL;
+  char *userShell = NULL;
 
   PID = fork();
 
-  if (PID == 0) {
-    char *argvec[4];
-
-    if (0 > setsid()) /* create us a new session for tty purposes */
-      perror("setsid");
-
-/* Open the slave side */
-    SlaveFD = open(PtySlave, O_RDWR);
-    if (SlaveFD == -1) {
-      perror("Slave Open");
-      perror(PtySlave);
-      exit(0);
-    }
-
-#ifdef OS5
-    ioctl(SlaveFD, I_PUSH, "ptem");
-    ioctl(SlaveFD, I_PUSH, "ldterm");
-#endif /* OS5 */
-
-    /* Set up as basic display terminal: canonical erase,
-       kill processing, echo, backspace to erase, echo ctrl
-       chars as ^x, kill line by backspacing */
-    tcgetattr(SlaveFD, &tio);
-    tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
-    tcsetattr(SlaveFD, TCSANOW, &tio);
-
-    (void)dup2(SlaveFD, 0);
-    (void)dup2(SlaveFD, 1);
-    (void)dup2(SlaveFD, 2);
-    (void)close(SlaveFD);
-
-    /* set the LDESHELL variable so the underlying .cshrc can see it and
-       configure the shell appropriately, though this may not be so important any more */
-    setenv("LDESHELL", "YES", 1);
-
-    if (termtype[0] != 0) { /* set the TERM environment var */
-      setenv("TERM", termtype, 1);
-    }
-    /* Start up csh */
-    argvec[0] = "csh";
-    if (shellarg[0] != 0) { /* setup to run command */
-      argvec[1] = "-c";     /* read commands from next arg */
-      argvec[2] = shellarg;
-      argvec[3] = (char *)0;
-    } else
-      argvec[1] = (char *)0;
-
-    execv("/bin/csh", argvec);
-
-    /* Should never get here */
-    perror("execv");
-    exit(0);
-  } else { /* not the forked process. */
+  if (PID != 0) {
     if (shellarg != shcom) free(shellarg);
+    return (PID);
   }
 
-  /* Set the process group so all the kids get the bullet too
-  if (setpgrp(PID, PID) != 0)
-    perror("setpgrp"); */
+  if (0 > setsid()) /* create us a new session for tty purposes */
+    perror("setsid");
 
-  return (PID);
+  /* Open the slave side */
+  SlaveFD = open(PtySlave, O_RDWR);
+  if (SlaveFD == -1) {
+    perror("Slave Open");
+    perror(PtySlave);
+    exit(0);
+  }
+
+#ifdef OS5
+  ioctl(SlaveFD, I_PUSH, "ptem");
+  ioctl(SlaveFD, I_PUSH, "ldterm");
+#endif /* OS5 */
+
+  /* Set up as basic display terminal: canonical erase,
+     kill processing, echo, backspace to erase, echo ctrl
+     chars as ^x, kill line by backspacing */
+  tcgetattr(SlaveFD, &tio);
+  tio.c_lflag |= ICANON | ECHO | ECHOE | ECHOCTL | ECHOKE;
+  tcsetattr(SlaveFD, TCSANOW, &tio);
+
+  (void)dup2(SlaveFD, 0);
+  (void)dup2(SlaveFD, 1);
+  (void)dup2(SlaveFD, 2);
+  (void)close(SlaveFD);
+
+  /* set the LDESHELL variable so the underlying shell initialization can see it and
+     configure the shell appropriately, though this may not be so important any more */
+  setenv("LDESHELL", "YES", 1);
+
+  if (termtype[0] != 0) { /* set the TERM environment var */
+    setenv("TERM", termtype, 1);
+  }
+  /* Start up shell -- use SHELL environment variable as long as it's in /etc/shells */
+  shell = getenv("SHELL");
+  for (userShell = getusershell(); userShell != NULL && strcmp(shell, userShell) != 0; userShell = getusershell());
+  if (userShell == NULL) {
+    perror("$(SHELL) not found in /etc/shells");
+    exit(0);
+  }
+
+  /* argvec entries initialized to NULL */
+  argvec[0] = strrchr(userShell, '/') + 1;
+  if (shellarg[0] != 0) { /* setup to run command */
+    argvec[1] = "-c";     /* read commands from next arg */
+    argvec[2] = shellarg;
+  }
+
+  execv(userShell, argvec);
+
+  /* Should never get here */
+  perror("execv");
+  exit(0);
 }
 
 /* fork_Unix is the secondary process spawned right after LISP is
