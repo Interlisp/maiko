@@ -351,7 +351,7 @@ static int FindAvailablePty(char *Slave) {
 /*		     => byte count (<= 512), NIL (no data), or T (EOF)          */
 /*	   10 Set Window Size, Arg2 = rows, Arg3 = columns                  */
 /*	   11 Fork PTY to Shell (obsoletes command 4)                       */
-/*        Arg1 = termtype, Arg2 = csh command string                    */
+/*        Arg1 = termtype, Arg2 = shell command string                    */
 /*		     => Job # or NIL                                            */
 /*     12 Create Unix Socket                                            */
 /*        Arg1 = pathname to bind socket to (string)                    */
