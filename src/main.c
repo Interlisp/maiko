@@ -490,9 +490,9 @@ int main(int argc, char *argv[])
   probemouse(); /* See if the mouse is connected. */
 #else
   if (getuid() != geteuid()) {
-    fprintf(stderr, "Effective user is not real user.  Setting euid to uid.\n");
-    if (seteuid(getuid()) == -1) {
-      fprintf(stderr, "Unable to reset effective user id to real user id\n");
+    fprintf(stderr, "Effective user is not real user.  Resetting uid\n");
+    if (setuid(getuid()) == -1) {
+      fprintf(stderr, "Unable to reset user id to real user id\n");
       exit(1);
     }
   }
