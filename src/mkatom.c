@@ -267,7 +267,6 @@ LispPTR compare_lisp_chars(register const char *char1, register const char *char
 LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int non_numericp)
 /* if it is NIL then these chars are treated as NUMBER */
 {
-  extern DLword *Spospspace;
   extern DLword *AtomHT;
   extern DLword *Pnamespace;
   extern DLword *AtomSpace;

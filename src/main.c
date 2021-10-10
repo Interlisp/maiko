@@ -75,7 +75,6 @@
 DLword *Lisp_world; /* lispworld */
 
 /********** 68k address for Lisp Space **********/
-DLword *Atomspace;
 DLword *Stackspace;
 DLword *Plistspace;
 DLword *DTDspace;
@@ -85,8 +84,6 @@ DLword *Pnamespace;
 DLword *AtomSpace;
 DLword *Defspace;
 DLword *Valspace;
-DLword *Spospspace;
-DLword *Snegspace;
 
 /********** For Virtual Memory Management **********/
 #ifdef BIGVM
@@ -124,7 +121,6 @@ DLword *HTcoll;
 DLword *DisplayRegion;
 int DisplayInitialized = NIL;
 
-DLword *Arrayspace;
 DLword *MDS_space_bottom;
 DLword *PnCharspace;
 struct dtd *ListpDTD;
