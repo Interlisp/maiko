@@ -31,7 +31,6 @@
 #include "lispemul.h" /* for LispPTR, DLword */
 #include "miscstat.h" /* for MISCSTAT */
 
- extern  DLword *Atomspace; 		/* ATOMSPACE */
  extern  DLword *Stackspace;		/* STACKSPACE*/
  extern  DLword *Plistspace;		/* PLISTSPACE */
  extern  DLword *DTDspace;		/* DTDSPACE */
@@ -41,8 +40,6 @@
  extern  DLword *AtomSpace;		/* New atoms, initial set */
  extern  DLword *Defspace;		/* DEFSPACE */
  extern  DLword *Valspace;		/* VALSPACE */
- extern  DLword *Spospspace;		/* POSITIVE Smallp */
- extern  DLword *Snegspace;		/* NEGATIVE Smallp */
  
 /* For Virtual Mem Management */
 #ifdef BIGVM
@@ -82,7 +79,6 @@ extern DLword *UFNTable ;
 
 
 /* FLEX STORAGES */
- extern  DLword *Arrayspace;  /* Start of ARRAYSPACE */
  extern  DLword *MDS_space_bottom;  /* Start of MDS (pre -2) */
  extern  DLword *PnCharspace ;	/* Space for PN char codes (Thin only) */
 
