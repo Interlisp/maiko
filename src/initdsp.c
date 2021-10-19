@@ -66,6 +66,7 @@ extern DspInterface currentdsp;
 int LispWindowFd = -1;
 int FrameBufferFd = -1;
 
+extern int sdl_displaywidth, sdl_displayheight;
 int displaywidth, displayheight, DisplayRasterWidth, DisplayType;
 int DisplayByteSize;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
@@ -180,7 +181,10 @@ void init_display2(DLword *display_addr, int display_max)
   displaywidth = currentdsp->Display.width;
   displayheight = currentdsp->Display.height;
 #endif /* XWINDOW */
-
+#if (defined(SDL))
+  displaywidth = sdl_displaywidth;
+  displayheight = sdl_displayheight;
+#endif /* SDL */
   DisplayRasterWidth = displaywidth / BITSPER_DLWORD;
 
   if ((displaywidth * displayheight) > display_max) { displayheight = display_max / displaywidth; }
@@ -194,7 +198,9 @@ void init_display2(DLword *display_addr, int display_max)
   DisplayType = SUN2BW;
   DisplayRegion68k_end_addr = DisplayRegion68k + DisplayRasterWidth * displayheight;
 #endif /* XWINDOW */
-
+#ifdef SDL
+  DisplayType = SUN2BW;
+#endif /* SDL */
   init_cursor();
   DisplayByteSize = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
 

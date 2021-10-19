@@ -1026,6 +1026,9 @@ $(OBJECTDIR)xwinman.o: $(SRCDIR)xwinman.c $(REQUIRED-INCS) \
 	$(INCDIR)xlspwindefs.h $(INCDIR)xscrolldefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman.o
 
+$(OBJECTDIR)sdl.o: $(SRCDIR)sdl.c $(REQUIRED-INCS)
+	$(CC) $(RFLAGS) $(SRCDIR)sdl.c -o $(OBJECTDIR)sdl.o
+
 $(OBJECTDIR)foreign.o: $(SRCDIR)foreign.c $(REQUIRED-INCS) \
 	$(INCDIR)/foreigndefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)foreign.c -o $(OBJECTDIR)foreign.o
