@@ -479,6 +479,10 @@ do_it_now:
   if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
 #endif /* XWINDOW */
 
+#ifdef SDL
+  if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
+#endif /* XWINDOW */
+
 #ifdef DOS
   /* Copy the changed section of display bank to the frame buffer */
   if (in_display_segment(dstbase)) {
@@ -834,6 +838,10 @@ do_it_now:
   if (in_display_segment(dstbase)) flush_display_region(dlx, dty, width, height);
 #endif /* XWINDOW */
 
+#ifdef SDL
+  if (in_display_segment(dstbase)) flush_display_region(dlx, dty, width, height);
+#endif /* SDL */
+
 #ifdef DOS
   /* Copy the changed section of display bank to the frame buffer */
   if (in_display_segment(dstbase)) {
@@ -1081,6 +1089,10 @@ do_it_now:
   if (in_display_segment(dstbase)) flush_display_region(left, dty, width, height);
 #endif /* XWINDOW */
 
+#ifdef SDL
+  if (in_display_segment(dstbase)) flush_display_region(left, dty, width, height);
+#endif /* SDL */
+
 #ifdef DOS
   /* Copy the changed section of display bank to the frame buffer */
   if (in_display_segment(dstbase)) {
@@ -1209,6 +1221,10 @@ void bltchar(LispPTR *args)
 #ifdef XWINDOW
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
+
+#ifdef SDL
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
+#endif /* SDL */
 
 #ifdef DOS
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
@@ -1423,6 +1439,9 @@ void newbltchar(LispPTR *args) {
 #ifdef XWINDOW
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
+#ifdef SDL
+  if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
+#endif /* SDL */
 #ifdef DOS
   if (in_display_segment(dstbase)) flush_display_lineregion(dx, dstbase, w, h);
 #endif /* DOS */

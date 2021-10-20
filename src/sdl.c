@@ -125,7 +125,7 @@ int sdl_windowheight = 0;
 // each pixel is shown as this many pixels
 int sdl_pixelscale = 0;
 
-extern char *DisplayRegion68k;
+extern Uint32 *DisplayRegion68k;
 
 
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
@@ -201,13 +201,14 @@ void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
                                             + x * surface->format->BytesPerPixel);
   *target_pixel = pixel;
 }
-void sdl_bitblt_to_screen(uint32_t *source) {
+void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
+  //  printf("bitblting\n");
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 32;
-  for(int y = 0; y < height; y++) {
-    for(int x = 0; x < width / bpw; x++) {
-      int w = source[y*(sdl_displaywidth/bpw) + x];
+  for(int y = _y; y < _y + _h; y++) {
+    for(int x = _x / bpw; x < (_x + _w + bpw - 1) / bpw; x++) {
+      int w = DisplayRegion68k[y*(sdl_displaywidth/bpw) + x];
       for(int b = 0; b < bpw; b++) {
         //printf("%d/%d %d\n", x, y, b);
         int px = 0;
@@ -222,6 +223,7 @@ void sdl_bitblt_to_screen(uint32_t *source) {
       }
     }
   }
+  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
 }
 int map_key(SDL_Keycode k) {
   for(int i = 0; keymap[i] != -1; i+= 2) {
@@ -288,6 +290,28 @@ static int min(int a, int b) {
     return a;
   return b;
 }
+static int last_draw = 0;
+static int last_keystate[512] = { 0 };
+/* void handle_keyboard() { */
+/*   SDL_PumpEvents(); */
+/*   int numkeys; */
+/*   const Uint8 *keystates = SDL_GetKeyboardState(&numkeys); */
+/*   for(int i = 0; keymap[i] != -1; i+= 2) { */
+/*     int keycode = keymap[i+1]; */
+/*     int lk = keymap[i]; */
+/*     int scancode = SDL_GetScancodeFromKey(keycode); */
+/*     if(scancode < numkeys) { */
+/*       int state = keystates[scancode]; */
+/*       if(state != last_keystate[scancode]) { */
+/*         printf("lk %d scancode %d %s <%s>\n", lk, scancode, state ? "pressed" : "released", SDL_GetKeyName(keycode)); */
+/*         kb_trans(lk - KEYCODE_OFFSET, state ? FALSE : TRUE); */
+/*         DoRing(); */
+/*         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0; */
+/*       } */
+/*       last_keystate[scancode] = state; */
+/*     } */
+/*   } */
+/* } */
 void process_SDLevents() {
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
@@ -365,25 +389,29 @@ void process_SDLevents() {
       printf("other event type: %d\n", event.type);
     }
   }
-  int before = SDL_GetTicks();
-  sdl_bitblt_to_screen(DisplayRegion68k);
-  int after = SDL_GetTicks();
-  // printf("blitting took %dms\n", after - before);
-  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
-  SDL_RenderClear(sdl_renderer);
-  SDL_Rect r;
-  r.x = 0;
-  r.y = 0;
-  r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
-  r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
-  SDL_Rect s;
-  s.x = 0;
-  s.y = 0;
-  s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
-  s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
-  SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
-  SDL_RenderPresent(sdl_renderer);
-  SDL_PumpEvents();
+  //  handle_keyboard();
+  /* int before = SDL_GetTicks(); */
+  /* sdl_bitblt_to_screen(); */
+  /* int after = SDL_GetTicks(); */
+  //  printf("blitting took %dms\n", after - before);
+  // SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+  int this_draw = SDL_GetTicks();
+  if(this_draw - last_draw > 16) {
+    SDL_RenderClear(sdl_renderer);
+    SDL_Rect r;
+    r.x = 0;
+    r.y = 0;
+    r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
+    r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
+    SDL_Rect s;
+    s.x = 0;
+    s.y = 0;
+    s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
+    s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
+    SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
+    SDL_RenderPresent(sdl_renderer);
+    last_draw = this_draw;
+  }
 }
 int init_SDL(int w, int h, int s) {
   sdl_pixelscale = s;
