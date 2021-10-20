@@ -66,7 +66,7 @@ extern DspInterface currentdsp;
 int LispWindowFd = -1;
 int FrameBufferFd = -1;
 
-extern int sdl_displaywidth, sdl_displayheight;
+extern int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
 int displaywidth, displayheight, DisplayRasterWidth, DisplayType;
 int DisplayByteSize;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
