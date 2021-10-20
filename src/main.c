@@ -599,7 +599,7 @@ int main(int argc, char *argv[])
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */
 #if defined(SDL)
-  init_SDL();
+  init_SDL(1600, 1024, 1);
 #endif /* SDL */
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);

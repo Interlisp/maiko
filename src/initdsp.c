@@ -56,10 +56,10 @@ extern DspInterface currentdsp;
 
 int FrameBufferFd = -1;
 
+extern int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
+int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
 extern unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
-extern int sdl_displaywidth, sdl_displayheight;
-int sdl_displaywidth, sdl_displayheight;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
 
 #ifdef DISPLAYBUFFER

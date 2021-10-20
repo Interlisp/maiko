@@ -4,8 +4,10 @@
 #include "miscstat.h"
 #include "keyboard.h"
 static SDL_Window *sdl_window = NULL;
-static SDL_Surface *sdl_screenSurface = NULL;
 static SDL_Renderer *sdl_renderer = NULL;
+static SDL_Texture *sdl_texture = NULL;
+static Uint32 *buffer = NULL;
+
 extern int KBDEventFlg;
 int keymap[] = {
   0, SDLK_5,
@@ -113,21 +115,18 @@ int keymap[] = {
   108, SDLK_F12,
   -1, -1
 };
-int sdl_displaywidth = 1600;
-int sdl_displayheight = 1024;
+// all of the following are overwritten, the values here are irrelevant defaults!
+// actual size of the lisp display in pixels.
+int sdl_displaywidth = 0;
+int sdl_displayheight = 0;
+// current size of the window, in pixels
+int sdl_windowwidth = 0;
+int sdl_windowheight = 0;
+// each pixel is shown as this many pixels
+int sdl_pixelscale = 0;
+
 extern char *DisplayRegion68k;
 
-void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
-{
-  if(x >= surface->w)
-    return;
-  if(y >= surface->h)
-    return;
-  Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
-                                            + y * surface->pitch
-                                            + x * surface->format->BytesPerPixel);
-  *target_pixel = pixel;
-}
 
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
   *EmRealUtilin68K;
@@ -191,22 +190,35 @@ void DoRing() {
   if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
 }
 
+void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
+{
+  if(x >= surface->w)
+    return;
+  if(y >= surface->h)
+    return;
+  Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
+                                            + y * surface->pitch
+                                            + x * surface->format->BytesPerPixel);
+  *target_pixel = pixel;
+}
 void sdl_bitblt_to_screen(uint32_t *source) {
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 32;
   for(int y = 0; y < height; y++) {
     for(int x = 0; x < width / bpw; x++) {
+      int w = source[y*(sdl_displaywidth/bpw) + x];
       for(int b = 0; b < bpw; b++) {
         //printf("%d/%d %d\n", x, y, b);
         int px = 0;
-        if(source[y*(sdl_displaywidth/bpw) + x] & (1 << (bpw - 1 - b))) {
+        if(w & (1 << (bpw - 1 - b))) {
           px = 0xff000000;
         } else {
           px = 0xffffffff;
         }
         //printf("px is %x\n", px);
-        set_pixel(sdl_screenSurface, x * bpw + b, y, px);
+        int xx = x * bpw + b;
+        buffer[y * sdl_displaywidth + xx] = px;
       }
     }
   }
@@ -256,7 +268,26 @@ extern MISCSTATS *MiscStats;
 #define MOUSE_LEFT 13
 #define MOUSE_RIGHT 14
 #define MOUSE_MIDDLE 15
-
+void sdl_update_viewport(int width, int height) {
+  int w = width / 32 * 32;
+  if(w > sdl_displaywidth * sdl_pixelscale)
+    w = sdl_displaywidth * sdl_pixelscale;
+  int h = height / 32 * 32;
+  if(h > sdl_displayheight * sdl_pixelscale)
+    h = sdl_displayheight * sdl_pixelscale;
+  SDL_Rect r;
+  r.x = 0;
+  r.y = 0;
+  r.w = w;
+  r.h = h;
+  SDL_RenderSetViewport(sdl_renderer, &r);
+  printf("new viewport: %d / %d\n", w, h);
+}
+static int min(int a, int b) {
+  if(a < b)
+    return a;
+  return b;
+}
 void process_SDLevents() {
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
@@ -266,19 +297,27 @@ void process_SDLevents() {
       break;
     case SDL_WINDOWEVENT:
       switch(event.window.event) {
-      case SDL_WINDOWEVENT_RESIZED: sdl_screenSurface = SDL_GetWindowSurface(sdl_window); break;
+      case SDL_WINDOWEVENT_RESIZED: {
+        sdl_windowwidth = event.window.data1;
+        sdl_windowheight = event.window.data2;
+        sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
+      }
+        break;
       }
       break;
     case SDL_KEYDOWN:
-      //      printf("type: %x, state: %x, repeat: %x, scancode: %x, sym: %x, mod: %x\n", event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, event.key.keysym.mod);
+      printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n", event.key.timestamp, event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
       handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
       break;
     case SDL_KEYUP:
+      printf("up ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n", event.key.timestamp, event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
       handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
       break;
     case SDL_MOUSEMOTION: {
       int x, y;
       SDL_GetMouseState(&x, &y);
+      x /= sdl_pixelscale;
+      y /= sdl_pixelscale;
       *CLastUserActionCell68k = MiscStats->secondstmp;
       *EmCursorX68K = (*((DLword *)EmMouseX68K)) =
         (short)(x & 0xFFFF);
@@ -318,19 +357,43 @@ void process_SDLevents() {
       if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
     }
       break;
-    /* case SDL_KEYMAPCHANGED: */
-    /*   printf("SDL_KEYMAPCHANGED\n"); break; */
-    /* case SDL_TEXTINPUT: */
-    /*   printf("SDL_TEXTINPUT\n"); break; */
+      /* case SDL_KEYMAPCHANGED: */
+      /*   printf("SDL_KEYMAPCHANGED\n"); break; */
+      /* case SDL_TEXTINPUT: */
+      /*   printf("SDL_TEXTINPUT\n"); break; */
     default:
       printf("other event type: %d\n", event.type);
     }
   }
-  SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);
+  int before = SDL_GetTicks();
   sdl_bitblt_to_screen(DisplayRegion68k);
-  SDL_UpdateWindowSurface(sdl_window);
+  int after = SDL_GetTicks();
+  // printf("blitting took %dms\n", after - before);
+  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+  SDL_RenderClear(sdl_renderer);
+  SDL_Rect r;
+  r.x = 0;
+  r.y = 0;
+  r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
+  r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
+  SDL_Rect s;
+  s.x = 0;
+  s.y = 0;
+  s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
+  s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
+  SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
+  SDL_RenderPresent(sdl_renderer);
+  SDL_PumpEvents();
 }
-int init_SDL() {
+int init_SDL(int w, int h, int s) {
+  sdl_pixelscale = s;
+  // must be multiples of 32
+  w = w / 32 * 32;
+  h = h / 32 * 32;
+  sdl_displaywidth = w;
+  sdl_displayheight = h;
+  sdl_windowwidth = w * s;
+  sdl_windowheight = h * s;
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   printf("requested width: %d, height: %d\n", width, height);
@@ -339,15 +402,24 @@ int init_SDL() {
     return 1;
   }
   printf("initialised\n");
-  sdl_window = SDL_CreateWindow("Maiko", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, 0);
+  sdl_window = SDL_CreateWindow("Maiko", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sdl_windowwidth, sdl_windowheight, 0);
   printf("Window created\n");
   if(sdl_window == NULL) {
     printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
     return 2;
   }
-  sdl_screenSurface = SDL_GetWindowSurface(sdl_window);
-  printf("surface: %dx%d, pitch %d\n", sdl_screenSurface->w, sdl_screenSurface->h, sdl_screenSurface->pitch);
-  printf("  format %d, bitspp %d, bytespp %d\n", sdl_screenSurface->format->format, sdl_screenSurface->format->BitsPerPixel, sdl_screenSurface->format->BytesPerPixel);
+  printf("Creating renderer...\n");
+  sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+  if(NULL == sdl_renderer) {
+    printf("SDL Error: %s\n", SDL_GetError());
+    return 3;
+  }
+  SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);
+  SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
+  printf("Creating texture...\n");
+  sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
+  printf("-> %x\n", sdl_texture);
+  buffer = malloc(width * height * sizeof(Uint32));
   printf("SDL initialised\n");
   return 0;
 }
