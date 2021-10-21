@@ -58,7 +58,9 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 
 #include "keyeventdefs.h"
 #include "osmsgdefs.h"
+#ifdef XWINDOW
 #include "xwinmandefs.h"
+#endif
 
 #ifdef MAIKO_ENABLE_ETHERNET
 #include "etherdefs.h"

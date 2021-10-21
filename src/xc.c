@@ -99,7 +99,9 @@
 #include "ubf3defs.h"
 #include "unwinddefs.h"
 #include "vars3defs.h"
+#ifdef XWINDOW
 #include "xwinmandefs.h"
+#endif
 #include "z2defs.h"
 
 #ifdef DOS
@@ -109,7 +111,7 @@ extern IOPAGE *IOPage68K;
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 extern MouseInterface currentmouse;
-#else
+#elif defined(XWINDOW)
 extern DspInterface currentdsp;
 #endif /* DOS */
 
