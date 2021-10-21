@@ -351,11 +351,10 @@ void process_SDLevents() {
       break;
     case SDL_KEYDOWN:
       printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n", event.key.timestamp, event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
-      // TODO: this produces *double* keys for me, need to fix that before using it
-      /* if (event.key.repeat) { */
-      /*   /\* Lisp needs to see the UP transition before the DOWN transition *\/ */
-      /*   handle_keyup(event.key.keysym.sym, event.key.keysym.mod); */
-      /* } */
+      if (event.key.repeat) {
+        /* Lisp needs to see the UP transition before the DOWN transition */
+        handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
+      }
       handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
       break;
     case SDL_KEYUP:
