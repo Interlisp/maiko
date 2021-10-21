@@ -238,7 +238,9 @@ int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will cal
 #include "devif.h"
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
-
+#ifdef SDL
+extern int init_SDL(int, int, int);
+#endif
 extern const time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
@@ -599,7 +601,7 @@ int main(int argc, char *argv[])
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */
 #if defined(SDL)
-  init_SDL(1600, 1024, 1);
+  init_SDL(1888, 1110, 1);
 #endif /* SDL */
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);

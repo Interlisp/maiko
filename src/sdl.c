@@ -201,15 +201,21 @@ void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
                                             + x * surface->format->BytesPerPixel);
   *target_pixel = pixel;
 }
+int should_update_texture = 0;
+
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   //  printf("bitblting\n");
   int before = SDL_GetTicks();
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 32;
-  for(int y = _y; y < _y + _h; y++) {
-    for(int x = _x / bpw; x < (_x + _w + bpw - 1) / bpw; x++) {
-      int w = DisplayRegion68k[y*(sdl_displaywidth/bpw) + x];
+  int pitch = sdl_displaywidth / bpw;
+  int xlimit = (_x + _w + bpw - 1) / bpw;
+  int ylimit = _y + _h;
+  for(int y = _y; y < ylimit; y++) {
+    for(int x = _x / bpw; x < xlimit; x++) {
+      int w = DisplayRegion68k[y * pitch + x];
+      int thex = x * bpw;
       for(int b = 0; b < bpw; b++) {
         //printf("%d/%d %d\n", x, y, b);
         int px = 0;
@@ -219,11 +225,12 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
           px = 0xffffffff;
         }
         //printf("px is %x\n", px);
-        int xx = x * bpw + b;
+        int xx = thex + b;
         buffer[y * sdl_displaywidth + xx] = px;
       }
     }
   }
+  should_update_texture = 1;
   int after = SDL_GetTicks();
   //  printf("bitblting took %dms\n", after - before);
   /* before = SDL_GetTicks(); */
@@ -401,14 +408,25 @@ void process_SDLevents() {
   //  handle_keyboard();
   /* sdl_bitblt_to_screen(); */
   // SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
-  int before = SDL_GetTicks();
-  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
-  int after = SDL_GetTicks();
+  int before = 0;
+  int after = 0;
+  /* if(should_update_texture) { */
+  /*   before = SDL_GetTicks(); */
+  /*   SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32)); */
+  /*   after = SDL_GetTicks(); */
+  /*   should_update_texture = 0; */
+  /* } */
   //  printf("UpdateTexture took %dms\n", after - before);
   int this_draw = SDL_GetTicks();
   before = SDL_GetTicks();
   //  printf("processing events took %dms\n", before - process_events_time);
   if(this_draw - last_draw > 16) {
+    before = SDL_GetTicks();
+    SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+    after = SDL_GetTicks();
+    should_update_texture = 0;
+
+    sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
     SDL_RenderClear(sdl_renderer);
     SDL_Rect r;
     r.x = 0;
