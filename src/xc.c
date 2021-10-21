@@ -109,6 +109,10 @@ extern MouseInterface currentmouse;
 extern DspInterface currentdsp;
 #endif /* DOS */
 
+#ifdef SDL
+extern void process_SDLevents();
+#endif
+
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
 
