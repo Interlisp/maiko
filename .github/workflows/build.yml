@@ -47,7 +47,7 @@ jobs:
       run: brew install --cask xquartz
     - name: Install SDL dependency on Ubuntu
       if: ${{ runner.os == 'Linux'}}
-      run: apt install libsdl2-dev
+      run: sudo apt-get install -y libsdl2-dev
     - name: Create Build Environment
       run: cmake -E make_directory ${{github.workspace}}/build
     - name: Configure CMake
