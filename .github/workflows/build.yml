@@ -47,6 +47,9 @@ jobs:
     - name: Install X11 dependencies on MacOS
       if: ${{ runner.os == 'macOS'}}
       run: brew install --cask xquartz
+    - name: Install SDL2 dependencies on MacOS
+      if: ${{ runner.os == 'macOS'}}
+      run: brew install --cask sdl2
     - name: Install SDL dependency on Ubuntu
       if: ${{ runner.os == 'Linux'}}
       run: sudo apt-get update && sudo apt-get install -y libsdl2-dev
