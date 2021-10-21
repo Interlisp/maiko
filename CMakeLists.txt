@@ -23,10 +23,12 @@ find_program(
 )
 
 IF (CLANG_TIDY_EXE)
+   IF (NOT CMAKE_CROSSCOMPILING)
 # There are many many warnings for strcpy instances to deal with,
 # but suppress it for now so that other issues are more obvious
 #
-   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+        SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+   ENDIF()
 ENDIF()
 
 INCLUDE(CheckLibraryExists)
@@ -78,7 +80,7 @@ IF(MAIKO_DISPLAY_SDL)
   SET(MAIKO_DISPLAY_SDL_DEFINITIONS
     "-DSDL"
   )
-  SET(MAIKO_DISPLAY_SDL_LIBRARIES SDL2::SDL2)
+  SET(MAIKO_DISPLAY_SDL_LIBRARIES SDL2)
   SET(MAIKO_DISPLAY_SDL_SRCS
     src/sdl.c
   )
@@ -422,7 +424,7 @@ IF(MAIKO_DISPLAY_SDL)
   # Tell it that the SDL launcher is available.
   TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DISPLAY_SDL_DEFINITIONS})
   # This is needed so that it can call XOpenDisplay.
-  TARGET_LINK_LIBRARIES(lde SDL2::SDL2)
+  TARGET_LINK_LIBRARIES(lde SDL2)
 ENDIF()
 
 ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
