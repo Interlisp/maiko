@@ -203,6 +203,7 @@ void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 }
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   //  printf("bitblting\n");
+  int before = SDL_GetTicks();
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 32;
@@ -223,7 +224,12 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
       }
     }
   }
-  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+  int after = SDL_GetTicks();
+  //  printf("bitblting took %dms\n", after - before);
+  /* before = SDL_GetTicks(); */
+  /* SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32)); */
+  /* after = SDL_GetTicks(); */
+  /* printf("UpdateTexture took %dms\n", after - before); */
 }
 int map_key(SDL_Keycode k) {
   for(int i = 0; keymap[i] != -1; i+= 2) {
@@ -312,7 +318,10 @@ static int last_keystate[512] = { 0 };
 /*     } */
 /*   } */
 /* } */
+int process_events_time = 0;
 void process_SDLevents() {
+  //  printf("processing events delta %dms\n", SDL_GetTicks() - process_events_time);
+  process_events_time = SDL_GetTicks();
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
@@ -390,12 +399,15 @@ void process_SDLevents() {
     }
   }
   //  handle_keyboard();
-  /* int before = SDL_GetTicks(); */
   /* sdl_bitblt_to_screen(); */
-  /* int after = SDL_GetTicks(); */
-  //  printf("blitting took %dms\n", after - before);
   // SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+  int before = SDL_GetTicks();
+  SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+  int after = SDL_GetTicks();
+  //  printf("UpdateTexture took %dms\n", after - before);
   int this_draw = SDL_GetTicks();
+  before = SDL_GetTicks();
+  //  printf("processing events took %dms\n", before - process_events_time);
   if(this_draw - last_draw > 16) {
     SDL_RenderClear(sdl_renderer);
     SDL_Rect r;
@@ -411,6 +423,8 @@ void process_SDLevents() {
     SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
     SDL_RenderPresent(sdl_renderer);
     last_draw = this_draw;
+    after = SDL_GetTicks();
+    //    printf("rendering took %dms\n", after - before);
   }
 }
 int init_SDL(int w, int h, int s) {
