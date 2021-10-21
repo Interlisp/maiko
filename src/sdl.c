@@ -445,7 +445,7 @@ void process_SDLevents() {
     //    printf("rendering took %dms\n", after - before);
   }
 }
-int init_SDL(int w, int h, int s) {
+int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_pixelscale = s;
   // must be multiples of 32
   w = w / 32 * 32;
@@ -462,7 +462,7 @@ int init_SDL(int w, int h, int s) {
     return 1;
   }
   printf("initialised\n");
-  sdl_window = SDL_CreateWindow("Maiko", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sdl_windowwidth, sdl_windowheight, 0);
+  sdl_window = SDL_CreateWindow(windowtitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sdl_windowwidth, sdl_windowheight, 0);
   printf("Window created\n");
   if(sdl_window == NULL) {
     printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
