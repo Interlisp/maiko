@@ -3,10 +3,14 @@
 #include "lispemul.h"
 #include "miscstat.h"
 #include "keyboard.h"
+
 static SDL_Window *sdl_window = NULL;
 static SDL_Renderer *sdl_renderer = NULL;
 static SDL_Texture *sdl_texture = NULL;
 static Uint32 *buffer = NULL;
+
+extern void kb_trans(u_short keycode, u_short upflg);
+extern int error(const char *s);
 
 extern int KBDEventFlg;
 int keymap[] = {
