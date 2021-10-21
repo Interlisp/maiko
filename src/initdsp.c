@@ -274,7 +274,7 @@ in_display_segment(baseaddr)
 void flush_display_buffer() {
   //  printf("flush_display_buffer\n");
 #ifdef SDL
-  sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
+  //  sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
 #endif
 #ifdef XWINDOW
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
@@ -308,7 +308,7 @@ void flush_display_region(int x, int y, int w, int h)
 {
   //  printf("flush_display_region %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  sdl_bitblt_to_screen(x, y, w, h);
+  //  sdl_bitblt_to_screen(x, y, w, h);
 #endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_region x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
@@ -354,7 +354,7 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
   //  printf("flush_display_lineregion %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  sdl_bitblt_to_screen(x, y, w, h);
+  //  sdl_bitblt_to_screen(x, y, w, h);
 #endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_lineregion x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
@@ -388,7 +388,7 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSI
   x = bitoffset + (BITSPERWORD * (baseoffset - (DLWORD_PERLINE * y)));
   //  printf("flush_display_ptrregion %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  sdl_bitblt_to_screen(x, y, w, h);
+  //  sdl_bitblt_to_screen(x, y, w, h);
 #endif
 #if   (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_ptrregion\n x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
