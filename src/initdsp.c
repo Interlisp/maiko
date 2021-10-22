@@ -80,6 +80,10 @@ extern DLword *ColorDisplayRegion68k;
 extern int MonoOrColor;
 #endif /* COLOR */
 
+#ifdef SDL
+extern void sdl_notify_damage(int, int, int, int);
+#endif /* SDL */
+
 #ifdef XWINDOW
 DLword *DisplayRegion68k_end_addr;
 extern int *Xdisplay; /* DAANGER -jarl nilsson 27-apr-92 */
@@ -264,7 +268,7 @@ in_display_segment(baseaddr)
 <<<<<<< HEAD
 void flush_display_buffer(void) {
 #ifdef SDL
-  //  sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
+  sdl_notify_damage(0, 0, sdl_displaywidth, sdl_displayheight);
 #endif
 #ifdef XWINDOW
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
@@ -295,7 +299,7 @@ void flush_display_region(int x, int y, int w, int h)
 {
   //  printf("flush_display_region %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  //  sdl_bitblt_to_screen(x, y, w, h);
+  sdl_notify_damage(x, y, w, h);
 #endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_region x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
@@ -341,7 +345,7 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h)
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
   //  printf("flush_display_lineregion %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  //  sdl_bitblt_to_screen(x, y, w, h);
+  sdl_notify_damage(x, y, w, h);
 #endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_lineregion x=%p, y=%d, w=%d, h=%d\n", (void *)x, y, w, h));
@@ -375,7 +379,7 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h)
   x = bitoffset + (BITSPERWORD * (baseoffset - (DLWORD_PERLINE * y)));
   //  printf("flush_display_ptrregion %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
-  //  sdl_bitblt_to_screen(x, y, w, h);
+  sdl_notify_damage(x, y, w, h);
 #endif
 #if   (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_ptrregion\n x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
