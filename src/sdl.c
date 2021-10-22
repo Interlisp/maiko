@@ -409,6 +409,9 @@ void process_SDLevents() {
       if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
     }
       break;
+    case SDL_MOUSEWHEEL:
+      printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x, event.wheel.y, event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
+      break;
       /* case SDL_KEYMAPCHANGED: */
       /*   printf("SDL_KEYMAPCHANGED\n"); break; */
       /* case SDL_TEXTINPUT: */
@@ -488,7 +491,6 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-  printf("-> %x\n", sdl_texture);
   buffer = malloc(width * height * sizeof(Uint32));
   printf("SDL initialised\n");
   return 0;
