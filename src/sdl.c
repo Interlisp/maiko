@@ -210,7 +210,7 @@ int should_update_texture = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
   should_update_texture = 1;
 }
-
+int do_invert = 0;
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   //printf("bitblting\n");
   int before = SDL_GetTicks();
@@ -228,9 +228,9 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
         //printf("%d/%d %d\n", x, y, b);
         int px = 0;
         if(w & (1 << (bpw - 1 - b))) {
-          px = 0xff000000;
+          px = do_invert ? 0xffffffff : 0xff000000;
         } else {
-          px = 0xffffffff;
+          px = do_invert ? 0xff000000 : 0xffffffff;
         }
         //printf("px is %x\n", px);
         int xx = thex + b;
@@ -333,6 +333,12 @@ static int last_keystate[512] = { 0 };
 /*     } */
 /*   } */
 /* } */
+void sdl_set_invert(int flag) {
+  do_invert = flag;
+}
+void sdl_setMousePosition(int x, int y) {
+  SDL_WarpMouseInWindow(sdl_window, x, y);
+}
 int process_events_time = 0;
 void process_SDLevents() {
   //  printf("processing events delta %dms\n", SDL_GetTicks() - process_events_time);
