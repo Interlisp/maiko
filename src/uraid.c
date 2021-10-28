@@ -286,7 +286,7 @@ LispPTR parse_atomstring(char *string)
     namelen = cnt - 1;
 
   if ((packagelen == 0) || (strncmp(packageptr, "IL", packagelen) == 0)) { /* default IL: */
-    aindex = make_atom(nameptr, 0, namelen, T);
+    aindex = make_atom(nameptr, 0, namelen);
     if (aindex == 0xffffffff) {
       printf("trying IL:\n");
       aindex = get_package_atom(nameptr, namelen, "INTERLISP", 9, 0);

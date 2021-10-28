@@ -27,7 +27,6 @@
                         compute_hash
                         create_symbol
                         compare_chars
-                        parse_number
 */
 /**********************************************************************/
 
@@ -248,10 +247,11 @@ LispPTR compare_lisp_chars(register const char *char1, register const char *char
 /*
         Func name :	make_atom
 
-        If the atom already existed then return
-        else create new atom .  Returns the Atom's index.
+        Look up the atom index of an existing atom, or return 0xFFFFFFFF
 
-        This function does not handle FAT pname's.
+        This function is a subset of \MKATOM (in LLBASIC), but only handles
+        thin text atom names (no numbers, no 2-byte pnames).
+        It MUST return the same atom index number as \MKATOM
 
         Date :		January 29, 1987
         Edited by :	Takeshi Shimizu
@@ -264,8 +264,7 @@ LispPTR compare_lisp_chars(register const char *char1, register const char *char
 */
 /**********************************************************************/
 
-LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int non_numericp)
-/* if it is NIL then these chars are treated as NUMBER */
+LispPTR make_atom(const char *char_base, DLword offset, DLword length)
 {
   extern DLword *AtomHT;
   extern DLword *Pnamespace;
@@ -281,41 +280,34 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int
   unsigned short first_char;
 
 #ifdef TRACE2
-  printf("TRACE: make_atom( %s , offset= %d, len= %d, non_numericp = %d)\n", char_base, offset,
-         length, non_numericp);
+  printf("TRACE: make_atom( %s , offset= %d, len= %d)\n", char_base, offset, length);
 #endif
 
   first_char = (*(char_base + offset)) & 0xff;
-  if (length != 0) {
-    if (length == 1) /* one char. atoms */
-    {
-      if (first_char > 57) /* greater than '9 */
-        return ((LispPTR)(ATOMoffset + (first_char - 10)));
-      else if (first_char > 47) /* between '0 to '9 */
-        return ((LispPTR)(S_POSITIVE + (first_char - 48)));
-      /* fixed S_... mar-27-87 take */
-      else /* other one char. atoms */
-        return ((LispPTR)(ATOMoffset + first_char));
-    } /* if(length==1.. end */
-    else if ((non_numericp == NIL) && (first_char <= '9'))
-    /* more than 10 arithmetic  aon + - mixed atom process */
-    {
-      if ((hash_entry = parse_number(char_base + offset, length)) != 0)
-        return ((LispPTR)hash_entry); /* if NIL that means THE ATOM is +- mixed litatom */
-                                      /* 15 may 87 take */
-    }
-
-    hash = compute_hash(char_base, offset, length);
-
-  } /* if(lengt.. end */
-  else {
+  switch (length) {
+  case 0:
+    /* the zero-length atom has hashcode 0 */
     hash = 0;
     first_char = 255;
+    break;
+
+  case 1:
+    /* One-character atoms live in well known places, no need to hash */
+    if (first_char > '9')
+      return ((LispPTR)(ATOMoffset + (first_char - 10)));
+    if (first_char >= '0' ) /* 0..9 */
+      return ((LispPTR)(S_POSITIVE + (first_char - '0')));
+    /* other one character atoms */
+    return ((LispPTR)(ATOMoffset + first_char));
+
+  default:
+    hash = compute_hash(char_base, offset, length);
+    break;
   }
 
   /* This point corresponds with LP in Lisp source */
 
-  /* following for loop never exits until it finds new hash entry or same atom */
+  /* following for loop does not exit until it finds new hash entry or same atom */
   for (reprobe = Atom_reprobe(hash, first_char); (hash_entry = GETWORD(AtomHT + hash)) != 0;
        hash = ((hash + reprobe) & 0xffff)) {
     atom_index = hash_entry - 1;
@@ -326,7 +318,7 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int
     if ((length == GETBYTE(pname_base)) &&
         (compare_chars(++pname_base, char_base + offset, length) == T)) {
       DBPRINT(("FOUND the atom. \n"));
-      return (atom_index); /* find already existed atom */
+      return (atom_index); /* found existing atom */
     }
     DBPRINT(("HASH doesn't hit. reprobe!\n"));
 
@@ -337,65 +329,3 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length, short int
   return (0xffffffff);
   /** Don't create newatom now **/
 } /* make_atom end */
-
-/*********************************************************************/
-/*
-        Func name :	parse_number
-
-        Desc	:	It can treat -65534 to 65535 integer
-                        Returns SMALLP PTR
-        Date :		1,May 1987 Take
-                        15 May 87 take
-*/
-/*********************************************************************/
-
-/* Assume this func. should be called with C string in "char_base" */
-LispPTR parse_number(const char *char_base, short int length) {
-  register LispPTR sign_mask;
-  register LispPTR val;
-  register int radix;
-  register int *cell68k;
-
-#ifdef TRACE2
-  printf("TRACE: parse_number()\n");
-#endif
-
-  /* Check for Radix 8(Q) postfixed ?? */
-  if ((*(char_base + (length - 1))) == 'Q') {
-    radix = 8;
-    length--;
-  } else
-    radix = 10;
-
-  /* Check for Sign */
-  sign_mask = S_POSITIVE;
-
-  if ((*(char_base) == '+') || (*(char_base) == '-')) {
-    sign_mask = ((*char_base++) == '+') ? S_POSITIVE : S_NEGATIVE;
-    length--;
-  }
-
-  for (val = 0; length > 0; length--) {
-    if ((((*char_base)) < '0') || ('9' < ((*char_base)))) return (NIL);
-    val = radix * val + (*char_base++) - '0';
-  }
-
-  if (val > 0xffffffff) error("parse_number : Overflow ...exceeded range of FIXP");
-
-  if ((sign_mask == S_POSITIVE) && (val > 0xffff)) {
-    cell68k = (int *)createcell68k(TYPE_FIXP);
-    *cell68k = val;
-    return (LADDR_from_68k(cell68k));
-  } else if ((sign_mask == S_NEGATIVE) && (val > 0xffff)) {
-    cell68k = (int *)createcell68k(TYPE_FIXP);
-    *cell68k = ~val + 1;
-    return (LADDR_from_68k(cell68k));
-  }
-
-  else if (sign_mask == S_NEGATIVE)
-    return (sign_mask | (~((DLword)val) + 1));
-  else {
-    return (sign_mask | val);
-  }
-}
-/* end parse_number */
