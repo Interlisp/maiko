@@ -424,7 +424,7 @@ void dump_fnobj(LispPTR index)
 /************************************************************************/
 
 /* Opcode names, by opcode */
-static const char *opcode_table[256] = {
+const char *opcode_table[256] = {
                            "-X-",
                            "CAR",
                            "CDR",
