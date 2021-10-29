@@ -35,7 +35,7 @@
 #include "conspagedefs.h"
 #include "gcfinaldefs.h"
 #include "gchtfinddefs.h"
-#include "mkatomdefs.h"
+#include "testtooldefs.h"
 
 #define MINARRAYBLOCKSIZE 4
 #define GUARDVMEMFULL 500
@@ -374,7 +374,7 @@ LispPTR newpage(LispPTR base) {
     } else if (InterfacePage->key == IFPVALID_KEY) {
       *VMEM_FULL_STATE_word = ATOM_T;
     } else
-      *VMEM_FULL_STATE_word = make_atom("DIRTY", 0, 5, 0);
+      *VMEM_FULL_STATE_word = MAKEATOM("DIRTY");
   }
 
   return (base);
