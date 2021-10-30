@@ -222,7 +222,7 @@ void Open_Display(DspInterface dsp)
 /*                                                                   */
 /*********************************************************************/
 
-DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
+DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int height_hint,
                     int depth_hint)
 {
   Screen *Xscreen;
