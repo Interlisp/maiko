@@ -659,7 +659,7 @@ int makepathname(char *src, char *dst)
 #ifdef DOS
         pwd = 0;
 #else
-        TIMEOUT(pwd = getpwuid(getuid()));
+        TIMEOUT0(pwd = getpwuid(getuid()));
 #endif /* DOS */
         if (pwd == NULL) {
           *Lisp_errno = errno;
@@ -678,7 +678,7 @@ int makepathname(char *src, char *dst)
           strncpy(name, base + 1, len);
           name[len] = '\0';
 #ifndef DOS
-          TIMEOUT(pwd = getpwnam(name));
+          TIMEOUT0(pwd = getpwnam(name));
 #endif /* DOS */
           if (pwd == NULL) {
             *Lisp_errno = errno;

@@ -691,7 +691,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
       nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
       nextp->prop->protect = (unsigned)sbuf.st_mode;
-      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+      TIMEOUT0(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) {
         nextp->prop->au_len = 0;
       } else {
@@ -1080,7 +1080,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   char namebuf[MAXPATHLEN];
 
   errno = 0;
-  TIMEOUT(dirp = opendir(dir));
+  TIMEOUT0(dirp = opendir(dir));
   if (dirp == NULL) {
     *Lisp_errno = errno;
     return (-1);
@@ -1263,7 +1263,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
   char namebuf[MAXPATHLEN];
 
   errno = 0;
-  TIMEOUT(dirp = opendir(dir));
+  TIMEOUT0(dirp = opendir(dir));
   if (dirp == NULL) {
     *Lisp_errno = errno;
     return (-1);
