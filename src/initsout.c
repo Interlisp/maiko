@@ -139,8 +139,7 @@ void init_ifpage(int sysout_size) {
 
 #ifdef BIGVM
   /* For BIGVM system, save the value in \LASTVMEMFILEPAGE for lisp's use */
-  if ((LispPTR)LASTVMEMFILEPAGE_word != 0xFFFFFFFF)
-    *LASTVMEMFILEPAGE_word = InterfacePage->dllastvmempage;
+  *LASTVMEMFILEPAGE_word = InterfacePage->dllastvmempage;
 #endif /* BIGVM */
 
   /* unfortunately, Lisp only looks at a 16 bit serial number */

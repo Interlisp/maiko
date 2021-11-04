@@ -27,9 +27,6 @@ DspInterface currentdsp = &curdsp;
 #ifdef XWINDOW
 extern int LispDisplayRequestedWidth;
 extern int LispDisplayRequestedHeight;
-
-extern DspInterface X_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
-                           int depth_hint);
 #endif /* XWINDOW */
 
 #ifdef DOS

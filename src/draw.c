@@ -17,9 +17,9 @@
 
 #include "version.h"
 
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 
 #include "lispemul.h"
 #include "lspglob.h"
@@ -268,21 +268,21 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
 #endif /* COLOR */
 
   {
-    DLword *start_addr, *temp_s, *temp_e;
-
+    DLword *start_addr;
     start_addr = (DLword *)Addr68k_from_LADDR(ptr);
 
-    if (((int)(temp_s = (DLword *)(start_addr - DisplayRegion68k)) >= 0) &&
-        (start_addr < DisplayRegion68k_end_addr) &&
-        ((int)(temp_e = (DLword *)(dataptr - DisplayRegion68k)) >= 0) &&
-        ((DLword *)dataptr < DisplayRegion68k_end_addr)) {
+    if (in_display_segment(start_addr) && in_display_segment(dataptr)) {
       int start_x, start_y, end_x, end_y, w, h;
+      ptrdiff_t temp_s, temp_e;
 
-      start_y = (int)temp_s / DisplayRasterWidth;
-      start_x = ((int)temp_s % DisplayRasterWidth) * BITSPER_DLWORD;
+      temp_s = start_addr - DisplayRegion68k;
+      temp_e = dataptr - DisplayRegion68k;
 
-      end_y = (int)temp_e / DisplayRasterWidth;
-      end_x = ((int)temp_e % DisplayRasterWidth) * BITSPER_DLWORD + (BITSPER_DLWORD - 1);
+      start_y = temp_s / DisplayRasterWidth;
+      start_x = (temp_s % DisplayRasterWidth) * BITSPER_DLWORD;
+
+      end_y = temp_e / DisplayRasterWidth;
+      end_x = (temp_e % DisplayRasterWidth) * BITSPER_DLWORD + (BITSPER_DLWORD - 1);
 
       w = abs(start_x - end_x) + 1;
       h = abs(start_y - end_y) + 1;
@@ -290,10 +290,8 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
       if (start_x > end_x) start_x = end_x;
       if (start_y > end_y) start_y = end_y;
 
-
 #if defined(XWINDOW) || defined(BYTESWAP)
       flush_display_region(start_x, start_y, w, h);
-
 #endif /* XWINDOW */
     }
   }
