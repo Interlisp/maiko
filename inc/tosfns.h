@@ -513,7 +513,8 @@
 #ifndef BIGATOMS
 #define EVAL                                                                   \
   do {                                                                         \
-    LispPTR scratch, work, lookuped;                                           \
+    LispPTR work, lookuped;                                                    \
+    DLword scratch[2];                                                         \
     switch (TOPOFSTACK & SEGMASK) {                                            \
     case S_POSITIVE:                                                           \
     case S_NEGATIVE:                                                           \
@@ -521,8 +522,8 @@
     case ATOM_OFFSET:                                                          \
       if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
         goto Hack_Label;                                                       \
-      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
-      work = POINTERMASK & swapx(scratch);                                     \
+      nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
+      work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                  \
       lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
@@ -552,7 +553,8 @@
 #else
 #define EVAL                                                                   \
   do {                                                                         \
-    LispPTR scratch, work, lookuped;                                           \
+    LispPTR work, lookuped;                                                    \
+    DLword scratch[2];                                                         \
     switch (TOPOFSTACK & SEGMASK) {                                            \
     case S_POSITIVE:                                                           \
     case S_NEGATIVE:                                                           \
@@ -560,8 +562,8 @@
     case ATOM_OFFSET:                                                          \
       if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
         goto Hack_Label;                                                       \
-      nnewframe(CURRENTFX, &scratch, TOPOFSTACK & 0xffff);                     \
-      work = POINTERMASK & swapx(scratch);                                     \
+      nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
+      work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                  \
       lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
@@ -584,8 +586,8 @@
         fn_apply = 0;                                                          \
         goto op_fn_common;                                                     \
       case TYPE_NEWATOM:                                                       \
-        nnewframe(CURRENTFX, &scratch, TOPOFSTACK);                            \
-        work = POINTERMASK & swapx(scratch);                                   \
+        nnewframe(CURRENTFX, scratch, TOPOFSTACK);                             \
+        work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                \
         lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                   \
         if (lookuped == NOBIND_PTR)                                            \
           goto op_ufn;                                                         \
