@@ -523,7 +523,7 @@
       if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
         goto Hack_Label;                                                       \
       nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
-      work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                  \
+      work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
       lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
@@ -563,7 +563,7 @@
       if ((TOPOFSTACK == NIL_PTR) || (TOPOFSTACK == ATOM_T))                   \
         goto Hack_Label;                                                       \
       nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
-      work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                  \
+      work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
       lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
@@ -587,7 +587,7 @@
         goto op_fn_common;                                                     \
       case TYPE_NEWATOM:                                                       \
         nnewframe(CURRENTFX, scratch, TOPOFSTACK);                             \
-        work = POINTERMASK & ((scratch[0] << 16) | scratch[1]);                \
+        work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
         lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                   \
         if (lookuped == NOBIND_PTR)                                            \
           goto op_ufn;                                                         \
