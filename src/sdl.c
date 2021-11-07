@@ -3,6 +3,11 @@
 #include "lispemul.h"
 #include "miscstat.h"
 #include "keyboard.h"
+#include "lspglob.h" // for IOPage
+#include "display.h" // for CURSORHEIGHT, DisplayRegion68k
+
+
+
 
 static SDL_Window *sdl_window = NULL;
 static SDL_Renderer *sdl_renderer = NULL;
@@ -129,9 +134,6 @@ int sdl_windowheight = 0;
 // each pixel is shown as this many pixels
 int sdl_pixelscale = 0;
 
-extern Uint32 *DisplayRegion68k;
-
-
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
   *EmRealUtilin68K;
 extern DLword *CTopKeyevent;
@@ -210,8 +212,35 @@ int should_update_texture = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
   should_update_texture = 1;
 }
+
+void sdl_setCursor(int hot_x, int hot_y) {
+  extern const unsigned char reversedbits[]; /* extern inside a function? Insanity! */
+  DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
+  Uint8 cursor[32];
+  printf("setCursor: bm %p, x %d, y %d\n", newbm, hot_x, hot_y);
+  for(int i = 0; i < CURSORHEIGHT; i++) {
+    printf("%04x ", newbm[i]);
+    // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1];
+  }
+  printf("\n");
+  Uint8 *bitmap = newbm;
+  for (int i = 0; i < 32; i++) cursor[i] = bitmap[i ^ 3];
+  // TODO: actually keep track of the cursors, don't just allocate a new one every time!
+  for(int i = 0; i < CURSORHEIGHT * 2; i++) {
+    printf("%02x ", cursor[i]);
+    // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1];
+  }
+  printf("\n");
+  hot_x = 0; hot_y = 0;
+  SDL_Cursor *c = SDL_CreateCursor(cursor, cursor, 16, 16, hot_x, hot_y);
+  if(c == NULL)
+    printf("ERROR creating cursor: %s\n", SDL_GetError());
+  SDL_SetCursor(c);
+
+}
 int do_invert = 0;
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
+  Uint32 *dr = (Uint32*)DisplayRegion68k;
   //printf("bitblting\n");
   int before = SDL_GetTicks();
   int width = sdl_displaywidth;
@@ -222,7 +251,7 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   int ylimit = _y + _h;
   for(int y = _y; y < ylimit; y++) {
     for(int x = _x / bpw; x < xlimit; x++) {
-      int w = DisplayRegion68k[y * pitch + x];
+      int w = dr[y * pitch + x];
       int thex = x * bpw;
       for(int b = 0; b < bpw; b++) {
         //printf("%d/%d %d\n", x, y, b);

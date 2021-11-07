@@ -103,9 +103,11 @@ void DSP_Cursor(LispPTR *args, int argnum)
   extern int LastCursorX, LastCursorY;
 
 
-#ifdef XWINDOW
+#if defined(XWINDOW)
   /* For X-Windows, set the cursor to the given location. */
   Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
+#elif defined(SDL)
+  sdl_setCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
 #endif /* XWINDOW */
 }
 
@@ -190,8 +192,10 @@ void flip_cursor() {
 #endif
 
 
-#ifdef XWINDOW
+#if defined(XWINDOW)
   /* JDS 011213: 15- cur y, as function does same! */
   Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
+#elif defined(SDL)
+  sdl_setCursor(0, 0); // TODO: keep track of the current hot_x and hot_y
 #endif /* XWINDOW */
 }
