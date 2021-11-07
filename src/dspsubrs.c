@@ -21,9 +21,11 @@
 
 #include "dspsubrsdefs.h"
 #include "commondefs.h"
-#ifdef XWINDOW
+#if defined(XWINDOW)
 #include "xcursordefs.h"
 #include "xlspwindefs.h"
+#elif defined(SDL)
+#include "sdldefs.h"
 #endif
 
 extern int DebugDSP;

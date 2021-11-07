@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_keycode.h>
+#include "sdldefs.h"
 #include "lispemul.h"
 #include "miscstat.h"
 #include "keyboard.h"
@@ -275,7 +276,7 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   /* after = SDL_GetTicks(); */
   /* printf("UpdateTexture took %dms\n", after - before); */
 }
-int map_key(SDL_Keycode k) {
+static int map_key(SDL_Keycode k) {
   for(int i = 0; keymap[i] != -1; i+= 2) {
     if(keymap[i+1] == k)
       return keymap[i];
@@ -283,7 +284,7 @@ int map_key(SDL_Keycode k) {
   return -1;
 }
 #define KEYCODE_OFFSET 0
-void handle_keydown(SDL_Keycode k, unsigned short mod) {
+static void handle_keydown(SDL_Keycode k, unsigned short mod) {
   int lk = map_key(k);
   if(lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
@@ -294,7 +295,7 @@ void handle_keydown(SDL_Keycode k, unsigned short mod) {
     if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
   }
 }
-void handle_keyup(SDL_Keycode k, unsigned short mod) {
+static void handle_keyup(SDL_Keycode k, unsigned short mod) {
   int lk = map_key(k);
   if(lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
@@ -320,7 +321,7 @@ extern MISCSTATS *MiscStats;
 #define MOUSE_LEFT 13
 #define MOUSE_RIGHT 14
 #define MOUSE_MIDDLE 15
-void sdl_update_viewport(int width, int height) {
+static void sdl_update_viewport(int width, int height) {
   int w = width / 32 * 32;
   if(w > sdl_displaywidth * sdl_pixelscale)
     w = sdl_displaywidth * sdl_pixelscale;
