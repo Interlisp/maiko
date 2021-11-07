@@ -18,9 +18,11 @@
 #include "lispemul.h"      // for LispPTR, DLword, ATOM_T, NIL
 #include "lispmap.h"       // for S_POSITIVE
 #include "lsptypes.h"      // for GETWORD
-#ifdef XWINDOW
+#if defined(XWINDOW)
 #include "xcursordefs.h"   // for Set_XCursor
 #include "xlspwindefs.h"   // for lisp_Xvideocolor, set_Xmouseposition
+#elif defined(SDL)
+#include "sdldefs.h"
 #endif
 
 extern int DebugDSP;
