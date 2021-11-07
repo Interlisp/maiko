@@ -486,9 +486,9 @@ int main(int argc, char *argv[])
   probemouse(); /* See if the mouse is connected. */
 #else
   if (getuid() != geteuid()) {
-    fprintf(stderr, "Effective user is not real user.  Setting euid to uid.\n");
-    if (seteuid(getuid()) == -1) {
-      fprintf(stderr, "Unable to reset effective user id to real user id\n");
+    fprintf(stderr, "Effective user is not real user.  Resetting uid\n");
+    if (setuid(getuid()) == -1) {
+      fprintf(stderr, "Unable to reset user id to real user id\n");
       exit(1);
     }
   }
@@ -661,7 +661,7 @@ int makepathname(char *src, char *dst)
 #ifdef DOS
         pwd = 0;
 #else
-        TIMEOUT(pwd = getpwuid(getuid()));
+        TIMEOUT0(pwd = getpwuid(getuid()));
 #endif /* DOS */
         if (pwd == NULL) {
           *Lisp_errno = errno;
@@ -680,7 +680,7 @@ int makepathname(char *src, char *dst)
           strncpy(name, base + 1, len);
           name[len] = '\0';
 #ifndef DOS
-          TIMEOUT(pwd = getpwnam(name));
+          TIMEOUT0(pwd = getpwnam(name));
 #endif /* DOS */
           if (pwd == NULL) {
             *Lisp_errno = errno;

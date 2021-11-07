@@ -742,7 +742,7 @@ static int check_filter(u_char *buffer)
 static void init_uid() {
   int rid;
   rid = getuid();
-  seteuid(rid);
+  setuid(rid);
 }
 #endif /* MAIKO_ENABLE_ETHERNET */
 
@@ -830,7 +830,7 @@ void init_ether() {
         /* JDS 991228 remove	perror("Can't open network; XNS unavailable.\n"); */
         ether_fd = -1;
       }
-      seteuid(getuid());
+      setuid(getuid());
     }
 #elif defined(USE_NIT)
 #ifndef OS4
@@ -952,7 +952,7 @@ void init_ether() {
     perror("Can't open network; XNS unavailable.\n");
     ether_fd = -1;
   }
-  seteuid(getuid());
+  setuid(getuid());
 }
 
 #endif /* OS4 */

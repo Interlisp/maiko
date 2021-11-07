@@ -424,7 +424,7 @@ void dump_fnobj(LispPTR index)
 /************************************************************************/
 
 /* Opcode names, by opcode */
-static const char *opcode_table[256] = {
+const char *opcode_table[256] = {
                            "-X-",
                            "CAR",
                            "CDR",
@@ -1018,7 +1018,7 @@ FX *get_nextFX(FX *fx) {
 } /* get_nextFX end */
 
 LispPTR MAKEATOM(char *string) {
-    return (make_atom(string, 0, strlen(string), 0));
+    return (make_atom(string, 0, strlen(string)));
 }
 
 /************************************************************************/
@@ -1032,7 +1032,7 @@ LispPTR MAKEATOM(char *string) {
 
 LispPTR *MakeAtom68k(char *string) {
   LispPTR index;
-  index = make_atom(string, 0, strlen(string), 0);
+  index = make_atom(string, 0, strlen(string));
   if (index == 0xffffffff) {
       error("MakeAtom68k: no such atom found");
   }

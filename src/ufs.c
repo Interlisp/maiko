@@ -566,7 +566,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
     case '~':
       if (*(cp + 1) == '>' || *(cp + 1) == '\0') {
         /* "~>" or "~" means the user's home directory. */
-        TIMEOUT(pwd = getpwuid(getuid()));
+        TIMEOUT0(pwd = getpwuid(getuid()));
         if (pwd == NULL) return (0);
 
         strcpy(dst, pwd->pw_dir);
@@ -590,7 +590,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
          */
         for (++cp, np = name; *cp != '\0' && *cp != '>';) *np++ = *cp++;
         *np = '\0';
-        TIMEOUT(pwd = getpwnam(name));
+        TIMEOUT0(pwd = getpwnam(name));
         if (pwd == NULL) return (0);
 
         strcpy(dst, pwd->pw_dir);

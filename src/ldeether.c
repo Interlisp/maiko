@@ -214,7 +214,7 @@ int main(int argc, char *argv[]) {
       ether_fd = -1;
       /*	exit();	*/
     }
-    seteuid(getuid());
+    setuid(getuid());
   }
 
   /* OK, right here do other stuff like scan args */

@@ -61,8 +61,8 @@ extern	int	TIMEOUT_TIME;
 /************************************************************************/
 
 #define INTRSAFE(exp)				\
-  do {} while ((int)(exp) == -1 && errno == EINTR)
+  do {errno = 0; } while ((exp) == -1 && errno == EINTR)
 
 #define INTRSAFE0(exp)				\
-  do {} while ((int)(exp) == 0 && errno == EINTR)
+  do {errno = 0; } while ((exp) == NULL && errno == EINTR)
 #endif /* TIMEOUT_H */

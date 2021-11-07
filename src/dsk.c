@@ -1702,7 +1702,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
     case AUTHOR: {
       size_t rval;
 #ifndef DOS
-      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+      TIMEOUT0(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) {
         /*
          * Returns Lisp 0.  Lisp code handles this case as author
@@ -1748,7 +1748,7 @@ LispPTR COM_getfileinfo(register LispPTR *args)
       bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
       *bufp = sbuf.st_mode;
 #ifndef DOS
-      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
+      TIMEOUT0(pwd = getpwuid(sbuf.st_uid));
       if (pwd == (struct passwd *)NULL) { return (GetSmallp(0)); }
       laddr = cdr(car(cdr(cdr(cdr(cdr(args[2]))))));
       STRING_BASE(laddr, base);

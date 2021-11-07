@@ -484,6 +484,7 @@ void OP_subrcall(int subr_no, int argnum) {
 
     case sb_GET_NATIVE_ADDR_FROM_LISP_PTR:
       POP_SUBR_ARGS;
+      /* XXX: this WILL NOT WORK if Lisp memory is allocated outside the low 4GB */
       ARITH_SWITCH(Addr68k_from_LADDR(args[0]), TopOfStack);
       break;
 
