@@ -13,7 +13,7 @@
 static SDL_Window *sdl_window = NULL;
 static SDL_Renderer *sdl_renderer = NULL;
 static SDL_Texture *sdl_texture = NULL;
-static Uint32 *buffer = NULL;
+static char *buffer = NULL;
 
 extern void kb_trans(u_short keycode, u_short upflg);
 extern int error(const char *s);
@@ -197,17 +197,6 @@ void DoRing() {
   if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
 }
 
-void set_pixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
-{
-  if(x >= surface->w)
-    return;
-  if(y >= surface->h)
-    return;
-  Uint32 * const target_pixel = (Uint32 *) ((Uint8 *) surface->pixels
-                                            + y * surface->pitch
-                                            + x * surface->format->BytesPerPixel);
-  *target_pixel = pixel;
-}
 int should_update_texture = 0;
 
 void sdl_notify_damage(int x, int y, int w, int h) {
@@ -246,7 +235,7 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   int before = SDL_GetTicks();
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
-  int bpw = 32;
+  int bpw = 8 * sizeof(Uint32);
   int pitch = sdl_displaywidth / bpw;
   int xlimit = (_x + _w + bpw - 1) / bpw;
   int ylimit = _y + _h;
@@ -258,9 +247,9 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
         //printf("%d/%d %d\n", x, y, b);
         int px = 0;
         if(w & (1 << (bpw - 1 - b))) {
-          px = do_invert ? 0xffffffff : 0xff000000;
+          px = do_invert ? 0xff : 0x00;
         } else {
-          px = do_invert ? 0xff000000 : 0xffffffff;
+          px = do_invert ? 0x00 : 0xff;
         }
         //printf("px is %x\n", px);
         int xx = thex + b;
@@ -462,7 +451,7 @@ void process_SDLevents() {
   if(should_update_texture) {
     before = SDL_GetTicks();
     sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
-    SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32));
+    SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(char));
     after = SDL_GetTicks();
     // printf("UpdateTexture took %dms\n", after - before);
     should_update_texture = 0;
@@ -526,8 +515,8 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
-  sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, width, height);
-  buffer = malloc(width * height * sizeof(Uint32));
+  sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGB332, SDL_TEXTUREACCESS_STREAMING, width, height);
+  buffer = malloc(width * height * sizeof(char));
   printf("SDL initialised\n");
   return 0;
 }
