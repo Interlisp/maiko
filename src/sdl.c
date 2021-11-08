@@ -134,6 +134,8 @@ int sdl_windowwidth = 0;
 int sdl_windowheight = 0;
 // each pixel is shown as this many pixels
 int sdl_pixelscale = 0;
+// if set, invert video (white on black)
+static int do_invert = 0;
 
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
   *EmRealUtilin68K;
@@ -197,41 +199,102 @@ void DoRing() {
   if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
 }
 
-int should_update_texture = 0;
+static int should_update_texture = 0;
 
+static int min_x = 0;
+static int min_y = 0;
+static int max_x = 0;
+static int max_y = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
+  if(x < min_x)
+    min_x = x;
+  if(y < min_y)
+    min_y = y;
+  if(x + w > max_x)
+    max_x = x + w;
+  if(y + h > max_y)
+    max_y = y + h;
   should_update_texture = 1;
 }
 
+/* a simple linked list to remember generated cursors
+ * because cursors don't have any identifying information
+ * except for the actual bitmap in Lisp, just cache that.
+ * 16 Uint16, to give a 16x16 bitmap cursor.
+ */
+struct CachedCursor {
+  struct CachedCursor *next;
+  DLword bitmap[CURSORHEIGHT];
+  SDL_Cursor *cursor;
+} *sdl_cursorlist = NULL;
+
+static int cursor_equal_p(DLword *a, DLword *b) {
+  for(int i = 0; i < CURSORHEIGHT; i++)
+    if(a[i] != b[i]) return FALSE;
+  return TRUE;
+}
+
+/*
+ * Try to find cursor CURSOR on the sdl_cursorlist, if it isn't there, add it.
+ * Return an SDL_Cursor that can be used directly.
+ */
+static SDL_Cursor *sdl_getOrAllocateCursor(Uint8 cursor[32], int hot_x, int hot_y) {
+  hot_x = 0;
+  hot_y = 0;
+  int i = 0;
+  /* try to find the cursor by checking the full bitmap */
+  DLword *bitmap = (DLword*)cursor;
+  struct CachedCursor *clp = sdl_cursorlist;
+  for(; clp != NULL; clp = clp->next) {
+    if(cursor_equal_p(clp->bitmap, bitmap) == TRUE) break;
+  }
+  if(clp == NULL) { /* it isn't there, push on a new one to the front of the list */
+    clp = (struct CachedCursor *)malloc(sizeof(struct CachedCursor));
+    for(int i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = bitmap[i];
+    SDL_Cursor *c = SDL_CreateCursor(cursor, cursor, 16, 16, hot_x, hot_y);
+    if(c == NULL)
+      printf("ERROR creating cursor: %s\n", SDL_GetError());
+    clp->cursor = c;
+    clp->next = sdl_cursorlist;
+    sdl_cursorlist = clp;
+    // printf("Creating new cursor, using it\n");
+    return clp->cursor;
+  } else {
+    /* TODO: move to front of list */
+    // printf("Found cursor, using it\n");
+    return clp->cursor;
+  }
+}
+
+/*
+ * Read a cursor bitmap from lisp. Try to find a cached cursor, then use that.
+ * Use HOT_X and HOT_Y as the cursor hotspot.
+ */
 void sdl_setCursor(int hot_x, int hot_y) {
-  extern const unsigned char reversedbits[]; /* extern inside a function? Insanity! */
   DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
   Uint8 cursor[32];
-  printf("setCursor: bm %p, x %d, y %d\n", newbm, hot_x, hot_y);
-  for(int i = 0; i < CURSORHEIGHT; i++) {
-    printf("%04x ", newbm[i]);
-    // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1];
-  }
-  printf("\n");
-  Uint8 *bitmap = newbm;
+  // printf("setCursor: bm %p, x %d, y %d\n", newbm, hot_x, hot_y);
+  /* for(int i = 0; i < CURSORHEIGHT; i++) { */
+  /*   printf("%04x ", newbm[i]); */
+  /*   // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1]; */
+  /* } */
+  /* printf("\n"); */
+  Uint8 *bitmap = (Uint8*)newbm;
   for (int i = 0; i < 32; i++) cursor[i] = bitmap[i ^ 3];
   // TODO: actually keep track of the cursors, don't just allocate a new one every time!
-  for(int i = 0; i < CURSORHEIGHT * 2; i++) {
-    printf("%02x ", cursor[i]);
-    // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1];
-  }
-  printf("\n");
-  hot_x = 0; hot_y = 0;
-  SDL_Cursor *c = SDL_CreateCursor(cursor, cursor, 16, 16, hot_x, hot_y);
-  if(c == NULL)
-    printf("ERROR creating cursor: %s\n", SDL_GetError());
+  /* for(int i = 0; i < CURSORHEIGHT * 2; i++) { */
+  /*   printf("%02x ", cursor[i]); */
+  /*   // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1]; */
+  /* } */
+  /* printf("\n"); */
+  SDL_Cursor *c = sdl_getOrAllocateCursor(cursor, hot_x, hot_y);
   SDL_SetCursor(c);
-
 }
-int do_invert = 0;
+
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
+  //  printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
   Uint32 *dr = (Uint32*)DisplayRegion68k;
-  //printf("bitblting\n");
+
   int before = SDL_GetTicks();
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
@@ -450,11 +513,14 @@ void process_SDLevents() {
   int after = 0;
   if(should_update_texture) {
     before = SDL_GetTicks();
-    sdl_bitblt_to_screen(0, 0, sdl_displaywidth, sdl_displayheight);
+    sdl_bitblt_to_screen(min_x, min_y, max_x - min_x, max_y - min_y);
     SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(char));
     after = SDL_GetTicks();
-    // printf("UpdateTexture took %dms\n", after - before);
+    //    printf("UpdateTexture took %dms\n", after - before);
     should_update_texture = 0;
+    min_x = sdl_displaywidth;
+    min_y = sdl_displayheight;
+    max_x = max_y = 0;
   }
   int this_draw = SDL_GetTicks();
   before = SDL_GetTicks();
@@ -492,6 +558,10 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_displayheight = h;
   sdl_windowwidth = w * s;
   sdl_windowheight = h * s;
+  min_x = 0;
+  max_x = sdl_displaywidth;
+  min_y = 0;
+  max_y = sdl_displayheight;
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   printf("requested width: %d, height: %d\n", width, height);
