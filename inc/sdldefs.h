@@ -3,7 +3,7 @@
 
 void sdl_notify_damage(int x, int y, int w, int h);
 void sdl_setCursor(int hot_x, int hot_y);
-void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h);
+void sdl_bitblt_to_screen(int x, int y, int w, int h);
 void sdl_set_invert(int flag);
 void sdl_setMousePosition(int x, int y);
 void process_SDLevents();
