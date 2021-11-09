@@ -199,6 +199,12 @@ void DoRing() {
   if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
 }
 
+static int min(int a, int b) {
+  if(a < b)
+    return a;
+  return b;
+}
+
 static int should_update_texture = 0;
 
 static int min_x = 0;
@@ -211,9 +217,9 @@ void sdl_notify_damage(int x, int y, int w, int h) {
   if(y < min_y)
     min_y = y;
   if(x + w > max_x)
-    max_x = x + w;
+    max_x = min(x + w, sdl_displaywidth - 1);
   if(y + h > max_y)
-    max_y = y + h;
+    max_y = min(y + h, sdl_displayheight - 1);
   should_update_texture = 1;
 }
 
@@ -387,11 +393,6 @@ static void sdl_update_viewport(int width, int height) {
   r.h = h;
   SDL_RenderSetViewport(sdl_renderer, &r);
   printf("new viewport: %d / %d\n", w, h);
-}
-static int min(int a, int b) {
-  if(a < b)
-    return a;
-  return b;
 }
 static int last_draw = 0;
 static int last_keystate[512] = { 0 };
