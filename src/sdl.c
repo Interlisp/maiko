@@ -555,9 +555,8 @@ void process_SDLevents() {
 }
 int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_pixelscale = s;
-  // must be multiples of 32
-  w = w / 32 * 32;
-  h = h / 32 * 32;
+  // width must be multiple of 32
+  w = (w + 31) / 32 * 32;
   sdl_displaywidth = w;
   sdl_displayheight = h;
   sdl_windowwidth = w * s;
