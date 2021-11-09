@@ -12,8 +12,13 @@
 
 
 static SDL_Window *sdl_window = NULL;
+#if defined(SDLRENDERING)
 static SDL_Renderer *sdl_renderer = NULL;
 static SDL_Texture *sdl_texture = NULL;
+#else
+static SDL_Surface *sdl_windowsurface = NULL;
+static SDL_Surface *sdl_buffersurface = NULL;
+#endif
 static int buffer_size = 0;
 static char *buffer = NULL;
 
@@ -383,6 +388,7 @@ extern MISCSTATS *MiscStats;
 #define MOUSE_RIGHT 14
 #define MOUSE_MIDDLE 15
 static void sdl_update_viewport(int width, int height) {
+  /* XXX: needs work */
   int w = width / 32 * 32;
   if(w > sdl_displaywidth * sdl_pixelscale)
     w = sdl_displaywidth * sdl_pixelscale;
@@ -394,7 +400,9 @@ static void sdl_update_viewport(int width, int height) {
   r.y = 0;
   r.w = w;
   r.h = h;
+#if defined(SDLRENDERING)
   SDL_RenderSetViewport(sdl_renderer, &r);
+#endif
   printf("new viewport: %d / %d\n", w, h);
 }
 static int last_draw = 0;
@@ -425,6 +433,7 @@ void sdl_set_invert(int flag) {
 void sdl_setMousePosition(int x, int y) {
   SDL_WarpMouseInWindow(sdl_window, x, y);
 }
+#if defined(SDLRENDERING)
 void sdl_update_display_rendering() {
   int before = 0;
   int after = 0;
@@ -463,6 +472,45 @@ void sdl_update_display_rendering() {
     //    printf("rendering took %dms\n", after - before);
   }
 }
+#else
+void sdl_update_display_surfaces() {
+  int before = 0;
+  int after = 0;
+  int this_draw = SDL_GetTicks();
+
+  /* check if there's anything to do and sufficient time has elapsed */
+  if (!should_update_texture || this_draw - last_draw <= 16) {
+    return;
+  }
+  before = SDL_GetTicks();
+  sdl_bitblt_to_screen(min_x, min_y, max_x - min_x, max_y - min_y);
+  after = SDL_GetTicks();
+  SDL_Rect r;
+  r.x = min_x;
+  r.y = min_y;
+  r.w = max_x - min_x;
+  r.h = max_y - min_y;
+  if (sdl_pixelscale == 1) {
+    SDL_BlitSurface(sdl_buffersurface, &r, sdl_windowsurface, &r);
+    SDL_UpdateWindowSurfaceRects(sdl_window, &r, 1);
+  } else {
+    SDL_Rect s;
+    s.x = r.x * sdl_pixelscale;
+    s.y = r.y * sdl_pixelscale;
+    s.w = r.w * sdl_pixelscale;
+    s.h = r.h * sdl_pixelscale;
+    SDL_BlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
+    SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
+  }
+  min_x = 0;
+  max_x = sdl_displaywidth;
+  min_y = 0;
+  max_y = sdl_displayheight;
+  after = SDL_GetTicks();
+  last_draw = this_draw;
+  //    printf("surface update took %dms\n", after - before);
+}
+#endif
 int process_events_time = 0;
 void process_SDLevents() {
   //  printf("processing events delta %dms\n", SDL_GetTicks() - process_events_time);
@@ -476,6 +524,7 @@ void process_SDLevents() {
     case SDL_WINDOWEVENT:
       switch(event.window.event) {
       case SDL_WINDOWEVENT_RESIZED: {
+        /* XXX: what about integer multiple of 32 requirements here? */
         sdl_windowwidth = event.window.data1;
         sdl_windowheight = event.window.data2;
         sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
@@ -550,8 +599,13 @@ void process_SDLevents() {
       printf("other event type: %d\n", event.type);
     }
   }
+#if defined(SDLRENDERING)
   sdl_update_display_rendering();
+#else
+  sdl_update_display_surfaces();
+#endif
 }
+
 int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_pixelscale = s;
   // width must be multiple of 32
@@ -578,6 +632,9 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
     printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
     return 2;
   }
+  buffer_size = width * height * sizeof(char);
+  buffer = malloc(buffer_size);
+#if defined(SDLRENDERING)
   printf("Creating renderer...\n");
   sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
   if(NULL == sdl_renderer) {
@@ -588,8 +645,12 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGB332, SDL_TEXTUREACCESS_STREAMING, width, height);
-  buffer_size = width * height * sizeof(char);
-  buffer = malloc(buffer_size);
+#else
+  printf("Creating window surface and buffer surface\n");
+  sdl_windowsurface = SDL_GetWindowSurface(sdl_window);
+  sdl_buffersurface = SDL_CreateRGBSurfaceWithFormatFrom(buffer, sdl_displaywidth, sdl_displayheight, 8,
+                                                         sdl_displaywidth, SDL_PIXELFORMAT_RGB332);
+#endif
   printf("SDL initialised\n");
   return 0;
 }
