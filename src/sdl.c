@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_keycode.h>
+#include <assert.h>
 #include "sdldefs.h"
 #include "lispemul.h"
 #include "miscstat.h"
@@ -13,6 +14,7 @@
 static SDL_Window *sdl_window = NULL;
 static SDL_Renderer *sdl_renderer = NULL;
 static SDL_Texture *sdl_texture = NULL;
+static int buffer_size = 0;
 static char *buffer = NULL;
 
 extern void kb_trans(u_short keycode, u_short upflg);
@@ -321,8 +323,9 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
           px = do_invert ? 0x00 : 0xff;
         }
         //printf("px is %x\n", px);
-        int xx = thex + b;
-        buffer[y * sdl_displaywidth + xx] = px;
+        int pxindex = (y * sdl_displaywidth) + thex + b;
+        assert(pxindex >= 0 && pxindex < buffer_size);
+        buffer[pxindex] = px;
       }
     }
   }
@@ -587,7 +590,8 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, SDL_PIXELFORMAT_RGB332, SDL_TEXTUREACCESS_STREAMING, width, height);
-  buffer = malloc(width * height * sizeof(char));
+  buffer_size = width * height * sizeof(char);
+  buffer = malloc(buffer_size);
   printf("SDL initialised\n");
   return 0;
 }
