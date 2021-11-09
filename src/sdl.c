@@ -425,6 +425,44 @@ void sdl_set_invert(int flag) {
 void sdl_setMousePosition(int x, int y) {
   SDL_WarpMouseInWindow(sdl_window, x, y);
 }
+void sdl_update_display_rendering() {
+  int before = 0;
+  int after = 0;
+
+  if(should_update_texture) {
+    before = SDL_GetTicks();
+    sdl_bitblt_to_screen(min_x, min_y, max_x - min_x, max_y - min_y);
+    SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(char));
+    after = SDL_GetTicks();
+    //    printf("UpdateTexture took %dms\n", after - before);
+    should_update_texture = 0;
+    min_x = sdl_displaywidth;
+    min_y = sdl_displayheight;
+    max_x = max_y = 0;
+  }
+  int this_draw = SDL_GetTicks();
+  before = SDL_GetTicks();
+
+  if(this_draw - last_draw > 16) {
+    before = SDL_GetTicks();
+    SDL_RenderClear(sdl_renderer);
+    SDL_Rect r;
+    r.x = 0;
+    r.y = 0;
+    r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
+    r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
+    SDL_Rect s;
+    s.x = 0;
+    s.y = 0;
+    s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
+    s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
+    SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
+    SDL_RenderPresent(sdl_renderer);
+    last_draw = this_draw;
+    after = SDL_GetTicks();
+    //    printf("rendering took %dms\n", after - before);
+  }
+}
 int process_events_time = 0;
 void process_SDLevents() {
   //  printf("processing events delta %dms\n", SDL_GetTicks() - process_events_time);
@@ -512,46 +550,7 @@ void process_SDLevents() {
       printf("other event type: %d\n", event.type);
     }
   }
-  //  handle_keyboard();
-  int before = 0;
-  int after = 0;
-  if(should_update_texture) {
-    before = SDL_GetTicks();
-    sdl_bitblt_to_screen(min_x, min_y, max_x - min_x, max_y - min_y);
-    SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(char));
-    after = SDL_GetTicks();
-    //    printf("UpdateTexture took %dms\n", after - before);
-    should_update_texture = 0;
-    min_x = sdl_displaywidth;
-    min_y = sdl_displayheight;
-    max_x = max_y = 0;
-  }
-  int this_draw = SDL_GetTicks();
-  before = SDL_GetTicks();
-  //  printf("processing events took %dms\n", before - process_events_time);
-  if(this_draw - last_draw > 16) {
-    before = SDL_GetTicks();
-    /* SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sizeof(Uint32)); */
-    after = SDL_GetTicks();
-    //    should_update_texture = 0;
-
-    SDL_RenderClear(sdl_renderer);
-    SDL_Rect r;
-    r.x = 0;
-    r.y = 0;
-    r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
-    r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
-    SDL_Rect s;
-    s.x = 0;
-    s.y = 0;
-    s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
-    s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
-    SDL_RenderPresent(sdl_renderer);
-    last_draw = this_draw;
-    after = SDL_GetTicks();
-    //    printf("rendering took %dms\n", after - before);
-  }
+  sdl_update_display_rendering();
 }
 int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_pixelscale = s;
