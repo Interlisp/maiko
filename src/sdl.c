@@ -385,6 +385,39 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   int after = SDL_GetTicks();
   //  printf("bitblting took %dms\n", after - before);
 }
+void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
+  //  printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
+  Uint32 *dr = (Uint32*)DisplayRegion68k;
+
+  int before = SDL_GetTicks();
+  int width = sdl_displaywidth;
+  int height = sdl_displayheight;
+  int bpw = 8 * sizeof(Uint32);
+  int pitch = sdl_displaywidth / bpw;
+  int xlimit = (_x + _w + bpw - 1) / bpw;
+  int ylimit = _y + _h;
+  for(int y = _y; y < ylimit; y++) {
+    for(int x = _x / bpw; x < xlimit; x++) {
+      int w = dr[y * pitch + x];
+      int thex = x * bpw;
+      for(int b = 0; b < bpw; b++) {
+        //printf("%d/%d %d\n", x, y, b);
+        uint32_t px = 0;
+        if(w & (1 << (bpw - 1 - b))) {
+          px = do_invert ? sdl_white : sdl_black;
+        } else {
+          px = do_invert ? sdl_black : sdl_white;
+        }
+        //printf("px is %x\n", px);
+        int pxindex = (y * sdl_displaywidth) + thex + b;
+        assert(pxindex >= 0 && pxindex < buffer_size);
+        ((Uint32 *)sdl_windowsurface->pixels)[pxindex] = px;
+      }
+    }
+  }
+  int after = SDL_GetTicks();
+  //  printf("bitblting took %dms\n", after - before);
+}
 #endif
 static int map_key(SDL_Keycode k) {
   for(int i = 0; keymap[i] != -1; i+= 2) {
@@ -528,16 +561,13 @@ void sdl_update_display_surfaces() {
   if (!should_update_texture || this_draw - last_draw <= 16) {
     return;
   }
-  before = SDL_GetTicks();
-  sdl_bitblt_to_screen(min_x, min_y, max_x - min_x, max_y - min_y);
-  after = SDL_GetTicks();
   SDL_Rect r;
   r.x = min_x;
   r.y = min_y;
   r.w = max_x - min_x;
   r.h = max_y - min_y;
   if (sdl_pixelscale == 1) {
-    SDL_BlitSurface(sdl_buffersurface, &r, sdl_windowsurface, &r);
+    sdl_bitblt_to_window_surface(r.x, r.y, r.w, r.h);
     SDL_UpdateWindowSurfaceRects(sdl_window, &r, 1);
   } else {
     SDL_Rect s;
@@ -545,13 +575,15 @@ void sdl_update_display_surfaces() {
     s.y = r.y * sdl_pixelscale;
     s.w = r.w * sdl_pixelscale;
     s.h = r.h * sdl_pixelscale;
+    sdl_bitblt_to_screen(r.x, r.y, r.w, r.h);
     SDL_BlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
-  min_x = 0;
-  max_x = sdl_displaywidth;
-  min_y = 0;
-  max_y = sdl_displayheight;
+  min_x = sdl_displaywidth;
+  max_x = 0;
+  min_y = sdl_displayheight;
+  max_y = 0;
+  should_update_texture = 0;
   after = SDL_GetTicks();
   last_draw = this_draw;
   //    printf("surface update took %dms\n", after - before);
