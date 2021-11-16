@@ -244,6 +244,7 @@ LispPTR UFS_getfilename(LispPTR *args)
 LispPTR UFS_deletefile(LispPTR *args)
 {
   char file[MAXPATHLEN], fbuf[MAXPATHLEN];
+  struct stat sbuf;
   register int len, rval;
 
   ERRSETJMP(NIL);
@@ -260,11 +261,21 @@ LispPTR UFS_deletefile(LispPTR *args)
 #else
   if (unixpathname(fbuf, file, 0, 0) == 0) return (NIL);
 #endif /* DOS */
-
+  /* check if we're operating on directory or file */
+  TIMEOUT(rval = stat(file, &sbuf));
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return (NIL);
+  }
   /*
-   * On UNIX device, all we have to do is just to unlink the file.
+   * On UNIX device, all we have to do is just to unlink the file
+   * or directory
    */
-  TIMEOUT(rval = unlink(file));
+  if ((sbuf.st_mode & S_IFMT) == S_IFDIR) {
+    TIMEOUT(rval = rmdir(file));
+  } else {
+    TIMEOUT(rval = unlink(file));
+  }
   if (rval == -1) {
     *Lisp_errno = errno;
     return (NIL);
