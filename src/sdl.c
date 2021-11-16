@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "sdldefs.h"
 #include "lispemul.h"
+#include "lsptypes.h"
 #include "miscstat.h"
 #include "keyboard.h"
 #include "lspglob.h" // for IOPage
@@ -21,6 +22,8 @@ static SDL_Surface *sdl_buffersurface = NULL;
 #endif
 static Uint32 sdl_white;
 static Uint32 sdl_black;
+static Uint32 sdl_foreground;
+static Uint32 sdl_background;
 static int sdl_bytesperpixel;
 static SDL_PixelFormat *sdl_pixelformat;
 static int buffer_size = 0;
@@ -145,9 +148,6 @@ int sdl_windowwidth = 0;
 int sdl_windowheight = 0;
 // each pixel is shown as this many pixels
 int sdl_pixelscale = 0;
-// if set, invert video (white on black)
-static int do_invert = 0;
-
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
   *EmRealUtilin68K;
 extern DLword *CTopKeyevent;
@@ -310,46 +310,46 @@ void sdl_setCursor(int hot_x, int hot_y) {
 #if defined(SDLRENDERING)
 void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
   // printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
-  Uint32 *dr = (Uint32*)DisplayRegion68k;
-  void *tbuffer;
-  int tpitch;
-  int before = SDL_GetTicks();
-  int width = sdl_displaywidth;
-  int height = sdl_displayheight;
-  int bpw = 8 * sizeof(Uint32);
-  int pitch = sdl_displaywidth / bpw;
-  int xlimit = (_x + _w + bpw - 1) / bpw;
-  int ylimit = _y + _h;
-  SDL_Rect r;
-  // if we are to avoid dealing with partial words in the update we must calculate the
-  // rounded down x starting bit position and the rounded up x ending bit position and
-  // lock that region
-  r.x = (_x / bpw) * bpw;
-  r.w = ((_x + _w + bpw - 1) / bpw * bpw) - r.x;
-  r.y = _y;
-  r.h = _h;
-  // printf("locking %d %d %d %d\n", r.x, r.y, r.w, r.h);
-  SDL_LockTexture(sdl_texture, &r, &tbuffer, &tpitch);
-  for(int y = _y; y < ylimit; y++) { // for each line
-    for(int x = _x / bpw; x < xlimit; x++) { // for each word within line
-      int w = dr[y * pitch + x];
-      int thex = x * bpw;
-      for(int b = 0; b < bpw; b++) { // for each bit within word
-        // printf("%d/%d %d\n", x, y, b);
-        uint32_t px = 0;
-        if(w & (1 << (bpw - 1 - b))) {
-          px = do_invert ? sdl_white : sdl_black;
-        } else {
-          px = do_invert ? sdl_black : sdl_white;
-        }
-        //printf("px is %x\n", px);
-        int pxindex = ((y - _y) * (tpitch / sdl_bytesperpixel)) + ((x - (_x / bpw)) * bpw) + b;
-        ((Uint32 *)tbuffer)[pxindex] = px;
+  // Uint32 *dr = (Uint32 *)DisplayRegion68k;
+  static const DLword mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
+                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
+  DLword *dr = DisplayRegion68k;
+  void *destbuffer;
+  int destpitchbytes;
+  int destpitchpixels;
+  // const int bitsperword = 8 * sizeof(Uint32);
+  const int bitsperword = 8 * sizeof(DLword);
+  int sourcepitchwords = sdl_displaywidth / bitsperword;
+  int xstart = _x / bitsperword;
+  int xlimit = (_x + _w + bitsperword - 1) / bitsperword;
+  int ystart = _y * sourcepitchwords;
+  int ylimit = (_y + _h) * sourcepitchwords;
+  SDL_Rect destrect;
+  /*  printf("_x %d _y %d _w %d _h %d; xstart %d xlimit %d ystart %d ylimit %d sourcepitchwords %d\n",
+      _x, _y, _w, _h, xstart, xlimit, ystart, ylimit, sourcepitchwords); */
+  // Avoid dealing with partial words in the update by stretching the source rectangle
+  // left and right to cover complete units (32-bit words) and lock the corresponding
+  // region in the texture
+  destrect.x = (_x / bitsperword) * bitsperword;
+  destrect.w = ((_x + _w + bitsperword - 1) / bitsperword * bitsperword) - destrect.x;
+  destrect.y = _y;
+  destrect.h = _h;
+  SDL_LockTexture(sdl_texture, &destrect, &destbuffer, &destpitchbytes);
+  destpitchpixels = destpitchbytes / sdl_bytesperpixel;
+  int dy = 0;
+  // for each line in the source image
+  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += destpitchpixels) {
+    // for each word in the line
+    int dx = 0;
+    for(int sx = xstart; sx < xlimit; sx++, dx += bitsperword) {
+      int w = GETBASEWORD(dr, sy + sx);
+      // for each bit in the word
+      for(int b = 0; b < bitsperword; b++) {
+        ((Uint32 *)destbuffer)[dy + dx + b] = (w & mask[b]) ? sdl_foreground : sdl_background;
       }
     }
   }
   SDL_UnlockTexture(sdl_texture);
-  int after = SDL_GetTicks();
 }
 #else
 void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
@@ -364,6 +364,7 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   int xlimit = (_x + _w + bpw - 1) / bpw;
   int ylimit = _y + _h;
   for(int y = _y; y < ylimit; y++) {
+    int they = y * sdl_displaywidth;
     for(int x = _x / bpw; x < xlimit; x++) {
       int w = dr[y * pitch + x];
       int thex = x * bpw;
@@ -371,12 +372,12 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
         //printf("%d/%d %d\n", x, y, b);
         uint32_t px = 0;
         if(w & (1 << (bpw - 1 - b))) {
-          px = do_invert ? sdl_white : sdl_black;
+          px = sdl_foreground;
         } else {
-          px = do_invert ? sdl_black : sdl_white;
+          px = sdl_background;
         }
         //printf("px is %x\n", px);
-        int pxindex = (y * sdl_displaywidth) + thex + b;
+        int pxindex = they + thex + b;
         assert(pxindex >= 0 && pxindex < buffer_size);
         ((Uint32 *)buffer)[pxindex] = px;
       }
@@ -397,6 +398,7 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
   int xlimit = (_x + _w + bpw - 1) / bpw;
   int ylimit = _y + _h;
   for(int y = _y; y < ylimit; y++) {
+    int they = y * sdl_displaywidth;
     for(int x = _x / bpw; x < xlimit; x++) {
       int w = dr[y * pitch + x];
       int thex = x * bpw;
@@ -404,12 +406,12 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
         //printf("%d/%d %d\n", x, y, b);
         uint32_t px = 0;
         if(w & (1 << (bpw - 1 - b))) {
-          px = do_invert ? sdl_white : sdl_black;
+          px = sdl_foreground;
         } else {
-          px = do_invert ? sdl_black : sdl_white;
+          px = sdl_background;
         }
         //printf("px is %x\n", px);
-        int pxindex = (y * sdl_displaywidth) + thex + b;
+        int pxindex = they + thex + b;
         assert(pxindex >= 0 && pxindex < buffer_size);
         ((Uint32 *)sdl_windowsurface->pixels)[pxindex] = px;
       }
@@ -505,7 +507,14 @@ static int last_keystate[512] = { 0 };
 /*   } */
 /* } */
 void sdl_set_invert(int flag) {
-  do_invert = flag;
+  if (flag) {
+    sdl_foreground = sdl_white;
+    sdl_background = sdl_black;
+  } else {
+    sdl_foreground = sdl_black;
+    sdl_background = sdl_white;
+  }
+  sdl_notify_damage(0, 0, sdl_displaywidth, sdl_displayheight);
 }
 void sdl_setMousePosition(int x, int y) {
   SDL_WarpMouseInWindow(sdl_window, x, y);
@@ -518,7 +527,6 @@ void sdl_update_display_rendering() {
   if(should_update_texture) {
     before = SDL_GetTicks();
     sdl_bitblt_to_texture(min_x, min_y, max_x - min_x, max_y - min_y);
-    // SDL_UpdateTexture(sdl_texture, NULL, buffer, sdl_displaywidth * sdl_bytesperpixel);
     after = SDL_GetTicks();
     //    printf("UpdateTexture took %dms\n", after - before);
     should_update_texture = 0;
@@ -530,7 +538,7 @@ void sdl_update_display_rendering() {
   before = SDL_GetTicks();
 
 
-  if(this_draw - last_draw > 16) {
+  if(this_draw - last_draw > 10) {
     before = SDL_GetTicks();
     //SDL_RenderClear(sdl_renderer);
     SDL_Rect r;
@@ -717,15 +725,18 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
     printf("SDL Error: %s\n", SDL_GetError());
     return 3;
   }
+  SDL_SetRenderDrawColor(sdl_renderer, 127, 127, 127, 255);
   SDL_RenderClear(sdl_renderer);
+  SDL_RenderPresent(sdl_renderer);
   SDL_GetRendererInfo(sdl_renderer, &sdl_rendererinfo);
-  // SDL_SetRenderDrawColor(sdl_renderer, 50, 50, 50, 255);
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_pixelformat = SDL_AllocFormat(sdl_rendererinfo.texture_formats[0]);
   sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format, SDL_TEXTUREACCESS_STREAMING, width, height);
   sdl_black = SDL_MapRGB(sdl_pixelformat, 0, 0, 0);
   sdl_white = SDL_MapRGB(sdl_pixelformat, 255, 255, 255);
+  sdl_foreground = sdl_black;
+  sdl_background = sdl_white;
   sdl_bytesperpixel = sdl_pixelformat->BytesPerPixel;
 #else
   printf("Creating window surface and buffer surface\n");
@@ -733,6 +744,8 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_pixelformat = sdl_windowsurface->format;
   sdl_black = SDL_MapRGB(sdl_pixelformat, 0, 0, 0);
   sdl_white = SDL_MapRGB(sdl_pixelformat, 255, 255, 255);
+  sdl_foreground = sdl_black;
+  sdl_background = sdl_white;
   sdl_bytesperpixel = sdl_pixelformat->BytesPerPixel;
   buffer_size = width * height * sdl_bytesperpixel;
   buffer = malloc(buffer_size);
