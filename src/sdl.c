@@ -517,7 +517,7 @@ void sdl_set_invert(int flag) {
   sdl_notify_damage(0, 0, sdl_displaywidth, sdl_displayheight);
 }
 void sdl_setMousePosition(int x, int y) {
-  SDL_WarpMouseInWindow(sdl_window, x, y);
+  SDL_WarpMouseInWindow(sdl_window, x * sdl_pixelscale, y * sdl_pixelscale);
 }
 #if defined(SDLRENDERING)
 void sdl_update_display_rendering() {
