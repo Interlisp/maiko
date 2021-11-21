@@ -19,6 +19,8 @@ static SDL_Texture *sdl_texture = NULL;
 #else
 static SDL_Surface *sdl_windowsurface = NULL;
 static SDL_Surface *sdl_buffersurface = NULL;
+static int buffer_size = 0;
+static void *buffer = NULL;
 #endif
 static Uint32 sdl_white;
 static Uint32 sdl_black;
@@ -26,8 +28,6 @@ static Uint32 sdl_foreground;
 static Uint32 sdl_background;
 static int sdl_bytesperpixel;
 static SDL_PixelFormat *sdl_pixelformat;
-static int buffer_size = 0;
-static void *buffer = NULL;
 
 extern void kb_trans(u_short keycode, u_short upflg);
 extern int error(const char *s);
@@ -216,7 +216,7 @@ static int min(int a, int b) {
   return b;
 }
 
-static int should_update_texture = 0;
+static int display_update_needed = 0;
 
 static int min_x = 0;
 static int min_y = 0;
@@ -231,7 +231,7 @@ void sdl_notify_damage(int x, int y, int w, int h) {
     max_x = min(x + w, sdl_displaywidth - 1);
   if(y + h > max_y)
     max_y = min(y + h, sdl_displayheight - 1);
-  should_update_texture = 1;
+  display_update_needed = 1;
 }
 
 /* a simple linked list to remember generated cursors
@@ -286,6 +286,7 @@ static SDL_Cursor *sdl_getOrAllocateCursor(Uint8 cursor[32], int hot_x, int hot_
 /*
  * Read a cursor bitmap from lisp. Try to find a cached cursor, then use that.
  * Use HOT_X and HOT_Y as the cursor hotspot.
+ * XXX: needs to deal with sdl_pixelscale > 1, and where is the hotspot?
  */
 void sdl_setCursor(int hot_x, int hot_y) {
   DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
@@ -310,51 +311,86 @@ void sdl_setCursor(int hot_x, int hot_y) {
 #if defined(SDLRENDERING)
 void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
   // printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
-  // Uint32 *dr = (Uint32 *)DisplayRegion68k;
+  // Uint32 *src = (Uint32 *)DisplayRegion68k;
   static const DLword mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
                                   1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
-  DLword *dr = DisplayRegion68k;
-  void *destbuffer;
-  int destpitchbytes;
-  int destpitchpixels;
-  // const int bitsperword = 8 * sizeof(Uint32);
+  DLword *src = DisplayRegion68k;
+  void *dst;
+  int dstpitchbytes;
+  int dstpitchpixels;
   const int bitsperword = 8 * sizeof(DLword);
   int sourcepitchwords = sdl_displaywidth / bitsperword;
   int xstart = _x / bitsperword;
   int xlimit = (_x + _w + bitsperword - 1) / bitsperword;
   int ystart = _y * sourcepitchwords;
   int ylimit = (_y + _h) * sourcepitchwords;
-  SDL_Rect destrect;
+  SDL_Rect dstrect;
   /*  printf("_x %d _y %d _w %d _h %d; xstart %d xlimit %d ystart %d ylimit %d sourcepitchwords %d\n",
       _x, _y, _w, _h, xstart, xlimit, ystart, ylimit, sourcepitchwords); */
   // Avoid dealing with partial words in the update by stretching the source rectangle
-  // left and right to cover complete units (32-bit words) and lock the corresponding
+  // left and right to cover complete units and lock the corresponding
   // region in the texture
-  destrect.x = (_x / bitsperword) * bitsperword;
-  destrect.w = ((_x + _w + bitsperword - 1) / bitsperword * bitsperword) - destrect.x;
-  destrect.y = _y;
-  destrect.h = _h;
-  SDL_LockTexture(sdl_texture, &destrect, &destbuffer, &destpitchbytes);
-  destpitchpixels = destpitchbytes / sdl_bytesperpixel;
+  dstrect.x = (_x / bitsperword) * bitsperword;
+  dstrect.w = ((_x + _w + bitsperword - 1) / bitsperword * bitsperword) - dstrect.x;
+  dstrect.y = _y;
+  dstrect.h = _h;
+  SDL_LockTexture(sdl_texture, &dstrect, &dst, &dstpitchbytes);
+  dstpitchpixels = dstpitchbytes / sdl_bytesperpixel;
   int dy = 0;
   // for each line in the source image
-  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += destpitchpixels) {
+  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
     // for each word in the line
     int dx = 0;
     for(int sx = xstart; sx < xlimit; sx++, dx += bitsperword) {
-      int w = GETBASEWORD(dr, sy + sx);
+      int srcw = GETBASEWORD(src, sy + sx);
       // for each bit in the word
       for(int b = 0; b < bitsperword; b++) {
-        ((Uint32 *)destbuffer)[dy + dx + b] = (w & mask[b]) ? sdl_foreground : sdl_background;
+        ((Uint32 *)dst)[dy + dx + b] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
+      }
+    }
+  }
+  SDL_UnlockTexture(sdl_texture);
+}
+void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
+  static const int mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
+                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
+  DLword *src = DisplayRegion68k;
+  void *dst;
+  int dstpitchbytes;
+  int dstpitchpixels;
+  const int bitsperword = 8 * sizeof(DLword);
+  int sourcepitchwords = sdl_displaywidth / bitsperword;
+  int xstart = _x / bitsperword;	// "word" index of first accessed word in line
+  int xstartb = _x % bitsperword;	// bit within word
+  int xlimit = (_x + _w + bitsperword - 1) / bitsperword;  // word index
+  int ystart = _y * sourcepitchwords;
+  int ylimit = (_y + _h) * sourcepitchwords;
+  SDL_Rect dstrect = {.x = _x, .y = _y, .w = _w, .h = _h};
+  SDL_LockTexture(sdl_texture, &dstrect, &dst, &dstpitchbytes);
+  dstpitchpixels = dstpitchbytes / sdl_bytesperpixel;
+  int dy = 0;
+  // for each line in the source image
+  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
+    int dx = 0;
+    int sx = xstart;
+    int b = xstartb;
+    int srcw = GETBASEWORD(src, sy + sx);
+    // for each pixel within the dstination region line
+    for (int dx = 0; dx < _w; dx++) {
+      ((Uint32 *)dst)[dy + dx] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
+      if (++b == bitsperword) {
+        b = 0;
+        sx++;
+        srcw = GETBASEWORD(src, sy + sx);
       }
     }
   }
   SDL_UnlockTexture(sdl_texture);
 }
 #else
-void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
+void sdl_bitblt_to_buffer(int _x, int _y, int _w, int _h) {
   //  printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
-  Uint32 *dr = (Uint32*)DisplayRegion68k;
+  Uint32 *src = (Uint32*)DisplayRegion68k;
 
   int before = SDL_GetTicks();
   int width = sdl_displaywidth;
@@ -366,12 +402,12 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   for(int y = _y; y < ylimit; y++) {
     int they = y * sdl_displaywidth;
     for(int x = _x / bpw; x < xlimit; x++) {
-      int w = dr[y * pitch + x];
+      int srcw = src[y * pitch + x];
       int thex = x * bpw;
       for(int b = 0; b < bpw; b++) {
         //printf("%d/%d %d\n", x, y, b);
         uint32_t px = 0;
-        if(w & (1 << (bpw - 1 - b))) {
+        if(srcw & (1 << (bpw - 1 - b))) {
           px = sdl_foreground;
         } else {
           px = sdl_background;
@@ -387,37 +423,31 @@ void sdl_bitblt_to_screen(int _x, int _y, int _w, int _h) {
   //  printf("bitblting took %dms\n", after - before);
 }
 void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
-  //  printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
-  Uint32 *dr = (Uint32*)DisplayRegion68k;
-
-  int before = SDL_GetTicks();
-  int width = sdl_displaywidth;
-  int height = sdl_displayheight;
-  int bpw = 8 * sizeof(Uint32);
-  int pitch = sdl_displaywidth / bpw;
-  int xlimit = (_x + _w + bpw - 1) / bpw;
-  int ylimit = _y + _h;
-  for(int y = _y; y < ylimit; y++) {
-    int they = y * sdl_displaywidth;
-    for(int x = _x / bpw; x < xlimit; x++) {
-      int w = dr[y * pitch + x];
-      int thex = x * bpw;
-      for(int b = 0; b < bpw; b++) {
-        //printf("%d/%d %d\n", x, y, b);
-        uint32_t px = 0;
-        if(w & (1 << (bpw - 1 - b))) {
-          px = sdl_foreground;
-        } else {
-          px = sdl_background;
-        }
-        //printf("px is %x\n", px);
-        int pxindex = they + thex + b;
-        assert(pxindex >= 0 && pxindex < buffer_size);
-        ((Uint32 *)sdl_windowsurface->pixels)[pxindex] = px;
+  static const DLword mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
+                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
+  DLword *src = DisplayRegion68k;
+  Uint32 *dst = (Uint32 *)sdl_windowsurface->pixels;
+  int dstpitchbytes = sdl_windowsurface->pitch;
+  int dstpitchpixels = dstpitchbytes / sdl_bytesperpixel;
+  const int bitsperword = 8 * sizeof(DLword);
+  int sourcepitchwords = sdl_displaywidth / bitsperword;
+  int xstart = _x / bitsperword;
+  int xlimit = (_x + _w + bitsperword - 1) / bitsperword;
+  int ystart = _y * sourcepitchwords;
+  int ylimit = (_y + _h) * sourcepitchwords;
+  int dy = _y * dstpitchpixels;
+  // for each line in the source image
+  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
+    // for each word in the line
+    int dx = (_x / bitsperword) * bitsperword;
+    for(int sx = xstart; sx < xlimit; sx++, dx+=bitsperword) {
+      int srcw = GETBASEWORD(src, sy + sx);
+      // for each bit in the word
+      for(int b = 0; b < bitsperword; b++) {
+        ((Uint32 *)dst)[dy + dx + b] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
       }
     }
   }
-  int after = SDL_GetTicks();
   //  printf("bitblting took %dms\n", after - before);
 }
 #endif
@@ -520,25 +550,24 @@ void sdl_setMousePosition(int x, int y) {
   SDL_WarpMouseInWindow(sdl_window, x * sdl_pixelscale, y * sdl_pixelscale);
 }
 #if defined(SDLRENDERING)
-void sdl_update_display_rendering() {
+void sdl_update_display() {
   int before = 0;
   int after = 0;
 
-  if(should_update_texture) {
-    before = SDL_GetTicks();
-    sdl_bitblt_to_texture(min_x, min_y, max_x - min_x, max_y - min_y);
-    after = SDL_GetTicks();
-    //    printf("UpdateTexture took %dms\n", after - before);
-    should_update_texture = 0;
-    min_x = sdl_displaywidth;
-    min_y = sdl_displayheight;
-    max_x = max_y = 0;
-  }
   int this_draw = SDL_GetTicks();
+  if(this_draw - last_draw <= 16) return;
+
+  sdl_bitblt_to_texture2(min_x, min_y, max_x - min_x, max_y - min_y);
+  after = SDL_GetTicks();
+  //    printf("UpdateTexture took %dms\n", after - before);
+  display_update_needed = 0;
+  min_x = sdl_displaywidth;
+  min_y = sdl_displayheight;
+  max_x = max_y = 0;
+
   before = SDL_GetTicks();
 
 
-  if(this_draw - last_draw > 10) {
     before = SDL_GetTicks();
     //SDL_RenderClear(sdl_renderer);
     SDL_Rect r;
@@ -557,16 +586,15 @@ void sdl_update_display_rendering() {
     last_draw = this_draw;
     after = SDL_GetTicks();
     //    printf("rendering took %dms\n", after - before);
-  }
 }
 #else
-void sdl_update_display_surfaces() {
+void sdl_update_display() {
   int before = 0;
   int after = 0;
   int this_draw = SDL_GetTicks();
 
   /* check if there's anything to do and sufficient time has elapsed */
-  if (!should_update_texture || this_draw - last_draw <= 16) {
+  if (!display_update_needed || this_draw - last_draw <= 16) {
     return;
   }
   SDL_Rect r;
@@ -583,7 +611,7 @@ void sdl_update_display_surfaces() {
     s.y = r.y * sdl_pixelscale;
     s.w = r.w * sdl_pixelscale;
     s.h = r.h * sdl_pixelscale;
-    sdl_bitblt_to_screen(r.x, r.y, r.w, r.h);
+    sdl_bitblt_to_buffer(r.x, r.y, r.w, r.h);
     SDL_BlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
@@ -591,7 +619,7 @@ void sdl_update_display_surfaces() {
   max_x = 0;
   min_y = sdl_displayheight;
   max_y = 0;
-  should_update_texture = 0;
+  display_update_needed = 0;
   after = SDL_GetTicks();
   last_draw = this_draw;
   //    printf("surface update took %dms\n", after - before);
@@ -685,11 +713,9 @@ void process_SDLevents() {
       printf("other event type: %d\n", event.type);
     }
   }
-#if defined(SDLRENDERING)
-  sdl_update_display_rendering();
-#else
-  sdl_update_display_surfaces();
-#endif
+  if (display_update_needed) {
+    sdl_update_display();
+  }
 }
 
 int init_SDL(char *windowtitle, int w, int h, int s) {
