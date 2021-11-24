@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_keycode.h>
 #include <assert.h>
+#include <limits.h>
 #include "sdldefs.h"
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -9,7 +10,7 @@
 #include "lspglob.h" // for IOPage
 #include "display.h" // for CURSORHEIGHT, DisplayRegion68k
 
-#define  SDLRENDERING 1
+// #define  SDLRENDERING 1
 
 static SDL_Window *sdl_window = NULL;
 #if defined(SDLRENDERING)
@@ -139,6 +140,8 @@ int keymap[] = {
   108, SDLK_F12,
   -1, -1
 };
+static const DLword bitmask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
+                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
 // all of the following are overwritten, the values here are irrelevant defaults!
 // actual size of the lisp display in pixels.
 int sdl_displaywidth = 0;
@@ -218,8 +221,8 @@ static int min(int a, int b) {
 
 static int display_update_needed = 0;
 
-static int min_x = 0;
-static int min_y = 0;
+static int min_x = INT_MAX;
+static int min_y = INT_MAX;
 static int max_x = 0;
 static int max_y = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
@@ -310,10 +313,6 @@ void sdl_setCursor(int hot_x, int hot_y) {
 }
 #if defined(SDLRENDERING)
 void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
-  // printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
-  // Uint32 *src = (Uint32 *)DisplayRegion68k;
-  static const DLword mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
-                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
   DLword *src = DisplayRegion68k;
   void *dst;
   int dstpitchbytes;
@@ -325,13 +324,11 @@ void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
   int ystart = _y * sourcepitchwords;
   int ylimit = (_y + _h) * sourcepitchwords;
   SDL_Rect dstrect;
-  /*  printf("_x %d _y %d _w %d _h %d; xstart %d xlimit %d ystart %d ylimit %d sourcepitchwords %d\n",
-      _x, _y, _w, _h, xstart, xlimit, ystart, ylimit, sourcepitchwords); */
   // Avoid dealing with partial words in the update by stretching the source rectangle
   // left and right to cover complete units and lock the corresponding
   // region in the texture
-  dstrect.x = (_x / bitsperword) * bitsperword;
-  dstrect.w = ((_x + _w + bitsperword - 1) / bitsperword * bitsperword) - dstrect.x;
+  dstrect.x = xstart * bitsperword;
+  dstrect.w = (xlimit * bitsperword) - dstrect.x;
   dstrect.y = _y;
   dstrect.h = _h;
   SDL_LockTexture(sdl_texture, &dstrect, &dst, &dstpitchbytes);
@@ -345,15 +342,13 @@ void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
       int srcw = GETBASEWORD(src, sy + sx);
       // for each bit in the word
       for(int b = 0; b < bitsperword; b++) {
-        ((Uint32 *)dst)[dy + dx + b] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
+        ((Uint32 *)dst)[dy + dx + b] = (srcw & bitmask[b]) ? sdl_foreground : sdl_background;
       }
     }
   }
   SDL_UnlockTexture(sdl_texture);
 }
 void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
-  static const int mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
-                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
   DLword *src = DisplayRegion68k;
   void *dst;
   int dstpitchbytes;
@@ -377,7 +372,7 @@ void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
     int srcw = GETBASEWORD(src, sy + sx);
     // for each pixel within the dstination region line
     for (int dx = 0; dx < _w; dx++) {
-      ((Uint32 *)dst)[dy + dx] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
+      ((Uint32 *)dst)[dy + dx] = (srcw & bitmask[b]) ? sdl_foreground : sdl_background;
       if (++b == bitsperword) {
         b = 0;
         sx++;
@@ -389,10 +384,7 @@ void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
 }
 #else
 void sdl_bitblt_to_buffer(int _x, int _y, int _w, int _h) {
-  //  printf("bitblt(%d, %d, %d, %d)\n", _x, _y, _w, _h);
   Uint32 *src = (Uint32*)DisplayRegion68k;
-
-  int before = SDL_GetTicks();
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 8 * sizeof(Uint32);
@@ -405,26 +397,20 @@ void sdl_bitblt_to_buffer(int _x, int _y, int _w, int _h) {
       int srcw = src[y * pitch + x];
       int thex = x * bpw;
       for(int b = 0; b < bpw; b++) {
-        //printf("%d/%d %d\n", x, y, b);
         uint32_t px = 0;
         if(srcw & (1 << (bpw - 1 - b))) {
           px = sdl_foreground;
         } else {
           px = sdl_background;
         }
-        //printf("px is %x\n", px);
         int pxindex = they + thex + b;
         assert(pxindex >= 0 && pxindex < buffer_size);
         ((Uint32 *)buffer)[pxindex] = px;
       }
     }
   }
-  int after = SDL_GetTicks();
-  //  printf("bitblting took %dms\n", after - before);
 }
 void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
-  static const DLword mask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
-                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
   DLword *src = DisplayRegion68k;
   Uint32 *dst = (Uint32 *)sdl_windowsurface->pixels;
   int dstpitchbytes = sdl_windowsurface->pitch;
@@ -444,11 +430,10 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
       int srcw = GETBASEWORD(src, sy + sx);
       // for each bit in the word
       for(int b = 0; b < bitsperword; b++) {
-        ((Uint32 *)dst)[dy + dx + b] = (srcw & mask[b]) ? sdl_foreground : sdl_background;
+        ((Uint32 *)dst)[dy + dx + b] = (srcw & bitmask[b]) ? sdl_foreground : sdl_background;
       }
     }
   }
-  //  printf("bitblting took %dms\n", after - before);
 }
 #endif
 static int map_key(SDL_Keycode k) {
@@ -514,28 +499,7 @@ static void sdl_update_viewport(int width, int height) {
 #endif
   printf("new viewport: %d / %d\n", w, h);
 }
-static int last_draw = 0;
 static int last_keystate[512] = { 0 };
-/* void handle_keyboard() { */
-/*   SDL_PumpEvents(); */
-/*   int numkeys; */
-/*   const Uint8 *keystates = SDL_GetKeyboardState(&numkeys); */
-/*   for(int i = 0; keymap[i] != -1; i+= 2) { */
-/*     int keycode = keymap[i+1]; */
-/*     int lk = keymap[i]; */
-/*     int scancode = SDL_GetScancodeFromKey(keycode); */
-/*     if(scancode < numkeys) { */
-/*       int state = keystates[scancode]; */
-/*       if(state != last_keystate[scancode]) { */
-/*         printf("lk %d scancode %d %s <%s>\n", lk, scancode, state ? "pressed" : "released", SDL_GetKeyName(keycode)); */
-/*         kb_trans(lk - KEYCODE_OFFSET, state ? FALSE : TRUE); */
-/*         DoRing(); */
-/*         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0; */
-/*       } */
-/*       last_keystate[scancode] = state; */
-/*     } */
-/*   } */
-/* } */
 void sdl_set_invert(int flag) {
   if (flag) {
     sdl_foreground = sdl_white;
@@ -551,53 +515,14 @@ void sdl_setMousePosition(int x, int y) {
 }
 #if defined(SDLRENDERING)
 void sdl_update_display() {
-  int before = 0;
-  int after = 0;
-
-  int this_draw = SDL_GetTicks();
-  if(this_draw - last_draw <= 16) return;
-
-  sdl_bitblt_to_texture2(min_x, min_y, max_x - min_x, max_y - min_y);
-  after = SDL_GetTicks();
-  //    printf("UpdateTexture took %dms\n", after - before);
-  display_update_needed = 0;
-  min_x = sdl_displaywidth;
-  min_y = sdl_displayheight;
-  max_x = max_y = 0;
-
-  before = SDL_GetTicks();
-
-
-    before = SDL_GetTicks();
-    //SDL_RenderClear(sdl_renderer);
-    SDL_Rect r;
-    r.x = 0;
-    r.y = 0;
-    r.w = min(sdl_windowwidth / sdl_pixelscale, sdl_displaywidth);
-    r.h = min(sdl_windowheight / sdl_pixelscale, sdl_displayheight);
-    SDL_Rect s;
-    s.x = 0;
-    s.y = 0;
-    s.w = min(sdl_windowwidth / sdl_pixelscale * sdl_pixelscale, sdl_displaywidth * sdl_pixelscale);
-    s.h = min(sdl_windowheight / sdl_pixelscale * sdl_pixelscale, sdl_displayheight * sdl_pixelscale);
-    SDL_RenderCopy(sdl_renderer, sdl_texture, &r, &s);
-    //SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
-    SDL_RenderPresent(sdl_renderer);
-    last_draw = this_draw;
-    after = SDL_GetTicks();
-    //    printf("rendering took %dms\n", after - before);
+  sdl_bitblt_to_texture(min_x, min_y, max_x - min_x, max_y - min_y);
+  SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+  SDL_RenderPresent(sdl_renderer);
 }
 #else
 void sdl_update_display() {
-  int before = 0;
-  int after = 0;
-  int this_draw = SDL_GetTicks();
+  SDL_Rect r, s;
 
-  /* check if there's anything to do and sufficient time has elapsed */
-  if (!display_update_needed || this_draw - last_draw <= 16) {
-    return;
-  }
-  SDL_Rect r;
   r.x = min_x;
   r.y = min_y;
   r.w = max_x - min_x;
@@ -606,7 +531,6 @@ void sdl_update_display() {
     sdl_bitblt_to_window_surface(r.x, r.y, r.w, r.h);
     SDL_UpdateWindowSurfaceRects(sdl_window, &r, 1);
   } else {
-    SDL_Rect s;
     s.x = r.x * sdl_pixelscale;
     s.y = r.y * sdl_pixelscale;
     s.w = r.w * sdl_pixelscale;
@@ -615,20 +539,10 @@ void sdl_update_display() {
     SDL_BlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
-  min_x = sdl_displaywidth;
-  max_x = 0;
-  min_y = sdl_displayheight;
-  max_y = 0;
-  display_update_needed = 0;
-  after = SDL_GetTicks();
-  last_draw = this_draw;
-  //    printf("surface update took %dms\n", after - before);
 }
 #endif
 int process_events_time = 0;
 void process_SDLevents() {
-  //  printf("processing events delta %dms\n", SDL_GetTicks() - process_events_time);
-  process_events_time = SDL_GetTicks();
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
     switch(event.type) {
@@ -637,12 +551,11 @@ void process_SDLevents() {
       break;
     case SDL_WINDOWEVENT:
       switch(event.window.event) {
-      case SDL_WINDOWEVENT_RESIZED: {
+      case SDL_WINDOWEVENT_RESIZED:
         /* XXX: what about integer multiple of 32 requirements here? */
         sdl_windowwidth = event.window.data1;
         sdl_windowheight = event.window.data2;
         sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
-      }
         break;
       }
       break;
@@ -670,8 +583,8 @@ void process_SDLevents() {
         (short)(y & 0xFFFF);
       DoRing();
       if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-    }
       break;
+    }
     case SDL_MOUSEBUTTONDOWN: {
       int button = event.button.button;
       switch(button) {
@@ -685,8 +598,8 @@ void process_SDLevents() {
       }
       DoRing();
       if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-    }
       break;
+    }
     case SDL_MOUSEBUTTONUP: {
       int button = event.button.button;
       switch(button) {
@@ -700,8 +613,8 @@ void process_SDLevents() {
       }
       DoRing();
       if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-    }
       break;
+    }
     case SDL_MOUSEWHEEL:
       printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x, event.wheel.y, event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
       break;
@@ -715,6 +628,9 @@ void process_SDLevents() {
   }
   if (display_update_needed) {
     sdl_update_display();
+    display_update_needed = 0;
+    min_x = min_y = INT_MAX;
+    max_x = max_y = 0;
   }
 }
 
@@ -726,10 +642,6 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_displayheight = h;
   sdl_windowwidth = w * s;
   sdl_windowheight = h * s;
-  min_x = 0;
-  max_x = sdl_displaywidth;
-  min_y = 0;
-  max_y = sdl_displayheight;
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   printf("requested width: %d, height: %d\n", width, height);
@@ -751,10 +663,10 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
     printf("SDL Error: %s\n", SDL_GetError());
     return 3;
   }
+  SDL_GetRendererInfo(sdl_renderer, &sdl_rendererinfo);
   SDL_SetRenderDrawColor(sdl_renderer, 127, 127, 127, 255);
   SDL_RenderClear(sdl_renderer);
   SDL_RenderPresent(sdl_renderer);
-  SDL_GetRendererInfo(sdl_renderer, &sdl_rendererinfo);
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_pixelformat = SDL_AllocFormat(sdl_rendererinfo.texture_formats[0]);
