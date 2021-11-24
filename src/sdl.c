@@ -7,10 +7,10 @@
 #include "lsptypes.h"
 #include "miscstat.h"
 #include "keyboard.h"
-#include "lspglob.h" // for IOPage
-#include "display.h" // for CURSORHEIGHT, DisplayRegion68k
+#include "lspglob.h"  // for IOPage
+#include "display.h"  // for CURSORHEIGHT, DisplayRegion68k
 
-// #define  SDLRENDERING 1
+#define  SDLRENDERING 1
 
 static SDL_Window *sdl_window = NULL;
 #if defined(SDLRENDERING)
@@ -34,6 +34,7 @@ extern void kb_trans(u_short keycode, u_short upflg);
 extern int error(const char *s);
 
 extern int KBDEventFlg;
+/* clang-format off */
 int keymap[] = {
   0, SDLK_5,
   1, SDLK_4,
@@ -140,8 +141,10 @@ int keymap[] = {
   108, SDLK_F12,
   -1, -1
 };
-static const DLword bitmask[16] = {1<<15, 1<<14, 1<<13, 1<<12, 1<<11, 1<<10, 1<<9, 1<<8,
-                                  1<<7, 1<<6, 1<<5, 1<<4, 1<<3, 1<<2, 1<<1, 1<<0};
+/* clang-format on */
+static const DLword bitmask[16] = {1 << 15, 1 << 14, 1 << 13, 1 << 12, 1 << 11, 1 << 10,
+                                   1 << 9,  1 << 8,  1 << 7,  1 << 6,  1 << 5,  1 << 4,
+                                   1 << 3,  1 << 2,  1 << 1,  1 << 0};
 // all of the following are overwritten, the values here are irrelevant defaults!
 // actual size of the lisp display in pixels.
 int sdl_displaywidth = 0;
@@ -152,7 +155,7 @@ int sdl_windowheight = 0;
 // each pixel is shown as this many pixels
 int sdl_pixelscale = 0;
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
-  *EmRealUtilin68K;
+    *EmRealUtilin68K;
 extern DLword *CTopKeyevent;
 extern int URaid_req;
 extern LispPTR *KEYBUFFERING68k;
@@ -161,7 +164,7 @@ void DoRing() {
   DLword w, r;
   KBEVENT *kbevent;
 
- do_ring:
+do_ring:
   /* DEL is not generally present on a Mac X keyboard, Ctrl-shift-ESC would be 18496 */
   if (((*EmKbdAd268K) & 2113) == 0) { /*Ctrl-shift-NEXT*/
     error("******  EMERGENCY Interrupt ******");
@@ -209,13 +212,12 @@ void DoRing() {
   else
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
 
- KBnext:
+KBnext:
   if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
 }
 
 static int min(int a, int b) {
-  if(a < b)
-    return a;
+  if (a < b) return a;
   return b;
 }
 
@@ -226,14 +228,10 @@ static int min_y = INT_MAX;
 static int max_x = 0;
 static int max_y = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
-  if(x < min_x)
-    min_x = x;
-  if(y < min_y)
-    min_y = y;
-  if(x + w > max_x)
-    max_x = min(x + w, sdl_displaywidth - 1);
-  if(y + h > max_y)
-    max_y = min(y + h, sdl_displayheight - 1);
+  if (x < min_x) min_x = x;
+  if (y < min_y) min_y = y;
+  if (x + w > max_x) max_x = min(x + w, sdl_displaywidth - 1);
+  if (y + h > max_y) max_y = min(y + h, sdl_displayheight - 1);
   display_update_needed = 1;
 }
 
@@ -249,8 +247,8 @@ struct CachedCursor {
 } *sdl_cursorlist = NULL;
 
 static int cursor_equal_p(DLword *a, DLword *b) {
-  for(int i = 0; i < CURSORHEIGHT; i++)
-    if(a[i] != b[i]) return FALSE;
+  for (int i = 0; i < CURSORHEIGHT; i++)
+    if (a[i] != b[i]) return FALSE;
   return TRUE;
 }
 
@@ -263,17 +261,16 @@ static SDL_Cursor *sdl_getOrAllocateCursor(Uint8 cursor[32], int hot_x, int hot_
   hot_y = 0;
   int i = 0;
   /* try to find the cursor by checking the full bitmap */
-  DLword *bitmap = (DLword*)cursor;
+  DLword *bitmap = (DLword *)cursor;
   struct CachedCursor *clp = sdl_cursorlist;
-  for(; clp != NULL; clp = clp->next) {
-    if(cursor_equal_p(clp->bitmap, bitmap) == TRUE) break;
+  for (; clp != NULL; clp = clp->next) {
+    if (cursor_equal_p(clp->bitmap, bitmap) == TRUE) break;
   }
-  if(clp == NULL) { /* it isn't there, push on a new one to the front of the list */
+  if (clp == NULL) { /* it isn't there, push on a new one to the front of the list */
     clp = (struct CachedCursor *)malloc(sizeof(struct CachedCursor));
-    for(int i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = bitmap[i];
+    for (int i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = bitmap[i];
     SDL_Cursor *c = SDL_CreateCursor(cursor, cursor, 16, 16, hot_x, hot_y);
-    if(c == NULL)
-      printf("ERROR creating cursor: %s\n", SDL_GetError());
+    if (c == NULL) printf("ERROR creating cursor: %s\n", SDL_GetError());
     clp->cursor = c;
     clp->next = sdl_cursorlist;
     sdl_cursorlist = clp;
@@ -300,7 +297,7 @@ void sdl_setCursor(int hot_x, int hot_y) {
   /*   // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1]; */
   /* } */
   /* printf("\n"); */
-  Uint8 *bitmap = (Uint8*)newbm;
+  Uint8 *bitmap = (Uint8 *)newbm;
   for (int i = 0; i < 32; i++) cursor[i] = bitmap[i ^ 3];
   // TODO: actually keep track of the cursors, don't just allocate a new one every time!
   /* for(int i = 0; i < CURSORHEIGHT * 2; i++) { */
@@ -335,13 +332,13 @@ void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
   dstpitchpixels = dstpitchbytes / sdl_bytesperpixel;
   int dy = 0;
   // for each line in the source image
-  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
+  for (int sy = ystart; sy < ylimit; sy += sourcepitchwords, dy += dstpitchpixels) {
     // for each word in the line
     int dx = 0;
-    for(int sx = xstart; sx < xlimit; sx++, dx += bitsperword) {
+    for (int sx = xstart; sx < xlimit; sx++, dx += bitsperword) {
       int srcw = GETBASEWORD(src, sy + sx);
       // for each bit in the word
-      for(int b = 0; b < bitsperword; b++) {
+      for (int b = 0; b < bitsperword; b++) {
         ((Uint32 *)dst)[dy + dx + b] = (srcw & bitmask[b]) ? sdl_foreground : sdl_background;
       }
     }
@@ -355,8 +352,8 @@ void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
   int dstpitchpixels;
   const int bitsperword = 8 * sizeof(DLword);
   int sourcepitchwords = sdl_displaywidth / bitsperword;
-  int xstart = _x / bitsperword;	// "word" index of first accessed word in line
-  int xstartb = _x % bitsperword;	// bit within word
+  int xstart = _x / bitsperword;   // "word" index of first accessed word in line
+  int xstartb = _x % bitsperword;  // bit within word
   int xlimit = (_x + _w + bitsperword - 1) / bitsperword;  // word index
   int ystart = _y * sourcepitchwords;
   int ylimit = (_y + _h) * sourcepitchwords;
@@ -365,7 +362,7 @@ void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
   dstpitchpixels = dstpitchbytes / sdl_bytesperpixel;
   int dy = 0;
   // for each line in the source image
-  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
+  for (int sy = ystart; sy < ylimit; sy += sourcepitchwords, dy += dstpitchpixels) {
     int dx = 0;
     int sx = xstart;
     int b = xstartb;
@@ -384,21 +381,21 @@ void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
 }
 #else
 void sdl_bitblt_to_buffer(int _x, int _y, int _w, int _h) {
-  Uint32 *src = (Uint32*)DisplayRegion68k;
+  Uint32 *src = (Uint32 *)DisplayRegion68k;
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   int bpw = 8 * sizeof(Uint32);
   int pitch = sdl_displaywidth / bpw;
   int xlimit = (_x + _w + bpw - 1) / bpw;
   int ylimit = _y + _h;
-  for(int y = _y; y < ylimit; y++) {
+  for (int y = _y; y < ylimit; y++) {
     int they = y * sdl_displaywidth;
-    for(int x = _x / bpw; x < xlimit; x++) {
+    for (int x = _x / bpw; x < xlimit; x++) {
       int srcw = src[y * pitch + x];
       int thex = x * bpw;
-      for(int b = 0; b < bpw; b++) {
+      for (int b = 0; b < bpw; b++) {
         uint32_t px = 0;
-        if(srcw & (1 << (bpw - 1 - b))) {
+        if (srcw & (1 << (bpw - 1 - b))) {
           px = sdl_foreground;
         } else {
           px = sdl_background;
@@ -423,13 +420,13 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
   int ylimit = (_y + _h) * sourcepitchwords;
   int dy = _y * dstpitchpixels;
   // for each line in the source image
-  for(int sy = ystart; sy < ylimit ; sy += sourcepitchwords, dy += dstpitchpixels) {
+  for (int sy = ystart; sy < ylimit; sy += sourcepitchwords, dy += dstpitchpixels) {
     // for each word in the line
     int dx = (_x / bitsperword) * bitsperword;
-    for(int sx = xstart; sx < xlimit; sx++, dx+=bitsperword) {
+    for (int sx = xstart; sx < xlimit; sx++, dx += bitsperword) {
       int srcw = GETBASEWORD(src, sy + sx);
       // for each bit in the word
-      for(int b = 0; b < bitsperword; b++) {
+      for (int b = 0; b < bitsperword; b++) {
         ((Uint32 *)dst)[dy + dx + b] = (srcw & bitmask[b]) ? sdl_foreground : sdl_background;
       }
     }
@@ -437,16 +434,15 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
 }
 #endif
 static int map_key(SDL_Keycode k) {
-  for(int i = 0; keymap[i] != -1; i+= 2) {
-    if(keymap[i+1] == k)
-      return keymap[i];
+  for (int i = 0; keymap[i] != -1; i += 2) {
+    if (keymap[i + 1] == k) return keymap[i];
   }
   return -1;
 }
 #define KEYCODE_OFFSET 0
 static void handle_keydown(SDL_Keycode k, unsigned short mod) {
   int lk = map_key(k);
-  if(lk == -1) {
+  if (lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
   } else {
     printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
@@ -457,7 +453,7 @@ static void handle_keydown(SDL_Keycode k, unsigned short mod) {
 }
 static void handle_keyup(SDL_Keycode k, unsigned short mod) {
   int lk = map_key(k);
-  if(lk == -1) {
+  if (lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
   } else {
     printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
@@ -474,7 +470,7 @@ extern MISCSTATS *MiscStats;
 /* bits within the EmRealUtilin word */
 #define KEYSET_LEFT 8
 #define KEYSET_LEFTMIDDLE 9
-#define KEYSET_MIDDLE  10
+#define KEYSET_MIDDLE 10
 #define KEYSET_RIGHTMIDDLE 11
 #define KEYSET_RIGHT 12
 /* Mouse buttons */
@@ -484,11 +480,9 @@ extern MISCSTATS *MiscStats;
 static void sdl_update_viewport(int width, int height) {
   /* XXX: needs work */
   int w = width / 32 * 32;
-  if(w > sdl_displaywidth * sdl_pixelscale)
-    w = sdl_displaywidth * sdl_pixelscale;
+  if (w > sdl_displaywidth * sdl_pixelscale) w = sdl_displaywidth * sdl_pixelscale;
   int h = height / 32 * 32;
-  if(h > sdl_displayheight * sdl_pixelscale)
-    h = sdl_displayheight * sdl_pixelscale;
+  if (h > sdl_displayheight * sdl_pixelscale) h = sdl_displayheight * sdl_pixelscale;
   SDL_Rect r;
   r.x = 0;
   r.y = 0;
@@ -499,7 +493,7 @@ static void sdl_update_viewport(int width, int height) {
 #endif
   printf("new viewport: %d / %d\n", w, h);
 }
-static int last_keystate[512] = { 0 };
+static int last_keystate[512] = {0};
 void sdl_set_invert(int flag) {
   if (flag) {
     sdl_foreground = sdl_white;
@@ -544,86 +538,92 @@ void sdl_update_display() {
 int process_events_time = 0;
 void process_SDLevents() {
   SDL_Event event;
-  while(SDL_PollEvent(&event)) {
-    switch(event.type) {
-    case SDL_QUIT:
-      printf("quitting\n"); exit(0);
-      break;
-    case SDL_WINDOWEVENT:
-      switch(event.window.event) {
-      case SDL_WINDOWEVENT_RESIZED:
-        /* XXX: what about integer multiple of 32 requirements here? */
-        sdl_windowwidth = event.window.data1;
-        sdl_windowheight = event.window.data2;
-        sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
+  while (SDL_PollEvent(&event)) {
+    switch (event.type) {
+      case SDL_QUIT:
+        printf("quitting\n");
+        exit(0);
+        break;
+      case SDL_WINDOWEVENT:
+        switch (event.window.event) {
+          case SDL_WINDOWEVENT_RESIZED:
+            /* XXX: what about integer multiple of 32 requirements here? */
+            sdl_windowwidth = event.window.data1;
+            sdl_windowheight = event.window.data2;
+            sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
+            break;
+        }
+        break;
+      case SDL_KEYDOWN:
+        printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
+               event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
+               event.key.keysym.scancode, event.key.keysym.sym,
+               SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
+        if (event.key.repeat) {
+          /* Lisp needs to see the UP transition before the DOWN transition */
+          handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
+        }
+        handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
+        break;
+      case SDL_KEYUP:
+        printf("up ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
+               event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
+               event.key.keysym.scancode, event.key.keysym.sym,
+               SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
+        handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
+        break;
+      case SDL_MOUSEMOTION: {
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+        x /= sdl_pixelscale;
+        y /= sdl_pixelscale;
+        *CLastUserActionCell68k = MiscStats->secondstmp;
+        *EmCursorX68K = (*((DLword *)EmMouseX68K)) = (short)(x & 0xFFFF);
+        *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(y & 0xFFFF);
+        DoRing();
+        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
         break;
       }
-      break;
-    case SDL_KEYDOWN:
-      printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n", event.key.timestamp, event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
-      if (event.key.repeat) {
-        /* Lisp needs to see the UP transition before the DOWN transition */
-        handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
+      case SDL_MOUSEBUTTONDOWN: {
+        int button = event.button.button;
+        switch (button) {
+          case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
+          case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
+          case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
+          case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, FALSE); break;
+          case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, FALSE); break;
+          case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, FALSE); break;
+          case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, FALSE); break;
+        }
+        DoRing();
+        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+        break;
       }
-      handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
-      break;
-    case SDL_KEYUP:
-      printf("up ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n", event.key.timestamp, event.key.type, event.key.state, event.key.repeat, event.key.keysym.scancode, event.key.keysym.sym, SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
-      handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
-      break;
-    case SDL_MOUSEMOTION: {
-      int x, y;
-      SDL_GetMouseState(&x, &y);
-      x /= sdl_pixelscale;
-      y /= sdl_pixelscale;
-      *CLastUserActionCell68k = MiscStats->secondstmp;
-      *EmCursorX68K = (*((DLword *)EmMouseX68K)) =
-        (short)(x & 0xFFFF);
-      *EmCursorY68K = (*((DLword *)EmMouseY68K)) =
-        (short)(y & 0xFFFF);
-      DoRing();
-      if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-      break;
-    }
-    case SDL_MOUSEBUTTONDOWN: {
-      int button = event.button.button;
-      switch(button) {
-      case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
-      case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
-      case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
-      case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, FALSE); break;
-      case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, FALSE); break;
-      case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, FALSE); break;
-      case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, FALSE); break;
+      case SDL_MOUSEBUTTONUP: {
+        int button = event.button.button;
+        switch (button) {
+          case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
+          case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
+          case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
+          case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, TRUE); break;
+          case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, TRUE); break;
+          case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, TRUE); break;
+          case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, TRUE); break;
+        }
+        DoRing();
+        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+        break;
       }
-      DoRing();
-      if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-      break;
-    }
-    case SDL_MOUSEBUTTONUP: {
-      int button = event.button.button;
-      switch(button) {
-      case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
-      case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
-      case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
-      case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, TRUE); break;
-      case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, TRUE); break;
-      case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, TRUE); break;
-      case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, TRUE); break;
-      }
-      DoRing();
-      if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
-      break;
-    }
-    case SDL_MOUSEWHEEL:
-      printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x, event.wheel.y, event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
-      break;
-      /* case SDL_KEYMAPCHANGED: */
-      /*   printf("SDL_KEYMAPCHANGED\n"); break; */
-      /* case SDL_TEXTINPUT: */
-      /*   printf("SDL_TEXTINPUT\n"); break; */
-    default:
-      printf("other event type: %d\n", event.type);
+      case SDL_MOUSEWHEEL:
+        printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
+               event.wheel.y,
+               event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
+        break;
+        /* case SDL_KEYMAPCHANGED: */
+        /*   printf("SDL_KEYMAPCHANGED\n"); break; */
+        /* case SDL_TEXTINPUT: */
+        /*   printf("SDL_TEXTINPUT\n"); break; */
+      default: printf("other event type: %d\n", event.type);
     }
   }
   if (display_update_needed) {
@@ -645,21 +645,22 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   int width = sdl_displaywidth;
   int height = sdl_displayheight;
   printf("requested width: %d, height: %d\n", width, height);
-  if(SDL_Init(SDL_INIT_VIDEO) < 0) {
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     printf("SDL could not be initialized. SDL_Error: %s\n", SDL_GetError());
     return 1;
   }
   printf("initialised\n");
-  sdl_window = SDL_CreateWindow(windowtitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, sdl_windowwidth, sdl_windowheight, 0);
+  sdl_window = SDL_CreateWindow(windowtitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                sdl_windowwidth, sdl_windowheight, 0);
   printf("Window created\n");
-  if(sdl_window == NULL) {
+  if (sdl_window == NULL) {
     printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
     return 2;
   }
 #if defined(SDLRENDERING)
   printf("Creating renderer...\n");
   sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
-  if(NULL == sdl_renderer) {
+  if (NULL == sdl_renderer) {
     printf("SDL Error: %s\n", SDL_GetError());
     return 3;
   }
@@ -670,7 +671,8 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
   printf("Creating texture...\n");
   sdl_pixelformat = SDL_AllocFormat(sdl_rendererinfo.texture_formats[0]);
-  sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format, SDL_TEXTUREACCESS_STREAMING, width, height);
+  sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format,
+                                  SDL_TEXTUREACCESS_STREAMING, width, height);
   sdl_black = SDL_MapRGB(sdl_pixelformat, 0, 0, 0);
   sdl_white = SDL_MapRGB(sdl_pixelformat, 255, 255, 255);
   sdl_foreground = sdl_black;
@@ -687,10 +689,9 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_bytesperpixel = sdl_pixelformat->BytesPerPixel;
   buffer_size = width * height * sdl_bytesperpixel;
   buffer = malloc(buffer_size);
-  sdl_buffersurface = SDL_CreateRGBSurfaceWithFormatFrom(buffer, sdl_displaywidth, sdl_displayheight,
-                                                         sdl_bytesperpixel * 8,
-                                                         sdl_displaywidth * sdl_bytesperpixel,
-                                                         sdl_pixelformat->format);
+  sdl_buffersurface = SDL_CreateRGBSurfaceWithFormatFrom(
+      buffer, sdl_displaywidth, sdl_displayheight, sdl_bytesperpixel * 8,
+      sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
 #endif
   printf("SDL initialised\n");
   return 0;
