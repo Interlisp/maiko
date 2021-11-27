@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <limits.h>
 #include "sdldefs.h"
+#include "byteswapdefs.h"
 #include "lispemul.h"
 #include "lsptypes.h"
 #include "miscstat.h"
@@ -156,6 +157,7 @@ int sdl_windowheight = 0;
 int sdl_pixelscale = 0;
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
     *EmRealUtilin68K;
+extern DLword *EmCursorBitMap68K;
 extern DLword *CTopKeyevent;
 extern int URaid_req;
 extern LispPTR *KEYBUFFERING68k;
@@ -238,11 +240,11 @@ void sdl_notify_damage(int x, int y, int w, int h) {
 /* a simple linked list to remember generated cursors
  * because cursors don't have any identifying information
  * except for the actual bitmap in Lisp, just cache that.
- * 16 Uint16, to give a 16x16 bitmap cursor.
+ * 16 DLwords, to give a 16x16 bitmap cursor.
  */
 struct CachedCursor {
   struct CachedCursor *next;
-  DLword bitmap[CURSORHEIGHT];
+  DLword EmCursorBitMap[CURSORHEIGHT];
   SDL_Cursor *cursor;
 } *sdl_cursorlist = NULL;
 
@@ -256,31 +258,40 @@ static int cursor_equal_p(DLword *a, DLword *b) {
  * Try to find cursor CURSOR on the sdl_cursorlist, if it isn't there, add it.
  * Return an SDL_Cursor that can be used directly.
  */
-static SDL_Cursor *sdl_getOrAllocateCursor(Uint8 cursor[32], int hot_x, int hot_y) {
+static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot_y) {
   hot_x = 0;
   hot_y = 0;
-  int i = 0;
+  Uint8 sdl_cursor_data[32];
   /* try to find the cursor by checking the full bitmap */
-  DLword *bitmap = (DLword *)cursor;
+  struct CachedCursor *pclp = NULL;
   struct CachedCursor *clp = sdl_cursorlist;
-  for (; clp != NULL; clp = clp->next) {
-    if (cursor_equal_p(clp->bitmap, bitmap) == TRUE) break;
+  while (clp != NULL) {
+    if (cursor_equal_p(clp->EmCursorBitMap, cursor) == TRUE) break;
+    pclp = clp;
+    clp = clp->next;
   }
   if (clp == NULL) { /* it isn't there, push on a new one to the front of the list */
     clp = (struct CachedCursor *)malloc(sizeof(struct CachedCursor));
-    for (int i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = bitmap[i];
-    SDL_Cursor *c = SDL_CreateCursor(cursor, cursor, 16, 16, hot_x, hot_y);
+    memcpy(clp->EmCursorBitMap, cursor, sizeof(clp->EmCursorBitMap));
+    for (int i = 0; i < 32; i++) sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
+    SDL_Cursor *c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16, 16, hot_x, hot_y);
     if (c == NULL) printf("ERROR creating cursor: %s\n", SDL_GetError());
     clp->cursor = c;
     clp->next = sdl_cursorlist;
     sdl_cursorlist = clp;
-    // printf("Creating new cursor, using it\n");
-    return clp->cursor;
-  } else {
-    /* TODO: move to front of list */
-    // printf("Found cursor, using it\n");
     return clp->cursor;
   }
+  /* if it's in the first two elements of the list, leave the order alone.
+   * There is a high probability of flipping back and forth between two
+   */
+  if (clp == sdl_cursorlist || pclp == sdl_cursorlist) {
+    return clp->cursor;
+  }
+  /* otherwise unlink the found item and reinsert at the front */
+  pclp->next = clp->next;
+  clp->next = sdl_cursorlist;
+  sdl_cursorlist = clp;
+  return clp->cursor;
 }
 
 /*
@@ -289,23 +300,7 @@ static SDL_Cursor *sdl_getOrAllocateCursor(Uint8 cursor[32], int hot_x, int hot_
  * XXX: needs to deal with sdl_pixelscale > 1, and where is the hotspot?
  */
 void sdl_setCursor(int hot_x, int hot_y) {
-  DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
-  Uint8 cursor[32];
-  // printf("setCursor: bm %p, x %d, y %d\n", newbm, hot_x, hot_y);
-  /* for(int i = 0; i < CURSORHEIGHT; i++) { */
-  /*   printf("%04x ", newbm[i]); */
-  /*   // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1]; */
-  /* } */
-  /* printf("\n"); */
-  Uint8 *bitmap = (Uint8 *)newbm;
-  for (int i = 0; i < 32; i++) cursor[i] = bitmap[i ^ 3];
-  // TODO: actually keep track of the cursors, don't just allocate a new one every time!
-  /* for(int i = 0; i < CURSORHEIGHT * 2; i++) { */
-  /*   printf("%02x ", cursor[i]); */
-  /*   // cursor[i] = newbm[i % 2 == 1 ? i - 1 : i + 1]; */
-  /* } */
-  /* printf("\n"); */
-  SDL_Cursor *c = sdl_getOrAllocateCursor(cursor, hot_x, hot_y);
+  SDL_Cursor *c = sdl_getOrAllocateCursor(EmCursorBitMap68K, hot_x, hot_y);
   SDL_SetCursor(c);
 }
 #if defined(SDLRENDERING)
