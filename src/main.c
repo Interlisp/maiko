@@ -236,10 +236,6 @@ int display_max = 65536 * 16 * 2;
 /* diagnostic flag for sysout dumping */
 extern int maxpages;
 
-/** For call makepathname inside main() **/
-extern int *Lisp_errno;
-extern int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
-
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 int sysout_size = 0;    /* ditto */
 
@@ -352,9 +348,6 @@ int main(int argc, char *argv[])
         Barf and print the command line if tha fails
 */
 
-  /* For call makepathname */
-  Lisp_errno = &Dummy_errno;
-
   i = 1;
 
   if (argv[i] && ((strcmp(argv[i], "-info") == 0) || (strcmp(argv[i], "-INFO") == 0))) {
@@ -374,13 +367,18 @@ int main(int argc, char *argv[])
     strncpy(sysout_name, envname, MAXPATHLEN);
   } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
     strncpy(sysout_name, envname, MAXPATHLEN);
+  else {
 #ifdef DOS
-  else if (!makepathname("lisp.vm", sysout_name)
+    strncpy(sysout_name, "lisp.vm", MAXPATHLEN);
 #else
-  else if (!makepathname("~/lisp.virtualmem", sysout_name)
+    if ((envname = getenv("HOME")) != NULL) {
+      strncpy(sysout_name, envname, MAXPATHLEN);
+      strncat(sysout_name, "/lisp.virtualmem", MAXPATHLEN - 17);
+    }
 #endif /* DOS */
-           || access(sysout_name, R_OK)) {
-    fprintf(stderr, "Couldn't find a sysout to run;\n");
+  }
+  if (access(sysout_name, R_OK)) {
+    perror("Couldn't find a sysout to run");
     fprintf(stderr, "%s", helpstring);
     exit(1);
   }
@@ -663,86 +661,6 @@ void start_lisp() {
   _dpmi_lockregion((void *)&dispatch, 32768);
 #endif /* DOS */
   dispatch();
-}
-
-/************************************************************************/
-/*									*/
-/*			m a k e p a t h n a m e				*/
-/*									*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-int makepathname(char *src, char *dst)
-{
-  register char *base, *cp;
-  register struct passwd *pwd;
-  char name[MAXPATHLEN];
-
-  base = src;
-  switch (*base) {
-    case '.':
-      if (getcwd(dst, MAXPATHLEN) == 0)
-      { /* set working directory */
-        *Lisp_errno = errno;
-        return (0);
-      }
-      switch (*(base + 1)) {
-        case '.':
-          if (*(base + 2) == '/') { /* Now, base == "../xxxx" */
-            cp = (char *)strrchr(dst, '/');
-            if (cp == 0) return (0);
-            *cp = '\0';
-            strcat(dst, base + 2);
-            return (1);
-          } else
-            return (0);
-        case '/':
-          /* Now, base == "./xxx" */
-          strcat(dst, base + 1);
-          return (1);
-        default: return (0);
-      }
-    case '~':
-      ERRSETJMP(0);
-      if (*(base + 1) == '/') {
-/* path is "~/foo" */
-#ifdef DOS
-        pwd = 0;
-#else
-        TIMEOUT0(pwd = getpwuid(getuid()));
-#endif /* DOS */
-        if (pwd == NULL) {
-          *Lisp_errno = errno;
-          return (0);
-        }
-#ifndef DOS
-        sprintf(dst, "%s%s", pwd->pw_dir, base + 1);
-#endif
-        return (1);
-      } else {
-        /* path is "~foo/" */
-        if ((cp = (char *)strchr(base + 1, '/')) == 0)
-          return (0);
-        else {
-          size_t len = cp - base - 1;
-          strncpy(name, base + 1, len);
-          name[len] = '\0';
-#ifndef DOS
-          TIMEOUT0(pwd = getpwnam(name));
-#endif /* DOS */
-          if (pwd == NULL) {
-            *Lisp_errno = errno;
-            return (0);
-          }
-#ifndef DOS
-          sprintf(dst, "%s%s", pwd->pw_dir, cp);
-#endif /* DOS */
-          return (1);
-        }
-      }
-    default: strcpy(dst, src); return (1);
-  }
 }
 
 void print_info_lines() {
