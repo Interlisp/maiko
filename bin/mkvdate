@@ -1,0 +1,5 @@
+#!/bin/sh
+cat <<EOF
+#include <time.h>
+time_t MDate = $(date +%s);
+EOF
