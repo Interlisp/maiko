@@ -4,6 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 SET(CMAKE_C_STANDARD 99)
+# SET(CMAKE_C_EXTENSIONS OFF) # actually use c99, *not* gnu99
 
 IF(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_COMPILER_ID MATCHES "GNU")
   IF(UNIX AND CMAKE_GENERATOR STREQUAL "Ninja")
@@ -23,10 +24,12 @@ find_program(
 )
 
 IF (CLANG_TIDY_EXE)
+   IF (NOT CMAKE_CROSSCOMPILING)
 # There are many many warnings for strcpy instances to deal with,
 # but suppress it for now so that other issues are more obvious
 #
-   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+        SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+   ENDIF()
 ENDIF()
 
 INCLUDE(CheckLibraryExists)
@@ -39,7 +42,7 @@ SET(MAIKO_DEFINITIONS
     "-DRELEASE=351"
 )
 
-OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." ON)
+OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." OFF)
 IF(MAIKO_DISPLAY_X11)
   FIND_PACKAGE(X11 REQUIRED)
   SET(MAIKO_DISPLAY_X11_DEFINITIONS
@@ -69,6 +72,20 @@ IF(MAIKO_DISPLAY_X11)
     inc/xscrolldefs.h
     inc/xscroll.h
     inc/xwinmandefs.h
+  )
+ENDIF()
+
+OPTION(MAIKO_DISPLAY_SDL "Use SDL for display." ON)
+IF(MAIKO_DISPLAY_SDL)
+  FIND_PACKAGE(SDL2 REQUIRED)
+  SET(MAIKO_DISPLAY_SDL_DEFINITIONS
+    "-DSDL"
+  )
+  SET(MAIKO_DISPLAY_SDL_LIBRARIES ${SDL2_LIBRARIES})
+  SET(MAIKO_DISPLAY_SDL_SRCS
+    src/sdl.c
+  )
+  SET(MAIKO_DISPLAY_SDL_HDRS
   )
 ENDIF()
 
@@ -404,6 +421,11 @@ IF(MAIKO_DISPLAY_X11)
   TARGET_LINK_LIBRARIES(lde X11::X11)
 ENDIF()
 
+IF(MAIKO_DISPLAY_SDL)
+  # Tell it that the SDL launcher is available.
+  TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DISPLAY_SDL_DEFINITIONS})
+ENDIF()
+
 ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
 TARGET_COMPILE_DEFINITIONS(ldeether PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(ldeether PUBLIC inc)
@@ -420,6 +442,21 @@ IF(MAIKO_DISPLAY_X11)
   TARGET_COMPILE_DEFINITIONS(ldex PUBLIC ${MAIKO_DEFINITIONS} ${MAIKO_DISPLAY_X11_DEFINITIONS})
   TARGET_INCLUDE_DIRECTORIES(ldex PUBLIC inc)
   TARGET_LINK_LIBRARIES(ldex ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_X11_LIBRARIES})
+ENDIF()
+
+IF(MAIKO_DISPLAY_SDL)
+  ADD_EXECUTABLE(ldesdl
+    src/main.c
+    vdate.c
+    ${MAIKO_SRCS}
+    ${MAIKO_HDRS}
+    ${MAIKO_DISPLAY_SDL_SRCS}
+    ${MAIKO_DISPLAY_SDL_HDRS}
+  )
+  TARGET_COMPILE_DEFINITIONS(ldesdl PUBLIC ${MAIKO_DEFINITIONS} ${MAIKO_DISPLAY_SDL_DEFINITIONS})
+  TARGET_INCLUDE_DIRECTORIES(ldesdl PUBLIC inc)
+  TARGET_INCLUDE_DIRECTORIES(ldesdl PRIVATE ${SDL2_INCLUDE_DIRS})
+  TARGET_LINK_LIBRARIES(ldesdl ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_SDL_LIBRARIES})
 ENDIF()
 
 ADD_EXECUTABLE(mkvdate src/mkvdate.c)

@@ -21,9 +21,11 @@
 
 #include "dspsubrsdefs.h"
 #include "commondefs.h"
-#ifdef XWINDOW
+#if defined(XWINDOW)
 #include "xcursordefs.h"
 #include "xlspwindefs.h"
+#elif defined(SDL)
+#include "sdldefs.h"
 #endif
 
 extern int DebugDSP;
@@ -72,6 +74,13 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
     return ATOM_T;
   else
     return NIL;
+#elif defined(SDL)
+  invert = args[0] & 0xFFFF;
+  sdl_set_invert(invert);
+  if (invert)
+    return ATOM_T;
+  else
+    return NIL;
 #else
   return NIL;
 #endif
@@ -96,9 +105,11 @@ void DSP_Cursor(LispPTR *args, int argnum)
   extern int LastCursorX, LastCursorY;
 
 
-#ifdef XWINDOW
+#if defined(XWINDOW)
   /* For X-Windows, set the cursor to the given location. */
   Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
+#elif defined(SDL)
+  sdl_setCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
 #endif /* XWINDOW */
 }
 
@@ -118,6 +129,11 @@ void DSP_SetMousePos(register LispPTR *args)
   if (Mouse_Included)
     set_Xmouseposition((int)(GetSmalldata(args[0])), (int)(GetSmalldata(args[1])));
 #endif /* XWINDOW */
+#ifdef SDL
+  int x = (int)(GetSmalldata(args[0]));
+  int y = (int)(GetSmalldata(args[1]));
+  sdl_setMousePosition(x, y);
+#endif /* SDL */
 }
 
 /****************************************************
@@ -178,8 +194,10 @@ void flip_cursor() {
 #endif
 
 
-#ifdef XWINDOW
+#if defined(XWINDOW)
   /* JDS 011213: 15- cur y, as function does same! */
   Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
+#elif defined(SDL)
+  sdl_setCursor(0, 0); // TODO: keep track of the current hot_x and hot_y
 #endif /* XWINDOW */
 }

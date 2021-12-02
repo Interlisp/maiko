@@ -99,7 +99,9 @@
 #include "ubf3defs.h"
 #include "unwinddefs.h"
 #include "vars3defs.h"
+#ifdef XWINDOW
 #include "xwinmandefs.h"
+#endif
 #include "z2defs.h"
 
 #ifdef DOS
@@ -109,9 +111,13 @@ extern IOPAGE *IOPage68K;
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 extern MouseInterface currentmouse;
-#else
+#elif defined(XWINDOW)
 extern DspInterface currentdsp;
 #endif /* DOS */
+
+#ifdef SDL
+extern void process_SDLevents();
+#endif
 
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
@@ -1118,8 +1124,12 @@ check_interrupt:
      * If the system is configured with SIGIO handling we have a hint
      * that allows us to cheaply skip if there's nothing to do
      */
+#ifdef XWINDOW
     process_Xevents(currentdsp);
-
+#endif
+#ifdef SDL
+    process_SDLevents();
+#endif
     if (IO_Signalled) {
       IO_Signalled = FALSE;
       process_io_events();

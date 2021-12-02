@@ -35,7 +35,9 @@
 #include <X11/Xutil.h>
 #define LDEX "ldex"
 #endif /* XWINDOW */
-
+#ifdef SDL
+#define LDESDL "ldesdl"
+#endif
 #define LDEMONO "ldesingle"
 #define LDECOLOR "ldemulti"
 #define LDETRUECOLOR "ldetruecolor"
@@ -133,7 +135,9 @@ int main(int argc, char *argv[])
     }   /* end if */
   }
 #endif /* XWINDOW */
-
+#ifdef SDL
+  strcpy(filetorun,LDESDL);
+#endif /* SDL */
 #ifdef USESUNSCREEN
   if ((FrameBufferFd = open("/dev/fb", O_RDWR)) < 0) {
     fprintf(stderr, "ldeboot: can't open FrameBuffer\n");
@@ -187,7 +191,6 @@ int main(int argc, char *argv[])
     fork_Unix();
 
   /* start ldemono or ldecolor */
-
   if (filetorun[0] == '\0') {
     fprintf(stderr, "Unable to determine what display program to run.\n");
     exit(1);
