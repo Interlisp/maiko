@@ -1,6 +1,7 @@
 #!/bin/sh
-os=`./config.guess`
+os=${LDEARCH:-`./config.guess`}
 case "$os" in
+        m68k-*-amigaos)		echo amigaos ;;
         sparc-sun-sunos*)	echo sunos4 ;;
         sparc-sun-solaris1*)	echo sunos4 ;;
         *-*-solaris2*)	        echo sunos5 ;;

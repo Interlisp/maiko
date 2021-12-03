@@ -12,6 +12,7 @@
 os=${LDEARCH:-`./config.guess`}
 # o/s switch block
 case "$os" in
+        m68k-*)		      echo m68k ;;
         sparc-*)	      echo sparc ;;
         alpha-*)	      echo alpha ;;
 	i*86-*-*)             echo 386 ;;

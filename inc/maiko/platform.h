@@ -59,6 +59,13 @@
 #  define MAIKO_OS_DETECTED 1
 #endif
 
+#ifdef amigaos3
+#  define MAIKO_OS_AMIGAOS3 1
+#  define MAIKO_OS_NAME "AmigaOS 3"
+#  define MAIKO_OS_UNIX_LIKE 1
+#  define MAIKO_OS_DETECTED 1
+#endif
+
 /* __SVR4: Defined by clang, gcc, and Sun Studio.
  * __SVR4__ was only defined by Sun Studio. */
 #if defined(__sun) && defined(__SVR4)
@@ -134,6 +141,13 @@
 #  else
 #    define MAIKO_ARCH_WORD_BITS 32
 #  endif
+#  define MAIKO_ARCH_DETECTED 1
+#endif
+
+#ifdef __mc68000
+#  define MAIKO_ARCH_M68000 1
+#  define MAIKO_ARCH_NAME "Motorola68K"
+#  define MAIKO_ARCH_WORD_BITS 32
 #  define MAIKO_ARCH_DETECTED 1
 #endif
 
