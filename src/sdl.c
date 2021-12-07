@@ -248,6 +248,26 @@ struct CachedCursor {
   SDL_Cursor *cursor;
 } *sdl_cursorlist = NULL;
 
+/*
+ * given a 16-bit value and a repeat count modify an array
+ * of bytes to contain the same bit pattern with each bit
+ * repeated "reps" times consecutively in the output
+ */
+static void replicate_bits(int bits, int reps, Uint8 *out) {
+  int dbyte = 0;
+  int dbit = 7;
+  for (int ibit = 15; ibit >= 0; --ibit) {
+    for (int r = 0; r < reps; r++) {
+      if (bits & (1 << ibit))
+        out[dbyte] |= 1 << dbit;
+      if (--dbit < 0) {
+        dbyte++;
+        dbit = 7;
+      }
+    }
+  }
+}
+
 static int cursor_equal_p(DLword *a, DLword *b) {
   for (int i = 0; i < CURSORHEIGHT; i++)
     if (a[i] != b[i]) return FALSE;
@@ -261,34 +281,52 @@ static int cursor_equal_p(DLword *a, DLword *b) {
 static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot_y) {
   hot_x = 0;
   hot_y = 0;
-  Uint8 sdl_cursor_data[32];
   /* try to find the cursor by checking the full bitmap */
   struct CachedCursor *pclp = NULL;
   struct CachedCursor *clp = sdl_cursorlist;
+  SDL_Cursor *c;
   while (clp != NULL) {
-    if (cursor_equal_p(clp->EmCursorBitMap, cursor) == TRUE) break;
+    if (cursor_equal_p(clp->EmCursorBitMap, cursor) == TRUE) {
+      /* if it's in the first two elements of the list, leave the order alone.
+       * There is a high probability of flipping back and forth between two
+       */
+      if (clp == sdl_cursorlist || pclp == sdl_cursorlist) {
+        return clp->cursor;
+      }
+      /* otherwise unlink the found item and reinsert at the front */
+      pclp->next = clp->next;
+      clp->next = sdl_cursorlist;
+      sdl_cursorlist = clp;
+      return clp->cursor;
+    }
     pclp = clp;
     clp = clp->next;
   }
-  if (clp == NULL) { /* it isn't there, push on a new one to the front of the list */
-    clp = (struct CachedCursor *)malloc(sizeof(struct CachedCursor));
-    memcpy(clp->EmCursorBitMap, cursor, sizeof(clp->EmCursorBitMap));
+  /* It isn't there, so build a new one */
+  clp = (struct CachedCursor *)malloc(sizeof(struct CachedCursor));
+  memcpy(clp->EmCursorBitMap, cursor, sizeof(clp->EmCursorBitMap));
+  /* no scaling is an easy case, scale > 1 is harder */
+  if (sdl_pixelscale == 1) {
+    Uint8 sdl_cursor_data[32];
     for (int i = 0; i < 32; i++) sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
-    SDL_Cursor *c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16, 16, hot_x, hot_y);
-    if (c == NULL) printf("ERROR creating cursor: %s\n", SDL_GetError());
-    clp->cursor = c;
-    clp->next = sdl_cursorlist;
-    sdl_cursorlist = clp;
-    return clp->cursor;
+    c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16, 16, hot_x, hot_y);
+  } else {
+    Uint8 *sdl_cursor_data = calloc(sdl_pixelscale * sdl_pixelscale, 32);
+    /* fill in the cursor data expanded */
+    for (int i = 0; i < 32; i += 2) {
+      int v = GETBYTE(((Uint8 *)cursor) + i) << 8 | GETBYTE(((Uint8 *)cursor) + i + 1);
+      int db = i * sdl_pixelscale * sdl_pixelscale;
+      /* spread the bits out for the first copy of the row */
+      replicate_bits(v, sdl_pixelscale, &sdl_cursor_data[db]);
+      /* and then copy the replicated bits for the copies of the row */
+      for (int j = 1; j < sdl_pixelscale; j++) {
+        memcpy(&sdl_cursor_data[db + (j * 2 * sdl_pixelscale)], &sdl_cursor_data[db], 2 * sdl_pixelscale);
+      }
+    }
+    c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16 * sdl_pixelscale, 16 * sdl_pixelscale, hot_x, hot_y);
   }
-  /* if it's in the first two elements of the list, leave the order alone.
-   * There is a high probability of flipping back and forth between two
-   */
-  if (clp == sdl_cursorlist || pclp == sdl_cursorlist) {
-    return clp->cursor;
-  }
-  /* otherwise unlink the found item and reinsert at the front */
-  pclp->next = clp->next;
+  if (c == NULL) printf("ERROR creating cursor: %s\n", SDL_GetError());
+  clp->cursor = c;
   clp->next = sdl_cursorlist;
   sdl_cursorlist = clp;
   return clp->cursor;
