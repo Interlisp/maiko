@@ -160,9 +160,6 @@ $(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
 $(OSARCHDIR)ldeether: $(OBJECTDIR)ldeether.o $(DLPIFILES)
 	$(CC) $(OBJECTDIR)ldeether.o $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
 
-$(OSARCHDIR)mkvdate: $(OBJECTDIR)mkvdate.o $(REQUIRED-INCS)
-	$(CC) $(OBJECTDIR)mkvdate.o $(LDFLAGS) -o $(OSARCHDIR)mkvdate
-
 $(OSARCHDIR)tstsout: $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(REQUIRED-INCS)
 	$(CC) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)tstsout
 
@@ -171,9 +168,9 @@ $(OSARCHDIR)setsout: $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
 
 #### Component files ######################################################
 
-$(OBJECTDIR)vdate.o: $(LIBFILES) $(EXTFILES) $(OSARCHDIR)mkvdate
+$(OBJECTDIR)vdate.o: $(LIBFILES) $(EXTFILES) mkvdate
 	$(RM) $(OBJECTDIR)vdate.c
-	$(OSARCHDIR)mkvdate > $(OBJECTDIR)vdate.c
+	$(BINDIR)mkvdate > $(OBJECTDIR)vdate.c
 	$(CC) $(RFLAGS) $(OBJECTDIR)vdate.c -o $(OBJECTDIR)vdate.o
 
 $(OBJECTDIR)tstsout.o: $(SRCDIR)tstsout.c $(REQUIRED-INCS) \
@@ -196,9 +193,6 @@ $(OBJECTDIR)ldeboot.o: $(SRCDIR)ldeboot.c $(REQUIRED-INCS) \
 
 $(OBJECTDIR)ldeether.o: $(SRCDIR)ldeether.c $(REQUIRED-INCS)
 	$(CC) $(RFLAGS) $(SRCDIR)ldeether.c -o $(OBJECTDIR)ldeether.o
-
-$(OBJECTDIR)mkvdate.o: $(SRCDIR)mkvdate.c $(REQUIRED-INCS)
-	$(CC) $(RFLAGS) $(SRCDIR)mkvdate.c -o $(OBJECTDIR)mkvdate.o
 
 $(OBJECTDIR)main.o: $(SRCDIR)main.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)dbprint.h \
