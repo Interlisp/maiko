@@ -187,8 +187,8 @@ error Must specify RELEASE to build Medley.
 
 	/* Set up defaults */
 #define UNALIGNED_FETCH_OK
-#define UNSIGNED unsigned long
-#define INT long
+typedef unsigned long UNSIGNED;
+typedef long INT;
 
 
 
@@ -237,9 +237,9 @@ typedef unsigned char u_char;
 typedef unsigned long u_int;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
-#define USHORT unsigned
+typedef unsigned USHORT;
 #else
-#define USHORT unsigned short
+typedef unsigned short USHORT;
 #endif /* DOS */
 
 	/****************************************************************/
