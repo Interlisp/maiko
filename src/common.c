@@ -141,39 +141,3 @@ uraidloop:
 
 void warn(const char *s)
 { printf("\nWARN: %s \n", s); }
-
-/*****************************************************************
-stackcheck
-
-        common sub-routine.
-
-        Not Implemented.
-
-        1.check Stack overflow.
-                (check CurrentStackPTR)
-        2.if overflow, return T (not 0).
-          Otherwise, return F (0).
-******************************************************************/
-int stackcheck() {
-#ifdef TRACE2
-  printf("TRACE:stackcheck()\n");
-#endif
-  return (0);
-}
-
-/*****************************************************************
-stackoverflow
-
-        common sub-routine.
-
-        Not Implemented.
-
-        1.error handling of stack overflow.
-******************************************************************/
-
-void stackoverflow() {
-#ifdef TRACE2
-  printf("TRACE:stackoverflow()\n");
-#endif
-  printf("stackoverflow \n");
-}

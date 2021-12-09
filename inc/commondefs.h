@@ -3,6 +3,4 @@
 void stab(void);
 void warn(const char *s);
 int error(const char *s);
-int stackcheck(void);
-void stackoverflow(void);
 #endif
