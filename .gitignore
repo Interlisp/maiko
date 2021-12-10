@@ -6,6 +6,8 @@
 .DS_Store
 # build directories
 build/**
+*.m68k-x/**
+*.m68k/**
 *.386-x/**
 *.386/**
 *.ppc-x/**
