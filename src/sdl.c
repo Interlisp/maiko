@@ -11,6 +11,10 @@
 #include "lspglob.h"  // for IOPage
 #include "display.h"  // for CURSORHEIGHT, DisplayRegion68k
 
+/* if SDLRENDERING is defined, render to a texture rather than
+ * using the window surface
+ */
+
 #define  SDLRENDERING 1
 
 static SDL_Window *sdl_window = NULL;
@@ -563,7 +567,7 @@ void sdl_update_display() {
     s.w = r.w * sdl_pixelscale;
     s.h = r.h * sdl_pixelscale;
     sdl_bitblt_to_buffer(r.x, r.y, r.w, r.h);
-    SDL_BlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
+    SDL_LowerBlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
 }
