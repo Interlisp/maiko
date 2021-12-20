@@ -382,7 +382,7 @@ void sdl_bitblt_to_texture(int _x, int _y, int _w, int _h) {
   }
   SDL_UnlockTexture(sdl_texture);
 }
-void sdl_bitblt_to_texture2(int _x, int _y, int _w, int _h) {
+void sdl_bitblt_to_texture_exact(int _x, int _y, int _w, int _h) {
   DLword *src = DisplayRegion68k;
   void *dst;
   int dstpitchbytes;
