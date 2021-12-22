@@ -89,7 +89,6 @@ enum UJTYPE {
 /* These are indexed by WRITE socket# */
 struct unixjob {
   char *pathname; /* used by Lisp direct socket access subr */
-  int readsock;   /* Socket to READ from for this job. */
   int PID;        /* process ID associated with this slot */
   int status;     /* status returned by subprocess (not shell) */
   enum UJTYPE type;
@@ -284,7 +283,6 @@ int FindUnixPipes(void) {
   cleareduj.status = -1;
   cleareduj.pathname = NULL;
   cleareduj.PID = 0;
-  cleareduj.readsock = 0;
   cleareduj.type = UJUNUSED;
   for (int i = 0; i < NPROCS; i++) UJ[i] = cleareduj;
 
@@ -435,7 +433,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         UJ[PipeFD].type = UJPROCESS;
         UJ[PipeFD].status = -1;
         UJ[PipeFD].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
-        UJ[PipeFD].readsock = 0;
         close(sockFD);
         unlink(PipeName);
         return (GetSmallp(PipeFD));
@@ -482,17 +479,11 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       N_GETNUMBER(args[1], slot, bad); /* Get job # */
 
       if (!valid_slot(slot)) return (NIL); /* No fd open; punt the read */
-
-      if (UJ[slot].readsock)
-        sock = UJ[slot].readsock;
-      else
-        sock = slot;
-
       switch (UJ[slot].type) {
         case UJPROCESS:
         case UJSHELL:
         case UJSOSTREAM:
-          TIMEOUT(dest = read(sock, buf, 1));
+          TIMEOUT(dest = read(slot, buf, 1));
           if (dest > 0) return (GetSmallp(buf[0]));
           /* Something's amiss; check our process status */
           wait_for_comm_processes();
@@ -562,7 +553,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         case UJPROCESS:
           DBPRINT(("Kill 3 closing process desc %d.\n", slot));
           close(slot);
-          if (UJ[slot].readsock) close(UJ[slot].readsock);
           break;
 
         case UJSOSTREAM:
@@ -582,7 +572,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           break;
       }
       UJ[slot].type = UJUNUSED;
-      UJ[slot].readsock = UJ[slot].PID = 0;
+      UJ[slot].PID = 0;
       UJ[slot].pathname = NULL;
 
       /* If status available, return it, otherwise T */
@@ -674,8 +664,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         case UJPROCESS:
           DBPRINT(("Kill 5 closing process desc %d.\n", dest));
           close(dest);
-          if (UJ[dest].readsock) close(UJ[dest].readsock);
-          UJ[dest].readsock = 0;
           break;
 
         case UJSOCKET:
@@ -696,7 +684,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       }
 
       UJ[dest].type = UJUNUSED;
-      UJ[dest].readsock = UJ[dest].PID = 0;
+      UJ[dest].PID = 0;
       return (ATOM_T);
     /* break; */
 
@@ -729,18 +717,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         N_GETNUMBER(args[1], slot, bad);     /* Get job # */
         if (!valid_slot(slot)) return (NIL); /* No fd open; punt the read */
 
-        if (UJ[slot].readsock)
-          sock = UJ[slot].readsock;
-        else
-          sock = slot;
-
         bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
         DBPRINT(("Read buffer slot %d, type is %d\n", slot, UJ[slot].type));
 
         switch (UJ[slot].type) {
           case UJSHELL:
           case UJPROCESS:
-          case UJSOSTREAM: dest = read(sock, bufp, 512);
+          case UJSOSTREAM: dest = read(slot, bufp, 512);
 #ifdef BYTESWAP
             word_swap_page(bufp, 128);
 #endif /* BYTESWAP */
