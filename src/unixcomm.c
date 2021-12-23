@@ -372,7 +372,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
   /* Get command */
   N_GETNUMBER(args[0], command, bad);
-  DBPRINT(("\nUnix_handlecomm: trying %d\n", command));
+  DBPRINT(("\nUnix_handlecomm: command %d\n", command));
 
   switch (command) {
     case 0: /* Fork pipe process */
@@ -435,6 +435,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         UJ[PipeFD].PID = (d[1] << 8) | d[2] | (d[4] << 16) | (d[5] << 24);
         close(sockFD);
         unlink(PipeName);
+        DBPRINT(("New process: slot/PipeFD %d PID %d\n", PipeFD, UJ[PipeFD].PID));
         return (GetSmallp(PipeFD));
       } else {
         DBPRINT(("Fork request failed."));
@@ -514,62 +515,43 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       N_GETNUMBER(args[1], slot, bad);
 
-      DBPRINT(("Killing process in slot %d.\n", slot));
-
-      if (valid_slot(slot)) switch (UJ[slot].type) {
-          case UJSHELL:
-          case UJPROCESS:
-            /* First check to see it hasn't already died */
-            if (UJ[slot].status == -1) {
-              /* Kill the job */
-              kill(UJ[slot].PID, SIGKILL);
-              for (int i = 0; i < 10; i++) {
-                /* Waiting for the process to exit is possibly risky.
-                   Sending SIGKILL is always supposed to kill
-                   a process, but on very rare occurrences this doesn't
-                   happen because of a Unix kernel bug, usually a user-
-                   written device driver which hasn't been fully
-                   debugged.  So we time it out just be safe. */
-                if (UJ[slot].status != -1) break;
-                wait_for_comm_processes();
-                usleep(10);
-              }
-            }
-            break;
-          default: break;
-          }
-      else
-        return (ATOM_T);
-
+      DBPRINT(("Terminating process in slot %d.\n", slot));
+      if (!valid_slot(slot)) return (ATOM_T);
+      /* in all cases we need to close() the file descriptor */
+      close(slot);
       switch (UJ[slot].type) {
-        case UJUNUSED:
-          break;
-
-        case UJSHELL:
-          DBPRINT(("Kill 3 closing shell desc %d.\n", slot));
-          close(slot);
-          break;
-
-        case UJPROCESS:
-          DBPRINT(("Kill 3 closing process desc %d.\n", slot));
-          close(slot);
-          break;
-
-        case UJSOSTREAM:
-          DBPRINT(("Kill 3 closing stream socket desc %d.\n", slot));
-          close(slot);
-          break;
-
-        case UJSOCKET:
-          DBPRINT(("Kill 3 closing raw socket desc %d.\n", slot));
-          close(slot);
+      case UJSHELL:
+      case UJPROCESS:
+        /* wait for up to 0.1s for it to exit on its own after the close() */
+        for (int i = 0; i < 10; i++) {
+          wait_for_comm_processes();
+          if (UJ[slot].status != -1) break;
+          usleep(10000); printf("."); fflush(stdout);
+        }
+        /* check again before we terminate it */
+        if (UJ[slot].status != -1) break;
+        kill(UJ[slot].PID, SIGKILL);
+        for (int i = 0; i < 10; i++) {
+          /* Waiting for the process to exit is possibly risky.
+             Sending SIGKILL is always supposed to kill
+             a process, but on very rare occurrences this doesn't
+             happen because of a Unix kernel bug, usually a user-
+             written device driver which hasn't been fully
+             debugged.  So we time it out just be safe. */
+          wait_for_comm_processes();
+          usleep(10000);
+          if (UJ[slot].status != -1) break;
+        }
+        break;
+      case UJSOCKET:
+        if (UJ[slot].pathname) {
           DBPRINT(("Unlinking %s\n", UJ[slot].pathname));
-          if (UJ[slot].pathname) {
-            if (unlink(UJ[slot].pathname) < 0) perror("Kill 3 unlink");
-            free(UJ[slot].pathname);
-            UJ[slot].pathname = NULL;
-          }
-          break;
+          if (unlink(UJ[slot].pathname) < 0) perror("Kill 3 unlink");
+          free(UJ[slot].pathname);
+          UJ[slot].pathname = NULL;
+        }
+        break;
+      default: break;
       }
       UJ[slot].type = UJUNUSED;
       UJ[slot].PID = 0;
