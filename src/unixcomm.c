@@ -526,7 +526,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         for (int i = 0; i < 10; i++) {
           wait_for_comm_processes();
           if (UJ[slot].status != -1) break;
-          usleep(10000); printf("."); fflush(stdout);
+          usleep(10000);
         }
         /* check again before we terminate it */
         if (UJ[slot].status != -1) break;
