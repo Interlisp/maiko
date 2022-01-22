@@ -485,18 +485,27 @@ void OP_subrcall(int subr_no, int argnum) {
     case sb_GET_NATIVE_ADDR_FROM_LISP_PTR:
       POP_SUBR_ARGS;
       /* XXX: this WILL NOT WORK if Lisp memory is allocated outside the low 4GB */
+      /* not supported since native addresses can't be represented as
+         a Lisp FIXP
       ARITH_SWITCH(Addr68k_from_LADDR(args[0]), TopOfStack);
+      */
+      TopOfStack = NIL_PTR;
       break;
 
     case sb_GET_LISP_PTR_FROM_NATIVE_ADDR:
       POP_SUBR_ARGS;
+      /* not supported since native addresses can't be represented as
+         a Lisp FIXP
+
       {
         register UNSIGNED iarg;
         N_GETNUMBER(args[0], iarg, ret_nil);
         ARITH_SWITCH(LADDR_from_68k(iarg), TopOfStack);
         break;
       };
-
+      */
+      TopOfStack = NIL_PTR;
+      break;
     case sb_DSK_GETFILENAME:
       POP_SUBR_ARGS;
       TopOfStack = DSK_getfilename(args);
