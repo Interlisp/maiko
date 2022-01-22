@@ -11,6 +11,7 @@
 /*									*/
 /************************************************************************/
 
+#include <inttypes.h>
 #include "maiko/platform.h"
 
 /************************************************************************/
@@ -187,8 +188,8 @@ error Must specify RELEASE to build Medley.
 
 	/* Set up defaults */
 #define UNALIGNED_FETCH_OK
-typedef unsigned long UNSIGNED;
-typedef long INT;
+typedef uintptr_t UNSIGNED;
+typedef intptr_t INT;
 
 
 
