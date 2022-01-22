@@ -18,7 +18,7 @@ ENDIF()
 
 find_program(
     CLANG_TIDY_EXE
-    NAMES "clang-tidy" "clang-tidy12" "clang-tidy11" "clang-tidy10"
+    NAMES "clang-tidy" "clang-tidy13" "clang-tidy12" "clang-tidy11" "clang-tidy10"
     DOC "Path to clang-tidy executable"
 )
 
