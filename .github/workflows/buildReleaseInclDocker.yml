@@ -1,0 +1,405 @@
+# Workflow to build a Maiko release that is pushed to github as well as
+# Docker images incorporating the release, which are pushed to Docker Hub.
+# For linux:  release assets are built/pushed for X86_64, aarch64 and arm7vl and 
+#     a multiplatform Docker image is pushed.
+# For macOS:  release assets are built/pushed for X86_64. (No aarch64 as yet.)
+# For Windows:  not supported
+#
+# Note release pushed to github also includes source code assets in tar and zip formats.
+#
+# 2022-01-16 by Frank Halasz based on earlier workflow called buildDocker.yml
+#
+
+name: 'Build/Push Release & Docker Image'
+
+env:
+  workflow: 'buildReleaseInclDocker.yml'
+
+# Run this workflow on ...
+on: 
+    workflow_dispatch:
+      inputs:
+        force:
+          description: "Force build even if build already successfully completed for this commit"
+          type: choice
+          options:
+          - 'false'
+          - 'true'
+
+    workflow_call:
+      secrets:
+        DOCKER_USERNAME:
+          required: true
+        DOCKER_PASSWORD:
+          required: true
+      outputs:
+        successful:
+          description: "'True' if maiko build completed successully"
+          value: ${{ jobs.complete.outputs.build_successful }}
+      inputs:
+        force:
+          description: "Force build even if build already successfully completed for this commit"
+          required: false
+          type: string
+          default: 'false'
+
+defaults:
+  run:
+    shell: bash
+
+#  3 separate jobs here that can run in parallel
+#
+#  1.  Linux: Build/push a multiplatform Linux Docker image and use results to
+#      build/push Linux release assets.
+#
+#  2.  MacOs_x86_64:  Build maiko for MacOS on X86_64 then create and push release assets.
+#
+#  3.  Sources:  create/push sources assets for this release.
+#
+
+jobs:
+
+######################################################################################
+
+  # Regularize the inputs so they can be referenced the same way whether they are
+  # the result of a workflow_dispatch or a workflow_call
+
+  inputs:
+    runs-on: ubuntu-latest
+    outputs:
+      force: ${{ steps.force.outputs.force }}
+    steps:
+      - id: force
+        run: >
+          if [ '${{ toJSON(inputs) }}' = 'null'  ];
+          then echo ::set-output name=force::'${{ github.event.inputs.force }}'; echo "workflow_dispatch";
+          else echo ::set-output name=force::'${{ inputs.force }}'; echo "workflow_call";
+          fi
+        
+
+
+######################################################################################
+
+  # Use sentry-action to determine if this release has already been built
+  # based on the latest commit to the repo
+
+  sentry:
+    needs: inputs
+    runs-on: ubuntu-latest
+    outputs:
+      release_not_built: ${{ steps.check.outputs.release_not_built }}
+
+    steps: 
+      # Checkout the actions for this repo_owner
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
+
+      # Check if build already run for this commit
+      - name: Build already completed? 
+        id: check
+        continue-on-error: true
+        uses: ./../actions/check-sentry-action
+        with:
+          workflow: ${{ env.workflow }}
+
+######################################################################################
+
+  # Linux: build and push multi-platform docker image for Linux
+  # Use docker images to create and push release assets to github
+
+  linux:
+  
+    needs: [inputs, sentry]
+    if: |
+      needs.sentry.outputs.release_not_built == 'true'
+      || needs.inputs.outputs.force == 'true'
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the actions for this repo_owner
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/actions
+          path: ./xyzzyActions
+      - run: mv ./xyzzyActions ../actions
+      
+      # Checkout the branch  
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Setup release tag
+      - name: Setup Release Tag
+        id: tag
+        uses: ./../actions/release-tag-action
+
+      # Setup docker environment variables
+      - name: Setup Docker Environment Variables
+        id: docker_env
+        run: |
+          DOCKER_OWNER=$(echo ${REPO_OWNER} | tr '[:upper:]' '[:lower:]')
+          echo "DOCKER_OWNER=${DOCKER_OWNER}" >> ${GITHUB_ENV}
+          DOCKER_IMAGE=${DOCKER_OWNER}/${{ steps.tag.outputs.repo_name }}
+          DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
+          echo ::set-output name=build_time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-output name=docker_tags::${DOCKER_TAGS}
+
+      # Setup the Docker Machine Emulation environment.  
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@master
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+      # Setup the Docker Buildx funtion
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@master
+
+      # Login into DockerHub - required to store the created image
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Do the Docker Build using the Dockerfile in the repository we
+      # checked out.  Push the result to Docker Hub.
+      #
+      # NOTE: THE ACTUAL MAIKO BUILD (FOR LINUX) HAPPENS HERE - I.E., IN THE
+      #       DOCKER BUILD CALL.  BUILD COMMANDS ARE SPECIFIED IN THE
+      #       Dockerfile, NOT HERE IN THE WORKFLOW.
+      #
+      - name: Build Docker Image for Push to Docker Hub
+        if: ${{ true }}
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          build-args: |
+            BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
+            RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          # Push the result to DockerHub
+          push: true
+          tags: ${{ steps.docker_env.outputs.docker_tags }}
+
+      # Redo the Docker Build (hopefully mostly using the cache from the previous build).
+      # But save the results in a directory under /tmp to be used for creating release tars.
+      - name: Rebuild Docker Image For Saving Locally
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          build-args: |
+            BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
+            RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          # Put the results out to the local file system
+          outputs: type=local,dest=/tmp/docker_images
+          tags: ${{ steps.docker_env.outputs.docker_tags }}
+
+      # Use docker results to create releases for github.
+      # Docker results are in /tmp/docker_images. One subdir for each platform.
+      - name: Make release tars for each platform
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
+        run: |
+          mkdir -p /tmp/release_tars
+          for OSARCH in "linux.x86_64:linux_amd64" "linux.aarch64:linux_arm64" "linux.armv7l:linux_arm_v7" ;    \
+            do                                                                         \
+              pushd /tmp/docker_images/${OSARCH##*:}/usr/local/interlisp >/dev/null ;  \
+              /usr/bin/tar -c -z                                                       \
+                -f /tmp/release_tars/${RELEASE_TAG}-${OSARCH%%:*}.tgz                  \
+                maiko/bin/osversion                                                    \
+                maiko/bin/machinetype                                                  \
+                maiko/bin/config.guess                                                 \
+                maiko/bin/config.sub                                                   \
+                maiko/${OSARCH%%:*}/lde*                                               \
+              ;                                                                        \
+              popd >/dev/null ;                                                        \
+            done
+
+      # Push Release to github
+      - name: Push the release
+        uses: ncipollo/release-action@v1.8.10
+        with: 
+          allowUpdates: true
+          artifacts:
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.x86_64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.aarch64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.armv7l.tgz
+          tag: ${{ steps.tag.outputs.release_tag }}
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+######################################################################################
+
+  # MacOS: build for MacOS (X86_64) and use results to
+  # create and push release assets to github
+  macos_x86_64:
+
+    needs: [inputs, sentry]
+    if: |
+      needs.sentry.outputs.release_not_built == 'true'
+      || needs.inputs.outputs.force == 'true'
+
+    runs-on: macos-10.15
+
+    steps:
+
+      # Checkout the branch  
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Checkout the actions for this repo
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/actions
+          path: ./xyzzyactions
+      - run: mv ./xyzzyactions ../actions
+
+      # Setup release tag
+      - name: Setup Release Tag
+        id: tag
+        uses: ./../actions/release-tag-action
+
+      # Install X11 dependencies
+      - name: Install X11 dependencies on MacOS
+        if: ${{ runner.os == 'macOS'}}
+        run: brew install --cask xquartz
+
+      # Build maiko   
+      - name: Build
+        working-directory: ./bin
+        run: |
+          ./makeright x
+          ./makeright init
+
+      # Create release tar for github.
+      - name: Make release tar(s)
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
+        run: |
+          mkdir -p /tmp/release_tars
+          pushd ${GITHUB_WORKSPACE}/../ >/dev/null
+          tar -c -z                                                       \
+            -f /tmp/release_tars/${RELEASE_TAG}-darwin.x86_64.tgz                  \
+            maiko/bin/osversion                                                    \
+            maiko/bin/machinetype                                                  \
+            maiko/bin/config.guess                                                 \
+            maiko/bin/config.sub                                                   \
+            maiko/darwin.x86_64/lde*
+          popd >/dev/null
+
+      # Push Release
+      - name: Push the release
+        uses: ncipollo/release-action@v1.8.10
+        with: 
+          allowUpdates: true
+          artifacts:
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.x86_64.tgz
+          tag: ${{ steps.tag.outputs.release_tag }}
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+######################################################################################
+
+  # Sources: create and push release assets containing sources to github
+  sources:
+
+    needs: [inputs, sentry]
+    if: |
+      needs.sentry.outputs.release_not_built == 'true'
+      || needs.inputs.outputs.force == 'true'
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout the branch  
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # Checkout the actions for this repo
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/actions
+          path: ./xyzzyactions
+      - run: mv ./xyzzyactions ../actions
+
+      # Setup release tag
+      - name: Setup Release Tag
+        id: tag
+        uses: ./../actions/release-tag-action
+
+      # Create source tars for the release
+      - name: Make source tars
+        env:
+          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
+        run: |
+          mkdir -p /tmp/release_tars
+          pushd ${GITHUB_WORKSPACE}/../ >/dev/null
+          mv maiko ${RELEASE_TAG}
+          /usr/bin/tar -c -z -f /tmp/release_tars/${RELEASE_TAG}-source.tgz --exclude=.git ${RELEASE_TAG}
+          /usr/bin/find ${RELEASE_TAG} -name .git -prune -o -print |\
+                /usr/bin/zip -@ /tmp/release_tars/${RELEASE_TAG}-source.zip
+          mv ${RELEASE_TAG} maiko
+          popd >/dev/null
+
+      # Push Release
+      - name: Push the release
+        uses: ncipollo/release-action@v1.8.10
+        with: 
+          allowUpdates: true
+          artifacts:
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-source.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-source.zip
+          tag: ${{ steps.tag.outputs.release_tag }}
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+######################################################################################
+
+  # Use set-sentry-action to determine set the sentry that says this release has
+  # been successfully built
+
+  complete:
+
+    runs-on: ubuntu-latest
+
+    outputs:
+      build_successful: ${{ steps.output.outputs.build_successful }}
+
+    needs: [inputs, sentry, linux, macos_x86_64, sources]
+
+    steps:
+      # Checkout the actions for this repo_owner
+      - name: Checkout Actions
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository_owner }}/actions
+          path: ./xyzzyActions
+      - run: mv ./xyzzyActions ../actions
+      
+      # Set sentry
+      - name: Is build for this commit already completed? 
+        id: set
+        uses: ./../actions/set-sentry-action
+     
+      - name: Output
+        id: output
+        run: |
+          echo ::set-output name=build_successful::'true'
+          
+######################################################################################
