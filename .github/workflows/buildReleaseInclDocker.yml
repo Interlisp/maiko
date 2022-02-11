@@ -1,3 +1,6 @@
+#*******************************************************************************
+# buidReleaseInclDocker.yml
+#
 # Workflow to build a Maiko release that is pushed to github as well as
 # Docker images incorporating the release, which are pushed to Docker Hub.
 # For linux:  release assets are built/pushed for X86_64, aarch64 and arm7vl and 
@@ -9,6 +12,10 @@
 #
 # 2022-01-16 by Frank Halasz based on earlier workflow called buildDocker.yml
 #
+# Copyright 2022 by Interlisp.org
+#
+#
+# ******************************************************************************
 
 name: 'Build/Push Release & Docker Image'
 
@@ -90,7 +97,7 @@ jobs:
       release_not_built: ${{ steps.check.outputs.release_not_built }}
 
     steps: 
-      # Checkout the actions for this repo_owner
+      # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v2
         with:
@@ -104,7 +111,7 @@ jobs:
         continue-on-error: true
         uses: ./../actions/check-sentry-action
         with:
-          workflow: ${{ env.workflow }}
+          tag: "release_docker"
 
 ######################################################################################
 
@@ -121,14 +128,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the actions for this repo_owner
+      # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository_owner }}/actions
-          path: ./xyzzyActions
-      - run: mv ./xyzzyActions ../actions
-      
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
+
       # Checkout the branch  
       - name: Checkout
         uses: actions/checkout@v2
@@ -142,7 +149,7 @@ jobs:
       - name: Setup Docker Environment Variables
         id: docker_env
         run: |
-          DOCKER_OWNER=$(echo ${REPO_OWNER} | tr '[:upper:]' '[:lower:]')
+          DOCKER_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "DOCKER_OWNER=${DOCKER_OWNER}" >> ${GITHUB_ENV}
           DOCKER_IMAGE=${DOCKER_OWNER}/${{ steps.tag.outputs.repo_name }}
           DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
@@ -259,13 +266,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Checkout the actions for this repo
+      # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository_owner }}/actions
-          path: ./xyzzyactions
-      - run: mv ./xyzzyactions ../actions
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
       # Setup release tag
       - name: Setup Release Tag
@@ -330,13 +337,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Checkout the actions for this repo
+      # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository_owner }}/actions
-          path: ./xyzzyactions
-      - run: mv ./xyzzyactions ../actions
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
       # Setup release tag
       - name: Setup Release Tag
@@ -383,19 +390,21 @@ jobs:
 
     needs: [inputs, sentry, linux, macos_x86_64, sources]
 
-    steps:
-      # Checkout the actions for this repo_owner
+    steps: 
+      # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v2
         with:
-          repository: ${{ github.repository_owner }}/actions
-          path: ./xyzzyActions
-      - run: mv ./xyzzyActions ../actions
-      
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
+
       # Set sentry
       - name: Is build for this commit already completed? 
         id: set
         uses: ./../actions/set-sentry-action
+        with:
+          tag: "release_docker"
      
       - name: Output
         id: output
