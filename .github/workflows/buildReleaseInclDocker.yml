@@ -8,7 +8,8 @@
 # For macOS:  release assets are built/pushed for X86_64. (No aarch64 as yet.)
 # For Windows:  not supported
 #
-# Note release pushed to github also includes source code assets in tar and zip formats.
+# Note release pushed to github automatically includes source code assets
+# in tar and zip formats.
 #
 # 2022-01-16 by Frank Halasz based on earlier workflow called buildDocker.yml
 #
@@ -54,14 +55,12 @@ defaults:
   run:
     shell: bash
 
-#  3 separate jobs here that can run in parallel
+#  2 separate jobs here that can run in parallel
 #
 #  1.  Linux: Build/push a multiplatform Linux Docker image and use results to
 #      build/push Linux release assets.
 #
 #  2.  MacOs_x86_64:  Build maiko for MacOS on X86_64 then create and push release assets.
-#
-#  3.  Sources:  create/push sources assets for this release.
 #
 
 jobs:
@@ -319,62 +318,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
-######################################################################################
-
-  # Sources: create and push release assets containing sources to github
-  sources:
-
-    needs: [inputs, sentry]
-    if: |
-      needs.sentry.outputs.release_not_built == 'true'
-      || needs.inputs.outputs.force == 'true'
-
-    runs-on: ubuntu-latest
-
-    steps:
-
-      # Checkout the branch  
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      # Checkout the actions for this repo owner
-      - name: Checkout Actions
-        uses: actions/checkout@v2
-        with:
-          repository: ${{ github.repository_owner }}/.github
-          path: ./Actions_${{ github.sha }}
-      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
-
-      # Setup release tag
-      - name: Setup Release Tag
-        id: tag
-        uses: ./../actions/release-tag-action
-
-      # Create source tars for the release
-      - name: Make source tars
-        env:
-          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
-        run: |
-          mkdir -p /tmp/release_tars
-          pushd ${GITHUB_WORKSPACE}/../ >/dev/null
-          mv maiko ${RELEASE_TAG}
-          /usr/bin/tar -c -z -f /tmp/release_tars/${RELEASE_TAG}-source.tgz --exclude=.git ${RELEASE_TAG}
-          /usr/bin/find ${RELEASE_TAG} -name .git -prune -o -print |\
-                /usr/bin/zip -@ /tmp/release_tars/${RELEASE_TAG}-source.zip
-          mv ${RELEASE_TAG} maiko
-          popd >/dev/null
-
-      # Push Release
-      - name: Push the release
-        uses: ncipollo/release-action@v1.8.10
-        with: 
-          allowUpdates: true
-          artifacts:
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-source.tgz,
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-source.zip
-          tag: ${{ steps.tag.outputs.release_tag }}
-          draft: true
-          token: ${{ secrets.GITHUB_TOKEN }}
 
 ######################################################################################
 
@@ -388,7 +331,7 @@ jobs:
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
 
-    needs: [inputs, sentry, linux, macos_x86_64, sources]
+    needs: [inputs, sentry, linux, macos_x86_64]
 
     steps: 
       # Checkout the actions for this repo owner
