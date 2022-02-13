@@ -148,9 +148,9 @@ jobs:
       - name: Setup Docker Environment Variables
         id: docker_env
         run: |
-          DOCKER_OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "DOCKER_OWNER=${DOCKER_OWNER}" >> ${GITHUB_ENV}
-          DOCKER_IMAGE=${DOCKER_OWNER}/${{ steps.tag.outputs.repo_name }}
+          DOCKER_NAMESPACE=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> ${GITHUB_ENV}
+          DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
           DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
           echo ::set-output name=build_time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=docker_tags::${DOCKER_TAGS}
