@@ -67,6 +67,8 @@ newframe:
     fnhead = (struct fnhead *)FuncObj;
     pc = (ByteCode *)PC + 3; /* to skip the miscn opcode we're in now */
   } else {
+    unbind_count = 0; /* different frame */
+
     fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
     pc = (ByteCode *)fnhead + (caller->pc);
   }
@@ -96,9 +98,14 @@ newpc:
         /* BUT 3's not enough for big atoms, so add diff between FN op size & MISCN op size */
         if (caller == immediate_caller) PC = pc + (FN_OPCODE_SIZE - 3);
 #endif /* BIGATOMS */
-
-        else
+        else {
           caller->pc = (UNSIGNED)pc + FN_OPCODE_SIZE - (UNSIGNED)fnhead;
+	  /* skip over FN opcode when we get there */
+	  prevcaller->fast = 0;
+	  caller->mvscase = 1;
+	  caller->nopush = 1;
+	}
+	
         return (make_value_list(arg_count, args));
       }
       break;
@@ -269,26 +276,22 @@ LispPTR make_value_list(int argcount, LispPTR *argarray) {
 
 void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
   int unbind;
-  LispPTR *stackptr = (LispPTR *)(Stackspace + frame->nextblock);
+  LispPTR *stack_pointer = (LispPTR *)(Stackspace + frame->nextblock);
   for (unbind = 0; unbind < unbind_count; unbind++) {
-    register int value;
-    register LispPTR *lastpvar;
-    int bindnvalues;
-    for (; ((int)*--stackptr >= 0);)
-      ; /* find the binding mark */
-    value = (int)*stackptr;
-    lastpvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
-    ;
-    bindnvalues = (~value) >> 16;
-    for (value = bindnvalues; --value >= 0;) { *--lastpvar = 0xffffffff; }
-    /* This line caused \NSMAIL.READ.HEADING to smash memory, */
-    /* so I removed it 21 Jul 91 --JDS.  This was the only	  */
-    /* difference between this function and the UNWIND code   */
-    /* in inlineC.h						  */
-    /*	MAKEFREEBLOCK(stackptr, (DLword *)stackptr-nextblock); */
+    register int num;
+    register LispPTR *ppvar;
+    register int i;
+    register LispPTR value;
+
+    for (; (((int)*--(stack_pointer)) >= 0);)
+      ;                               
+    value = *stack_pointer;
+    num = (~value) >> 16;             
+    ppvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
+    for (i = num; --i >= 0;) { *--ppvar = 0xffffffff; }         
   }
-  if (returner)
-    returner->fast = 0; /* since we've destroyed contiguity */
+  /* if (returner)	
+    returner->fast = 0; since we've destroyed contiguity */
                         /* in the stack, but that only
                            matters if there's a return. */
 }
