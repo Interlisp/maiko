@@ -407,7 +407,7 @@ LispPTR COM_openfile(register LispPTR *args)
   if (dskp) {
     TIMEOUT(rval = stat(file, &sbuf));
     if (rval == 0) {
-      if ((sbuf.st_mode & S_IFMT) != S_IFREG) {
+      if (S_ISREG(sbuf.st_mode)) {
         /*
          * The Lisp code handles this case as same as "file table
          * overflow" error.  Final error message is "File won't
@@ -513,7 +513,7 @@ LispPTR COM_openfile(register LispPTR *args)
   *bufp = ToLispTime(sbuf.st_mtime);
 
   bufp = (int *)(Addr68k_from_LADDR(args[4]));
-  if (!dskp && ((sbuf.st_mode & S_IFMT) != S_IFREG) && ((sbuf.st_mode & S_IFMT) != S_IFDIR)) {
+  if (!dskp && (!S_ISREG(sbuf.st_mode)) && (!S_ISDIR(sbuf.st_mode))) {
     /*
      * Not a regular file or directory file.  Put on a marker.
      */
@@ -617,7 +617,7 @@ LispPTR COM_closefile(register LispPTR *args)
     /* Just close. */
     TIMEOUT(rval = close(fd));
     if (rval == -1) {
-      if (!dskp && errno == EPERM && (sbuf.st_mode & S_IFREG) == 0) {
+      if (!dskp && errno == EPERM && !S_ISREG(sbuf.st_mode)) {
         /*
          * On {UNIX} device, closing a special file we are not
          * the owner of it.  Although I don't think close fails
@@ -745,7 +745,7 @@ LispPTR COM_closefile(register LispPTR *args)
     /* Just close. */
     TIMEOUT(rval = close(fd));
     if (rval == -1) {
-      if (!dskp && errno == EPERM && (sbuf.st_mode & S_IFREG) == 0) {
+      if (!dskp && errno == EPERM && !S_ISREG(sbuf.st_mode)) {
         /*
          * On {UNIX} device, closing a special file we are not
          * the owner of it.  Although I don't think close fails
@@ -1945,7 +1945,7 @@ LispPTR COM_readpage(register LispPTR *args)
     return (NIL);
   }
 
-  if ((sbuf.st_mode & S_IFREG) != 0) {
+  if (S_ISREG(sbuf.st_mode)) {
   /*
    * The request file is a regular file.  We have to make sure that
    * next byte read is at the beginning of the requested page of the
@@ -2096,7 +2096,7 @@ LispPTR COM_truncatefile(register LispPTR *args)
     return (NIL);
   }
 
-  if ((sbuf.st_mode & S_IFREG) == 0) {
+  if (!S_ISREG(sbuf.st_mode)) {
     /*
      * The request file is not a regular file.  We don't need to
      * truncate such file.
