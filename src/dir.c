@@ -522,7 +522,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     }
 
     strcpy(namebuf, dirp.name);
-    if (sbuf.st_mode & S_IFDIR) {
+    if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf);
       strcpy(nextp->lname, namebuf);
@@ -659,7 +659,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       }
 
       strcpy(namebuf, dp->d_name);
-      if (sbuf.st_mode & S_IFDIR) {
+      if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf);
         strcpy(nextp->lname, namebuf);
@@ -800,7 +800,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     }
 
     strcpy(namebuf, dirp.name); /* moved from below 2/26/93 */
-    if (sbuf.st_mode & S_IFDIR) {
+    if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf);
       strcpy(nextp->lname, namebuf);
@@ -922,7 +922,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       }
 
       strcpy(namebuf, dp->d_name);
-      if (sbuf.st_mode & S_IFDIR) {
+      if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf);
         strcpy(nextp->lname, namebuf);
@@ -1025,7 +1025,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     }
 
     strcpy(namebuf, dirp.name);
-    if (sbuf.st_mode & S_IFDIR) {
+    if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf);
       strcpy(nextp->lname, namebuf);
@@ -1117,7 +1117,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       }
 
       strcpy(namebuf, dp->d_name);
-      if (sbuf.st_mode & S_IFDIR) {
+      if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf);
         strcpy(nextp->lname, namebuf);
@@ -1224,7 +1224,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
     }
 
     strcpy(namebuf, dirp.name);
-    if (sbuf.st_mode & S_IFDIR) {
+    if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf);
       strcpy(nextp->lname, namebuf);
@@ -1300,7 +1300,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       }
 
       strcpy(namebuf, dp->d_name);
-      if (sbuf.st_mode & S_IFDIR) {
+      if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf);
         strcpy(nextp->lname, namebuf);

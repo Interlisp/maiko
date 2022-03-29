@@ -271,7 +271,7 @@ LispPTR UFS_deletefile(LispPTR *args)
    * On UNIX device, all we have to do is just to unlink the file
    * or directory
    */
-  if ((sbuf.st_mode & S_IFMT) == S_IFDIR) {
+  if (S_ISDIR(sbuf.st_mode)) {
     TIMEOUT(rval = rmdir(file));
   } else {
     TIMEOUT(rval = unlink(file));
@@ -409,7 +409,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
     return (NIL);
   }
 
-  if ((sbuf.st_mode & S_IFMT) != S_IFDIR) return (NIL);
+  if (!S_ISDIR(sbuf.st_mode)) return (NIL);
 
   /* Convert Unix file naming convention to Xerox Lisp one. */
   if (lisppathname(fullname, dirname, 1, 0) == 0) return (NIL);
