@@ -327,29 +327,23 @@ LispPTR COM_openfile(register LispPTR *args)
 
         case ACCESS_OUTPUT:
           flags = O_RDWR | O_TRUNC | O_CREAT;
-          if (dskp) {
-            unpack_filename(file, dir, name, ver, 1);
-            if (make_directory(dir) == 0) return (NIL);
-            link_check_flg = 1;
-          }
+          unpack_filename(file, dir, name, ver, 1);
+          if (make_directory(dir) == 0) return (NIL);
+          if (dskp) link_check_flg = 1;
           break;
 
         case ACCESS_BOTH:
           flags = O_RDWR | O_CREAT;
-          if (dskp) {
-            unpack_filename(file, dir, name, ver, 1);
-            if (make_directory(dir) == 0) return (NIL);
-            link_check_flg = 1;
-          }
+          unpack_filename(file, dir, name, ver, 1);
+          if (make_directory(dir) == 0) return (NIL);
+          if (dskp) link_check_flg = 1;
           break;
 
         case ACCESS_APPEND:
           flags = O_RDWR | O_CREAT;
-          if (dskp) {
-            unpack_filename(file, dir, name, ver, 1);
-            if (make_directory(dir) == 0) return (NIL);
-            link_check_flg = 1;
-          }
+          unpack_filename(file, dir, name, ver, 1);
+          if (make_directory(dir) == 0) return (NIL);
+          if (dskp) link_check_flg = 1;
           break;
       }
       break;
