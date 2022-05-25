@@ -246,7 +246,7 @@ int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will cal
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
-extern time_t MDate;
+extern const time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
 #ifdef DOS

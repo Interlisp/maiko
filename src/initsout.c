@@ -111,7 +111,7 @@ LispPTR *fixp_value(LispPTR *ptr) {
 #define PAGES_IN_MBYTE 2048
 
 void init_ifpage(int sysout_size) {
-  extern time_t MDate;
+  extern const time_t MDate;
   extern int DisplayType;
   extern int Storage_expanded;
   int new_lastvmem;
