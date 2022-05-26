@@ -74,13 +74,4 @@ extern DLword *DisplayRegion68k;
 #undef DISPLAYBUFFER
 #endif /* XWINDOW */
 
-void flush_display_buffer();
-void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h);
-void flush_display_region(int x, int y, int w, int h);
-void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h);
-
-#ifdef BYTESWAP
-void byte_swapped_displayregion(int x, int y, int w, int h);
-#endif
-
 #endif
