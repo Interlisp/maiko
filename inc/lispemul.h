@@ -82,17 +82,17 @@ typedef struct interrupt_state_2 { /* alternate view of the interrupt state */
 } INTSTAT2;
 
 struct state {
-  DLword *ivar;               /* + 0 */
-  DLword *pvar;               /* + 4 */
-  DLword *csp;                /* + 8 */
-  LispPTR tosvalue;           /* + 12 */
-  ByteCode *currentpc;        /* + 16 */
-  struct fnhead *currentfunc; /* + 20*/
-  DLword *endofstack;         /* + 24*/
-  UNSIGNED irqcheck;          /* + 28 */
-  UNSIGNED irqend;            /* + 32 */
-  LispPTR scratch_cstk;       /* + 34 */
-  int errorexit;              /* + 38 */
+  DLword *ivar;
+  DLword *pvar;
+  DLword *csp;
+  ByteCode *currentpc;
+  struct fnhead *currentfunc;
+  DLword *endofstack;
+  UNSIGNED irqcheck;
+  UNSIGNED irqend;
+  LispPTR tosvalue;
+  LispPTR scratch_cstk;
+  int errorexit;
 };
 
 /***** Get_DLword(ptr) ptr is char* ***/
@@ -226,17 +226,17 @@ typedef struct interrupt_state_2 { /* alternate view of the interrupt state */
 } INTSTAT2;
 
 struct state {
-  DLword *ivar;               /* + 0 */
-  DLword *pvar;               /* + 4 */
-  DLword *csp;                /* + 8 */
-  LispPTR tosvalue;           /* + 12 */
-  ByteCode *currentpc;        /* + 16 */
-  struct fnhead *currentfunc; /* + 20*/
-  DLword *endofstack;         /* + 24*/
-  UNSIGNED irqcheck;          /* + 28 */
-  UNSIGNED irqend;            /* + 32 */
-  LispPTR scratch_cstk;       /* + 34 */
-  int errorexit;              /* + 38 */
+  DLword *ivar;
+  DLword *pvar;
+  DLword *csp;
+  ByteCode *currentpc;
+  struct fnhead *currentfunc;
+  DLword *endofstack;
+  UNSIGNED irqcheck;
+  UNSIGNED irqend;
+  LispPTR tosvalue;
+  LispPTR scratch_cstk;
+  int errorexit;
 };
 
 /* Fetching 2 bytes to make a word -- always do it the hard way */
