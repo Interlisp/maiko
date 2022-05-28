@@ -129,6 +129,8 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
   }
   /* Start up shell -- use SHELL environment variable as long as it's in /etc/shells */
   shell = getenv("SHELL");
+  if (shell == NULL) /* shell of last resort */
+    shell = "/bin/sh";
   for (userShell = getusershell(); userShell != NULL && strcmp(shell, userShell) != 0; userShell = getusershell());
   if (userShell == NULL) {
     perror("$(SHELL) not found in /etc/shells");
