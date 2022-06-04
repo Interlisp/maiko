@@ -127,7 +127,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(proto);
       result = socket(AF_INET, SOCK_STREAM, 0);
       farend.sin_family = AF_INET;
-      farend.sin_port = sock;
+      farend.sin_port = htons(sock);
       if (connect(result, (struct sockaddr *)&farend, sizeof farend) < 0) {
         perror("TCP connect");
         return (NIL);
