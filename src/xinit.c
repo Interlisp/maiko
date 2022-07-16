@@ -133,13 +133,14 @@ void Xevent_before_raid(DspInterface dsp)
 
   XSelectInput(dsp->display_id, dsp->LispWindow, NoEventMask);
   XSelectInput(dsp->display_id, dsp->DisplayWindow, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->VerScrollBar, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->HorScrollBar, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->NEGrav, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->SEGrav, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->SWGrav, NoEventMask);
-  XSelectInput(dsp->display_id, dsp->NWGrav, NoEventMask);
-
+  if (noscroll == 0) {
+    XSelectInput(dsp->display_id, dsp->VerScrollBar, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->HorScrollBar, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->NEGrav, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->SEGrav, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->SWGrav, NoEventMask);
+    XSelectInput(dsp->display_id, dsp->NWGrav, NoEventMask);
+  }
   XLOCK;
   XFlush(dsp->display_id);
   XUNLOCK(dsp);
