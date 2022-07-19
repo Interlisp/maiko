@@ -451,7 +451,7 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
   do {                  \
     TopOfStack = tos;   \
     Error_Exit = 1;     \
-    return (-1);        \
+    return ((LispPTR)-1);                      \
   } while (0)
 #define TIMER_EXIT(tos) \
   do {                  \
