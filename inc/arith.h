@@ -134,32 +134,4 @@
     ERROR_EXIT(tos);                 \
   } while (0)
 
-#define N_ARITH_BODY_1(a, n, op)  \
-  do {                            \
-    register int arg1;            \
-                                  \
-    N_GETNUMBER(a, arg1, do_ufn); \
-                                  \
-    arg1 = arg1 op n;             \
-                                  \
-    N_ARITH_SWITCH(arg1);         \
-                                  \
-  do_ufn:                         \
-    ERROR_EXIT(a);                \
-  } while (0)
-
-#define N_ARITH_BODY_1_UNSIGNED(a, n, op) \
-  do {                                    \
-    register unsigned int arg1;           \
-                                          \
-    N_GETNUMBER(a, arg1, do_ufn);         \
-                                          \
-    arg1 = arg1 op n;                     \
-                                          \
-    N_ARITH_SWITCH(arg1);                 \
-                                          \
-  do_ufn:                                 \
-    ERROR_EXIT(a);                        \
-  } while (0)
-
 #endif /* ARITH_H */
