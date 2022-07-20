@@ -39,6 +39,7 @@
 #include "dbgtooldefs.h"
 #include "kprintdefs.h"
 #include "testtooldefs.h"
+#include "uraidextdefs.h"
 
 #define LOCAL_PVAR 0xFFFF
 #ifdef BIGATOMS
@@ -57,13 +58,6 @@
 #define NAMETABLE DLword
 #endif
 
-#define URMAXFXNUM 2000
-#define URSCAN_ALINK 0
-#define URSCAN_CLINK 1
-extern int URaid_scanlink;
-extern int URaid_currentFX;
-extern FX *URaid_FXarray[];
-extern int URaid_ArrMAXIndex;
 int BT_lines;
 int BT_temp;
 jmp_buf BT_jumpbuf;

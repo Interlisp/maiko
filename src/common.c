@@ -28,6 +28,7 @@
 #include "commondefs.h"
 #include "kprintdefs.h"
 #include "uraiddefs.h"
+#include "uraidextdefs.h"
 
 void stab() { DBPRINT(("Now in stab\n")); }
 
@@ -40,7 +41,6 @@ error
         And exit.(takeshi)
 
 ******************************************************************/
-#define URMAXFXNUM 100
 
 extern fd_set LispReadFds;
 extern int LispWindowFd, LispKbdFd;
@@ -48,19 +48,9 @@ extern struct screen LispScreen;
 extern int displaywidth, displayheight;
 extern DLword *DisplayRegion68k;
 extern int FrameBufferFd;
-extern char URaid_inputstring[];
-extern char URaid_comm;
-extern char URaid_arg1[256];
-extern char URaid_arg2[10];
-extern int URaid_argnum;
-extern const char *URaid_errmess;
-extern int URaid_currentFX;
-extern FX *URaid_FXarray[];
 extern jmp_buf BT_jumpbuf;
 extern jmp_buf SD_jumpbuf;
 extern int BT_temp; /* holds the continue-character the user typed */
-
-LispPTR Uraid_mess = NIL;
 
 /* Currentry Don't care Ether re-initial */
 /* Medley only */
@@ -73,7 +63,8 @@ LispPTR Uraid_mess = NIL;
 /*									*/
 /************************************************************************/
 
-#define URMAXCOMM 512
+LispPTR Uraid_mess = NIL;
+
 int error(const char *cp) {
   char *ptr;
   if (device_before_raid() < 0) {

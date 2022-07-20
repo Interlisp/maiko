@@ -67,14 +67,10 @@
 #include "gcarraydefs.h"
 #include "kprintdefs.h"
 #include "mkatomdefs.h"
+#include "uraidextdefs.h"
 
-#define URMAXFXNUM 100
 #define URSCAN_ALINK 0
 #define URSCAN_CLINK 1
-extern int URaid_scanlink;
-extern int URaid_currentFX;
-extern FX *URaid_FXarray[];
-extern int URaid_ArrMAXIndex;
 
 /************************************************************************/
 /*									*/

@@ -61,6 +61,7 @@
 #include "bitblt.h"
 
 #include "uraiddefs.h"
+#include "uraidextdefs.h"
 #include "dbgtooldefs.h"
 #include "gcarraydefs.h"
 #include "initdspdefs.h"
@@ -156,7 +157,7 @@ extern int Inited_Color;
 #endif /* COLOR */
 
 #ifdef DOS
-char *URaid_summary1 =
+static const char *URaid_summary1 =
     "\n-- Stack display commands\n\
 c\t\t\tChecks all user stack contents\n\
 f number\t\tDisplays stack frame for that frame number (decimal)\n\
@@ -164,7 +165,7 @@ k type\t\t\tChanges the type of stack link following. (a|c)\n\
 l [type]\t\tBack Trace for specified type stack. (k|m|r|g|p|u|<null>)\n\
 <CR>\t\t\tDisplay next frame.\n";
 
-char *URaid_summary2 =
+static const char *URaid_summary2 =
     "\n-- Memory display commands\n\
 a litatom\t\tDisplays the top-level value of the litatom\n\
 B Xaddress\t\tPrint the contents of the arrayblock at that address.\n\
@@ -179,7 +180,7 @@ x Xaddress [xnum]\tHex-Dump xnum (16-bit) words starting at Xaddress\n\
 @ litatom val\t\tSets TOPVAL of litatom to Decimal-val\n\
 < Xaddress Xval\t\tSets the (16-bit) word at the address to Xval\n";
 
-char *URaid_summary3 =
+static const char *URaid_summary3 =
     "\n-- Continue or exit commands\n\
 e\t\t\tExit to DOS\n\
 h\t\t\tDo a HARDRESET\n\
@@ -190,7 +191,7 @@ v filename\t\tSave the virtual memory on the filename(Not Bootable)\n\
 !\t\t\tPrints the error message passed from the emulator\n\
 ?\t\t\tDisplay this summary";
 #else
-char *URaid_summary =
+static const char *URaid_summary =
     "---URAID command summary---\n\
 \n-- Stack display commands\n\
 c\t\t\tChecks all user stack contents\n\
@@ -229,11 +230,6 @@ v filename\t\tSaves the virtual memory on the filename (Not Bootable)\n\
     return (T);                                       \
   }
 
-#define URMAXCOMM 512
-#define URMAXFXNUM 2000
-#define URSCAN_ALINK 0
-#define URSCAN_CLINK 1
-
 /*** URaid G vals ***/
 int URaid_scanlink = URSCAN_ALINK;
 int URaid_currentFX = URMAXFXNUM + 1;
@@ -265,9 +261,9 @@ extern int PrintMaxLevel; /* for print level */
 LispPTR parse_atomstring(char *string)
 {
   char *start, *packageptr, *nameptr;
-  int packagelen = 0;
-  int namelen = 0;
-  int cnt;
+  DLword packagelen = 0;
+  DLword namelen = 0;
+  DLword cnt;
   LispPTR aindex;
 
   for (cnt = 0, start = string; *string != '\0'; string++, cnt++) {
@@ -349,7 +345,8 @@ unsigned int uGetTN(unsigned int address) {
 /***********************************************************************/
 
 LispPTR uraid_commands() {
-  int num, address, val;
+  int num, val;
+  LispPTR address;
   char *endpointer;
   LispPTR index;
   DefCell *defcell68k;
@@ -386,7 +383,7 @@ LispPTR uraid_commands() {
         return (T);
       }
       errno = 0;
-      num = strtoul(URaid_arg1, &endpointer, 10);
+      num = (int)strtoul(URaid_arg1, &endpointer, 10);
       if (errno != 0 || *endpointer != '\0') { /* com read fails */
         printf("Illegal argument, not decimal number\n");
         return (T);
@@ -510,13 +507,13 @@ LispPTR uraid_commands() {
 
       break;
     case 'O': { /* print instance from Laddr. Not documented */
-      int objaddr;
+      LispPTR objaddr;
       if (URaid_argnum == 1) {
         printf("PRINT-INSTANCE: O HEX-LispAddress\n");
         return (T);
       }
       errno = 0;
-      objaddr = strtoul(URaid_arg1, &endpointer, 16);
+      objaddr = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
         return (T);
@@ -531,7 +528,7 @@ LispPTR uraid_commands() {
 
       /**HEXNUMP(URaid_arg1,"Not Address");**/
       errno = 0;
-      address = strtoul(URaid_arg1, &endpointer, 16);
+      address = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
         return (T);
@@ -618,7 +615,7 @@ LispPTR uraid_commands() {
         return (T);
       }
       errno = 0;
-      address = strtoul(URaid_arg1, &endpointer, 16);
+      address = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
         return (T);
@@ -706,7 +703,7 @@ LispPTR uraid_commands() {
       ***/
 
       errno = 0;
-      address = strtol(URaid_arg1, &endpointer, 16);
+      address = (LispPTR)strtol(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
         return (T);

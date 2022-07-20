@@ -212,7 +212,7 @@ $(OBJECTDIR)dbgtool.o: $(SRCDIR)dbgtool.c $(REQUIRED-INCS) \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h $(INCDIR)cell.h \
 	$(INCDIR)stack.h $(INCDIR)dbgtooldefs.h $(INCDIR)kprintdefs.h \
-	$(INCDIR)testtooldefs.h
+	$(INCDIR)testtooldefs.h $(INCDIR)uraidextdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)dbgtool.c -o $(OBJECTDIR)dbgtool.o
 
 $(OBJECTDIR)dlpi.o: $(SRCDIR)dlpi.c \
@@ -233,7 +233,7 @@ $(OBJECTDIR)testtool.o: $(SRCDIR)testtool.c $(REQUIRED-INCS) \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h $(INCDIR)cell.h \
 	$(INCDIR)debug.h $(INCDIR)dbprint.h $(INCDIR)tosfns.h $(INCDIR)testtooldefs.h \
 	$(INCDIR)stack.h $(INCDIR)dbgtooldefs.h $(INCDIR)gcarraydefs.h \
-	$(INCDIR)kprintdefs.h $(INCDIR)mkatomdefs.h
+	$(INCDIR)kprintdefs.h $(INCDIR)mkatomdefs.h $(INCDIR)uraidextdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)testtool.c -o $(OBJECTDIR)testtool.o
 
 $(OBJECTDIR)allocmds.o: $(SRCDIR)allocmds.c $(REQUIRED-INCS) \
@@ -382,7 +382,7 @@ $(OBJECTDIR)common.o: $(SRCDIR)common.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
 	$(INCDIR)miscstat.h $(INCDIR)emlglob.h $(INCDIR)stack.h $(INCDIR)dbprint.h \
-	$(INCDIR)commondefs.h $(INCDIR)kprintdefs.h $(INCDIR)uraiddefs.h
+	$(INCDIR)commondefs.h $(INCDIR)kprintdefs.h $(INCDIR)uraiddefs.h $(INCDIR)uraidextdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)common.c -o $(OBJECTDIR)common.o
 
 $(OBJECTDIR)conspage.o: $(SRCDIR)conspage.c $(REQUIRED-INCS) \
@@ -807,7 +807,7 @@ $(OBJECTDIR)subr.o: $(SRCDIR)subr.c $(REQUIRED-INCS) \
 	$(INCDIR)gcrdefs.h $(INCDIR)inetdefs.h $(INCDIR)kbdsubrsdefs.h \
 	$(INCDIR)mkcelldefs.h $(INCDIR)osmsgdefs.h $(INCDIR)rpcdefs.h \
 	$(INCDIR)storagedefs.h $(INCDIR)timerdefs.h $(INCDIR)ufsdefs.h \
-	$(INCDIR)unixcommdefs.h $(INCDIR)uutilsdefs.h $(INCDIR)vmemsavedefs.h
+	$(INCDIR)unixcommdefs.h $(INCDIR)uraidextdefs.h $(INCDIR)uutilsdefs.h $(INCDIR)vmemsavedefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)subr.c -o $(OBJECTDIR)subr.o
 
 $(OBJECTDIR)miscn.o: $(SRCDIR)miscn.c $(REQUIRED-INCS) \
@@ -880,7 +880,7 @@ $(OBJECTDIR)uraid.o: $(SRCDIR)uraid.c $(REQUIRED-INCS) \
 	$(INCDIR)gcarraydefs.h $(INCDIR)initdspdefs.h $(INCDIR)initkbddefs.h \
 	$(INCDIR)kprintdefs.h $(INCDIR)llstkdefs.h $(INCDIR)mkatomdefs.h \
 	$(INCDIR)returndefs.h $(INCDIR)testtooldefs.h $(INCDIR)timerdefs.h \
-	$(INCDIR)vmemsavedefs.h $(INCDIR)devif.h
+	$(INCDIR)uraidextdefs.h $(INCDIR)vmemsavedefs.h $(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)uraid.c -o $(OBJECTDIR)uraid.o
 
 $(OBJECTDIR)rpc.o: $(SRCDIR)rpc.c $(REQUIRED-INCS) \
