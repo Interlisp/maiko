@@ -32,28 +32,65 @@ N_OP_llsh1
         entry		LLSH1		OPCODE[0340]
         return(a << 1)
 ************************************************************/
-LispPTR N_OP_llsh1(int a) { N_ARITH_BODY_1_UNSIGNED(a, 1, <<); }
+LispPTR N_OP_llsh1(int a) {
+  int arg1;
+
+  N_GETNUMBER(a, arg1, du_ufn);
+  arg1 <<= 1;
+  N_ARITH_SWITCH(arg1);
+
+ du_ufn:
+  ERROR_EXIT(a);
+}
 
 /************************************************************
 N_OP_llsh8
         entry		LLSH8		OPCODE[0341]
         return(a << 8)
 ************************************************************/
-LispPTR N_OP_llsh8(int a) { N_ARITH_BODY_1_UNSIGNED(a, 8, <<); }
+LispPTR N_OP_llsh8(int a) {
+  int arg1;
+
+  N_GETNUMBER(a, arg1, du_ufn);
+  arg1 <<= 8;
+  N_ARITH_SWITCH(arg1);
+
+ du_ufn:
+  ERROR_EXIT(a);
+}
 
 /************************************************************
 N_OP_lrsh1
         entry		LRSH1		OPCODE[0342]
         return(a >> 1)
 ************************************************************/
-LispPTR N_OP_lrsh1(int a) { N_ARITH_BODY_1_UNSIGNED(a, 1, >>); }
+LispPTR N_OP_lrsh1(int a) {
+  int arg1;
+
+  N_GETNUMBER(a, arg1, du_ufn);
+  arg1 = (unsigned)arg1 >> 1;
+  N_ARITH_SWITCH(arg1);
+
+ du_ufn:
+  ERROR_EXIT(a);
+
+}
 
 /************************************************************
 N_OP_lrsh8
         entry		LRSH8		OPCODE[0343]
         return(a >> 8)
 ************************************************************/
-LispPTR N_OP_lrsh8(int a) { N_ARITH_BODY_1_UNSIGNED(a, 8, >>); }
+LispPTR N_OP_lrsh8(int a) {
+  int arg1;
+
+  N_GETNUMBER(a, arg1, du_ufn);
+  arg1 = (unsigned)arg1 >> 8;
+  N_ARITH_SWITCH(arg1);
+
+ du_ufn:
+  ERROR_EXIT(a);
+}
 
 /************************************************************
 N_OP_lsh

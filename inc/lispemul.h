@@ -444,20 +444,21 @@ DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
 /*	so that it picks up where it left off after the interrupt.	*/
 /*									*/
 /*	Call Interface where neg number indicates an error return	*/
+/*	but the function returns a LispPTR and casts back to int	*/
 /*									*/
 /************************************************************************/
 
 #define ERROR_EXIT(tos) \
   do {                  \
-    TopOfStack = tos;   \
+    TopOfStack = (LispPTR)tos; \
     Error_Exit = 1;     \
-    return (-1);        \
+    return ((LispPTR)-1); \
   } while (0)
 #define TIMER_EXIT(tos) \
   do {                  \
-    TopOfStack = tos;   \
+    TopOfStack = (LispPTR)tos; \
     Error_Exit = 1;     \
-    return (-2);        \
+    return ((LispPTR)-2); \
   } while (0)
 
 #define WARN(message, operation) \

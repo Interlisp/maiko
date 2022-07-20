@@ -43,7 +43,7 @@
 
 */
 /**********************************************************************/
-int N_OP_times2(int tosm1, int tos) {
+LispPTR N_OP_times2(int tosm1, int tos) {
   int arg1, arg2;
   int result;
 
@@ -72,7 +72,7 @@ doufn:
 
 } /* end N_OP_times2 */
 
-int N_OP_itimes2(int tosm1, int tos) {
+LispPTR N_OP_itimes2(int tosm1, int tos) {
   int arg1, arg2;
   int result;
 
@@ -107,7 +107,7 @@ doufn:
 
 */
 /**********************************************************************/
-int N_OP_quot(int tosm1, int tos) {
+LispPTR N_OP_quot(int tosm1, int tos) {
   int arg1, arg2;
   int result;
 
@@ -125,7 +125,7 @@ doufn:
 
 } /* end N_OP_quot */
 
-int N_OP_iquot(int tosm1, int tos) {
+LispPTR N_OP_iquot(int tosm1, int tos) {
   register int arg1, arg2;
   register int result;
 
@@ -149,7 +149,7 @@ doufn:
 */
 /**********************************************************************/
 
-int N_OP_iremainder(int tosm1, int tos) {
+LispPTR N_OP_iremainder(int tosm1, int tos) {
   register int arg1, arg2;
   register int result;
 
