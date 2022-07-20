@@ -62,6 +62,7 @@
 #include "ufsdefs.h"
 #include "unixcommdefs.h"
 #include "uutilsdefs.h"
+#include "uraidextdefs.h"
 #include "vmemsavedefs.h"
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
 #include "foreigndefs.h"
@@ -78,8 +79,6 @@ extern LispPTR *PENDINGINTERRUPT68k;
 
 */
 /***********************************************************/
-
-extern LispPTR Uraid_mess;
 
 LispPTR subr_lisperror(); /* 0377 */
 
