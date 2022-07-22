@@ -65,13 +65,12 @@ LispPTR SX_hash(LispPTR object) {
 static unsigned short sxhash(LispPTR obj) {
   /* unsigned short hashOffset; Not Used */
   unsigned int cell;
-  unsigned typen;
   OneDArray *str;
   switch (SEGMASK & obj) {
     case S_POSITIVE:
     case S_NEGATIVE: return (obj & 0xFFFF);
     default:
-      switch (typen = GetTypeNumber(obj)) {
+      switch (GetTypeNumber(obj)) {
         case TYPE_FIXP: return ((FIXP_VALUE(obj)) & 0xFFFF);
         case TYPE_FLOATP:
           cell = (unsigned int)FIXP_VALUE(obj);
