@@ -54,7 +54,7 @@ void set_sysout(int version, char *sysout_file_name) {
    */
 
   /* open SysoutFile */
-  sysout = open(sysout_file_name, O_RDWR, NULL);
+  sysout = open(sysout_file_name, O_RDWR);
   if (sysout == -1) {
     sprintf(errmsg, "sysout_loader: can't open sysout file: %s", sysout_file_name);
     perror(errmsg);
