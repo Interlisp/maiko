@@ -379,6 +379,7 @@ SET(MAIKO_HDRS
     inc/unixfork.h
     inc/unwinddefs.h
     inc/uraiddefs.h
+    inc/uraidextdefs.h
     inc/usrsubrdefs.h
     inc/uutilsdefs.h
     inc/vars3defs.h
