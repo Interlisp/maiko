@@ -829,7 +829,7 @@ void walk_stack(StackWord *start68k) {
                 for DEBUGING using FNSTKCHECK
 */
 /**************************************************************/
-void quick_stack_check(void) {
+int quick_stack_check(void) {
   StackWord *start68k;
   StackWord *scanptr68k;
   StackWord *endstack68k;
@@ -849,7 +849,7 @@ void quick_stack_check(void) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
            printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
                   LADDR_from_68k(CurrentStackPTR)));
-      return;
+      return(1);
     }
     setflg = T;
     save_nextblock = CURRENTFX->nextblock;
@@ -871,7 +871,7 @@ void quick_stack_check(void) {
         freesize = FSB_size(scanptr68k);
         if (freesize == 0) {
           warn("FSB freesize = 0!");
-          return;
+          return(1);
         }
 #ifdef FSBCHECK
         if (freesize > STACKAREA_SIZE + MINEXTRASTACKWORDS) {
@@ -888,7 +888,7 @@ void quick_stack_check(void) {
         freesize = FSB_size(scanptr68k);
         if (freesize == 0) {
           warn("Guard block freesize = 0!");
-          return;
+          return(1);
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
         break;
@@ -902,7 +902,7 @@ void quick_stack_check(void) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
             warn("StackCheck:!=STK_NOTFLG");
             printf("content:0x%x\n", GETWORD(scanptr68k));
-            return;
+            return(1);
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */;
@@ -941,7 +941,7 @@ void quick_stack_check(void) {
     GETWORD(CurrentStackPTR + 2) = savestack1;
     GETWORD(CurrentStackPTR + 3) = savestack2;
   }
-  return;
+  return(0);
 
 } /* quick_stack_check end */
 
