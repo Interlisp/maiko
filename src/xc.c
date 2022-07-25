@@ -50,6 +50,7 @@
 #include "arith.h"
 #include "stream.h"
 
+#include "testtooldefs.h"
 #include "tos1defs.h"
 #include "tosret.h"
 #include "tosfns.h"
