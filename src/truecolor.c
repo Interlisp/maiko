@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <sys/mman.h>
 #include <pixrect/pixrect_hs.h>
+#include <unistd.h>
 
 #include "lispemul.h"
 #include "lsptypes.h"
@@ -309,7 +310,6 @@ void truecolor_before_exit() {
 
 } /* truecolor_before_exit */
 
-char *valloc();
 char *HideOverlayRegion;
 #ifdef VIDEO
 char *HideVideoEnableRegion;
@@ -323,8 +323,8 @@ void truecolor_before_raid() {
   if (Inited_TrueColor) {
     size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
 
-    if ((HideOverlayRegion = valloc(size)) == 0) {
-      printf("can't valloc hide space\n");
+    if (posix_memalign((void *)&HideOverlayRegion, getpagesize(), size) != 0) {
+      printf("can't allocate hide space\n");
       return (-1);
     } /* end if( HideOverlayRegion ) */
 
@@ -343,8 +343,8 @@ void truecolor_before_raid() {
 #ifdef VIDEO
   if (Inited_Video) {
     if ((video_onoff = Video_OnOff_Flg)) Video_OnOff(FALSE);
-    if ((HideVideoEnableRegion = valloc(size)) == 0) {
-      printf("can't valloc hide space\n");
+    if (posix_memalign((void *)&HideVideoEnableRegion, getpagesize(), size) != 0) {
+      printf("can't allocate hide space\n");
       return (-1);
     } /* end if( HideVideoEnableRegion ) */
 

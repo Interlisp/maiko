@@ -172,8 +172,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 
   /* allocate Virtual Memory Space */
 
-  lispworld_scratch = valloc(sys_size * MBYTE);
-  if (lispworld_scratch == NULL) {
+  if (posix_memalign((void *)&lispworld_scratch, getpagesize(), sys_size * MBYTE) != 0) {
     fprintf(stderr, "sysout_loader: can't allocate Lisp %dMBytes VM \n", sys_size);
     exit(-1);
   }
