@@ -11,18 +11,13 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <stdint.h>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "lispemul.h"
-#include "dbprint.h"
-
-#include "xdefs.h"
-#include "devif.h"
-
-#include "xmkicondefs.h"
+#include <X11/X.h>        // for MSBFirst, Pixmap, XYBitmap
+#include <X11/Xlib.h>     // for XImage, XCreatePixmap, XPutImage, XReadBitm...
+#include <X11/Xutil.h>    // for BitmapFileInvalid, BitmapNoMemory, BitmapOp...
+#include <stdint.h>       // for uint8_t
+#include <stdio.h>        // for fprintf, printf, stderr
+#include "devif.h"        // for (anonymous), DspInterface
+#include "xmkicondefs.h"  // for make_Xicon
 
 XImage IconImage;
 

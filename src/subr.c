@@ -28,45 +28,42 @@
 */
 /***********************************************************/
 
-#include <stdio.h>
-#include <time.h>
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "lspglob.h"
-#include "cell.h"
-#include "stack.h"
-#include "arith.h"
-#include "subrs.h"
-#include "dbprint.h"
-
-#include "subrdefs.h"
-#include "bbtsubdefs.h"
-#include "chardevdefs.h"
-#include "commondefs.h"
-#include "dirdefs.h"
-#include "dskdefs.h"
-#include "dspsubrsdefs.h"
-#include "etherdefs.h"
-#include "gcarraydefs.h"
-#include "gcrdefs.h"
-#include "inetdefs.h"
-#include "kbdsubrsdefs.h"
-#include "mkcelldefs.h"
-#include "osmsgdefs.h"
-#include "rpcdefs.h"
-#include "storagedefs.h"
-#include "timerdefs.h"
-#include "ufsdefs.h"
-#include "unixcommdefs.h"
-#include "uutilsdefs.h"
-#include "uraidextdefs.h"
-#include "vmemsavedefs.h"
+#include <stdio.h>         // for printf, sprintf, NULL
+#include <time.h>          // for nanosleep, timespec
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "arith.h"         // for N_GETNUMBER, ARITH_SWITCH
+#include "bbtsubdefs.h"    // for bitblt_bitmap, bitbltsub, bitshade_bitmap
+#include "cell.h"          // for PNCell, GetPnameCell
+#include "chardevdefs.h"   // for CHAR_bin, CHAR_bins, CHAR_bout, CHAR_bouts
+#include "commondefs.h"    // for error
+#include "dbprint.h"       // for DBPRINT
+#include "dirdefs.h"       // for COM_finish_finfo, COM_gen_files, COM_next_...
+#include "dskdefs.h"       // for COM_changedir, COM_closefile, COM_getfileinfo
+#include "dspsubrsdefs.h"  // for DSP_Cursor, DSP_ScreenHight, DSP_ScreenWidth
+#include "etherdefs.h"     // for check_ether, check_sum, ether_ctrlr, ether...
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
 #include "foreigndefs.h"
 #endif
+#include "gcarraydefs.h"   // for with_symbol
+#include "gcrdefs.h"       // for disablegc1, doreclaim
+#include "inetdefs.h"      // for subr_TCP_ops
+#include "kbdsubrsdefs.h"  // for KB_beep, KB_enable, KB_setmp
+#include "lispemul.h"      // for state, LispPTR, NIL_PTR, PopStackTo, TopOf...
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"
+#include "lsptypes.h"
+#include "osmsgdefs.h"     // for mess_read, mess_readp
+#include "rpcdefs.h"       // for rpc
+#include "storagedefs.h"   // for newpage
+#include "subrdefs.h"      // for OP_subrcall, atom_to_str
+#include "subrs.h"         // for sb_BITBLTSUB, sb_BITBLT_BITMAP, sb_BLTCHAR
+#include "timerdefs.h"     // for subr_copytimestats, subr_gettime, subr_set...
+#include "ufsdefs.h"       // for UFS_deletefile, UFS_directorynamep, UFS_ge...
+#include "unixcommdefs.h"  // for Unix_handlecomm
+#include "uraidextdefs.h"  // for Uraid_mess
+#include "uutilsdefs.h"    // for suspend_lisp, check_unix_password, unix_fu...
+#include "version.h"       // for UNSIGNED
+#include "vmemsavedefs.h"  // for lisp_finish, vmem_save0
 
 extern LispPTR *PENDINGINTERRUPT68k;
 

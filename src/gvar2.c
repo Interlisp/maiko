@@ -9,18 +9,16 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "gcdata.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "cell.h"        // for xpointer
+#include "commondefs.h"  // for error
+#include "dbprint.h"     // for DEBUGGER
 #include "emlglob.h"
-#include "cell.h"
-#include "dbprint.h"
-#include "commondefs.h"
-#include "gvar2defs.h"
-#include "gchtfinddefs.h"
+#include "gcdata.h"      // for FRPLPTR
+#include "gvar2defs.h"   // for N_OP_gvar_, N_OP_rplptr
+#include "lispemul.h"    // for LispPTR, DLword, NEWATOM_VALUE_OFFSET, NEWAT...
+#include "lspglob.h"     // for AtomSpace
+#include "lsptypes.h"
 
 /************************************************************************/
 /*									*/

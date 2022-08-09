@@ -51,6 +51,7 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 
 #include "iopage.h"
 #include "ifpage.h"
+#include "miscstat.h"
 
 #include "bb.h"
 #include "bitblt.h"

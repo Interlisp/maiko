@@ -63,24 +63,19 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "stack.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "gcdata.h"
-#include "dbprint.h"
-
-#include "gcrcelldefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "gccodedefs.h"
-#include "gcfinaldefs.h"
-#include "gchtfinddefs.h"
+#include <stdio.h>        // for printf
+#include "address.h"      // for POINTER_PAGE
+#include "adr68k.h"       // for Addr68k_from_LADDR, Addr68k_from_LPAGE
+#include "car-cdrdefs.h"  // for car, cdr
+#include "cell.h"         // for conspage, freecons, FREECONS, CDR_INDIRECT
+#include "commondefs.h"   // for error
+#include "gccodedefs.h"   // for reclaimcodeblock
+#include "gcdata.h"       // for DELREF, REC_GCLOOKUPV, ADDREF, REC_GCLOOKUP
+#include "gcfinaldefs.h"  // for reclaimarrayblock, reclaimstackp, releasing...
+#include "gcrcelldefs.h"  // for freelistcell, gcreccell
+#include "lispemul.h"     // for LispPTR, ConsCell, NIL, POINTERMASK, DLword
+#include "lspglob.h"      // for ListpDTD
+#include "lsptypes.h"     // for dtd, GetDTD, GetTypeNumber, TYPE_ARRAYBLOCK
 
 #ifdef NEWCDRCODING
 #undef CONSPAGE_LAST

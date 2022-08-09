@@ -31,19 +31,15 @@
 /**********************************************************************/
 
 #ifndef BYTESWAP
-#include <string.h>
+#include <string.h>      // for memcmp
 #endif
-#include <stdint.h>
-#include "lispemul.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "cell.h"
-#include "dbprint.h"
-
-#include "mkatomdefs.h"
-#include "commondefs.h"
-#include "mkcelldefs.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "cell.h"        // for PNCell, GetPnameCell
+#include "dbprint.h"     // for DBPRINT
+#include "lispemul.h"    // for DLword, LispPTR, T, NIL, POINTERMASK
+#include "lispmap.h"     // for S_POSITIVE
+#include "lsptypes.h"    // for GETBYTE, GETWORD
+#include "mkatomdefs.h"  // for compare_chars, compare_lisp_chars, compute_hash
 
 #define ATOMoffset 2         /* NIL NOBIND  */
 #define MAX_ATOMINDEX 0xffff /* max number of atoms */
@@ -132,7 +128,7 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
 } /* end compute_lisp_hash */
 
 #ifdef BYTESWAP
-int bytecmp(const char *char1, const char *char2, int len)
+static int bytecmp(const char *char1, const char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {

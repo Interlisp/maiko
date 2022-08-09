@@ -154,7 +154,7 @@
 #define SNEG_SIZE	0x10000
 
 /* for characters */
-#define S_CHAR		0x70000
+#define S_CHARACTER	0x70000
 
 /* for HTMAIN */
 #define HTMAIN_HI	     22
@@ -307,7 +307,7 @@
 #define SNEG_SIZE	0x10000
 
 /* for characters */
-#define S_CHAR		0x70000
+#define S_CHARACTER	0x70000
 
 #ifdef BIGVM
 /* for HTMAIN */

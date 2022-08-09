@@ -14,21 +14,18 @@
  *  @file conspage.c
  */
 
-#include <stddef.h>
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "cell.h"
-#include "lispmap.h"
+#include <stddef.h>        // for NULL
+#include "address.h"       // for POINTER_PAGE
+#include "adr68k.h"        // for Addr68k_from_LPAGE, LPAGE_from_68k, LADDR_...
+#include "allocmdsdefs.h"  // for alloc_mdspage
+#include "car-cdrdefs.h"   // for find_close_prior_cell
+#include "cell.h"          // for conspage, freecons, FREECONS, CDR_NIL, CON...
+#include "commondefs.h"    // for error
+#include "conspagedefs.h"  // for N_OP_cons, cons, next_conspage
+#include "gcdata.h"        // for GCLOOKUP, ADDREF, DELREF
+#include "lispemul.h"      // for ConsCell, DLword, LispPTR, NIL_PTR, DLWORD...
 #include "lspglob.h"
-#include "gcdata.h"
-
-#include "conspagedefs.h"
-#include "allocmdsdefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "gchtfinddefs.h"
+#include "lsptypes.h"      // for dtd, Listp, TYPE_LISTP
 
 /**
  * Initializes a page of CONS cells, sets up the free count and

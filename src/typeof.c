@@ -20,13 +20,10 @@
 
 */
 
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "cell.h"
-#include "lispmap.h"
+#include "lispemul.h"    // for LispPTR, ATOM_T, NIL_PTR
 #include "lspglob.h"
-
-#include "typeofdefs.h"
+#include "lsptypes.h"    // for dtd, GetDTD, GetTypeNumber
+#include "typeofdefs.h"  // for N_OP_instancep
 
 /************************************************************************/
 /*									*/

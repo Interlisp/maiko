@@ -10,41 +10,23 @@
 
 #include "version.h"
 
-#include <assert.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <sys/types.h>
-#include <sys/file.h>
+#include <X11/X.h>        // for NoEventMask, MSBFirst, StructureNotifyMask
+#include <X11/Xlib.h>     // for XSelectInput, XImage, XFlush, DefaultScreen
+#include <assert.h>       // for assert
+#include <signal.h>       // for sig_atomic_t
+#include <stdbool.h>      // for false, bool, true
+#include <stdio.h>        // for NULL
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "dbprint.h"      // for TPRINT
+#include "devif.h"        // for (anonymous), MRegion, DspInterface, OUTER_S...
+#include "dspifdefs.h"    // for GenericReturnT
+#include "lispemul.h"     // for BITSPER_DLWORD, DLword, LispPTR
+#include "xbbtdefs.h"     // for clipping_Xbitblt
+#include "xdefs.h"        // for XLOCK, XUNLOCK, DEF_BDRWIDE, DEF_WIN_HEIGHT
+#include "xinitdefs.h"    // for Open_Display, X_init, Xevent_after_raid
+#include "xlspwindefs.h"  // for Create_LispWindow
+#include "xwinmandefs.h"  // for bound
 
-#include "lispemul.h"
-#include "dbprint.h"
-
-#include "xdefs.h"
-#include "devif.h"
-
-#include "adr68k.h"
-#include "xinitdefs.h"
-#include "dspifdefs.h"
-#include "timerdefs.h"
-#include "xbbtdefs.h"
-#include "xlspwindefs.h"
-#include "xwinmandefs.h"
-
-
-#include <fcntl.h>
-#include <sys/select.h>
-
-#ifdef OS5
-#include <sys/ioctl.h>
-#include <stropts.h>
-#endif /* OS5 */
-
-#define PERCENT_OF_SCREEN 95
 /* DISPLAY_MAX same magic number is in ldsout.c */
 #define DISPLAY_MAX (65536 * 16 * 2)
 

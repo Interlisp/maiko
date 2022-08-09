@@ -11,19 +11,16 @@
 
 #include "version.h"
 
-#include <stdio.h>
-
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "display.h"
-#include "arith.h"
-
-#include "dspsubrsdefs.h"
-#include "commondefs.h"
+#include <stdio.h>         // for putc
+#include "arith.h"         // for GetSmalldata
+#include "display.h"       // for BCPLDISPLAY, CURSORHEIGHT
+#include "dspsubrsdefs.h"  // for DSP_Cursor, DSP_ScreenHight, DSP_ScreenWidth
+#include "lispemul.h"      // for LispPTR, DLword, ATOM_T, NIL
+#include "lispmap.h"       // for S_POSITIVE
+#include "lsptypes.h"      // for GETWORD
 #ifdef XWINDOW
-#include "xcursordefs.h"
-#include "xlspwindefs.h"
+#include "xcursordefs.h"   // for Set_XCursor
+#include "xlspwindefs.h"   // for lisp_Xvideocolor, set_Xmouseposition
 #endif
 
 extern int DebugDSP;

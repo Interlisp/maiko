@@ -9,23 +9,36 @@
 
 #include "version.h"
 
-#include <errno.h>
-#include <fcntl.h>
-#include <setjmp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include <errno.h>          // for errno, EINTR, ENOENT, ENFILE, EPERM
+#include <fcntl.h>          // for O_RDWR, O_CREAT, open, O_RDONLY, O_TRUNC
+#include <stdio.h>          // for NULL, sprintf, size_t, rename, SEEK_SET
+#include <stdlib.h>         // for strtoul
+#include <string.h>         // for strcpy, strcmp, strlen, strncpy, strchr
+#include <sys/stat.h>       // for stat, fstat, mkdir, S_ISREG, st_atime, chmod
+#include <sys/types.h>      // for ino_t, time_t, off_t
+#include <unistd.h>         // for unlink, close, link, lseek, access, chdir
+
+#include "adr68k.h"         // for Addr68k_from_LADDR
+#include "arith.h"          // for GetSmallp
+#ifdef BYTESWAP
+#include "byteswapdefs.h"   // for word_swap_page
+#endif
+#include "car-cdrdefs.h"    // for cdr, car
+#include "dskdefs.h"        // for COM_changedir, COM_closefile, COM_getfile...
+#include "lispemul.h"       // for NIL, LispPTR, ATOM_T
+#include "locfile.h"        // for ConcDirAndName, LASTVERSIONARRAY, ConcNam...
+#include "lspglob.h"
+#include "lsptypes.h"
+#include "timeout.h"        // for TIMEOUT, ERRSETJMP, S_TOUT, TIMEOUT0
+#include "ufsdefs.h"        // for unixpathname, lisppathname
 
 #ifndef DOS
-#include <dirent.h>
-#include <pwd.h>
-#include <sys/param.h>
-#include <sys/statvfs.h>
-#include <sys/time.h>
-#else /* DOS */
+#include <dirent.h>         // for MAXNAMLEN, readdir, closedir, opendir
+#include <pwd.h>            // for getpwuid, passwd
+#include <sys/param.h>      // for MAXPATHLEN
+#include <sys/statvfs.h>    // for statvfs
+#include <sys/time.h>       // for timeval, utimes
+#else
 #include <direct.h>
 #include <dos.h>
 #include <time.h>
@@ -33,26 +46,7 @@
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEM _MAX_PATH
 #define alarm(x) 0
-#endif /* DOS */
-
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lspglob.h"
-#include "arith.h"
-#include "stream.h"
-#include "timeout.h"
-#include "locfile.h"
-#include "osmsg.h"
-#include "dbprint.h"
-
-#include "dskdefs.h"
-#include "byteswapdefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "ufsdefs.h"
-
+#endif
 
 extern int *Lisp_errno;
 extern int Dummy_errno;

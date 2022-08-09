@@ -19,6 +19,7 @@
 /**********************************************************************/
 #include "lispemul.h" /* for LispPTR, DLword */
 #include "version.h" /* for USHORT */
+#include "gchtfinddefs.h"
 
 #define ADDREF  0       /* for gclookup routine. */
 #define DELREF  1       /* for gclookup routine. */

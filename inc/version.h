@@ -11,8 +11,8 @@
 /*									*/
 /************************************************************************/
 
-#include <inttypes.h>
-#include "maiko/platform.h"
+#include <stdint.h>
+#include "maiko/platform.h" // IWYU pragma: export
 
 /************************************************************************/
 /*									*/

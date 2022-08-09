@@ -13,24 +13,21 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <sys/time.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#include "lispemul.h"
-
-#include "xdefs.h"
-#include "xbitmaps.h"
-
-#include "keyboard.h"
-#include "devif.h"
-#include "dbprint.h"
-
-#include "xlspwindefs.h"
-#include "commondefs.h"
-#include "xcursordefs.h"
-#include "xmkicondefs.h"
+#include <X11/X.h>        // for Cursor, CWOverrideRedirect, GCBackground
+#include <X11/Xlib.h>     // for XCreateSimpleWindow, XMapWindow, XChangeWin...
+#include <X11/Xutil.h>    // for XSizeHints, XStringListToTextProperty, XWMH...
+#include <stdio.h>        // for NULL
+#include "commondefs.h"   // for error
+#include "dbprint.h"      // for TPRINT
+#include "devif.h"        // for (anonymous), MRegion, OUTER_SB_WIDTH, Defin...
+#include "keyboard.h"     // for RING, KBEVENT, KB_ALLUP, KEYEVENTSIZE, MAXK...
+#include "lispemul.h"     // for DLword, ATOM_T, LispPTR, NIL, T
+#include "version.h"
+#include "xbitmaps.h"     // for LISP_CURSOR, default_cursor, horizscroll_cu...
+#include "xcursordefs.h"  // for set_Xcursor, init_Xcursor
+#include "xdefs.h"        // for XLOCK, XUNLOCK
+#include "xlspwindefs.h"  // for Create_LispWindow, DoRing, lisp_Xvideocolor
+#include "xmkicondefs.h"  // for make_Xicon
 
 extern DLword *EmKbdAd068K, *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K,
     *EmRealUtilin68K;

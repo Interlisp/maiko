@@ -8,21 +8,13 @@
 /************************************************************************/
 
 #include "version.h"
-
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "array6defs.h"  // for N_OP_aset2
 #include "emlglob.h"
-#include "gcdata.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
-
-#include "array6defs.h"
-#include "gchtfinddefs.h"
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
+#include "lspglob.h"
+#include "lsptypes.h"    // for LispArray, GetTypeNumber, TYPE_TWOD_ARRAY
+#include "my.h"          // for N_GetPos, aset_switch
 
 /***	N_OP_aset2   -- op 357   (new-value array index0 index1)   ***/
 LispPTR N_OP_aset2(register LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {

@@ -9,18 +9,14 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "adr68k.h"
+#include "adr68k.h"      // for LADDR_from_68k
+#include "arith.h"       // for N_ARITH_SWITCH
+#include "lispemul.h"    // for state, ERROR_EXIT, DLword, LispPTR
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "medleyfp.h"
-#include "my.h"
-
-#include "ubf1defs.h"
+#include "lsptypes.h"    // for TYPE_FLOATP
+#include "mkcelldefs.h"  // for createcell68k
+#include "my.h"          // for N_MakeFloat
+#include "ubf1defs.h"    // for N_OP_ubfloat1
 
 /************************************************************
         OP_ubfloat1  -- op 355  ==  UBFLOAT1

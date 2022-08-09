@@ -337,7 +337,7 @@ LispPTR call_c_fn(LispPTR *args) {
                           intarg[18], intarg[19], intarg[20], intarg[21], intarg[22], intarg[23],
                           intarg[24], intarg[25], intarg[26], intarg[27], intarg[28], intarg[29],
                           intarg[30], intarg[31]);
-      return (S_CHAR | tmp);
+      return (S_CHARACTER | tmp);
     }; break;
     case TYPE_FLOATP:
       fresult = ((PFF)fnaddr)(intarg[0], intarg[1], intarg[2], intarg[3], intarg[4], intarg[5],
@@ -598,7 +598,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
       return (NIL);
     }; break;
     case TYPE_CHARACTERP:
-      return (S_CHAR |
+      return (S_CHARACTER |
               (((PFC)fnaddr)(intarg[0], intarg[1], intarg[2], intarg[3], intarg[4], intarg[5],
                              intarg[6], intarg[7], intarg[8], intarg[9], intarg[10], intarg[11],
                              intarg[12], intarg[13], intarg[14], intarg[15], intarg[16], intarg[17],

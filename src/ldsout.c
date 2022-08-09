@@ -11,25 +11,25 @@
 
 #include "version.h"
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include "adr68k.h"
-#include "lispemul.h"
+#include <fcntl.h>        // for open, O_RDONLY
+#include <stdio.h>        // for perror, fprintf, printf, stderr, sprintf
+#include <stdlib.h>       // for exit, free, malloc, posix_memalign
+#include <string.h>       // for memset
+#include <sys/stat.h>     // for stat, fstat
+#include <unistd.h>       // for lseek, read, close, getpagesize
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#ifdef BYTESWAP
+#include "byteswapdefs.h" // for word_swap_page
+#endif
+#include "dbprint.h"      // for DBPRINT, TPRINT
+#include "devif.h"        // for DspInterface
+#include "ifpage.h"       // for IFPAGE, IFPAGE_KEYVAL
+#include "initdspdefs.h"  // for flush_display_buffer, init_display2
+#include "ldsoutdefs.h"   // for sysout_loader
+#include "lispemul.h"     // for BYTESPER_PAGE, GETFPTOVP, DLword, GETPAGEOK
+#include "lispmap.h"      // for DISPLAY_OFFSET
+#include "lspglob.h"      // for Lisp_world, native_load_address
 #include "lsptypes.h"
-#include "lispmap.h"
-#include "lspglob.h"
-#include "ifpage.h"
-#include "dbprint.h"
-
-#include "ldsoutdefs.h"
-#include "byteswapdefs.h"
-#include "initdspdefs.h"
-
 
 #define IFPAGE_ADDRESS 512
 #define DEFAULT_MAX_SYSOUTSIZE 64 /* in Mbyte */

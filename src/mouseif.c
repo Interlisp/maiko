@@ -13,15 +13,14 @@
 
 #include "version.h"
 
-#include "lispemul.h"
-#include "dbprint.h"
-#include "devif.h"
+#include "devif.h"  // for MouseInterface, MouseInterfaceRec
 
 MouseInterfaceRec curmouse;
 MouseInterface currentmouse = &curmouse;
 
 #ifdef DOS
 #include <dos.h>
+#include "lispemul.h"
 
 int nomouseflag = FALSE;
 extern DLword *Lisp_world;

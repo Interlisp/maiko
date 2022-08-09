@@ -9,17 +9,12 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
+#include "arith.h"      // for N_GETNUMBER, N_ARITH_SWITCH
 #include "emlglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
+#include "lispemul.h"   // for state, ERROR_EXIT, LispPTR
+#include "lspglob.h"
 #include "lsptypes.h"
-#include "arith.h"
-
-#include "shiftdefs.h"
-#include "mkcelldefs.h"
+#include "shiftdefs.h"  // for N_OP_llsh1, N_OP_llsh8, N_OP_lrsh1, N_OP_lrsh8
 
 /*
  * XXX: it feels as though something is not clean here, looks like the

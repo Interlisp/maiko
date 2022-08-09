@@ -16,12 +16,16 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-#include "adr68k.h" /* for Addr68k_from_LADDR */
-#include "lispemul.h" /* for LispPTR, DLword */
-#include "lispmap.h" /* for S_NEGATIVE, S_POSITIVE */
-#include "lsptypes.h" /* for GETWORD */
+#include "version.h"     // for BIGVM
+#include "adr68k.h"      // for Addr68k_from_LADDR, LADDR_from_68k
+#include "arith.h"       // for N_ARITH_SWITCH, N_GETNUMBER
+#include "gcdata.h"	 // for ADDREF, DELREF
+#include "lispemul.h"    // for ERROR_EXIT, LispPTR, DLword, SEGMASK, state
+#include "lispmap.h"     // for S_POSITIVE, S_CHARACTER, S_NEGATIVE
+#include "lspglob.h"
+#include "lsptypes.h"    // for GETBYTE, GETWORD, GetTypeNumber, TYPE_FLOATP
+#include "mkcelldefs.h"  // for createcell68k
 
-#define S_CHARACTER 0x70000
 #ifdef BIGVM
 #define IsNumber(address)     ((GETWORD(MDStypetbl +(((address) & 0x0fffff00)>>9))) & 0x1000)
 #else

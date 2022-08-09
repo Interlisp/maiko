@@ -8,8 +8,11 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "version.h"  /* for BIGVM, UNSIGNED */
+#include "adr68k.h"   /* for LADDR_from_68k */
+#include "address.h"  /* for LOLOC */
+#include "commondefs.h" /* for error */
 #include "lispemul.h" /* for LispPTR, DLword, FRAMESIZE, DLWORDSPER_CELL */
-#include "version.h" /* for BIGVM, UNSIGNED */
 
 /* ContextSW frame number */
 #define CurrentFXP 0
@@ -383,6 +386,7 @@ typedef struct stackp {
 #ifdef STACKCHECK
 
 #include <stdio.h>
+#include "testtooldefs.h"
 
 #define S_CHECK(condition, msg)                          \
   {                                                      \

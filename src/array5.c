@@ -7,8 +7,6 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
-
 /************************************************************************/
 /*									*/
 /*			    A R R A Y 5 . C				*/
@@ -17,18 +15,14 @@
 /*									*/
 /************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "version.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "array5defs.h"  // for N_OP_aref2
 #include "emlglob.h"
-
-#include "array5defs.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
+#include "lspglob.h"
+#include "lsptypes.h"    // for LispArray, GetTypeNumber, TYPE_TWOD_ARRAY
+#include "my.h"          // for aref_switch, N_GetPos
 
 /************************************************************************/
 /*									*/
@@ -39,7 +33,6 @@
 /************************************************************************/
 
 LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
-#define REG
   LispPTR baseL;
   int arindex, temp;
   LispArray *arrayblk;

@@ -14,19 +14,15 @@
  *	This file includes main()
  */
 
-#include "lispemul.h"
-#include "dbprint.h"
-
 #include <errno.h>
-#include <setjmp.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <time.h>
 
 #ifndef DOS
-#include <pwd.h>
 #include <sys/param.h>
 #include <unistd.h>
 #else /* DOS */
@@ -42,20 +38,16 @@
 #endif               /* MAIKO_ENABLE_ETHERNET */
 
 #include "emlglob.h"
-#include "address.h"
 #include "adr68k.h"
 #include "stack.h"
 #include "return.h"
 
+#include "lispemul.h"
 #include "lspglob.h"
 #include "lsptypes.h"
 #include "lispmap.h"
 #include "ifpage.h"
 #include "iopage.h"
-
-#include "debug.h"
-
-#include "timeout.h"
 
 #include "maindefs.h"
 #include "commondefs.h"
@@ -66,6 +58,7 @@
 #include "initkbddefs.h"
 #include "initsoutdefs.h"
 #include "ldsoutdefs.h"
+#include "miscstat.h"
 #include "storagedefs.h"
 #include "timerdefs.h"
 #include "unixcommdefs.h"

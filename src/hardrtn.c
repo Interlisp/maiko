@@ -22,21 +22,18 @@
 
 */
 /********************************************************************/
-#include <stdio.h>
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "adr68k.h"
-#include "address.h"
-#include "lspglob.h"
+#include <stdio.h>        // for printf
+#include "adr68k.h"       // for Addr68k_from_StkOffset, StkOffset_from_68K
+#include "commondefs.h"   // for error
 #include "emlglob.h"
-#include "cell.h"
-#include "stack.h"
-#include "return.h"
-
-#include "hardrtndefs.h"
-#include "commondefs.h"
-#include "llstkdefs.h"
+#include "hardrtndefs.h"  // for incusecount68k, slowreturn
+#include "lispemul.h"     // for state, DLword, CURRENTFX, DLWORDSPER_CELL
+#include "lispmap.h"      // for STK_HI
+#include "llstkdefs.h"    // for decusecount68k, freestackblock, blt, stack_...
+#include "lspglob.h"
+#include "lsptypes.h"     // for GETWORD
+#include "return.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
+#include "stack.h"        // for FX, frameex1, Bframe, CHECK_FX, StackWord
 
 #define MAKE_FXCOPY(fx68k)                                                                   \
   {                                                                                          \

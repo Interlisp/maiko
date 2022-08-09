@@ -17,19 +17,13 @@
 /*									*/
 /************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
+#include "version.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "array4defs.h"  // for N_OP_aset1
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
 #include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "gcdata.h"
-#include "my.h"
-
-#include "array4defs.h"
-#include "gchtfinddefs.h"
+#include "lsptypes.h"    // for OneDArray, GetTypeNumber, TYPE_ONED_ARRAY
+#include "my.h"          // for N_GetPos, aset_switch
 
 /***	N_OP_aset1   -- op 267   (new-value array index)   ***/
 

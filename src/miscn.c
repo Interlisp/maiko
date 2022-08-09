@@ -16,22 +16,18 @@
 */
 /***********************************************************/
 
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lispmap.h"
+#include "arith.h"         // for N_GETNUMBER
+#include "commondefs.h"    // for error
 #include "emlglob.h"
+#include "lispemul.h"      // for LispPTR, state, CurrentStackPTR, TopOfStack
+#include "loopsopsdefs.h"  // for LCFetchMethod, LCFetchMethodOrHelp, LCFind...
 #include "lspglob.h"
-#include "arith.h"
-#include "subrs.h"
-
-#include "miscndefs.h"
-#include "commondefs.h"
-#include "loopsopsdefs.h"
-#include "mvsdefs.h"
-#include "sxhashdefs.h"
-#include "usrsubrdefs.h"
+#include "lsptypes.h"
+#include "miscndefs.h"     // for OP_miscn
+#include "mvsdefs.h"       // for values, values_list
+#include "subrs.h"         // for miscn_LCFetchMethod, miscn_LCFetchMethodOr...
+#include "sxhashdefs.h"    // for STRING_EQUAL_HASHBITS, STRING_HASHBITS
+#include "usrsubrdefs.h"   // for UserSubr
 
 /***********************************************************/
 /*

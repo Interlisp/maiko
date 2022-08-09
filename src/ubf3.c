@@ -11,14 +11,12 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
+#include "adr68k.h"    // for Addr68k_from_LADDR
+#include "lispemul.h"  // for state, ERROR_EXIT, LispPTR, SEGMASK
+#include "lispmap.h"   // for S_POSITIVE
 #include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "medleyfp.h"
-
-#include "ubf3defs.h"
+#include "medleyfp.h"  // for FPCLEAR, FPTEST
+#include "ubf3defs.h"  // for N_OP_ubfloat3
 
 /************************************************************
         N_OP_ubfloat3  -- op 062

@@ -17,18 +17,14 @@
 /*									*/
 /************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "version.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "array3defs.h"  // for N_OP_aref1
 #include "emlglob.h"
-
-#include "array3defs.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
+#include "lspglob.h"
+#include "lsptypes.h"    // for OneDArray, GetTypeNumber, TYPE_ONED_ARRAY
+#include "my.h"          // for aref_switch, N_GetPos
 
 /***	N_OP_aref1   -- op 266   (array index)   ***/
 LispPTR N_OP_aref1(register LispPTR arrayarg, register LispPTR inx) {

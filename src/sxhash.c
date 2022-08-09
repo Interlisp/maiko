@@ -10,23 +10,17 @@
 
 #include "version.h"
 
-#include <stdio.h>
-
-#include "lispemul.h"
-#include "lspglob.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "arith.h"        // for FIXP_VALUE
+#include "car-cdrdefs.h"  // for car, cdr
+#include "cell.h"         // for PLCell, PNCell, GetPnameCell, GetPropCell
+#include "commondefs.h"   // for error
 #include "emlglob.h"
-#include "adr68k.h"
-#include "address.h"
-#include "stack.h"
-#include "cell.h"
-#include "array.h"
-#include "arith.h"
-
-#include "sxhashdefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
+#include "lispemul.h"     // for LispPTR, DLword, POINTERMASK, SEGMASK
+#include "lispmap.h"      // for S_POSITIVE, S_NEGATIVE
+#include "lspglob.h"
+#include "lsptypes.h"     // for OneDArray, PATHNAME, GETBYTE, GETWORD, COMPLEX
+#include "sxhashdefs.h"   // for STRING_EQUAL_HASHBITS, STRING_HASHBITS, SX_...
 
 /** Follows definition in LLARRAYELT: **/
 #define EQHASHINGBITS(item) \

@@ -10,23 +10,16 @@
 
 #include "version.h"
 
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "stack.h"
-#include "return.h"
+#include "adr68k.h"       // for StkOffset_from_68K, Addr68k_from_LADDR, Add...
+#include "cell.h"         // for definition_cell, GetDEFCELL68k
 #include "emlglob.h"
+#include "intcalldefs.h"  // for cause_interruptcall
+#include "llstkdefs.h"    // for do_stackoverflow
 #include "lspglob.h"
-#include "initatms.h"
-#include "cell.h"
-#include "tosfns.h"
-
-#include "intcalldefs.h"
-#include "commondefs.h"
-#include "llstkdefs.h"
-#include "returndefs.h"
+#include "lsptypes.h"     // for GETWORD
+#include "returndefs.h"   // for contextsw
+#include "stack.h"        // for state, CurrentStackPTR, DLword, FX, FuncObj
+#include "tosfns.h"       // for SWAPPED_FN_CHECK
 
 void cause_interruptcall(register unsigned int atom_index)
 /* Atomindex for Function you want to invoke */

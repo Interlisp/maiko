@@ -29,22 +29,15 @@
 /* \Tomtom								*/
 /************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "lispmap.h"
-#include "stack.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "gcdata.h"
-#include "array.h"
-
-#include "gccodedefs.h"
-#include "commondefs.h"
-#include "gchtfinddefs.h"
+#include <stdio.h>       // for sprintf
+#include "address.h"     // for LOLOC, HILOC
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "commondefs.h"  // for error
+#include "gccodedefs.h"  // for code_block_size, map_code_pointers, reclaimc...
+#include "gcdata.h"      // for REC_GCLOOKUP, DELREF, ADDREF
+#include "lspglob.h"     // for Deleted_Implicit_Hash_Slot_word, UFNTable
+#include "lsptypes.h"    // for LispPTR, NIL, UFN, Get_code_BYTE, POINTERMASK
+#include "stack.h"       // for fnhead
 
 #define min(a, b) (((a) > (b)) ? (b) : (a))
 

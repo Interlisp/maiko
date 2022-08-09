@@ -17,22 +17,17 @@
 
 #include "version.h"
 
-#include <stddef.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "lispemul.h"
-#include "lspglob.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include <stddef.h>       // for ptrdiff_t
+#include <stdlib.h>       // for abs
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "display.h"      // for DISPLAYBUFFER, DisplayRegion68k, in_display...
+#include "drawdefs.h"     // for N_OP_drawline
 #include "emlglob.h"
-#include "adr68k.h"
-#include "bitblt.h"
-#include "display.h"
-
-#include "drawdefs.h"
-#include "bbtsubdefs.h"
-#include "initdspdefs.h"
+#include "initdspdefs.h"  // for flush_display_region
+#include "lispemul.h"     // for DLword, BITSPER_DLWORD, SEGMASK, state, ERR...
+#include "lispmap.h"      // for S_NEGATIVE, S_POSITIVE
+#include "lspglob.h"
+#include "lsptypes.h"     // for GETWORD
 
 #ifdef DISPLAYBUFFER
 extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;

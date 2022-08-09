@@ -10,15 +10,13 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "adr68k.h"       // for Addr68k_from_LADDR
 #include "emlglob.h"
-
-#include "lowlev2defs.h"
+#include "lispemul.h"     // for state, LispPTR, ERROR_EXIT, SEGMASK, POINTE...
+#include "lispmap.h"      // for S_POSITIVE, S_NEGATIVE
+#include "lowlev2defs.h"  // for N_OP_addbase, N_OP_getbasebyte, N_OP_putbas...
+#include "lspglob.h"
+#include "lsptypes.h"     // for GETBYTE, GetTypeNumber, TYPE_FIXP
 
 /*** NOTE: these routines likely not called (see inlinedefsC.h) ***/
 

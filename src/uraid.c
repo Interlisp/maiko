@@ -36,6 +36,9 @@
 #include <sys/select.h>
 #endif /* DOS */
 
+#ifdef XWINDOW
+#include <X11/Xlib.h>      // for ConnectionNumber
+#endif
 
 #ifdef OS5
 #include <stropts.h>
@@ -56,6 +59,7 @@
 #include "ifpage.h"
 #include "debug.h"
 #include "devconf.h"
+#include "stack.h"
 
 #include "display.h"
 #include "bitblt.h"

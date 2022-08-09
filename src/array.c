@@ -8,19 +8,11 @@
 /************************************************************************/
 
 #include "version.h"
-
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "arraydefs.h"  // for N_OP_misc3
 #include "emlglob.h"
-
-#include "arraydefs.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
+#include "lispemul.h"   // for state, LispPTR, ERROR_EXIT
+#include "lspglob.h"
+#include "my.h"         // for aref_switch, N_GetPos
 
 
 /************************************************************

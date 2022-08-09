@@ -16,26 +16,22 @@
 
 */
 /*****************************************************************/
-#include <stdio.h> /* for printf */
-#include "hdw_conf.h"
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "stack.h"
-#include "lspglob.h"
-#include "cell.h"
-#include "lsptypes.h"
-#include "ifpage.h"
-#include "gcdata.h"
-
-#include "storagedefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "conspagedefs.h"
-#include "gcfinaldefs.h"
-#include "gchtfinddefs.h"
-#include "testtooldefs.h"
+#include <stdio.h>         // for printf
+#include "address.h"       // for POINTER_PAGE
+#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "car-cdrdefs.h"   // for cdr, car, rplacd, rplaca
+#include "commondefs.h"    // for error
+#include "conspagedefs.h"  // for cons
+#include "gcdata.h"        // for ADDREF, GCLOOKUP
+#include "gcfinaldefs.h"   // for makefreearrayblock, mergebackward
+#include "hdw_conf.h"      // for KATANA
+#include "ifpage.h"        // for IFPAGE
+#include "lispemul.h"      // for LispPTR, NIL, GETFPTOVP, INTSTAT, ATOM_T
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"       // for InterfacePage, FPtoVP, SYSTEMCACHEVARS_word
+#include "lsptypes.h"      // for Listp
+#include "storagedefs.h"   // for checkfor_storagefull, init_storage, newpage
+#include "testtooldefs.h"  // for MAKEATOM
 
 #define MINARRAYBLOCKSIZE 4
 #define GUARDVMEMFULL 500

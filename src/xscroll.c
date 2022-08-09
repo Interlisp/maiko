@@ -11,17 +11,11 @@
 
 #include "version.h"
 
-#include <stdio.h>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#include "lispemul.h"
-#include "xdefs.h"
-#include "devif.h"
-
-#include "xscrolldefs.h"
-#include "xwinmandefs.h"
+#include <X11/Xlib.h>     // for XMoveWindow
+#include "devif.h"        // for (anonymous), MRegion, DspInterface
+#include "xdefs.h"        // for SCROLL_PITCH
+#include "xscrolldefs.h"  // for JumpScrollHor, JumpScrollVer, Scroll, Scrol...
+#include "xwinmandefs.h"  // for bound
 
 int ScrollPitch = SCROLL_PITCH;
 

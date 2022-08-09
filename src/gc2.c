@@ -22,18 +22,16 @@
 */
 /**********************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "lspglob.h"
+#include <stdio.h>         // for printf
+#include "address.h"       // for LOLOC
 #include "emlglob.h"
-#include "address.h"
-#include "adr68k.h"
-#include "testtooldefs.h"
-#include "gc2defs.h"
-#include "gcscandefs.h"
-
+#include "gc2defs.h"       // for OP_gcscan1, OP_gcscan2
+#include "gcscandefs.h"    // for gcscan1, gcscan2
+#include "lispemul.h"      // for state, TopOfStack, NIL, PC, SEGMASK
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"
+#include "lsptypes.h"
+#include "testtooldefs.h"  // for printPC
 
 /**********************************************************************/
 /*
