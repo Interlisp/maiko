@@ -42,27 +42,21 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
-
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "stack.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "gcdata.h"
-#include "array.h"
-#include "debug.h"
-#include "lispmap.h"
-
-#include "gcarraydefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "mkatomdefs.h"
-#include "testtooldefs.h"
+#include <stdio.h>         // for printf
+#include <string.h>        // for strncmp
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "array.h"         // for arrayheader
+#include "car-cdrdefs.h"   // for car, cdr
+#include "cell.h"          // for PNCell, PLCell, GetPnameCell, GetPropCell
+#include "commondefs.h"    // for error
+#include "debug.h"         // for PACKAGE
+#include "gcarraydefs.h"   // for aref1, find_symbol, get_package_atom, with...
+#include "lispemul.h"      // for LispPTR, DLword, NIL, SEGMASK, T
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"       // for Package_from_Index_word
+#include "lsptypes.h"      // for GETBYTE, GETWORD
+#include "mkatomdefs.h"    // for compare_chars, compare_lisp_chars, compute...
+#include "testtooldefs.h"  // for find_package_from_name
 
 /*** not currently used -FS
         #define min(a,b)		((a > b)?b:a)

@@ -24,7 +24,6 @@
 #define VERTICAL   0
 #define HORIZONTAL 1
 
-#define PERCENT_OF_SCREEN 95
 #define SCROLL_PITCH      30
 
 typedef struct _MyEvent

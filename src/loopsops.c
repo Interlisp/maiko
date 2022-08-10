@@ -19,20 +19,21 @@
         PutValue(object, iv, val)
 */
 
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "cell.h"
-#include "lispmap.h"
+#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "car-cdrdefs.h"   // for car, cdr
+#include "cell.h"          // for GetVALCELL68k, definition_cell, GetDEFCELL68k
+#include "commondefs.h"    // for error
+#include "gcarraydefs.h"   // for get_package_atom
+#include "gcdata.h"        // for FRPLPTR
+#include "lispemul.h"      // for LispPTR, state, CurrentStackPTR, NIL_PTR, NIL
+#include "lispmap.h"       // for S_POSITIVE, STK_OFFSET
+#include "loopsopsdefs.h"  // for lcfuncall, LCFetchMethod, LCFetchMethodOrHelp
 #include "lspglob.h"
-#include "adr68k.h"
-#include "stack.h"
-#include "gcdata.h"
-
-#include "loopsopsdefs.h"
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "gcarraydefs.h"
-#include "gchtfinddefs.h"
+#include "lsptypes.h"      // for GetDTD, GetTypeNumber, dtd, Listp, GETWORD
+#include "stack.h"         // for frameex1, fnhead, BF_MARK, FX_MARK, STK_SAFE
+#include "version.h"       // for UNSIGNED, BIGVM
+struct LCIVCacheEntry;
+struct LCInstance;
 
 static const char il_string[] = "INTERLISP";
 #define GET_IL_ATOM(string) get_package_atom((string), (sizeof(string) - 1), il_string, 9, NIL)

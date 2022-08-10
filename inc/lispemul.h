@@ -9,7 +9,9 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-#include "version.h" /* for BIGVM, BIGATOMS, UNSIGNED, UNALIGNED_FETCH_OK */
+#include "version.h"
+
+#include "lispmap.h"     // for S_POSITIVE
 
 #ifndef BYTESWAP
 /*** Normal byte-order type decls */

@@ -10,15 +10,12 @@
 
 #include "version.h"
 
-#include <stdio.h>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#include "lispemul.h"
-#include "xdefs.h"
-#include "devif.h"
-#include "xbbtdefs.h"
+#include <X11/Xlib.h>  // for XFlush, XPutImage
+#include "devif.h"     // for (anonymous), MRegion, DspInterface
+#include "lispemul.h"  // for DLword
+#include "version.h"
+#include "xbbtdefs.h"  // for clipping_Xbitblt
+#include "xdefs.h"     // for XLOCK, XUNLOCK
 
 /************************************************************************/
 /*									*/

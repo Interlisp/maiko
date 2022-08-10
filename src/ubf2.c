@@ -11,12 +11,10 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <math.h>
-#include "lispemul.h"
-#include "medleyfp.h"
-
-#include "ubf2defs.h"
+#include <math.h>      // for fmodf
+#include "lispemul.h"  // for state, ERROR_EXIT, ATOM_T, LispPTR, NIL_PTR
+#include "medleyfp.h"  // for FPCLEAR, FPTEST
+#include "ubf2defs.h"  // for N_OP_ubfloat2
 
 /************************************************************
         OP_ub2  -- op 354  ==  UBFLOAT2

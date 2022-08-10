@@ -52,28 +52,19 @@
 
 #include "version.h"
 
-#include "lispemul.h"
-#include "lispmap.h"
+#include "address.h"       // for LOLOC
+#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "commondefs.h"    // for error
+#include "dspsubrsdefs.h"  // for flip_cursor
 #include "emlglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "stack.h"
-#include "gcdata.h"
-
-#include "gcrdefs.h"
-#include "commondefs.h"
-#include "dspsubrsdefs.h"
-#include "gcmain3defs.h"
-#include "timerdefs.h"
-
-#define MAXSMALLP 65535
-#define HTBIGENTRYSIZE 4
-#define WORDSPERPAGE 256
-#define WORDSPERCELL 2
-#define MAXTYPENUMBER INIT_TYPENUM
-#define STK_HI 1
+#include "gcmain3defs.h"   // for gcmapscan, gcmapunscan, gcscanstack
+#include "gcrdefs.h"       // for disablegc1, dogc01, doreclaim, gcarrangeme...
+#include "lispemul.h"      // for state, NIL, DLword, CurrentStackPTR, ATOM_T
+#include "lspglob.h"       // for MiscStats, GcDisabled_word, Reclaim_cnt_word
+#include "lsptypes.h"      // for GETWORD, TT_NOREF
+#include "miscstat.h"      // for MISCSTATS
+#include "stack.h"         // for STK_FSB_WORD, frameex1
+#include "timerdefs.h"     // for update_miscstats
 
 #ifndef BYTESWAP
 struct interruptstate {
@@ -102,7 +93,7 @@ struct interruptstate {
 void gcarrangementstack(void) {
   LispPTR tmpnextblock;
   PushCStack;
-  tmpnextblock = LADDR_from_68k(CurrentStackPTR += WORDSPERCELL);
+  tmpnextblock = LADDR_from_68k(CurrentStackPTR += DLWORDSPER_CELL);
   CURRENTFX->nextblock = LOLOC(tmpnextblock);
   if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack block.");
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;

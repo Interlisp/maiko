@@ -11,27 +11,24 @@
 
 #include "version.h"
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <limits.h>
+#include <X11/Xlib.h>       // for XPointer, True, XParseGeometry, XResource...
+#include <X11/Xresource.h>  // for XrmoptionSepArg, XrmGetResource, Xrmoptio...
+#include <errno.h>          // for errno
+#include <limits.h>         // for PATH_MAX
+#include <stdio.h>          // for fprintf, NULL, stderr, sscanf
+#include <stdlib.h>         // for getenv, exit, strtol
+#include <string.h>         // for strncpy, strcat, strcpy, strcmp
+#include <sys/types.h>      // for u_char
+#include <unistd.h>         // for access, R_OK
+#include "version.h"        // for MAIKO_ENABLE_ETHERNET
+#include "xdefs.h"          // for WINDOW_NAME
+#include "xrdoptdefs.h"     // for print_Xusage, read_Xoption
+
 #ifdef MAIKO_ENABLE_ETHERNET
 #if defined(USE_NIT)
 #include <net/nit.h> /* needed for Ethernet stuff below */
 #endif               /* USE_NIT */
 #endif               /* MAIKO_ENABLE_ETHERNET */
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
-
-#include "xdefs.h"
-#include "dbprint.h"
-
-#include "xrdoptdefs.h"
 
 extern int LispWindowRequestedX, LispWindowRequestedY;
 extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;

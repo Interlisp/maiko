@@ -20,24 +20,17 @@
 /*									*/
 /************************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <fcntl.h>
-
-#include "adr68k.h"
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "lispmap.h"
+#include <errno.h>   // for errno
+#include <fcntl.h>   // for open, O_RDWR
+#include <stdio.h>   // for perror, printf, sprintf, SEEK_SET, NULL
+#include <stdlib.h>  // for exit, strtol
+#include <unistd.h>  // for lseek, close, read, write
+#ifdef BYTESWAP
+#include "byteswapdefs.h"   // for word_swap_page
+#endif
+#include "ifpage.h"  // for IFPAGE
 #include "lspglob.h"
-#include "ifpage.h"
-#include "dbprint.h"
-
-#include "byteswapdefs.h"
+#include "lsptypes.h"
 
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */

@@ -17,36 +17,34 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
 #ifndef DOS
-#include <pwd.h>
+#include <pwd.h>           // for getpwuid, passwd
 #endif
-
-#include "hdw_conf.h"
-#include "lispemul.h"
-#include "lspglob.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "ifpage.h"
-#include "iopage.h"
-#include "cell.h"
-#include "devconf.h"
-#include "dbprint.h"
-#include "lldsp.h"
-#include "gcdata.h" /* for ADDREF & GCLOOKUP */
-
-#include "initsoutdefs.h"
-#include "byteswapdefs.h"
-#include "gcarraydefs.h"
-#include "gchtfinddefs.h"
-#include "mkcelldefs.h"
-#include "testtooldefs.h"
+#include <stdio.h>         // for fprintf, NULL, stderr
+#include <stdlib.h>        // for malloc, exit
+#include <string.h>        // for strlen, strncpy
+#include <time.h>          // for time_t
+#include <unistd.h>        // for gethostid, getuid
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#ifdef BYTESWAP
+#include "byteswapdefs.h"   // for word_swap_page
+#endif
+#include "cell.h"          // for GetVALCELL68k
+#include "dbprint.h"       // for DBPRINT
+#include "etherdefs.h"     // for init_ifpage_ether
+#include "gcarraydefs.h"   // for get_package_atom
+#include "gcdata.h"        // for ADDREF, GCLOOKUP
+#include "hdw_conf.h"      // for KATANA
+#include "ifpage.h"        // for IFPAGE
+#include "initsoutdefs.h"  // for build_lisp_map, fixp_value, init_for_bitblt
+#include "iopage.h"        // for IOPAGE
+#include "lispemul.h"      // for LispPTR, DLword, NIL, BYTESPER_DLWORD
+#include "lispmap.h"       // for ATMHT_OFFSET, ATOMS_OFFSET, DEFS_OFFSET
+#include "lspglob.h"       // for InterfacePage, IOPage, AtomHT, Closure_Cac...
+#include "lsptypes.h"      // for GetDTD, TYPE_FIXP, TYPE_LISTP
+#include "miscstat.h"      // for MISCSTATS
+#include "mkcelldefs.h"    // for N_OP_createcell
+#include "testtooldefs.h"  // for MakeAtom68k, MAKEATOM
 
 #ifdef MAIKO_ENABLE_ETHERNET
 #include "etherdefs.h"

@@ -19,29 +19,24 @@
 
 */
 /******************************************************************/
-#include <stdio.h> /* for printf */
-#ifdef FSBCHECK
-#include <string.h>    /* for memset */
-#endif
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "address.h"
-#include "lsptypes.h"
-#include "initatms.h"
-#include "lspglob.h"
+#include <stdio.h>        // for printf, putchar
+#include <string.h>	  // for memset
+#include "address.h"      // for LOLOC
+#include "adr68k.h"       // for Addr68k_from_StkOffset, StkOffset_from_68K
+#include "commondefs.h"   // for error, warn
+#include "dbgtooldefs.h"  // for sff
 #include "emlglob.h"
-#include "cell.h"
-#include "stack.h"
-#include "return.h"
-
-#include "llstkdefs.h"
-#include "commondefs.h"
-#include "dbgtooldefs.h"
-#include "testtooldefs.h"
-#include "kprintdefs.h"
-#include "storagedefs.h"
-
+#include "ifpage.h"       // for IFPAGE
+#include "kprintdefs.h"   // for print
+#include "lispemul.h"     // for DLword, state, CurrentStackPTR, CURRENTFX
+#include "lispmap.h"      // for STK_HI, STK_OFFSET, S_POSITIVE
+#include "llstkdefs.h"    // for blt, check_BF, check_FX, check_stack_rooms
+#include "lspglob.h"      // for InterfacePage, Stackspace, STACKOVERFLOW_word
+#include "lsptypes.h"     // for GETWORD
+#include "return.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW
+#include "stack.h"        // for StackWord, Bframe, FX, frameex1, STKWORD
+#include "storagedefs.h"  // for newpage
+// #include "testtooldefs.h" // for print_atomname
 extern int extended_frame;
 
 /******************************************************************/

@@ -18,27 +18,22 @@
 /*									*/
 /************************************************************************/
 
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-
 #ifndef DOS
-#include <pwd.h>
+#include <pwd.h>         // for getpwuid, passwd
 #endif
-
-#include "lispemul.h"
-#include "adr68k.h"
-#include "lsptypes.h"
+#include <signal.h>      // for killpg, SIGTSTP
+#include <stdio.h>       // for printf, NULL, snprintf, size_t
+#include <stdlib.h>      // for getenv
+#include <string.h>      // for strcmp, strcpy, strlen, strncpy
+#include <unistd.h>      // for getuid, gethostid, gethostname, getpgrp
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "keyboard.h"    // for KBEVENT, KB_ALLUP, RING, KEYEVENTSIZE, MAXKE...
+#include "lispemul.h"    // for LispPTR, DLword, NIL, ATOM_T
 #include "lspglob.h"
-#include "osmsg.h"
-#include "keyboard.h"
-
-#include "uutilsdefs.h"
-#include "osmsgdefs.h"
-#include "uraiddefs.h"
+#include "lsptypes.h"    // for GETWORD, OneDArray, GetTypeNumber, THIN_CHAR...
+#include "osmsg.h"       // for OSMESSAGE_PRINT
+#include "uraiddefs.h"   // for device_after_raid, device_before_raid
+#include "uutilsdefs.h"  // for c_string_to_lisp_string, check_unix_password
 
 /************************************************************************/
 /*									*/

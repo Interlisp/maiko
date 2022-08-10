@@ -9,34 +9,32 @@
 
 #include "version.h"
 
-#include <errno.h>
-#include <setjmp.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #ifndef DOS
-#include <dirent.h>
-#include <pwd.h>
-#include <sys/param.h>
+#include <dirent.h>         // for closedir, MAXNAMLEN, dirent, readdir, ope...
+#include <pwd.h>            // for getpwuid, passwd
+#include <sys/param.h>      // for MAXPATHLEN
 #else /* DOS, now */
 #include <dos.h>
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEN _MAX_PATH
 #define alarm(x) 1
 #endif /* DOS */
-
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "arith.h"
+#include <errno.h>          // for errno, EINTR, ENOENT
+#include <stdio.h>          // for NULL, sprintf, size_t
+#include <stdlib.h>         // for calloc, free, strtoul, malloc, qsort
+#include <string.h>         // for strcpy, strcmp, strlen, strrchr, strcat
+#include <sys/stat.h>       // for stat, S_ISDIR, st_atime, st_mtime
+#include <sys/time.h>       // for timespec_t
+#include "adr68k.h"         // for Addr68k_from_LADDR
+#include "arith.h"          // for GetSmallp
+#include "dirdefs.h"        // for COM_finish_finfo, COM_gen_files, COM_next...
+#include "dskdefs.h"        // for separate_version, separate_host, true_name
+#include "lispemul.h"       // for LispPTR, NIL, ATOM_T
+#include "locfile.h"        // for VERSIONLEN, DOWNCASE, ToLispTime, STRING_...
 #include "lspglob.h"
-#include "timeout.h"
-#include "locfile.h"
+#include "lsptypes.h"
+#include "timeout.h"        // for S_TOUT, TIMEOUT0, TIMEOUT, ERRSETJMP
+#include "ufsdefs.h"        // for quote_dname, quote_fname, quote_fname_ufs
 
 extern int *Lisp_errno;
 extern int Dummy_errno;
@@ -222,62 +220,6 @@ int make_old_version(char *old, char *file)
 /************ B E G I N  O F   F I L E - I N F O   C O D E **************/
 /************************************************************************/
 
-/*
- * FINFO and FPROP are used to store the information of the enumerated files
- * and directories.  They are arranged in a form of linked list.  Each list is
- * corresponding to the each directory enumeration.  All of the informations
- * Lisp needs are stored in the list.  This list is in the emulator's address space
- * and can be specified by "ID" which is the interface between the emulator and Lisp
- * code.  In this implementation, ID is represented as an integer and is actually
- * an index of the array of the lists.
- *
- * To avoid the overhead of the FINFO and FPROP structure dynamic allocation and
- * deallocation, some number of their instances are pre-allocated when the emulator
- * starts and managed in a free list.  If all of the pre-allocated instances are in
- * use, new instances are allocated.  The new instances are linked to the free list
- * when it is freed.
- *
- * As described above, the linked list result of the enumeration is stored in a
- * array for the subsequent request from Lisp.  Lisp code requests the emulator to
- * release the list when it enumerated all of the entries in the list or the
- * enumerating operation is aborted.
- */
-
-typedef struct fprop {
-  unsigned length;   /* Byte length of this file. */
-  unsigned wdate;    /* Written (Creation) date in Lisp sense. */
-  unsigned rdate;    /* Read date in Lisp sense. */
-  unsigned protect;  /* Protect mode of this file. */
-  char author[256];  /* Author in Lisp sense. */
-  u_short au_len;    /* Byte length of author. */
-  unsigned long nil; /* padding to 8-byte multiple */
-} FPROP;
-
-/* This structure has a pointer at each end to force alignment to
-   be correct when a pointer is 8 bytes long. */
-typedef struct finfo {
-  FPROP *prop;           /* File properties Lisp needs. */
-  char lname[MAXNAMLEN]; /* Name in Lisp Format. */
-  u_short lname_len;     /* Byte length of lname. */
-  char no_ver_name[MAXNAMLEN];
-  /*
-   * Name in UNIX Format.  Does not
-   * include Version field.
-   * All lower case.
-   */
-  ino_t ino;          /* I-node number of this file. */
-  unsigned version;   /* Version in Lisp sense. */
-  u_short dirp;       /* If 1, this file is a directory. */
-  struct finfo *next; /*
-                       * Link to a next entry.  Last entry is
-                       * indicated by NULL pointer.
-                       */
-} FINFO;
-
-typedef struct dfinfo {
-  FINFO *head; /* Head of the linked FINFO structures. */
-  FINFO *next; /* FINFO structure generated next time. */
-} DFINFO;
 
 FINFO *FreeFinfoList;
 #define INITFINFONUM 1024
@@ -310,11 +252,6 @@ int MAXFINFO;
     FreeFinfoList = fp;                                                    \
   }
 
-/* XXX: the datatypes need to go into dirdefs.h so that one could include it elsewhere */
-#include "dirdefs.h"
-#include "commondefs.h"
-#include "dskdefs.h"
-#include "ufsdefs.h"
 
 /*
  * For debug aid.
@@ -333,7 +270,7 @@ void print_finfo(FINFO *fp)
       fp = fp->next;
     } while (fp != (FINFO *)NULL && fp != sp);
 
-    if (fp = sp) printf("Circular detected!\n");
+    if (fp == sp) printf("Circular detected!\n");
   }
 }
 #endif /* FSDEBUG */

@@ -18,22 +18,18 @@
 /*									*/
 /************************************************************************/
 
-#include <stdio.h>
-
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lspglob.h"
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#ifdef RESWAPPEDCODESTREAM
+#include "byteswapdefs.h"  // for byte_swap_code_block
+#endif
+#include "car-cdrdefs.h"   // for car
+#include "conspagedefs.h"  // for cons
 #include "emlglob.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "opcodes.h"
-#include "cell.h"
-#include "byteswapdefs.h"
-
-#include "mvsdefs.h"
-#include "car-cdrdefs.h"
-#include "conspagedefs.h"
-
+#include "lspglob.h"       // for Stackspace
+#include "lsptypes.h"      // for ByteCode, LispPTR, state, DLword, FN_OPCOD...
+#include "mvsdefs.h"       // for make_value_list, simulate_unbind, values
+#include "opcodes.h"       // for opc_JUMP, opc_FJUMP, opc_FN1, opc_JUMPX
+#include "stack.h"         // for FX2, GETCLINK
 
 /* to optionally swap the fnhead field of a frame */
 #ifdef BIGVM

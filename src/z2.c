@@ -23,25 +23,17 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
+#include "car-cdrdefs.h"   // for car, cdr
+#include "cell.h"          // for cadr_cell, S_N_CHECKANDCADR
+#include "conspagedefs.h"  // for cons
 #include "emlglob.h"
+#include "lispemul.h"      // for state, LispPTR, NIL_PTR, ERROR_EXIT, Irq_S...
+#include "lispmap.h"       // for ATOM_OFFSET, S_CHARACTER, S_NEGATIVE, S_PO...
 #include "lspglob.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-#include "stack.h"
-#include "gcdata.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
-
-#include "z2defs.h"
-#include "car-cdrdefs.h"
-#include "conspagedefs.h"
-#include "vars3defs.h"
+#include "lsptypes.h"      // for Listp, GetTypeNumber, TYPE_LISTP
+#include "vars3defs.h"     // for cadr
+#include "version.h"
+#include "z2defs.h"        // for N_OP_classoc, N_OP_clfmemb, N_OP_restlist
 
 /*   N_OP_classoc()  OP 33Q  */
 LispPTR N_OP_classoc(LispPTR key, LispPTR list) {

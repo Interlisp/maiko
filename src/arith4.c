@@ -8,8 +8,6 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
-
 /***********************************************************************/
 /*
                 File Name :	arith4.c
@@ -21,20 +19,13 @@
 
 */
 /**********************************************************************/
-
-#include "lispemul.h"
-#include "lispmap.h"
+#include "version.h"
+#include "arith.h"       // for N_IGETNUMBER, N_ARITH_SWITCH, N_GETNUMBER
+#include "arith4defs.h"  // for N_OP_iquot, N_OP_iremainder, N_OP_itimes2
+#include "fpdefs.h"      // for N_OP_fquotient, N_OP_ftimes2
+#include "lispemul.h"    // for state, ERROR_EXIT, LispPTR
 #include "lspglob.h"
 #include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-#include "medleyfp.h"
-#include "arith.h"
-
-#include "arith4defs.h"
-#include "fpdefs.h"
-#include "mkcelldefs.h"
 
 /**********************************************************************/
 /*

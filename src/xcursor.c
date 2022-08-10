@@ -11,20 +11,18 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "xdefs.h"
-
-#include "lispemul.h"
-#include "iopage.h"
-#include "display.h"
-#include "dbprint.h"
-#include "devif.h"
-
-#include "xcursordefs.h"
+#include <X11/X.h>        // for Cursor, Pixmap, Colormap
+#include <X11/Xlib.h>     // for XAllocNamedColor, XCreatePixmapFromBitmapData
+#include <stdint.h>       // for uint8_t
+#include <stdio.h>        // for NULL
+#include <stdlib.h>       // for malloc
+#include "dbprint.h"      // for TPRINT
+#include "devif.h"        // for (anonymous), DspInterface, DefineCursor
+#include "display.h"      // for CURSORHEIGHT
+#include "iopage.h"       // for IOPAGE
+#include "lispemul.h"     // for DLword
+#include "xcursordefs.h"  // for Init_XCursor, Set_XCursor, init_Xcursor
+#include "xdefs.h"        // for XLOCK, XUNLOCK
 
 extern IOPAGE *IOPage;
 

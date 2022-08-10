@@ -12,21 +12,17 @@
 
 #include "version.h"
 
-#include <stdio.h> /* for sprintf */
-#include <stdlib.h>
-
-#include "lispemul.h"
-#include "lspglob.h"
+#include <stdio.h>       // for sprintf
+#include <stdlib.h>      // for abs
+#include "adr68k.h"      // for Addr68k_from_LADDR, LADDR_from_68k
+#include "commondefs.h"  // for error
 #include "emlglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "medleyfp.h"
-#include "arith.h"
-
-#include "lisp2cdefs.h"
-#include "commondefs.h"
-#include "mkcelldefs.h"
+#include "lisp2cdefs.h"  // for CIntToLispInt, LispIntToCInt, LispStringLength
+#include "lispemul.h"    // for LispPTR
+#include "lispmap.h"     // for S_NEGATIVE, S_POSITIVE
+#include "lspglob.h"
+#include "lsptypes.h"    // for OneDArray, FAT_CHAR_TYPENUMBER, THIN_CHAR_TY...
+#include "mkcelldefs.h"  // for createcell68k
 
 int LispStringP(LispPTR object) {
   int type;

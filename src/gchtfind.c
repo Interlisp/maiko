@@ -10,19 +10,17 @@
 
 #include "version.h"
 
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "gcdata.h"
-#include "lispmap.h"
-#include "cell.h"
-
-#include "gchtfinddefs.h"
-#include "commondefs.h"
-#include "gcrdefs.h"
-#include "storagedefs.h"
+#include "address.h"       // for LOLOC
+#include "adr68k.h"        // for LADDR_from_68k
+#include "commondefs.h"    // for error
+#include "gcdata.h"        // for GETGC, GCENTRY, ADDREF, DELREF, gc_ovfl
+#include "gchtfinddefs.h"  // for enter_big_reference_count, htfind, modify_...
+#include "gcrdefs.h"       // for disablegc1
+#include "lispemul.h"      // for LispPTR, NIL, state, DLWORDSPER_CELL, ATOM_T
+#include "lispmap.h"       // for HTCOLL_SIZE
+#include "lspglob.h"       // for HTcoll, HTbigcount, HTmain
+#include "lsptypes.h"      // for WORDPTR
+#include "storagedefs.h"   // for newpage
 
 #define Evenp(num, prim) (((num) % (prim)) == 0)
 #ifdef BIGVM

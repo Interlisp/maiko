@@ -42,23 +42,19 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "stack.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "gcdata.h"
-#include "array.h"
-
-#include "gcfinaldefs.h"
-#include "commondefs.h"
-#include "gccodedefs.h"
-#include "gchtfinddefs.h"
-#include "llstkdefs.h"
+#include <stdio.h>        // for printf
+#include "address.h"      // for HILOC
+#include "adr68k.h"       // for Addr68k_from_LADDR, LADDR_from_68k, Addr68k...
+#include "array.h"        // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
+#include "commondefs.h"   // for error
+#include "gccodedefs.h"   // for reclaimcodeblock
+#include "gcdata.h"       // for DELREF, REC_GCLOOKUP
+#include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock, deleteblock
+#include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
+#include "llstkdefs.h"    // for decusecount68k
+#include "lspglob.h"      // for FreeBlockBuckets_word, ArrayMerging_word
+#include "lsptypes.h"     // for WORDPTR
+#include "stack.h"        // for STACKP, FX
 
 #ifdef NEVER
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1) /* segnum field */

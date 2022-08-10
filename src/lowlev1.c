@@ -10,15 +10,13 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "adr68k.h"       // for Addr68k_from_LADDR
 #include "emlglob.h"
-
-#include "lowlev1defs.h"
+#include "lispemul.h"     // for LispPTR, state, DLword, POINTERMASK, ERROR_...
+#include "lispmap.h"      // for S_POSITIVE
+#include "lowlev1defs.h"  // for N_OP_getbitsnfd, N_OP_putbasen, N_OP_putbas...
+#include "lspglob.h"
+#include "lsptypes.h"     // for GETWORD
 
 static const int mask_array[16] = {
     1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,

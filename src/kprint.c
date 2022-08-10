@@ -10,21 +10,18 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "print.h"
-#include "address.h"
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "lspglob.h"
-#include "initatms.h"
-#include "cell.h"
+#include <stdio.h>         // for printf
+#include "address.h"       // for LOLOC
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "car-cdrdefs.h"   // for cdr, car
 #include "emlglob.h"
-#include "lispmap.h"
-#include "adr68k.h"
-
-#include "kprintdefs.h"
-#include "car-cdrdefs.h"
-#include "testtooldefs.h"
+#include "kprintdefs.h"    // for prindatum, print, print_NEWstring, print_fixp
+#include "lispemul.h"      // for LispPTR, DLbyte, DLword, POINTERMASK, NIL
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"
+#include "lsptypes.h"      // for NEWSTRINGP, GETBYTE, GetTypeNumber, TYPE_L...
+#include "print.h"         // for DOUBLEQUOTE, RIGHT_PAREN, LEFT_PAREN, SPACE
+#include "testtooldefs.h"  // for print_atomname
 
 int PrintMaxLevel = 3;
 int Printdepth = 0;

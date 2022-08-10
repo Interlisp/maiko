@@ -7,8 +7,6 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
-
 /***********************************************************************/
 /*
                 File Name :	bin.c
@@ -24,18 +22,14 @@
 
 */
 /**********************************************************************/
-
-#include "lispemul.h"
-#include "lispmap.h"
+#include "version.h"
+#include "adr68k.h"    // for Addr68k_from_LADDR
+#include "bindefs.h"   // for N_OP_bin
 #include "emlglob.h"
+#include "lispmap.h"   // for S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-#include "stream.h"
-
-#include "bindefs.h"
+#include "lsptypes.h"  // for state, ERROR_EXIT, GetTypeNumber, Get_BYTE
+#include "stream.h"    // for Stream
 
 LispPTR N_OP_bin(register int tos) {
   register Stream *stream68k; /* stream instance on TOS */

@@ -8,7 +8,6 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
 
 /************************************************************************/
 /*									*/
@@ -21,17 +20,14 @@
 /*									*/
 /************************************************************************/
 
-#include "lispemul.h"
-#include "lispmap.h"
+#include "version.h"
+#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "arith.h"       // for N_GETNUMBER, N_ARITH_SWITCH
+#include "arith3defs.h"  // for N_OP_boxidiff, N_OP_boxiplus, N_OP_makenumber
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
+#include "lispmap.h"     // for S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-#include "arith.h"
-
-#include "arith3defs.h"
-#include "mkcelldefs.h"
+#include "lsptypes.h"    // for GetTypeNumber, TYPE_FIXP
 
 /************************************************************************/
 /*									*/

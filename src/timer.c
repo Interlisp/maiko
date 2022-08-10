@@ -60,6 +60,7 @@ extern int ether_fd;
 #include "lispmap.h"
 #include "stack.h"
 #include "dbprint.h"
+#include "miscstat.h"
 
 #include "timerdefs.h"
 #include "commondefs.h"

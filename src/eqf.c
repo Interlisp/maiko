@@ -17,18 +17,13 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
+#include "arith.h"     // for FIXP_VALUE, FLOATP_VALUE
+#include "eqfdefs.h"   // for N_OP_clequal, N_OP_eqlop, N_OP_eqq, N_OP_equal
+#include "lispemul.h"  // for NIL, state, ATOM_T, ERROR_EXIT, SEGMASK, LispPTR
+#include "lispmap.h"   // for ATOM_OFFSET, S_CHARACTER, S_NEGATIVE, S_POSITIVE
 #include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "medleyfp.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
-
-#include "eqfdefs.h"
+#include "lsptypes.h"  // for TYPE_FLOATP, GetTypeNumber, TYPE_FIXP, TYPE_SM...
+#include "my.h"        // for IsNumber, N_MakeFloat
 
 /************************************************************
 op 072   N_OP_eqlop	EQL

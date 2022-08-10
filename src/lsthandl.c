@@ -18,17 +18,14 @@
 
 #include "version.h"
 
-#include "lispemul.h"
+#include "car-cdrdefs.h"   // for car, cdr
+#include "cell.h"          // for cadr_cell
 #include "emlglob.h"
+#include "lispemul.h"      // for state, LispPTR, ERROR_EXIT, NIL_PTR, Scrat...
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-
-#include "lsthandldefs.h"
-#include "car-cdrdefs.h"
-#include "vars3defs.h"
+#include "lsptypes.h"      // for Listp, GetTypeNumber, TYPE_LISTP
+#include "lsthandldefs.h"  // for N_OP_fmemb, N_OP_listget, fmemb
+#include "vars3defs.h"     // for cadr
 
 /***********************************************************************/
 /*	 N_OP_fmemb							*/

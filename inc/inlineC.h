@@ -687,8 +687,6 @@
     N_OP_POPPED_CALL_2(N_OP_eqq, arg2);         \
   } while (0)
 
-#define S_CHARACTER 0x70000
-
 #define AREF1                                                                                      \
   do {                                                                                             \
     LispPTR arrayarg;                                                                              \

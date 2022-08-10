@@ -9,21 +9,16 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "stack.h"
+#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "byteswapdefs.h"  // for swapx
+#include "commondefs.h"    // for error
 #include "emlglob.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "gcdata.h"
-
-#include "fvardefs.h"
-#include "byteswapdefs.h"
-#include "commondefs.h"
-#include "gchtfinddefs.h"
-
+#include "fvardefs.h"      // for N_OP_fvar_, N_OP_fvarn, N_OP_stkscan, nati...
+#include "gcdata.h"        // for GCLOOKUP, ADDREF, DELREF
+#include "lispmap.h"       // for ATOMS_HI, STK_HI
+#include "lspglob.h"       // for Stackspace
+#include "lsptypes.h"      // for DLword, LispPTR, GETBASEWORD, state, FRAME...
+#include "stack.h"         // for fnhead, frameex1, GETNAMETABLE, frameex2
 
 #define MaskShift(x) (((x) << 16) & SEGMASK)
 

@@ -11,26 +11,17 @@
 
 /*	misc7.c
  */
-#include <stdio.h>
-#ifndef DOS
-#include <sys/ioctl.h>
-#endif /* DOS */
-#include "lispemul.h"
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "arith.h"        // for N_GETNUMBER
+#include "bbtsubdefs.h"   // for n_new_cursorin
+#include "dbprint.h"      // for DBPRINT
+#include "display.h"      // for in_display_segment
+#include "initdspdefs.h"  // for flush_display_ptrregion
+#include "lispemul.h"     // for LispPTR, DLword, state, BITSPER_DLWORD, ERR...
+#include "lispmap.h"      // for S_POSITIVE
 #include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "arith.h"
-#include "dbprint.h"
-/* osamu '90/02/08
- * add display.h, because in_display_segment() is changed as
- * macro. definition is in display.h
- */
-#include "display.h"
-
-#include "misc7defs.h"
-#include "bbtsubdefs.h"
-#include "initdspdefs.h"
+#include "lsptypes.h"     // for GETWORDBASEWORD
+#include "misc7defs.h"    // for N_OP_misc7
 
 
 /*************************************************/

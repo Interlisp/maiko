@@ -9,18 +9,16 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "lispmap.h"
-#include "adr68k.h"
+#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "car-cdrdefs.h"  // for car, cdr
+#include "cell.h"         // for cadr_cell, CDR_NIL, CDR_INDIRECT, S_N_CHECK...
 #include "emlglob.h"
-#include "cell.h"
-#include "lsptypes.h"
-#include "stack.h"
-
-#include "vars3defs.h"
-#include "car-cdrdefs.h"
+#include "lispemul.h"     // for state, ConsCell, LispPTR, NIL_PTR, DLword
+#include "lispmap.h"      // for S_POSITIVE
+#include "lspglob.h"      // for Stackspace
+#include "lsptypes.h"     // for Listp
+#include "stack.h"        // for frameex1
+#include "vars3defs.h"    // for N_OP_arg0, N_OP_assoc, cadr
 
 /*******************************************
 cadr

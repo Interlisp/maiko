@@ -30,19 +30,17 @@
 */
 /**********************************************************************/
 
-#include "lispemul.h"
+#include "address.h"       // for POINTER_PAGEBASE
+#include "adr68k.h"        // for Addr68k_from_LADDR, Addr68k_from_LPAGE
+#include "car-cdrdefs.h"   // for N_OP_car, N_OP_cdr, N_OP_rplaca, N_OP_rplacd
+#include "cell.h"          // for freecons, conspage, FREECONS, CDR_INDIRECT
+#include "commondefs.h"    // for error
+#include "conspagedefs.h"  // for next_conspage
 #include "emlglob.h"
-#include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "gcdata.h"
-#include "cell.h"
-
-#include "car-cdrdefs.h"
-#include "commondefs.h"
-#include "conspagedefs.h"
-#include "gchtfinddefs.h"
+#include "gcdata.h"        // for GCLOOKUP, ADDREF, DELREF
+#include "lispemul.h"      // for ConsCell, LispPTR, DLword, NIL_PTR, state
+#include "lspglob.h"       // for ListpDTD
+#include "lsptypes.h"      // for Listp, dtd
 
 /************************************************************************/
 /*									*/

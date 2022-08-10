@@ -41,33 +41,30 @@
 
 
 */
-#include <stdint.h>
-#include <inttypes.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <string.h>
-
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lspglob.h"
+#include <inttypes.h>      // for PRIoPTR, PRIuPTR
+#include <setjmp.h>        // for longjmp, jmp_buf
+#include <stdint.h>        // for int8_t, uint8_t, uintptr_t
+#include <stdio.h>         // for printf, putchar, fflush, getchar, stdin
+#include <stdlib.h>        // for exit
+#include <string.h>        // for strlen
+#include "adr68k.h"        // for LADDR_from_68k, Addr68k_from_LADDR, Addr68...
+#include "array.h"         // for arrayheader
+#include "cell.h"          // for conspage, PNCell, GetDEFCELL68k, GetPnameCell
+#include "commondefs.h"    // for error
+#include "dbgtooldefs.h"   // for get_fn_fvar_name
+#include "debug.h"         // for PACKAGE
 #include "emlglob.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "debug.h"
-#include "dbprint.h"
-#include "tosfns.h"
-#include "array.h"
-
-#include "commondefs.h"
-#include "testtooldefs.h"
-#include "dbgtooldefs.h"
-#include "gcarraydefs.h"
-#include "kprintdefs.h"
-#include "mkatomdefs.h"
-#include "uraidextdefs.h"
+#include "gcarraydefs.h"   // for aref1
+#include "ifpage.h"        // for IFPAGE
+#include "kprintdefs.h"    // for print, prindatum
+#include "lispemul.h"      // for DLword, LispPTR, DLbyte, state, T, ConsCell
+#include "lispmap.h"       // for STK_OFFSET, ATOMS_HI
+#include "lspglob.h"       // for Package_from_Index_word, Stackspace
+#include "lsptypes.h"      // for GETWORD, dtd, GETBYTE, NEWSTRINGP, GetType...
+#include "mkatomdefs.h"    // for compare_chars, make_atom
+#include "stack.h"         // for Bframe, FX, fnhead, frameex1, BFRAMEPTR
+#include "testtooldefs.h"  // for print_package_name, GETTOPVAL, MAKEATOM
+#include "uraidextdefs.h"  // for URaid_scanlink
 
 #define URSCAN_ALINK 0
 #define URSCAN_CLINK 1

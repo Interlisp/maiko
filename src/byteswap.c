@@ -19,13 +19,8 @@
 /*                                                                         */
 /***************************************************************************/
 
-#include "hdw_conf.h"
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "stack.h"
-
 #include "byteswapdefs.h"
+#include "lsptypes.h"
 
 /****************************************************************/
 /*                                                              */

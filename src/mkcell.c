@@ -27,20 +27,16 @@
 */
 /**********************************************************************/
 
-#include "lispemul.h"
-#include "lispmap.h"
+#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage
+#include "commondefs.h"    // for error
 #include "emlglob.h"
+#include "gcdata.h"        // for DELREF, GCLOOKUP
+#include "lispemul.h"      // for LispPTR, DLword, NIL, POINTERMASK, state
+#include "lispmap.h"       // for S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "cell.h"
-#include "gcdata.h"
-
-#include "mkcelldefs.h"
-#include "allocmdsdefs.h"
-#include "commondefs.h"
-#include "gchtfinddefs.h"
+#include "lsptypes.h"      // for dtd, GETWORD, GetDTD
+#include "mkcelldefs.h"    // for N_OP_createcell, createcell68k
 #ifdef DTDDEBUG
 #include "testtooldefs.h"
 #endif

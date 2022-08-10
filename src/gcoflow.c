@@ -29,23 +29,13 @@
 
 #include "version.h"
 
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "gcdata.h"
+#include "gcdata.h"       // for htoverflow, REC_GCLOOKUP
+#include "gcoflowdefs.h"  // for gc_handleoverflow, gcmaptable
+#include "gcrdefs.h"      // for doreclaim
+#include "lispemul.h"     // for NIL, DLword, LispPTR
+#include "lspglob.h"      // for Reclaim_cnt_word, HToverflow, MaxTypeNumber...
+#include "lsptypes.h"     // for dtd, GetDTD, TYPE_LISTP
 
-#include "gcoflowdefs.h"
-#include "gchtfinddefs.h"
-#include "gcrdefs.h"
-
-#define MAXSMALLP 65535
-#define HTBIGENTRYSIZE 4
-#define WORDSPERPAGE 256
-#define MAXTYPENUMBER INIT_TYPENUM
-#define Oddp(num) ((((num) % 2) != 0) ? 1 : 0)
-#define Evenp(num, prim) ((((num) % (prim)) == 0) ? 1 : 0)
 #define Increment_Allocation_Count(n) \
   if (*Reclaim_cnt_word != NIL) {     \
     if (*Reclaim_cnt_word > (n))      \

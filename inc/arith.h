@@ -9,6 +9,13 @@
 /*									*/
 /************************************************************************/
 
+#include "adr68k.h"    // for Addr68k_from_LADDR, LADDR_from_68k
+#include "commondefs.h" // for error
+#include "lispemul.h"  // for SEGMASK, ERROR_EXIT
+#include "lispmap.h"   // for S_NEGATIVE, S_POSITIVE
+#include "lsptypes.h"  // for TYPE_FIXP, GetTypeNumber, TYPE_FLOATP
+#include "mkcelldefs.h" // for createcell68k
+
 #define MAX_SMALL 65535  /* == 0x0000FFFF  */
 #define MIN_SMALL (-65536) /* == 0xFFFF0000  */
 

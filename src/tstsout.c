@@ -13,23 +13,15 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/file.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <fcntl.h>           // for open
+#include <stdio.h>           // for printf, perror, fprintf, sprintf, SEEK_SET
+#include <stdlib.h>          // for exit
+#include <string.h>          // for strncmp
+#include <fcntl.h>           // for O_RDONLY
+#include <unistd.h>          // for close, lseek, read
 
-#include "adr68k.h"
-#include "lispemul.h"
-#include "lsptypes.h"
-#include "lispmap.h"
-#include "lspglob.h"
-#include "ifpage.h"
-#include "dbprint.h"
-#include "byteswapdefs.h"
+#include "byteswapdefs.h"    // for word_swap_page
+#include "ifpage.h"          // for IFPAGE
 
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */

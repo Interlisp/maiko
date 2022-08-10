@@ -8,7 +8,8 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
-#include "setjmp.h" /* for jmp_buf */
+#include <setjmp.h> /* for jmp_buf */
+#include <unistd.h> /* for alarm */
 
 extern jmp_buf jmpbuf;
 

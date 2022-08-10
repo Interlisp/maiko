@@ -16,7 +16,6 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/file.h>
-#include <unistd.h>
 
 #include "lispemul.h"
 #include "lispmap.h"

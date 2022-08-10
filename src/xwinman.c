@@ -11,20 +11,19 @@
 
 #include "version.h"
 
-#include <stdio.h>
-
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-
-#include "lispemul.h"
-#include "miscstat.h"
-#include "devif.h"
-#include "xdefs.h"
-#include "xscroll.h"
-#include "xwinmandefs.h"
-#include "keyeventdefs.h"
-#include "xlspwindefs.h"
-#include "xscrolldefs.h"
+#include <X11/X.h>         // for Button1, Cursor, ButtonPress, Button2, But...
+#include <X11/Xlib.h>      // for XEvent, XMoveResizeWindow, XAnyEvent, XBut...
+#include <stdio.h>         // for printf
+#include <sys/types.h>     // for u_char
+#include "devif.h"         // for (anonymous), MRegion, DefineCursor, OUTER_...
+#include "keyeventdefs.h"  // for kb_trans
+#include "lispemul.h"      // for PUTBASEBIT68K, FALSE, TRUE, DLword, state
+#include "miscstat.h"      // for MISCSTATS
+#include "version.h"
+#include "xdefs.h"         // for XLOCK, XUNLOCK
+#include "xlspwindefs.h"   // for DoRing
+#include "xscrolldefs.h"   // for JumpScrollHor, JumpScrollVer, Scroll, Scro...
+#include "xwinmandefs.h"   // for Set_BitGravity, beep_Xkeyboard, bound, dis...
 
 int Mouse_Included = FALSE;
 

@@ -22,18 +22,13 @@
 */
 /**********************************************************************/
 
-#include "lispemul.h"
+#include "car-cdrdefs.h"   // for N_OP_rplacd
+#include "conspagedefs.h"  // for cons
 #include "emlglob.h"
+#include "lispemul.h"      // for LispPTR, state, ERROR_EXIT, NIL_PTR
 #include "lspglob.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "gcdata.h"
-#include "cell.h"
-
-#include "rplconsdefs.h"
-#include "car-cdrdefs.h"
-#include "conspagedefs.h"
+#include "lsptypes.h"      // for Listp
+#include "rplconsdefs.h"   // for N_OP_rplcons
 
 /***************************************************/
 

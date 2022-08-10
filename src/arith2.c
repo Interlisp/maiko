@@ -9,19 +9,12 @@
 /************************************************************************/
 
 #include "version.h"
-
-#include <stdio.h>
-#include "lispemul.h"
+#include "arith.h"       // for N_IGETNUMBER, N_ARITH_SWITCH, N_GETNUMBER
+#include "arith2defs.h"  // for N_OP_difference, N_OP_greaterp, N_OP_idiffer...
+#include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
+#include "lispemul.h"    // for state, ERROR_EXIT, LispPTR, ATOM_T, NIL_PTR
 #include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
 #include "lsptypes.h"
-#include "medleyfp.h"
-#include "arith.h"
-
-#include "arith2defs.h"
-#include "fpdefs.h"
-#include "mkcelldefs.h"
 
 /************************************************************
 N_OP_plus2

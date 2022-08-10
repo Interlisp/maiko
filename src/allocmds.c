@@ -25,21 +25,15 @@
 */
 /**********************************************************************/
 
-#include "lispemul.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "cell.h"
-#include "lispmap.h"
-#include "initatms.h"
-#include "lspglob.h"
-
-#include "allocmdsdefs.h"
-#include "commondefs.h"
-#include "gcrdefs.h"
-#include "perrnodefs.h"
-#include "storagedefs.h"
-#include "timerdefs.h"
+#include "address.h"       // for LOLOC                                                                                                                                     
+#include "adr68k.h"        // for LADDR_from_68k, LPAGE_from_68k, Addr68k_fr...                                                                                             
+#include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage                                                                                                                
+#include "commondefs.h"    // for error                                                                                                                                     
+#include "lispemul.h"      // for DLword, LispPTR, DLWORDSPER_PAGE, MDSINCRE...                                                                                             
+#include "lispmap.h"       // for S_POSITIVE                                                                                                                                
+#include "lspglob.h"       // for MDStypetbl                                                                                                                                
+#include "lsptypes.h"      // for GETWORD, GetTypeNumber, TYPE_SMALLP                                                                                                       
+#include "storagedefs.h"   // for newpage, checkfor_storagefull                                                                                                             
 
 /************************************************************************/
 /*									*/

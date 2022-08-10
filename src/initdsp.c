@@ -15,43 +15,34 @@
  *	Author	:	Osamu Nakamura
  */
 
-#include <stdio.h>
-#include <unistd.h>
-
+#include <unistd.h>       // for getpagesize
+#ifdef BYTESWAP
+#include "byteswapdefs.h"
+#endif
+#include "dbprint.h"      // for DBPRINT, TPRINT
+#include "devconf.h"      // for SUN2BW
+#include "devif.h"        // for (anonymous), MRegion, DevRec, DspInterface
+#include "display.h"      // for DLWORD_PERLINE, DISPLAYBUFFER
+#include "emlglob.h"
+#include "ifpage.h"       // for IFPAGE
+#include "initdspdefs.h"  // for clear_display, display_before_exit, flush_d...
+#include "lispemul.h"     // for DLword, BITSPER_DLWORD, T
+#include "lspglob.h"
+#include "lsptypes.h"
+#ifdef XWINDOW
+#include "xcursordefs.h"  // for Init_XCursor
+#endif
 
 #ifdef OS4
 #include <vfork.h>
 #endif /* OS4 */
 
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
-#include "emlglob.h"
-#include "display.h"
-#include "devconf.h"
-
-#include "bb.h"
-#include "bitblt.h"
-#include "pilotbbt.h"
-#include "dbprint.h"
-
-#include "initdspdefs.h"
-#ifdef BYTESWAP
-#include "byteswapdefs.h"
-#endif
-#ifdef XWINDOW
-#include "xcursordefs.h"
-#endif
 
 #ifdef DOS
 #define getpagesize() 512
 #endif /* DOS */
 
 #if defined(XWINDOW) || defined(DOS)
-#include "devif.h"
 DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
 #endif /* DOS */

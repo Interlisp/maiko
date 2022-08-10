@@ -11,24 +11,20 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <setjmp.h>
-#include <fcntl.h>
-#include <string.h> /* for memset */
-#include <sys/select.h> /* for fd_set */
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "lspglob.h"
+#include <fcntl.h>         // for fcntl, F_GETFL, O_RDONLY, O_RDWR
+#include <setjmp.h>        // for setjmp, jmp_buf
+#include <stdio.h>         // for fflush, fprintf, printf, getchar, stderr
+#include <stdlib.h>        // for exit
+#include <string.h>        // for memset
+#include <sys/select.h>    // for fd_set
+#include "commondefs.h"    // for error, stab, warn
+#include "dbprint.h"       // for DBPRINT
 #include "emlglob.h"
-#include "stack.h"
-#include "dbprint.h"
-
-#include "commondefs.h"
-#include "kprintdefs.h"
-#include "uraiddefs.h"
-#include "uraidextdefs.h"
+#include "kprintdefs.h"    // for print
+#include "lispemul.h"      // for NIL, DLword, LispPTR
+#include "lspglob.h"
+#include "uraiddefs.h"     // for device_after_raid, device_before_raid, ura...
+#include "uraidextdefs.h"  // for URMAXFXNUM, URaid_inputstring, URaid_FXarray
 
 void stab() { DBPRINT(("Now in stab\n")); }
 

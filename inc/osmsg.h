@@ -15,6 +15,7 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include "osmsgdefs.h"   // for flush_pty
 
 #define	OSMESSAGE_PRINT(print_exp)		\
   {						\

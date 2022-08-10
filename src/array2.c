@@ -7,8 +7,6 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
-
 /************************************************************************/
 /*									*/
 /*			    A R R A Y 2 . C				*/
@@ -16,21 +14,13 @@
 /*	Contains N_OP_misc4, the ASET opcode.				*/
 /*									*/
 /************************************************************************/
-
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
+#include "version.h"
+#include "array2defs.h"  // for N_OP_misc4
 #include "emlglob.h"
-#include "gcdata.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
-
-#include "array2defs.h"
-#include "gchtfinddefs.h"
+#include "lispemul.h"    // for state, LispPTR, ERROR_EXIT
+#include "lspglob.h"
+#include "lsptypes.h"
+#include "my.h"          // for N_GetPos, aset_switch
 
 /************************************************************************/
 /*									*/

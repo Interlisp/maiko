@@ -9,15 +9,13 @@
 
 #include "version.h"
 
-#include <stdio.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "lsptypes.h"
+#include <stdio.h>         // for printf
 #include "emlglob.h"
-#include "gcdata.h"
-#include "testtooldefs.h"
-#include "gcdefs.h"
-#include "gchtfinddefs.h"
+#include "gcdata.h"        // for GCLOOKUPV
+#include "gcdefs.h"        // for OP_gcref
+#include "lspglob.h"
+#include "lsptypes.h"      // for state, ByteCode, PC, TopOfStack, Get_code_...
+#include "testtooldefs.h"  // for printPC
 
 /************************************************************
 

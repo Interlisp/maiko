@@ -16,20 +16,16 @@
 /*	Floating-point arithmetic code.					*/
 /*									*/
 /************************************************************************/
-#include <stdio.h>
-#include <math.h>
-#include "lispemul.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "emlglob.h"
-#include "mkcelldefs.h"
-#include "arith.h"
-#include "my.h"
-#include "medleyfp.h"
 
-#include "fpdefs.h"
+#include "adr68k.h"      // for LADDR_from_68k
+#include "emlglob.h"
+#include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
+#include "lispemul.h"    // for state, LispPTR, DLword, ERROR_EXIT, ATOM_T
+#include "lspglob.h"
+#include "lsptypes.h"    // for TYPE_FLOATP
+#include "medleyfp.h"    // for FPCLEAR, FPTEST
+#include "mkcelldefs.h"  // for createcell68k
+#include "my.h"          // for N_MakeFloat
 
 /************************************************************
         N_OP_fplus2       -- op 350

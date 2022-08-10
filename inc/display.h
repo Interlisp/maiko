@@ -10,7 +10,6 @@
 /*									*/
 /************************************************************************/
 #include "lispemul.h" /* for DLword */
-#include "version.h" /* for UNSIGNED */
 
 #define BCPLDISPLAY	stdout
 

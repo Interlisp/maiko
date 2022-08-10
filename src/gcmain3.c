@@ -33,25 +33,21 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h> /* for sprintf */
-#include "lispemul.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "address.h"
-#include "adr68k.h"
-#include "lspglob.h"
+#include <stdio.h>        // for sprintf
+#include "address.h"      // for VAG2
+#include "adr68k.h"       // for Addr68k_from_LADDR, Addr68k_from_StkOffset
+#include "commondefs.h"   // for error
 #include "emlglob.h"
-#include "stack.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "gcdata.h"
-
-#include "gcmain3defs.h"
-#include "commondefs.h"
-#include "gchtfinddefs.h"
-#include "gcrcelldefs.h"
-#include "gcscandefs.h"
-
+#include "gcdata.h"       // for GCENTRY, REC_GCLOOKUP, STKREF, hashentry
+#include "gcmain3defs.h"  // for gcmapscan, gcmapunscan, gcscanstack
+#include "gcrcelldefs.h"  // for gcreccell
+#include "gcscandefs.h"   // for gcscan1, gcscan2
+#include "ifpage.h"       // for IFPAGE
+#include "lispemul.h"     // for LispPTR, DLword, NIL, FRAMESIZE, POINTERMASK
+#include "lispmap.h"      // for HTMAIN_SIZE, STK_HI
+#include "lspglob.h"      // for HTcoll, HTmain, InterfacePage
+#include "lsptypes.h"
+#include "stack.h"        // for Bframe, fnhead, frameex1, STK_BF, STK_FSB
 
 #define WORDSPERCELL 2
 #define MAXHTCNT 63
