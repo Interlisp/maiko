@@ -124,12 +124,7 @@ SET(MAIKO_SRCS
     src/arith2.c
     src/arith3.c
     src/arith4.c
-    src/array2.c
-    src/array3.c
-    src/array4.c
-    src/array5.c
-    src/array6.c
-    src/array.c
+    src/arrayops.c
     src/asmbbt.c
     src/bbtsub.c
     src/bin.c
@@ -227,12 +222,7 @@ SET(MAIKO_HDRS
     inc/arith3defs.h
     inc/arith4defs.h
     inc/arith.h
-    inc/array2defs.h
-    inc/array3defs.h
-    inc/array4defs.h
-    inc/array5defs.h
-    inc/array6defs.h
-    inc/arraydefs.h
+    inc/arrayopsdefs.h
     inc/array.h
     inc/bb.h
     inc/bbtsubdefs.h
