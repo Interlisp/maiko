@@ -397,9 +397,7 @@ LispPTR vmem_save(char *sysout_file_name)
   for (i = 0; i < vmemsize; i++) {
     if (GETPAGEOK(fptovp, i) != 0177777) {
       int oldfptovp = GETFPTOVP(fptovp, i);
-#ifdef DEBUG
       int saveoldfptovp = oldfptovp;
-#endif
       int contig_pages = 0;
       register char *base_addr;
 

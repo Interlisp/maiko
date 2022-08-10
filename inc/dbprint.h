@@ -43,7 +43,7 @@ extern int flushing;
 #define DBPRINT(X) do {printf X ; if (flushing) fflush(stdout); } while(0)
 #define DEBUGGER(X) X
 #else
-#define DBPRINT(X) do {} while(0)
+#define DBPRINT(X) if (0) do {printf X ; } while(0)
 #define DEBUGGER(X)
 #endif
 
@@ -55,7 +55,7 @@ extern int flushing;
 #define TRACER(X) X
 #else /* TRACE */
 
-#define TPRINT(X) do { } while (0)
+#define TPRINT(X) if (0) do {  printf X; } while (0)
 #define TRACER(X)
 #endif /* TRACE */
 
@@ -67,7 +67,7 @@ extern int flushing;
 #define OPTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
 #define OPTRACER(X) X
 #else
-#define OPTPRINT(X) do { } while (0)
+#define OPTPRINT(X) if (0) do {  printf X; } while (0)
 #define OPTRACER(X)
 #endif
 
@@ -78,7 +78,7 @@ extern int flushing;
 #define FNTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
 #define FNTRACER(X)  X
 #else
-#define FNTPRINT(X) do { } while (0)
+#define FNTPRINT(X) if (0) do {  printf X; } while (0)
 #define FNTRACER(X)
 #endif
 
@@ -89,7 +89,7 @@ extern int flushing;
 #define FNCHKPRINT(X) do { printf X ; if (flushing) fflush(stdout); } while (0)
 #define FNCHECKER(X) X
 #else
-#define FNCHKPRINT(X) do { } while (0)
+#define FNCHKPRINT(X) if (0) do {  printf X; } while (0)
 #define FNCHECKER(X)
 #endif
 
