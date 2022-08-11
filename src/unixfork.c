@@ -270,7 +270,7 @@ int fork_Unix() {
       perror("Error reading packet by slave");
       exit(0);
     } else if (len != 6) {
-      DBPRINT(("Input packet wrong length: %d", len));
+      DBPRINT(("Input packet wrong length: %zd", len));
       exit(0);
     }
     slot = IOBuf[3];
@@ -420,7 +420,7 @@ int fork_Unix() {
           IOBuf[1] = pid & 0xFF;
           IOBuf[0] = (pid >> 8) & 0xFF;
         }
-        DBPRINT(("wait3 returned pid = %d.\n", pid));
+        DBPRINT(("wait3 returned pid = %ld.\n", (long)pid));
       }
 
       break;

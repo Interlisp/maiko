@@ -107,7 +107,7 @@ LispPTR aref1(LispPTR array, int index) {
     printf("Invalid index in GC's AREF1:  0x%x\n", index);
     printf(" Array size limit:  0x%x\n", actarray->totalsize);
     printf(" Array ptr: 0x%x\n", array);
-    printf(" Array 68K ptr: %p\n", actarray);
+    printf(" Array 68K ptr: %p\n", (void *)actarray);
     printf("base:     0x%x\n", actarray->base);
     printf("offset:   0x%x\n", actarray->offset);
     printf("type #:   0x%x\n", actarray->typenumber);

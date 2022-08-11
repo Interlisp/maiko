@@ -527,15 +527,15 @@ void printarrayblock(LispPTR base) {
   printf("          Length: %d cells.\n\n", bbase->arlen);
 
   addr = ((LispPTR *)bbase) - 20;
-  for (; addr < (LispPTR *)bbase; addr++) printf("%p	%8x\n", addr, *addr);
-  printf("%p	%8x <- array header\n", addr, *addr);
+  for (; addr < (LispPTR *)bbase; addr++) printf("%p	%8x\n", (void *)addr, *addr);
+  printf("%p	%8x <- array header\n", (void *)addr, *addr);
   addr++;
-  for (; addr < (LispPTR *)bbase + 20; addr++) printf("%p	%8x\n", addr, *addr);
+  for (; addr < (LispPTR *)bbase + 20; addr++) printf("%p	%8x\n", (void *)addr, *addr);
   printf(". . .\n");
 
   addr = ((LispPTR *)btrailer) - 20;
-  for (; addr < (LispPTR *)btrailer; addr++) printf("%p	%8x\n", addr, *addr);
-  printf("%p	%8x <- array trailer\n", addr, *addr);
+  for (; addr < (LispPTR *)btrailer; addr++) printf("%p	%8x\n", (void *)addr, *addr);
+  printf("%p	%8x <- array trailer\n", (void *)addr, *addr);
   addr++;
-  for (; addr < (LispPTR *)btrailer + 20; addr++) printf("%p	%8x\n", addr, *addr);
+  for (; addr < (LispPTR *)btrailer + 20; addr++) printf("%p	%8x\n", (void *)addr, *addr);
 }

@@ -189,7 +189,7 @@ void init_display2(DLword *display_addr, int display_max)
   init_cursor();
   DisplayByteSize = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
 
-  DBPRINT(("Display address: 0x%x\n", DisplayRegion68k));
+  DBPRINT(("Display address: %p\n", (void *)DisplayRegion68k));
   DBPRINT(("        length : 0x%x\n", DisplayByteSize));
   DBPRINT(("        pg size: 0x%x\n", getpagesize()));
 
@@ -327,13 +327,13 @@ void byte_swapped_displayregion(int x, int y, int w, int h)
 /*									*/
 /************************************************************************/
 
-void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
+void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h)
 {
   int y;
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
 
 #if (defined(XWINDOW) || defined(DOS))
-  TPRINT(("Enter flush_display_lineregion x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
+  TPRINT(("Enter flush_display_lineregion x=%p, y=%d, w=%d, h=%d\n", (void *)x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);
   TPRINT(("Exit flush_display_lineregion\n"));
 #endif /* DOS */
@@ -356,7 +356,7 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h)
 
 #define BITSPERWORD 16
 
-void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h)
+void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h)
 {
   int y, x, baseoffset;
   baseoffset = (((DLword *)ybase) - DisplayRegion68k);

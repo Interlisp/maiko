@@ -356,7 +356,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   fnobj = (struct fnhead *)Addr68k_from_LADDR(fnblockaddr);
 
   printf("***DUMP Func Obj << ");
-  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), (void *)fnobj);
 
   print(fnobj->framename);
   putchar('\n');
@@ -375,7 +375,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   for (i = 20; i < (fnobj->startpc); i += 2) {
     int word;
     word = (int)(0xffff & (GETWORD((DLword *)(scratch + i))));
-    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), scratch + i, word, word);
+    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), (void *)(scratch + i), word, word);
   }
 
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
@@ -1196,8 +1196,8 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
 
       badblock:
         SD_morep;
-        printf("\n0x%x: Invalid, %x %x", LADDR_from_68k(stkptr), GETWORD(stkptr),
-               GETWORD(stkptr + 1));
+        printf("\n0x%x: Invalid, %x %x", LADDR_from_68k(stkptr), GETWORD((DLword *)stkptr),
+               GETWORD((DLword *)(stkptr + 1)));
       incptr:
         stkptr = (STKH *)(((DLword *)stkptr) + 2);
         break;

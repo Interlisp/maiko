@@ -108,8 +108,8 @@ void describedsp(DspInterface dsp) {
   printf("BytesPerLine= %d\n", dsp->BytesPerLine);
   printf("DisplayStartAddr= %d\n", dsp->DisplayStartAddr);
 #endif /* DOS */
-  printf("bitblt_to_screen= %p\n", dsp->bitblt_to_screen);
-  printf("cleardisplay= %p\n", dsp->cleardisplay);
+  printf("bitblt_to_screen= %p\n", (void *)dsp->bitblt_to_screen);
+  printf("cleardisplay= %p\n", (void *)dsp->cleardisplay);
 #ifdef DOS
   printf("mouse_visible= %d\n", dsp->mouse_visible);
   printf("mouse_invisible= %d\n", dsp->mouse_invisible);

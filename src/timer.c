@@ -473,7 +473,7 @@ static void int_timer_init()
   timert.it_interval.tv_usec = timert.it_value.tv_usec = TIMER_INTERVAL;
   setitimer(ITIMER_VIRTUAL, &timert, NULL);
 
-  DBPRINT(("Timer interval set to %d usec\n", timert.it_value.tv_usec));
+  DBPRINT(("Timer interval set to %ld usec\n", (long)timert.it_value.tv_usec));
 #endif /* DOS */
 }
 

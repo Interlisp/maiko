@@ -333,7 +333,7 @@ SCAN:
       StackWord *orig68k = scanptr68k;
 #endif
       while (STKWORD(scanptr68k)->flags != STK_BF) {
-        S_WARN(STKWORD(scanptr68k)->flags == STK_NOTFLG, "NOTFLG not on", scanptr68k);
+        S_WARN(STKWORD(scanptr68k)->flags == STK_NOTFLG, "NOTFLG not on", (void *)scanptr68k);
         scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
       };
 
@@ -602,7 +602,7 @@ void stack_check(StackWord *start68k) {
         top_ivar = (DLword *)scanptr68k;
         while (STKWORD(scanptr68k)->flags != STK_BF) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
-            WARN("StackCheck:!=STK_NOTFLG", printf("content:0x%x\n", GETWORD(scanptr68k)));
+            WARN("StackCheck:!=STK_NOTFLG", printf("content:0x%x\n", GETWORD((DLword *)scanptr68k)));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */;
@@ -623,7 +623,7 @@ void stack_check(StackWord *start68k) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", (void *)scanptr68k, (void *)endstack68k));
       }
     }
   } /* while end */
@@ -700,7 +700,7 @@ void walk_stack(StackWord *start68k) {
   printf("  End of stack = 0x%tx.\n\n", (DLword *)endstack68k - Stackspace);
 
   if (STKWORD(endstack68k)->flags != STK_GUARD)
-    printf("?? endstack is not GUARD BLK\nendstack = %p, flags = %d\n\n", endstack68k,
+    printf("?? endstack is not GUARD BLK\nendstack = %p, flags = %d\n\n", (void *)endstack68k,
            STKWORD(endstack68k)->flags);
 
   while (scanptr68k < endstack68k) {
@@ -771,7 +771,7 @@ void walk_stack(StackWord *start68k) {
         while (STKWORD(scanptr68k)->flags != STK_BF) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
             printf("%04tx:  Bad BF IVAR 0x%x\n", (DLword *)scanptr68k - Stackspace,
-                   GETWORD(scanptr68k));
+                   GETWORD((DLword *)scanptr68k));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */;
@@ -793,7 +793,7 @@ void walk_stack(StackWord *start68k) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", (void *)scanptr68k, (void *)endstack68k));
       }
     }
   } /* while end */
@@ -896,7 +896,7 @@ int quick_stack_check(void) {
         while (STKWORD(scanptr68k)->flags != STK_BF) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
             warn("StackCheck:!=STK_NOTFLG");
-            printf("content:0x%x\n", GETWORD(scanptr68k));
+            printf("content:0x%x\n", GETWORD((DLword *)scanptr68k));
             return(1);
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
@@ -915,7 +915,7 @@ int quick_stack_check(void) {
     if (scanptr68k != start68k) {
       if (scanptr68k > endstack68k) {
         WARN("scanptr exceeded end stack",
-             printf("scanptr68k=%p endstack68k=%p", scanptr68k, endstack68k));
+             printf("scanptr68k=%p endstack68k=%p", (void *)scanptr68k, (void *)endstack68k));
       }
     }
   } /* while end */

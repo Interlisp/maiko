@@ -718,7 +718,7 @@ void nt(LispPTR index)
   }
 
   printf("***DUMP Func Header << ");
-  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), (void *)fnobj);
   print(index);
   putchar('\n');
 
