@@ -126,19 +126,4 @@
     }                                                        \
   } while (0)
 
-#define N_IARITH_BODY_2(a, tos, op)  \
-  do {                               \
-    register int arg1, arg2;         \
-                                     \
-    N_IGETNUMBER(a, arg1, do_ufn);   \
-    N_IGETNUMBER(tos, arg2, do_ufn); \
-                                     \
-    arg1 = arg1 op arg2;             \
-                                     \
-    N_ARITH_SWITCH(arg1);            \
-                                     \
-  do_ufn:                            \
-    ERROR_EXIT(tos);                 \
-  } while (0)
-
 #endif /* ARITH_H */
