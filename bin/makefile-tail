@@ -41,12 +41,7 @@ RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 OFILES = $(OBJECTDIR)arith2.o \
 	$(OBJECTDIR)arith3.o \
 	$(OBJECTDIR)arith4.o \
-	$(OBJECTDIR)array.o \
-	$(OBJECTDIR)array2.o \
-	$(OBJECTDIR)array3.o \
-	$(OBJECTDIR)array4.o \
-	$(OBJECTDIR)array5.o \
-	$(OBJECTDIR)array6.o \
+	$(OBJECTDIR)arrayops.o \
 	$(OBJECTDIR)bin.o \
 	$(OBJECTDIR)binds.o \
 	$(OBJECTDIR)bitblt.o \
@@ -267,26 +262,24 @@ $(OBJECTDIR)arith4.o: $(SRCDIR)arith4.c $(REQUIRED-INCS) \
 	$(INCDIR)mkcelldefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)arith4.c -o $(OBJECTDIR)arith4.o
 
-$(OBJECTDIR)array.o: $(SRCDIR)array.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)arraydefs.h \
-	$(INCDIR)mkcelldefs.h $(INCDIR)arith.h $(INCDIR)my.h
-	$(CC) $(RFLAGS) $(SRCDIR)array.c -o $(OBJECTDIR)array.o
-
-$(OBJECTDIR)array3.o: $(SRCDIR)array3.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h \
-	$(INCDIR)array3defs.h $(INCDIR)mkcelldefs.h $(INCDIR)arith.h $(INCDIR)my.h
-	$(CC) $(RFLAGS) $(SRCDIR)array3.c -o $(OBJECTDIR)array3.o
-
-$(OBJECTDIR)array5.o: $(SRCDIR)array5.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h \
-	$(INCDIR)array5defs.h $(INCDIR)mkcelldefs.h $(INCDIR)arith.h $(INCDIR)my.h
-	$(CC) $(RFLAGS) $(SRCDIR)array5.c -o $(OBJECTDIR)array5.o
+$(OBJECTDIR)arrayops.o: $(SRCDIR)arrayops.c $(REQUIRED-INCS) \
+	$(INCDIR)adr68k.h \
+	$(INCDIR)arrayopsdefs.h \
+	$(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h \
+	$(INCDIR)emlglob.h \
+	$(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h \
+	$(INCDIR)iopage.h \
+	$(INCDIR)miscstat.h \
+	$(INCDIR)lsptypes.h \
+	$(INCDIR)my.h \
+	$(INCDIR)arith.h \
+	$(INCDIR)commondefs.h \
+	$(INCDIR)mkcelldefs.h \
+	$(INCDIR)gcdata.h \
+	$(INCDIR)gchtfinddefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)arrayops.c -o $(OBJECTDIR)arrayops.o
 
 $(OBJECTDIR)bin.o: $(SRCDIR)bin.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
@@ -914,29 +907,6 @@ $(OBJECTDIR)vmemsave.o: $(SRCDIR)vmemsave.c $(REQUIRED-INCS) \
 	$(INCDIR)ufsdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)vmemsave.c -o $(OBJECTDIR)vmemsave.o
 
-$(OBJECTDIR)array2.o: $(SRCDIR)array2.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)gcdata.h \
-	$(INCDIR)mkcelldefs.h $(INCDIR)arith.h $(INCDIR)my.h $(INCDIR)array2defs.h \
-	$(INCDIR)gchtfinddefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)array2.c -o $(OBJECTDIR)array2.o
-
-$(OBJECTDIR)array4.o: $(SRCDIR)array4.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)mkcelldefs.h $(INCDIR)arith.h \
-	$(INCDIR)gcdata.h $(INCDIR)my.h $(INCDIR)array4defs.h $(INCDIR)gchtfinddefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)array4.c -o $(OBJECTDIR)array4.o
-
-$(OBJECTDIR)array6.o: $(SRCDIR)array6.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)gcdata.h \
-	$(INCDIR)mkcelldefs.h $(INCDIR)arith.h $(INCDIR)my.h $(INCDIR)array6defs.h \
-	$(INCDIR)gchtfinddefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)array6.c -o $(OBJECTDIR)array6.o
-
 $(OBJECTDIR)sxhash.o: $(SRCDIR)sxhash.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h \
@@ -957,9 +927,8 @@ $(OBJECTDIR)xc.o: $(SRCDIR)xc.c $(REQUIRED-INCS) \
 	$(INCDIR)initatms.h $(INCDIR)gcdata.h $(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)tos1defs.h $(INCDIR)tosret.h $(INCDIR)tosfns.h $(INCDIR)inlineC.h \
 	$(INCDIR)xcdefs.h $(INCDIR)arith2defs.h $(INCDIR)arith3defs.h \
-	$(INCDIR)arith4defs.h $(INCDIR)arraydefs.h $(INCDIR)array2defs.h \
-	$(INCDIR)array3defs.h $(INCDIR)array4defs.h $(INCDIR)array5defs.h \
-	$(INCDIR)array6defs.h $(INCDIR)bitbltdefs.h $(INCDIR)bltdefs.h \
+	$(INCDIR)arith4defs.h $(INCDIR)arrayopsdefs.h  \
+	$(INCDIR)bitbltdefs.h $(INCDIR)bltdefs.h \
 	$(INCDIR)byteswapdefs.h $(INCDIR)car-cdrdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)conspagedefs.h $(INCDIR)drawdefs.h $(INCDIR)eqfdefs.h \
 	$(INCDIR)findkeydefs.h $(INCDIR)fpdefs.h $(INCDIR)fvardefs.h \
