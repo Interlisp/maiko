@@ -48,7 +48,7 @@
 /*									*/
 /*									*/
 /*	Register conventions within arithmetic functions in the files	*/
-/*	arith2.c - arith4.c, etc.:					*/
+/*	arithops.c, etc.:						*/
 /*									*/
 /*		esi	first argument to the function			*/
 /*		edi	second argument to the function			*/

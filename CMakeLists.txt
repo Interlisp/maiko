@@ -121,9 +121,7 @@ SET(BAD_SRCS
 
 SET(MAIKO_SRCS
     src/allocmds.c
-    src/arith2.c
-    src/arith3.c
-    src/arith4.c
+    src/arithops.c
     src/arrayops.c
     src/asmbbt.c
     src/bbtsub.c
@@ -218,9 +216,7 @@ SET(MAIKO_HDRS
     inc/address.h
     inc/adr68k.h
     inc/allocmdsdefs.h
-    inc/arith2defs.h
-    inc/arith3defs.h
-    inc/arith4defs.h
+    inc/arithopsdefs.h
     inc/arith.h
     inc/arrayopsdefs.h
     inc/array.h

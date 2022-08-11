@@ -57,9 +57,7 @@
 #include "inlineC.h"
 
 #include "xcdefs.h"
-#include "arith2defs.h"
-#include "arith3defs.h"
-#include "arith4defs.h"
+#include "arithopsdefs.h"
 #include "arrayopsdefs.h"
 #include "bitbltdefs.h"
 #include "bltdefs.h"

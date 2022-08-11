@@ -38,9 +38,7 @@ REQUIRED-INCS = $(INCDIR)version.h $(INCDIR)maiko/platform.h
 CFLAGS = $(OPTFLAGS) $(DFLAGS)
 RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
-OFILES = $(OBJECTDIR)arith2.o \
-	$(OBJECTDIR)arith3.o \
-	$(OBJECTDIR)arith4.o \
+OFILES = $(OBJECTDIR)arithops.o \
 	$(OBJECTDIR)arrayops.o \
 	$(OBJECTDIR)bin.o \
 	$(OBJECTDIR)binds.o \
@@ -240,27 +238,21 @@ $(OBJECTDIR)allocmds.o: $(SRCDIR)allocmds.c $(REQUIRED-INCS) \
 	$(INCDIR)timerdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)allocmds.c -o $(OBJECTDIR)allocmds.o
 
-$(OBJECTDIR)arith2.o: $(SRCDIR)arith2.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
-	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)medleyfp.h $(INCDIR)arith.h \
-	$(INCDIR)arith2defs.h $(INCDIR)fpdefs.h $(INCDIR)mkcelldefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)arith2.c -o $(OBJECTDIR)arith2.o
-
-$(OBJECTDIR)arith3.o: $(SRCDIR)arith3.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
-	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
-	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)cell.h \
-	$(INCDIR)arith.h $(INCDIR)arith3defs.h $(INCDIR)mkcelldefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)arith3.c -o $(OBJECTDIR)arith3.o
-
-$(OBJECTDIR)arith4.o: $(SRCDIR)arith4.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
-	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
-	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)cell.h \
-	$(INCDIR)medleyfp.h $(INCDIR)arith.h $(INCDIR)arith4defs.h $(INCDIR)fpdefs.h \
-	$(INCDIR)mkcelldefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)arith4.c -o $(OBJECTDIR)arith4.o
+$(OBJECTDIR)arithops.o: $(SRCDIR)arithops.c $(REQUIRED-INCS) \
+	$(INCDIR)adr68k.h \
+	$(INCDIR)arith.h \
+	$(INCDIR)commondefs.h \
+	$(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h \
+	$(INCDIR)lsptypes.h \
+	$(INCDIR)mkcelldefs.h \
+	$(INCDIR)arithopsdefs.h \
+	$(INCDIR)fpdefs.h \
+	$(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h \
+	$(INCDIR)iopage.h \
+	$(INCDIR)miscstat.h
+	$(CC) $(RFLAGS) $(SRCDIR)arithops.c -o $(OBJECTDIR)arithops.o
 
 $(OBJECTDIR)arrayops.o: $(SRCDIR)arrayops.c $(REQUIRED-INCS) \
 	$(INCDIR)adr68k.h \
@@ -926,8 +918,7 @@ $(OBJECTDIR)xc.o: $(SRCDIR)xc.c $(REQUIRED-INCS) \
 	$(INCDIR)miscstat.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)cell.h \
 	$(INCDIR)initatms.h $(INCDIR)gcdata.h $(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)tos1defs.h $(INCDIR)tosret.h $(INCDIR)tosfns.h $(INCDIR)inlineC.h \
-	$(INCDIR)xcdefs.h $(INCDIR)arith2defs.h $(INCDIR)arith3defs.h \
-	$(INCDIR)arith4defs.h $(INCDIR)arrayopsdefs.h  \
+	$(INCDIR)xcdefs.h $(INCDIR)arithopsdefs.h $(INCDIR)arrayopsdefs.h  \
 	$(INCDIR)bitbltdefs.h $(INCDIR)bltdefs.h \
 	$(INCDIR)byteswapdefs.h $(INCDIR)car-cdrdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)conspagedefs.h $(INCDIR)drawdefs.h $(INCDIR)eqfdefs.h \
