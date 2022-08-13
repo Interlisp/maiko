@@ -23,7 +23,7 @@ N_OP_plus2
         return(tos + b)
 ************************************************************/
 
-LispPTR N_OP_plus2(int tosm1, int tos) {
+LispPTR N_OP_plus2(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -58,7 +58,7 @@ doufn:
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_iplus2(int tosm1, int tos) {
+LispPTR N_OP_iplus2(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -92,7 +92,7 @@ N_OP_difference
         return(a - tos)
 ************************************************************/
 
-LispPTR N_OP_difference(int tosm1, int tos) {
+LispPTR N_OP_difference(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -119,7 +119,7 @@ doufn:
   return (N_OP_fdifference(tosm1, tos));
 }
 
-LispPTR N_OP_idifference(int tosm1, int tos) {
+LispPTR N_OP_idifference(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -150,7 +150,7 @@ N_OP_logxor
         return(tosm1 ^ tos)
 ************************************************************/
 
-LispPTR N_OP_logxor(int tosm1, int tos) {
+LispPTR N_OP_logxor(LispPTR tosm1, LispPTR tos) {
     int arg1, arg2;
 
     N_IGETNUMBER(tosm1, arg1, do_ufn);
@@ -169,7 +169,7 @@ N_OP_logand
         entry		LOGAND2		OPCODE[0345]
         return(tosm1 & tos)
 ************************************************************/
-LispPTR N_OP_logand(int tosm1, int tos) {
+LispPTR N_OP_logand(LispPTR tosm1, LispPTR tos) {
     int arg1, arg2;
 
     N_IGETNUMBER(tosm1, arg1, do_ufn);
@@ -188,7 +188,7 @@ N_OP_logor
         entry		LOGOR2		OPCODE[0344]
         return(tosm1 | tos)
 ************************************************************/
-LispPTR N_OP_logor(int tosm1, int tos) {
+LispPTR N_OP_logor(LispPTR tosm1, LispPTR tos) {
       int arg1, arg2;
 
     N_IGETNUMBER(tosm1, arg1, do_ufn);
@@ -209,7 +209,7 @@ N_OP_greaterp
         return(tosm1 > tos)
 
 ************************************************************/
-LispPTR N_OP_greaterp(int tosm1, int tos) {
+LispPTR N_OP_greaterp(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
 
   N_GETNUMBER(tosm1, arg1, do_ufn);
@@ -224,7 +224,7 @@ do_ufn:
   return (N_OP_fgreaterp(tosm1, tos));
 }
 
-LispPTR N_OP_igreaterp(int tosm1, int tos) {
+LispPTR N_OP_igreaterp(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
 
   N_IGETNUMBER(tosm1, arg1, do_ufn);
@@ -244,7 +244,7 @@ N_OP_iplusn
         entry		IPLUS.N		OPCODE[0335]
         return(tos + n)
 ************************************************************/
-LispPTR N_OP_iplusn(int tos, int n) {
+LispPTR N_OP_iplusn(LispPTR tos, int n) {
   int arg1;
   int result;
 
@@ -274,7 +274,7 @@ N_OP_idifferencen
         entry		IDIFFERENCE.N		OPCODE[0336]
         return(tos - n)
 ************************************************************/
-LispPTR N_OP_idifferencen(int tos, int n) {
+LispPTR N_OP_idifferencen(LispPTR tos, int n) {
   int arg1;
   int result;
 
@@ -308,7 +308,7 @@ do_ufn:
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_makenumber(int tosm1, int tos) {
+LispPTR N_OP_makenumber(LispPTR tosm1, LispPTR tos) {
   int result;
 
   if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) ERROR_EXIT(tos);
@@ -326,7 +326,7 @@ LispPTR N_OP_makenumber(int tosm1, int tos) {
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_boxiplus(int a, int tos) {
+LispPTR N_OP_boxiplus(LispPTR a, LispPTR tos) {
   int arg2;
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
@@ -349,7 +349,7 @@ bad:
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_boxidiff(int a, int tos) {
+LispPTR N_OP_boxidiff(LispPTR a, LispPTR tos) {
   int arg2;
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
@@ -369,7 +369,7 @@ bad:
 
 */
 /**********************************************************************/
-LispPTR N_OP_times2(int tosm1, int tos) {
+LispPTR N_OP_times2(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -398,7 +398,7 @@ doufn:
 
 } /* end N_OP_times2 */
 
-LispPTR N_OP_itimes2(int tosm1, int tos) {
+LispPTR N_OP_itimes2(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -433,7 +433,7 @@ doufn:
 
 */
 /**********************************************************************/
-LispPTR N_OP_quot(int tosm1, int tos) {
+LispPTR N_OP_quot(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -451,7 +451,7 @@ doufn:
 
 } /* end N_OP_quot */
 
-LispPTR N_OP_iquot(int tosm1, int tos) {
+LispPTR N_OP_iquot(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 
@@ -475,7 +475,7 @@ doufn:
 */
 /**********************************************************************/
 
-LispPTR N_OP_iremainder(int tosm1, int tos) {
+LispPTR N_OP_iremainder(LispPTR tosm1, LispPTR tos) {
   int arg1, arg2;
   int result;
 

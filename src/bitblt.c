@@ -59,7 +59,7 @@ extern int MonoOrColor;
 /**                                                                         **/
 /*****************************************************************************/
 
-LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
+LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;

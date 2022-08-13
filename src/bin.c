@@ -31,7 +31,7 @@
 #include "lsptypes.h"  // for state, ERROR_EXIT, GetTypeNumber, Get_BYTE
 #include "stream.h"    // for Stream
 
-LispPTR N_OP_bin(register int tos) {
+LispPTR N_OP_bin(LispPTR tos) {
   register Stream *stream68k; /* stream instance on TOS */
   register char *buff68k;     /* pointer to BUFF */
 
