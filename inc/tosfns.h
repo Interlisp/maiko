@@ -368,7 +368,7 @@
       }                                                                                        \
       LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(defcell->defpointer);                    \
       BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + fn_opcode_size;              \
-      FNTPRINT(("Saving PC = 0%o (0x%x).\n", BCE_CURRENTFX->pc, PCMAC + fn_opcode_size));      \
+      FNTPRINT(("Saving PC = 0%o (%p).\n", BCE_CURRENTFX->pc, (void *)PCMAC + fn_opcode_size)); \
       FN_STACK_CHECK;                                                                          \
       APPLY_POP_PUSH_TEST;                                                                     \
       {                                                                                        \

@@ -196,7 +196,7 @@ LispPTR gcscanstack(void) {
     char debugStr[100];
     sprintf(debugStr,
             "Frame ptr (%p) not to word bound at start of gcscanstack.",
-            basicframe);
+            (void *)basicframe);
     error(debugStr);
   }
 
@@ -275,7 +275,7 @@ LispPTR gcscanstack(void) {
               sprintf(debugStr,
                       "Frame ptr (%p) not to word bound "
                       "in gcscanstack() STK_FX case; old frame = %p.",
-                      basicframe, obasicframe);
+                      (void *)basicframe, (void *)obasicframe);
               error(debugStr);
             }
 
@@ -296,7 +296,7 @@ LispPTR gcscanstack(void) {
                 sprintf(debugStr,
                         "Frame ptr (%p) not to word bound "
                         "in gcscanstack() scantemps; old frame = %p.",
-                        basicframe, obasicframe);
+                        (void *)basicframe, (void *)obasicframe);
                 error(debugStr);
               }
 
@@ -313,7 +313,7 @@ LispPTR gcscanstack(void) {
               sprintf(debugStr,
                       "Frame ptr (%p) not to word bound "
                       "in gcscanstack(), end scantemps; old frame = %p.",
-                      basicframe, obasicframe);
+                      (void *)basicframe, (void *)obasicframe);
               error(debugStr);
             }
 
@@ -333,7 +333,7 @@ LispPTR gcscanstack(void) {
             sprintf(debugStr,
                     "Frame ptr (%p) not to word bound "
                     "in gcscanstack() STK_GUARD; old frame = %p.",
-                    basicframe, obasicframe);
+                    (void *)basicframe, (void *)obasicframe);
             error(debugStr);
           }
         };
@@ -348,7 +348,7 @@ LispPTR gcscanstack(void) {
           sprintf(debugStr,
                   "Frame ptr (%p) not to word bound "
                   "in gcscanstack() STK_FSB; old frame = %p.",
-                  basicframe, obasicframe);
+                  (void *)basicframe, (void *)obasicframe);
           error(debugStr);
         }
 

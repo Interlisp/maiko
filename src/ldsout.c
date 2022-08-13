@@ -64,10 +64,10 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 #else
   DLword *fptovp; /* FPTOVP */
 #endif                /* BIGVM */
-  long fptovp_offset; /* FPTOVP start offset */
+  off_t fptovp_offset; /* FPTOVP start offset */
 
   char *lispworld_scratch; /* scratch area for lispworld */
-  long lispworld_offset;   /* lispworld offset */
+  size_t lispworld_offset;   /* lispworld offset */
 
   unsigned sysout_size; /* sysout size in page */
   struct stat stat_buf; /* file stat buf */
@@ -182,7 +182,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
   /* now you can access lispworld */
   Lisp_world = (DLword *)lispworld_scratch;
 
-  DBPRINT(("VM allocated = 0x%x at 0x%x\n", sys_size * MBYTE, Lisp_world));
+  DBPRINT(("VM allocated = 0x%x at %p\n", sys_size * MBYTE, (void *)Lisp_world));
   DBPRINT(("Native Load Address = 0x%x\n", native_load_address));
 
   /*
@@ -192,7 +192,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
   /* get FPTOVP location from IFPAGE */
   fptovp_offset = ifpage.fptovpstart;
 
-  DBPRINT(("FPTOVP Location %d \n", fptovp_offset));
+  DBPRINT(("FPTOVP Location %ld \n", (long)fptovp_offset));
 
   /* get sysout file size in halfpage(256) */
   if (fstat(sysout, &stat_buf) == -1) {
@@ -306,7 +306,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
       lispworld_offset = GETFPTOVP(fptovp, i) * BYTESPER_PAGE;
       if (read(sysout, lispworld_scratch + lispworld_offset, BYTESPER_PAGE) == -1) {
         printf("sysout_loader: can't read sysout file at %d\n", i);
-        printf("               offset was 0x%lx (0x%x pages).\n", lispworld_offset,
+        printf("               offset was 0x%zx (0x%x pages).\n", lispworld_offset,
                GETFPTOVP(fptovp, i));
         perror("read() error was");
         for (int j = 0; j < 10; j++) {

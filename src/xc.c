@@ -246,9 +246,7 @@ nextopcode:
   if ((struct fnhead *)Addr68k_from_LADDR(0x2ed600) == FuncObj) {
     quick_stack_check();
 #endif /* MYOPTRACE */
-
-    OPTPRINT(
-             ("PC= 0x%x (fn+%d) op= 0%o TOS= 0x%x\n", (int)PCMAC, (int)PCMAC - (int)FuncObj, Get_BYTE_PCMAC0, TOPOFSTACK));
+    OPTPRINT(("PC= %p (fn+%td) op= %02x TOS= 0x%x\n", (void *)PCMAC, PCMAC - (char *)FuncObj, Get_BYTE_PCMAC0, TOPOFSTACK));
 #ifdef MYOPTRACE
   }
 #endif /* MYOPTRACE */

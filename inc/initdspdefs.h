@@ -10,6 +10,6 @@ void display_before_exit(void);
 void flush_display_buffer(void);
 void flush_display_region(int x, int y, int w, int h);
 void byte_swapped_displayregion(int x, int y, int w, int h);
-void flush_display_lineregion(UNSIGNED x, DLword *ybase, UNSIGNED w, UNSIGNED h);
-void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, UNSIGNED w, UNSIGNED h);
+void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h);
+void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h);
 #endif

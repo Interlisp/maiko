@@ -372,7 +372,7 @@ static u_char *make_X_keymap() {
   for (i = 0; i < codecount * symspercode; i += symspercode) {
       printf("%d:", minkey + (i / symspercode));
       for (int j = 0; j < symspercode; j++) {
-          printf("\t %8x", mapping[i+j]);
+        printf("\t %8lx", (unsigned long)mapping[i+j]);
       }
       printf("\n");
   }

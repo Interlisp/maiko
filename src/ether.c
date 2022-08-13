@@ -480,7 +480,7 @@ int *ether_debug() {
 #ifdef MAIKO_ENABLE_ETHERNET
   estat[0] = 0;
   if (ether_fd < 0) return (NIL);
-  printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, ether_buf,
+  printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
          IOPage->dlethernet[3], ether_in, ether_out);
 #endif /* MAIKO_ENABLE_ETHERNET */
 

@@ -198,6 +198,6 @@ void tty_debug(const char *name)
 
   printf("DEBUG:\n");
   printf("DEBUG: \t\tSymbol       Address        Contents\n");
-  printf("DEBUG: \t\tIOPAGE       %p\n", Addr68k_from_LADDR(IOPAGE_OFFSET));
+  printf("DEBUG: \t\tIOPAGE       %p\n", (void *)Addr68k_from_LADDR(IOPAGE_OFFSET));
   /* In the future, we could print out the various fields of DLTTYOut, DLTTYIn, and DLTTYPortCmd */
 }

@@ -229,8 +229,8 @@ void build_lisp_map(void) {
   Defspace = (DLword *)Addr68k_from_LADDR(DEFS_OFFSET);
   Valspace = (DLword *)Addr68k_from_LADDR(VALS_OFFSET);
 
-  DBPRINT(("Stackspace = 0x%x.\n", Stackspace));
-  DBPRINT(("AtomHT = 0x%x.\n", AtomHT));
+  DBPRINT(("Stackspace = %p.\n", (void *)Stackspace));
+  DBPRINT(("AtomHT = %p.\n", (void *)AtomHT));
 
   ListpDTD = (struct dtd *)GetDTD(TYPE_LISTP);
 
@@ -280,8 +280,8 @@ void build_lisp_map(void) {
   Package_from_Index_word = MakeAtom68k("*PACKAGE-FROM-INDEX*");
   Package_from_Name_word = MakeAtom68k("*PACKAGE-FROM-NAME*");
   Keyword_Package_word = MakeAtom68k("*KEYWORD-PACKAGE*");
-  DBPRINT(("Package_from_Index_word = 0x%x.\n", Package_from_Index_word));
-  DBPRINT(("Package_from_Name_word  = 0x%x.\n", Package_from_Name_word));
+  DBPRINT(("Package_from_Index_word = %p\n", (void *)Package_from_Index_word));
+  DBPRINT(("Package_from_Name_word  = %p\n", (void *)Package_from_Name_word));
 
   /*** The following atom-index cache is for CL:VALUES opcode JDS 4/5/89 ***/
 
@@ -299,7 +299,7 @@ void build_lisp_map(void) {
     Deleted_Implicit_Hash_Slot_word = (LispPTR *)malloc(4);
     *Deleted_Implicit_Hash_Slot_word = NIL;
   } else {
-    DBPRINT(("%d %d %d %d %d", Stackspace, Plistspace, DTDspace, MDStypetbl, AtomHT));
+    DBPRINT(("%p %p %p %p %p", (void *)Stackspace, (void *)Plistspace, (void *)DTDspace, (void *)MDStypetbl, (void *)AtomHT));
 
     index = get_package_atom("*CLOSURE-CACHE-ENABLED*", 23, "SI", 2, NIL);
     Closure_Cache_Enabled_word = GetVALCELL68k(index);

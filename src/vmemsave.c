@@ -413,7 +413,7 @@ LispPTR vmem_save(char *sysout_file_name)
         contig_pages++, oldfptovp++, i++;
       }
       i--; /* Previous loop always overbumps i */
-      DBPRINT(("%4d: writing %d pages from %x (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
+      DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
 
 #ifdef BYTESWAP
       word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);

@@ -219,7 +219,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       }
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);
-      DBPRINT(("LispIOFds = 0x%x.\n", LispIOFds));
+      DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
       break;
 
@@ -273,7 +273,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);
-      DBPRINT(("LispIOFds = 0x%x.\n", LispIOFds));
+      DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
       break;
 

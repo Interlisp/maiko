@@ -328,7 +328,7 @@ int dlpi_devtype(int fd)
     case DL_FDDI: return (DLT_FDDI);
 #endif
     default:
-      fprintf(stderr, "%s: DLPI MACtype %d unknown, ", pname, dlp->info_ack.dl_mac_type);
+      fprintf(stderr, "%s: DLPI MACtype %ld unknown, ", pname, (long)dlp->info_ack.dl_mac_type);
       fprintf(stderr, "assuming ethernet.\n");
       return (DLT_EN10MB);
   }
