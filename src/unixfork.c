@@ -45,13 +45,11 @@
 int flushing = 0;
 #endif
 
-/* The following globals are used to communicate between Unix
-   subprocesses and LISP */
+/* Used to communicate between Unix subprocesses and LISP */
 
-long StartTime; /* Time, for creating pipe filenames */
-
-char shcom[512]; /* Here because I'm suspicious of */
-                 /* large allocations on the stack */
+static long StartTime;  /* Time, for creating pipe filenames */
+static char shcom[512]; /* Here because I'm suspicious of */
+                        /* large allocations on the stack */
 
 
 static inline ssize_t SAFEREAD(int f, char *b, int c)
