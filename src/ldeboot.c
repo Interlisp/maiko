@@ -26,6 +26,12 @@
 
 #ifdef USESUNSCREEN
 #include <sys/fbio.h>
+
+#define LDEMONO "ldesingle"
+#define LDECOLOR "ldemulti"
+#define LDETRUECOLOR "ldetruecolor"
+
+#define FBTYPE_SUNFAST_COLOR 12
 #endif /* USESUNSCREEN */
 
 #include "unixfork.h"
@@ -36,13 +42,7 @@
 #define LDEX "ldex"
 #endif /* XWINDOW */
 
-#define LDEMONO "ldesingle"
-#define LDECOLOR "ldemulti"
-#define LDETRUECOLOR "ldetruecolor"
 
-#define FBTYPE_SUNFAST_COLOR 12
-
-char filetorun[30];
 
 /************************************************************************/
 /*									*/
@@ -55,6 +55,7 @@ char filetorun[30];
 int main(int argc, char *argv[])
 {
   int i;
+  char filetorun[30];
 #ifdef USESUNSCREEN
   int FrameBufferFd;
   struct fbtype my_screen;
