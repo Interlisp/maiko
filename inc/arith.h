@@ -38,29 +38,27 @@
 
 #define N_GETNUMBER(sour, dest, label)                        \
   do {                                                        \
-    (dest) = (sour); /* access memory once */                 \
-    switch (SEGMASK & (dest)) {                               \
-      case S_POSITIVE: (dest) &= 0xFFFF; break;       \
-      case S_NEGATIVE: (dest) |= (int)0xFFFF0000; break; \
+    switch (SEGMASK & (sour)) {                               \
+    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFF); break;  \
+    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000); break; \
       default:                                                \
         /* NOLINTNEXTLINE(bugprone-macro-parentheses) */      \
-        if (GetTypeNumber(dest) != TYPE_FIXP) goto label;     \
-        (dest) = FIXP_VALUE(dest);                            \
+        if (GetTypeNumber(sour) != TYPE_FIXP) goto label;     \
+        (dest) = FIXP_VALUE(sour);                            \
     }                                                         \
   } while (0)
 
 #define N_IGETNUMBER(sour, dest, label)                                                   \
   do {                                                                                    \
-    (dest) = (sour); /* access memory once */                                             \
-    switch (SEGMASK & (dest)) {                                                           \
-      case S_POSITIVE: (dest) &= 0xFFFF; break;                                   \
-      case S_NEGATIVE: (dest) |= (int)0xFFFF0000; break; \
+    switch (SEGMASK & (sour)) {                                                           \
+    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFF); break;            \
+    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000); break;        \
       default:                                                                            \
-        switch (GetTypeNumber(dest)) {                                                    \
-          case TYPE_FIXP: (dest) = FIXP_VALUE(dest); break;               \
+        switch (GetTypeNumber(sour)) {                                                    \
+          case TYPE_FIXP: (dest) = FIXP_VALUE(sour); break;               \
           case TYPE_FLOATP: {                                                             \
             register float temp;                                                          \
-            temp = FLOATP_VALUE(dest);                                                    \
+            temp = FLOATP_VALUE(sour);                                                    \
             /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                              \
             if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) goto label; \
             (dest) = (int)temp;                                                           \
