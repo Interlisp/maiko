@@ -331,7 +331,7 @@ LispPTR N_OP_boxiplus(LispPTR a, LispPTR tos) {
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
     N_GETNUMBER(tos, arg2, bad);
-    *((LispPTR *)Addr68k_from_LADDR(a)) += arg2;
+    *((int *)Addr68k_from_LADDR(a)) += arg2;
     return (a);
   }
 bad:
@@ -354,7 +354,7 @@ LispPTR N_OP_boxidiff(LispPTR a, LispPTR tos) {
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
     N_GETNUMBER(tos, arg2, bad);
-    *((LispPTR *)Addr68k_from_LADDR(a)) -= arg2;
+    *((int *)Addr68k_from_LADDR(a)) -= arg2;
     return (a);
   }
 bad:
