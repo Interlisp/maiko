@@ -410,7 +410,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
       /* Now, let's see how many pages we can dump */
       while (GETFPTOVP(fptovp, i) == oldfptovp && i < vmemsize) {
-        contig_pages++, oldfptovp++, i++;
+        contig_pages++; oldfptovp++; i++;
       }
       i--; /* Previous loop always overbumps i */
       DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
