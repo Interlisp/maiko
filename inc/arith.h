@@ -75,39 +75,15 @@
       case 0: (result) = (S_POSITIVE | (int)(arg)); break;                 \
       case (int)0xFFFF0000: (result) = (S_NEGATIVE | (0xFFFF & (arg))); break; \
       default: {                                                           \
-        register LispPTR *wordp;                                           \
+        int *fixpp;                                           \
         /* arg is FIXP, call createcell */                                 \
-        wordp = (LispPTR *)createcell68k(TYPE_FIXP);                       \
-        *((int *)wordp) = (int)(arg);                                      \
-        (result) = (LADDR_from_68k(wordp));                                \
+        fixpp = (int *)createcell68k(TYPE_FIXP);                       \
+        *((int *)fixpp) = (int)(arg);                                      \
+        (result) = (LADDR_from_68k(fixpp));                                \
         break;                                                             \
       }                                                                    \
     }                                                                      \
   } while (0)
-
-/* *******
-        NEED to See if this is faster than the N_ARITH_SWITCH macro
-
-        if( (MIN_FIXP <= result) && (result <= MAX_FIXP) ){
-                if(0 <= result){
-                        if(result <= MAX_SMALL)
-                                return(S_POSITIVE | result);
-                        else{
-                                wordp = createcell68k(TYPE_FIXP);
-                                *((unsigned int *)wordp) = result;
-                                return(LADDR_from_68k(wordp));
-                        }
-                }else{
-                        if(MIN_SMALL <= result)
-                                return(S_NEGATIVE | (0xFFFF & result));
-                        else{
-                                wordp = createcell68k(TYPE_FIXP);
-                                *((unsigned int *)wordp) = result;
-                                return(LADDR_from_68k(wordp));
-                        }
-                }/
-        }
-****** */
 
 #define N_ARITH_SWITCH(arg)                                  \
   do {                                                       \
@@ -115,10 +91,10 @@
     case 0: return (LispPTR) (S_POSITIVE | (arg));                       \
     case (int)0xFFFF0000: return (LispPTR)(S_NEGATIVE | (0xFFFF & (arg))); \
       default: {                                             \
-        register LispPTR *fixpp;                             \
+        int *fixpp;                             \
         /* arg is FIXP, call createcell */                   \
-        fixpp = (LispPTR *)createcell68k(TYPE_FIXP);         \
-        *((int *)fixpp) = arg;                               \
+        fixpp = (int *)createcell68k(TYPE_FIXP);         \
+        *fixpp = arg;                                       \
         return (LADDR_from_68k(fixpp));                      \
       }                                                      \
     }                                                        \
