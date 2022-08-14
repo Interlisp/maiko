@@ -22,6 +22,7 @@
 #include <pwd.h>         // for getpwuid, passwd
 #endif
 #include <signal.h>      // for killpg, SIGTSTP
+#include <stddef.h>      // for size_t
 #include <stdio.h>       // for printf, NULL, snprintf, size_t
 #include <stdlib.h>      // for getenv
 #include <string.h>      // for strcmp, strcpy, strlen, strncpy
@@ -45,9 +46,9 @@
 /*									*/
 /************************************************************************/
 
-int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
-  register OneDArray *arrayp;
-  register char *base;
+static int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
+  OneDArray *arrayp;
+  char *base;
 
   if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
 
@@ -61,9 +62,9 @@ int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
       strncpy(C, base, arrayp->fillpointer);
 #else
       {
-        register int i, length;
-        register char *dp;
-        for (i = 0, dp = C, length = arrayp->fillpointer; i < length; i++) {
+        size_t l = arrayp->fillpointer;
+        char *dp = C;
+        for (size_t i = 0; i < l; i++) {
           *dp++ = (char)(GETBYTE(base++));
         }
       }
@@ -87,10 +88,10 @@ int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
 /*									*/
 /************************************************************************/
 
-int c_string_to_lisp_string(char *C, LispPTR Lisp) {
-  register OneDArray *arrayp;
+static int c_string_to_lisp_string(char *C, LispPTR Lisp) {
+  OneDArray *arrayp;
   char *base;
-  register size_t length;
+  size_t length;
 
   length = strlen(C);
   if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
@@ -106,9 +107,8 @@ int c_string_to_lisp_string(char *C, LispPTR Lisp) {
       strcpy(base, C);
 #else
       {
-        register size_t i;
-        register char *dp;
-        for (i = 0, dp = C; i < length + 1; i++) {
+        char *dp = C;
+        for (size_t i = 0; i < length + 1; i++) {
           char ch = *dp++;
 #ifdef DOS
           if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
