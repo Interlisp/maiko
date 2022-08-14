@@ -87,7 +87,7 @@ extern DspInterface currentdsp;
  *	to get Alto time.
  */
 
-int TIMEOUT_TIME = 10; /* For file system timeout, seconds, default 10 */
+unsigned int TIMEOUT_TIME = 10; /* For file system timeout, seconds, default 10 */
 
 volatile sig_atomic_t IO_Signalled = FALSE;
 
