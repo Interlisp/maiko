@@ -22,15 +22,22 @@
 #define MAX_FIXP 2147483647  /* == 0x7FFFFFFF  */
 #define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
-#define GetSmalldata(x)          \
-  (((SEGMASK & (x)) == S_POSITIVE)            \
-       ? (0xFFFF & (x))            \
-       : (((SEGMASK & (x)) == S_NEGATIVE) ? (0xFFFF0000 | (x)) : error("Not smallp address")))
+static inline int GetSmalldata(LispPTR x) {
+  if ((SEGMASK & (int)x) == S_POSITIVE) return (int)(x & 0xFFFF);
+  if ((SEGMASK & (int)x) == S_NEGATIVE) return (int)(x | 0xFFFF0000);
+  error("Not smallp address");
+  return (0);
+}
 
-#define GetSmallp(x)                                                                  \
-  ((0xFFFF0000 & (x)) ? (((0xFFFF0000 & (x)) == 0xFFFF0000) ? (S_NEGATIVE | (0xFFFF & (x))) \
-                                                        : error("Not Smallp data"))   \
-                    : (S_POSITIVE | (0xFFFF & (x))))
+static inline LispPTR GetSmallp(int x) {
+  if (x >= 0) {
+    if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
+  } else {
+    if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFF));
+  }
+  error("Not Smallp data");
+  return (S_POSITIVE | 0);
+}
 
 #define FIXP_VALUE(dest) *((int *)Addr68k_from_LADDR(dest))
 
