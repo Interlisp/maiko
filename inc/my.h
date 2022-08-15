@@ -26,13 +26,6 @@
 #include "lsptypes.h"    // for GETBYTE, GETWORD, GetTypeNumber, TYPE_FLOATP
 #include "mkcelldefs.h"  // for createcell68k
 
-#ifdef BIGVM
-#define IsNumber(address)     ((GETWORD(MDStypetbl +(((address) & 0x0fffff00)>>9))) & 0x1000)
-#else
-#define IsNumber(address)     ((GETWORD(MDStypetbl +(((address) & 0x0ffff00)>>9))) & 0x1000)
-#endif
-
-
 /************************************************************************/
 /*									*/
 /*			N _ M a k e F l o a t				*/

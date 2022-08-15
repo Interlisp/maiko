@@ -23,7 +23,7 @@
 #include "lispmap.h"   // for ATOM_OFFSET, S_CHARACTER, S_NEGATIVE, S_POSITIVE
 #include "lspglob.h"
 #include "lsptypes.h"  // for TYPE_FLOATP, GetTypeNumber, TYPE_FIXP, TYPE_SM...
-#include "my.h"        // for IsNumber, N_MakeFloat
+#include "my.h"        // for N_MakeFloat
 
 /************************************************************
 op 072   N_OP_eqlop	EQL
@@ -79,7 +79,7 @@ BIGNUM  (integer that can't be represented bigger than 32 bits)
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_clequal(int arg1, int arg2) {
+LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
   int type;
 
   if (arg2 == arg1) return (ATOM_T);
@@ -91,10 +91,10 @@ LispPTR N_OP_clequal(int arg1, int arg2) {
 
   /* can return NIL if one is a number and the other isn't */
 
-  if (IsNumber(arg1)) {
-    if (!IsNumber(arg2)) return (NIL);
+  if (Numberp(arg1)) {
+    if (!Numberp(arg2)) return (NIL);
   } else {
-    if (IsNumber(arg2)) {
+    if (Numberp(arg2)) {
       return (NIL);
     } else
       ERROR_EXIT(arg2);
@@ -128,7 +128,7 @@ LispPTR N_OP_clequal(int arg1, int arg2) {
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_eqlop(int arg1, int arg2) {
+LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
   int type;
 
   if (arg2 == arg1) return (ATOM_T);
@@ -153,7 +153,7 @@ LispPTR N_OP_eqlop(int arg1, int arg2) {
       return (NIL);
 
     default:
-      if (IsNumber(arg1)) {
+      if (Numberp(arg1)) {
         ERROR_EXIT(arg2);
       } else
         return (NIL);
@@ -169,7 +169,7 @@ LispPTR N_OP_eqlop(int arg1, int arg2) {
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_equal(int arg1, int arg2) {
+LispPTR N_OP_equal(LispPTR arg1, LispPTR arg2) {
   int type, type2;
 
   if (arg2 == arg1) return (ATOM_T);
@@ -183,10 +183,10 @@ arg1_small:
 
 arg2_small:
 
-  if (IsNumber(arg1)) {
-    if (!IsNumber(arg2)) return (NIL);
+  if (Numberp(arg1)) {
+    if (!Numberp(arg2)) return (NIL);
   } else {
-    if (IsNumber(arg2)) {
+    if (Numberp(arg2)) {
       return (NIL);
     } else
       ERROR_EXIT(arg2);
@@ -232,7 +232,7 @@ arg2_small:
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_eqq(int arg1, int arg2) /* CL:=    opcode 0377 */
+LispPTR N_OP_eqq(LispPTR arg1, LispPTR arg2) /* CL:=    opcode 0377 */
 
 {
   int type1, type2;

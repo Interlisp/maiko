@@ -631,6 +631,7 @@ typedef struct
 /* This MACRO is similar to LISTP */
 #define Listp(address)	(GetTypeNumber(address) == TYPE_LISTP)
 
+#define Numberp(address) (GetTypeEntry(address) & TT_NUMBERP)
 
 	/******************************************/
 	/*        Lisp's PATHNAME datatype        */
