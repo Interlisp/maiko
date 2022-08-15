@@ -17,7 +17,7 @@
 #include "adr68k.h"      // for Addr68k_from_LADDR, LADDR_from_68k
 #include "commondefs.h"  // for error
 #include "emlglob.h"
-#include "lisp2cdefs.h"  // for CIntToLispInt, LispIntToCInt, LispStringLength
+#include "lisp2cdefs.h"  // for CIntToLispInt, LispIntToCInt, LispStringSimpleLength
 #include "lispemul.h"    // for LispPTR
 #include "lispmap.h"     // for S_NEGATIVE, S_POSITIVE
 #include "lspglob.h"
@@ -31,7 +31,7 @@ int LispStringP(LispPTR object) {
   return ((type == THIN_CHAR_TYPENUMBER) || (type == FAT_CHAR_TYPENUMBER));
 }
 
-int LispStringLength(LispPTR lispstring) {
+int LispStringSimpleLength(LispPTR lispstring) {
   OneDArray *arrayp;
 
   arrayp = (OneDArray *)(Addr68k_from_LADDR(lispstring));

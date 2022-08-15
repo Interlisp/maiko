@@ -146,7 +146,7 @@ char *gettitlestring(LispPTR medleywin)
   if (((MedleyWindow)Cptr(medleywin))->WTITLE == NIL)
     titlestring = NULL;
   else {
-    strlen = LispStringLength(((MedleyWindow)Cptr(medleywin))->WTITLE);
+    strlen = LispStringSimpleLength(((MedleyWindow)Cptr(medleywin))->WTITLE);
     titlestring = (char *)malloc(strlen + 1);
     LispStringToCStr(((MedleyWindow)Cptr(medleywin))->WTITLE, titlestring);
   }
@@ -200,7 +200,7 @@ void setlineattributes(Display *display, DspInterface dspif, WindowInterface wif
   }
 
   if (mdash != NIL) {
-    l = LispStringLength(mdash);
+    l = LispStringSimpleLength(mdash);
     dash_list = (unsigned char *)malloc(l + 1);
     LispStringToCStr(mdash, dash_list);
 
@@ -2797,7 +2797,7 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
   /* if NATIVE_INFO has a string use it for the hostname */
   /* else use the environment var DISPLAY or "unix:0.0" */
   if (LispStringP(SCREEN->NATIVE_INFO)) {
-    strlen = LispStringLength(SCREEN->NATIVE_INFO);
+    strlen = LispStringSimpleLength(SCREEN->NATIVE_INFO);
     tmpstring = (char *)alloca(strlen + 1);
     LispStringToCStr(SCREEN->NATIVE_INFO, tmpstring);
     dspif->handle =
