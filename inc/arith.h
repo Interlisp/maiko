@@ -22,6 +22,9 @@
 #define MAX_FIXP 2147483647  /* == 0x7FFFFFFF  */
 #define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
+/**
+ * extract an integer value from a smallp
+ */
 static inline int GetSmalldata(LispPTR x) {
   if ((SEGMASK & (int)x) == S_POSITIVE) return (int)(x & 0xFFFF);
   if ((SEGMASK & (int)x) == S_NEGATIVE) return (int)(x | 0xFFFF0000);
@@ -29,12 +32,25 @@ static inline int GetSmalldata(LispPTR x) {
   return (0);
 }
 
-static inline LispPTR GetSmallp(int x) {
+/**
+ * construct a smallp from an integer value
+ */
+
+static inline LispPTR GetSmallp(long x) {
   if (x >= 0) {
     if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
   } else {
     if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFF));
   }
+  error("Not Smallp data");
+  return (S_POSITIVE | 0);
+}
+
+/**
+ * construct a smallp from an unsigned value
+ */
+static inline LispPTR GetPosSmallp(unsigned long x) {
+  if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
   error("Not Smallp data");
   return (S_POSITIVE | 0);
 }
