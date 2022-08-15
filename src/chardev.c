@@ -76,8 +76,8 @@ LispPTR CHAR_openfile(LispPTR *args)
 /* args[2]            errno */
 {
 #ifndef DOS
-  register int fd;    /* return value  of open system call. */
-  register int flags; /* open system call's argument */
+  int fd;    /* return value  of open system call. */
+  int flags; /* open system call's argument */
   /* struct stat statbuf; */
   char pathname[MAXPATHLEN];
 
@@ -128,8 +128,8 @@ LispPTR CHAR_closefile(LispPTR *args)
 /* args[1]            errno   */
 {
 #ifndef DOS
-  register int fd; /* file descriptor */
-  register int rval;
+  int fd; /* file descriptor */
+  int rval;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
   fd = LispNumToCInt(args[0]);
   ERRSETJMP(NIL);
@@ -174,7 +174,7 @@ LispPTR CHAR_ioctl(LispPTR *args)
 #ifndef DOS
   int fd, request;
   void *data;
-  register int rval;
+  int rval;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
   fd = LispNumToCInt(args[0]);
   request = LispNumToCInt(args[1]);
@@ -204,7 +204,7 @@ LispPTR CHAR_ioctl(LispPTR *args)
 LispPTR CHAR_bin(int fd, LispPTR errn)
 {
 #ifndef DOS
-  register int rval;
+  ssize_t rval;
   unsigned char ch[4];
   Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
   ERRSETJMP(NIL);
@@ -219,7 +219,7 @@ LispPTR CHAR_bin(int fd, LispPTR errn)
     *Lisp_errno = errno;
     return (NIL);
   }
-  return (GetSmallp(ch[0]));
+  return (GetPosSmallp(ch[0]));
 #endif /* DOS */
 }
 
@@ -236,7 +236,7 @@ LispPTR CHAR_bin(int fd, LispPTR errn)
 LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
 {
 #ifndef DOS
-  register int rval;
+  ssize_t rval;
   char buf[4];
   Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
   ERRSETJMP(NIL);
@@ -281,7 +281,8 @@ LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
 LispPTR CHAR_bins(LispPTR *args)
 {
 #ifndef DOS
-  register int fd, rval;
+  int fd;
+  ssize_t rval;
   char *buffer;
   int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
@@ -304,7 +305,7 @@ LispPTR CHAR_bins(LispPTR *args)
   word_swap_page((unsigned short *)buffer, (nbytes + 3) >> 2);
 #endif /* BYTESWAP */
 
-  return (GetSmallp(rval));
+  return (GetPosSmallp(rval));
 #endif /* DOS */
 }
 
@@ -332,7 +333,8 @@ LispPTR CHAR_bins(LispPTR *args)
 LispPTR CHAR_bouts(LispPTR *args)
 {
 #ifndef DOS
-  register int fd, rval;
+  int fd;
+  ssize_t rval;
   char *buffer;
   int nbytes;
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
