@@ -32,12 +32,12 @@
 
 /***************************************************/
 
-LispPTR N_OP_rplcons(register LispPTR list, register LispPTR item) {
+LispPTR N_OP_rplcons(LispPTR list, LispPTR item) {
 #ifndef NEWCDRCODING
-  register struct conspage *conspage;
-  register ConsCell *new_cell;
-  register ConsCell *list68k;
-  LispPTR register page;
+  struct conspage *conspage;
+  ConsCell *new_cell;
+  ConsCell *list68k;
+  LispPTR page;
 #endif
 
   if (!Listp(list)) ERROR_EXIT(item);

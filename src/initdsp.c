@@ -134,8 +134,8 @@ void clear_display() {
 #else /* COLOR */
 
 void clear_display() {
-  register short *word;
-  register int w, h;
+  short *word;
+  int w, h;
   if (MonoOrColor == MONO_SCREEN) {
 #ifndef DISPLAYBUFFER
     word = DisplayRegion68k;
@@ -238,7 +238,7 @@ void display_before_exit() {
 /*  Change as MACRO by osamu '90/02/08
  *  new macro definition is in display.h
 in_display_segment(baseaddr)
-  register DLword *baseaddr;
+  DLword *baseaddr;
   {
     if ((DisplayRegion68k <= baseaddr) &&
         (baseaddr <=DISP_MAX_Address))   return(T);
@@ -298,7 +298,7 @@ void flush_display_region(int x, int y, int w, int h)
 #ifdef BYTESWAP
 void byte_swapped_displayregion(int x, int y, int w, int h)
 {
-  register unsigned int *longptr;
+  unsigned int *longptr;
 
   /* Get QUAD byte aligned pointer */
   longptr = (unsigned int *)(((UNSIGNED)((DLword *)DisplayRegion68k + (DLWORD_PERLINE * y)) +

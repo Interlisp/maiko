@@ -59,10 +59,10 @@
  * @param[in] link Lisp page number of next cons page
  */
 
-static void init_conspage(register struct conspage *base, unsigned int link)
+static void init_conspage(struct conspage *base, unsigned int link)
 {
-  register ConsCell *cell;
-  register int j; /* DL-> int */
+  ConsCell *cell;
+  int j; /* DL-> int */
 
 #ifdef TRACE2
   printf("TRACE: init_conspage()\n");
@@ -116,10 +116,10 @@ static void init_conspage(register struct conspage *base, unsigned int link)
 struct conspage *next_conspage(void) {
   extern struct dtd *ListpDTD;
 
-  register struct conspage *page1; /* Allocated 1st MDS page */
-  register struct conspage *page2; /* Allocated 2nd MDS page */
+  struct conspage *page1; /* Allocated 1st MDS page */
+  struct conspage *page2; /* Allocated 2nd MDS page */
   struct conspage *pg, *priorpg;
-  register int next, prior;
+  int next, prior;
 
 #ifdef NEWCDRCODING
   /* Allocate 2 conspages and get 1st page base */
@@ -292,15 +292,15 @@ static ConsCell *find_free_cons_cell(void) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_cons(register int cons_car, register int cons_cdr) {
+LispPTR N_OP_cons(int cons_car, int cons_cdr) {
   extern struct dtd *ListpDTD;
 
-  register struct conspage *new_conspage;
-  register ConsCell *new_cell;
+  struct conspage *new_conspage;
+  ConsCell *new_cell;
 #ifndef NEWCDRCODING
-  register ConsCell *temp_cell;
+  ConsCell *temp_cell;
 #endif
-  register int new_page; /* hold the return  val of nextconspage ,DL->int */
+  int new_page; /* hold the return  val of nextconspage ,DL->int */
 
   GCLOOKUP(cons_cdr &= POINTERMASK, ADDREF);
   GCLOOKUP(cons_car, ADDREF);

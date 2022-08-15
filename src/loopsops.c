@@ -71,7 +71,7 @@ static const char il_string[] = "INTERLISP";
 
 #define INSTANCE_CLASS_OR_PUNT(obj, fn, argnum)                         \
   {                                                                     \
-    register LispPTR tmp = DTD_FROM_LADDR(obj);                         \
+    LispPTR tmp = DTD_FROM_LADDR(obj);                         \
     if (tmp != atom_instance && tmp != atom_class) RETCALL(fn, argnum); \
   }
 
@@ -80,8 +80,8 @@ static const char il_string[] = "INTERLISP";
 
 #define GET_IV_INDEX(objptr, iv, dest, otherwise)                 \
   {                                                               \
-    register struct LCIVCacheEntry *ce;                           \
-    register LispPTR iNames = (objptr)->iNames;                   \
+    struct LCIVCacheEntry *ce;                           \
+    LispPTR iNames = (objptr)->iNames;                   \
                                                                   \
     ce = &(LCIVCache[IV_CACHE_INDEX(iNames, iv)]);                \
     if (ce->iNames == iNames && ce->iv == (iv)) {                 \
@@ -90,7 +90,7 @@ static const char il_string[] = "INTERLISP";
       if (!Listp(iNames)) {                                       \
         otherwise;                                                \
       } else {                                                    \
-        register int i = 0;                                       \
+        int i = 0;                                       \
         while (1) {                                               \
           if (car(iNames) == (iv)) {                              \
             ce->iNames = (objptr)->iNames;                        \
@@ -151,7 +151,7 @@ LispPTR LCinit(void) {
 #ifdef NEVER
 int LCTypeOf(LispPTR thing, LispPTR typename)
 {
-  register struct dtd *dtd68k;
+  struct dtd *dtd68k;
 #ifdef BIGVM
   for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(thing)); typename != (dtd68k->dtd_name);
        dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
@@ -170,10 +170,10 @@ int LCTypeOf(LispPTR thing, LispPTR typename)
 
 /* Method lookup using global cache */
 
-LispPTR LCFetchMethodOrHelp(register LispPTR object, register LispPTR selector) {
-  register struct LCInstance *objptr;
-  register struct LCMethodCacheEntry *ce;
-  register LispPTR cur_class;
+LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
+  struct LCInstance *objptr;
+  struct LCMethodCacheEntry *ce;
+  LispPTR cur_class;
 
   LC_INIT;
 
@@ -188,10 +188,10 @@ LispPTR LCFetchMethodOrHelp(register LispPTR object, register LispPTR selector) 
     LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
 
     for (;;) {
-      register int i = 0;
-      register LispPTR val;
-      register LispPTR *selectorptr;
-      register struct LCClass *classptr;
+      int i = 0;
+      LispPTR val;
+      LispPTR *selectorptr;
+      struct LCClass *classptr;
 
       classptr = (struct LCClass *)Addr68k_from_LADDR(cur_class);
       if (classptr->selectors == NIL_PTR) {
@@ -221,8 +221,8 @@ LispPTR LCFetchMethodOrHelp(register LispPTR object, register LispPTR selector) 
   /*  return PUNT;*/
 }
 
-LispPTR LCFetchMethod(register LispPTR class, register LispPTR selector) {
-  register struct LCMethodCacheEntry *ce;
+LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
+  struct LCMethodCacheEntry *ce;
 
   LC_INIT;
 
@@ -234,14 +234,14 @@ LispPTR LCFetchMethod(register LispPTR class, register LispPTR selector) {
 
   if (!LC_TYPEP(class, atom_class)) RETCALL(atom_FetchMethod_LCUFN, 2);
   {
-    register LispPTR cur_class = class;
+    LispPTR cur_class = class;
     LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
 
     for (;;) {
-      register int i = 0;
-      register LispPTR val;
-      register struct LCClass *classptr;
-      register LispPTR *selectorptr;
+      int i = 0;
+      LispPTR val;
+      struct LCClass *classptr;
+      LispPTR *selectorptr;
 
       classptr = (struct LCClass *)Addr68k_from_LADDR(cur_class);
       if (classptr->selectors == NIL_PTR)
@@ -267,10 +267,10 @@ LispPTR LCFetchMethod(register LispPTR class, register LispPTR selector) {
   return NIL_PTR;
 }
 
-LispPTR LCFindVarIndex(register LispPTR iv, register LispPTR object) {
-  register struct LCInstance *objptr;
-  register struct LCIVCacheEntry *ce;
-  register LispPTR iNames;
+LispPTR LCFindVarIndex(LispPTR iv, LispPTR object) {
+  struct LCInstance *objptr;
+  struct LCIVCacheEntry *ce;
+  LispPTR iNames;
 
   LC_INIT;
 
@@ -283,7 +283,7 @@ LispPTR LCFindVarIndex(register LispPTR iv, register LispPTR object) {
   if (!Listp(iNames)) return NIL_PTR; /* FastFindIndex lisp macro (& others?) */
                                       /* needs this check too ! */
   {
-    register int i;
+    int i;
 
     for (i = 0; (iNames = cdr(iNames)) != NIL_PTR; i++) {
       if (car(iNames) == iv) {
@@ -298,10 +298,10 @@ LispPTR LCFindVarIndex(register LispPTR iv, register LispPTR object) {
 
 #if 01
 
-LispPTR LCGetIVValue(register LispPTR object, register LispPTR iv) {
-  register struct LCInstance *objptr;
-  register LispPTR val;
-  register int index;
+LispPTR LCGetIVValue(LispPTR object, LispPTR iv) {
+  struct LCInstance *objptr;
+  LispPTR val;
+  int index;
 
   LC_INIT;
   INSTANCE_OR_PUNT(object, atom_GetIVValue_LCUFN, 2);
@@ -317,10 +317,10 @@ pnut:
   */
 }
 
-LispPTR LCPutIVValue(register LispPTR object, register LispPTR iv, register LispPTR val) {
-  register struct LCInstance *objptr;
-  register LispPTR *valptr;
-  register int index;
+LispPTR LCPutIVValue(LispPTR object, LispPTR iv, LispPTR val) {
+  struct LCInstance *objptr;
+  LispPTR *valptr;
+  int index;
 
   LC_INIT;
   INSTANCE_OR_PUNT(object, atom_PutIVValue_LCUFN, 3);
@@ -341,15 +341,15 @@ pnut:
 
 #endif
 
-LispPTR lcfuncall(register unsigned int atom_index, register int argnum, register int bytenum)
+LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
 /* Atomindex for Function to invoke */
 /* Number of ARGS on TOS and STK */
 /* Number of bytes of Caller's
    OPCODE(including multi-byte) */
 {
-  register struct definition_cell *defcell68k; /* Definition Cell PTR */
-  register short pv_num;                       /* scratch for pv */
-  register struct fnhead *tmp_fn;
+  struct definition_cell *defcell68k; /* Definition Cell PTR */
+  short pv_num;                       /* scratch for pv */
+  struct fnhead *tmp_fn;
   int rest; /* use for alignments */
 
   if (atom_index == 0xffffffff) error("Loops punt to nonexistent fn");

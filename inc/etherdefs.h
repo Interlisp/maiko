@@ -13,5 +13,5 @@ int *ether_debug(void);
 LispPTR check_ether(void);
 void init_ifpage_ether(void);
 void init_ether(void);
-LispPTR check_sum(register LispPTR *args);
+LispPTR check_sum(LispPTR *args);
 #endif

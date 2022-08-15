@@ -42,11 +42,11 @@
     AFTER_CONTEXTSW;                                                                         \
     CHECK_FX(fx68k);                                                                         \
   }
-static FX *make_FXcopy(register FX *fx68k) {
-  register int size;
+static FX *make_FXcopy(FX *fx68k) {
+  int size;
   int nametbl_on_stk = NIL;
-  register DLword *new68k;
-  register Bframe *retbf68k;
+  DLword *new68k;
+  Bframe *retbf68k;
 
 #ifdef FLIPCURSOR
   flip_cursorbar(5);
@@ -141,10 +141,10 @@ static FX *make_FXcopy(register FX *fx68k) {
 /********************************************************************/
 
 int slowreturn(void) {
-  register DLword *next68k;
-  register DLword *freeptr;
-  register Bframe *currentBF;
-  register FX *returnFX;
+  DLword *next68k;
+  DLword *freeptr;
+  Bframe *currentBF;
+  FX *returnFX;
 
   S_CHECK(SLOWP(CURRENTFX), "CURRENTFX not SLOWP");
 

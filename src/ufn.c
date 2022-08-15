@@ -55,12 +55,12 @@
 
 void ufn(DLword bytecode)
 {
-  register DefCell *defcell68k; /* Definition Cell PTR */
-  register int pv_num;          /* scratch for pv */
-  register UFN *entry68k;
-  register struct fnhead *tmp_fn;
-  register unsigned int arg_num; /* Num of args */
-  register int rest;             /* use for alignments */
+  DefCell *defcell68k; /* Definition Cell PTR */
+  int pv_num;          /* scratch for pv */
+  UFN *entry68k;
+  struct fnhead *tmp_fn;
+  unsigned int arg_num; /* Num of args */
+  int rest;             /* use for alignments */
 
 #ifdef TRACE
   printPC();

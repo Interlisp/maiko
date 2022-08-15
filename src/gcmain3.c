@@ -94,10 +94,10 @@
 
 
 LispPTR gcmapscan(void) {
-  register GCENTRY probe;
-  register GCENTRY *entry;
+  GCENTRY probe;
+  GCENTRY *entry;
   GCENTRY offset, dbgcontents;
-  register LispPTR ptr;
+  LispPTR ptr;
 
   probe = HTMAIN_ENTRY_COUNT;
 nextentry:
@@ -105,8 +105,8 @@ nextentry:
     entry = (GCENTRY *)HTmain + probe;
   retry:
     if (HENTRY->collision) {
-      register GCENTRY *prev;
-      register GCENTRY *link;
+      GCENTRY *prev;
+      GCENTRY *link;
       LispPTR content;
 
       prev = (GCENTRY *)0;
@@ -140,8 +140,8 @@ nextentry:
 }
 
 LispPTR gcmapunscan(void) {
-  register GCENTRY probe;
-  register GCENTRY *entry;
+  GCENTRY probe;
+  GCENTRY *entry;
   GCENTRY offset;
 
   probe = HTMAIN_ENTRY_COUNT;
@@ -149,8 +149,8 @@ LispPTR gcmapunscan(void) {
     entry = (GCENTRY *)HTmain + probe;
   retry:
     if (HENTRY->collision) {
-      register GCENTRY *prev;
-      register GCENTRY *link;
+      GCENTRY *prev;
+      GCENTRY *link;
 
       prev = (GCENTRY *)0;
       link = (GCENTRY *)(HTcoll + GetLinkptr(HTLPTR->contents));
@@ -181,7 +181,7 @@ LispPTR gcmapunscan(void) {
 }
 
 LispPTR gcscanstack(void) {
-  register Bframe *basicframe;
+  Bframe *basicframe;
   Bframe *obasicframe;
   LispPTR scanptr, scanend;
   UNSIGNED scanend68K;
@@ -207,11 +207,11 @@ LispPTR gcscanstack(void) {
     switch (ftyp) {
       case STK_FX: {
         {
-          register struct frameex1 *frameex;
-          register struct fnhead *fnheader;
+          struct frameex1 *frameex;
+          struct fnhead *fnheader;
           frameex = (struct frameex1 *)basicframe;
           {
-            register LispPTR fn_head;
+            LispPTR fn_head;
 #ifdef BIGVM
             fn_head = (LispPTR)(frameex->fnheader);
 #else
@@ -221,34 +221,34 @@ LispPTR gcscanstack(void) {
             fnheader = (struct fnhead *)Addr68k_from_LADDR(fn_head);
           };
           {
-            register int pcou;
-            register LispPTR *pvars;
+            int pcou;
+            LispPTR *pvars;
             pvars = (LispPTR *)((DLword *)basicframe + FRAMESIZE);
             for (pcou = fnheader->nlocals; pcou-- != 0;) {
-              register LispPTR value;
+              LispPTR value;
               value = *pvars;
               if
                 Boundp(BIND_BITS(value)) Stkref(value);
               ++pvars;
             }; /* for */
-          };   /* register int pcou */
+          };   /* int pcou */
 
           {
-            register UNSIGNED qtemp;
-            register UNSIGNED next;
-            register UNSIGNED ntend;
+            UNSIGNED qtemp;
+            UNSIGNED next;
+            UNSIGNED ntend;
 
             next = qtemp = (UNSIGNED)Addr68k_from_StkOffset(frameex->nextblock);
             /* this is offset */
             ntend = 0; /* init flag */
             if (frameex->validnametable) {
-              register LispPTR nametable;
+              LispPTR nametable;
 #ifdef BIGVM
               nametable = frameex->nametable;
 #define hi2nametable (nametable >> 16)
 #else
-              register unsigned int hi2nametable;
-              register unsigned int lonametable;
+              unsigned int hi2nametable;
+              unsigned int lonametable;
               lonametable = frameex->lonametable;
               hi2nametable = frameex->hi2nametable;
               nametable = VAG2(hi2nametable, lonametable);
@@ -281,7 +281,7 @@ LispPTR gcscanstack(void) {
 
           scantemps:
             while ((UNSIGNED)basicframe < (UNSIGNED)qtemp) {
-              register LispPTR value;
+              LispPTR value;
               value = *((LispPTR *)basicframe);
               if
                 Boundp(BIND_BITS(value)) Stkref(value);
@@ -356,7 +356,7 @@ LispPTR gcscanstack(void) {
       };
       default: /* must be basic frame !! */
       {
-        register LispPTR bf_word;
+        LispPTR bf_word;
         while (STK_BF != BF_FLAGS(bf_word = *((LispPTR *)basicframe))) {
           Stkref(PTR_BITS(bf_word));
           basicframe++;
@@ -365,7 +365,7 @@ LispPTR gcscanstack(void) {
       };
 
         /* **** NOTE THIS CODE DOES NOT COMPILE CORRECTLY ON THE SUN 4
-           {register LispPTR bf_word;
+           {LispPTR bf_word;
            while(STK_BF != BF_FLAGS(
            bf_word = *((LispPTR *)basicframe++)))
            { Stkref(PTR_BITS(bf_word));

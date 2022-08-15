@@ -389,7 +389,7 @@
  do_partial_transfer						\
  dst32addr++;							\
  switch (op)							\
- { register int cnt;						\
+ { int cnt;						\
    case op_repl_src: ForInner { DestGetsF(=)  } break;		\
    case op_fn_and:   ForInner { DestGetsF(&=) } break;		\
    case op_fn_or:    ForInner { DestGetsF(|=) } break;		\
@@ -416,14 +416,14 @@
  if (aligned_loop)						\
  {								\
    if (src_comp) switch (op)					\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {*dst32addr++  = ~*src32addr++;} break;	\
      case op_fn_and:   ForInner {*dst32addr++ &= ~*src32addr++;} break;	\
      case op_fn_or:    ForInner {*dst32addr++ |= ~*src32addr++;} break;	\
      case op_fn_xor:   ForInner {*dst32addr++ ^= ~*src32addr++;} break;	\
    }									\
    else switch (op)							\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {*dst32addr++  = *src32addr++;} break;	\
      case op_fn_and:   ForInner {*dst32addr++ &= *src32addr++;} break;	\
      case op_fn_or:    ForInner {*dst32addr++ |= *src32addr++;} break;	\
@@ -433,14 +433,14 @@
  else									\
  {									\
    if (src_comp) switch (op)						\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {GetSrcCF DestGetsF(=)  } break;	\
      case op_fn_and:   ForInner {GetSrcCF DestGetsF(&=) } break;	\
      case op_fn_or:    ForInner {GetSrcCF DestGetsF(|=) } break;	\
      case op_fn_xor:   ForInner {GetSrcCF DestGetsF(^=) } break;	\
    }									\
    else switch (op)							\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {GetSrcF  DestGetsF(=)  } break;	\
      case op_fn_and:   ForInner {GetSrcF  DestGetsF(&=) } break;	\
      case op_fn_or:    ForInner {GetSrcF  DestGetsF(|=) } break;	\
@@ -470,14 +470,14 @@
  if (aligned_loop)						\
  {								\
    if (src_comp) switch (op)					\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {*dst32addr--  = ~*src32addr--;} break;	\
      case op_fn_and:   ForInner {*dst32addr-- &= ~*src32addr--;} break;	\
      case op_fn_or:    ForInner {*dst32addr-- |= ~*src32addr--;} break;	\
      case op_fn_xor:   ForInner {*dst32addr-- ^= ~*src32addr--;} break;	\
    }									\
    else switch (op)							\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {*dst32addr--  = *src32addr--;} break;	\
      case op_fn_and:   ForInner {*dst32addr-- &= *src32addr--;} break;	\
      case op_fn_or:    ForInner {*dst32addr-- |= *src32addr--;} break;	\
@@ -487,14 +487,14 @@
  else									\
  {									\
    if (src_comp) switch (op)						\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {GetSrcCB DestGetsB(=)  } break;	\
      case op_fn_and:   ForInner {GetSrcCB DestGetsB(&=) } break;	\
      case op_fn_or:    ForInner {GetSrcCB DestGetsB(|=) } break;	\
      case op_fn_xor:   ForInner {GetSrcCB DestGetsB(^=) } break;	\
    }									\
    else switch (op)							\
-   { register int cnt;							\
+   { int cnt;							\
      case op_repl_src: ForInner {GetSrcB  DestGetsB(=)  } break;	\
      case op_fn_and:   ForInner {GetSrcB  DestGetsB(&=) } break;	\
      case op_fn_or:    ForInner {GetSrcB  DestGetsB(|=) } break;	\
@@ -698,7 +698,7 @@
 /*	However, YOU must set up the control variables that are used	*/
 /*	as "arguments" to the bitblt code:				*/
 /*									*/
-/*	register DLword	*srcbase, *dstbase;				*/
+/*	DLword	*srcbase, *dstbase;				*/
 /*	int	sx, dx, w, h, srcbpl, dstbpl, backwardflg;		*/
 /*	int	src_comp, op, gray, num_gray, curr_gray_line;		*/
 /*									*/
@@ -713,9 +713,9 @@ int abc, dst32rbit, src32rbit, fwd;				\
 unsigned int *OrigSrcAddr, *OrigDstAddr;			\
 int bb_fast;							\
 unsigned int preloop_mask, postloop_mask, sdw_mask;		\
-register unsigned int *dst32addr, *src32addr;			\
-register unsigned int shS, savedS, newS;			\
-register int srcRshift;
+unsigned int *dst32addr, *src32addr;			\
+unsigned int shS, savedS, newS;			\
+int srcRshift;
 
 
 

@@ -108,7 +108,7 @@ void DSP_Cursor(LispPTR *args, int argnum)
  /* args[0] :	X pos
   * args[1] :	Y pos
   */
-void DSP_SetMousePos(register LispPTR *args)
+void DSP_SetMousePos(LispPTR *args)
 {
 
 #ifdef XWINDOW
@@ -149,8 +149,8 @@ extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
 void flip_cursor() {
-  register DLword *word;
-  register int cnt;
+  DLword *word;
+  int cnt;
   extern int ScreenLocked;
   extern DLword *EmCursorX68K, *EmCursorY68K;
 

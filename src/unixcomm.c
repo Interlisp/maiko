@@ -113,7 +113,7 @@ char shcom[2048]; /* Here because I'm suspicious of */
 /*									*/
 /************************************************************************/
 
-int find_process_slot(register int pid)
+int find_process_slot(int pid)
 /* Find a slot with the specified pid */
 
 {

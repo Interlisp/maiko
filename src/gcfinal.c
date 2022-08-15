@@ -162,8 +162,8 @@ LispPTR findptrsbuffer(LispPTR ptr) {
 /************************************************************************/
 
 LispPTR releasingvmempage(LispPTR ptr) {
-  register struct buf *bptr;
-  register LispPTR bufferptr = findptrsbuffer(ptr);
+  struct buf *bptr;
+  LispPTR bufferptr = findptrsbuffer(ptr);
 
   if (bufferptr == NIL) return (NIL); /* Not in use, OK to reclaim it */
 
@@ -494,8 +494,8 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
 LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
                                    /*  in stack reclaiming */
 {
-  register STACKP *stkp;
-  register FX *fxp;
+  STACKP *stkp;
+  FX *fxp;
   stkp = (STACKP *)Addr68k_from_LADDR(ptr);
   fxp = (FX *)Addr68k_from_StkOffset(stkp->edfxp);
   decusecount68k(fxp); /* decrement the use-count for the frame it uses */

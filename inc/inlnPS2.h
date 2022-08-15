@@ -39,8 +39,8 @@
 /*									*/
 /*		   R E G I S T E R   C O N V E N T I O N S		*/
 /*									*/
-/*	The following register conventions hold in the dispatch loop,	*/
-/*	and are set up by register ... asm("...") decls in xc.c:	*/
+/*	The following conventions hold in the dispatch loop,	*/
+/*	and are set up by ... asm("...") decls in xc.c:	*/
 /*									*/
 /*		esi	pccache	- the current PC			*/
 /*		edi	cspcache - the current lisp stack ptr.		*/
@@ -60,7 +60,7 @@
 /*									*/
 /*    G E N E R A L - P U R P O S E   I N L I N E   F U N C T I O N S	*/
 /*									*/
-/*	These functions don't rely on register conventions.		*/
+/*	These functions don't rely on conventions.		*/
 /*									*/
 /************************************************************************/
 
@@ -88,7 +88,7 @@
 extern inline const unsigned int Get_BYTE_PCMAC0fn (pccache)
 unsigned int pccache;
  {
-    register unsigned int word;
+    unsigned int word;
     asm("leal	-1(%1),%0 \n\
 	xorl	$3,%0 \n\
 	movzbl	(%0),%0 \n\
@@ -99,7 +99,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_BYTE_PCMAC1fn (pccache)
 unsigned int pccache;
  {
-    register unsigned int word;
+    unsigned int word;
     asm("movl	%1,%0 \n\
 	xorl	$3,%0 \n\
 	movzbl	(%0),%0 \n\
@@ -110,7 +110,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_BYTE_PCMAC2fn (pccache)
 unsigned int pccache;
  {
-    register unsigned int word;
+    unsigned int word;
     asm("leal	1(%1),%0 \n\
 	xorl	$3,%0 \n\
 	movzbl	(%0),%0 \n\
@@ -121,7 +121,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_BYTE_PCMAC3fn (pccache)
 unsigned int pccache;
  {
-    register unsigned int word;
+    unsigned int word;
     asm("leal	2(%1),%0 \n\
 	xorl	$3,%0 \n\
 	movzbl	(%0),%0 \n\
@@ -144,7 +144,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_DLword_PCMAC0fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("movl	%1,%%edx \n\
 	xorb	$3,%%dl \n\
 	movzbl	(%%edx),%%eax \n\
@@ -158,7 +158,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_DLword_PCMAC1fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	1(%1),%%edx \n\
 	xorb	$3,%%dl \n\
 	movzbl	(%%edx),%%eax \n\
@@ -173,7 +173,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_DLword_PCMAC2fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	2(%1),%%edx \n\
 	xorb	$3,%%dl \n\
 	movzbl	(%%edx),%%eax \n\
@@ -187,7 +187,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_DLword_PCMAC3fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	3(%1),%%edx \n\
 	xorb	$3,%%dl \n\
 	movzbl	(%%edx),%%eax \n\
@@ -211,7 +211,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_Pointer_PCMAC0fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	-1(%1),%%edx	\n\
 	xorb	$3,%%dl		\n\
 	movzbl	(%%edx),%%eax	\n\
@@ -229,7 +229,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_Pointer_PCMAC1fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	(%1),%%edx	\n\
 	xorb	$3,%%dl		\n\
 	movzbl	(%%edx),%%eax	\n\
@@ -248,7 +248,7 @@ unsigned int pccache;
 extern inline const unsigned int Get_Pointer_PCMAC2fn(pccache)
 unsigned int pccache;
  {
-    register unsigned int word asm("ax");
+    unsigned int word asm("ax");
     asm("leal	1(%1),%%edx	\n\
 	xorb	$3,%%dl		\n\
 	movzbl	(%%edx),%%eax	\n\

@@ -31,7 +31,7 @@
 /*	 N_OP_fmemb							*/
 /**********************************************************************/
 
-LispPTR N_OP_fmemb(register LispPTR item, register LispPTR tos) { /* OP 34Q */
+LispPTR N_OP_fmemb(LispPTR item, LispPTR tos) { /* OP 34Q */
 
   while (Listp(tos)) {
     if (item == car(tos)) return tos;
@@ -54,7 +54,7 @@ LispPTR N_OP_fmemb(register LispPTR item, register LispPTR tos) { /* OP 34Q */
 */
 /**********************************************************************/
 
-LispPTR fmemb(register LispPTR item, register LispPTR list) {
+LispPTR fmemb(LispPTR item, LispPTR list) {
   while (Listp(list)) {
     if (item == car(list)) return (list);
     list = cdr(list);
@@ -80,14 +80,14 @@ LispPTR fmemb(register LispPTR item, register LispPTR list) {
 
 #define S_N_CHECKANDCADR2(sour, dest, tos, tcstk) \
   {                                               \
-    register LispPTR parm = sour;                 \
+    LispPTR parm = sour;                 \
     if (GetTypeNumber(parm) != TYPE_LISTP) {      \
       SAVE_ERROR_EXIT2(tcstk, tos);               \
     } else                                        \
       (dest) = cadr(parm);                        \
   }
 
-LispPTR N_OP_listget(register LispPTR plist, register LispPTR tos) {
+LispPTR N_OP_listget(LispPTR plist, LispPTR tos) {
   struct cadr_cell cadrobj;
 
   while (plist != NIL_PTR) {

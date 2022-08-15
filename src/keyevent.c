@@ -366,7 +366,7 @@ void cursor_hidden_bitmap(int, int);
 #ifndef COLOR
 /* FOR MONO ONLY */
 void taking_mouse_down() {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
@@ -397,7 +397,7 @@ void taking_mouse_down() {
 extern DLword *ColorDisplayRegion68k;
 /* It assumes that MONO screen size and COLOR screen size are identical */
 void taking_mouse_down() {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
@@ -437,7 +437,7 @@ void taking_mouse_down() {
 /* FOR MONO ONLY */
 void copy_cursor(int newx, int newy)
 {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
   extern DLword *EmCursorBitMap68K;
@@ -461,7 +461,7 @@ void copy_cursor(int newx, int newy)
 /* store bitmap image inside rect. which specified by x,y */
 void cursor_hidden_bitmap(int x, int y)
 {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
   /* save image */
@@ -482,8 +482,8 @@ void cursor_hidden_bitmap(int x, int y)
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
 void copy_cursor(int newx, int newy)
 {
-  register DLword *srcbase, *dstbase;
-  register int offsetx, offsety;
+  DLword *srcbase, *dstbase;
+  int offsetx, offsety;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
   CURSOR *cursor68k;
@@ -541,7 +541,7 @@ void taking_mouse_up(int newx, int newy)
 /* store bitmap image inside rect. which specified by x,y */
 void cursor_hidden_bitmap(int x, int y)
 {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
   /* save image */

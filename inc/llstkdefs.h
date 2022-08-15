@@ -4,9 +4,9 @@
 #include "stack.h" /* for FX, StackWord, Bframe */
 int do_stackoverflow(int incallp);
 DLword *freestackblock(DLword n, StackWord *start68k, int align);
-void decusecount68k(register FX *frame68k);
+void decusecount68k(FX *frame68k);
 void flip_cursorbar(int n);
-void blt(register DLword *dest68k, register DLword *source68k, int nw);
+void blt(DLword *dest68k, DLword *source68k, int nw);
 void stack_check(StackWord *start68k);
 void walk_stack(StackWord *start68k);
 int quick_stack_check(void);

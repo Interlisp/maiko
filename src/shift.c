@@ -93,8 +93,8 @@ N_OP_lsh
         return(a <?> b)
 ************************************************************/
 LispPTR N_OP_lsh(int a, int b) {
-  register int arg, arg2;
-  register int size;
+  int arg, arg2;
+  int size;
   /*DLword	*wordp;*/
 
   N_GETNUMBER(b, size, do_ufn);

@@ -48,7 +48,7 @@ LispPTR MVLIST_index;
 /*								*/
 /****************************************************************/
 
-LispPTR values(int arg_count, register LispPTR *args) {
+LispPTR values(int arg_count, LispPTR *args) {
   FX2 *caller, *prevcaller = 0, *immediate_caller = 0;
   ByteCode *pc;
   int unbind_count = 0;
@@ -105,7 +105,7 @@ newpc:
       goto newpc;
 
     case opc_JUMPX: {
-      register short displacement;
+      short displacement;
       displacement = (short)(GETBYTE((char *)pc + 1));
       if (displacement >= 128) displacement -= 256;
       pc += displacement;
@@ -113,7 +113,7 @@ newpc:
     }
 
     case opc_JUMPXX: {
-      register int displacement;
+      int displacement;
       displacement = (int)Get_code_DLword(pc + 1);
       if (displacement >= 32768) displacement -= 65536;
       pc += displacement;
@@ -144,7 +144,7 @@ newpc:
 /*								*/
 /****************************************************************/
 
-LispPTR values_list(int arg_count, register LispPTR *args) {
+LispPTR values_list(int arg_count, LispPTR *args) {
   FX2 *caller, *prevcaller = 0, *immediate_caller = 0;
   ByteCode *pc;
   int unbind_count = 0;
@@ -202,7 +202,7 @@ newpc:
       goto newpc;
 
     case opc_JUMPX: {
-      register short displacement;
+      short displacement;
       displacement = (short)(GETBYTE((char *)pc + 1));
       if (displacement >= 128) displacement -= 256;
       pc += displacement;
@@ -210,7 +210,7 @@ newpc:
     }
 
     case opc_JUMPXX: {
-      register int displacement;
+      int displacement;
       displacement = (int)Get_code_DLword(pc + 1);
       if (displacement >= 32768) displacement -= 65536;
       pc += displacement;
@@ -245,8 +245,8 @@ newpc:
 /************************************************************************/
 
 LispPTR make_value_list(int argcount, LispPTR *argarray) {
-  register LispPTR result = NIL_PTR;
-  register int i;
+  LispPTR result = NIL_PTR;
+  int i;
   if (argcount == 0) return (NIL_PTR);
   for (i = argcount - 1; i >= 0; i--) { result = cons(argarray[i], result); }
   return (result);
@@ -267,8 +267,8 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
   int unbind;
   LispPTR *stackptr = (LispPTR *)(Stackspace + frame->nextblock);
   for (unbind = 0; unbind < unbind_count; unbind++) {
-    register int value;
-    register LispPTR *lastpvar;
+    int value;
+    LispPTR *lastpvar;
     int bindnvalues;
     for (; ((int)*--stackptr >= 0);)
       ; /* find the binding mark */

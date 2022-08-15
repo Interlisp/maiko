@@ -259,7 +259,7 @@ set_DOSmouseposition(DspInterface dsp, int x, int y)
 
 void docopy(int newx, int newy)
 {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w = 16, h = 16, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
@@ -284,7 +284,7 @@ dostaking_mouse_up(int newx, int newy)
 {
   /* save hidden bitmap */
 
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w = 16, h = 16, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
@@ -333,7 +333,7 @@ dostaking_mouse_up(int newx, int newy)
 
 dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
 {
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 

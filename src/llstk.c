@@ -50,8 +50,8 @@ extern int extended_frame;
 */
 /******************************************************************/
 static DLword *extendstack(void) {
-  register LispPTR easp;
-  register LispPTR scanptr;
+  LispPTR easp;
+  LispPTR scanptr;
 
   easp = InterfacePage->endofstack;
 
@@ -80,10 +80,10 @@ static DLword *extendstack(void) {
         Edited by :     Take(March 14, 1988)
 */
 /******************************************************************/
-static LispPTR moveframe(register FX *oldfx68k) {
-  register int size;
-  register DLword *next68k;
-  register DLword *new68k;
+static LispPTR moveframe(FX *oldfx68k) {
+  int size;
+  DLword *next68k;
+  DLword *new68k;
   int nametbl_on_stk = NIL;
   int at_eos = NIL;
 
@@ -287,11 +287,11 @@ DLword *freestackblock(DLword n, StackWord *start68k, int align)
 /* searching will start68k at here */
 /* if Negative,it needn't align */
 {
-  register int wantedsize;
-  register StackWord *scanptr68k;
-  register STKBLK *freeptr68k;
-  register StackWord *easp68k;
-  register DLword freesize;
+  int wantedsize;
+  StackWord *scanptr68k;
+  STKBLK *freeptr68k;
+  StackWord *easp68k;
+  DLword freesize;
 
   DLword *extendstack(void);
 
@@ -420,12 +420,12 @@ FREE:
 /******************************************************************/
 #define BF_size(ptr68k) ((StkOffset_from_68K(ptr68k)) - ((Bframe *)(ptr68k))->ivar + 2)
 
-void decusecount68k(register FX *frame68k) {
+void decusecount68k(FX *frame68k) {
   DLword *alink68k;
-  register Bframe *blink68k;
+  Bframe *blink68k;
   DLword *clink68k;
-  /*** register DLword *ivar68k; */
-  register int size;
+  /*** DLword *ivar68k; */
+  int size;
 
   if (FX_INVALIDP(frame68k)) return;
   CHECK_FX(frame68k);
@@ -488,7 +488,7 @@ extern short *DisplayRegion68k;
 extern int DisplayRasterWidth;
 
 void flip_cursorbar(int n) {
-  register short *word;
+  short *word;
   word = DisplayRegion68k + (n * DisplayRasterWidth);
   GETWORD(word) ^= 0xFFFF;
 }
@@ -499,9 +499,9 @@ void flip_cursorbar(int n) {
                 blt(dest,source,size)
 */
 /**************************************************************/
-void blt(register DLword *dest68k, register DLword *source68k, int nw) {
+void blt(DLword *dest68k, DLword *source68k, int nw) {
   /******* OLD def ,
-   Due to C compiler's bug, we can't use pre-decrement for register val
+   Due to C compiler's bug, we can't use pre-decrement for val
     source68k += nw;
     dest68k += nw;
     while(nw)

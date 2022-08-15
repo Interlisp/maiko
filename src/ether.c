@@ -708,7 +708,7 @@ LispPTR get_packet() {
 
 static int ether_addr_equal(u_char add1[], u_char add2[])
 {
-  register int i;
+  int i;
   for (i = 0; i < 6; i++)
     if (add1[i] != add2[i]) return (0);
   return (1);
@@ -1101,11 +1101,11 @@ void init_ether() {
 /*									*/
 /************************************************************************/
 
-LispPTR check_sum(register LispPTR *args)
+LispPTR check_sum(LispPTR *args)
 {
-  register LispPTR checksum;
-  register DLword *address;
-  register int nwords;
+  LispPTR checksum;
+  DLword *address;
+  int nwords;
 
   address = (DLword *)Addr68k_from_LADDR(*args++);
   nwords = *args++;

@@ -114,9 +114,9 @@ typedef ByteCode *InstPtr;
 
 #if   (DOS && OPDISP)
 #include "inlndos.h"
-register InstPtr pccache asm("si");
-register LispPTR *cspcache asm("di");
-register LispPTR tscache asm("bx");
+InstPtr pccache asm("si");
+LispPTR *cspcache asm("di");
+LispPTR tscache asm("bx");
 #endif /* DOS */
 
 /* This used to be here for including optimized dispatch
@@ -163,7 +163,7 @@ static const int n_mask_array[16] = {
 extern int TIMER_INTERVAL;
 
 void dispatch(void) {
-  register InstPtr pccache;
+  InstPtr pccache;
 
 #if defined(OPDISP)
   static const void* optable[256] = {
@@ -204,8 +204,8 @@ void dispatch(void) {
 
 #if (DOS && OPDISP)
 #else
-  register LispPTR *cspcache;
-  register LispPTR tscache;
+  LispPTR *cspcache;
+  LispPTR tscache;
 #endif
 
   /* OP_FN_COMMON arguments */
@@ -1062,7 +1062,7 @@ check_interrupt:
   /* Check for an IRQ request */
 
   {
-    register int need_irq;
+    int need_irq;
     static int period_cnt = 60;
     extern int KBDEventFlg;
     extern int ETHEREventCount;

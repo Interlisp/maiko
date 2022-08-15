@@ -67,7 +67,7 @@
 /** in CONTEXTSW , for exchanging context **/
 
 #define Midpunt(fxnum) 							\
-  { register DLword midpunt; 					\
+  { DLword midpunt; 					\
     midpunt = LOLOC(LADDR_from_68k(CURRENTFX));			\
     PVar=(DLword *)							\
 	    Addr68k_from_StkOffset(					\
@@ -98,7 +98,7 @@
 
 
 #define AFTER_CONTEXTSW							\
-  { register DLword *ac_ptr68k,*ac_freeptr;					\
+  { DLword *ac_ptr68k,*ac_freeptr;					\
     ac_ptr68k = (DLword*)Addr68k_from_StkOffset(CURRENTFX->nextblock);	\
     if(GETWORD(ac_ptr68k) != STK_FSB_WORD) error("pre_moveframe: MP9316");	\
     CHECK_FX(CURRENTFX);						\

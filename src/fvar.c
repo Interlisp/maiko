@@ -60,17 +60,17 @@ nnewframe
 
 ******************************************************************************/
 
-void nnewframe(register struct frameex1 *newpfra2, register DLword *achain, register int name)
+void nnewframe(struct frameex1 *newpfra2, DLword *achain, int name)
 /* pointer to new frame extension */
 /* pointer to 1st word of the searching
    FVAR slot in CurrentFrameExtension */
 /* Atom index num. of target FVAR slot. */
 {
-  register NAMETABLE *pindex; /* '90/06/06 osamu changed from DLword *
+  NAMETABLE *pindex; /* '90/06/06 osamu changed from DLword *
                                * index to indexs of new name table */
-  register UNSIGNED i;        /* temp for control */
-  register int nametablesize; /* NameTable size of current function header. */
-  register int ph;            /* alink temp, also phase */
+  UNSIGNED i;        /* temp for control */
+  int nametablesize; /* NameTable size of current function header. */
+  int ph;            /* alink temp, also phase */
 
 newframe:
   /* assume that apframe1 points to the next frame to be scanned */
@@ -81,7 +81,7 @@ newframe:
 #ifdef BIGATOMS
     if ((name & SEGMASK) != 0) /* New symbol */
     {
-      register int result = name + NEWATOM_VALUE_OFFSET;
+      int result = name + NEWATOM_VALUE_OFFSET;
       /*    printf("NEW-SYMBOL in nnewframe, 0x%x, result = 0x%x\n", name, result); */
       GETBASEWORD(achain, 1) = result >> 16;
       GETBASEWORD(achain, 0) = result & 0xFFFF;
@@ -90,11 +90,11 @@ newframe:
 
 #ifdef BIGVM
         if (name & SEGMASK) { /* It's a big-atom, so just offset from the base to get value */
-      register int result = name + NEWATOM_VALUE_OFFSET;
+      int result = name + NEWATOM_VALUE_OFFSET;
       GETBASEWORD(achain, 1) = result >> 16;
       GETBASEWORD(achain, 0) = result & 0xFFFF;
     } else { /* It's an "old" atom, so offset into the table of atoms */
-      register int result = (ATOMS_HI << 16) + (10 * name) + NEWATOM_VALUE_OFFSET;
+      int result = (ATOMS_HI << 16) + (10 * name) + NEWATOM_VALUE_OFFSET;
       GETBASEWORD(achain, 1) = result >> 16;
       GETBASEWORD(achain, 0) = result & 0xFFFF;
     }
@@ -113,8 +113,8 @@ newframe:
   ph &= 0xFFFE; /* to mask off SLOW bit */
   newpfra2 = (struct frameex1 *)(-FRAMESIZE + Stackspace + ph);
 
-  {                                  /* open new block to try and conserve address register */
-    register struct fnhead *newpfn2; /* ptr to new fn header */
+  {                                  /* open new block to try and conserve address */
+    struct fnhead *newpfn2; /* ptr to new fn header */
 
     if (newpfra2->validnametable) /* check VALIDNAMETABLE */
 #ifdef BIGVM
@@ -197,9 +197,9 @@ newframe:
 #endif
     continue;
   foundit : {
-    register int fvartype;   /* probing fvar vartype */
-    register int fvaroffset; /* probing fvar varoffset */
-    register DLword *ppvar;  /* ptr to probing var candidate */
+    int fvartype;   /* probing fvar vartype */
+    int fvaroffset; /* probing fvar varoffset */
+    DLword *ppvar;  /* ptr to probing var candidate */
 #ifdef BIGATOMS
     fvartype = (int)*(pindex + nametablesize - 1);
 #else
@@ -258,15 +258,15 @@ endlookfor:
         2. call fvlookfor.
 
 ****************************************************************************/
-void nfvlookup(struct frameex1 *apframe1, register DLword *achain,
-               register struct fnhead *apfnhead1)
+void nfvlookup(struct frameex1 *apframe1, DLword *achain,
+               struct fnhead *apfnhead1)
 /* pointer to current frame extension */
 /* pointer to 1st word of the searching
    FVAR slot in CurrentFrameExtension */
 /* pointer to current function header */
 {
-  register DLword *pfh;  /* pointer to current function header */
-  register int paoffset; /* 2word offset in PVAR AREA */
+  DLword *pfh;  /* pointer to current function header */
+  int paoffset; /* 2word offset in PVAR AREA */
 
   pfh = (DLword *)apfnhead1;
   paoffset = ((UNSIGNED)achain - (UNSIGNED)PVar) >> 2;
@@ -290,11 +290,11 @@ void nfvlookup(struct frameex1 *apframe1, register DLword *achain,
         4. get some address by calculation of content of FVAR slot.
         5. set the address to TopOfStack.
 **************************************************************************/
-LispPTR N_OP_fvarn(register int n)
+LispPTR N_OP_fvarn(int n)
 /* n is word offset */
 
 {
-  register DLword *chain; /* keep FVAR slot2 in CurrentFrameExtension */
+  DLword *chain; /* keep FVAR slot2 in CurrentFrameExtension */
 
   chain = PVar + n;
 
@@ -340,9 +340,9 @@ N_OP_fvar_
 
 ***************************************************/
 
-LispPTR N_OP_fvar_(register LispPTR tos, register int n) {
-  register DLword *ppvar;    /* pointer to argued Fvar slot in pvar area */
-  register DLword *pfreeval; /* pointer to argued free value */
+LispPTR N_OP_fvar_(LispPTR tos, int n) {
+  DLword *ppvar;    /* pointer to argued Fvar slot in pvar area */
+  DLword *pfreeval; /* pointer to argued free value */
 
   ppvar = PVar + n;
 
@@ -396,15 +396,15 @@ native_newframe
 LispPTR native_newframe(int slot)
 /* index of FVAR slot. */
 {
-  register struct frameex2 *newpfra2; /* pointer to new frame extension */
-  register DLword *achain;            /* pointer to 1st word of the searching
+  struct frameex2 *newpfra2; /* pointer to new frame extension */
+  DLword *achain;            /* pointer to 1st word of the searching
                                        FVAR slot in CurrentFrameExtension */
-  register int name;                  /* Atom# of target FVAR slot. */
+  int name;                  /* Atom# of target FVAR slot. */
 
   { /* LOCAL temp regs */
-    register int rslot = slot;
-    register struct fnhead *fnobj = FuncObj;
-    register LispPTR *pvar = (LispPTR *)PVar;
+    int rslot = slot;
+    struct fnhead *fnobj = FuncObj;
+    LispPTR *pvar = (LispPTR *)PVar;
 
 #ifdef BIGATOMS
     name = (int)*((LispPTR *)((DLword *)fnobj + fnobj->fvaroffset) + rslot - fnobj->nlocals);
@@ -417,10 +417,10 @@ LispPTR native_newframe(int slot)
   }
 
   {
-    register NAMETABLE *pindex; /* index to indexs of new name table */
-    register int i;             /* temp for control */
-    register int nametablesize; /* NameTable size of current fnhdr */
-    register int alink;
+    NAMETABLE *pindex; /* index to indexs of new name table */
+    int i;             /* temp for control */
+    int nametablesize; /* NameTable size of current fnhdr */
+    int alink;
 
   natnewframe:
     /* assume that apframe1 points to the next frame to be scanned */
@@ -435,8 +435,8 @@ LispPTR native_newframe(int slot)
     }
     newpfra2 = (struct frameex2 *)(-FRAMESIZE + Stackspace + (alink & 0xFFFE));
 
-    {                                  /* open new block to try and conserve address register */
-      register struct fnhead *newpfn2; /* ptr to new fn header */
+    {                                  /* open new block to try and conserve address */
+      struct fnhead *newpfn2; /* ptr to new fn header */
 
       newpfn2 = GETNAMETABLE(newpfra2);
 
@@ -459,9 +459,9 @@ LispPTR native_newframe(int slot)
 #endif /* BIGATOMS    */
 
 
-        register int fvartype;   /* probing fvar vartype */
-        register int fvaroffset; /* probing fvar varoffset */
-        register DLword *ppvar;  /* ptr to probing var candidate */
+        int fvartype;   /* probing fvar vartype */
+        int fvaroffset; /* probing fvar varoffset */
+        DLword *ppvar;  /* ptr to probing var candidate */
 #ifdef BIGATOMS
         fvartype = (int)*(pindex + nametablesize - 1);
 #else

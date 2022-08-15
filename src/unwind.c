@@ -26,10 +26,10 @@
 #include "lspglob.h"
 #include "unwinddefs.h"  // for N_OP_unwind
 
-LispPTR *N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int keep) {
-  register int num;           /* number of UNBOUND slot */
-  register LispPTR *endptr;   /* unwind limit */
-  register LispPTR *lastpvar; /* points PVar slot that is unbounded. */
+LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
+  int num;           /* number of UNBOUND slot */
+  LispPTR *endptr;   /* unwind limit */
+  LispPTR *lastpvar; /* points PVar slot that is unbounded. */
 
   /* Slots:
           -----------------
@@ -107,9 +107,9 @@ LispPTR *N_OP_unwind(register LispPTR *cstkptr, register LispPTR tos, int n, int
 
 LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
 {
-  register LispPTR target;
-  register FX *target_addr;
-  register LispPTR pc = NIL_PTR;
+  LispPTR target;
+  FX *target_addr;
+  LispPTR pc = NIL_PTR;
 
   LispPTR CATCH_RETURN_PC_ATOM = parse_atomstring("SI::*CATCH-RETURN-PC*");
   LispPTR CATCH_RETURN_TO_ATOM = parse_atomstring("SI::*CATCH-RETURN-TO*");
@@ -118,7 +118,7 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
   for (target = (LispPTR)unwinder; FX_INVALIDP(target); GETCLINK(target_addr)) {
     target_addr = (FX *)Addr68k_from_StkOffset(target);
     if (blip == *target_addr) {
-      register LispPTR var_name_in_frame = variable_name_in_frame(target_addr, (FVPVAR << 8) + 1);
+      LispPTR var_name_in_frame = variable_name_in_frame(target_addr, (FVPVAR << 8) + 1);
       if (var_name_in_frame == CATCH_RETURN_TO_ATOM) {
         if (throwp) {
           pc = pvar_value_in_frame(target_addr, CATCH_RETURN_PC_ATOM);
@@ -141,10 +141,10 @@ cons_result:
 
 LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
 {
-  register DLword *name_ptr;
-  register DLword *name_bind_ptr;
-  register DLword *name_table_base;
-  register DLword value;
+  DLword *name_ptr;
+  DLword *name_bind_ptr;
+  DLword *name_table_base;
+  DLword value;
 
   name_table_base = Addr68k_from_LADDR(GETNAMETABLE(fx_addr));
   name_ptr = name_table_base + FNHEADSIZE;
@@ -168,10 +168,10 @@ LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
 LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
 
 {
-  register DLword *name_ptr;
-  register DLword *name_bind_ptr;
-  register DLword *name_table_base;
-  register DLword value;
+  DLword *name_ptr;
+  DLword *name_bind_ptr;
+  DLword *name_table_base;
+  DLword value;
 
   name_table_base = Addr68k_from_LADDR(GETNAMETABLE(frame_addr));
   name_ptr = name_table_base + FNHEADSIZE;
@@ -179,9 +179,9 @@ LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
 
   while (value = GETWORD(name_ptr++)) do {
       if (value == atom_index) {
-        register DLword bind_info = GETWORD(name_bind_ptr);
+        DLword bind_info = GETWORD(name_bind_ptr);
         if ((bind_info >> 8) == FVPVAR) {
-          register LispPTR slot_value = *((LispPTR *)(FRAMESIZE + (DLword *)frame_addr) +
+          LispPTR slot_value = *((LispPTR *)(FRAMESIZE + (DLword *)frame_addr) +
                                           (bind_info - (FVPVAR << 8))) if (slot_value > 0) {
             return (slot_value & POINTERMASK);
           };

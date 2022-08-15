@@ -44,7 +44,7 @@ N_OP_atomcellN(int tos, int n)
 }
 
 #else
-N_OP_atomcellN(register int tos, int n) {
+N_OP_atomcellN(int tos, int n) {
   if ((tos & 0xffff0000) == 0) { /* XeroxLisp traditional symbol */
     tos = (tos << 1);
     switch (n) {

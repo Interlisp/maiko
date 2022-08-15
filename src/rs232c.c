@@ -215,8 +215,8 @@ rs232c_lisp_is_ready() { return (RS232CGetFlag->busy); }
 static struct timeval sel_tv = {0, 0};
 
 rs232c_read() {
-  register DLRS232C_IOCB *iocb;
-  register int count;
+  DLRS232C_IOCB *iocb;
+  int count;
   fd_set readfds;
 
   if (RS232C_Fd >= 0) {
@@ -266,9 +266,9 @@ rs232c_read() {
 #define MAX_WRITE_TRY 5
 
 RS232C_write() {
-  register int size, count, trynum;
-  register char *buf;
-  register DLRS232C_IOCB *iocb;
+  int size, count, trynum;
+  char *buf;
+  DLRS232C_IOCB *iocb;
 
   iocb = (DLRS232C_IOCB *)Addr68k_from_LADDR(((*(RS232CPutCSB + 1) & 0xff) << 16) + *RS232CPutCSB);
 
@@ -414,7 +414,7 @@ void rs_sbit(u_int sbit)
 }
 
 void rs232c_majorparam() {
-  register int baud, csize, sbit;
+  int baud, csize, sbit;
 
   if (RS232C_Fd >= 0) {
     baud = rs_baud((u_int)((DLRS232C_PARAMETER_CSB *)RS232CParameterCSB)->line_speed);

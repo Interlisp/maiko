@@ -29,11 +29,11 @@ N_OP_bind(stack_pointer, tos, n1, n2)
 
 ***************************************************/
 
-LispPTR *N_OP_bind(register LispPTR *stack_pointer, register LispPTR tos, int byte1, int byte2) {
-  register int n1;         /* # slots to bind to NIL (0, 0) */
-  register int n2;         /* # slots to bind to value in stack */
-  register LispPTR *ppvar; /* pointer to argued slot in Pvar area */
-  register unsigned i;          /* temporary for control */
+LispPTR *N_OP_bind(LispPTR *stack_pointer, LispPTR tos, int byte1, int byte2) {
+  int n1;         /* # slots to bind to NIL (0, 0) */
+  int n2;         /* # slots to bind to value in stack */
+  LispPTR *ppvar; /* pointer to argued slot in Pvar area */
+  unsigned i;          /* temporary for control */
 
 #ifdef TRACE
   printPC();
@@ -69,11 +69,11 @@ LispPTR N_OP_unbind(stackpointer)
 
 ***************************************************/
 
-LispPTR *N_OP_unbind(register LispPTR *stack_pointer) {
-  register DLword num;     /* number of unbind sot */
-  register LispPTR *ppvar; /* pointer to last PVAR slot. */
-  register DLword i;       /* temporary for control */
-  register LispPTR value;
+LispPTR *N_OP_unbind(LispPTR *stack_pointer) {
+  DLword num;     /* number of unbind sot */
+  LispPTR *ppvar; /* pointer to last PVAR slot. */
+  DLword i;       /* temporary for control */
+  LispPTR value;
 
 #ifdef TRACE
   printPC();
@@ -106,11 +106,11 @@ N_OP_dunbind
 
 ***************************************************/
 
-LispPTR *N_OP_dunbind(register LispPTR *stack_pointer, register LispPTR tos) {
-  register DLword num;     /* number of unbind sot */
-  register LispPTR *ppvar; /* pointer to last PVAR slot. */
-  register DLword i;       /* temporary for control */
-  register LispPTR value;
+LispPTR *N_OP_dunbind(LispPTR *stack_pointer, LispPTR tos) {
+  DLword num;     /* number of unbind sot */
+  LispPTR *ppvar; /* pointer to last PVAR slot. */
+  DLword i;       /* temporary for control */
+  LispPTR value;
 
 #ifdef TRACE
   printPC();

@@ -183,9 +183,9 @@
 
 #define OPFN(argcount, num_args_fn, fn_xna_args, fn_native)                            \
   do { /* argcount is a number of the arguments on stack */                               \
-    register struct fnhead *LOCFNCELL;                                                 \
-    register int defcell_word;                                                         \
-    register int NEXTBLOCK;                                                            \
+    struct fnhead *LOCFNCELL;                                                 \
+    int defcell_word;                                                         \
+    int NEXTBLOCK;                                                            \
     FNTRACER(Trace_FNCall(argcount, Get_AtomNo_PCMAC1, TOPOFSTACK, CSTKPTR - 1));      \
     FNCHECKER(if (quick_stack_check())                                                 \
                   Trace_FNCall(argcount, Get_AtomNo_PCMAC1, TOPOFSTACK, CSTKPTR - 1)); \
@@ -202,13 +202,13 @@
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FN_OPCODE_SIZE;        \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      register UNSIGNED newivar;                                                       \
+      UNSIGNED newivar;                                                       \
       newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - (argcount) + 1));              \
       BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
-      register int RESTARGS;                                                           \
+      int RESTARGS;                                                           \
       RESTARGS = (argcount) - LOCFNCELL->na;                                           \
       while (RESTARGS < 0) {                                                           \
         HARD_PUSH(NIL_PTR);                                                            \
@@ -238,9 +238,9 @@
 /*************** OPFNX *************/
 #define OPFNX                                                                          \
   do {                                                                                    \
-    register struct fnhead *LOCFNCELL;                                                 \
-    register DefCell *defcell; /* this reg is not allocated */                         \
-    register int NEXTBLOCK;                                                            \
+    struct fnhead *LOCFNCELL;                                                 \
+    DefCell *defcell; /* this reg is not allocated */                         \
+    int NEXTBLOCK;                                                            \
     int num_args = Get_BYTE_PCMAC1;                                                    \
     defcell = (DefCell *)GetDEFCELL68k(Get_AtomNo_PCMAC2);                             \
     FNTRACER(Trace_FNCall(num_args, Get_AtomNo_PCMAC2, TOPOFSTACK, CSTKPTR - 1));      \
@@ -258,13 +258,13 @@
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FNX_OPCODE_SIZE;       \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      register UNSIGNED newivar;                                                       \
+      UNSIGNED newivar;                                                       \
       newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args + 1));                \
       BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
-      register int RESTARGS;                                                           \
+      int RESTARGS;                                                           \
       RESTARGS = num_args - LOCFNCELL->na;                                             \
       while (RESTARGS < 0) {                                                           \
         HARD_PUSH(NIL_PTR);                                                            \
@@ -296,7 +296,7 @@
 #ifdef BIGATOMS
 #define OPCHECKAPPLY                                                                        \
   do {                                                                                         \
-    register DefCell *defcell;                                                              \
+    DefCell *defcell;                                                              \
     defcell = (DefCell *)GetDEFCELL68k(TOPOFSTACK & POINTERMASK);                           \
     if (!(defcell->ccodep &&                                                                \
           (((TOPOFSTACK & SEGMASK) == 0) || (GetTypeNumber(TOPOFSTACK) == TYPE_NEWATOM)) && \
@@ -306,7 +306,7 @@
 #else
 #define OPCHECKAPPLY                                              \
   do {                                                               \
-    register DefCell *defcell;                                    \
+    DefCell *defcell;                                    \
     defcell = (DefCell *)GetDEFCELL68k(TOPOFSTACK & POINTERMASK); \
     if (!(defcell->ccodep && ((TOPOFSTACK & SEGMASK) == 0)) &&    \
         ((defcell->argtype == 0) || (defcell->argtype == 2)))     \
@@ -322,7 +322,7 @@
 #define UFN_COMMON                                        \
   op_ufn:                                                 \
   use code in XC.c {                                      \
-    register UFN *entry68k;                               \
+    UFN *entry68k;                               \
     entry68k = (UFN *)GetUFNEntry(Get_BYTE_PCMAC0);       \
     fn_num_args = entry68k->arg_num;                      \
     fn_opcode_size = entry68k->byte_num + 1;              \
@@ -346,12 +346,12 @@
 #define needpush NEXTBLOCK
 #define OP_FN_COMMON                                                                           \
   op_fn_common : {                                                                             \
-    register struct fnhead *LOCFNCELL;                                                         \
-    register DefCell *defcell; /* this reg is not allocated */                                 \
+    struct fnhead *LOCFNCELL;                                                         \
+    DefCell *defcell; /* this reg is not allocated */                                 \
     CClosure *closure;                                                                         \
     LispPTR closure_env = (LispPTR)0xffffffff;                                                 \
     {                                                                                          \
-      register int NEXTBLOCK = NIL;                                                            \
+      int NEXTBLOCK = NIL;                                                            \
       defcell = fn_defcell;                                                                    \
       if (defcell->ccodep == 0) {                                                              \
         if (GetTypeNumber(defcell->defpointer) == TYPE_COMPILED_CLOSURE) { /* setup closure */ \
@@ -372,13 +372,13 @@
       FN_STACK_CHECK;                                                                          \
       APPLY_POP_PUSH_TEST;                                                                     \
       {                                                                                        \
-        register UNSIGNED newivar;                                                             \
+        UNSIGNED newivar;                                                             \
         newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR + (1 - fn_num_args - needpush)));      \
         BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);                    \
       }                                                                                        \
       HARD_PUSH(TOPOFSTACK); /* save TOS */                                                    \
       if (LOCFNCELL->na >= 0) {                                                                \
-        register int RESTARGS;                                                                 \
+        int RESTARGS;                                                                 \
         RESTARGS = fn_num_args - LOCFNCELL->na;                                                \
         while (RESTARGS < 0) {                                                                 \
           HARD_PUSH(NIL_PTR);                                                                  \
@@ -394,8 +394,8 @@
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                                   \
     PVARL = (DLword *)CSTKPTR;                                                                 \
     {                                                                                          \
-      register int result;                                                                     \
-      register LispPTR unboundval;                                                             \
+      int result;                                                                     \
+      LispPTR unboundval;                                                             \
       unboundval = (LispPTR)0xffffffff;                                                        \
       result = LOCFNCELL->pv;                                                                  \
       HARD_PUSH(closure_env);                                                                  \
@@ -428,11 +428,11 @@
 
 #define OP_ENVCALL                                                        \
   do {                                                                    \
-    register struct fnhead *LOCFNCELL;                                    \
-    register int NEXTBLOCK;                                               \
-    register LispPTR closure_env = TOPOFSTACK;                            \
-    register int num_args;                                                \
-    register LispPTR Fn_DefCell = GET_TOS_1;                              \
+    struct fnhead *LOCFNCELL;                                    \
+    int NEXTBLOCK;                                               \
+    LispPTR closure_env = TOPOFSTACK;                            \
+    int num_args;                                                \
+    LispPTR Fn_DefCell = GET_TOS_1;                              \
     LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(Fn_DefCell);          \
     FNTPRINT(("ENVCall.\n"));                                             \
     FNCHECKER(if (quick_stack_check()) printf("In ENVCALL.\n"));          \
@@ -441,12 +441,12 @@
     FN_STACK_CHECK;                                                       \
     CSTKPTRL -= 2;                                                        \
     {                                                                     \
-      register UNSIGNED newivar;                                          \
+      UNSIGNED newivar;                                          \
       newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args));       \
       BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar); \
     }                                                                     \
     if (LOCFNCELL->na >= 0) {                                             \
-      register int RESTARGS;                                              \
+      int RESTARGS;                                              \
       RESTARGS = num_args - LOCFNCELL->na;                                \
       while (RESTARGS < 0) {                                              \
         HARD_PUSH(NIL_PTR);                                               \
@@ -461,10 +461,10 @@
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);              \
     PVARL = (DLword *)CSTKPTR;                                            \
     {                                                                     \
-      register int result;                                                \
+      int result;                                                \
       result = LOCFNCELL->pv;                                             \
       if (result >= 0) {                                                  \
-        register LispPTR unboundval;                                      \
+        LispPTR unboundval;                                      \
         unboundval = (LispPTR)0xffffffff;                                 \
         if (closure_env == NIL_PTR)                                       \
           HARD_PUSH(unboundval);                                          \

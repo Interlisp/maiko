@@ -80,7 +80,7 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
         switch (GetTypeNumber(sour)) {                                                    \
           case TYPE_FIXP: (dest) = FIXP_VALUE(sour); break;               \
           case TYPE_FLOATP: {                                                             \
-            register float temp;                                                          \
+            float temp;                                                          \
             temp = FLOATP_VALUE(sour);                                                    \
             /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                              \
             if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) goto label; \

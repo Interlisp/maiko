@@ -6,9 +6,9 @@
 
 #define LispVersionToUnixVersion(pathname){				\
 									\
-	register char	*lv_cp;						\
-	register char	*lv_vp;						\
-	register unsigned lv_ver;					\
+	char	*lv_cp;						\
+	char	*lv_vp;						\
+	unsigned lv_ver;					\
 	char		lv_ver_buf[VERSIONLEN];				\
 									\
 	lv_cp = pathname;						\

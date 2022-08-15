@@ -494,8 +494,8 @@ void yyoutput(int c) { output(c); }
 void yyunput(int c) { unput(c); }
 
 int yylook() {
-  register struct yysvf *yystate, **lsp;
-  register struct yywork *yyt;
+  struct yysvf *yystate, **lsp;
+  struct yywork *yyt;
   struct yysvf *yyz;
   int yych, yyfirst;
   struct yywork *yyr;

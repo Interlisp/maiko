@@ -85,7 +85,7 @@ int LispIntToCInt(LispPTR lispint) {
 
 LispPTR CIntToLispInt(int cint) {
   if (abs(cint) > 0xFFFF) { /* its a fixp! */
-    register LispPTR *wordp;
+    LispPTR *wordp;
     wordp = (LispPTR *)createcell68k(TYPE_FIXP);
     *((int *)wordp) = cint;
     return (LADDR_from_68k(wordp));

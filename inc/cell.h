@@ -417,7 +417,7 @@ struct cadr_cell {
 
 #define S_N_CHECKANDCADR(sour, dest, tos)    \
   {                                          \
-    register LispPTR parm = sour;            \
+    LispPTR parm = sour;            \
     if (GetTypeNumber(parm) != TYPE_LISTP) { \
       ERROR_EXIT(tos);                       \
     } else                                   \

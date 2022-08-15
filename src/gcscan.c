@@ -63,11 +63,11 @@
 #define GetStkCnt(entry1) (entry1 >> 9)
 #endif /* BIGVM */
 
-DLword gcscan1(register int probe)
+DLword gcscan1(int probe)
 /* probe is offset */
 {
-  register struct htlinkptr *htlptr; /* overlay access method */
-  register int contents;
+  struct htlinkptr *htlptr; /* overlay access method */
+  int contents;
   while (--probe >= 0) /* End of HTmain Table ? */
   {
     /* Start addr. of scanning */
@@ -79,10 +79,10 @@ DLword gcscan1(register int probe)
   return (NIL);
 }
 
-DLword gcscan2(register int probe)
+DLword gcscan2(int probe)
 /* probe is offset */
 {
-  register struct htlinkptr *htlptr; /* overlay access method */
+  struct htlinkptr *htlptr; /* overlay access method */
   while (--probe >= 0)               /* End of HTmain Table ? */
   {
     htlptr = (struct htlinkptr *)(HTmain + probe);

@@ -85,9 +85,9 @@ void Init_XCursor() {
 void Set_XCursor(int x, int y)
 {
   /* compare cursor in IOPage memory with cursors we've seen before */
-  register struct MXCURSOR *clp, *clbp;
-  register DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
-  register int i;
+  struct MXCURSOR *clp, *clbp;
+  DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
+  int i;
 
   XLOCK; /* No signals while setting the cursor */
   for (clp = cursorlist; clp != NULL; clbp = clp, clp = clp->next) {

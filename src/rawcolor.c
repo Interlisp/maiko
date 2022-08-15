@@ -139,7 +139,7 @@ C_slowbltchar(LispPTR *args)
   DLword src_w, src_h, src_x, src_y, dst_x, dst_y, w, h;
 
   u_char forecolor, backcolor;
-  register int displayflg;
+  int displayflg;
 
   extern LispPTR *TOPWDS68k;
 
@@ -193,11 +193,11 @@ C_slowbltchar(LispPTR *args)
     cury += yoff;
 
     {
-      register PILOTBBT *pbt;
-      register BITMAP *n_destBM, *n_srcBM;
-      register BIGBM *n_destBIGBM;
-      register int destYOffset;
-      register int width, sourceBitOffset;
+      PILOTBBT *pbt;
+      BITMAP *n_destBM, *n_srcBM;
+      BIGBM *n_destBIGBM;
+      int destYOffset;
+      int width, sourceBitOffset;
       extern int ScreenLocked;
       extern int displayheight;
 
@@ -300,9 +300,9 @@ u_int ColorizedFont8CACHE[MAXFONTHEIGHT / BITSPERNIBBLE * MAXFONTWIDTH / BITSPER
 void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
               LispPTR sourcetype, LispPTR operation)
 {
-  register DLword *nbase;
-  register u_char *dbase;
-  register int i;
+  DLword *nbase;
+  u_char *dbase;
+  int i;
 
   sYOffset = sBM->bmheight - (sYOffset + height);
   dYOffset = dBM->bmheight - (dYOffset + height);
@@ -330,9 +330,9 @@ void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, D
 void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
               LispPTR sourcetype, LispPTR operation)
 {
-  register DLword *nbase;
-  register u_char *dbase;
-  register int i;
+  DLword *nbase;
+  u_char *dbase;
+  int i;
   int dest_bottom, dest_bigbmheight, dest_fragtop, dest_fragbottom, dest_yoffset, dest_h;
 
   LispPTR dest_bmlist;
@@ -406,9 +406,9 @@ loop:
 
 void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype, LispPTR ope)
 {
-  register DLword *nbase;
-  register u_char *dbase;
-  register int i;
+  DLword *nbase;
+  u_char *dbase;
+  int i;
 
   nbase = (DLword *)Addr68k_from_LADDR((pbt->pbtsourcehi << 16) | (pbt->pbtsourcelo));
   (DLword *)dbase = (DLword *)Addr68k_from_LADDR((pbt->pbtdesthi << 16) | (pbt->pbtdestlo));
@@ -430,11 +430,11 @@ void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR
 void Uncolorize_Bitmap(LispPTR args[])
 {
   BITMAP *s_bitmap, *d_bitmap;
-  register DLword *OnOff;
+  DLword *OnOff;
 
-  register u_char *s_base;
-  register DLword *d_base;
-  register int y;
+  u_char *s_base;
+  DLword *d_base;
+  int y;
   int s_height, s_width, s_bitsperpixel, s_rasterwidth, d_rasterwidth;
 
   s_bitmap = (BITMAP *)Addr68k_from_LADDR(args[0]);
@@ -453,8 +453,8 @@ void Uncolorize_Bitmap(LispPTR args[])
   d_rasterwidth = d_bitmap->bmrasterwidth;
 
   for (y = 0; y < s_height; y++) {
-    register int x;
-    register DLword word;
+    int x;
+    DLword word;
     word = 0;
     for (x = 0; x < s_width; x++) {
       if (OnOff[*(s_base + x)]) {
@@ -509,9 +509,9 @@ LispPTR Colorize_Bitmap(LispPTR args[])
 {
   BITMAP *s_bitmap, *d_bitmap;
   int s_left, s_bottom, d_left, d_bottom, width, height, color0, color1, d_nbits;
-  register DLword *s_base;
-  register u_char *d_base;
-  register int i;
+  DLword *s_base;
+  u_char *d_base;
+  int i;
 
   N_GETNUMBER(args[10], d_nbits, bad_arg);
   if (d_nbits != 8) return (NIL); /* do nothing. */
@@ -587,9 +587,9 @@ void Draw_8BppColorLine(LispPTR *args)
   extern DLword REPLACE_atom, INVERT_atom, PAINT_atom, ERASE_atom;
   extern int ScreenLocked;
 
-  register u_char color;
-  register u_char *base;
-  register short x0, y0, xlimit, ylimit, dx, dy, cdl, yinc, raster_width;
+  u_char color;
+  u_char *base;
+  short x0, y0, xlimit, ylimit, dx, dy, cdl, yinc, raster_width;
   int mode, displayflg;
   u_char *n_bmbase;
 

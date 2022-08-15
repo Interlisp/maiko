@@ -26,7 +26,7 @@
 /*
 	Get_BYTE(PCMAC+1);			\
 xc.c:		#define PCMAC pccache
-xc.c:		register InstPtr pccache;
+xc.c:		InstPtr pccache;
 xc.c:		typedef ByteCode *InstPtr;  CHANGED TO
 xc.c:		typedef BYTECODE *InstPtr;
 lispemul.h:	typedef char ByteCode;
@@ -51,7 +51,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 
 #define BOX_INTO(result, dest){					\
 	if (NSMALLP_RANGE(result))/* dest = box_fixp(result);*/	\
-		{register LispPTR *wordp; 			\
+		{LispPTR *wordp; 			\
 		wordp = (LispPTR *) createcell68k(TYPE_FIXP);	\
 		*((int *)wordp) = result;			\
 		dest = (LADDR_from_68k(wordp));	}		\
@@ -59,7 +59,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 
 
 #define ARITH_OP(op, exceptions, handler) 			\
-	{register int arg1, arg2, result;			\
+	{int arg1, arg2, result;			\
 	arg1 = GET_TOS_1;		 /* w/o side effect */	\
 	if(!NSMALLP(TOPOFSTACK) && !NSMALLP(arg1)) {		\
 		arg2 = UNBOX_SMALLP(TOPOFSTACK);		\
@@ -71,7 +71,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 	N_OP_CALL_2(handler); }
 
 #define BINARY_OP(exp, exceptions) {				\
-	register int arg1, arg2, result;			\
+	int arg1, arg2, result;			\
 	arg1 = GET_TOS_1;		 /* w/o side effect */	\
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg2);			\
 	UNBOX_ELSE_UFN(arg1, arg1);				\
@@ -84,7 +84,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 #undef IGREATERP
 
 #define GREATERP {						\
-	register int arg1, arg2, result;			\
+	int arg1, arg2, result;			\
 	arg1 = GET_TOS_1;		 /* w/o side effect */	\
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg2);			\
 	UNBOX_ELSE_UFN(arg1, arg1);				\
@@ -92,7 +92,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 	POP_TOS_1; nextop1;}
 
 #define IGREATERP {						\
-	register int arg1, arg2, result;			\
+	int arg1, arg2, result;			\
 	arg1 = GET_TOS_1;		 /* w/o side effect */	\
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg2);			\
 	UNBOX_ELSE_UFN(arg1, arg1);				\
@@ -122,7 +122,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 #define LOGXOR		BINARY_OP(arg1 ^ arg2, 0)
 
 #define UNARY_OP(exp, exceptions) {				\
-	register int arg, result; 						\
+	int arg, result; 						\
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg);			\
 	result = exp;						\
 	if (exceptions) goto op_ufn;				\
@@ -141,7 +141,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 
 #undef ADDBASE
 #define ADDBASE {						\
-	register int arg1, arg2;				\
+	int arg1, arg2;				\
 	UNBOX_ELSE_UFN(TOPOFSTACK, arg2);			\
 	TOPOFSTACK = POP_TOS_1 + arg2;				\
 	nextop1;}
