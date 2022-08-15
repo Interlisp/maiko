@@ -16,7 +16,7 @@ static inline unsigned int swapx(unsigned int word) {
 /*                                                              */
 /****************************************************************/
 static inline unsigned short byte_swap_word(unsigned short word) {
-  return (((word >> 8) & 0xff) | ((word & 0xff) << 8));
+  return ((word >> 8) | (unsigned short)((word & 0xff) << 8));
 }
 
 void byte_swap_page(unsigned short *page, int wordcount);
