@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <stddef.h>	// for ptrdiff_t
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef DOS
@@ -103,8 +104,6 @@ int lispstringP(LispPTR Lisp)
   }
 }
 
-LispPTR vmem_save(register char *sysout_file_name);
-
 /************************************************************************/
 /*									*/
 /*			v m e m _ s a v e 0				*/
@@ -143,7 +142,7 @@ LispPTR vmem_save(register char *sysout_file_name);
 
 LispPTR vmem_save0(LispPTR *args)
 {
-  register char *def;
+  char *def;
   char pathname[MAXPATHLEN], sysout[MAXPATHLEN], host[MAXNAMLEN];
 #ifdef DOS
   char pwd[MAXNAMLEN];
@@ -212,7 +211,8 @@ int twowords(const void *i, const void *j) /* the difference between two  DLword
 
 void sort_fptovp(DLword *fptovp, int size)
 {
-  int oldloc, newloc, oldsize, i;
+  int oldsize, i;
+  ptrdiff_t oldloc, newloc;
   DLword *fptr;
 
   for (fptr = fptovp, i = 0; GETWORD(fptr) != FPTOVP_ENTRY && i < size; fptr++, i++)
@@ -299,20 +299,21 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
  */
 
 /* diagnostic flag value to limit the size of write() s */
+extern int maxpages;
 int maxpages = 65536;
 
 LispPTR vmem_save(char *sysout_file_name)
 {
   int sysout; /* SysoutFile descriptor */
 #ifdef BIGVM
-  register unsigned int *fptovp;
+  unsigned int *fptovp;
 #else
-  register DLword *fptovp; /* FPTOVP */
+  DLword *fptovp; /* FPTOVP */
 #endif          /* BIGVM */
   int vmemsize; /* VMEMSIZE */
-  register int i;
+  int i;
   char tempname[MAXPATHLEN];
-  register int rval;
+  ssize_t rval;
 #ifndef DOS
   extern int ScreenLocked;
   extern DLword *EmCursorX68K;
@@ -323,7 +324,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
 /* remove cursor image from screen */
 
-#if   DOS
+#ifdef   DOS
   /*  For DOS, must also take the mouse cursor away (it's  */
   /*  written into the display-region bitmap).	     */
   currentdsp->device.locked++;
@@ -396,10 +397,10 @@ LispPTR vmem_save(char *sysout_file_name)
 
   for (i = 0; i < vmemsize; i++) {
     if (GETPAGEOK(fptovp, i) != 0177777) {
-      int oldfptovp = GETFPTOVP(fptovp, i);
-      int saveoldfptovp = oldfptovp;
-      int contig_pages = 0;
-      register char *base_addr;
+      unsigned int oldfptovp = GETFPTOVP(fptovp, i);
+      unsigned int saveoldfptovp = oldfptovp;
+      unsigned int contig_pages = 0;
+      char *base_addr;
 
       TIMEOUT(rval = lseek(sysout, i * BYTESPER_PAGE, SEEK_SET));
       if (rval == -1) {
@@ -410,7 +411,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
       /* Now, let's see how many pages we can dump */
       while (GETFPTOVP(fptovp, i) == oldfptovp && i < vmemsize) {
-        contig_pages++, oldfptovp++, i++;
+        contig_pages++; oldfptovp++; i++;
       }
       i--; /* Previous loop always overbumps i */
       DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
@@ -421,7 +422,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
       if (contig_pages > maxpages) {
         char *ba = base_addr;
-        int pc = contig_pages;
+        unsigned int pc = contig_pages;
         while (pc > maxpages) {
           TIMEOUT(rval = write(sysout, ba, maxpages * BYTESPER_PAGE));
           if (rval == -1) {
@@ -433,7 +434,7 @@ LispPTR vmem_save(char *sysout_file_name)
         }
         if (pc > 0) TIMEOUT(rval = write(sysout, ba, pc * BYTESPER_PAGE));
       } else {
-        int oldTT = TIMEOUT_TIME;
+        unsigned int oldTT = TIMEOUT_TIME;
         /* As we can spend longer than TIMEOUT_TIME doing a big
            write, we adjust the timeout temporarily here */
         TIMEOUT_TIME += contig_pages >> 3;
@@ -494,7 +495,7 @@ LispPTR vmem_save(char *sysout_file_name)
   }
 
 /* restore cursor image to screen */
-#if   DOS
+#ifdef DOS
   /* Must also put the mouse back. */
   (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
   currentdsp->device.locked--;

@@ -41,8 +41,8 @@
 /***********************************************************/
 
 int OP_miscn(int misc_index, int arg_count) {
-  register LispPTR *stk;
-  register int result;
+  LispPTR *stk;
+  int result;
   static LispPTR args[255];
 
   /* Put the Args into a Vector */
@@ -51,7 +51,7 @@ int OP_miscn(int misc_index, int arg_count) {
   stk = ((LispPTR *)CurrentStackPTR) + 1;
 
   {
-    register int arg_num = arg_count;
+    int arg_num = arg_count;
     if (arg_num > 0) {
       *stk++ = (LispPTR)TopOfStack;
       while (arg_num > 0) args[--arg_num] = *--stk;
@@ -62,7 +62,7 @@ int OP_miscn(int misc_index, int arg_count) {
 
   switch (misc_index) {
     case miscn_USER_SUBR: {
-      register LispPTR user_subr;
+      LispPTR user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
       if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) goto do_ufn;
     } break;

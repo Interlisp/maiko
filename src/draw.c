@@ -116,7 +116,7 @@ plot:
 
 int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int op, int delta, int numx, int numy)
 {
-  register DLword *dataptr;
+  DLword *dataptr;
   ScreenLocked = T;
 
 #ifdef COLOR

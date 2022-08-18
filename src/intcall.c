@@ -21,12 +21,12 @@
 #include "stack.h"        // for state, CurrentStackPTR, DLword, FX, FuncObj
 #include "tosfns.h"       // for SWAPPED_FN_CHECK
 
-void cause_interruptcall(register unsigned int atom_index)
+void cause_interruptcall(unsigned int atom_index)
 /* Atomindex for Function you want to invoke */
 {
-  register struct definition_cell *defcell68k; /* Definition Cell PTR */
-  register short pv_num;                       /* scratch for pv */
-  register struct fnhead *tmp_fn;
+  struct definition_cell *defcell68k; /* Definition Cell PTR */
+  short pv_num;                       /* scratch for pv */
+  struct fnhead *tmp_fn;
   int rest; /* use for alignments */
 
   CURRENTFX->nopush = T;

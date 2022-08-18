@@ -33,7 +33,7 @@
 /* GetLink gets a new entry from the GC collision table */
 #define GetLink(var)                                               \
   {                                                                \
-    register GCENTRY linkoff;                                      \
+    GCENTRY linkoff;                                      \
     linkoff = GETGC(HTcoll);                                       \
     if (linkoff == 0) {                                            \
       if ((linkoff = GETGC((GCENTRY *)HTcoll + 1)) >= HTCOLLMAX) { \
@@ -213,7 +213,7 @@
 
 void enter_big_reference_count(LispPTR ptr) {
   struct gc_ovfl *oventry;
-  register LispPTR tmp;
+  LispPTR tmp;
 
   /* this kludge is apparently necessary. Odd pointers are
   illegal, but apparently some are reference counted. If you
@@ -308,8 +308,8 @@ void modify_big_reference_count(LispPTR *entry, DLword casep, LispPTR ptr) {
 /************************************************************************/
 
 LispPTR htfind(LispPTR ptr, int casep) {
-  register GCENTRY *entry, *link, *prev;
-  register GCENTRY entry_contents, hiptr;
+  GCENTRY *entry, *link, *prev;
+  GCENTRY entry_contents, hiptr;
 
   /* if the NOREF bit is on in the type table entry, do
   not reference count this pointer. Used for non-reference
@@ -429,8 +429,8 @@ nolink: /* no match */
 /************************************************************************/
 
 LispPTR rec_htfind(LispPTR ptr, int casep) {
-  register GCENTRY *entry, *link, *prev;
-  register GCENTRY entry_contents, hiptr;
+  GCENTRY *entry, *link, *prev;
+  GCENTRY entry_contents, hiptr;
 
   /* if the NOREF bit is on in the type table entry, do
   not reference count this pointer. Used for non-reference

@@ -35,7 +35,7 @@
 
 ***********************************************************/
 
-LispPTR N_OP_addbase(register int base, register int offset) {
+LispPTR N_OP_addbase(LispPTR base, LispPTR offset) {
   base = POINTERMASK & base;
   switch ((SEGMASK & offset)) {
     case S_POSITIVE: return (base + (offset & 0x0000FFFF));
@@ -65,7 +65,7 @@ LispPTR N_OP_addbase(register int base, register int offset) {
 
 ***********************************************************/
 
-LispPTR N_OP_getbasebyte(register LispPTR base_addr, register int byteoffset) {
+LispPTR N_OP_getbasebyte(LispPTR base_addr, LispPTR byteoffset) {
   switch ((SEGMASK & byteoffset)) {
     case S_POSITIVE: byteoffset = byteoffset & 0x0000FFFF; break;
     case S_NEGATIVE: byteoffset = byteoffset | 0xFFFF0000; break;
@@ -93,7 +93,7 @@ LispPTR N_OP_getbasebyte(register LispPTR base_addr, register int byteoffset) {
 
 ***********************************************************/
 
-LispPTR N_OP_putbasebyte(register LispPTR base_addr, register int byteoffset, register int tos) {
+LispPTR N_OP_putbasebyte(LispPTR base_addr, LispPTR byteoffset, LispPTR tos) {
   if (((SEGMASK & tos) != S_POSITIVE) || ((unsigned short)tos >= 256)) ERROR_EXIT(tos);
   switch ((SEGMASK & byteoffset)) {
     case S_POSITIVE: byteoffset &= 0x0000FFFF; break;

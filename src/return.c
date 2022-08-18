@@ -80,7 +80,7 @@ void OP_contextsw(void) {
 /*									*/
 /************************************************************************/
 
-void contextsw(register DLword fxnum, register DLword bytenum, register DLword flags)
+void contextsw(DLword fxnum, DLword bytenum, DLword flags)
 
 /* BYTEnum that you want increment PC
       after CONTEXTSW */
@@ -89,8 +89,8 @@ void contextsw(register DLword fxnum, register DLword bytenum, register DLword f
 /* I don't know that it is the possible case that
        flags is 3 . */
 {
-  register DLword *next68k;
-  register DLword *freeptr; /* point to STK to be FSB */
+  DLword *next68k;
+  DLword *freeptr; /* point to STK to be FSB */
 
 #ifdef TRACE
   printf("contextsw : %d \n", fxnum);

@@ -19,7 +19,7 @@
 /*
  * XXX: it feels as though something is not clean here, looks like the
  * "int a" arguments are really LispPTR types, though perhaps it doesn't
- * matter.  NBriggs, May 2017
+ * matter.  NBriggs, May 2017 -- Yes. Replaced. NBriggs, Aug 2022
  */
 
 /************************************************************
@@ -27,7 +27,7 @@ N_OP_llsh1
         entry		LLSH1		OPCODE[0340]
         return(a << 1)
 ************************************************************/
-LispPTR N_OP_llsh1(int a) {
+LispPTR N_OP_llsh1(LispPTR a) {
   int arg1;
 
   N_GETNUMBER(a, arg1, du_ufn);
@@ -43,7 +43,7 @@ N_OP_llsh8
         entry		LLSH8		OPCODE[0341]
         return(a << 8)
 ************************************************************/
-LispPTR N_OP_llsh8(int a) {
+LispPTR N_OP_llsh8(LispPTR a) {
   int arg1;
 
   N_GETNUMBER(a, arg1, du_ufn);
@@ -59,7 +59,7 @@ N_OP_lrsh1
         entry		LRSH1		OPCODE[0342]
         return(a >> 1)
 ************************************************************/
-LispPTR N_OP_lrsh1(int a) {
+LispPTR N_OP_lrsh1(LispPTR a) {
   int arg1;
 
   N_GETNUMBER(a, arg1, du_ufn);
@@ -76,7 +76,7 @@ N_OP_lrsh8
         entry		LRSH8		OPCODE[0343]
         return(a >> 8)
 ************************************************************/
-LispPTR N_OP_lrsh8(int a) {
+LispPTR N_OP_lrsh8(LispPTR a) {
   int arg1;
 
   N_GETNUMBER(a, arg1, du_ufn);
@@ -92,9 +92,9 @@ N_OP_lsh
         entry		LSH		OPCODE[0347]
         return(a <?> b)
 ************************************************************/
-LispPTR N_OP_lsh(int a, int b) {
-  register int arg, arg2;
-  register int size;
+LispPTR N_OP_lsh(LispPTR a, LispPTR b) {
+  int arg, arg2;
+  int size;
   /*DLword	*wordp;*/
 
   N_GETNUMBER(b, size, do_ufn);

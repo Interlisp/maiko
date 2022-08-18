@@ -33,8 +33,8 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 **************************************************************/
 #define WriteLongW(srcpattern, destptr, op1, op2)                                      \
   {                                                                                    \
-    register int cnt;                                                                  \
-    register u_char *des, *src;                                                        \
+    int cnt;                                                                  \
+    u_char *des, *src;                                                        \
     for (cnt = 0, des = (u_char *)(destptr), src = (u_char *)(&(srcpattern)); cnt < 4; \
          cnt++, des++, src++)                                                          \
       (*des) op1(*src);                                                                \
@@ -57,8 +57,8 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 
 #define LineBLT8(srcWptr, offset, width, dstLptr, op1, op2)                                \
   {                                                                                        \
-    register DLword *srcw;                                                                 \
-    register u_int temp1;                                                                  \
+    DLword *srcw;                                                                 \
+    u_int temp1;                                                                  \
     for (srcw = (srcWptr) + (offset) / BITSPERDLWORD; ((width)-BITSPERNIBBLE) >= 0;        \
          (width) -= BITSPERNIBBLE, (dstLptr) = (u_char *)((u_int *)(dstLptr) + 1),         \
         (offset) += BITSPERNIBBLE) {                                                       \
@@ -98,8 +98,8 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
     }   /* for end */                                                                      \
     /* process for the rest bits (0~3)*/                                                   \
     switch (width) {                                                                       \
-      register u_char *destc;                                                              \
-      register int mod;                                                                    \
+      u_char *destc;                                                              \
+      int mod;                                                                    \
       case 0: /* already finished */ break;                                                \
       case 1:                                                                              \
       case 2:                                                                              \
@@ -130,10 +130,10 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 
 /* I don't care sourcetype & operation NOW */
 
-void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, register int width,
+void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width,
               u_char color0, u_char color1, LispPTR sourcetype, LispPTR operation)
 
-/* register u_int *destl;*/
+/* u_int *destl;*/
 /* for SPARC */
 
 /* Background color */
@@ -153,15 +153,15 @@ void lineBlt8(DLword *srcbase, register int offset, register u_char *destl, regi
   extern DLword ERASE_atom;
 
   if (sourcetype == INVERT_atom) {
-    register int tempcol;
+    int tempcol;
     tempcol = color0;
     color0 = color1;
     color1 = tempcol;
   }
   if ((beforecolor0 != color0) || (beforecolor1 != color1)) {
     /* making color-mapped array */
-    register int i;
-    register u_int longcol0, longcol1;
+    int i;
+    u_int longcol0, longcol1;
 
     beforecolor0 = color0;
     beforecolor1 = color1;

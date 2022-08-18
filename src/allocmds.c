@@ -62,7 +62,7 @@ static inline void Make_MDSentry(UNSIGNED page, DLword pattern) {
 */
 /**********************************************************************/
 
-LispPTR initmdspage(register LispPTR *base, register DLword size, register LispPTR prev)
+LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
 /* MDS page base */
 /* object cell size you need (WORD) */
 /* keeping top of previous MDS cell */
@@ -70,11 +70,11 @@ LispPTR initmdspage(register LispPTR *base, register DLword size, register LispP
 {
   extern DLword *MDStypetbl;
 
-  register int remain_size; /* (IREMAINDER WORDSPERPAGE SIZE) */
-  register short num_pages;
-  register int limit;
+  int remain_size; /* (IREMAINDER WORDSPERPAGE SIZE) */
+  short num_pages;
+  int limit;
   int used; /* used space in MDS page */
-  register int i;
+  int i;
 
 #ifdef TRACE2
   printf("TRACE: initmdspage()\n");
@@ -121,14 +121,14 @@ LispPTR initmdspage(register LispPTR *base, register DLword size, register LispP
 */
 /**********************************************************************/
 
-LispPTR *alloc_mdspage(register short int type) {
+LispPTR *alloc_mdspage(short int type) {
   extern LispPTR *MDS_free_page_word; /* Free MDS page number */
 
   extern DLword *Next_MDSpage; /* next vacant(new) MDS page */
   extern LispPTR *Next_MDSpage_word;
   extern LispPTR *Next_Array_word;
 
-  register LispPTR *ptr; /* points Top 32 bit of the MDS page */
+  LispPTR *ptr; /* points Top 32 bit of the MDS page */
   LispPTR next_page;
 
   /* Next_Array=(DLword *)Addr68k_from_LADDR(((*Next_Array_word)& 0xffff ) << 8); */

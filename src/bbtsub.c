@@ -328,16 +328,16 @@ void bitbltsub(LispPTR *argv) {
   int displayflg = 0;
 #endif
   int backwardflg = 0, sx, dx, srcbpl=2147483647, dstbpl, src_comp, op;
-  register DLword *srcbase, *dstbase;
+  DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
   DLword grayword[4];
 
   { /* Initialization code, in a block so it optimizes independently */
-    register LispPTR *args = argv;
-    register PILOTBBT *pbt;
-    register BITMAP *srcebm, *destbm;
+    LispPTR *args = argv;
+    PILOTBBT *pbt;
+    BITMAP *srcebm, *destbm;
     BITMAP *texture68k;
-    register DLword *base;
+    DLword *base;
 
 #ifdef INIT
     init_kbd_startup;
@@ -671,8 +671,8 @@ LispPTR bitblt_bitmap(LispPTR *args) {
 
   if (clipreg != NIL_PTR) {
     /* clip the BITBLT using the clipping region supplied */
-    register LispPTR clipvalue;
-    register int temp, cr_left, cr_bot;
+    LispPTR clipvalue;
+    int temp, cr_left, cr_bot;
 
     clipvalue = car(clipreg);
     N_GETNUMBER(clipvalue, cr_left, bad_arg);
@@ -702,7 +702,7 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   stodx = dleft - sleft;
 
   {
-    register int temp;
+    int temp;
     left = max(clipleft, max(0, left - stodx));
     bottom = max(clipbottom, max(0, bottom - stody));
     temp = SourceBitmap->bmwidth;
@@ -916,7 +916,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
 
   texture = args[0];
   {
-    register int temp;
+    int temp;
     temp = GetTypeNumber(texture);
     if (((temp == TYPE_LITATOM) && (texture != NIL_PTR)) || (temp == TYPE_LISTP)) {
       PUNT_TO_BLTSHADEBITMAP;
@@ -936,8 +936,8 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   left = bottom = 0;
   right = DestBitmap->bmwidth;
   if (clipreg != NIL_PTR) { /* clip the BITBLT using the clipping region supplied */
-    register LispPTR clipvalue;
-    register int temp, cr_left, cr_bot;
+    LispPTR clipvalue;
+    int temp, cr_left, cr_bot;
 
     clipvalue = car(clipreg);
     N_GETNUMBER(clipvalue, cr_left, bad_arg);
@@ -1143,11 +1143,11 @@ void bltchar(LispPTR *args)
  *      args[5] :       RIGHT
  */
 {
-  register PILOTBBT *pbt;
-  register DISPLAYDATA *dspdata;
+  PILOTBBT *pbt;
+  DISPLAYDATA *dspdata;
   int base;
 #ifdef REALCURSOR
-  register int displayflg;
+  int displayflg;
 #endif
   int w, h;
   int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
@@ -1316,7 +1316,7 @@ LispPTR TEDIT_BLTCHAR_index; /* if NIL ,TEDIT is not yet loaded */
 /************************************************************************/
 
 void newbltchar(LispPTR *args) {
-  register DISPLAYDATA *displaydata68k;
+  DISPLAYDATA *displaydata68k;
   int right, left, curx;
   PILOTBBT *pbt;
   int lmargin, rmargin, xoff;
@@ -1354,7 +1354,7 @@ void newbltchar(LispPTR *args) {
   if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
 
   {
-    register int newpos;
+    int newpos;
     newpos = curx +
              GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
 
@@ -1564,7 +1564,7 @@ static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILO
   int y;
   int chartop, top;
   BITMAP *bm68k;
-  register LispPTR base, ypos, yoff;
+  LispPTR base, ypos, yoff;
 
   FGetNum2(displaydata68k->ddyoffset, yoff);
   FGetNum2(displaydata68k->ddyposition, ypos);
@@ -1596,11 +1596,11 @@ static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILO
 
 } /* sfffixy */
 
-static LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLword charset) {
-  register PILOTBBT *pbt68k;
-  register FONTDESC *fontd68k;
+static LispPTR changecharset_display(DISPLAYDATA *displaydata68k, DLword charset) {
+  PILOTBBT *pbt68k;
+  FONTDESC *fontd68k;
   LispPTR csinfo;
-  register CHARSETINFO *csinfo68k;
+  CHARSETINFO *csinfo68k;
   BITMAP *bm68k;
   LispPTR *base68k;
 
@@ -1626,8 +1626,8 @@ static LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLwor
     printf("CCD1\n");
     return (sfffixy(displaydata68k, csinfo68k, pbt68k));
   } else {
-    register LispPTR addr;
-    register int num;
+    LispPTR addr;
+    int num;
     FGetNum2(displaydata68k->ddcharheightdelta, num); /* if not number, return -1 */
     addr = bm68k->bmbase + (bm68k->bmrasterwidth * num);
     printf("CCD2 num=%d\n", num);
@@ -1639,14 +1639,14 @@ static LispPTR changecharset_display(register DISPLAYDATA *displaydata68k, DLwor
 #endif
 /******************************************************************/
 
-void ccfuncall(register unsigned int atom_index, register int argnum, register int bytenum)
+void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
  /* Atomindex for Function you want to invoke */
  /* Number of ARGS on TOS and STK */
  /* Number of bytes of Caller's OPCODE(including multi-byte) */
 {
-  register struct definition_cell *defcell68k; /* Definition Cell PTR */
-  register short pv_num;                       /* scratch for pv */
-  register struct fnhead *tmp_fn;
+  struct definition_cell *defcell68k; /* Definition Cell PTR */
+  short pv_num;                       /* scratch for pv */
+  struct fnhead *tmp_fn;
   int rest; /* use for alignments */
 
   /* Get Next Block offset from argnum */
@@ -1739,9 +1739,9 @@ void tedit_bltchar(LispPTR *args)
 {
 #define backwardflg 0
 #define displayflg 0
-  register DISPLAYDATA *displaydata68k;
+  DISPLAYDATA *displaydata68k;
   int right;
-  register PILOTBBT *pbt;
+  PILOTBBT *pbt;
   int imagewidth, newx;
   /* for new_char_bitblt_code */
   int h, w;
@@ -1818,7 +1818,7 @@ static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y
 /* Lisp addr hi-word, lo-word, ... */
 static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
 {
-  register DLword *base68k;
+  DLword *base68k;
   extern int MonoOrColor;
   extern int displaywidth;
 #ifdef INIT

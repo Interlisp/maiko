@@ -67,7 +67,7 @@ int make_old_version(char *old, char *file);
 void print_finfo(FINFO *fp);
 #endif
 int init_finfo(void);
-LispPTR COM_gen_files(register LispPTR *args);
-LispPTR COM_next_file(register LispPTR *args);
-LispPTR COM_finish_finfo(register LispPTR *args);
+LispPTR COM_gen_files(LispPTR *args);
+LispPTR COM_next_file(LispPTR *args);
+LispPTR COM_finish_finfo(LispPTR *args);
 #endif

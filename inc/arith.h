@@ -22,15 +22,38 @@
 #define MAX_FIXP 2147483647  /* == 0x7FFFFFFF  */
 #define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
-#define GetSmalldata(x)          \
-  (((SEGMASK & (x)) == S_POSITIVE)            \
-       ? (0xFFFF & (x))            \
-       : (((SEGMASK & (x)) == S_NEGATIVE) ? (0xFFFF0000 | (x)) : error("Not smallp address")))
+/**
+ * extract an integer value from a smallp
+ */
+static inline int GetSmalldata(LispPTR x) {
+  if ((SEGMASK & (int)x) == S_POSITIVE) return (int)(x & 0xFFFF);
+  if ((SEGMASK & (int)x) == S_NEGATIVE) return (int)(x | 0xFFFF0000);
+  error("Not smallp address");
+  return (0);
+}
 
-#define GetSmallp(x)                                                                  \
-  ((0xFFFF0000 & (x)) ? (((0xFFFF0000 & (x)) == 0xFFFF0000) ? (S_NEGATIVE | (0xFFFF & (x))) \
-                                                        : error("Not Smallp data"))   \
-                    : (S_POSITIVE | (0xFFFF & (x))))
+/**
+ * construct a smallp from an integer value
+ */
+
+static inline LispPTR GetSmallp(long x) {
+  if (x >= 0) {
+    if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
+  } else {
+    if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFF));
+  }
+  error("Not Smallp data");
+  return (S_POSITIVE | 0);
+}
+
+/**
+ * construct a smallp from an unsigned value
+ */
+static inline LispPTR GetPosSmallp(unsigned long x) {
+  if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
+  error("Not Smallp data");
+  return (S_POSITIVE | 0);
+}
 
 #define FIXP_VALUE(dest) *((int *)Addr68k_from_LADDR(dest))
 
@@ -38,29 +61,27 @@
 
 #define N_GETNUMBER(sour, dest, label)                        \
   do {                                                        \
-    (dest) = (sour); /* access memory once */                 \
-    switch (SEGMASK & (dest)) {                               \
-      case S_POSITIVE: (dest) &= 0xFFFF; break;       \
-      case S_NEGATIVE: (dest) |= (int)0xFFFF0000; break; \
+    switch (SEGMASK & (sour)) {                               \
+    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFF); break;  \
+    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000); break; \
       default:                                                \
         /* NOLINTNEXTLINE(bugprone-macro-parentheses) */      \
-        if (GetTypeNumber(dest) != TYPE_FIXP) goto label;     \
-        (dest) = FIXP_VALUE(dest);                            \
+        if (GetTypeNumber(sour) != TYPE_FIXP) goto label;     \
+        (dest) = FIXP_VALUE(sour);                            \
     }                                                         \
   } while (0)
 
 #define N_IGETNUMBER(sour, dest, label)                                                   \
   do {                                                                                    \
-    (dest) = (sour); /* access memory once */                                             \
-    switch (SEGMASK & (dest)) {                                                           \
-      case S_POSITIVE: (dest) &= 0xFFFF; break;                                   \
-      case S_NEGATIVE: (dest) |= (int)0xFFFF0000; break; \
+    switch (SEGMASK & (sour)) {                                                           \
+    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFF); break;            \
+    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000); break;        \
       default:                                                                            \
-        switch (GetTypeNumber(dest)) {                                                    \
-          case TYPE_FIXP: (dest) = FIXP_VALUE(dest); break;               \
+        switch (GetTypeNumber(sour)) {                                                    \
+          case TYPE_FIXP: (dest) = FIXP_VALUE(sour); break;               \
           case TYPE_FLOATP: {                                                             \
-            register float temp;                                                          \
-            temp = FLOATP_VALUE(dest);                                                    \
+            float temp;                                                          \
+            temp = FLOATP_VALUE(sour);                                                    \
             /* NOLINTNEXTLINE(bugprone-macro-parentheses) */                              \
             if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) goto label; \
             (dest) = (int)temp;                                                           \
@@ -77,39 +98,15 @@
       case 0: (result) = (S_POSITIVE | (int)(arg)); break;                 \
       case (int)0xFFFF0000: (result) = (S_NEGATIVE | (0xFFFF & (arg))); break; \
       default: {                                                           \
-        register LispPTR *wordp;                                           \
+        int *fixpp;                                           \
         /* arg is FIXP, call createcell */                                 \
-        wordp = (LispPTR *)createcell68k(TYPE_FIXP);                       \
-        *((int *)wordp) = (int)(arg);                                      \
-        (result) = (LADDR_from_68k(wordp));                                \
+        fixpp = (int *)createcell68k(TYPE_FIXP);                       \
+        *((int *)fixpp) = (int)(arg);                                      \
+        (result) = (LADDR_from_68k(fixpp));                                \
         break;                                                             \
       }                                                                    \
     }                                                                      \
   } while (0)
-
-/* *******
-        NEED to See if this is faster than the N_ARITH_SWITCH macro
-
-        if( (MIN_FIXP <= result) && (result <= MAX_FIXP) ){
-                if(0 <= result){
-                        if(result <= MAX_SMALL)
-                                return(S_POSITIVE | result);
-                        else{
-                                wordp = createcell68k(TYPE_FIXP);
-                                *((unsigned int *)wordp) = result;
-                                return(LADDR_from_68k(wordp));
-                        }
-                }else{
-                        if(MIN_SMALL <= result)
-                                return(S_NEGATIVE | (0xFFFF & result));
-                        else{
-                                wordp = createcell68k(TYPE_FIXP);
-                                *((unsigned int *)wordp) = result;
-                                return(LADDR_from_68k(wordp));
-                        }
-                }/
-        }
-****** */
 
 #define N_ARITH_SWITCH(arg)                                  \
   do {                                                       \
@@ -117,10 +114,10 @@
     case 0: return (LispPTR) (S_POSITIVE | (arg));                       \
     case (int)0xFFFF0000: return (LispPTR)(S_NEGATIVE | (0xFFFF & (arg))); \
       default: {                                             \
-        register LispPTR *fixpp;                             \
+        int *fixpp;                             \
         /* arg is FIXP, call createcell */                   \
-        fixpp = (LispPTR *)createcell68k(TYPE_FIXP);         \
-        *((int *)fixpp) = arg;                               \
+        fixpp = (int *)createcell68k(TYPE_FIXP);         \
+        *fixpp = arg;                                       \
         return (LADDR_from_68k(fixpp));                      \
       }                                                      \
     }                                                        \

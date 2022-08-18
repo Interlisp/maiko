@@ -39,8 +39,8 @@ void byte_swap_page(unsigned short *page, int wordcount) {
 /*                                                              */
 /****************************************************************/
 void word_swap_page(unsigned short *page, int longwordcount) {
-  register int i;
-  register unsigned int *longpage;
+  int i;
+  unsigned int *longpage;
   longpage = (unsigned int *)page;
   for (i = 0; i < (longwordcount + longwordcount); i++) {
     *(page + i) = byte_swap_word(*(page + i));
@@ -98,8 +98,8 @@ const unsigned char reversedbits[256] = {
 #define reverse_bits(word) ((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word)&0xff])
 
 void bit_reverse_region(unsigned short *top, int width, int height, int rasterwidth) {
-  register int i, j, wordwid = ((width + 31) >> 5) << 1;
-  register unsigned short *word;
+  int i, j, wordwid = ((width + 31) >> 5) << 1;
+  unsigned short *word;
 
   for (i = 0; i < height; i++) {
     word = top;

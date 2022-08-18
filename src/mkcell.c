@@ -44,11 +44,11 @@
 static LispPTR oldoldfree;
 static LispPTR oldfree;
 
-LispPTR N_OP_createcell(register LispPTR tos) {
-  register struct dtd *dtd68k;
-  register DLword *ptr, *lastptr;
-  register LispPTR newcell;
-  register unsigned int type;
+LispPTR N_OP_createcell(LispPTR tos) {
+  struct dtd *dtd68k;
+  DLword *ptr, *lastptr;
+  LispPTR newcell;
+  unsigned int type;
 
   if ((tos & SEGMASK) != S_POSITIVE) ERROR_EXIT(tos);
   type = tos & 0xffff;
@@ -91,9 +91,9 @@ retry:
 } /* N_OP_createcell end */
 
 DLword *createcell68k(unsigned int type) {
-  register struct dtd *dtd68k;
-  register DLword *ptr, *lastptr;
-  register LispPTR newcell;
+  struct dtd *dtd68k;
+  DLword *ptr, *lastptr;
+  LispPTR newcell;
 #ifdef DTDDEBUG
   if (type == TYPE_LISTP) error("createcell : Can't create Listp cell with CREATECELL");
   if (type == TYPE_STREAM) stab();

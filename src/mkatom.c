@@ -156,7 +156,7 @@ static int bytecmp(const char *char1, const char *char2, int len)
 */
 /**********************************************************************/
 
-LispPTR compare_chars(register const char *char1, register const char *char2, register DLword length) {
+LispPTR compare_chars(const char *char1, const char *char2, DLword length) {
 #ifndef BYTESWAP
   if (memcmp(char1, char2, length) == 0)
 #else
@@ -196,7 +196,7 @@ int lispcmp(const DLword *char1, const char *char2, int len) {
 */
 /**********************************************************************/
 
-LispPTR compare_lisp_chars(register const char *char1, register const char *char2, register DLword length,
+LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
                            DLword fat1, DLword fat2) {
   if ((!fat1) == (!fat2)) { /* both fat or both non-fat. */
 #ifdef BYTESWAP

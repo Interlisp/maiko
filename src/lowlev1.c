@@ -40,10 +40,10 @@ static const int mask_array[16] = {
                 return:	??
 
 ***********************************************************/
-LispPTR N_OP_putbitsnfd(register LispPTR base, register LispPTR data, int word_offset,
-                        register int beta) {
-  register DLword *pword;
-  register int shift_size, field_size, fmask;
+LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset,
+                        int beta) {
+  DLword *pword;
+  int shift_size, field_size, fmask;
 
 #ifdef CHECK
   if (base > POINTERMASK) { error("getbits: base out of range"); }
@@ -77,10 +77,10 @@ LispPTR N_OP_putbitsnfd(register LispPTR base, register LispPTR data, int word_o
                                 lo - mask & shifted data
 
 ***********************************************************/
-LispPTR N_OP_getbitsnfd(int base_addr, register int word_offset, int beta) {
-  register DLword *pword;
-  register short first;
-  register short size;
+LispPTR N_OP_getbitsnfd(int base_addr, int word_offset, int beta) {
+  DLword *pword;
+  short first;
+  short size;
 
   pword = Addr68k_from_LADDR(base_addr + word_offset);
   size = 0xF & beta;
@@ -111,7 +111,7 @@ LispPTR N_OP_getbitsnfd(int base_addr, register int word_offset, int beta) {
                 (Called only by Native code)
 ***********************************************************/
 
-LispPTR N_OP_putbasen(register LispPTR base, register LispPTR tos, int n) {
+LispPTR N_OP_putbasen(LispPTR base, LispPTR tos, int n) {
   base = POINTERMASK & base;
   if ((SEGMASK & tos) != S_POSITIVE) {
     ERROR_EXIT(tos);
@@ -137,7 +137,7 @@ LispPTR N_OP_putbasen(register LispPTR base, register LispPTR tos, int n) {
                 (Called only by Native code)
 ***********************************************************/
 
-LispPTR N_OP_putbaseptrn(register LispPTR base, register LispPTR tos, int n) {
+LispPTR N_OP_putbaseptrn(LispPTR base, LispPTR tos, int n) {
   base = POINTERMASK & base;
   *((LispPTR *)Addr68k_from_LADDR(base + n)) = tos & POINTERMASK;
   return (base);

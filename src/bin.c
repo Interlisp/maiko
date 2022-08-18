@@ -31,9 +31,9 @@
 #include "lsptypes.h"  // for state, ERROR_EXIT, GetTypeNumber, Get_BYTE
 #include "stream.h"    // for Stream
 
-LispPTR N_OP_bin(register int tos) {
-  register Stream *stream68k; /* stream instance on TOS */
-  register char *buff68k;     /* pointer to BUFF */
+LispPTR N_OP_bin(LispPTR tos) {
+  Stream *stream68k; /* stream instance on TOS */
+  char *buff68k;     /* pointer to BUFF */
 
   if (GetTypeNumber(tos) == TYPE_STREAM) {
     stream68k = (Stream *)Addr68k_from_LADDR(tos);

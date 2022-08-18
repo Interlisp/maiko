@@ -70,7 +70,7 @@ extern int Dummy_errno;
 
 #define SetupMatch(tname, pname, text, pext, tver)   \
   {                                                  \
-    register char *pp;                               \
+    char *pp;                               \
                                                      \
     separate_version(tname, tver, 0);                \
                                                      \
@@ -141,8 +141,8 @@ extern int Dummy_errno;
 
 static int match_pattern(char *tp, char *pp)
 {
-  register char *tsp, *psp;
-  register int inastr;
+  char *tsp, *psp;
+  int inastr;
 
 #ifdef DOS
   /* % is not allowed in DOS names for Medley. */
@@ -246,7 +246,7 @@ int MAXFINFO;
 
 #define FreeFinfo(fp)                                                      \
   {                                                                        \
-    register FINFO *lastp;                                                 \
+    FINFO *lastp;                                                 \
     for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {} \
     lastp->next = FreeFinfoList;                                           \
     FreeFinfoList = fp;                                                    \
@@ -293,8 +293,8 @@ void print_finfo(FINFO *fp)
  */
 
 int init_finfo() {
-  register FINFO *cp;
-  register int n;
+  FINFO *cp;
+  int n;
 
   if ((FreeFinfoList = (FINFO *)calloc(sizeof(FINFO) + sizeof(FPROP), INITFINFONUM)) ==
       (FINFO *)NULL) {
@@ -341,7 +341,7 @@ int init_finfo() {
  */
 
 static int get_finfo_id() {
-  register int i;
+  int i;
   DFINFO *dfap;
 
   for (i = 0; i < MAXFINFO; i++)
@@ -387,12 +387,12 @@ static int get_finfo_id() {
 #ifdef DOS
 static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct direct *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, len, rval, res, isslash = 0, drive = 0;
   struct find_t dirp;
-  register struct passwd *pwd;
+  struct passwd *pwd;
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
   char fver[VERSIONLEN];
@@ -547,13 +547,13 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct dirent *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct dirent *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, rval;
   size_t len;
   DIR *dirp;
-  register struct passwd *pwd;
+  struct passwd *pwd;
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
   char fver[VERSIONLEN];
@@ -667,9 +667,9 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #ifdef DOS
 static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct direct *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, len, rval, isslash = 0, drive = 0;
   struct find_t dirp;
   struct stat sbuf;
@@ -811,9 +811,9 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
 static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct dirent *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct dirent *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, rval;
   size_t len;
   DIR *dirp;
@@ -920,12 +920,12 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #ifdef DOS
 static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct direct *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, len, rval;
   struct find_t dirp;
-  /* register struct passwd *pwd; -- From author support */
+  /* struct passwd *pwd; -- From author support */
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
 
@@ -1006,13 +1006,13 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct dirent *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct dirent *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, rval;
   size_t len;
   DIR *dirp;
-  /* register struct passwd *pwd; -- From author support */
+  /* struct passwd *pwd; -- From author support */
   struct stat sbuf;
   char namebuf[MAXPATHLEN];
 
@@ -1120,9 +1120,9 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #ifdef DOS
 static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct direct *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct direct *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, len, rval;
   struct find_t dirp;
   struct stat sbuf;
@@ -1190,9 +1190,9 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 #else  /* DOS */
 static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 {
-  register struct dirent *dp;
-  register FINFO *prevp;
-  register FINFO *nextp;
+  struct dirent *dp;
+  FINFO *prevp;
+  FINFO *nextp;
   int n, rval;
   size_t len;
   DIR *dirp;
@@ -1287,8 +1287,8 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
 static int trim_finfo(FINFO **fp)
 {
 #ifndef DOS
-  register FINFO *tp, *sp, *mp, *cp, *pp;
-  register int num, pnum;
+  FINFO *tp, *sp, *mp, *cp, *pp;
+  int num, pnum;
   int linkp;
   char ver[VERSIONLEN];
 
@@ -1415,8 +1415,8 @@ static int trim_finfo(FINFO **fp)
 
 static int trim_finfo_highest(FINFO **fp, int highestp)
 {
-  register FINFO *tp, *sp, *mp, *cp, *pp;
-  register int num, pnum;
+  FINFO *tp, *sp, *mp, *cp, *pp;
+  int num, pnum;
   int linkp;
   char ver[VERSIONLEN];
 
@@ -1553,8 +1553,8 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
 
 static int trim_finfo_version(FINFO **fp, unsigned rver)
 {
-  register FINFO *tp, *sp, *mp, *cp, *pp, *vp;
-  register int num, pnum;
+  FINFO *tp, *sp, *mp, *cp, *pp, *vp;
+  int num, pnum;
   int linkp;
   char ver[VERSIONLEN];
 
@@ -1742,10 +1742,10 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
  * Caller have to free the area after sorting done.
  */
 
-static FINFO **prepare_sort_buf(register FINFO *fp, register int n)
+static FINFO **prepare_sort_buf(FINFO *fp, int n)
 {
-  register FINFO **bp;
-  register FINFO **bufp;
+  FINFO **bp;
+  FINFO **bufp;
 
   if ((bufp = (FINFO **)malloc(sizeof(FINFO *) * n)) == NULL) {
     *Lisp_errno = errno;
@@ -1777,7 +1777,7 @@ static FINFO **prepare_sort_buf(register FINFO *fp, register int n)
 
 static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
 {
-  register int res;
+  int res;
   unsigned v1, v2;
 
   if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) return (res);
@@ -1807,7 +1807,7 @@ static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
  * Note that the result is in the reversed order.
  */
 
-static int unix_filecmp(register FINFO **f1, register FINFO **f2)
+static int unix_filecmp(FINFO **f1, FINFO **f2)
 { return (strcmp((*f1)->lname, (*f2)->lname)); }
 
 /*
@@ -1829,10 +1829,10 @@ static int unix_filecmp(register FINFO **f1, register FINFO **f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-static int file_sort(register FINFO **fpp, register int n, register int (*sortfn)())
+static int file_sort(FINFO **fpp, int n, int (*sortfn)())
 {
-  register FINFO **fp;
-  register FINFO **sort_bufp;
+  FINFO **fp;
+  FINFO **sort_bufp;
 
   if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) return (0);
 
@@ -1963,7 +1963,7 @@ typedef struct ufsgfs {
  * Enumerates files matching pattern.
  */
 
-LispPTR COM_gen_files(register LispPTR *args)
+LispPTR COM_gen_files(LispPTR *args)
 {
   char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
   char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN];
@@ -1972,7 +1972,7 @@ LispPTR COM_gen_files(register LispPTR *args)
 #endif
   int dskp, count, highestp, fid;
   unsigned propp, version;
-  register char *cp;
+  char *cp;
   FINFO *fp;
   int dsk_filecmp(), unix_filecmp();
 
@@ -2124,14 +2124,14 @@ LispPTR COM_gen_files(register LispPTR *args)
  * name.
  */
 
-LispPTR COM_next_file(register LispPTR *args)
+LispPTR COM_next_file(LispPTR *args)
 {
-  register LispPTR laddr;
-  register FPROP *pp;
-  register FINFO *fp;
-  register char *base;
-  register DFINFO *dfp;
-  register UFSGFS *gfsp;
+  LispPTR laddr;
+  FPROP *pp;
+  FINFO *fp;
+  char *base;
+  DFINFO *dfp;
+  UFSGFS *gfsp;
   int finfoid;
   unsigned propp;
 
@@ -2196,11 +2196,11 @@ LispPTR COM_next_file(register LispPTR *args)
  * Abandon all cached information corresponding to the generator.
  */
 
-LispPTR COM_finish_finfo(register LispPTR *args)
+LispPTR COM_finish_finfo(LispPTR *args)
 {
-  register DFINFO *dfp;
-  register FINFO *fp;
-  register int finfoid;
+  DFINFO *dfp;
+  FINFO *fp;
+  int finfoid;
 
   ERRSETJMP(NIL);
 

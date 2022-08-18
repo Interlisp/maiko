@@ -97,10 +97,10 @@ struct hashtable {
 /************************************************************************/
 
 LispPTR aref1(LispPTR array, int index) {
-  register LispPTR retval = 0;
-  register LispPTR base;
-  register short typenumber;
-  register struct arrayheader *actarray;
+  LispPTR retval = 0;
+  LispPTR base;
+  short typenumber;
+  struct arrayheader *actarray;
 
   actarray = (struct arrayheader *)Addr68k_from_LADDR(array);
   if (index >= actarray->totalsize) {

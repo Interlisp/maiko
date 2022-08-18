@@ -25,7 +25,7 @@ typedef struct {
 	short cudata;		/* ?? */
 } LISP_CURSOR;
 
-const uint8_t defaultcursor_bitmap[]=
+static const uint8_t defaultcursor_bitmap[]=
   {
 	  0x80, 0, 0xc0, 0, 0xe0, 0, 0xf0, 0
 	, 0xf8, 0, 0xfc, 0, 0xfe, 0, 0xf0, 0
@@ -44,7 +44,7 @@ LISP_CURSOR default_cursor =
   };
 
 
-const uint8_t  waitcursor_bitmap[]=
+static const uint8_t  waitcursor_bitmap[]=
   {
 	  0xFF, 0xFE, 0xC0, 0x06, 0x60, 0x1C, 0x3D, 0x78
 	, 0x1F, 0xF0, 0x0F, 0xE0, 0x06, 0xC0, 0x03, 0x80
@@ -62,7 +62,7 @@ LISP_CURSOR wait_cursor =
    , 0
   };
 	
-const uint8_t horizscrollcursor_bitmap[]={
+static const uint8_t horizscrollcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -92,7 +92,7 @@ LISP_CURSOR horizscroll_cursor = {
 	
 
 
-const uint8_t horizthumbcursor_bitmap[]={
+static const uint8_t horizthumbcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -122,7 +122,7 @@ LISP_CURSOR horizthumb_cursor = {
 	
 
 
-const uint8_t scrolldowncursor_bitmap[]={
+static const uint8_t scrolldowncursor_bitmap[]={
 		  0x03, 0x80
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -152,7 +152,7 @@ LISP_CURSOR scrolldown_cursor = {
 	
 
 
-const uint8_t scrollleftcursor_bitmap[]={
+static const uint8_t scrollleftcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -182,7 +182,7 @@ LISP_CURSOR scrollleft_cursor = {
 	
 
 
-const uint8_t scrollrightcursor_bitmap[]={
+static const uint8_t scrollrightcursor_bitmap[]={
 	  0x00, 0x00
 	, 0x00, 0x00
 	, 0x00, 0x00
@@ -212,7 +212,7 @@ LISP_CURSOR scrollright_cursor = {
 	
 
 
-const uint8_t scrollupcursor_bitmap[]={
+static const uint8_t scrollupcursor_bitmap[]={
 		  0x01, 0x00
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -242,7 +242,7 @@ LISP_CURSOR scrollup_cursor = {
 	
 
 
-const uint8_t vertscrollcursor_bitmap[]={
+static const uint8_t vertscrollcursor_bitmap[]={
 		  0x01, 0x00
 		, 0x03, 0x80
 		, 0x03, 0x80
@@ -272,7 +272,7 @@ LISP_CURSOR vertscroll_cursor = {
 	
 
 
-const uint8_t vertthumbcursor_bitmap[]={
+static const uint8_t vertthumbcursor_bitmap[]={
 		 0x00,0x00
 		,0x00,0x1f
 		,0x00,0x00

@@ -1236,7 +1236,7 @@ void dtd_chain(DLword type) {
 
 void check_dtd_chain(DLword type)
 {
-  register LispPTR next, onext;
+  LispPTR next, onext;
   LispPTR before;
 
   onext = 0;

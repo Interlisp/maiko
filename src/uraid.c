@@ -321,7 +321,7 @@ void uraid_commclear() {
 
 void copy_region(const DLword *src, DLword *dst, int width, int h)
 {
-  register int w;
+  int w;
 
   for (; (h--);) {
     for (w = width; (w--);) { GETWORD(dst++) = GETWORD(src++); }

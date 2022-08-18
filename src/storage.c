@@ -37,7 +37,7 @@
 #define GUARDVMEMFULL 500
 #define IFPVALID_KEY 5603
 
-static void advance_array_seg(register unsigned int nxtpage);
+static void advance_array_seg(unsigned int nxtpage);
 static void advance_storagestate(DLword flg);
 static LispPTR dremove(LispPTR x, LispPTR l);
 static void set_storage_state(void);
@@ -53,9 +53,9 @@ static void set_storage_state(void);
 */
 /*****************************************************************/
 
-void checkfor_storagefull(register unsigned int npages) {
-  register int pagesleft;
-  register INTSTAT *int_state;
+void checkfor_storagefull(unsigned int npages) {
+  int pagesleft;
+  INTSTAT *int_state;
 
 #ifdef BIGVM
   pagesleft = (*Next_MDSpage_word) - (*Next_Array_word) - PAGESPER_MDSUNIT;
@@ -147,7 +147,7 @@ void checkfor_storagefull(register unsigned int npages) {
 */
 /*****************************************************************/
 
-static void advance_array_seg(register unsigned int nxtpage)
+static void advance_array_seg(unsigned int nxtpage)
 /* rare page num */
 {
   unsigned int ncellsleft;
@@ -281,12 +281,12 @@ static LispPTR dremove(LispPTR x, LispPTR l) {
 
 LispPTR newpage(LispPTR base) {
 #ifdef BIGVM
-  register unsigned int vp; /* Virtual Page we're creating */
+  unsigned int vp; /* Virtual Page we're creating */
 #else
-  register DLword vp;        /* (built from base)           */
+  DLword vp;        /* (built from base)           */
 #endif /* BIGVM */
 
-  register INTSTAT *int_state;
+  INTSTAT *int_state;
 
   extern LispPTR *LASTVMEMFILEPAGE_word;
   extern LispPTR *VMEM_FULL_STATE_word;

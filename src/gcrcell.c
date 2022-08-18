@@ -111,10 +111,10 @@ unsigned todo_reads = 0;
 /************************************************************************/
 
 LispPTR gcreccell(LispPTR cell) {
-  register ConsCell *ptr;
+  ConsCell *ptr;
   struct dtd *typdtd;
   DLword typ;
-  register LispPTR tmpptr, donext, tmpcell, val;
+  LispPTR tmpptr, donext, tmpcell, val;
   LispPTR ptrfield, carfield;
   int index, code;
   LispPTR *field;
@@ -314,7 +314,7 @@ trynext:
 
 void freelistcell(LispPTR cell) {
   struct conspage *pbase;
-  register ConsCell *cell68k;
+  ConsCell *cell68k;
   unsigned int offset, prior, celloffset;
 
   cell68k = (ConsCell *)Addr68k_from_LADDR(cell);

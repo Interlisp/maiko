@@ -59,7 +59,7 @@ extern int MonoOrColor;
 /**                                                                         **/
 /*****************************************************************************/
 
-LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
+LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
@@ -155,7 +155,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl,int tos)
 /* for MONO only */
 int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 {
-  register int x, y;
+  int x, y;
   if (addrhi == DISPLAY_HI) {
     y = addrlo / DisplayRasterWidth;
     x = (addrlo - y * DisplayRasterWidth) << 4;
@@ -177,8 +177,8 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 /* for COLOR & MONO */
 int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 {
-  register int x, y;
-  register DLword *base68k;
+  int x, y;
+  DLword *base68k;
   extern int MonoOrColor;
   extern int displaywidth;
   extern DLword *ColorDisplayRegion68k;

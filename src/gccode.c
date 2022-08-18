@@ -122,8 +122,8 @@ typedef ByteCode *InstPtr;
 
 LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
   InstPtr codeptr;
-  register unsigned int opnum;
-  register unsigned int len;
+  unsigned int opnum;
+  unsigned int len;
   struct fnhead *fnbase;
   fnbase = (struct fnhead *)Addr68k_from_LADDR(codeblock);
   codeptr = ((InstPtr)fnbase) + fnbase->startpc;
@@ -252,8 +252,8 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
 
 int code_block_size(long unsigned int codeblock68k) {
   InstPtr codeptr, initcodeptr;
-  register unsigned int opnum;
-  register unsigned int len;
+  unsigned int opnum;
+  unsigned int len;
   struct fnhead *fnbase;
   fnbase = (struct fnhead *)codeblock68k;
   initcodeptr = codeptr = ((InstPtr)fnbase) + fnbase->startpc;

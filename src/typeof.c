@@ -33,8 +33,8 @@
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_instancep(register LispPTR tos, register int atom_index) {
-  register struct dtd *dtd68k;
+LispPTR N_OP_instancep(LispPTR tos, int atom_index) {
+  struct dtd *dtd68k;
 
   for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(tos));
 #ifdef BIGVM

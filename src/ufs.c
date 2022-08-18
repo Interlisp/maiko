@@ -155,9 +155,9 @@ exit_host_filesystem() {
 
 LispPTR UFS_getfilename(LispPTR *args)
 {
-  register char *base;
+  char *base;
   size_t len;
-  register int rval;
+  int rval;
   char lfname[MAXPATHLEN], file[MAXPATHLEN];
 
   ERRSETJMP(NIL);
@@ -245,7 +245,7 @@ LispPTR UFS_deletefile(LispPTR *args)
 {
   char file[MAXPATHLEN], fbuf[MAXPATHLEN];
   struct stat sbuf;
-  register int len, rval;
+  int len, rval;
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
@@ -382,8 +382,8 @@ LispPTR UFS_directorynamep(LispPTR *args)
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
   size_t len;
-  register int rval;
-  register char *base;
+  int rval;
+  char *base;
   struct stat sbuf;
 
   ERRSETJMP(NIL);
@@ -466,8 +466,8 @@ int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int 
 int unixpathname(char *src, char *dst, int versionp, int genp)
 #endif /* DOS */
 {
-  register char *cp, *dp, *np;
-  register int newdirflg;
+  char *cp, *dp, *np;
+  int newdirflg;
   char name[64];
   char lfname[MAXPATHLEN], fbuf1[MAXPATHLEN], fbuf2[MAXPATHLEN];
   char ver1[VERSIONLEN], ver2[VERSIONLEN];
@@ -871,9 +871,9 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 
 int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
 {
-  register char *cp, *dp, *lnamep, *cnamep;
+  char *cp, *dp, *lnamep, *cnamep;
   char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN];
-  register int i, mask, extensionp;
+  int i, mask, extensionp;
 
   if (strcmp(fullname, DIRSEPSTR) == 0) {
     strcpy(lispname, "<");
@@ -1129,8 +1129,8 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
 
 int quote_fname(char *file)
 {
-  register char *cp, *dp;
-  register int extensionp;
+  char *cp, *dp;
+  int extensionp;
   char fbuf[MAXNAMLEN + 1], namebuf[MAXNAMLEN + 1], ver[VERSIONLEN];
 
   cp = file;
@@ -1214,8 +1214,8 @@ int quote_fname(char *file)
 
 int quote_fname_ufs(char *file)
 {
-  register char *cp, *dp;
-  register int extensionp;
+  char *cp, *dp;
+  int extensionp;
   char fbuf[MAXNAMLEN + 1];
 
   cp = file;
@@ -1290,7 +1290,7 @@ int quote_fname_ufs(char *file)
 
 int quote_dname(char *dir)
 {
-  register char *cp, *dp;
+  char *cp, *dp;
   char fbuf[MAXNAMLEN + 1];
 
   cp = dir;

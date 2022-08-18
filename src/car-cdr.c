@@ -50,11 +50,11 @@
 /*									*/
 /************************************************************************/
 
-LispPTR car(register LispPTR datum)
+LispPTR car(LispPTR datum)
 /* datum must be LISP pointer(word offset) */
 {
-  register ConsCell *datum68k;
-  register ConsCell *temp;
+  ConsCell *datum68k;
+  ConsCell *temp;
 
   datum68k = (ConsCell *)(Addr68k_from_LADDR(datum));
   if (Listp(datum)) {
@@ -88,12 +88,12 @@ LispPTR car(register LispPTR datum)
 /*									*/
 /************************************************************************/
 
-LispPTR cdr(register LispPTR datum)
+LispPTR cdr(LispPTR datum)
 /* datum must be LISP pointer(word offset) */
 {
-  register ConsCell *datum68k;
-  register DLword cdr_code;
-  register ConsCell *temp;
+  ConsCell *datum68k;
+  DLword cdr_code;
+  ConsCell *temp;
 
   if (datum == NIL_PTR) return (NIL_PTR);
   if (!Listp(datum)) error("cdr : ARG not list");
@@ -130,12 +130,12 @@ LispPTR cdr(register LispPTR datum)
 */
 /**********************************************************************/
 
-LispPTR rplaca(register LispPTR x, register LispPTR y)
+LispPTR rplaca(LispPTR x, LispPTR y)
 /* car of x will be smashed */
 /* y is a newly car object */
 {
-  register ConsCell *x_68k;
-  register ConsCell *temp;
+  ConsCell *x_68k;
+  ConsCell *temp;
 
 #ifdef TRACE2
   printf("TRACE: rplaca()\n");
@@ -183,17 +183,17 @@ static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart); /* below..
 static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell);
 #endif
 
-LispPTR rplacd(LispPTR x, register LispPTR y)
+LispPTR rplacd(LispPTR x, LispPTR y)
 /* cdr of x will be smashed */
 /* y is a newly cdr object */
 {
-  register ConsCell *x_68k;
-  register ConsCell *temp68k;
-  register ConsCell *cdr_cell68k;
+  ConsCell *x_68k;
+  ConsCell *temp68k;
+  ConsCell *cdr_cell68k;
   LispPTR cdr_cell;
   LispPTR rp_page;
   DLword cdr_code;
-  register struct conspage *cons68k;
+  struct conspage *cons68k;
 
   if (Listp(x) == NIL) {
     if (x == NIL_PTR) {
@@ -318,9 +318,9 @@ LispPTR rplacd(LispPTR x, register LispPTR y)
 */
 /**********************************************************************/
 
-LispPTR N_OP_car(register LispPTR tos) {
-  register ConsCell *datum68k;
-  register ConsCell *temp;
+LispPTR N_OP_car(LispPTR tos) {
+  ConsCell *datum68k;
+  ConsCell *temp;
 
   datum68k = (ConsCell *)(Addr68k_from_LADDR(tos));
   if (Listp(tos)) {
@@ -349,9 +349,9 @@ LispPTR N_OP_car(register LispPTR tos) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_cdr(register LispPTR tos) {
-  register ConsCell *datum68k;
-  register DLword cdr_code;
+LispPTR N_OP_cdr(LispPTR tos) {
+  ConsCell *datum68k;
+  DLword cdr_code;
 
   if (tos == NIL_PTR) return (tos);
   if (!Listp(tos)) {
@@ -390,9 +390,9 @@ LispPTR N_OP_cdr(register LispPTR tos) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_rplaca(register LispPTR tosm1, register LispPTR tos) {
-  register ConsCell *x_68k;
-  register ConsCell *temp;
+LispPTR N_OP_rplaca(LispPTR tosm1, LispPTR tos) {
+  ConsCell *x_68k;
+  ConsCell *temp;
 
   if (Listp(tosm1) == NIL) {
     if (tosm1 == NIL_PTR) {
@@ -433,7 +433,7 @@ LispPTR N_OP_rplaca(register LispPTR tosm1, register LispPTR tos) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_rplacd(register LispPTR tosm1, register LispPTR tos) {
+LispPTR N_OP_rplacd(LispPTR tosm1, LispPTR tos) {
   if (Listp(tosm1) == NIL) {
     if (tosm1 == NIL_PTR) {
       if (tos != NIL_PTR)

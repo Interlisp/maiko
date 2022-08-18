@@ -62,9 +62,9 @@ LispPTR rpc(LispPTR *args)
   struct hostent *hp;
   struct sockaddr_in sin, sin1, from;
   char *outbuf, *inbuf, *destaddr;
-  register int s, msec_until_timeout, msec_between_tries, out_length;
-  register int received;
-  register int port;
+  int s, msec_until_timeout, msec_between_tries, out_length;
+  int received;
+  int port;
   int dest;
   unsigned fromlen;
   fd_set read_descriptors;

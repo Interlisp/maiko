@@ -38,7 +38,7 @@
 /*   N_OP_classoc()  OP 33Q  */
 LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
   struct cadr_cell cadr1;
-  register LispPTR cdrcell; /* address of (cdr A-list); Lisp address */
+  LispPTR cdrcell; /* address of (cdr A-list); Lisp address */
 
   switch (key & SEGMASK) {
     case S_POSITIVE: break;
@@ -78,7 +78,7 @@ LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
 } /* end N_OP_classoc() */
 
 /*   (CL:FMEMB item list)  OP 35Q  */
-LispPTR N_OP_clfmemb(register LispPTR item, register LispPTR list) { /* OP 35Q */
+LispPTR N_OP_clfmemb(LispPTR item, LispPTR list) { /* OP 35Q */
 
   switch (item & SEGMASK) {
     case S_POSITIVE: break;
@@ -151,7 +151,7 @@ fin:	DelRef tail
 
 ***********************************************************/
 
-LispPTR N_OP_restlist(register LispPTR tail, register int last, register int skip) {
+LispPTR N_OP_restlist(LispPTR tail, int last, int skip) {
   last &= 0xFFFF;
   while (skip <= last) { tail = cons(GetLongWord(IVar + (--last << 1)), tail); }
   return (tail);

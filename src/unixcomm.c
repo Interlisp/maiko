@@ -113,7 +113,7 @@ char shcom[2048]; /* Here because I'm suspicious of */
 /*									*/
 /************************************************************************/
 
-int find_process_slot(register int pid)
+int find_process_slot(int pid)
 /* Find a slot with the specified pid */
 
 {
@@ -365,7 +365,7 @@ static int FindAvailablePty(char *Slave) {
 /************************************************************************/
 
 LispPTR Unix_handlecomm(LispPTR *args) {
-  int command, dest, i, slot, sock;
+  int command, dest, slot;
   unsigned char d[6];
   unsigned char ch;
   unsigned char buf[1];
@@ -852,6 +852,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     case 15: /* Write buffer */
     {
       DLword *bufp;
+      int i;
       N_GETNUMBER(args[1], slot, bad);              /* Get job # */
       bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
       N_GETNUMBER(args[3], i, bad);                 /* # to write */

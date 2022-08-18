@@ -447,7 +447,7 @@ void OP_subrcall(int subr_no, int argnum) {
 
       switch (args[0] & 0xffff) {
         case 00: {
-          register UNSIGNED iarg;
+          UNSIGNED iarg;
           if (argnum != 2) goto ret_nil;
           N_GETNUMBER(args[1], iarg, ret_nil);
           ARITH_SWITCH(*((LispPTR *)iarg), TopOfStack);
@@ -455,7 +455,7 @@ void OP_subrcall(int subr_no, int argnum) {
         }
 
         case 01: {
-          register UNSIGNED iarg, iarg2;
+          UNSIGNED iarg, iarg2;
           if (argnum != 3) goto ret_nil;
           N_GETNUMBER(args[1], iarg, ret_nil);
           N_GETNUMBER(args[2], iarg2, ret_nil);
@@ -494,7 +494,7 @@ void OP_subrcall(int subr_no, int argnum) {
          a Lisp FIXP
 
       {
-        register UNSIGNED iarg;
+        UNSIGNED iarg;
         N_GETNUMBER(args[0], iarg, ret_nil);
         ARITH_SWITCH(LADDR_from_68k(iarg), TopOfStack);
         break;
@@ -533,7 +533,7 @@ void OP_subrcall(int subr_no, int argnum) {
     /*
             case 0166: POP_SUBR_ARGS;
                              error("called SUBR 0166, not defined!!");
-                                  {register int temp;
+                                  {int temp;
                              N_GETNUMBER(TopOfStack, temp, badarg);
                              temp = (UNSIGNED) Addr68k_from_LADDR(temp);
                              ARITH_SWITCH(temp, TopOfStack);

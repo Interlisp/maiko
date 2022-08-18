@@ -31,7 +31,7 @@ LispPTR N_OP_ubfloat1(int arg, int alpha) {
   switch (alpha) {
     case 0: /* box */
     {
-      register DLword *wordp;
+      DLword *wordp;
       wordp = createcell68k(TYPE_FLOATP);
       *((int *)wordp) = arg;
       return (LADDR_from_68k(wordp));
@@ -48,7 +48,7 @@ LispPTR N_OP_ubfloat1(int arg, int alpha) {
     case 3: /* neg */ return (0x80000000 ^ arg);
     case 4: /* ufix */
     {
-      register float temp;
+      float temp;
       int val;
       temp = *(float *)&arg;
       if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) ERROR_EXIT(arg);

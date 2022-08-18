@@ -16,7 +16,7 @@ extern jmp_buf jmpbuf;
 /*** TIMEOUT_TIME is changeable by UNIX env var LDEFILETIMEOUT. 
 #define	TIMEOUT_TIME	10 **/
 
-extern	int	TIMEOUT_TIME;
+extern	unsigned int TIMEOUT_TIME;
 
 #define	SETJMP(x)	\
   {				\

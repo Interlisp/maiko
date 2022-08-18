@@ -45,15 +45,17 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */
 
-#define StrNCpyFromCToLisp(lispbuf, cbuf ,len)	{int lf_i;	\
-			char *lf_sptr,*lf_dptr;		\
-			for(lf_i=0,lf_sptr=(cbuf),lf_dptr =(lispbuf);lf_i<(len);lf_i++)\
+#define StrNCpyFromCToLisp(lispbuf, cbuf ,len)	{	\
+			char *lf_sptr = (cbuf);		\
+                        char *lf_dptr = (lispbuf);                      \
+			for(size_t lf_i=0;lf_i<(len);lf_i++)\
 				GETBYTE(lf_dptr++) = *lf_sptr++;		\
 		}
 
-#define StrNCpyFromLispToC(cbuf , lispbuf, len)	{int lf_i;	\
-			char *lf_sptr,*lf_dptr;			\
-			for(lf_i=0,lf_sptr=(lispbuf),lf_dptr =(cbuf);lf_i<(len);lf_i++)\
+#define StrNCpyFromLispToC(cbuf , lispbuf, len)	{	\
+			char *lf_sptr = (lispbuf);                                          \
+			char *lf_dptr = (cbuf);                       \
+			for(size_t lf_i=0;lf_i<(len);lf_i++)\
 				*lf_dptr++ = GETBYTE(lf_sptr++);		\
 		}
 
@@ -83,7 +85,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
     OneDArray	*lf_arrayp;						\
     char	*lf_base, *lf_dp;						\
     short	*lf_sbase;							\
-    int	lf_i, lf_length;						\
+    size_t		 lf_length;						\
     lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));			\
     lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
     switch(lf_arrayp->typenumber)						\
@@ -98,8 +100,9 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	case FAT_CHAR_TYPENUMBER:					\
 		lf_sbase = ((short *)(Addr68k_from_LADDR(lf_arrayp->base)))	\
 		       + ((int)(lf_arrayp->offset));			\
-		for(lf_i=0,lf_dp=C;lf_i<(lf_length);lf_i++)	\
-		  *lf_dp++ = (char)(*lf_sbase++);				\
+                lf_dp = C;						\
+		for(size_t lf_i=0;lf_i<(lf_length);lf_i++)		\
+		  *lf_dp++ = (char)(*lf_sbase++);			\
 		*lf_dp = '\0';						\
 		break;							\
 	default:							\
@@ -112,7 +115,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
     OneDArray	*lf_arrayp;						\
     char	*lf_base, *lf_dp;						\
     short	*lf_sbase;							\
-    int	lf_ii, lf_length;						\
+    size_t 	lf_length;						\
     lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));			\
     lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
     switch(lf_arrayp->typenumber)						\
@@ -127,7 +130,8 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 	case FAT_CHAR_TYPENUMBER:					\
 		lf_sbase = ((short *)(Addr68k_from_LADDR(lf_arrayp->base)))	\
 		       + ((int)(lf_arrayp->offset));			\
-		for(lf_ii=0,lf_dp=C;lf_ii<(lf_length);lf_ii++,lf_sbase++)  \
+                lf_dp = C;						\
+		for(size_t lf_ii=0;lf_ii<(lf_length);lf_ii++,lf_sbase++)  \
                     *lf_dp++ = (char)(GETWORD(lf_sbase));               \
 		*lf_dp = '\0';						\
 		break;							\

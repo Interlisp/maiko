@@ -18,6 +18,7 @@
 */
 /**********************************************************************/
 #include "version.h" /* for BIGVM, BIGATOMS */
+#include <stdint.h> /* for int32_t */
 #include "lispemul.h" /* for LispPTR, DLword */
 
 /************************************************************************/
@@ -238,8 +239,8 @@ typedef struct oned_array {
 		unsigned int extendablep : 1;
 		unsigned int typenumber : 8 ;
 		DLword offset;
-		LispPTR fillpointer ;
-		LispPTR totalsize ; } OneDArray;
+		int32_t fillpointer ;
+		int32_t totalsize ; } OneDArray;
 
 typedef struct oned_array NEWSTRINGP;
 
@@ -256,10 +257,10 @@ typedef struct general_array {
 		unsigned int extendablep : 1;
 		unsigned int typenumber : 8 ;
 		unsigned int nil2:16;
-		LispPTR Dim0;
-		LispPTR totalsize;
-		LispPTR Dim1 ;
-		LispPTR Dim2 ; } LispArray;
+		int32_t Dim0;
+		int32_t totalsize;
+		int32_t Dim1 ;
+		int32_t Dim2 ; } LispArray;
 
 typedef struct compiled_closure {
 		unsigned int nil1	: 4 ;
@@ -434,8 +435,8 @@ typedef struct oned_array {
 		unsigned int bitp :1 ;
 		unsigned int indirectp : 1; /* as used arrayheader */
 		unsigned int readonlyp :1 ;
-		LispPTR fillpointer ;
-		LispPTR totalsize ; } OneDArray;
+		int32_t fillpointer ;
+		int32_t totalsize ; } OneDArray;
 
 
 typedef struct oned_array NEWSTRINGP;
@@ -453,10 +454,10 @@ typedef struct general_array {
 		unsigned int bitp :1 ;
 		unsigned int indirectp : 1; /* as used arrayheader */
 		unsigned int readonlyp :1 ;
-		LispPTR Dim0;
-		LispPTR totalsize;
-		LispPTR Dim1 ;
-		LispPTR Dim2 ; } LispArray;
+		int32_t Dim0;
+		int32_t totalsize;
+		int32_t Dim1 ;
+		int32_t Dim2 ; } LispArray;
 
 typedef struct compiled_closure {
 		unsigned int def_ptr	: 28; /* function */
@@ -630,6 +631,7 @@ typedef struct
 /* This MACRO is similar to LISTP */
 #define Listp(address)	(GetTypeNumber(address) == TYPE_LISTP)
 
+#define Numberp(address) (GetTypeEntry(address) & TT_NUMBERP)
 
 	/******************************************/
 	/*        Lisp's PATHNAME datatype        */

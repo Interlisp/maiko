@@ -111,20 +111,20 @@ static unsigned short sxhash_rotate(short unsigned int value) {
 
 static unsigned short sxhash_string(OneDArray *obj) {
   unsigned len, offset;
-  register unsigned short hash = 0;
+  unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
   if (len > 13) len = 13;
   offset = (unsigned)obj->offset;
   switch (obj->typenumber) {
     case THIN_CHAR_TYPENUMBER: {
-      register char *thin;
-      register unsigned i;
+      char *thin;
+      unsigned i;
       thin = ((char *)(Addr68k_from_LADDR(obj->base))) + offset;
       for (i = 0; i < len; i++) hash = sxhash_rotate(hash ^ GETBYTE(thin++));
     } break;
     case FAT_CHAR_TYPENUMBER: {
-      register unsigned short *fat;
-      register unsigned i;
+      unsigned short *fat;
+      unsigned i;
       fat = ((unsigned short *)(Addr68k_from_LADDR(obj->base))) + offset;
       for (i = 0; i < len; i++) hash = sxhash_rotate(hash ^ GETWORD(fat++));
     } break;
@@ -189,7 +189,7 @@ LispPTR STRING_EQUAL_HASHBITS(LispPTR object) {
 
 static unsigned short stringequalhash(LispPTR obj) {
   unsigned len, offset, fatp, ind;
-  register unsigned short hash = 0;
+  unsigned short hash = 0;
   PNCell *pnptr;
   DLword *base;
   PLCell *Prop;
@@ -223,16 +223,16 @@ static unsigned short stringequalhash(LispPTR obj) {
   };
 
   if (fatp) {
-    register unsigned short *fat;
-    register unsigned i;
+    unsigned short *fat;
+    unsigned i;
     fat = ((unsigned short *)base) + offset;
     for (i = 0; i < len; i++) {
       hash = hash + ((hash & 0xFFF) << 2);
       hash = hash + (0x20 | GETWORD(fat++)) + ((hash & 0xFF) << 8);
     }
   } else {
-    register char *thin;
-    register unsigned i;
+    char *thin;
+    unsigned i;
     thin = ((char *)base) + offset;
     for (i = 0; i < len; i++) {
       hash = hash + ((hash & 0xFFF) << 2);
@@ -257,7 +257,7 @@ LispPTR STRING_HASHBITS(LispPTR object) {
 
 static unsigned short stringhash(LispPTR obj) {
   unsigned len, offset, fatp, ind;
-  register unsigned short hash = 0;
+  unsigned short hash = 0;
   PNCell *pnptr;
   DLword *base;
   PLCell *Prop;
@@ -291,16 +291,16 @@ static unsigned short stringhash(LispPTR obj) {
   }; /* switch */
 
   if (fatp) {
-    register unsigned short *fat;
-    register unsigned i;
+    unsigned short *fat;
+    unsigned i;
     fat = ((unsigned short *)base) + offset;
     for (i = 0; i < len; i++) {
       hash = hash + ((hash & 0xFFF) << 2);
       hash = hash + GETWORD(fat++) + ((hash & 0xFF) << 8);
     }
   } else {
-    register char *thin;
-    register unsigned i;
+    char *thin;
+    unsigned i;
     thin = ((char *)base) + offset;
     for (i = 0; i < len; i++) {
       hash = hash + ((hash & 0xFFF) << 2);

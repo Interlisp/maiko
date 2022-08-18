@@ -42,10 +42,10 @@
         TOS has number of words to be translated.
 */
 
-LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, register LispPTR wordcount) {
-  register DLword *source68k;
-  register DLword *dest68k;
-  register int nw;
+LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, LispPTR wordcount) {
+  DLword *source68k;
+  DLword *dest68k;
+  int nw;
 
   if ((wordcount & SEGMASK) != S_POSITIVE) ERROR_EXIT(wordcount);
   nw = wordcount & 0xffff;

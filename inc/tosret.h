@@ -23,8 +23,8 @@
 /************************************************************************/
 
 #define OPRETURN	{						\
- register struct frameex2 *returnFX ;					\
- register int alink;							\
+ struct frameex2 *returnFX ;					\
+ int alink;							\
  FNCHECKER(struct frameex2 *old_bce_fx = (struct frameex2 *) BCE_CURRENTFX); \
  alink = ((struct frameex2 *) BCE_CURRENTFX)->alink;			\
  FNTPRINT(("RETURN = 0x%x,  ", TOPOFSTACK));						\

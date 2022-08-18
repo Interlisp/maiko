@@ -2,5 +2,5 @@
 #define RETURNDEFS_H 1
 #include "lispemul.h" /* for DLword */
 void OP_contextsw(void);
-void contextsw(register DLword fxnum, register DLword bytenum, register DLword flags);
+void contextsw(DLword fxnum, DLword bytenum, DLword flags);
 #endif

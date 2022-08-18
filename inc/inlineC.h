@@ -101,7 +101,7 @@
 #define OPCAR                                                                                     \
   do {                                                                                            \
     if (Listp(TOPOFSTACK)) {                                                                      \
-      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                 \
+      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                 \
       if (DATUM68K->cdr_code == CDR_INDIRECT) {                                                   \
         TOPOFSTACK = ((LispPTR)((ConsCell *)Addr68k_from_LADDR(DATUM68K->car_field))->car_field); \
         nextop1;                                                                                  \
@@ -122,8 +122,8 @@
 #define OPCDR                                                                              \
   do {                                                                                     \
     if (Listp(TOPOFSTACK)) {                                                               \
-      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));          \
-      register int CDRCODEX = DATUM68K->cdr_code;                                          \
+      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));          \
+      int CDRCODEX = DATUM68K->cdr_code;                                          \
       if (CDRCODEX == CDR_NIL) {                                                           \
         /* cdr-nil */                                                                      \
         TOPOFSTACK = (NIL_PTR);                                                            \
@@ -152,8 +152,8 @@
 #define OPCDR                                                                                  \
   do {                                                                                         \
     if (Listp(TOPOFSTACK)) {                                                                   \
-      register ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));              \
-      register int CDRCODEX = DATUM68K->cdr_code;                                              \
+      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));              \
+      int CDRCODEX = DATUM68K->cdr_code;                                              \
       if (CDRCODEX == CDR_NIL) {                                                               \
         /* cdr-nil */                                                                          \
         TOPOFSTACK = (NIL_PTR);                                                                \
@@ -250,8 +250,8 @@
   } while (0)
 #define PUTBASEBYTE                                                                    \
   do {                                                                                 \
-    register int byteoffset;                                                           \
-    register char *p_data;                                                             \
+    int byteoffset;                                                           \
+    char *p_data;                                                             \
     if (((SEGMASK & TOPOFSTACK) != S_POSITIVE) || ((unsigned short)TOPOFSTACK >= 256)) \
       goto op_ufn;                                                                     \
     byteoffset = GET_TOS_1;                                                            \
@@ -290,7 +290,7 @@
 
 #define PUTBASEPTR_N(n)                                        \
   do {                                                         \
-    register int base;                                         \
+    int base;                                         \
     base = POINTERMASK & POP_TOS_1;                            \
     *((LispPTR *)Addr68k_from_LADDR(base + (n))) = TOPOFSTACK; \
     TOPOFSTACK = base;                                         \
@@ -299,7 +299,7 @@
 
 #define PUTBASE_N(n)                                                           \
   do {                                                                         \
-    register int base;                                                         \
+    int base;                                                         \
     if (GetHiWord(TOPOFSTACK) != (S_POSITIVE >> 16)) goto op_ufn;              \
     base = POINTERMASK & POP_TOS_1;                                            \
     GETWORD((DLword *)Addr68k_from_LADDR(base + (n))) = GetLoWord(TOPOFSTACK); \
@@ -337,7 +337,7 @@
 #elif defined(BIGVM)
 #define GVAR(x)                                                                  \
   do {                                                                           \
-    register int tx = x;                                                         \
+    int tx = x;                                                         \
     if (tx & SEGMASK) {                                                          \
       PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET)));        \
     } else                                                                       \
@@ -348,7 +348,7 @@
 #else
 #define GVAR(x)                                                           \
   do {                                                                    \
-    register int tx = x;                                                  \
+    int tx = x;                                                  \
     if (tx & SEGMASK) {                                                   \
       PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET))); \
     } else                                                                \
@@ -366,7 +366,7 @@
 
 #define SWAP                \
   do {                      \
-    register LispPTR temp;  \
+    LispPTR temp;  \
     temp = GET_TOS_1;       \
     GET_TOS_1 = TOPOFSTACK; \
     TOPOFSTACK = temp;      \
@@ -421,8 +421,8 @@
 
 #define BIN                                                                                  \
   do {                                                                                       \
-    register Stream *stream68k; /* stream instance on TOS */                                 \
-    register char *buff68k;     /* pointer to BUFF */                                        \
+    Stream *stream68k; /* stream instance on TOS */                                 \
+    char *buff68k;     /* pointer to BUFF */                                        \
                                                                                              \
     if (GetTypeNumber(TOPOFSTACK) == TYPE_STREAM) {                                          \
       stream68k = (Stream *)Addr68k_from_LADDR(TOPOFSTACK);                                  \
@@ -496,11 +496,11 @@
 
 #define BIND                                                    \
   do {                                                          \
-    register int byte = Get_BYTE_PCMAC1;                        \
-    register unsigned n1;                                       \
-    register unsigned n2;                                       \
-    register LispPTR *ppvar;                                    \
-    register int i;                                             \
+    int byte = Get_BYTE_PCMAC1;                        \
+    unsigned n1;                                       \
+    unsigned n2;                                       \
+    LispPTR *ppvar;                                    \
+    int i;                                             \
     n1 = byte >> 4;                                             \
     n2 = byte & 0xf;                                            \
     ppvar = (LispPTR *)PVAR + 1 + Get_BYTE_PCMAC2;              \
@@ -517,10 +517,10 @@
 
 #define UNBIND                                                  \
   do {                                                          \
-    register int num;                                           \
-    register LispPTR *ppvar;                                    \
-    register int i;                                             \
-    register LispPTR value;                                     \
+    int num;                                           \
+    LispPTR *ppvar;                                    \
+    int i;                                             \
+    LispPTR value;                                     \
     for (; (((int)*--CSTKPTRL) >= 0);)                          \
       ;                                                         \
     value = *CSTKPTR;                                           \
@@ -532,10 +532,10 @@
 
 #define DUNBIND                                                          \
   do {                                                                   \
-    register int num;                                                    \
-    register LispPTR *ppvar;                                             \
-    register int i;                                                      \
-    register LispPTR value;                                              \
+    int num;                                                    \
+    LispPTR *ppvar;                                             \
+    int i;                                                      \
+    LispPTR value;                                              \
     if ((int)TOPOFSTACK < 0) {                                           \
       num = (~TOPOFSTACK) >> 16;                                         \
       if (num != 0) {                                                    \
@@ -567,7 +567,7 @@
 
 #define GETBITS_N_M(a, b)                                                                          \
   do {                                                                                             \
-    register int temp, bb = b;                                                                     \
+    int temp, bb = b;                                                                     \
     temp = 0xF & bb;                                                                               \
     TOPOFSTACK = S_POSITIVE | (((GETWORD(Addr68k_from_LADDR(POINTERMASK & (TOPOFSTACK + (a))))) >> \
                                 (16 - ((0xF & (bb >> 4)) + temp + 1))) &                           \
@@ -578,9 +578,9 @@
 #define PUTBITS_N_M(a, b)                                                                \
   do {                                                                                   \
     int base;                                                                            \
-    register int bb = b;                                                                 \
-    register DLword *pword;                                                              \
-    register int shift_size, field_size, fmask;                                          \
+    int bb = b;                                                                 \
+    DLword *pword;                                                              \
+    int shift_size, field_size, fmask;                                          \
     if ((SEGMASK & TOPOFSTACK) != S_POSITIVE) { goto op_ufn; };                          \
     base = POINTERMASK & POP_TOS_1;                                                      \
     pword = (DLword *)Addr68k_from_LADDR(base + (a));                                    \
@@ -606,7 +606,7 @@
 
 #define MYARGCOUNT                                                \
   do {                                                            \
-    register UNSIGNED arg_num;                                    \
+    UNSIGNED arg_num;                                    \
     if ((CURRENTFX->alink & 1) == 0)                              \
       arg_num = (UNSIGNED)((LispPTR *)(CURRENTFX)-1);             \
     else                                                          \
@@ -671,7 +671,7 @@
 
 #define CLARITHEQUAL                            \
   do {                                          \
-    register int arg2;                          \
+    int arg2;                          \
     SV;                                         \
     arg2 = POP_TOS_1;                           \
     if ((TOPOFSTACK & SEGMASK) == S_POSITIVE) { \
@@ -690,9 +690,9 @@
 #define AREF1                                                                                      \
   do {                                                                                             \
     LispPTR arrayarg;                                                                              \
-    register LispPTR baseL;                                                                        \
-    register int index;                                                                            \
-    register OneDArray *arrayblk;                                                                  \
+    LispPTR baseL;                                                                        \
+    int index;                                                                            \
+    OneDArray *arrayblk;                                                                  \
     SV;                                                                                            \
     arrayarg = POP_TOS_1;                                                                          \
     if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) goto aref_ufn;                                 \
@@ -723,7 +723,7 @@
           case 0: TOPOFSTACK |= S_POSITIVE; break;                                                 \
           case (unsigned)0xFFFF0000: TOPOFSTACK &= S_NEGATIVE; break;                              \
           default: {                                                                               \
-            register DLword *wordp;                                                                \
+            DLword *wordp;                                                                \
             wordp = createcell68k(TYPE_FIXP);                                                      \
             *((int *)wordp) = TOPOFSTACK;                                                          \
             TOPOFSTACK = (LispPTR)LADDR_from_68k(wordp);                                           \
@@ -744,7 +744,7 @@
             S_POSITIVE | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF);      \
         nextop1;                                                                                   \
       case 54: /* Float : 32 bits */ {                                                             \
-        register DLword *wordp;                                                                    \
+        DLword *wordp;                                                                    \
         wordp = createcell68k(TYPE_FLOATP);                                                        \
         *((int *)wordp) = *(((int *)Addr68k_from_LADDR(baseL)) + index);                           \
         TOPOFSTACK = (LispPTR)LADDR_from_68k(wordp);                                               \
@@ -766,8 +766,8 @@
 #ifdef BIGVM
 #define DTEST(n)                                                                                   \
   do {                                                                                             \
-    register int atom_index;                                                                       \
-    register struct dtd *dtd68k;                                                                   \
+    int atom_index;                                                                       \
+    struct dtd *dtd68k;                                                                   \
     atom_index = n;                                                                                \
     for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(TOPOFSTACK)); atom_index != dtd68k->dtd_name; \
          dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {                                   \
@@ -778,8 +778,8 @@
 #else /* BIGVM */
 #define DTEST(n)                                                               \
   do {                                                                         \
-    register int atom_index;                                                   \
-    register struct dtd *dtd68k;                                               \
+    int atom_index;                                                   \
+    struct dtd *dtd68k;                                               \
     atom_index = n;                                                            \
     for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(TOPOFSTACK));             \
          atom_index != dtd68k->dtd_namelo + ((int)(dtd68k->dtd_namehi) << 16); \
@@ -792,7 +792,7 @@
 
 #define FVAR(n)                                                                             \
   do {                                                                                      \
-    register LispPTR *chain;                                                                \
+    LispPTR *chain;                                                                \
     chain = (LispPTR *)(PVar + (n));                                                        \
     if (WBITSPTR(chain)->LSB) {                                                             \
       PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe((n) >> 1))))); \
@@ -804,8 +804,8 @@
 
 #define FVARX(n)                                                                           \
   do {                                                                                     \
-    register int nn = n;                                                                   \
-    register LispPTR *chain;                                                               \
+    int nn = n;                                                                   \
+    LispPTR *chain;                                                               \
     chain = (LispPTR *)(PVar + nn);                                                        \
     if (WBITSPTR(chain)->LSB) {                                                            \
       PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe(nn >> 1))))); \
@@ -835,7 +835,7 @@
 #elif defined(BIGVM)
 #define ATOMCELL_N(n)                                                                             \
   do {                                                                                            \
-    register int nn = n;                                                                          \
+    int nn = n;                                                                          \
     if (0 == ((unsigned int)(TOPOFSTACK &= POINTERMASK) & SEGMASK)) {                             \
       /* old-symbol case; just add cell-number arg */                                             \
       switch (nn) {                                                                               \
@@ -879,7 +879,7 @@
 
 #define ATOMCELL_N(n)                                         \
   do {                                                        \
-    register int nn = n;                                      \
+    int nn = n;                                      \
     if (0 == ((unsigned int)TOPOFSTACK & SEGMASK)) {          \
       /* old-symbol case; just add cell-number arg */         \
       TOPOFSTACK = (nn << 16) + (TOPOFSTACK << 1);            \

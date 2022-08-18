@@ -34,7 +34,7 @@
 */
 /**********************************************************************/
 
-LispPTR N_OP_findkey(register LispPTR tos, register int byte) {
+LispPTR N_OP_findkey(LispPTR tos, int byte) {
   LispPTR *ptr;
   DLword *find_end;
   DLword arg_nth;

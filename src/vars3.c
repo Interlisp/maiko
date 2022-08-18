@@ -101,10 +101,10 @@ N_OP_arg0
 
 ************************************************************/
 
-LispPTR N_OP_arg0(register LispPTR tos) {
-  register int num;
-  register DLword *bf; /* index of Basic frame */
-  register int nargs;
+LispPTR N_OP_arg0(LispPTR tos) {
+  int num;
+  DLword *bf; /* index of Basic frame */
+  int nargs;
 
   if ((SEGMASK & tos) != S_POSITIVE) {
     /* error("OP_arg0: Bad TopOfStack\n"); */
@@ -140,9 +140,9 @@ N_OP_assoc
 
 *******************************************/
 
-LispPTR N_OP_assoc(register LispPTR key, register LispPTR list) {
+LispPTR N_OP_assoc(LispPTR key, LispPTR list) {
   struct cadr_cell cadr1;
-  register LispPTR cdr; /* address of (cdr A-list); Lisp address */
+  LispPTR cdr; /* address of (cdr A-list); Lisp address */
 
   if (list == NIL_PTR) { return (NIL_PTR); }
 

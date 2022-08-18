@@ -26,13 +26,6 @@
 #include "lsptypes.h"    // for GETBYTE, GETWORD, GetTypeNumber, TYPE_FLOATP
 #include "mkcelldefs.h"  // for createcell68k
 
-#ifdef BIGVM
-#define IsNumber(address)     ((GETWORD(MDStypetbl +(((address) & 0x0fffff00)>>9))) & 0x1000)
-#else
-#define IsNumber(address)     ((GETWORD(MDStypetbl +(((address) & 0x0ffff00)>>9))) & 0x1000)
-#endif
-
-
 /************************************************************************/
 /*									*/
 /*			N _ M a k e F l o a t				*/
@@ -76,40 +69,50 @@
 
 static inline LispPTR
 aref_switch(unsigned type, LispPTR tos, LispPTR baseL, int index)
-{								  
-  LispPTR result;
+{
+  int result;
   DLword *wordp;
 
   switch (type)
     {
     case 38: /* pointer : 32 bits */
-      return(*(((LispPTR *)Addr68k_from_LADDR(baseL)) + index));		
-    case 20: /* signed : 16 bits */					
+      return(*(((LispPTR *)Addr68k_from_LADDR(baseL)) + index));
+
+    case 20: /* signed : 16 bits */
       result = (GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF;
       if (result & 0x8000) return(result | S_NEGATIVE);
-      else return(result | S_POSITIVE);				
-    case 67: /* Character :  8 bits */				
-      return(S_CHARACTER | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF));								
-    case 22: /* signed : 32 bits */					
-      result = *(((LispPTR *)Addr68k_from_LADDR(baseL)) + index);	
-      N_ARITH_SWITCH(result);					
-    case 0: /* unsigned : 1 bit per element */			
-      return(S_POSITIVE | (((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + (index >> 3))) >> (7 - (index & 7))) & 1));					
-    case 3: /* unsigned : 8 bits per element */			
-      return(S_POSITIVE | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF));								
-    case 4: /* unsigned : 16 bits per element */			
-      return(S_POSITIVE | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF));								
-    case 54: /* Float : 32 bits */					
-      wordp = createcell68k(TYPE_FLOATP);				
-      *((LispPTR *)wordp) = *(((LispPTR *)Addr68k_from_LADDR(baseL)) + index);										
-      return(LADDR_from_68k(wordp));					
-    case 68: /* Character :  16 bits */				
-      return(S_CHARACTER | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF));								
-    case 86: /* XPointer : 32 bits */					
-      return(*(((LispPTR *)Addr68k_from_LADDR(baseL)) + index));		
-    default: /* Illegal or Unimplemented */				
-      ERROR_EXIT(tos);						
-    }/* end switch typenumber */					
+      else return(result | S_POSITIVE);
+
+    case 67: /* Character :  8 bits */
+      return(S_CHARACTER | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF));
+
+    case 22: /* signed : 32 bits */
+      result = *(((int *)Addr68k_from_LADDR(baseL)) + index);
+      N_ARITH_SWITCH(result);
+
+    case 0: /* unsigned : 1 bit per element */
+      return(S_POSITIVE | (((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + (index >> 3))) >> (7 - (index & 7))) & 1));
+
+    case 3: /* unsigned : 8 bits per element */
+      return(S_POSITIVE | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF));
+
+    case 4: /* unsigned : 16 bits per element */
+      return(S_POSITIVE | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF));
+
+    case 54: /* Float : 32 bits */
+      wordp = createcell68k(TYPE_FLOATP);
+      *((LispPTR *)wordp) = *(((LispPTR *)Addr68k_from_LADDR(baseL)) + index);
+      return(LADDR_from_68k(wordp));
+
+    case 68: /* Character :  16 bits */
+      return(S_CHARACTER | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF));
+
+    case 86: /* XPointer : 32 bits */
+      return(*(((LispPTR *)Addr68k_from_LADDR(baseL)) + index));
+
+   default: /* Illegal or Unimplemented */
+      ERROR_EXIT(tos);
+    }/* end switch typenumber */
 }
 
 #define aset_switch(type, tos)						\
