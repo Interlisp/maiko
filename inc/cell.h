@@ -22,6 +22,7 @@
 
 */
 /**********************************************************************/
+#include "adr68k.h"   /* for NativeAligned4FromLPage, NativeAligned4FromLAddr */
 #include "lispemul.h" /* for LispPTR, DLword */
 
 /*  CONS CELL (LISTP) definitions moved to lispemulater.h */
@@ -101,13 +102,13 @@ struct conspage {
 /* Following MACROs for Conspage */
 
 /* lisp_ptr is LISP pointer, returns 68k ptr points struct conspage obj */
-#define Get_ConsPageBase(lisp_ptr) (struct conspage *)Addr68k_from_LPAGE(POINTER_PAGEBASE(lisp_ptr))
+#define Get_ConsPageBase(lisp_ptr) (struct conspage *)NativeAligned4FromLPage(POINTER_PAGEBASE(lisp_ptr))
 
 #define GetNewCell_68k(conspage68k) \
   (ConsCell *)(((DLword *)(conspage68k)) + (unsigned)((conspage68k)->next_cell))
 
 /* page : LISP page */
-#define GetCONSCount(page) (((struct conspage *)Addr68k_from_LPAGE(page))->count)
+#define GetCONSCount(page) (((struct conspage *)NativeAligned4FromLPage(page))->count)
 
 #ifndef BYTESWAP
 /* For chaining together free cons cells on a page */
@@ -402,10 +403,13 @@ struct cadr_cell {
 #endif
 
 /* Good only for new-style NEW-ATOMs */
-#define GetDEFCELLnew(index) (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_DEFN_OFFSET)
-#define GetVALCELLnew(index) (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_VALUE_OFFSET)
-#define GetPnameCellnew(index) (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PNAME_OFFSET)
-#define GetPropCellnew(index) (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PLIST_OFFSET)
+/* Note: the _OFFSET values are in units of DLword so need to be adjusted before doing pointer
+ *       arithmetic since we now have native pointers to cells not DLwords
+ */
+#define GetDEFCELLnew(index) (NativeAligned4FromLAddr(index) + (NEWATOM_DEFN_OFFSET / DLWORDSPER_CELL))
+#define GetVALCELLnew(index) (NativeAligned4FromLAddr(index) + (NEWATOM_VALUE_OFFSET / DLWORDSPER_CELL))
+#define GetPnameCellnew(index) (NativeAligned4FromLAddr(index) + (NEWATOM_PNAME_OFFSET / DLWORDSPER_CELL))
+#define GetPropCellnew(index) (NativeAligned4FromLAddr(index) + (NEWATOM_PLIST_OFFSET / DLWORDSPER_CELL))
 
 #endif /* BIGATOMS */
 
