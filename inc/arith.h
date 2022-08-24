@@ -9,7 +9,7 @@
 /*									*/
 /************************************************************************/
 
-#include "adr68k.h"    // for Addr68k_from_LADDR, LADDR_from_68k
+#include "adr68k.h"    // for NativeAligned4FromLAddr
 #include "commondefs.h" // for error
 #include "lispemul.h"  // for SEGMASK, ERROR_EXIT
 #include "lispmap.h"   // for S_NEGATIVE, S_POSITIVE
@@ -55,9 +55,9 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
   return (S_POSITIVE | 0);
 }
 
-#define FIXP_VALUE(dest) *((int *)Addr68k_from_LADDR(dest))
+#define FIXP_VALUE(dest) *((int *)NativeAligned4FromLAddr(dest))
 
-#define FLOATP_VALUE(dest) *((float *)Addr68k_from_LADDR(dest))
+#define FLOATP_VALUE(dest) *((float *)NativeAligned4FromLAddr(dest))
 
 #define N_GETNUMBER(sour, dest, label)                        \
   do {                                                        \
