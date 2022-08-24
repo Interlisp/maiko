@@ -377,20 +377,16 @@ struct cadr_cell {
 #else
 /* Good for old LITATOMS and new NEW-ATOMs */
 #define GetDEFCELL68k(index)                                                                 \
-  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_DEFN_OFFSET) \
-                            : GetDEFCELLlitatom(index))
+  ((((index) & SEGMASK) != 0) ? GetDEFCELLnew(index) : GetDEFCELLlitatom(index))
 
 #define GetVALCELL68k(index)                                                                  \
-  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_VALUE_OFFSET) \
-                            : GetVALCELLlitatom(index))
+  ((((index) & SEGMASK) != 0) ? GetVALCELLnew(index) : GetVALCELLlitatom(index))
 
 #define GetPnameCell(index)                                                                   \
-  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PNAME_OFFSET) \
-                            : GetPnameCelllitatom(index))
+  ((((index) & SEGMASK) != 0) ? GetPnameCellnew(index) : GetPnameCelllitatom(index))
 
 #define GetPropCell(index)                                                                    \
-  ((((index) & SEGMASK) != 0) ? (LispPTR *)(Addr68k_from_LADDR(index) + NEWATOM_PLIST_OFFSET) \
-                            : GetPropCelllitatom(index))
+  ((((index) & SEGMASK) != 0) ? GetPropCellnew(index) : GetPropCelllitatom(index))
 
 /* Good only for old-style LITATOMS */
 #ifdef BIGVM
