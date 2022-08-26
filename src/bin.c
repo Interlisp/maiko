@@ -36,14 +36,14 @@ LispPTR N_OP_bin(LispPTR tos) {
   char *buff68k;     /* pointer to BUFF */
 
   if (GetTypeNumber(tos) == TYPE_STREAM) {
-    stream68k = (Stream *)Addr68k_from_LADDR(tos);
+    stream68k = (Stream *)NativeAligned4FromLAddr(tos);
 
     if (!stream68k->BINABLE) ERROR_EXIT(tos);
 
     if (stream68k->COFFSET >= stream68k->CBUFSIZE) ERROR_EXIT(tos);
 
     /* get BUFFER instance */
-    buff68k = (char *)Addr68k_from_LADDR(stream68k->CBUFPTR);
+    buff68k = (char *)NativeAligned2FromLAddr(stream68k->CBUFPTR);
 
     /* get BYTE data and set it to TOS */
     return (S_POSITIVE | (Get_BYTE(buff68k + (stream68k->COFFSET)++)));
