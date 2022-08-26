@@ -37,11 +37,11 @@
 /************************************************************************/
 
 LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
-  LispPTR *pslot; /* pointer to argued GVAR slot */
+  LispPTR *pslot; /* Native pointer to GVAR slot of atom */
 
 #ifdef BIGATOMS
   if (0 != (atom_index & SEGMASK))
-    pslot = (LispPTR *)Addr68k_from_LADDR(atom_index + NEWATOM_VALUE_OFFSET);
+    pslot = (LispPTR *)NativeAligned4FromLAddr(atom_index + NEWATOM_VALUE_OFFSET);
   else
 #endif /* BIGATOMS */
 
@@ -70,9 +70,9 @@ LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
 /************************************************************************/
 
 LispPTR N_OP_rplptr(LispPTR tos_m_1, LispPTR tos, unsigned int alpha) {
-  DLword *pslot; /* pointer to argued slot (68 address) */
+  struct xpointer *pslot;
 
-  pslot = Addr68k_from_LADDR(tos_m_1 + alpha);
-  FRPLPTR(((struct xpointer *)pslot)->addr, tos);
+  pslot = (struct xpointer *)NativeAligned4FromLAddr(tos_m_1 + alpha);
+  FRPLPTR(pslot->addr, tos);
   return (tos_m_1);
 }
