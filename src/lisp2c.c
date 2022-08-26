@@ -14,7 +14,7 @@
 
 #include <stdio.h>       // for sprintf
 #include <stdlib.h>      // for abs
-#include "adr68k.h"      // for Addr68k_from_LADDR, LADDR_from_68k
+#include "adr68k.h"      // for NativeAligned4FromLAddr, LAddrFromNative
 #include "commondefs.h"  // for error
 #include "emlglob.h"
 #include "lisp2cdefs.h"  // for CIntToLispInt, LispIntToCInt, LispStringSimpleLength
@@ -27,14 +27,14 @@
 int LispStringP(LispPTR object) {
   int type;
 
-  type = ((OneDArray *)Addr68k_from_LADDR(object))->typenumber;
+  type = ((OneDArray *)NativeAligned4FromLAddr(object))->typenumber;
   return ((type == THIN_CHAR_TYPENUMBER) || (type == FAT_CHAR_TYPENUMBER));
 }
 
 int LispStringSimpleLength(LispPTR lispstring) {
   OneDArray *arrayp;
 
-  arrayp = (OneDArray *)(Addr68k_from_LADDR(lispstring));
+  arrayp = (OneDArray *)(NativeAligned4FromLAddr(lispstring));
   return (arrayp->fillpointer);
 }
 
@@ -44,18 +44,18 @@ void LispStringToCStr(LispPTR lispstring, char *cstring) {
   short *sbase;
   int i, Len;
 
-  arrayp = (OneDArray *)(Addr68k_from_LADDR((UNSIGNED)lispstring));
+  arrayp = (OneDArray *)(NativeAligned4FromLAddr(lispstring));
   Len = arrayp->fillpointer;
 
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
-      base = ((char *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));
+      base = ((char *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
       for (i = 0; i < Len; i++) cstring[i] = base[i];
       cstring[Len] = '\0';
       break;
 
     case FAT_CHAR_TYPENUMBER:
-      sbase = ((short *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));
+      sbase = ((short *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
       base = (char *)sbase;
       for (i = 0; i < Len * 2; i++) cstring[i] = base[i];
       cstring[Len * 2] = '\0';
@@ -71,7 +71,7 @@ int LispIntToCInt(LispPTR lispint) {
     case S_NEGATIVE: return (lispint | 0xFFFF0000); break;
     default:
       if (GetTypeNumber(lispint) == TYPE_FIXP) {
-        return (*((int *)Addr68k_from_LADDR(lispint)));
+        return (*((int *)NativeAligned4FromLAddr(lispint)));
       } else {
         char msg[200];
         sprintf(msg, "Arg 0x%x isn't a lisp integer.", lispint);
@@ -88,7 +88,7 @@ LispPTR CIntToLispInt(int cint) {
     LispPTR *wordp;
     wordp = (LispPTR *)createcell68k(TYPE_FIXP);
     *((int *)wordp) = cint;
-    return (LADDR_from_68k(wordp));
+    return (LAddrFromNative(wordp));
   } else if (cint >= 0) { /* its a positive smallp! */
     return (S_POSITIVE | cint);
   } else { /* its a negative smallp! */
