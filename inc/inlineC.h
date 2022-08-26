@@ -101,9 +101,9 @@
 #define OPCAR                                                                                     \
   do {                                                                                            \
     if (Listp(TOPOFSTACK)) {                                                                      \
-      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));                 \
+      ConsCell *DATUM68K = (ConsCell *)NativeAligned4FromLAddr(TOPOFSTACK);			  \
       if (DATUM68K->cdr_code == CDR_INDIRECT) {                                                   \
-        TOPOFSTACK = ((LispPTR)((ConsCell *)Addr68k_from_LADDR(DATUM68K->car_field))->car_field); \
+        TOPOFSTACK = ((LispPTR)((ConsCell *)NativeAligned4FromLAddr(DATUM68K->car_field))->car_field); \
         nextop1;                                                                                  \
       } else {                                                                                    \
         TOPOFSTACK = ((LispPTR)DATUM68K->car_field);                                              \
@@ -122,7 +122,7 @@
 #define OPCDR                                                                              \
   do {                                                                                     \
     if (Listp(TOPOFSTACK)) {                                                               \
-      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));          \
+      ConsCell *DATUM68K = (ConsCell *)(NativeAligned4FromLAddr(TOPOFSTACK));          \
       int CDRCODEX = DATUM68K->cdr_code;                                          \
       if (CDRCODEX == CDR_NIL) {                                                           \
         /* cdr-nil */                                                                      \
@@ -139,7 +139,7 @@
       } else {                                                                             \
         /* cdr-differentpage */                                                            \
         TOPOFSTACK =                                                                       \
-            ((ConsCell *)(Addr68k_from_LADDR((TOPOFSTACK) + (CDRCODEX << 1))))->car_field; \
+            ((ConsCell *)(NativeAligned4FromLAddr((TOPOFSTACK) + (CDRCODEX << 1))))->car_field; \
         nextop1;                                                                           \
       }                                                                                    \
     } else if (TOPOFSTACK == NIL_PTR) {                                                    \
@@ -152,7 +152,7 @@
 #define OPCDR                                                                                  \
   do {                                                                                         \
     if (Listp(TOPOFSTACK)) {                                                                   \
-      ConsCell *DATUM68K = (ConsCell *)(Addr68k_from_LADDR(TOPOFSTACK));              \
+      ConsCell *DATUM68K = (ConsCell *)(NativeAligned4FromLAddr(TOPOFSTACK));              \
       int CDRCODEX = DATUM68K->cdr_code;                                              \
       if (CDRCODEX == CDR_NIL) {                                                               \
         /* cdr-nil */                                                                          \
@@ -169,7 +169,7 @@
       } else {                                                                                 \
         /* cdr-differentpage */                                                                \
         TOPOFSTACK =                                                                           \
-            ((ConsCell *)(Addr68k_from_LADDR(POINTER_PAGEBASE(TOPOFSTACK) + (CDRCODEX << 1)))) \
+            ((ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(TOPOFSTACK) + (CDRCODEX << 1)))) \
                 ->car_field;                                                                   \
         nextop1;                                                                               \
       }                                                                                        \
@@ -239,18 +239,18 @@
 #define GETBASE_N(N)                                                                          \
   do {                                                                                        \
     TOPOFSTACK =                                                                              \
-      (S_POSITIVE | GETWORD((DLword *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + (N)))); \
+      (S_POSITIVE | GETWORD((DLword *)NativeAligned2FromLAddr((POINTERMASK & TOPOFSTACK) + (N)))); \
     nextop2;                                                                                  \
   } while (0)
 
 #define GETBASEPTR_N(N)                                                                            \
   do {                                                                                             \
-    TOPOFSTACK = (POINTERMASK & *((LispPTR *)Addr68k_from_LADDR((POINTERMASK & TOPOFSTACK) + (N)))); \
+    TOPOFSTACK = (POINTERMASK & *((LispPTR *)NativeAligned4FromLAddr((POINTERMASK & TOPOFSTACK) + (N)))); \
     nextop2;                                                                                       \
   } while (0)
 #define PUTBASEBYTE                                                                    \
   do {                                                                                 \
-    int byteoffset;                                                           \
+    LispPTR byteoffset;                                                           \
     char *p_data;                                                             \
     if (((SEGMASK & TOPOFSTACK) != S_POSITIVE) || ((unsigned short)TOPOFSTACK >= 256)) \
       goto op_ufn;                                                                     \
@@ -261,12 +261,12 @@
       default:                                                                         \
         goto op_ufn;                                                                   \
         /***      if( GetTypeNumber(byteoffset) == TYPE_FIXP )                         \
-                        byteoffset = *((int *)Addr68k_from_LADDR(byteoffset));         \
+                        byteoffset = *((int *)NativeAligned4FromLAddr(byteoffset));         \
                 else                                                                   \
                         goto op_ufn; ***/                                              \
     }                                                                                  \
     --CSTKPTRL;                                                                        \
-    p_data = (char *)Addr68k_from_LADDR(POINTERMASK & (POP_TOS_1)) + byteoffset;       \
+    p_data = (char *)NativeAligned2FromLAddr(POINTERMASK & (POP_TOS_1)) + byteoffset;       \
     GETBYTE(p_data) = 0xFF & TOPOFSTACK;                                               \
     nextop1;                                                                           \
   } while (0)
@@ -278,31 +278,30 @@
       case S_NEGATIVE: TOPOFSTACK |= 0xFFFF0000; break;                                            \
       default:                                                                                     \
         if (GetTypeNumber(TOPOFSTACK) == TYPE_FIXP)                                                \
-          TOPOFSTACK = *((int *)Addr68k_from_LADDR(TOPOFSTACK));                                   \
+          TOPOFSTACK = *NativeAligned4FromLAddr(TOPOFSTACK);                                       \
         else                                                                                       \
           goto op_ufn;                                                                             \
     }                                                                                              \
-    TOPOFSTACK =                                                                                   \
-        (0xFF & (GETBYTE((char *)Addr68k_from_LADDR((POINTERMASK & (POP_TOS_1))) + TOPOFSTACK))) | \
-        S_POSITIVE;                                                                                \
+    TOPOFSTACK = S_POSITIVE | (0xFF &                                                              \
+            (GETBYTE((char *)NativeAligned2FromLAddr((POINTERMASK & (POP_TOS_1))) + TOPOFSTACK))); \
     nextop1;                                                                                       \
   } while (0)
 
 #define PUTBASEPTR_N(n)                                        \
   do {                                                         \
-    int base;                                         \
+    LispPTR base;                                              \
     base = POINTERMASK & POP_TOS_1;                            \
-    *((LispPTR *)Addr68k_from_LADDR(base + (n))) = TOPOFSTACK; \
+    *((LispPTR *)NativeAligned4FromLAddr(base + (n))) = TOPOFSTACK; \
     TOPOFSTACK = base;                                         \
     nextop2;                                                   \
   } while (0)
 
 #define PUTBASE_N(n)                                                           \
   do {                                                                         \
-    int base;                                                         \
+    LispPTR base;                                                         \
     if (GetHiWord(TOPOFSTACK) != (S_POSITIVE >> 16)) goto op_ufn;              \
     base = POINTERMASK & POP_TOS_1;                                            \
-    GETWORD((DLword *)Addr68k_from_LADDR(base + (n))) = GetLoWord(TOPOFSTACK); \
+    GETWORD((DLword *)NativeAligned2FromLAddr(base + (n))) = GetLoWord(TOPOFSTACK); \
     TOPOFSTACK = base;                                                         \
     nextop2;                                                                   \
   } while (0)
@@ -337,9 +336,9 @@
 #elif defined(BIGVM)
 #define GVAR(x)                                                                  \
   do {                                                                           \
-    int tx = x;                                                         \
+    LispPTR tx = x;                                                         \
     if (tx & SEGMASK) {                                                          \
-      PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET)));        \
+      PUSH(GetLongWord(NativeAligned4FromLAddr((tx) + NEWATOM_VALUE_OFFSET)));        \
     } else                                                                       \
       PUSH(GetLongWord((LispPTR *)AtomSpace + (tx * 5) + NEWATOM_VALUE_PTROFF)); \
                                                                                  \
@@ -348,9 +347,9 @@
 #else
 #define GVAR(x)                                                           \
   do {                                                                    \
-    int tx = x;                                                  \
+    LispPTR tx = x;                                                  \
     if (tx & SEGMASK) {                                                   \
-      PUSH(GetLongWord(Addr68k_from_LADDR((tx) + NEWATOM_VALUE_OFFSET))); \
+      PUSH(GetLongWord(NativeAligned4FromLAddr((tx) + NEWATOM_VALUE_OFFSET))); \
     } else                                                                \
       PUSH(GetLongWord(Valspace + ((tx) << 1)));                          \
                                                                           \
@@ -425,11 +424,11 @@
     char *buff68k;     /* pointer to BUFF */                                        \
                                                                                              \
     if (GetTypeNumber(TOPOFSTACK) == TYPE_STREAM) {                                          \
-      stream68k = (Stream *)Addr68k_from_LADDR(TOPOFSTACK);                                  \
+      stream68k = (Stream *)NativeAligned4FromLAddr(TOPOFSTACK);                                  \
       if ((!stream68k->BINABLE) || (stream68k->COFFSET >= stream68k->CBUFSIZE)) goto op_ufn; \
                                                                                              \
       /* get BUFFER instance */                                                              \
-      buff68k = (char *)Addr68k_from_LADDR(stream68k->CBUFPTR);                              \
+      buff68k = (char *)NativeAligned2FromLAddr(stream68k->CBUFPTR);                              \
                                                                                              \
       /* get BYTE data and set it to TOS */                                                  \
       TOPOFSTACK = (S_POSITIVE | (Get_BYTE(buff68k + (stream68k->COFFSET)++)));              \
@@ -496,7 +495,7 @@
 
 #define BIND                                                    \
   do {                                                          \
-    int byte = Get_BYTE_PCMAC1;                        \
+    LispPTR byte = Get_BYTE_PCMAC1;                        \
     unsigned n1;                                       \
     unsigned n2;                                       \
     LispPTR *ppvar;                                    \
@@ -569,7 +568,7 @@
   do {                                                                                             \
     int temp, bb = b;                                                                     \
     temp = 0xF & bb;                                                                               \
-    TOPOFSTACK = S_POSITIVE | (((GETWORD(Addr68k_from_LADDR(POINTERMASK & (TOPOFSTACK + (a))))) >> \
+    TOPOFSTACK = S_POSITIVE | (((GETWORD(NativeAligned2FromLAddr(POINTERMASK & (TOPOFSTACK + (a))))) >> \
                                 (16 - ((0xF & (bb >> 4)) + temp + 1))) &                           \
                                n_mask_array[temp]);                                                \
     nextop3;                                                                                       \
@@ -577,13 +576,13 @@
 
 #define PUTBITS_N_M(a, b)                                                                \
   do {                                                                                   \
-    int base;                                                                            \
+    LispPTR base;                                                                            \
     int bb = b;                                                                 \
     DLword *pword;                                                              \
     int shift_size, field_size, fmask;                                          \
     if ((SEGMASK & TOPOFSTACK) != S_POSITIVE) { goto op_ufn; };                          \
     base = POINTERMASK & POP_TOS_1;                                                      \
-    pword = (DLword *)Addr68k_from_LADDR(base + (a));                                    \
+    pword = NativeAligned2FromLAddr(base + (a));                                         \
     field_size = 0xF & bb;                                                               \
     shift_size = 15 - (0xF & (bb >> 4)) - field_size;                                    \
     fmask = n_mask_array[field_size] << shift_size;                                      \
@@ -671,7 +670,7 @@
 
 #define CLARITHEQUAL                            \
   do {                                          \
-    int arg2;                          \
+    LispPTR arg2;                          \
     SV;                                         \
     arg2 = POP_TOS_1;                           \
     if ((TOPOFSTACK & SEGMASK) == S_POSITIVE) { \
@@ -696,7 +695,7 @@
     SV;                                                                                            \
     arrayarg = POP_TOS_1;                                                                          \
     if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) goto aref_ufn;                                 \
-    arrayblk = (OneDArray *)Addr68k_from_LADDR(arrayarg);                                          \
+    arrayblk = (OneDArray *)NativeAligned4FromLAddr(arrayarg);                                     \
     if ((TOPOFSTACK & SEGMASK) != S_POSITIVE) goto aref_ufn;                                       \
     index = TOPOFSTACK & 0xFFFF;                                                                   \
     if (index >= arrayblk->totalsize) goto aref_ufn;                                               \
@@ -704,10 +703,10 @@
     baseL = arrayblk->base;                                                                        \
     switch (arrayblk->typenumber) {                                                                \
       case 38: /* pointer : 32 bits */                                                             \
-        TOPOFSTACK = *(((int *)Addr68k_from_LADDR(baseL)) + index);                                \
+        TOPOFSTACK = *(NativeAligned4FromLAddr(baseL) + index);                           \
         nextop1;                                                                                   \
       case 20: /* signed : 16 bits */                                                              \
-        TOPOFSTACK = (GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF;            \
+        TOPOFSTACK = (GETWORD(((DLword *)NativeAligned2FromLAddr(baseL)) + index)) & 0xFFFF;       \
         if (TOPOFSTACK & 0x8000)                                                                   \
           TOPOFSTACK |= S_NEGATIVE;                                                                \
         else                                                                                       \
@@ -715,47 +714,47 @@
         nextop1;                                                                                   \
       case 67: /* Character :  8 bits */                                                           \
         TOPOFSTACK =                                                                               \
-            S_CHARACTER | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF);         \
+            S_CHARACTER | ((GETBYTE(((char *)NativeAligned2FromLAddr(baseL)) + index)) & 0xFF);    \
         nextop1;                                                                                   \
       case 22: /* signed : 32 bits */                                                              \
-        TOPOFSTACK = *(((int *)Addr68k_from_LADDR(baseL)) + index);                                \
+        TOPOFSTACK = *(NativeAligned4FromLAddr(baseL) + index);                           \
         switch (TOPOFSTACK & 0xFFFF0000) {                                                         \
           case 0: TOPOFSTACK |= S_POSITIVE; break;                                                 \
           case (unsigned)0xFFFF0000: TOPOFSTACK &= S_NEGATIVE; break;                              \
           default: {                                                                               \
-            DLword *wordp;                                                                \
-            wordp = createcell68k(TYPE_FIXP);                                                      \
-            *((int *)wordp) = TOPOFSTACK;                                                          \
-            TOPOFSTACK = (LispPTR)LADDR_from_68k(wordp);                                           \
+            LispPTR *cellp;                                                                        \
+            cellp = createcell68k(TYPE_FIXP);                                                      \
+            *cellp = TOPOFSTACK;                                                          \
+            TOPOFSTACK = (LispPTR)LAddrFromNative(cellp);                                          \
           }                                                                                        \
         }                                                                                          \
         nextop1;                                                                                   \
       case 0: /* unsigned : 1 bit per element */                                                   \
         TOPOFSTACK =                                                                               \
-            S_POSITIVE | (((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + (index >> 3))) >>        \
+            S_POSITIVE | (((GETBYTE(((char *)NativeAligned2FromLAddr(baseL)) + (index >> 3))) >>   \
                            (7 - (index & 7))) &                                                    \
                           1);                                                                      \
         nextop1;                                                                                   \
       case 3: /* unsigned : 8 bits per element */                                                  \
-        TOPOFSTACK = S_POSITIVE | ((GETBYTE(((char *)Addr68k_from_LADDR(baseL)) + index)) & 0xFF); \
+        TOPOFSTACK = S_POSITIVE | ((GETBYTE(((char *)NativeAligned2FromLAddr(baseL)) + index)) & 0xFF); \
         nextop1;                                                                                   \
       case 4: /* unsigned : 16 bits per element */                                                 \
         TOPOFSTACK =                                                                               \
-            S_POSITIVE | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF);      \
+            S_POSITIVE | ((GETWORD(((DLword *)NativeAligned2FromLAddr(baseL)) + index)) & 0xFFFF); \
         nextop1;                                                                                   \
       case 54: /* Float : 32 bits */ {                                                             \
-        DLword *wordp;                                                                    \
-        wordp = createcell68k(TYPE_FLOATP);                                                        \
-        *((int *)wordp) = *(((int *)Addr68k_from_LADDR(baseL)) + index);                           \
-        TOPOFSTACK = (LispPTR)LADDR_from_68k(wordp);                                               \
+        LispPTR *cellp;                                                                            \
+        cellp = createcell68k(TYPE_FLOATP);                                                        \
+        *cellp = *(NativeAligned4FromLAddr(baseL) + index);                                        \
+        TOPOFSTACK = (LispPTR)LAddrFromNative(cellp);                                              \
       }                                                                                            \
         nextop1;                                                                                   \
       case 68: /* Character :  16 bits */                                                          \
         TOPOFSTACK =                                                                               \
-            S_CHARACTER | ((GETWORD(((DLword *)Addr68k_from_LADDR(baseL)) + index)) & 0xFFFF);     \
+            S_CHARACTER | ((GETWORD(((DLword *)NativeAligned2FromLAddr(baseL)) + index)) & 0xFFFF);\
         nextop1;                                                                                   \
       case 86: /* XPointer : 32 bits */                                                            \
-        TOPOFSTACK = *(((int *)Addr68k_from_LADDR(baseL)) + index);                                \
+        TOPOFSTACK = *(NativeAligned4FromLAddr(baseL) + index);                           \
         nextop1;                                                                                   \
       default: /* Illegal or Unimplemented */ goto aref_ufn;                                       \
     } /* end switch typenumber */                                                                  \
@@ -792,26 +791,26 @@
 
 #define FVAR(n)                                                                             \
   do {                                                                                      \
-    LispPTR *chain;                                                                \
+    LispPTR *chain;                                                                         \
     chain = (LispPTR *)(PVar + (n));                                                        \
     if (WBITSPTR(chain)->LSB) {                                                             \
-      PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe((n) >> 1))))); \
+      PUSH(GetLongWord(NativeAligned4FromLAddr(POINTERMASK &swapx(native_newframe((n) >> 1))))); \
       nextop1;                                                                              \
     } /* if(((WBITS */                                                                      \
-    PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                      \
+    PUSH(GetLongWord(NativeAligned4FromLAddr(POINTERMASK &swapx(*chain))));                 \
     nextop1;                                                                                \
   } while (0)
 
 #define FVARX(n)                                                                           \
   do {                                                                                     \
-    int nn = n;                                                                   \
-    LispPTR *chain;                                                               \
+    int nn = n;                                                                            \
+    LispPTR *chain;                                                                        \
     chain = (LispPTR *)(PVar + nn);                                                        \
     if (WBITSPTR(chain)->LSB) {                                                            \
-      PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(native_newframe(nn >> 1))))); \
+      PUSH(GetLongWord(NativeAligned4FromLAddr(POINTERMASK &swapx(native_newframe(nn >> 1))))); \
       nextop2;                                                                             \
     } /* if(((WBITS */                                                                     \
-    PUSH(GetLongWord(Addr68k_from_LADDR(POINTERMASK &swapx(*chain))));                     \
+    PUSH(GetLongWord(NativeAligned4FromLAddr(POINTERMASK &swapx(*chain))));                     \
     nextop2;                                                                               \
   } while (0)
 
