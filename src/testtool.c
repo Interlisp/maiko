@@ -47,7 +47,7 @@
 #include <stdio.h>         // for printf, putchar, fflush, getchar, stdin
 #include <stdlib.h>        // for exit
 #include <string.h>        // for strlen
-#include "adr68k.h"        // for LADDR_from_68k, Addr68k_from_LADDR, Addr68...
+#include "adr68k.h"        // for LAddrFromNative, NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "array.h"         // for arrayheader
 #include "cell.h"          // for conspage, PNCell, GetDEFCELL68k, GetPnameCell
 #include "commondefs.h"    // for error
@@ -86,7 +86,7 @@ void print_atomname(LispPTR index)
 
   pnptr = (PNCell *)GetPnameCell(index);
   print_package_name(pnptr->pkg_index);
-  pname = (char *)Addr68k_from_LADDR(pnptr->pnamebase);
+  pname = (char *)NativeAligned2FromLAddr(pnptr->pnamebase);
 
   length = (DLword)GETBYTE(pname++);
 
@@ -112,11 +112,11 @@ int find_package_from_name(const char *packname, int len) {
   struct arrayheader *pi_array;
 
   /* assumes the *PACKAGE-FROM-INDEX* array is simple with no offset */
-  pi_array = (struct arrayheader *)Addr68k_from_LADDR(*Package_from_Index_word);
+  pi_array = (struct arrayheader *)NativeAligned4FromLAddr(*Package_from_Index_word);
   for (index = 1; index < pi_array->totalsize; index++) {
-    package = (PACKAGE *)Addr68k_from_LADDR(aref1(*Package_from_Index_word, index));
-    namestring = (NEWSTRINGP *)Addr68k_from_LADDR(package->NAME);
-    pname = (char *)Addr68k_from_LADDR(namestring->base);
+    package = (PACKAGE *)NativeAligned4FromLAddr(aref1(*Package_from_Index_word, index));
+    namestring = (NEWSTRINGP *)NativeAligned4FromLAddr(package->NAME);
+    pname = (char *)NativeAligned2FromLAddr(namestring->base);
     if (namestring->offset != 0) { pname += namestring->offset; }
 
     len2 = (DLword)(namestring->fillpointer);
@@ -143,9 +143,9 @@ void print_package_name(int index) {
     printf("#:");
     return;
   }
-  package = (PACKAGE *)Addr68k_from_LADDR(aref1(*Package_from_Index_word, index));
-  namestring = (NEWSTRINGP *)Addr68k_from_LADDR(package->NAME);
-  pname = (char *)Addr68k_from_LADDR(namestring->base);
+  package = (PACKAGE *)NativeAligned4FromLAddr(aref1(*Package_from_Index_word, index));
+  namestring = (NEWSTRINGP *)NativeAligned4FromLAddr(package->NAME);
+  pname = (char *)NativeAligned2FromLAddr(namestring->base);
   if (namestring->offset != 0) {
     pname += namestring->offset;
     printf("OFFSET:\n");
@@ -242,13 +242,13 @@ void dump_dtd(void) {
 /************************************************************************/
 
 void check_type_68k(int type, LispPTR *ptr) {
-  if (type != (GetTypeNumber(LADDR_from_68k(ptr)))) {
-    printf("Mismatching occur !!! LispAddr 0x%x  type %d\n", LADDR_from_68k(ptr), type);
+  if (type != (GetTypeNumber(LAddrFromNative(ptr)))) {
+    printf("Mismatching occur !!! LispAddr 0x%x  type %d\n", LAddrFromNative(ptr), type);
     exit(-1);
   }
 
-  printf("LispPTR 0x%x is the datatype %d\n", LADDR_from_68k(ptr),
-         GetTypeNumber(LADDR_from_68k(ptr)));
+  printf("LispPTR 0x%x is the datatype %d\n", LAddrFromNative(ptr),
+         GetTypeNumber(LAddrFromNative(ptr)));
 }
 
 /************************************************************************/
@@ -286,10 +286,10 @@ lp:
   printf(
       "conspage at 0x%x(lisp) has %d free cells , next available cell offset is %d ,and next page "
       "is 0x%x(lisp)\n",
-      LADDR_from_68k(base), (0xff & base->count), (0xff & base->next_cell), base->next_page);
+      LAddrFromNative(base), (0xff & base->count), (0xff & base->next_cell), base->next_page);
 
   for (i = 0, cell = (ConsCell *)base + 1; i < 127; i++, cell++) {
-    printf(" LADDR : %d = Cell[ %d ]## cdr_code= %d ,car = %d\n", LADDR_from_68k(cell), i + 1,
+    printf(" LADDR : %d = Cell[ %d ]## cdr_code= %d ,car = %d\n", LAddrFromNative(cell), i + 1,
            cell->cdr_code, cell->car_field);
   }
 
@@ -319,7 +319,7 @@ void trace_listpDTD(void) {
 
 void a68k(LispPTR lispptr) {
   DLword *val;
-  val = Addr68k_from_LADDR(lispptr);
+  val = NativeAligned2FromLAddr(lispptr);
   printf("68k: %p (%"PRIuPTR")\n", (void *)val, (uintptr_t)val);
 }
 
@@ -333,7 +333,7 @@ void a68k(LispPTR lispptr) {
 
 void laddr(DLword *addr68k) {
   int val;
-  val = LADDR_from_68k(addr68k);
+  val = LAddrFromNative(addr68k);
   printf("LADDR : 0x%x (%d)\n", val, val);
 }
 
@@ -353,10 +353,10 @@ void dump_fnbody(LispPTR fnblockaddr)
   DLbyte *scratch;
   int i;
 
-  fnobj = (struct fnhead *)Addr68k_from_LADDR(fnblockaddr);
+  fnobj = (struct fnhead *)NativeAligned4FromLAddr(fnblockaddr);
 
   printf("***DUMP Func Obj << ");
-  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), (void *)fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LAddrFromNative(fnobj), (void *)fnobj);
 
   print(fnobj->framename);
   putchar('\n');
@@ -375,7 +375,7 @@ void dump_fnbody(LispPTR fnblockaddr)
   for (i = 20; i < (fnobj->startpc); i += 2) {
     int word;
     word = (int)(0xffff & (GETWORD((DLword *)(scratch + i))));
-    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LADDR_from_68k(scratch + i), (void *)(scratch + i), word, word);
+    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LAddrFromNative(scratch + i), (void *)(scratch + i), word, word);
   }
 
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
@@ -819,9 +819,9 @@ void dumpl(LispPTR laddr) {
   int i;
   LispPTR *ptr;
 
-  ptr = (LispPTR *)Addr68k_from_LADDR(laddr);
+  ptr = (LispPTR *)NativeAligned4FromLAddr(laddr);
 
-  for (i = 0; i < 40; i++, ptr++) printf("LADDR 0x%x : %d\n", LADDR_from_68k(ptr), *ptr);
+  for (i = 0; i < 40; i++, ptr++) printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
 }
 
 /**** dump specified area (in 16 bit width) ***/
@@ -830,10 +830,10 @@ void dumps(LispPTR laddr) {
   int i;
   DLword *ptr;
 
-  ptr = (DLword *)Addr68k_from_LADDR(laddr);
+  ptr = (DLword *)NativeAligned2FromLAddr(laddr);
 
   for (i = 0; i < 40; i++, ptr++)
-    printf("LADDR 0x%x : %d\n", LADDR_from_68k(ptr), (GETWORD(ptr) & 0xffff));
+    printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), (GETWORD(ptr) & 0xffff));
 }
 
 /***********************/
@@ -855,19 +855,19 @@ void dump_bf(Bframe *bf) {
 
   if (BFRAMEPTR(bf)->residual) { goto printflags; }
 
-  ptr = Addr68k_from_LADDR(STK_OFFSET + bf->ivar);
+  ptr = NativeAligned2FromLAddr(STK_OFFSET + bf->ivar);
   if ((((DLword *)bf - ptr) > 512) || (((UNSIGNED)ptr & 1) != 0)) {
     printf("\nInvalid basic frame");
     return;
   }
   while (ptr < (DLword *)bf) {
-    printf("\n %x : %x %x", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+    printf("\n %x : %x %x", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
     print(*ptr);
     ptr += 2;
   }
 
 printflags:
-  printf("\n %x : %x %x ", LADDR_from_68k(bf), *(DLword *)bf, *((DLword *)bf + 1));
+  printf("\n %x : %x %x ", LAddrFromNative(bf), *(DLword *)bf, *((DLword *)bf + 1));
   putchar('[');
   if (BFRAMEPTR(bf)->residual) printf("Residual, ");
   if (BFRAMEPTR(bf)->padding) printf("Padded, ");
@@ -890,7 +890,7 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   atomindex = get_framename((struct frameex1 *)fx_addr68k);
   printf("\n*** Frame Extension for ");
   print(atomindex);
-  printf("\n %x : %x %x ", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x ", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   putchar('[');
   if (fx_addr68k->fast) printf("F,");
@@ -900,20 +900,20 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   if (fx_addr68k->alink & 1) printf("[SLOWP]");
 
   ptr += 2;
-  printf("\n %x : %x %x fnheadlo, fnheadhi\n", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x fnheadlo, fnheadhi\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   ptr += 2;
-  printf("\n %x : %x %x next,     pc\n", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x next,     pc\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   ptr += 2;
-  printf("\n %x : %x %x LoNmTbl,  HiNmTbl\n", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x LoNmTbl,  HiNmTbl\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   ptr += 2;
-  printf("\n %x : %x %x #blink,   #clink\n", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x #blink,   #clink\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   /* should pay attention to the name table like RAID does */
 
-  next68k = (DLword *)Addr68k_from_LADDR((fx_addr68k->nextblock + STK_OFFSET));
+  next68k = (DLword *)NativeAligned2FromLAddr((fx_addr68k->nextblock + STK_OFFSET));
   if (fx_addr68k == CURRENTFX) { next68k = CurrentStackPTR + 2; }
 
   if ((next68k < ptr) || (((UNSIGNED)next68k & 1) != 0)) {
@@ -923,7 +923,7 @@ void dump_fx(struct frameex1 *fx_addr68k) {
 
   while (next68k > ptr) {
     ptr += 2;
-    printf("\n %x : %x %x", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+    printf("\n %x : %x %x", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
   }
 } /* end dump_fx */
 
@@ -940,7 +940,7 @@ void dump_stackframe(struct frameex1 *fx_addr68k) {
   if ((fx_addr68k->alink & 1) == 0) { /* FAST */
     bf = (Bframe *)(((DLword *)fx_addr68k) - 2);
   } else { /* SLOW */
-    bf = (Bframe *)Addr68k_from_LADDR((fx_addr68k->blink + STK_OFFSET));
+    bf = (Bframe *)NativeAligned4FromLAddr((fx_addr68k->blink + STK_OFFSET));
   }
   dump_bf(bf);
   dump_fx((struct frameex1 *)fx_addr68k);
@@ -950,10 +950,10 @@ void dump_CSTK(int before) {
   DLword *ptr;
   ptr = CurrentStackPTR - before;
   while (ptr != CurrentStackPTR) {
-    printf("\n%x : %x ", LADDR_from_68k(ptr), GETWORD(ptr));
+    printf("\n%x : %x ", LAddrFromNative(ptr), GETWORD(ptr));
     ptr++;
   }
-  printf("\nCurrentSTKP : %x  ", LADDR_from_68k(CurrentStackPTR));
+  printf("\nCurrentSTKP : %x  ", LAddrFromNative(CurrentStackPTR));
   printf("\ncontents :  %x ", *((LispPTR *)(CurrentStackPTR - 1)));
 } /* dump_CSTK end */
 
@@ -997,7 +997,7 @@ int get_framename(struct frameex1 *fx_addr68k) {
     scratch |= (unsigned int)(fx_addr68k->lonametable);
   }
 #endif /* BIGVM */
-  fnheader = (struct fnhead *)Addr68k_from_LADDR(scratch);
+  fnheader = (struct fnhead *)NativeAligned4FromLAddr(scratch);
   return (fnheader->framename);
 } /* get_framename end */
 
@@ -1034,7 +1034,7 @@ LispPTR *MakeAtom68k(char *string) {
 #else
   index = VALS_OFFSET + (index << 1);
 #endif /* BIGVM */
-  return ((LispPTR *) Addr68k_from_LADDR(index));
+  return ((LispPTR *) NativeAligned4FromLAddr(index));
 }
 
 /************************************************************************/
@@ -1106,12 +1106,12 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
   if (start == 0)
     start68k = Stackspace + InterfacePage->stackbase;
   else
-    start68k = Addr68k_from_LADDR(STK_OFFSET | start);
+    start68k = NativeAligned2FromLAddr(STK_OFFSET | start);
 
   if (end == 0)
     end68k = Stackspace + InterfacePage->endofstack;
   else
-    end68k = Addr68k_from_LADDR(STK_OFFSET | end);
+    end68k = NativeAligned2FromLAddr(STK_OFFSET | end);
 
   stkptr = (STKH *)start68k;
 
@@ -1122,9 +1122,9 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
         if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) { goto badblock; };
         size = GETWORD(((DLword *)stkptr) + 1);
         if (STKHPTR(stkptr)->flags1 == STK_GUARD)
-          printf("\n0x%x GUARD, size : 0x%x", LADDR_from_68k(stkptr), size);
+          printf("\n0x%x GUARD, size : 0x%x", LAddrFromNative(stkptr), size);
         else
-          printf("\n0x%x FSB,   size : 0x%x", LADDR_from_68k(stkptr), size);
+          printf("\n0x%x FSB,   size : 0x%x", LAddrFromNative(stkptr), size);
 
         if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; };
 
@@ -1142,7 +1142,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
          {goto badblock;};*/
         if (silent) {
           SD_morep;
-          printf("\n0x%x: FX for ", LADDR_from_68k(stkptr));
+          printf("\n0x%x: FX for ", LAddrFromNative(stkptr));
           print(get_framename((struct frameex1 *)stkptr));
           printf(" [");
           if (((FX *)stkptr)->fast) printf("fast,");
@@ -1158,7 +1158,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           printf(" <-***current***");
           size = EndSTKP - (DLword *)stkptr;
         } else {
-          size = Addr68k_from_LADDR(STK_OFFSET | ((FX *)stkptr)->nextblock) - (DLword *)stkptr;
+          size = NativeAligned2FromLAddr(STK_OFFSET | ((FX *)stkptr)->nextblock) - (DLword *)stkptr;
         };
         goto checksize;
       default:
@@ -1171,19 +1171,19 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
 
         if ((BFRAMEPTR(stkptr))->residual) {
           if ((DLword *)stkptr != orig68k) {
-            printf("\n$$$Bad BF(res):0x%x", LADDR_from_68k(stkptr));
+            printf("\n$$$Bad BF(res):0x%x", LAddrFromNative(stkptr));
             goto incptr;
           }
         } else {
           if (BFRAMEPTR(stkptr)->ivar != StkOffset_from_68K(orig68k)) {
-            printf("\n$$$BF doesn't point TopIVAR:0x%x\n", LADDR_from_68k(stkptr));
+            printf("\n$$$BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(stkptr));
             goto incptr;
           }
         }
 
         if (silent) {
           SD_morep;
-          printf("\n0x%x BF,   ", LADDR_from_68k(stkptr));
+          printf("\n0x%x BF,   ", LAddrFromNative(stkptr));
           putchar('[');
           if (BFRAMEPTR(stkptr)->residual) printf("Res,");
           if (BFRAMEPTR(stkptr)->padding) printf("Pad,");
@@ -1196,7 +1196,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
 
       badblock:
         SD_morep;
-        printf("\n0x%x: Invalid, %x %x", LADDR_from_68k(stkptr), GETWORD((DLword *)stkptr),
+        printf("\n0x%x: Invalid, %x %x", LAddrFromNative(stkptr), GETWORD((DLword *)stkptr),
                GETWORD((DLword *)(stkptr + 1)));
       incptr:
         stkptr = (STKH *)(((DLword *)stkptr) + 2);
@@ -1217,7 +1217,7 @@ void dtd_chain(DLword type) {
   dtdp = (struct dtd *)GetDTD(type);
 
   next = dtdp->dtd_free;
-  next68k = (LispPTR *)Addr68k_from_LADDR(next);
+  next68k = (LispPTR *)NativeAligned4FromLAddr(next);
 
   while ((*next68k) != 0) {
     if (type != GetTypeNumber(next)) {
@@ -1228,7 +1228,7 @@ void dtd_chain(DLword type) {
     putchar('\n');
 
     next = *next68k;
-    next68k = (LispPTR *)Addr68k_from_LADDR(next);
+    next68k = (LispPTR *)NativeAligned4FromLAddr(next);
   }
   printf("That's All !\n");
 
@@ -1256,7 +1256,7 @@ void check_dtd_chain(DLword type)
       return;
     }
     onext = next;
-    next = *((LispPTR *)Addr68k_from_LADDR(next));
+    next = *((LispPTR *)NativeAligned4FromLAddr(next));
     next &= POINTERMASK;
   }
 }
