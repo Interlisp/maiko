@@ -9,7 +9,7 @@
 /*									*/
 /************************************************************************/
 
-#include "adr68k.h"    // for NativeAligned4FromLAddr
+#include "adr68k.h"    // for NativeAligned4FromLAddr, LAddrFromNative
 #include "commondefs.h" // for error
 #include "lispemul.h"  // for SEGMASK, ERROR_EXIT
 #include "lispmap.h"   // for S_NEGATIVE, S_POSITIVE
@@ -102,7 +102,7 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
         /* arg is FIXP, call createcell */                                 \
         fixpp = (int *)createcell68k(TYPE_FIXP);                       \
         *((int *)fixpp) = (int)(arg);                                      \
-        (result) = (LADDR_from_68k(fixpp));                                \
+        (result) = (LAddrFromNative(fixpp));                                \
         break;                                                             \
       }                                                                    \
     }                                                                      \
@@ -118,7 +118,7 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
         /* arg is FIXP, call createcell */                   \
         fixpp = (int *)createcell68k(TYPE_FIXP);         \
         *fixpp = arg;                                       \
-        return (LADDR_from_68k(fixpp));                      \
+        return (LAddrFromNative(fixpp));                      \
       }                                                      \
     }                                                        \
   } while (0)
