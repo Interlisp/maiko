@@ -9,7 +9,7 @@
 /*									*/
 /************************************************************************/
 #include "version.h"  /* for BIGVM, UNSIGNED */
-#include "adr68k.h"   /* for LADDR_from_68k */
+#include "adr68k.h"   /* for LAddrFromNative, NativeAligned4FromLAddr */
 #include "address.h"  /* for LOLOC */
 #include "commondefs.h" /* for error */
 #include "lispemul.h" /* for LispPTR, DLword, FRAMESIZE, DLWORDSPER_CELL */
@@ -297,7 +297,7 @@ typedef struct stackp {
 #define STKWORD(stkptr) ((StackWord *)WORDPTR(stkptr))
 
 #define FX_INVALIDP(fx68k) (((fx68k) == 0) || ((DLword *)(fx68k) == Stackspace))
-#define FX_size(fx68k) (((FX *)(fx68k))->nextblock - LOLOC(LADDR_from_68k(fx68k)))
+#define FX_size(fx68k) (((FX *)(fx68k))->nextblock - LOLOC(LAddrFromNative(fx68k)))
 #define FSBP(ptr68k) (((STKBLK *)(ptr68k))->flagword == STK_FSB_WORD)
 #define FSB_size(ptr68k) (((STKBLK *)(ptr68k))->size)
 /** Following suff assumes fx is 68kptr and val is LISP_LO_OFFSET **/
@@ -317,13 +317,13 @@ typedef struct stackp {
 #define SETALINK(fx, val)                                \
   {                                                      \
     if (FASTP(fx)) {                                     \
-      ((FX *)(fx))->blink = LADDR_from_68k(DUMMYBF(fx)); \
+      ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); \
       ((FX *)(fx))->clink = ((FX *)(fx))->alink;         \
     }                                                    \
     ((FX *)(fx))->alink = (val) + FRAMESIZE + 1;         \
   }
 
-#define GETBLINK(fx) (SLOWP(fx) ? ((FX *)(fx))->blink : LOLOC(LADDR_from_68k(DUMMYBF(fx))))
+#define GETBLINK(fx) (SLOWP(fx) ? ((FX *)(fx))->blink : LOLOC(LAddrFromNative(DUMMYBF(fx))))
 #define SETBLINK(fx, val)                        \
   {                                              \
     ((FX *)(fx))->blink = (val);                 \
@@ -339,14 +339,14 @@ typedef struct stackp {
   {                                                      \
     ((FX *)(fx))->clink = (val) + FRAMESIZE;             \
     if (FASTP((fx))) {                                   \
-      ((FX *)(fx))->blink = LADDR_from_68k(DUMMYBF(fx)); \
+      ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); \
       SLOWP(fx) = 1;                                     \
     }                                                    \
   }
 
 #define SETACLINK(fx, val)                                                \
   {                                                                       \
-    if (FASTP(fx)) { ((FX *)(fx))->blink = LADDR_from_68k(DUMMYBF(fx)); } \
+    if (FASTP(fx)) { ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); } \
     ((FX *)(fx))->clink = (val) + FRAMESIZE;                              \
     ((FX *)(fx))->alink = ((FX *)(fx))->clink + 1;                        \
   }
@@ -358,7 +358,7 @@ typedef struct stackp {
 #endif /* BIGVM */
 
 #define GETNAMETABLE(fx)                                                                          \
-  ((struct fnhead *)Addr68k_from_LADDR(                                                           \
+  ((struct fnhead *)NativeAligned4FromLAddr(                                                      \
       SWAP_FNHEAD(                                                                                \
         ((((FX2 *)(fx))->validnametable) ? ((FX2 *)(fx))->nametable : ((FX2 *)(fx))->fnheader)) & \
       POINTERMASK))
