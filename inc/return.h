@@ -37,10 +37,9 @@
 #define FastRetCALL							\
   do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
-    IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
+    IVar = NativeAligned2FromLAddr(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
-    FuncObj = (struct fnhead *)						\
-		Addr68k_from_LADDR(FX_FNHEADER);	\
+    FuncObj = (struct fnhead *)NativeAligned4FromLAddr(FX_FNHEADER);	        \
     /* Get PC from Returnee's pc slot in FX */ 				\
     PC = (ByteCode *)FuncObj + CURRENTFX->pc ; 				\
   } while (0)
@@ -48,10 +47,9 @@
 #define FastRetCALL							\
   do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
-    IVar = Addr68k_from_LADDR(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
+    IVar = NativeAligned2FromLAddr(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
-    FuncObj = (struct fnhead *)						\
-		Addr68k_from_LADDR(FX_FNHEADER);	\
+    FuncObj = (struct fnhead *)NativeAligned4FromLAddr(FX_FNHEADER);	        \
     /* Get PC from Returnee's pc slot in FX */ 				\
     PC = (ByteCode *)FuncObj + CURRENTFX->pc ; 				\
     if (!(FuncObj->byteswapped))					\
@@ -68,7 +66,7 @@
 
 #define Midpunt(fxnum) 							\
   { DLword midpunt; 					\
-    midpunt = LOLOC(LADDR_from_68k(CURRENTFX));			\
+    midpunt = LOLOC(LAddrFromNative(CURRENTFX));			\
     PVar=(DLword *)							\
 	    Addr68k_from_StkOffset(					\
                         (GETWORD(((DLword *)InterfacePage) + (fxnum)))) \
@@ -80,7 +78,7 @@
 #define CHECKFX							\
   if (((UNSIGNED)PVar -(UNSIGNED)CURRENTFX) != 20)			\
     { printf("Invalid FX(0x%x) and PV(0x%x) \n",		\
-	     LADDR_from_68k(CURRENTFX),LADDR_from_68k(PVar));	\
+	     LAddrFromNative(CURRENTFX),LAddrFromNative(PVar));	\
     }
 
 
