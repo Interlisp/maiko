@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <sys/param.h>
 
+#include "byteswapdefs.h"
 #include "dld.h"
 #include "lispemul.h"
 #include "lspglob.h"
@@ -48,20 +49,20 @@
     short *sbase;                                                                                  \
     int i;                                                                                         \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
     Len = min(MaxLen, arrayp->fillpointer);                                                        \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
-            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
         for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
         C[Len] = '\0';                                                                             \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase =                                                                                    \
-            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
         C[Len * 2] = '\0';                                                                         \
@@ -122,7 +123,7 @@ LispPTR call_c_fn(LispPTR *args) {
   ByteCode *pc;
 
   /* Initialize the variables from the descriptorblock */
-  descriptorblock = (int *)Addr68k_from_LADDR(args[0]);
+  descriptorblock = (int *)NativeAligned4FromLAddr(args[0]);
   fnaddr = *descriptorblock++;
   resulttype = *descriptorblock++;
   errorflag = descriptorblock++;
@@ -146,7 +147,7 @@ LispPTR call_c_fn(LispPTR *args) {
     int *tracedesc;
 
     printf("Start Foreign function call=====\n");
-    tracedesc = (int *)Addr68k_from_LADDR(args[0]);
+    tracedesc = (int *)NativeAligned4FromLAddr(args[0]);
     printf("fnaddr: %d\n", *tracedesc++);
     printf("resulttype: %d\n", *tracedesc++);
     printf("errorflag: %d\n", *tracedesc++);
@@ -196,7 +197,7 @@ LispPTR call_c_fn(LispPTR *args) {
       case TYPE_LITATOM:
       case TYPE_NEWATOM:
         if (expectedtype == TYPE_LITATOM) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -204,7 +205,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_LISTP:
         if (expectedtype == TYPE_LISTP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -212,7 +213,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_ARRAYP:
         if (expectedtype == TYPE_ARRAYP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -244,7 +245,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_BITMAP:
         if (expectedtype == TYPE_BITMAP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -253,7 +254,7 @@ LispPTR call_c_fn(LispPTR *args) {
       case TYPE_COMPILED_CLOSURE: break;
       case TYPE_ONED_ARRAY:
         if (expectedtype == TYPE_ONED_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -261,7 +262,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_TWOD_ARRAY:
         if (expectedtype == TYPE_TWOD_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -269,7 +270,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_GENERAL_ARRAY:
         if (expectedtype == TYPE_GENERAL_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -277,7 +278,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_BIGNUM:
         if (expectedtype == TYPE_BIGNUM) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -285,7 +286,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_RATIO:
         if (expectedtype == TYPE_RATIO) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -293,7 +294,7 @@ LispPTR call_c_fn(LispPTR *args) {
         break;
       case TYPE_COMPLEX:
         if (expectedtype == TYPE_COMPLEX) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -315,7 +316,7 @@ LispPTR call_c_fn(LispPTR *args) {
                     intarg[20], intarg[21], intarg[22], intarg[23], intarg[24], intarg[25],
                     intarg[26], intarg[27], intarg[28], intarg[29], intarg[30], intarg[31]);
       caller = (FX2 *)CURRENTFX; /* Don't return values, just continue. */
-      fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & swapx((int)caller->fnheader));
+      fnhead = (struct fnhead *)NativeAligned4FromLAddr(POINTERMASK & swapx((int)caller->fnheader));
       pc = (ByteCode *)fnhead + (caller->pc);
       break;
     case TYPE_SMALLP:
@@ -348,7 +349,7 @@ LispPTR call_c_fn(LispPTR *args) {
                               intarg[27], intarg[28], intarg[29], intarg[30], intarg[31]);
       fword = createcell68k(TYPE_FLOATP);
       *((float *)fword) = fresult;
-      return (LADDR_from_68k(fword));
+      return (LAddrFromNative(fword));
       break;
     default: *errorflag = -2; break;
   }
@@ -402,7 +403,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
   ByteCode *pc;
 
   /* Initialize the variables from the descriptorblock */
-  descriptorblock = (int *)Addr68k_from_LADDR(args[0]);
+  descriptorblock = (int *)NativeAligned4FromLAddr(args[0]);
   fnaddr = *descriptorblock++;
   resulttype = *descriptorblock++;
   errorflag = descriptorblock++;
@@ -412,7 +413,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
   *errorflag = 0;
 
   /* Initialize the valueplace */
-  valueplace = (int *)Addr68k_from_LADDR(args[1]);
+  valueplace = (int *)NativeAligned4FromLAddr(args[1]);
 
   /* Initialize the argvector */
   for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; };
@@ -463,7 +464,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
       case TYPE_LITATOM:
       case TYPE_NEWATOM:
         if (expectedtype == TYPE_LITATOM) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -471,7 +472,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_LISTP:
         if (expectedtype == TYPE_LISTP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -479,7 +480,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_ARRAYP:
         if (expectedtype == TYPE_ARRAYP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -511,7 +512,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_BITMAP:
         if (expectedtype == TYPE_BITMAP) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -520,7 +521,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
       case TYPE_COMPILED_CLOSURE: break;
       case TYPE_ONED_ARRAY:
         if (expectedtype == TYPE_ONED_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -528,7 +529,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_TWOD_ARRAY:
         if (expectedtype == TYPE_TWOD_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -536,7 +537,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_GENERAL_ARRAY:
         if (expectedtype == TYPE_GENERAL_ARRAY) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -544,7 +545,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_BIGNUM:
         if (expectedtype == TYPE_BIGNUM) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -552,7 +553,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_RATIO:
         if (expectedtype == TYPE_RATIO) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -560,7 +561,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
         break;
       case TYPE_COMPLEX:
         if (expectedtype == TYPE_COMPLEX) {
-          intarg[j] = *(int *)Addr68k_from_LADDR(args[i]);
+          intarg[j] = *(int *)NativeAligned4FromLAddr(args[i]);
         } else {
           *errorflag = i;
           return (NIL);
@@ -582,7 +583,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
                     intarg[20], intarg[21], intarg[22], intarg[23], intarg[24], intarg[25],
                     intarg[26], intarg[27], intarg[28], intarg[29], intarg[30], intarg[31]);
       caller = (FX2 *)CURRENTFX; /* Don't return values, just continue. */
-      fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & swapx((int)caller->fnheader));
+      fnhead = (struct fnhead *)NativeAligned4FromLAddr(POINTERMASK & swapx((int)caller->fnheader));
       pc = (ByteCode *)fnhead + (caller->pc);
       break;
     case TYPE_SMALLP:
@@ -928,7 +929,7 @@ int get_c_basebyte(LispPTR *args) {
     case 4: /* float */
       fword = createcell68k(TYPE_FLOATP);
       *((float *)fword) = *(float *)((addr & 0xFFFFFFFE) + (offset << 2));
-      return (LADDR_from_68k(fword));
+      return (LAddrFromNative(fword));
       break;
   }
 }
