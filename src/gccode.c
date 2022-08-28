@@ -31,7 +31,7 @@
 
 #include <stdio.h>       // for sprintf
 #include "address.h"     // for LOLOC, HILOC
-#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "commondefs.h"  // for error
 #include "gccodedefs.h"  // for code_block_size, map_code_pointers, reclaimc...
 #include "gcdata.h"      // for REC_GCLOOKUP, DELREF, ADDREF
@@ -47,7 +47,7 @@
 #define Reprobefn(bits, index) ((((bits) ^ ((bits) >> 8)) & min(63, index)) | 1)
 #define Fn16bits(a, b) (((a) + (b)) & 0x0ffff)
 #define Hashingbits(item) (HILOC(item) ^ (((LOLOC(item) & 0x1fff) << 3) ^ (LOLOC(item) >> 9)))
-#define Getikvalue(base, index) (*(LispPTR *)Addr68k_from_LADDR((base) + ((index) << 1)))
+#define Getikvalue(base, index) (*(LispPTR *)NativeAligned4FromLAddr((base) + ((index) << 1)))
 
 #ifndef BYTESWAP
 typedef struct implicit_key_hash_table {
@@ -125,7 +125,7 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
   unsigned int opnum;
   unsigned int len;
   struct fnhead *fnbase;
-  fnbase = (struct fnhead *)Addr68k_from_LADDR(codeblock);
+  fnbase = (struct fnhead *)NativeAligned4FromLAddr(codeblock);
   codeptr = ((InstPtr)fnbase) + fnbase->startpc;
 
 #ifdef RESWAPPEDCODESTREAM
@@ -177,12 +177,12 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
 
 /* JRB - These values are xpointers; their high bytes are not set and
         shouldn't be looked at */
-#define getikkey(value) ((*(LispPTR *)Addr68k_from_LADDR(value)) & POINTERMASK)
+#define getikkey(value) ((*(LispPTR *)NativeAligned4FromLAddr(value)) & POINTERMASK)
 
 LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   Ikhashtbl *ik_htable;
   LispPTR reprobe, bits, limits, index, base, value;
-  ik_htable = (Ikhashtbl *)Addr68k_from_LADDR(ik_hash_table);
+  ik_htable = (Ikhashtbl *)NativeAligned4FromLAddr(ik_hash_table);
   bits = Hashingbits(item);
   limits = ik_htable->last_index;
   index = (bits & limits);
@@ -236,7 +236,7 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
       (remimplicitkeyhash(codebase, *Closure_Cache_word) != NIL)) {
     return (T);
   };
-  fnbase = (struct fnhead *)Addr68k_from_LADDR(codebase);
+  fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
   REC_GCLOOKUP((POINTERMASK & fnbase->framename), DELREF);
   if (fnbase->startpc != 0) map_code_pointers(codebase, DELREF);
   return (NIL);
