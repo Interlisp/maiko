@@ -35,20 +35,20 @@
     short *sbase;                                                                                  \
     int i;                                                                                         \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
     Len = min(MaxLen, arrayp->totalsize);                                                          \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
-            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
         for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
         C[Len] = '\0';                                                                             \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase =                                                                                    \
-            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
         C[Len * 2] = '\0';                                                                         \
@@ -65,19 +65,19 @@
     short *sbase;                                                                                  \
     int idx;                                                                                       \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
-            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
         for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase =                                                                                    \
-            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
         arrayp->fillpointer = Len;                                                                 \
@@ -91,7 +91,7 @@
   {                                                       \
     int *base;                                            \
                                                           \
-    base = (int *)Addr68k_from_LADDR((unsigned int)Lisp); \
+    base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
     *base = C;                                            \
   }
 
@@ -143,7 +143,7 @@ LispPTR Picture_Create(LispPTR *args)
 
   cell = (unsigned int *)createcell68k(TYPE_FIXP);
   *cell = (unsigned int)storage;
-  return (LADDR_from_68k(cell));
+  return (LAddrFromNative(cell));
 
 } /* end Picture_Create */
 
@@ -154,7 +154,7 @@ LispPTR Picture_Free(LispPTR *args)
   LispPicture *n_picture;
   Pixrect *pict;
 
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[1]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[1]);
   pict = (Pixrect *)n_picture->storage;
 
   /* TrueColorFb should not be destory. */
@@ -174,7 +174,7 @@ LispPTR Picture_GetValue(LispPTR *args)
   Pixrect *pict;
   unsigned int *cell;
 
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[1]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[1]);
   x = (DLword)args[2];
   y = (DLword)args[3];
 
@@ -183,7 +183,7 @@ LispPTR Picture_GetValue(LispPTR *args)
 
   cell = (unsigned int *)createcell68k(TYPE_FIXP);
   *cell = (unsigned int)value;
-  return (LADDR_from_68k(cell));
+  return (LAddrFromNative(cell));
 
 } /* end Picture_GetValue */
 
@@ -193,7 +193,7 @@ LispPTR Picture_SetValue(LispPTR *args)
   LispPicture *n_picture;
   struct pixrect *pict;
 
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[1]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[1]);
   x = (DLword)args[2];
   y = (DLword)args[3];
   N_GETNUMBER(args[4], value, bad_arg);
@@ -215,7 +215,7 @@ LispPTR Picture_Get(LispPTR *args)
   LispPicture *n_picture;
   int length;
 
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[1]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[1]);
   LStringToCString(args[2], file_name, MAX_NAME_LEN, length);
 
   if ((n_picture->storage = (unsigned int)File_to_Pixrect(file_name)) != NULL) {
@@ -235,7 +235,7 @@ LispPTR Picture_Put(LispPTR *args)
   char *name;
   int length;
 
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[1]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[1]);
   LStringToCString(args[2], file_name, MAX_NAME_LEN, length);
 
   Pixrect_to_File((Pixrect *)n_picture->storage, file_name);
@@ -253,8 +253,8 @@ LispPTR Picture_Bitblt(LispPTR *args)
   int video_flg;
   LispPTR operation, cl_region;
 
-  src = (LispPicture *)Addr68k_from_LADDR(args[1]);
-  dst = (LispPicture *)Addr68k_from_LADDR(args[4]);
+  src = (LispPicture *)NativeAligned4FromLAddr(args[1]);
+  dst = (LispPicture *)NativeAligned4FromLAddr(args[4]);
   N_GETNUMBER(args[2], src_left, bad_arg);
   N_GETNUMBER(args[3], src_bottom, bad_arg);
   N_GETNUMBER(args[5], dst_left, bad_arg);
@@ -362,7 +362,7 @@ LispPTR Picture_Bltshade(LispPTR *args)
   LispPTR cl_region;
   int dst_left, dst_bottom, left, right, bottom, top, width, height, operation, video_flg;
 
-  dst = (LispPicture *)Addr68k_from_LADDR(args[2]);
+  dst = (LispPicture *)NativeAligned4FromLAddr(args[2]);
   N_GETNUMBER(args[1], texture, bad_arg);
   N_GETNUMBER(args[3], dst_left, bad_arg);
   N_GETNUMBER(args[4], dst_bottom, bad_arg);
@@ -470,7 +470,7 @@ LispPTR VideoFile_Open(LispPTR *args)
 
   cell = (unsigned int *)createcell68k(TYPE_FIXP);
   *cell = videofile;
-  return (LADDR_from_68k(cell));
+  return (LAddrFromNative(cell));
 } /* end VideoFile_Open */
 
 LispPTR VideoFile_Close(LispPTR *args)
@@ -491,7 +491,7 @@ LispPTR VideoFile_Read(LispPTR *args)
   unsigned int *cell, pix, videofile;
 
   N_GETNUMBER(args[1], (unsigned int)videofile, bad_arg);
-  n_picture = (LispPicture *)Addr68k_from_LADDR(args[2]);
+  n_picture = (LispPicture *)NativeAligned4FromLAddr(args[2]);
 
   if ((n_picture->storage = (unsigned int)read_rasterfile(videofile)) != NULL) {
     n_picture->width = (DLword)(((Pixrect *)n_picture->storage)->pr_width);
@@ -513,7 +513,7 @@ LispPTR VideoFile_Write(LispPTR *args)
   int status;
 
   N_GETNUMBER(args[1], videofile, bad_arg);
-  n_pict = (LispPicture *)Addr68k_from_LADDR(args[2]);
+  n_pict = (LispPicture *)NativeAligned4FromLAddr(args[2]);
 
   if ((status = write_rasterfile(videofile, (Pixrect *)n_pict->storage))) {
     return (ATOM_T);
