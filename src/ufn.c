@@ -104,7 +104,7 @@ void ufn(DLword bytecode)
 
   /* Get Next Block offset form OPCODE byte */
   CURRENTFX->nextblock =
-      (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
+      (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
 
   /* Setup IVar */
   IVar = Addr68k_from_LADDR((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
@@ -166,7 +166,7 @@ void ufn(DLword bytecode)
   /* Set up FX */
   GETWORD(CurrentStackPTR) = FX_MARK;
 
-  ((struct frameex1 *)CurrentStackPTR)->alink = LADDR_from_68k(PVar);
+  ((struct frameex1 *)CurrentStackPTR)->alink = LAddrFromNative(PVar);
   PVar = (DLword *)CurrentStackPTR + FRAMESIZE;
 #ifdef BIGVM
   ((struct frameex1 *)CurrentStackPTR)->fnheader = (defcell68k->defpointer);
