@@ -496,7 +496,7 @@ void OP_subrcall(int subr_no, int argnum) {
       {
         UNSIGNED iarg;
         N_GETNUMBER(args[0], iarg, ret_nil);
-        ARITH_SWITCH(LADDR_from_68k(iarg), TopOfStack);
+        ARITH_SWITCH(LAddrFromNative(iarg), TopOfStack);
         break;
       };
       */
