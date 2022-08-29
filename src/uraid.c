@@ -477,9 +477,9 @@ LispPTR uraid_commands() {
 
     case 'M': /* Machine States */
       printf("TOS   : 0x%x\n", TopOfStack);
-      printf("CSTKP : 0x%x\n", LADDR_from_68k(CurrentStackPTR));
-      printf("PVAR  : 0x%x\n", LADDR_from_68k(PVar));
-      printf("IVAR  : 0x%x\n", LADDR_from_68k(IVar));
+      printf("CSTKP : 0x%x\n", LAddrFromNative(CurrentStackPTR));
+      printf("PVAR  : 0x%x\n", LAddrFromNative(PVar));
+      printf("IVAR  : 0x%x\n", LAddrFromNative(IVar));
       printPC();
       putchar('\n');
       break;
@@ -649,7 +649,7 @@ LispPTR uraid_commands() {
         endptr = ptr + num;
 
         while (ptr < endptr) {
-          printf("0x%x : ", LADDR_from_68k(ptr));
+          printf("0x%x : ", LAddrFromNative(ptr));
 
           for (i = 0; ((ptr < endptr) && (i < XDUMPW)); ptr++, i++) { printf("%4x ", *ptr); }
           putchar('\n');
