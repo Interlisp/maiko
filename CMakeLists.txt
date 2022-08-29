@@ -377,7 +377,7 @@ SET(MAIKO_HDRS
 )
 
 ADD_CUSTOM_TARGET(gen-vdate
-  COMMAND ../bin/mkvdate > vdate.c
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bin/mkvdate > vdate.c
   BYPRODUCTS vdate.c
 )
 
