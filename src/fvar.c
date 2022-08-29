@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "adr68k.h"        // for Addr68k_from_LADDR, LAddrFromNative
 #include "byteswapdefs.h"  // for swapx
 #include "commondefs.h"    // for error
 #include "emlglob.h"
@@ -222,7 +222,7 @@ newframe:
               case 3 : goto cont4; */
           }
         GETBASEWORD(achain, 1) = STK_HI;
-        GETBASEWORD(achain, 0) = 0xFFFF & LADDR_from_68k(ppvar);
+        GETBASEWORD(achain, 0) = 0xFFFF & LAddrFromNative(ppvar);
         /* save High word of PVAR slot address to FVAR slot */
         /* achain points to target FVAR slot */
         return;
@@ -480,7 +480,7 @@ LispPTR native_newframe(int slot)
             }
             /* save High word of PVAR slot address to FVAR slot */
             /* achain points to target FVAR slot */
-            return (*((LispPTR *)achain) = STK_HI_RET(LADDR_from_68k(ppvar)));
+            return (*((LispPTR *)achain) = STK_HI_RET(LAddrFromNative(ppvar)));
           case FVFVARHI: /* 0xC000 or 0xC0000000(NEWATOM S) */
             ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
             if (WBITSPTR(ppvar)->LSB) { goto endlookfor; }
