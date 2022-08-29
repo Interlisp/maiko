@@ -292,7 +292,7 @@ int sf(struct frameex1 *fx_addr68k) {
 
   if ((UNSIGNED)fx_addr68k == 0) return (-1);
   if ((fx_addr68k)->flags != STK_FX) {
-    printf("Invalid FX 0x%x, flags = 0x%x.\n", LADDR_from_68k(fx_addr68k), (fx_addr68k)->flags);
+    printf("Invalid FX 0x%x, flags = 0x%x.\n", LAddrFromNative(fx_addr68k), (fx_addr68k)->flags);
     return (-1);
   }
 
@@ -310,7 +310,7 @@ int sf(struct frameex1 *fx_addr68k) {
   i = 0;
   while (ptr != (DLword *)bf) {
     ptrlo = ptr + 1;
-    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptr), GETWORD(ptrlo));
+    printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptrlo));
     ivarindex = get_ivar_name(fx_addr68k, i++, &localivar);
     if (localivar == 1) printf("*local* ");
     print_atomname(ivarindex);
@@ -322,7 +322,7 @@ int sf(struct frameex1 *fx_addr68k) {
   }
   putchar('\n');
   BT_morep;
-  printf("## STACK BF at 0x%x ##\n", (LispPTR)LADDR_from_68k(bf));
+  printf("## STACK BF at 0x%x ##\n", (LispPTR)LAddrFromNative(bf));
   BT_morep;
 
   /* print BF  */
@@ -339,7 +339,7 @@ int sf(struct frameex1 *fx_addr68k) {
   BT_morep;
 
   printf(">> Bf's ivar says 0x%x vs. IVar says 0x%x\n", bf->ivar + STK_OFFSET,
-         LADDR_from_68k(IVar));
+         LAddrFromNative(IVar));
   BT_morep;
 
   atomindex = get_framename(fx_addr68k);
@@ -349,7 +349,7 @@ int sf(struct frameex1 *fx_addr68k) {
   BT_morep;
 
   /***** printout FX ****/
-  printf("## STACK FX at 0x%x ##\n", LADDR_from_68k(fx_addr68k));
+  printf("## STACK FX at 0x%x ##\n", LAddrFromNative(fx_addr68k));
   BT_morep;
 
   if ((fx_addr68k)->flags != 6) {
@@ -426,7 +426,7 @@ int sf(struct frameex1 *fx_addr68k) {
     while (npvar-- > 0) {
       ptrhi = ptr;
       ptrlo = ptr + 1;
-      printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+      printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
       if ((pvarindex = get_pvar_name(fx_addr68k, i++)) == LOCAL_PVAR)
         printf("*local* [pvar%d] ", (i - 1));
       else
@@ -446,7 +446,7 @@ int sf(struct frameex1 *fx_addr68k) {
     while (nfvar && nfvar-- >= max_npvar) {
       ptrhi = ptr;
       ptrlo = ptr + 1;
-      printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+      printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
       if (0xFFFF == GETWORD(ptrhi)) {
         printf("[not looked up]  ");
         print_atomname(get_fvar_name(fx_addr68k, i));
@@ -480,7 +480,7 @@ int sf(struct frameex1 *fx_addr68k) {
     while (ptr < next68k) {
       ptrhi = ptr;
       ptrlo = ptr + 1;
-      printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+      printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
       print(*(LispPTR *)ptr);
       ptr += 2;
       putchar('\n');
@@ -498,7 +498,7 @@ int sf(struct frameex1 *fx_addr68k) {
   while (npvar-- > 0) {
     ptrhi = ptr;
     ptrlo = ptr + 1;
-    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+    printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
     if ((pvarindex = get_pvar_name(fx_addr68k, i++)) == LOCAL_PVAR)
       printf("*local* [pvar%d] ", (i - 1));
     else
@@ -519,7 +519,7 @@ int sf(struct frameex1 *fx_addr68k) {
   while (nfvar && nfvar-- >= max_npvar) {
     ptrhi = ptr;
     ptrlo = ptr + 1;
-    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+    printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
     if (0xFFFF == GETWORD(ptrhi)) {
       printf("[not looked up]  ");
       print_atomname(get_fvar_name(fx_addr68k, i));
@@ -549,7 +549,7 @@ int sf(struct frameex1 *fx_addr68k) {
   while (next68k > ptr) {
     ptrhi = ptr;
     ptrlo = ptr + 1;
-    printf(" %6x : 0x%4x  0x%4x  ", LADDR_from_68k(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
+    printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
     putchar('\n');
     BT_morep;
     ptr += 2;
@@ -583,7 +583,7 @@ void bt1(FX *startFX) {
 #else
   fnobj = (struct fnhead *)Addr68k_from_LADDR(((int)fx->hi2fnheader << 16) | fx->lofnheader);
 #endif /* BIGVM */
-  printf("   0x%x : ", LADDR_from_68k(fx));
+  printf("   0x%x : ", LAddrFromNative(fx));
   print(fnobj->framename);
   putchar('\n');
   BT_morep;
@@ -614,7 +614,7 @@ void bt1(FX *startFX) {
 #endif /* BIGVM */
     URaid_FXarray[fnum] = fx;
     printf("%3d : ", fnum++);
-    printf("   0x%x : ", LADDR_from_68k(fx));
+    printf("   0x%x : ", LAddrFromNative(fx));
     print(fnobj->framename);
     putchar('\n');
     BT_morep;
@@ -718,7 +718,7 @@ void nt(LispPTR index)
   }
 
   printf("***DUMP Func Header << ");
-  printf("start at 0x%x lisp address(%p 68k)\n", LADDR_from_68k(fnobj), (void *)fnobj);
+  printf("start at 0x%x lisp address(%p 68k)\n", LAddrFromNative(fnobj), (void *)fnobj);
   print(index);
   putchar('\n');
 
@@ -730,7 +730,7 @@ void ntheader(struct fnhead *fnobj) {
   int localntsize;
   LispPTR fnobj_lisp;
 
-  fnobj_lisp = LADDR_from_68k((DLword *)fnobj);
+  fnobj_lisp = LAddrFromNative((DLword *)fnobj);
   printf("0x%08x: 0x%08x  stkmin\n", fnobj_lisp, fnobj->stkmin);
   printf("0x%08x: 0x%08x  na\n", fnobj_lisp + 1, fnobj->na);
   printf("0x%08x: 0x%08x  pv\n", fnobj_lisp + 2, fnobj->pv);
@@ -781,8 +781,8 @@ void nt1(LispPTR *start, int size, char *str) {
   endp = start + size;
   while (start < endp) {
     entry2p = start + size;
-    printf("0x%06x: 0x%08x", LADDR_from_68k((DLword *)start), *start);
-    printf("  0x%06x: 0x%08x", LADDR_from_68k((DLword *)entry2p), *entry2p);
+    printf("0x%06x: 0x%08x", LAddrFromNative((DLword *)start), *start);
+    printf("  0x%06x: 0x%08x", LAddrFromNative((DLword *)entry2p), *entry2p);
     if (*start != 0) {
       if ((*entry2p >> 30) == VARTYPE_FVAR)
         printf(" FVAR");
