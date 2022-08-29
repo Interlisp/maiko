@@ -26,7 +26,7 @@
 /**********************************************************************/
 
 #include "address.h"       // for LOLOC                                                                                                                                     
-#include "adr68k.h"        // for LADDR_from_68k, LPAGE_from_68k, Addr68k_fr...                                                                                             
+#include "adr68k.h"        // for LAddrFromNative, LPAGE_from_68k, Addr68k_fr...                                                                                             
 #include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage                                                                                                                
 #include "commondefs.h"    // for error                                                                                                                                     
 #include "lispemul.h"      // for DLword, LispPTR, DLWORDSPER_PAGE, MDSINCRE...                                                                                             
@@ -94,7 +94,7 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
     used = 0;
     while ((used += size) <= limit) {
       *base = prev;                /* write prev MDS address to the top of MDS page */
-      prev = LADDR_from_68k(base); /* exchanging pointers */
+      prev = LAddrFromNative(base); /* exchanging pointers */
       base = (LispPTR *)((DLword *)base + size);
     } /* while end */
 
@@ -156,7 +156,7 @@ LispPTR *alloc_mdspage(short int type) {
 #else
     *Next_MDSpage_word = S_POSITIVE | LPAGE_from_68k(Next_MDSpage);
 #endif
-    newpage(newpage(LADDR_from_68k(ptr)) + DLWORDSPER_PAGE);
+    newpage(newpage(LAddrFromNative(ptr)) + DLWORDSPER_PAGE);
   }
 
   Make_MDSentry(LPAGE_from_68k(ptr), type);
