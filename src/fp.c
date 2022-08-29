@@ -17,7 +17,7 @@
 /*									*/
 /************************************************************************/
 
-#include "adr68k.h"      // for LADDR_from_68k
+#include "adr68k.h"      // for LAddrFromNative
 #include "emlglob.h"
 #include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
 #include "lispemul.h"    // for state, LispPTR, DLword, ERROR_EXIT, ATOM_T
@@ -56,7 +56,7 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
   *((float *)wordp) = result;
-  return (LADDR_from_68k(wordp));
+  return (LAddrFromNative(wordp));
 } /* end N_OP_fplus2()  */
 
 /************************************************************************/
@@ -79,7 +79,7 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
   *((float *)wordp) = result;
-  return (LADDR_from_68k(wordp));
+  return (LAddrFromNative(wordp));
 } /* end N_OP_fdifference()  */
 
 /************************************************************************/
@@ -102,7 +102,7 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
   *((float *)wordp) = result;
-  return (LADDR_from_68k(wordp));
+  return (LAddrFromNative(wordp));
 } /* end N_OP_ftimes2()  */
 
 /************************************************************************/
@@ -126,7 +126,7 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   if (FPTEST(result)) ERROR_EXIT(parg2);
   wordp = createcell68k(TYPE_FLOATP);
   *((float *)wordp) = result;
-  return (LADDR_from_68k(wordp));
+  return (LAddrFromNative(wordp));
 } /* end N_OP_fquotient()  */
 
 /************************************************************************/
