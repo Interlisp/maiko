@@ -119,7 +119,7 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
     CurrentStackPTR += 2;
   }
 
-  CURRENTFX->nextblock = LOLOC(LADDR_from_68k(CurrentStackPTR));
+  CURRENTFX->nextblock = LOLOC(LAddrFromNative(CurrentStackPTR));
 
   /* FSB set */
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;
