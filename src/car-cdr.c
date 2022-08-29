@@ -259,7 +259,7 @@ LispPTR rplacd(LispPTR x, LispPTR y)
 
         *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
 
-        x_68k->cdr_code = (LADDR_from_68k(cdr_cell68k) - x) >> 1;
+        x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - x) >> 1;
       }
 #else
       if (cons68k->count > 0) {
@@ -270,7 +270,7 @@ LispPTR rplacd(LispPTR x, LispPTR y)
 
         *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
 
-        x_68k->cdr_code = (LADDR_from_68k(cdr_cell68k) - rp_page) >> 1;
+        x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - rp_page) >> 1;
       }
 #endif /* NEWCDRCODING */
       else {
@@ -278,7 +278,7 @@ LispPTR rplacd(LispPTR x, LispPTR y)
 #ifdef NEWCDRCODING
         temp68k = (ConsCell *)find_cdrable_pair(x, y);
         temp68k->car_field = x_68k->car_field;
-        x_68k->car_field = LADDR_from_68k(temp68k);
+        x_68k->car_field = LAddrFromNative(temp68k);
         x_68k->cdr_code = CDR_INDIRECT;
 #else
         cons68k = next_conspage();
@@ -293,9 +293,9 @@ LispPTR rplacd(LispPTR x, LispPTR y)
         *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
 
         temp68k->car_field = x_68k->car_field;
-        x_68k->car_field = LADDR_from_68k(temp68k);
+        x_68k->car_field = LAddrFromNative(temp68k);
 
-        temp68k->cdr_code = (LADDR_from_68k(cdr_cell68k) & 0xff) >> 1;
+        temp68k->cdr_code = (LAddrFromNative(cdr_cell68k) & 0xff) >> 1;
 
         x_68k->cdr_code = CDR_INDIRECT;
 #endif /* NEWCDRCODING */
