@@ -62,9 +62,9 @@ LispPTR N_OP_rplcons(LispPTR list, LispPTR item) {
 
     ListpDTD->dtd_cnt0++;
 
-    list68k->cdr_code = CDR_ONPAGE | ((LADDR_from_68k(new_cell) & 0xff) >> 1);
+    list68k->cdr_code = CDR_ONPAGE | ((LAddrFromNative(new_cell) & 0xff) >> 1);
 
-    return (LADDR_from_68k(new_cell));
+    return (LAddrFromNative(new_cell));
 
   } else
 #endif /* ndef NEWCDRCODING */
