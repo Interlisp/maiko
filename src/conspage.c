@@ -360,7 +360,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       new_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (new_cell->car_field != NIL) {
-        printf("CELL 0x%x has non-NIL car = 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CELL 0x%x has non-NIL car = 0x%x \n", LAddrFromNative(new_cell),
                new_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -390,7 +390,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       temp_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (temp_cell->car_field != NIL) {
-        printf("CDR indirect CELL 0x%x has non-NIL car 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CDR indirect CELL 0x%x has non-NIL car 0x%x \n", LAddrFromNative(new_cell),
                temp_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -400,7 +400,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       new_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (new_cell->car_field != NIL) {
-        printf("CDR ind-2 CELL 0x%x has non-NIL car = 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CDR ind-2 CELL 0x%x has non-NIL car = 0x%x \n", LAddrFromNative(new_cell),
                new_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -416,7 +416,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
 
 #ifndef NEWCDRCODING
       /* culc. cdr code */
-      new_cell->cdr_code = (((LispPTR)LADDR_from_68k(temp_cell)) & 0xff) >> 1;
+      new_cell->cdr_code = (((LispPTR)LAddrFromNative(temp_cell)) & 0xff) >> 1;
 #endif /* NEWCDRCODING */
 
       ListpDTD->dtd_oldcnt++; /* added feb-12 take */
@@ -425,7 +425,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
 
   } /* else (cons_cdr==NIL end) */
 
-  new_page = LADDR_from_68k(new_cell);
+  new_page = LAddrFromNative(new_cell);
   GCLOOKUP(new_page, DELREF);
 #ifdef NEWCDRCODING
   if (254 < ((new_page & 0xff) + ((new_cell->cdr_code & 7) << 1)))
