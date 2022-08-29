@@ -140,7 +140,7 @@ tryfsb:
       n = oldfx68k->lonametable;
 #endif /* BIGVM */
       if ((n <= StkOffset_from_68K(oldfx68k)) && (n >= oldfx68k->nextblock)) {
-        WARN("moveframe:check!!", sff(LADDR_from_68k(oldfx68k)));
+        WARN("moveframe:check!!", sff(LAddrFromNative(oldfx68k)));
         return 0; /* ? */
       }
     }
@@ -148,7 +148,7 @@ tryfsb:
     nametbl_on_stk = T;
     /* Find a free stack block */
     new68k = freestackblock(size, (StackWord *)oldfx68k,
-                            (LADDR_from_68k(oldfx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
+                            (LAddrFromNative(oldfx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
   } else
     new68k = freestackblock(size, (StackWord *)oldfx68k, -1); /* Not needed to align */
 
@@ -340,12 +340,12 @@ SCAN:
 #ifdef STACKCHECK
       if (((Bframe *)scanptr68k)->residual) {
         if (scanptr68k != orig68k) {
-          WARN("freestackblock:scanptr68k !=org", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+          WARN("freestackblock:scanptr68k !=org", printf(":0x%x\n", LAddrFromNative(scanptr68k)));
           return 0; /* ? */
         }
       } else {
         if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(orig68k)) {
-          WARN("BF doesn't point TopIVAR", printf(":0x%x\n", LADDR_from_68k(scanptr68k)));
+          WARN("BF doesn't point TopIVAR", printf(":0x%x\n", LAddrFromNative(scanptr68k)));
           return 0; /* ? */
         }
       }
@@ -546,8 +546,8 @@ void stack_check(StackWord *start68k) {
   if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
-           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
-                  LADDR_from_68k(CurrentStackPTR)));
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
+                  LAddrFromNative(CurrentStackPTR)));
     }
     setflg = T;
     printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
@@ -609,10 +609,10 @@ void stack_check(StackWord *start68k) {
         CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)
-            printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+            printf("Residual has real IVAR:0x%x\n", LAddrFromNative(scanptr68k));
         } else {
           if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
-            printf("BF doesn't point TopIVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+            printf("BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(scanptr68k));
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         putchar('B');
@@ -671,8 +671,8 @@ void walk_stack(StackWord *start68k) {
   if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
-           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
-                  LADDR_from_68k(CurrentStackPTR)));
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
+                  LAddrFromNative(CurrentStackPTR)));
     }
     setflg = T;
     printf("set CURRENTFX->nextblock in debugger. But it will be reset after this check \n");
@@ -842,8 +842,8 @@ int quick_stack_check(void) {
   if ((CURRENTFX->nextblock != StkOffset_from_68K(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
-           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LADDR_from_68k(CURRENTFX),
-                  LADDR_from_68k(CurrentStackPTR)));
+           printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
+                  LAddrFromNative(CurrentStackPTR)));
       return(1);
     }
     setflg = T;
@@ -904,10 +904,10 @@ int quick_stack_check(void) {
         CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)
-            printf("Residual has real IVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+            printf("Residual has real IVAR:0x%x\n", LAddrFromNative(scanptr68k));
         } else {
           if (((Bframe *)scanptr68k)->ivar != StkOffset_from_68K(top_ivar))
-            printf("BF doesn't point TopIVAR:0x%x\n", LADDR_from_68k(scanptr68k));
+            printf("BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(scanptr68k));
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         break;
