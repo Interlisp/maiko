@@ -74,6 +74,18 @@ static inline DLword *NativeAligned2FromStackOffset(DLword StackOffset)
   return Stackspace + StackOffset;
 }
 
+static inline LispPTR *NativeAligned4FromStackOffset(DLword StackOffset)
+{
+  return (LispPTR *)(Stackspace + StackOffset);
+}
+
+static inline LispPTR LPageFromNative(void *NAddr)
+{
+  if ((uintptr_t)NAddr & 1) {
+    printf("Misaligned pointer in LPageFromNative %p\n", NAddr);
+  }
+  return (((DLword *)NAddr) - Lisp_world) >> 8;
+}
 /*  translate 68k ptr to Lisp DLword address */
 #define LADDR_from_68k(ptr68k)	((LispPTR)(((UNSIGNED)(ptr68k) - (UNSIGNED)Lisp_world) >>1))
 
