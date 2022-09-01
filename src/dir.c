@@ -25,7 +25,7 @@
 #include <string.h>         // for strcpy, strcmp, strlen, strrchr, strcat
 #include <sys/stat.h>       // for stat, S_ISDIR, st_atime, st_mtime
 #include <sys/time.h>       // for timespec_t
-#include "adr68k.h"         // for Addr68k_from_LADDR
+#include "adr68k.h"         // for NativeAligned4FromLAddr
 #include "arith.h"          // for GetSmallp
 #include "dirdefs.h"        // for COM_finish_finfo, COM_gen_files, COM_next...
 #include "dskdefs.h"        // for separate_version, separate_host, true_name
@@ -1978,7 +1978,7 @@ LispPTR COM_gen_files(LispPTR *args)
 
   ERRSETJMP(GetSmallp(-1));
 
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[3]));
 
   LispStringLength(args[0], count, dskp);
   /*
@@ -2099,7 +2099,7 @@ LispPTR COM_gen_files(LispPTR *args)
       }
 
       if ((fid = get_finfo_id()) < 0) return (GetSmallp(-1));
-      *(int *)(Addr68k_from_LADDR(args[2])) = fid;
+      *(int *)(NativeAligned4FromLAddr(args[2])) = fid;
       FinfoArray[fid].head = fp;
       FinfoArray[fid].next = fp;
       return (GetSmallp(count));
@@ -2138,7 +2138,7 @@ LispPTR COM_next_file(LispPTR *args)
   ERRSETJMP(-1);
   Lisp_errno = &Dummy_errno;
 
-  gfsp = (UFSGFS *)(Addr68k_from_LADDR(args[0]));
+  gfsp = (UFSGFS *)(NativeAligned4FromLAddr(args[0]));
 
   finfoid = (int)gfsp->finfoid;
 
