@@ -23,7 +23,7 @@
 */
 /**********************************************************************/
 #include "version.h"
-#include "adr68k.h"    // for Addr68k_from_LADDR
+#include "adr68k.h"    // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "bindefs.h"   // for N_OP_bin
 #include "emlglob.h"
 #include "lispmap.h"   // for S_POSITIVE
