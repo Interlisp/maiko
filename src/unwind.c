@@ -116,7 +116,7 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
   LispPTR CATCH_RETURN_FROM_ATOM = parse_atomstring("SI::*CATCH-RETURN-FROM*");
 
   for (target = (LispPTR)unwinder; FX_INVALIDP(target); GETCLINK(target_addr)) {
-    target_addr = (FX *)Addr68k_from_StkOffset(target);
+    target_addr = (FX *)NativeAligned4FromStackOffset(target);
     if (blip == *target_addr) {
       LispPTR var_name_in_frame = variable_name_in_frame(target_addr, (FVPVAR << 8) + 1);
       if (var_name_in_frame == CATCH_RETURN_TO_ATOM) {
@@ -136,7 +136,7 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
 no_result:
   return (NIL_PTR);
 cons_result:
-  return (cons(StkOffset_from_68K(target), pc));
+  return (cons(StackOffsetFromNative(target), pc));
 }
 
 LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
@@ -146,7 +146,7 @@ LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
   DLword *name_table_base;
   DLword value;
 
-  name_table_base = Addr68k_from_LADDR(GETNAMETABLE(fx_addr));
+  name_table_base = NativeAligned2FromLAddr(GETNAMETABLE(fx_addr));
   name_ptr = name_table_base + FNHEADSIZE;
   name_table_base = name_ptr + ((FNHEAD *)name_table_base)->ntsize;
 
@@ -173,7 +173,7 @@ LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
   DLword *name_table_base;
   DLword value;
 
-  name_table_base = Addr68k_from_LADDR(GETNAMETABLE(frame_addr));
+  name_table_base = NativeAligned2FromLAddr(GETNAMETABLE(frame_addr));
   name_ptr = name_table_base + FNHEADSIZE;
   name_table_base = name_ptr + ((FNHEAD *)name_table_base)->ntsize;
 
