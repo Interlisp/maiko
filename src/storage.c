@@ -18,7 +18,7 @@
 /*****************************************************************/
 #include <stdio.h>         // for printf
 #include "address.h"       // for POINTER_PAGE
-#include "adr68k.h"        // for Addr68k_from_LADDR, LAddrFromNative
+#include "adr68k.h"        // for NativeAligned4FromLAddr, LAddrFromNative
 #include "car-cdrdefs.h"   // for cdr, car, rplacd, rplaca
 #include "commondefs.h"    // for error
 #include "conspagedefs.h"  // for cons
@@ -78,7 +78,7 @@ void checkfor_storagefull(unsigned int npages) {
 		Please save and reload a.s.a.p.");
         } else if (*STORAGEFULL_word == NIL) {
           *STORAGEFULL_word = ATOM_T;
-          int_state = (INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word);
+          int_state = (INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
           int_state->storagefull = T;
           *PENDINGINTERRUPT_word = ATOM_T;
         }
@@ -356,7 +356,7 @@ LispPTR newpage(LispPTR base) {
   {
     /* set vmemfull state */
     if (*VMEM_FULL_STATE_word == NIL) {
-      int_state = (INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word);
+      int_state = (INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
       int_state->vmemfull = T;
       *PENDINGINTERRUPT_word = ATOM_T;
     }
