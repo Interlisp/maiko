@@ -131,7 +131,7 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
 
   Midpunt(fxnum); /* exchanging FX */
 
-  next68k = (DLword *)Addr68k_from_LADDR(STK_OFFSET | CURRENTFX->nextblock);
+  next68k = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | CURRENTFX->nextblock);
 
   if (GETWORD(next68k) != STK_FSB_WORD) error("contextsw(): MP9316");
   freeptr = next68k;
