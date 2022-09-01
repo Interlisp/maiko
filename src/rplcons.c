@@ -45,13 +45,13 @@ LispPTR N_OP_rplcons(LispPTR list, LispPTR item) {
 /* There are some rest Cell and "list" must be ONPAGE cdr_coded */
 #ifndef NEWCDRCODING
   page = POINTER_PAGE(list);
-  list68k = (ConsCell *)Addr68k_from_LADDR(list);
+  list68k = (ConsCell *)NativeAligned4FromLAddr(list);
 
   if ((GetCONSCount(page) != 0) && (list68k->cdr_code > CDR_MAXINDIRECT)) {
     GCLOOKUP(item, ADDREF);
     GCLOOKUP(cdr(list), DELREF);
 
-    conspage = (struct conspage *)Addr68k_from_LPAGE(page);
+    conspage = (struct conspage *)NativeAligned4FromLPage(page);
     new_cell = (ConsCell *)GetNewCell_68k(conspage);
 
     conspage->count--;
