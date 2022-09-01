@@ -723,7 +723,7 @@
           case (unsigned)0xFFFF0000: TOPOFSTACK &= S_NEGATIVE; break;                              \
           default: {                                                                               \
             LispPTR *cellp;                                                                        \
-            cellp = createcell68k(TYPE_FIXP);                                                      \
+            cellp = (LispPTR *)createcell68k(TYPE_FIXP);                \
             *cellp = TOPOFSTACK;                                                          \
             TOPOFSTACK = (LispPTR)LAddrFromNative(cellp);                                          \
           }                                                                                        \
@@ -744,7 +744,7 @@
         nextop1;                                                                                   \
       case 54: /* Float : 32 bits */ {                                                             \
         LispPTR *cellp;                                                                            \
-        cellp = createcell68k(TYPE_FLOATP);                                                        \
+        cellp = (LispPTR *)createcell68k(TYPE_FLOATP);                  \
         *cellp = *(NativeAligned4FromLAddr(baseL) + index);                                        \
         TOPOFSTACK = (LispPTR)LAddrFromNative(cellp);                                              \
       }                                                                                            \
