@@ -107,7 +107,7 @@ void ufn(DLword bytecode)
       (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
 
   /* Setup IVar */
-  IVar = Addr68k_from_LADDR((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
 
 #ifdef LISPTRACE
   print(entry68k->atom_name);
@@ -133,7 +133,7 @@ void ufn(DLword bytecode)
   }
 
   /* Nov 25 87 take */
-  tmp_fn = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
+  tmp_fn = (struct fnhead *)NativeAligned4FromLAddr(defcell68k->defpointer);
 
   /* stack overflow check STK_SAFE is redundant?? */
   if ((UNSIGNED)(CurrentStackPTR + tmp_fn->stkmin + STK_SAFE) >= (UNSIGNED)StkLimO) {
