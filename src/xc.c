@@ -1122,7 +1122,7 @@ check_interrupt:
     }
 
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
-      if (StkOffset_from_68K(CSTKPTR) > InterfacePage->stackbase) {
+      if (StackOffsetFromNative(CSTKPTR) > InterfacePage->stackbase) {
         /* Interrupts not Disabled */
         EXT;
         update_timer();
