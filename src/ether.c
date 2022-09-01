@@ -381,7 +381,7 @@ LispPTR ether_get(LispPTR args[])
   sigprocmask(SIG_BLOCK, &signals, NULL);
 
   if (ether_fd > 0 && (MaxByteCount > 0)) {
-    ether_buf = (u_char *)Addr68k_from_LADDR(args[1]);
+    ether_buf = (u_char *)NativeAligned2FromLAddr(args[1]);
     ether_bsize = MaxByteCount; /* do this LAST; it enables reads */
     result = get_packet();
     /*	check_ether(); for old behavior, move comment to above line */
@@ -413,7 +413,7 @@ LispPTR ether_send(LispPTR args[])
   u_char *BufferAddr; /* buffer address pointer(in native address) */
 
   MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
-  BufferAddr = (u_char *)Addr68k_from_LADDR(args[1]);
+  BufferAddr = (u_char *)NativeAligned2FromLAddr(args[1]);
 
   if (ether_fd > 0) {
 #ifdef PKTFILTER
@@ -550,7 +550,7 @@ LispPTR check_ether() {
                 DBPRINT(
                     ("Found packet len %d, at pos %d in buflen %d.\n", fromlen, nitpos, nitlen));
                 nitpos += fromlen;
-                ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
+                ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
                 ETHEREventCount++;
                 Irq_Stk_Check = Irq_Stk_End = 0;
                 *PENDINGINTERRUPT68k = ATOM_T;
@@ -591,7 +591,7 @@ LispPTR check_ether() {
         ether_bsize = 0;
         ether_in++;
         IOPage->dlethernet[3] = data.len;
-        ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
+        ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
         ETHEREventCount++;
         Irq_Stk_Check = Irq_Stk_End = 0;
         *PENDINGINTERRUPT68k = ATOM_T;
@@ -786,8 +786,8 @@ void init_ether() {
   struct strioctl si;
   unsigned long snaplen = 0;
 
-  /*   ((INTSTAT*)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->ETHERInterrupt = 0;
-     ((INTSTAT2 *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->handledmask = 0;
+  /*   ((INTSTAT*)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 0;
+     ((INTSTAT2 *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->handledmask = 0;
  */
 
   if (ether_fd < 0) {
@@ -1107,7 +1107,7 @@ LispPTR check_sum(LispPTR *args)
   DLword *address;
   int nwords;
 
-  address = (DLword *)Addr68k_from_LADDR(*args++);
+  address = (DLword *)NativeAligned2FromLAddr(*args++);
   nwords = *args++;
 
   if (*args != NIL)
