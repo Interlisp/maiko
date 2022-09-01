@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "cell.h"        // for xpointer
 #include "commondefs.h"  // for error
 #include "dbprint.h"     // for DEBUGGER
