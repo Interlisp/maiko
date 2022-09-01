@@ -23,7 +23,7 @@
 */
 /********************************************************************/
 #include <stdio.h>        // for printf
-#include "adr68k.h"       // for Addr68k_from_StkOffset, StkOffset_from_68K
+#include "adr68k.h"       // for NativeAligned2FromStackOffset, StackOffsetFromNative
 #include "commondefs.h"   // for error
 #include "emlglob.h"
 #include "hardrtndefs.h"  // for incusecount68k, slowreturn
@@ -70,14 +70,14 @@ static FX *make_FXcopy(FX *fx68k) {
 #else
       n = fx68k->lonametable;
 #endif /* BIGVM */
-      if ((n <= StkOffset_from_68K(fx68k)) && (n >= fx68k->nextblock))
+      if ((n <= StackOffsetFromNative(fx68k)) && (n >= fx68k->nextblock))
         error("hardreturn:nametable check");
     }
 #endif
     nametbl_on_stk = T;
     /* Find a free stack block */
     new68k = freestackblock(size, (StackWord *)CURRENTFX,
-                            (StkOffset_from_68K(fx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
+                            (StackOffsetFromNative(fx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
   } /*if end */
   else
     new68k = freestackblock(size, (StackWord *)CURRENTFX, -1); /* No align */
@@ -89,8 +89,8 @@ static FX *make_FXcopy(FX *fx68k) {
 
   ((Bframe *)new68k)->residual = T;
   new68k = new68k + DLWORDSPER_CELL; /* now NEW points to the FX */
-  ((FX *)new68k)->nextblock = (StkOffset_from_68K(new68k) + size) - DLWORDSPER_CELL;
-  retbf68k = (Bframe *)Addr68k_from_StkOffset(GETBLINK(fx68k));
+  ((FX *)new68k)->nextblock = (StackOffsetFromNative(new68k) + size) - DLWORDSPER_CELL;
+  retbf68k = (Bframe *)NativeAligned4FromStackOffset(GETBLINK(fx68k));
   /* Set true BFptr,not the residual */
   SETBLINK(new68k, GETBLINK(fx68k));
   ((FX *)new68k)->usecount = 0;
@@ -107,14 +107,14 @@ static FX *make_FXcopy(FX *fx68k) {
   SET_FASTP_NIL(fx68k);
   /* increment use count of CLINK of returnee
      because we made a copy of returnee */
-  incusecount68k((FX *)Addr68k_from_StkOffset(GETCLINK(fx68k)));
+  incusecount68k((FX *)NativeAligned4FromStackOffset(GETCLINK(fx68k)));
 
   if (GETCLINK(fx68k) != GETALINK(fx68k)) {
-    incusecount68k((FX *)Addr68k_from_StkOffset(GETALINK(fx68k)));
+    incusecount68k((FX *)NativeAligned4FromStackOffset(GETALINK(fx68k)));
   }
 
   decusecount68k(fx68k); /* if usecon==0  -> FSB */
-  SETACLINK(CURRENTFX, StkOffset_from_68K(new68k));
+  SETACLINK(CURRENTFX, StackOffsetFromNative(new68k));
   CHECK_FX((FX *)new68k);
   CHECK_FX(CURRENTFX);
 #ifdef STACKCHECK
@@ -149,7 +149,7 @@ int slowreturn(void) {
   S_CHECK(SLOWP(CURRENTFX), "CURRENTFX not SLOWP");
 
   /* Get returnee's FX from CURRENTFX->alink , It's SLOWP case */
-  returnFX = (FX *)Addr68k_from_StkOffset(CURRENTFX->alink - 11);
+  returnFX = (FX *)NativeAligned4FromStackOffset(CURRENTFX->alink - 11);
 
   if ((CURRENTFX->alink & 0xFFFE) != CURRENTFX->clink) { /* ALINK != CLINK */
 #ifdef STACKCHECK
@@ -158,7 +158,7 @@ int slowreturn(void) {
     /* return to CLINK fx */
     SETALINK(CURRENTFX, CURRENTFX->clink);
     decusecount68k(returnFX);
-    returnFX = (FX *)Addr68k_from_StkOffset(CURRENTFX->clink - FRAMESIZE);
+    returnFX = (FX *)NativeAligned4FromStackOffset(CURRENTFX->clink - FRAMESIZE);
   }
 
   if (returnFX->usecount != 0) { /* COPY returnee's FX */
@@ -170,8 +170,8 @@ int slowreturn(void) {
 
 retry: /* this is retry entry after MAKE_FXCOPY etc */
 
-  next68k = Addr68k_from_StkOffset(returnFX->nextblock);
-  currentBF = (Bframe *)Addr68k_from_StkOffset(CURRENTFX->blink);
+  next68k = NativeAligned2FromStackOffset(returnFX->nextblock);
+  currentBF = (Bframe *)NativeAligned4FromStackOffset(CURRENTFX->blink);
 
   if (GETWORD(next68k) == STK_FSB_WORD) {
   another:
@@ -263,7 +263,7 @@ void incusecount68k(FX *fx68k) {
   if ((++(fx68k->usecount)) > MAXSAFEUSECOUNT)
     error("MP9324:Stack frame use count maximum exceeded");
 
-  scanptr68k = (StackWord *)Addr68k_from_StkOffset(fx68k->nextblock);
+  scanptr68k = (StackWord *)NativeAligned2FromStackOffset(fx68k->nextblock);
   switch (STKWORD(scanptr68k)->flags) {
     case STK_NOTFLG:
       while (STKWORD(scanptr68k)->flags != STK_BF)
