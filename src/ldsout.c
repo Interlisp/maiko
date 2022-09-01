@@ -13,8 +13,9 @@
 
 #include <fcntl.h>        // for open, O_RDONLY
 #include <stdio.h>        // for perror, fprintf, printf, stderr, sprintf
-#include <stdlib.h>       // for exit, free, malloc, posix_memalign
+#include <stdlib.h>       // for exit, free, malloc
 #include <string.h>       // for memset
+#include <sys/mman.h>     // for mmap
 #include <sys/stat.h>     // for stat, fstat
 #include <unistd.h>       // for lseek, read, close, getpagesize
 #include "adr68k.h"       // for Addr68k_from_LADDR
@@ -172,12 +173,11 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 
   /* allocate Virtual Memory Space */
 
-  if (posix_memalign((void *)&lispworld_scratch, getpagesize(), sys_size * MBYTE) != 0) {
+  lispworld_scratch = mmap(0, sys_size * MBYTE, PROT_READ|PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+  if (lispworld_scratch == MAP_FAILED) {
     fprintf(stderr, "sysout_loader: can't allocate Lisp %dMBytes VM \n", sys_size);
     exit(-1);
   }
-  /* Sadly, parts of the system depend on memory being initialized to zero */
-  memset(lispworld_scratch, 0, sys_size * MBYTE);
 
   /* now you can access lispworld */
   Lisp_world = (DLword *)lispworld_scratch;
