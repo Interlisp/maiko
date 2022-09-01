@@ -19,7 +19,7 @@
 #include <sys/types.h>      // for ino_t, time_t, off_t
 #include <unistd.h>         // for unlink, close, link, lseek, access, chdir
 
-#include "adr68k.h"         // for Addr68k_from_LADDR
+#include "adr68k.h"         // for NativeAligned4FromLAddr
 #include "arith.h"          // for GetSmallp
 #ifdef BYTESWAP
 #include "byteswapdefs.h"   // for word_swap_page
@@ -223,7 +223,7 @@ LispPTR COM_openfile(LispPTR *args)
   char rawname[MAXNAMLEN];
 #endif /* DOS */
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[5]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[5]);
 
   LispStringLength(args[0], slen, fatp);
   /*
@@ -499,10 +499,10 @@ LispPTR COM_openfile(LispPTR *args)
     return (NIL);
   }
 
-  bufp = (int *)(Addr68k_from_LADDR(args[3]));
+  bufp = (int *)NativeAligned4FromLAddr(args[3]);
   *bufp = ToLispTime(sbuf.st_mtime);
 
-  bufp = (int *)(Addr68k_from_LADDR(args[4]));
+  bufp = (int *)NativeAligned4FromLAddr(args[4]);
   if (!dskp && (!S_ISREG(sbuf.st_mode)) && (!S_ISDIR(sbuf.st_mode))) {
     /*
      * Not a regular file or directory file.  Put on a marker.
@@ -561,7 +561,7 @@ LispPTR COM_closefile(LispPTR *args)
   char rawname[MAXNAMLEN];
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], rval, dskp);
 
@@ -690,7 +690,7 @@ LispPTR COM_closefile(LispPTR *args)
   ino_t ino;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], rval, fatp);
   /*
@@ -858,7 +858,7 @@ LispPTR DSK_getfilename(LispPTR *args)
 #endif        /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], len, fatp);
   /*
@@ -1139,7 +1139,7 @@ LispPTR DSK_deletefile(LispPTR *args)
 #endif        /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[1]);
 
   LispStringLength(args[0], rval, fatp);
   /*
@@ -1288,7 +1288,7 @@ LispPTR DSK_renamefile(LispPTR *args)
 #endif /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[2]);
 
   LispStringLength(args[0], rval, fatp);
   /*
@@ -1511,7 +1511,7 @@ LispPTR DSK_directorynamep(LispPTR *args)
 #endif        /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[2]);
 
   LispStringLength(args[0], len, fatp);
   /*
@@ -1603,7 +1603,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
 #endif        /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], rval, dskp);
   /*
@@ -1672,22 +1672,22 @@ LispPTR COM_getfileinfo(LispPTR *args)
 
   switch (args[1]) {
     case LENGTH:
-      bufp = (unsigned *)(Addr68k_from_LADDR(args[2]));
+      bufp = (unsigned *)NativeAligned4FromLAddr(args[2]);
       *bufp = (unsigned)sbuf.st_size;
       return (ATOM_T);
 
     case WDATE:
-      bufp = (unsigned *)(Addr68k_from_LADDR(args[2]));
+      bufp = (unsigned *)NativeAligned4FromLAddr(args[2]);
       *bufp = (unsigned)ToLispTime(sbuf.st_mtime);
       return (ATOM_T);
 
     case RDATE:
-      bufp = (unsigned *)(Addr68k_from_LADDR(args[2]));
+      bufp = (unsigned *)NativeAligned4FromLAddr(args[2]);
       *bufp = (unsigned)ToLispTime(sbuf.st_atime);
       return (ATOM_T);
 
     case PROTECTION:
-      bufp = (unsigned *)(Addr68k_from_LADDR(args[2]));
+      bufp = (unsigned *)NativeAligned4FromLAddr(args[2]);
       *bufp = sbuf.st_mode;
       return (ATOM_T);
 
@@ -1723,19 +1723,19 @@ LispPTR COM_getfileinfo(LispPTR *args)
        *	 (AUTHOR	.	string))
        */
       laddr = cdr(car(args[2]));
-      bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
+      bufp = (unsigned *)NativeAligned4FromLAddr(laddr);
       *bufp = sbuf.st_size;
 
       laddr = cdr(car(cdr(args[2])));
-      bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
+      bufp = (unsigned *)NativeAligned4FromLAddr(laddr);
       *bufp = ToLispTime(sbuf.st_mtime);
 
       laddr = cdr(car(cdr(cdr(args[2]))));
-      bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
+      bufp = (unsigned *)NativeAligned4FromLAddr(laddr);
       *bufp = ToLispTime(sbuf.st_atime);
 
       laddr = cdr(car(cdr(cdr(cdr(args[2])))));
-      bufp = (unsigned *)(Addr68k_from_LADDR(laddr));
+      bufp = (unsigned *)NativeAligned4FromLAddr(laddr);
       *bufp = sbuf.st_mode;
 #ifndef DOS
       TIMEOUT0(pwd = getpwuid(sbuf.st_uid));
@@ -1798,7 +1798,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
 #endif /* DOS */
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], rval, dskp);
   /*
@@ -1924,11 +1924,11 @@ LispPTR COM_readpage(LispPTR *args)
   struct stat sbuf;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   fd = LispNumToCInt(args[0]);
   npage = LispNumToCInt(args[1]);
-  bufp = (char *)(Addr68k_from_LADDR(args[2]));
+  bufp = (char *)NativeAligned2FromLAddr(args[2]);
 
   TIMEOUT(rval = fstat(fd, &sbuf));
   if (rval != 0) {
@@ -2009,11 +2009,11 @@ LispPTR COM_writepage(LispPTR *args)
   off_t offval;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[4]);
 
   fd = LispNumToCInt(args[0]);
   npage = LispNumToCInt(args[1]);
-  bufp = (char *)(Addr68k_from_LADDR(args[2]));
+  bufp = (char *)NativeAligned2FromLAddr(args[2]);
   count = LispNumToCInt(args[3]);
 
 sklp2:
@@ -2078,7 +2078,7 @@ LispPTR COM_truncatefile(LispPTR *args)
   struct stat sbuf;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[2]);
 
   fd = LispNumToCInt(args[0]);
   length = LispNumToCInt(args[1]);
@@ -2263,7 +2263,7 @@ LispPTR COM_getfreeblock(LispPTR *args)
   if (rval > MAXPATHLEN + 5) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
-  buf = (int *)(Addr68k_from_LADDR(args[1]));
+  buf = (int *)NativeAligned4FromLAddr(args[1]);
 #ifdef DOS
   separate_host(lfname, host, drive);
 #else
