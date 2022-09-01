@@ -294,7 +294,7 @@ lp:
   }
 
   if ((linking == T) && (base->next_page != NIL_PTR)) {
-    base = (struct conspage *)Addr68k_from_LPAGE(base->next_page);
+    base = (struct conspage *)NativeAligned4FromLPage(base->next_page);
     goto lp;
   }
 
@@ -306,7 +306,7 @@ lp:
 void trace_listpDTD(void) {
   extern struct dtd *ListpDTD;
   printf("Dump conspages from ListpDTD chain\n");
-  dump_conspage((struct conspage *)Addr68k_from_LPAGE(ListpDTD->dtd_nextpage), T);
+  dump_conspage((struct conspage *)NativeAligned4FromLPage(ListpDTD->dtd_nextpage), T);
 }
 
 /************************************************************************/
@@ -1004,9 +1004,9 @@ int get_framename(struct frameex1 *fx_addr68k) {
 FX *get_nextFX(FX *fx) {
 
   if (URaid_scanlink == URSCAN_ALINK)
-    return ((FX *)Addr68k_from_StkOffset(GETALINK(fx)));
+    return ((FX *)NativeAligned4FromStackOffset(GETALINK(fx)));
   else
-    return ((FX *)Addr68k_from_StkOffset(GETCLINK(fx)));
+    return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
 
 } /* get_nextFX end */
 
@@ -1175,7 +1175,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
             goto incptr;
           }
         } else {
-          if (BFRAMEPTR(stkptr)->ivar != StkOffset_from_68K(orig68k)) {
+          if (BFRAMEPTR(stkptr)->ivar != StackOffsetFromNative(orig68k)) {
             printf("\n$$$BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(stkptr));
             goto incptr;
           }
