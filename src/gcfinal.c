@@ -497,7 +497,7 @@ LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
   STACKP *stkp;
   FX *fxp;
   stkp = (STACKP *)NativeAligned4FromLAddr(ptr);
-  fxp = (FX *)Addr68k_from_StkOffset(stkp->edfxp);
+  fxp = (FX *)NativeAligned4FromStackOffset(stkp->edfxp);
   decusecount68k(fxp); /* decrement the use-count for the frame it uses */
   return (NIL);        /* and let the normal reclaimer reclaim it */
 }
