@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"        // for Addr68k_from_LADDR, LAddrFromNative
+#include "adr68k.h"        // for NativeAligned4FromLAddr, NativeAligned2FromLAddr, LAddrFromNative
 #include "byteswapdefs.h"  // for swapx
 #include "commondefs.h"    // for error
 #include "emlglob.h"
@@ -118,15 +118,15 @@ newframe:
 
     if (newpfra2->validnametable) /* check VALIDNAMETABLE */
 #ifdef BIGVM
-      newpfn2 = (struct fnhead *)(Addr68k_from_LADDR(newpfra2->nametable));
+      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->nametable);
     else
-      newpfn2 = (struct fnhead *)(Addr68k_from_LADDR(newpfra2->fnheader));
+      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->fnheader);
 #else
-      newpfn2 = (struct fnhead *)(Addr68k_from_LADDR(
-          ((newpfra2->hi2nametable) << 16 | newpfra2->lonametable)));
+      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
+          ((newpfra2->hi2nametable) << 16 | newpfra2->lonametable));
     else
-      newpfn2 = (struct fnhead *)(Addr68k_from_LADDR(
-          ((newpfra2->hi2fnheader) << 16 | newpfra2->lofnheader)));
+      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
+          ((newpfra2->hi2fnheader) << 16 | newpfra2->lofnheader));
 #endif /* BIGVM */
     pindex = (NAMETABLE *)((DLword *)newpfn2 + FNHEADSIZE);
 /* now pindex points 1st word of Nametable. */
@@ -306,7 +306,7 @@ LispPTR N_OP_fvarn(int n)
   }
 
   return (GetLongWord(
-      Addr68k_from_LADDR(POINTERMASK & (((GETBASEWORD(chain, 1)) << 16) | GETBASEWORD(chain, 0)))));
+      NativeAligned4FromLAddr(POINTERMASK & (((GETBASEWORD(chain, 1)) << 16) | GETBASEWORD(chain, 0)))));
 }
 
 /******************************************************************************
@@ -351,7 +351,7 @@ LispPTR N_OP_fvar_(LispPTR tos, int n) {
     nfvlookup(CURRENTFX, ppvar, FuncObj);
   }
 
-  pfreeval = Addr68k_from_LADDR(MaskShift((GETWORD(ppvar + 1))) | GETWORD(ppvar));
+  pfreeval = NativeAligned2FromLAddr(MaskShift((GETWORD(ppvar + 1))) | GETWORD(ppvar));
 
   if (((0xFF & GETWORD(ppvar + 1)) != STK_HI)) {
     GCLOOKUP(*((LispPTR *)pfreeval), DELREF);
