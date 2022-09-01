@@ -60,7 +60,7 @@ LispPTR cgfour_init_color_display(LispPTR color_bitmapbase) /* SUBR 0210 */ /* C
     printf("You can not initialize the color screen from inside color screen. \n");
   }
 
-  ColorDisplayRegion68k = Addr68k_from_LADDR(color_bitmapbase);
+  ColorDisplayRegion68k = NativeAligned2FromLAddr(color_bitmapbase);
 
   Dispcolorsize =
       ((displaywidth * displayheight + (getpagesize() - 1)) & -getpagesize()); /* 8 bit depth */
