@@ -86,19 +86,19 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
     char	*lf_base, *lf_dp;						\
     short	*lf_sbase;							\
     size_t		 lf_length;						\
-    lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));			\
+    lf_arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);		\
     lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
     switch(lf_arrayp->typenumber)						\
       {									\
 	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(Addr68k_from_LADDR(lf_arrayp->base)))  	\
+		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
 		       + ((int)(lf_arrayp->offset));			\
 		strncpy(C, lf_base, lf_length);				\
 		(C)[lf_length] = '\0';					\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(Addr68k_from_LADDR(lf_arrayp->base)))	\
+		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
 		       + ((int)(lf_arrayp->offset));			\
                 lf_dp = C;						\
 		for(size_t lf_i=0;lf_i<(lf_length);lf_i++)		\
@@ -116,19 +116,19 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
     char	*lf_base, *lf_dp;						\
     short	*lf_sbase;							\
     size_t 	lf_length;						\
-    lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));			\
+    lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(Lisp));			\
     lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
     switch(lf_arrayp->typenumber)						\
       {									\
 	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(Addr68k_from_LADDR(lf_arrayp->base)))  	\
+		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
 		       + ((int)(lf_arrayp->offset));			\
 		StrNCpyFromLispToC(C , lf_base , lf_length );		\
 		(C)[lf_length] = '\0';					\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(Addr68k_from_LADDR(lf_arrayp->base)))	\
+		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
 		       + ((int)(lf_arrayp->offset));			\
                 lf_dp = C;						\
 		for(size_t lf_ii=0;lf_ii<(lf_length);lf_ii++,lf_sbase++)  \
@@ -156,7 +156,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 #define	LispStringLength(LispString, Length, FatP)			\
   {									\
     OneDArray	*lf_arrayp;						\
-    lf_arrayp = (OneDArray *)(Addr68k_from_LADDR(LispString));		\
+    lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(LispString));		\
     switch(lf_arrayp->typenumber)					\
       {									\
 	case THIN_CHAR_TYPENUMBER:					\
@@ -186,8 +186,8 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 #define STRING_BASE(lstringp, cstringp) \
   {				\
 	LispPTR	*lf_naddress;				  \
-	lf_naddress = (LispPTR *)(Addr68k_from_LADDR(lstringp));		  \
-	(cstringp) = (char *)(Addr68k_from_LADDR(((OneDArray *)lf_naddress)->base)); \
+	lf_naddress = (LispPTR *)(NativeAligned4FromLAddr(lstringp));		  \
+	(cstringp) = (char *)(NativeAligned2FromLAddr(((OneDArray *)lf_naddress)->base)); \
   }
 
 #ifndef min
@@ -196,7 +196,7 @@ extern	DLword	*Lisp_world;	/* To access LispSysout area */
 
 #define	LispNumToCInt(Lisp)					\
 	( (((Lisp) & SEGMASK) == S_POSITIVE) ?                  \
-          ((Lisp) & 0xFFFF) : (*((int *)(Addr68k_from_LADDR(Lisp)))) )
+          ((Lisp) & 0xFFFF) : (*((int *)(NativeAligned4FromLAddr(Lisp)))) )
 
 #define	UPLOWDIFF	0x20
 
