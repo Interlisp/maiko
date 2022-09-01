@@ -30,7 +30,7 @@
 
 #include <stdio.h>         // for printf, sprintf, NULL
 #include <time.h>          // for nanosleep, timespec
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "arith.h"         // for N_GETNUMBER, ARITH_SWITCH
 #include "bbtsubdefs.h"    // for bitblt_bitmap, bitbltsub, bitshade_bitmap
 #include "cell.h"          // for PNCell, GetPnameCell
@@ -84,7 +84,7 @@ char *atom_to_str(LispPTR atom_index) {
   char *pname_base;
 
   pnptr = (PNCell *)GetPnameCell(atom_index);
-  pname_base = (char *)Addr68k_from_LADDR(pnptr->pnamebase);
+  pname_base = (char *)NativeAligned2FromLAddr(pnptr->pnamebase);
   return (pname_base + 1);
 } /*atom_to_str*/
 
@@ -483,7 +483,7 @@ void OP_subrcall(int subr_no, int argnum) {
       /* XXX: this WILL NOT WORK if Lisp memory is allocated outside the low 4GB */
       /* not supported since native addresses can't be represented as
          a Lisp FIXP
-      ARITH_SWITCH(Addr68k_from_LADDR(args[0]), TopOfStack);
+      ARITH_SWITCH(NativeAligned2FromLAddr(args[0]), TopOfStack);
       */
       TopOfStack = NIL_PTR;
       break;
@@ -535,7 +535,7 @@ void OP_subrcall(int subr_no, int argnum) {
                              error("called SUBR 0166, not defined!!");
                                   {int temp;
                              N_GETNUMBER(TopOfStack, temp, badarg);
-                             temp = (UNSIGNED) Addr68k_from_LADDR(temp);
+                             temp = (UNSIGNED) NativeAligned4FromLAddr(temp);
                              ARITH_SWITCH(temp, TopOfStack);
                              break;
                     badarg:	TopOfStack = NIL;
