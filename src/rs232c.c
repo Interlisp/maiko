@@ -222,10 +222,10 @@ rs232c_read() {
   if (RS232C_Fd >= 0) {
     if (RS232CGetFlag->busy) {
       iocb =
-          (DLRS232C_IOCB *)Addr68k_from_LADDR(((*(RS232CGetCSB + 1) & 0xff) << 16) + *RS232CGetCSB);
+          (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CGetCSB + 1) & 0xff) << 16) + *RS232CGetCSB);
 
       if ((count =
-               read(RS232C_Fd, (char *)Addr68k_from_LADDR(((iocb->block_pointer_hi & 0xff) << 16) +
+               read(RS232C_Fd, (char *)NativeAligned2FromLAddr(((iocb->block_pointer_hi & 0xff) << 16) +
                                                           iocb->block_pointer_lo),
                     iocb->byte_count)) < 0) {
         ((DLRS232C_IOCB_TRANSFER_STATUS *)(&iocb->transfer_status))->success = 0;
@@ -270,12 +270,12 @@ RS232C_write() {
   char *buf;
   DLRS232C_IOCB *iocb;
 
-  iocb = (DLRS232C_IOCB *)Addr68k_from_LADDR(((*(RS232CPutCSB + 1) & 0xff) << 16) + *RS232CPutCSB);
+  iocb = (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CPutCSB + 1) & 0xff) << 16) + *RS232CPutCSB);
 
   if (RS232CPutFlag->busy && RS232C_Fd >= 0) {
     if (iocb->put) {
       for (size = iocb->byte_count,
-          buf = (char *)Addr68k_from_LADDR(((iocb->block_pointer_hi & 0xff) << 16) +
+          buf = (char *)NativeAligned2FromLAddr(((iocb->block_pointer_hi & 0xff) << 16) +
                                            iocb->block_pointer_lo);
            size > 0; size -= count, buf += count) {
         trynum = 0;
@@ -762,7 +762,7 @@ rs232c_debug( name, sw )
 
         printf("DEBUG:\n");
         printf("DEBUG: \t\tSymbol             Address    Contents\n");
-        printf("DEBUG: \t\tIOPAGE             %#x\n",Addr68k_from_LADDR(IOPAGE_OFFSET));
+        printf("DEBUG: \t\tIOPAGE             %#x\n",NativeAligned4FromLAddr(IOPAGE_OFFSET));
         printf("DEBUG: \t\tHardWareConfig     %#x    %#x\n", HardWareConfig, *(DLword*)
 HardWareConfig);
         printf("DEBUG: \t\tRS232CGetFlag      %#x    %#x\n", RS232CGetFlag, *(DLword*)
