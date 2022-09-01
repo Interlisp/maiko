@@ -59,10 +59,10 @@ static inline LispPTR *NativeAligned4FromLPage(LispPTR LPage)
   return (LispPTR *)(Lisp_world + (LPage << 8));
 }
 
-static inline DLword StackOffsetFromNative(DLword *SAddr)
+static inline DLword StackOffsetFromNative(void *SAddr)
 {
   /* Stack offsets are expressed as an offset in DLwords from the stack base */
-  ptrdiff_t hoffset = SAddr - Stackspace;
+  ptrdiff_t hoffset = (DLword *)SAddr - Stackspace;
   if (hoffset > 0xffff) {
     printf("Stack offset is too large: 0x%tx\n", hoffset);
   }
