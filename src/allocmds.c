@@ -26,7 +26,7 @@
 /**********************************************************************/
 
 #include "address.h"       // for LOLOC                                                                                                                                     
-#include "adr68k.h"        // for LAddrFromNative, LPAGE_from_68k, Addr68k_fr...                                                                                             
+#include "adr68k.h"        // for LAddrFromNative, LPageFromNative, Addr68k_fr...                                                                                             
 #include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage                                                                                                                
 #include "commondefs.h"    // for error                                                                                                                                     
 #include "lispemul.h"      // for DLword, LispPTR, DLWORDSPER_PAGE, MDSINCRE...                                                                                             
@@ -131,10 +131,10 @@ LispPTR *alloc_mdspage(short int type) {
   LispPTR *ptr; /* points Top 32 bit of the MDS page */
   LispPTR next_page;
 
-  /* Next_Array=(DLword *)Addr68k_from_LADDR(((*Next_Array_word)& 0xffff ) << 8); */
+  /* Next_Array=(DLword *)NativeAligned2FromLAddr(((*Next_Array_word)& 0xffff ) << 8); */
 
   if (LOLOC(*MDS_free_page_word) != NIL) {
-    ptr = (LispPTR *)Addr68k_from_LPAGE(LOLOC(*MDS_free_page_word));
+    ptr = (LispPTR *)NativeAligned4FromLPage(LOLOC(*MDS_free_page_word));
 
     if (((next_page = LOLOC(*ptr)) != 0) && (GetTypeNumber((*ptr)) != TYPE_SMALLP))
       error("alloc_mdspage: Bad Free Page Link");
@@ -145,20 +145,20 @@ LispPTR *alloc_mdspage(short int type) {
     /* I guess Next_MDSpage is redundant */
     checkfor_storagefull(NIL);
 #ifdef BIGVM
-    Next_MDSpage = (DLword *)Addr68k_from_LADDR(((*Next_MDSpage_word)) << 8);
+    Next_MDSpage = (DLword *)NativeAligned2FromLAddr(((*Next_MDSpage_word)) << 8);
 #else
-    Next_MDSpage = (DLword *)Addr68k_from_LADDR(((*Next_MDSpage_word) & 0xffff) << 8);
+    Next_MDSpage = (DLword *)NativeAligned2FromLAddr(((*Next_MDSpage_word) & 0xffff) << 8);
 #endif
     ptr = (LispPTR *)Next_MDSpage;       /* Get Pointer to First Page */
     Next_MDSpage -= DLWORDSPER_PAGE * 2; /* decrement MDS count */
 #ifdef BIGVM
-    *Next_MDSpage_word = LPAGE_from_68k(Next_MDSpage);
+    *Next_MDSpage_word = LPageFromNative(Next_MDSpage);
 #else
-    *Next_MDSpage_word = S_POSITIVE | LPAGE_from_68k(Next_MDSpage);
+    *Next_MDSpage_word = S_POSITIVE | LPageFromNative(Next_MDSpage);
 #endif
     newpage(newpage(LAddrFromNative(ptr)) + DLWORDSPER_PAGE);
   }
 
-  Make_MDSentry(LPAGE_from_68k(ptr), type);
+  Make_MDSentry(LPageFromNative(ptr), type);
   return (ptr);
 } /* alloc_mdspage end */
