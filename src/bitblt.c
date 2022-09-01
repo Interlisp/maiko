@@ -86,7 +86,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 
 #endif
 
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(pilot_bt_tbl);
+  pbt = (PILOTBBT *)NativeAligned4FromLAddr(pilot_bt_tbl);
 
   w = pbt->pbtwidth;
   h = pbt->pbtheight;
@@ -106,8 +106,8 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
                cursorin(pbt->pbtsourcehi, (pbt->pbtsourcelo + (sx >> 4)), w, h, backwardflg);
 #endif /* SUNDISPLAY */
 
-  srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
-  dstbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   srcbpl = pbt->pbtsourcebpl;
   dstbpl = pbt->pbtdestbpl;
@@ -200,7 +200,7 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     else
       return (NIL);
   } else {
-    base68k = (DLword *)Addr68k_from_LADDR(addrhi << 16 | addrlo);
+    base68k = (DLword *)NativeAligned2FromLAddr(addrhi << 16 | addrlo);
     if ((ColorDisplayRegion68k <= base68k) && (base68k <= COLOR_MAX_Address)) {
       y = (base68k - ColorDisplayRegion68k) / displaywidth;
       x = (UNSIGNED)(base68k - ColorDisplayRegion68k) - (y * displaywidth);
