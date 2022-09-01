@@ -415,24 +415,24 @@ LispPTR uraid_commands() {
       switch (URaid_arg1[0]) {
         case 'k':
           printf("IFP->KBDFXP :\n");
-          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->kbdfxp));
+          bt1((FX *)NativeAligned4FromStackOffset(InterfacePage->kbdfxp));
           break;
         case 'm':
           printf("IFP->MISCFXP :\n");
-          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->miscfxp));
+          bt1((FX *)NativeAligned4FromStackOffset(InterfacePage->miscfxp));
           break;
         case 'r':
           printf("IFP->RESETFXP :\n");
-          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->resetfxp));
+          bt1((FX *)NativeAligned4FromStackOffset(InterfacePage->resetfxp));
           break;
         case 'g':
           printf("IFP->GCFXP :\n");
-          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->gcfxp));
+          bt1((FX *)NativeAligned4FromStackOffset(InterfacePage->gcfxp));
 
           break;
         case 'p':
           printf("IFP->FAULTFXP :\n");
-          bt1((FX*)Addr68k_from_StkOffset(InterfacePage->faultfxp));
+          bt1((FX *)NativeAligned4FromStackOffset(InterfacePage->faultfxp));
 
           break;
         case 'u': bt(); break;
@@ -645,7 +645,7 @@ LispPTR uraid_commands() {
       {
         int i;
         DLword *ptr, *endptr;
-        ptr = (DLword *)Addr68k_from_LADDR(address);
+        ptr = (DLword *)NativeAligned2FromLAddr(address);
         endptr = ptr + num;
 
         while (ptr < endptr) {
@@ -727,7 +727,7 @@ LispPTR uraid_commands() {
 
       {
         DLword *ptr;
-        ptr = (DLword *)Addr68k_from_LADDR(address);
+        ptr = (DLword *)NativeAligned2FromLAddr(address);
         *ptr = val;
         printf("0x%x : 0x%x\n", address, *ptr);
       }
@@ -910,21 +910,21 @@ char *alloc_hideDISP(int size)
         case 0 :
         case SFS_SWITCHABLE :
                 retaddr =
-                 (char*)Addr68k_from_LADDR((*ArraySpace2_word) & POINTERMASK);
+                 (char *)NativeAligned2FromLAddr((*ArraySpace2_word) & POINTERMASK);
                 printf("Hidespace inside Lisp(2)\n");
 
                 break;
         case SFS_ARRAYSWITCHED :
-                retaddr=(char*)Addr68k_from_LADDR(*Next_Array_word & 0xffff);
+                retaddr=(char *)NativeAligned2FromLAddr(*Next_Array_word & 0xffff);
 ;
                 printf("Hidespace inside Lisp(3)\n");
 
                 break;
         case SFS_FULLYSWITCHED :
-                if((UNSIGNED)Addr68k_from_LADDR(*Next_MDSpage_word & 0xffff)
-                        - (UNSIGNED)Addr68k_from_LADDR(*Next_Array_word & 0xffff)
+                if((UNSIGNED)NativeAligned2FromLAddr(*Next_MDSpage_word & 0xffff)
+                        - (UNSIGNED)NativeAligned2FromLAddr(*Next_Array_word & 0xffff)
                  >size) {
-                        retaddr= (char*)Addr68k_from_LADDR(*Next_Array_word & 0xffff);
+                        retaddr= (char *)NativeAligned2FromLAddr(*Next_Array_word & 0xffff);
                         printf("Hidespace inside Lisp(4)\n");
                  }
                 else if((retaddr=malloc(size)) ==0){
