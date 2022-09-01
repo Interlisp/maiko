@@ -95,7 +95,7 @@ MNWEvent *NewEvent() {
     if (index != 0xFFFFFFFF) {
       MNWEVENTQUEUE68k = GetVALCELL68k(index);
       DOMNWEVENT_index = get_package_atom("\\DOMNWEVENT", 11, "INTERLISP", 9, NIL);
-      CTopMNWEvent = (DLword *)Addr68k_from_LADDR(*MNWEVENTQUEUE68k);
+      CTopMNWEvent = (DLword *)NativeAligned2FromLAddr(*MNWEVENTQUEUE68k);
     }
   }
   if (CTopMNWEvent) {
@@ -523,7 +523,7 @@ void DoMNWRing(int type, LispPTR screen, LispPTR window, int l, int b, int wid, 
     if (index != 0xFFFFFFFF) {
       MNWEVENTQUEUE68k = GetVALCELL68k(index);
       DOMNWEVENT_index = get_package_atom("\\DOMNWEVENT", 11, "INTERLISP", 9, NIL);
-      CTopMNWEvent = (DLword *)Addr68k_from_LADDR(*MNWEVENTQUEUE68k);
+      CTopMNWEvent = (DLword *)NativeAligned2FromLAddr(*MNWEVENTQUEUE68k);
     }
   }
 do_ring:
