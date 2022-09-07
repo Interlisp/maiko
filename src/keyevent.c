@@ -61,9 +61,9 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "osmsgdefs.h"
 #include "xwinmandefs.h"
 
-#ifdef MAIKO_ENABLE_ETHERNET
+#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
 #include "etherdefs.h"
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
 
 #include "dbprint.h"
 #if (defined(DOS) || defined(XWINDOW))
@@ -124,9 +124,9 @@ extern volatile sig_atomic_t XNeedSignal;
 
 extern int LogFileFd;
 
-#ifdef MAIKO_ENABLE_ETHERNET
+#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
 extern int ether_fd;
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
 
 extern DLword *DisplayRegion68k;
 
@@ -262,6 +262,10 @@ void process_io_events()
       check_ether();
     }
 #endif /* MAIKO_ENABLE_ETHERNET */
+
+#ifdef MAIKO_ENABLE_NETHUB
+    check_ether();
+#endif /* MAIKO_ENABLE_NETHUB */
 
 #ifdef RS232
     if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))

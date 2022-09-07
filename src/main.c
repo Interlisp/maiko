@@ -285,6 +285,14 @@ const char *helpstring =
  -help        Print this message\n";
 #endif /* DOS */
 
+#ifdef MAIKO_ENABLE_NETHUB
+extern void setNethubHost(char* host);
+extern void setNethubPort(int port);
+extern void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5);
+extern void setNethubLogLevel(int ll);
+extern void connectToHub();
+#endif /* MAIKO_ENABLE_NETHUB */
+
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
@@ -454,6 +462,62 @@ int main(int argc, char *argv[])
 #endif /* MAIKO_ENABLE_ETHERNET */
 
     }
+
+#ifdef MAIKO_ENABLE_NETHUB
+    else if (!strcmp(argv[i], "-nh-host")) {
+      if (argc > ++i) {
+        setNethubHost(argv[i]);
+      } else {
+        fprintf(stderr, "Missing argument after -nh-host\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-port")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 0) {
+          setNethubPort(tmpint);
+        } else {
+          fprintf(stderr, "Bad value for -nh-port\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-port\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-mac")) {
+      if (argc > ++i) {
+        int b0, b1, b2, b3, b4, b5;
+        if (sscanf(argv[i], "%x-%x-%x-%x-%x-%x",  &b0, &b1, &b2, &b3, &b4, &b5) == 6) {
+          setNethubMac(b0, b1, b2, b3, b4, b5);
+        } else {
+          fprintf(stderr, "Invalid argument for -nh-mac\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-mac\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-loglevel")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint >= 0) {
+          setNethubLogLevel(tmpint);
+        } else {
+          fprintf(stderr, "Bad value for -nh-loglevel\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-loglevel\n");
+        exit(1);
+      }
+    }
+#endif /* MAIKO_ENABLE_NETHUB */
+
     /* diagnostic flag for big vmem write() calls */
     else if (!strcmp(argv[i], "-xpages")) {
       if (argc > ++i) {
@@ -490,6 +554,10 @@ int main(int argc, char *argv[])
 #ifdef MAIKO_ENABLE_ETHERNET
   init_ether(); /* modified by kiuchi Nov. 4 */
 #endif          /* MAIKO_ENABLE_ETHERNET */
+
+#ifdef MAIKO_ENABLE_NETHUB
+  connectToHub();
+#endif
 
 #ifdef DOS
   init_host_filesystem();
