@@ -19,8 +19,8 @@
 /************************************************************************/
 
 #include "adr68k.h"        // for NativeAligned4FromLAddr
-#ifdef RESWAPPEDCODESTREAM
-#include "byteswapdefs.h"  // for byte_swap_code_block
+#if defined(RESWAPPEDCODESTREAM) | !defined(BIGVM)
+#include "byteswapdefs.h"  // for byte_swap_code_block, swapx
 #endif
 #include "car-cdrdefs.h"   // for car
 #include "conspagedefs.h"  // for cons

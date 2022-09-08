@@ -22,6 +22,10 @@
 */
 /**********************************************************************/
 
+#if !defined(NEWCDRCODING)
+#include "address.h"
+#include "gcdata.h"
+#endif
 #include "car-cdrdefs.h"   // for N_OP_rplacd
 #include "conspagedefs.h"  // for cons
 #include "emlglob.h"
