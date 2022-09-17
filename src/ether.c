@@ -9,9 +9,11 @@
 
 /*******************************************************************************/
 /*                                                                             */
-/* Copyright (c) 2022, Dr. Hans-Walter Latz, All rights reserved               */
 /* for:                                                                        */
 /* Support for Dodo Nethub networking (see: https://github.com/devhawala/dodo) */
+/*                                                                             */
+/* Copyright (c) 2022, Dr. Hans-Walter Latz. All rights reserved.              */
+/* Released to the Public Domain.                                              */
 /*                                                                             */
 /*******************************************************************************/
 
@@ -131,7 +133,7 @@ int ETHEREventCount = 0;
 **  --- nethub configuration data --------------------------------------------------
 */
 
-static char* nethubHost = "127.0.0.1";
+static char* nethubHost = NULL;
 static int   nethubPort = 3333;
 static int   mac0 = 0xCA;
 static int   mac1 = 0xFF;
@@ -225,6 +227,9 @@ static void asyncFd(int fd) {
 */
 
 void connectToHub() {
+  if (nethubHost == NULL) {
+    return;
+  }
   if (ether_fd > -1) {
     return;
   }
@@ -279,9 +284,9 @@ static void disconnectFromHub() {
   if (ether_fd > -1) {
     close(ether_fd);
     ether_fd = -1;
-  log_debug(("disconnectFromHub() - disconnected from nethub\n"));
-  log_info(("disconnectFromHub() - disconnected from nethub\n"));
-  log_all(("disconnectFromHub() - disconnected from nethub\n"));
+    log_debug(("disconnectFromHub() - disconnected from nethub\n"));
+    log_info(("disconnectFromHub() - disconnected from nethub\n"));
+    log_all(("disconnectFromHub() - disconnected from nethub\n"));
   }
 }
 
@@ -359,14 +364,11 @@ static int recvPacket() {
   if ((bLen + 2) != rcvLen) {
     log_debug(("  recvPacket() ***** :: logical/physical length differ -> preserving next packet in multiBuffer\n"));
     log_info(("recvPacket() ***** :: logical/physical length differ -> preserving next packet in multiBuffer\n"));
-    log_all(("recvPacket() ***** :: logical/physical length differ -> preserving next packet in multiBuffer\n"));
     nextPacket = &rcvBuffer[bLen + 2];
     rcvLen -= bLen + 2;
     log_debug(("  recvPacket() ***** :: next packet in multiBuffer at +%d , remaining length = %d\n", 
 	       (int)(nextPacket - multiBuffer), rcvLen));
     log_info(("recvPacket() ***** :: next packet in multiBuffer at +%d , remaining length = %d\n", 
-	       (int)(nextPacket - multiBuffer), rcvLen));
-    log_all(("recvPacket() ***** :: next packet in multiBuffer at +%d , remaining length = %d\n", 
 	       (int)(nextPacket - multiBuffer), rcvLen));
   }
 
@@ -468,6 +470,9 @@ static int sendPacket(u_char *source, int sourceLen) {
 /************************************************************************/
 LispPTR ether_suspend(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (ATOM_T);
+  }
   log_debug(("ether_suspend() -- ignored!\n\n"));
   log_info(("ether_suspend()\n"));
   return (ATOM_T);
@@ -483,6 +488,9 @@ LispPTR ether_suspend(LispPTR args[])
 /************************************************************************/
 LispPTR ether_resume(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (ATOM_T);
+  }
   log_debug(("ether_resume() - begin\n"));
   asyncFd(ether_fd);
   log_debug(("ether_resume() - end\n\n"));
@@ -500,6 +508,9 @@ LispPTR ether_resume(LispPTR args[])
 /************************************************************************/
 LispPTR ether_ctrlr(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (NIL);
+  }
   log_debug(("ether_ctrlr() - begin\n"));
 
   connectToHub();
@@ -523,6 +534,9 @@ LispPTR ether_ctrlr(LispPTR args[])
  **********************************************************************/
 LispPTR ether_reset(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (NIL);
+  }
   log_debug(("ether_reset() - begin\n"));
   
   if (ether_fd < 0) {
@@ -557,6 +571,9 @@ LispPTR ether_reset(LispPTR args[])
 /************************************************************************/
 LispPTR ether_get(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (NIL);
+  }
   log_debug(("ether_get() - begin\n"));
 
   u_char *target = (u_char *)Addr68k_from_LADDR(args[1]);
@@ -594,6 +611,9 @@ LispPTR ether_get(LispPTR args[])
  **********************************************************************/
 LispPTR ether_send(LispPTR args[])
 {
+  if (nethubHost == NULL) {
+    return (NIL);
+  }
   log_debug(("ether_send() - begin\n"));
 
   u_char *source = (u_char *)Addr68k_from_LADDR(args[1]);
