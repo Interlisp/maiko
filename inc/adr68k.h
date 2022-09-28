@@ -86,26 +86,4 @@ static inline LispPTR LPageFromNative(void *NAddr)
   }
   return (((DLword *)NAddr) - Lisp_world) >> 8;
 }
-/*  translate 68k ptr to Lisp DLword address */
-#define LADDR_from_68k(ptr68k)	((LispPTR)(((UNSIGNED)(ptr68k) - (UNSIGNED)Lisp_world) >>1))
-
-
-/*  translate 68k ptr to Lisp Page number   */
-#define LPAGE_from_68k(ptr68k)	(LADDR_from_68k(ptr68k) >> 8)
-
-
-/* Translate Lisp_address to 68K address	*/
-/*	Lisp_addr: word offset		*/
-#define Addr68k_from_LADDR(Lisp_addr)	(Lisp_world + (Lisp_addr))
-
-
-/* translate LispPage to 68k address */
-#define Addr68k_from_LPAGE(Lisp_page)	(Addr68k_from_LADDR(((Lisp_page) << 8) ))
-/* Stack Offset Macros */
-
-#define StkOffset_from_68K(ptr68k)\
-	((LispPTR)(((UNSIGNED)(ptr68k) - (UNSIGNED)Stackspace) >>1))
-
-#define Addr68k_from_StkOffset(stkoffset)\
-	(Stackspace + (stkoffset))
 #endif /* ADR68K_H */
