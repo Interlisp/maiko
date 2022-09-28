@@ -68,7 +68,7 @@
   { DLword midpunt; 					\
     midpunt = LOLOC(LAddrFromNative(CURRENTFX));			\
     PVar=(DLword *)							\
-	    Addr68k_from_StkOffset(					\
+	    NativeAligned2FromStackOffset(					\
                         (GETWORD(((DLword *)InterfacePage) + (fxnum)))) \
 		+ FRAMESIZE; 						\
     GETWORD(((DLword *)InterfacePage) + (fxnum)) = midpunt ;		\
@@ -88,7 +88,7 @@
 
 #define BEFORE_CONTEXTSW						\
   { CurrentStackPTR += 2; 						\
-    CURRENTFX->nextblock=StkOffset_from_68K(CurrentStackPTR); 		\
+    CURRENTFX->nextblock=StackOffsetFromNative(CurrentStackPTR); 		\
     GETWORD(CurrentStackPTR)=STK_FSB_WORD; 				\
     GETWORD(CurrentStackPTR+1)= (((UNSIGNED)EndSTKP-(UNSIGNED)(CurrentStackPTR))>>1); \
     if (GETWORD(CurrentStackPTR+1) == 0) error("0-long free block."); \
@@ -97,7 +97,7 @@
 
 #define AFTER_CONTEXTSW							\
   { DLword *ac_ptr68k,*ac_freeptr;					\
-    ac_ptr68k = (DLword*)Addr68k_from_StkOffset(CURRENTFX->nextblock);	\
+    ac_ptr68k = (DLword*)NativeAligned2FromStackOffset(CURRENTFX->nextblock);	\
     if(GETWORD(ac_ptr68k) != STK_FSB_WORD) error("pre_moveframe: MP9316");	\
     CHECK_FX(CURRENTFX);						\
     ac_freeptr=ac_ptr68k;							\

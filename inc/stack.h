@@ -307,7 +307,7 @@ typedef struct stackp {
 #define SET_FASTP_NIL(fx68k)                                       \
   {                                                                \
     if (FASTP(fx68k)) {                                            \
-      ((FX *)(fx68k))->blink = StkOffset_from_68K(DUMMYBF(fx68k)); \
+      ((FX *)(fx68k))->blink = StackOffsetFromNative(DUMMYBF(fx68k)); \
       ((FX *)(fx68k))->clink = ((FX *)(fx68k))->alink;             \
       SLOWP(fx68k) = T;                                            \
     }                                                              \
@@ -411,7 +411,7 @@ typedef struct stackp {
     if (check_stack_rooms(fx68k) > 1000) {                                      \
       warn("moveframe:there is more than 100 words SPACE for FX");              \
       printf("# When calling ");                                                \
-      tos_on_stack = (LispPTR *)Addr68k_from_StkOffset((fx68k)->nextblock - 2); \
+      tos_on_stack = (LispPTR *)NativeAligned4FromStackOffset((fx68k)->nextblock - 2); \
       print_atomname(*tos_on_stack);                                            \
       printf("\n");                                                             \
       stack_check(0);                                                           \

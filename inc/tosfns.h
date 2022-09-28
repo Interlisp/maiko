@@ -202,9 +202,8 @@
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FN_OPCODE_SIZE;        \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      UNSIGNED newivar;                                                       \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - (argcount) + 1));              \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
+      IVARL = (DLword *)(CSTKPTR - (argcount) + 1);                                    \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);             \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
@@ -218,7 +217,7 @@
     } /* if end */                                                                     \
     /* Set up BF */                                                                    \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                  \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));              \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));              \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell_word);                \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
@@ -258,9 +257,8 @@
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FNX_OPCODE_SIZE;       \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      UNSIGNED newivar;                                                       \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args + 1));                \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
+      IVARL = (DLword *)(CSTKPTR - num_args + 1);                                      \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);             \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
@@ -274,7 +272,7 @@
     } /* if end */                                                                     \
     /* Set up BF */                                                                    \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                  \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));              \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));              \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell->defpointer);         \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
@@ -372,9 +370,8 @@
       FN_STACK_CHECK;                                                                          \
       APPLY_POP_PUSH_TEST;                                                                     \
       {                                                                                        \
-        UNSIGNED newivar;                                                             \
-        newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR + (1 - fn_num_args - needpush)));      \
-        BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);                    \
+        IVARL = (DLword *)(CSTKPTR + (1 - fn_num_args - needpush));                            \
+        BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);                   \
       }                                                                                        \
       HARD_PUSH(TOPOFSTACK); /* save TOS */                                                    \
       if (LOCFNCELL->na >= 0) {                                                                \
@@ -389,7 +386,7 @@
       /* Set up BF */                                                                          \
       HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                        \
     } /* NEXTBLOCK BLOCK */                                                                    \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));                      \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));                      \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell->defpointer);                 \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                                   \
     PVARL = (DLword *)CSTKPTR;                                                                 \
@@ -441,9 +438,8 @@
     FN_STACK_CHECK;                                                       \
     CSTKPTRL -= 2;                                                        \
     {                                                                     \
-      UNSIGNED newivar;                                          \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args));       \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar); \
+      IVARL = (DLword *)(CSTKPTR - num_args);                             \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);\
     }                                                                     \
     if (LOCFNCELL->na >= 0) {                                             \
       int RESTARGS;                                              \
@@ -456,7 +452,7 @@
     } /* if end */                                                        \
     /* Set up BF */                                                       \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                     \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR)); \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR)); \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(Fn_DefCell);     \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);              \
     PVARL = (DLword *)CSTKPTR;                                            \
