@@ -18,7 +18,7 @@
 #include <sys/mman.h>     // for mmap
 #include <sys/stat.h>     // for stat, fstat
 #include <unistd.h>       // for lseek, read, close, getpagesize
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned2FromLAddr
 #ifdef BYTESWAP
 #include "byteswapdefs.h" // for word_swap_page
 #endif
@@ -270,7 +270,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
   /*
    * Initialize the display (note now passing 68k address!!!)
    */
-  init_display2(Addr68k_from_LADDR(DISPLAY_OFFSET), 65536 * 16 * 2);
+  init_display2(NativeAligned2FromLAddr(DISPLAY_OFFSET), 65536 * 16 * 2);
 
   /* read sysout file to lispworld */
 

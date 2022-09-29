@@ -19,7 +19,7 @@
 
 #include <stddef.h>       // for ptrdiff_t
 #include <stdlib.h>       // for abs
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned2FromLAddr
 #include "display.h"      // for DISPLAYBUFFER, DisplayRegion68k, in_display...
 #include "drawdefs.h"     // for N_OP_drawline
 #include "emlglob.h"
@@ -135,7 +135,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
     ERROR_EXIT(numy);
 
   curbit = 0x8000 >> (curbit & 0xFFFF);
-  dataptr = Addr68k_from_LADDR(ptr);
+  dataptr = NativeAligned2FromLAddr(ptr);
   numy &= 0xFFFF;
   numx &= 0xFFFF;
   ysize &= 0xFFFF;
@@ -264,7 +264,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
 
   {
     DLword *start_addr;
-    start_addr = (DLword *)Addr68k_from_LADDR(ptr);
+    start_addr = (DLword *)NativeAligned2FromLAddr(ptr);
 
     if (in_display_segment(start_addr) && in_display_segment(dataptr)) {
       int start_x, start_y, end_x, end_y, w, h;

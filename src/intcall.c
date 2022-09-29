@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for StkOffset_from_68K, Addr68k_from_LADDR, Add...
+#include "adr68k.h"       // for StackOffsetFromNative, NativeAligned4FromLAddr
 #include "cell.h"         // for definition_cell, GetDEFCELL68k
 #include "emlglob.h"
 #include "intcalldefs.h"  // for cause_interruptcall
@@ -30,11 +30,11 @@ void cause_interruptcall(unsigned int atom_index)
   int rest; /* use for alignments */
 
   CURRENTFX->nopush = T;
-  CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR) + 4;
+  CURRENTFX->nextblock = StackOffsetFromNative(CurrentStackPTR) + 4;
   PushCStack; /* save TOS */
 
   /* Setup IVar */
-  IVar = Addr68k_from_StkOffset(CURRENTFX->nextblock);
+  IVar = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
   /* Set PC to the Next Instruction and save into pre-FX */
   CURRENTFX->pc = ((UNSIGNED)PC - (UNSIGNED)FuncObj);
@@ -43,7 +43,7 @@ void cause_interruptcall(unsigned int atom_index)
   defcell68k = (struct definition_cell *)GetDEFCELL68k(atom_index);
 
   /* Interrupt FN should be compiled code */
-  tmp_fn = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
+  tmp_fn = (struct fnhead *)NativeAligned4FromLAddr(defcell68k->defpointer);
 
   /* This used to be >=, but I think that was a change from earlier,
      when it was originally >.  I changed it back on 2/2/98 to see
@@ -79,9 +79,9 @@ void cause_interruptcall(unsigned int atom_index)
 
   /* Now SET new FX */
   /* Make it SLOWP */
-  ((FX *)CurrentStackPTR)->alink = StkOffset_from_68K(PVar) + 1;
-  ((FX *)CurrentStackPTR)->blink = StkOffset_from_68K(DUMMYBF(CurrentStackPTR));
-  ((FX *)CurrentStackPTR)->clink = StkOffset_from_68K(PVar);
+  ((FX *)CurrentStackPTR)->alink = StackOffsetFromNative(PVar) + 1;
+  ((FX *)CurrentStackPTR)->blink = StackOffsetFromNative(DUMMYBF(CurrentStackPTR));
+  ((FX *)CurrentStackPTR)->clink = StackOffsetFromNative(PVar);
   PVar = (DLword *)CurrentStackPTR + FRAMESIZE;
 #ifdef BIGVM
   ((FX *)CurrentStackPTR)->fnheader = (defcell68k->defpointer);
@@ -104,6 +104,6 @@ void cause_interruptcall(unsigned int atom_index)
 
   /* Set PC points New Function's first OPCODE */
   PC = (ByteCode *)FuncObj + FuncObj->startpc;
-  CURRENTFX->nextblock = StkOffset_from_68K(CurrentStackPTR);
+  CURRENTFX->nextblock = StackOffsetFromNative(CurrentStackPTR);
   MAKEFREEBLOCK(CurrentStackPTR, ((UNSIGNED)EndSTKP - (UNSIGNED)CurrentStackPTR) >> 1);
 } /* end */

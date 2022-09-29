@@ -44,7 +44,7 @@
 
 #include <stdio.h>        // for printf
 #include "address.h"      // for HILOC
-#include "adr68k.h"       // for Addr68k_from_LADDR, LADDR_from_68k, Addr68k...
+#include "adr68k.h"       // for NativeAligned4FromLAddr, LAddrFromNative
 #include "array.h"        // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
 #include "commondefs.h"   // for error
 #include "gccodedefs.h"   // for reclaimcodeblock
@@ -140,12 +140,12 @@ int integerlength(unsigned int n) {
 
 LispPTR findptrsbuffer(LispPTR ptr) {
   struct buf *bptr;
-  bptr = (struct buf *)Addr68k_from_LADDR(*System_Buffer_List_word);
-  while (LADDR_from_68k(bptr) != NIL) {
+  bptr = (struct buf *)NativeAligned4FromLAddr(*System_Buffer_List_word);
+  while (LAddrFromNative(bptr) != NIL) {
     if (ptr == bptr->vmempage)
-      return (LADDR_from_68k(bptr));
+      return (LAddrFromNative(bptr));
     else
-      bptr = (struct buf *)Addr68k_from_LADDR(bptr->sysnext);
+      bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
   };
   return (NIL);
 }
@@ -167,7 +167,7 @@ LispPTR releasingvmempage(LispPTR ptr) {
 
   if (bufferptr == NIL) return (NIL); /* Not in use, OK to reclaim it */
 
-  bptr = (struct buf *)Addr68k_from_LADDR(bufferptr);
+  bptr = (struct buf *)NativeAligned4FromLAddr(bufferptr);
   bptr->noreference = T; /* Mark the buffer free to use ?? */
   return (ATOM_T);
 }
@@ -191,10 +191,10 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   if (*Array_Block_Checking_word != NIL)
 #endif
   {
-    bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
-    btrailer = (struct arrayblock *)Addr68k_from_LADDR(Trailer(base, bbase));
-    bfwd = (struct arrayblock *)Addr68k_from_LADDR(bbase->fwd);
-    bbwd = (struct arrayblock *)Addr68k_from_LADDR(bbase->bkwd);
+    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
+    btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
+    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
+    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
     if (bbase->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
@@ -220,13 +220,13 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       error("ARRAYBLOCK links fouled\n");
     } else {
       fbl = FreeBlockChainN(bbase->arlen);
-      rover = tmprover = (LispPTR *)Addr68k_from_LADDR(fbl);
+      rover = tmprover = (LispPTR *)NativeAligned4FromLAddr(fbl);
       /* GETBASEPTR */
       if ((*rover & POINTERMASK) == NIL) error("Free Block's bucket empty\n");
       do {
         if ((*rover & POINTERMASK) == base) return (NIL);
         checkarrayblock((*rover & POINTERMASK), T, NIL);
-        rbase = (struct arrayblock *)Addr68k_from_LADDR(*rover & POINTERMASK);
+        rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
       } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
       return (NIL);
     };
@@ -246,14 +246,14 @@ LispPTR deleteblock(LispPTR base) {
   struct arrayblock *bbase, *fbbase, *bbbase;
   LispPTR fwd, bkwd, fbl, freeblocklsp;
   LispPTR *freeblock;
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
   if ((bbase->arlen >= MINARRAYBLOCKSIZE) && (bbase->fwd != NIL)) {
     fwd = bbase->fwd;
-    fbbase = (struct arrayblock *)Addr68k_from_LADDR(fwd);
+    fbbase = (struct arrayblock *)NativeAligned4FromLAddr(fwd);
     bkwd = bbase->bkwd;
-    bbbase = (struct arrayblock *)Addr68k_from_LADDR(bkwd);
+    bbbase = (struct arrayblock *)NativeAligned4FromLAddr(bkwd);
     fbl = FreeBlockChainN(bbase->arlen);
-    freeblock = (LispPTR *)Addr68k_from_LADDR(fbl);
+    freeblock = (LispPTR *)NativeAligned4FromLAddr(fbl);
     freeblocklsp = POINTERMASK & *freeblock;
     if (base == fwd) {
       if (base == freeblocklsp)
@@ -282,21 +282,21 @@ LispPTR linkblock(LispPTR base) {
   LispPTR fbl, freeblocklsp;
   LispPTR *freeblock;
   if (*FreeBlockBuckets_word != NIL) {
-    bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
+    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
     if (bbase->arlen < MINARRAYBLOCKSIZE)
       checkarrayblock(base, T, NIL);
     else {
       fbl = FreeBlockChainN(bbase->arlen);
-      freeblock = (LispPTR *)Addr68k_from_LADDR(POINTERMASK & fbl);
+      freeblock = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
       freeblocklsp = POINTERMASK & (*freeblock);
       if (freeblocklsp == NIL) {
         bbase->fwd = base;
         bbase->bkwd = base;
       } else {
-        fbbase = (struct arrayblock *)Addr68k_from_LADDR(freeblocklsp);
+        fbbase = (struct arrayblock *)NativeAligned4FromLAddr(freeblocklsp);
         bbase->fwd = freeblocklsp;
         bbase->bkwd = fbbase->bkwd;
-        tmpbase = (struct arrayblock *)Addr68k_from_LADDR(fbbase->bkwd);
+        tmpbase = (struct arrayblock *)NativeAligned4FromLAddr(fbbase->bkwd);
         tmpbase->fwd = base;
         fbbase->bkwd = base;
       };
@@ -319,12 +319,12 @@ LispPTR makefreearrayblock(LispPTR block, DLword length) {
   LispPTR trailer;
   struct arrayblock *bbase;
   struct abdum *dbase;
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(block);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(block);
   dbase = (struct abdum *)WORDPTR(bbase);
   dbase->abflags = FREEARRAYFLAGWORD;
   bbase->arlen = length;
   trailer = Trailer(block, bbase);
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(trailer);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(trailer);
   dbase = (struct abdum *)WORDPTR(bbase);
   dbase->abflags = FREEARRAYFLAGWORD;
   bbase->arlen = length;
@@ -342,8 +342,8 @@ LispPTR makefreearrayblock(LispPTR block, DLword length) {
 LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
   DLword arlens, narlens, secondbite, minblocksize, shaveback;
   struct arrayblock *bbase, *bnbase;
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
-  bnbase = (struct arrayblock *)Addr68k_from_LADDR(nbase);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
   arlens = bbase->arlen;
   narlens = bnbase->arlen;
   secondbite = MAXARRAYBLOCKSIZE - arlens;
@@ -376,7 +376,7 @@ LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
   struct arrayblock *ptrailer;
 
-  ptrailer = (struct arrayblock *)Addr68k_from_LADDR(base - ARRAYBLOCKTRAILERWORDS);
+  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
   if (base == NIL)
     return (NIL);
   else if ((*ArrayMerging_word == NIL) ||
@@ -399,9 +399,9 @@ LispPTR mergebackward(LispPTR base) {
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
   struct arrayblock *bbase, *bnbase;
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
   nbase = base + 2 * (bbase->arlen);
-  bnbase = (struct arrayblock *)Addr68k_from_LADDR(nbase);
+  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
   if ((*ArrayMerging_word == NIL) ||
       ((base == NIL) ||
        (checkarrayblock(base, T, T) ||
@@ -433,7 +433,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
   checkarrayblock(ptr - ARRAYBLOCKHEADERWORDS, NIL, NIL);
 #endif /* ARRAYCHECK */
 
-  base = (struct arrayblock *)Addr68k_from_LADDR(ptr - ARRAYBLOCKHEADERWORDS);
+  base = (struct arrayblock *)NativeAligned4FromLAddr(ptr - ARRAYBLOCKHEADERWORDS);
 #ifdef ARRAYCHECK
   if (HILOC(ptr) < FIRSTARRAYSEGMENT) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
@@ -465,7 +465,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       btrailer = (ptr - 2) + 2 * (base->arlen - ARRAYBLOCKTRAILERCELLS);
       tmpptr = ptr;
       do {
-        tmpp = (LispPTR *)Addr68k_from_LADDR(tmpptr);
+        tmpp = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
         /* GCLOOKUP(0x8000,DELREF, *tmpp);*/ /* added 8-Oct-87 TT */
         REC_GCLOOKUP(*tmpp, DELREF);
         *tmpp = NIL;
@@ -496,8 +496,8 @@ LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
 {
   STACKP *stkp;
   FX *fxp;
-  stkp = (STACKP *)Addr68k_from_LADDR(ptr);
-  fxp = (FX *)Addr68k_from_StkOffset(stkp->edfxp);
+  stkp = (STACKP *)NativeAligned4FromLAddr(ptr);
+  fxp = (FX *)NativeAligned4FromStackOffset(stkp->edfxp);
   decusecount68k(fxp); /* decrement the use-count for the frame it uses */
   return (NIL);        /* and let the normal reclaimer reclaim it */
 }
@@ -516,9 +516,9 @@ void printarrayblock(LispPTR base) {
 
   LispPTR pbase, nbase;
 
-  bbase = (struct arrayblock *)Addr68k_from_LADDR(base);
-  btrailer = (struct arrayblock *)Addr68k_from_LADDR(Trailer(base, bbase));
-  ptrailer = (struct arrayblock *)Addr68k_from_LADDR(base - ARRAYBLOCKTRAILERWORDS);
+  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
+  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
 
   nbase = base + 2 * bbase->arlen;
   pbase = base - 2 * ptrailer->arlen;

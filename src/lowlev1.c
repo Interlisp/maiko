@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "emlglob.h"
 #include "lispemul.h"     // for LispPTR, state, DLword, POINTERMASK, ERROR_...
 #include "lispmap.h"      // for S_POSITIVE
@@ -52,7 +52,7 @@ LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset,
 
   if ((SEGMASK & data) != S_POSITIVE) { ERROR_EXIT(data); };
 
-  pword = Addr68k_from_LADDR(base + word_offset);
+  pword = NativeAligned2FromLAddr(base + word_offset);
   field_size = 0xF & beta;
   shift_size = 15 - (beta >> 4) - field_size;
   fmask = mask_array[field_size] << shift_size;
@@ -69,7 +69,7 @@ LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset,
                 TopOfStack: base address.
                 alpha:	word offset.
                 beta:	High nibble -- number of the first bit of the field
-                        Low nibble  -- (number of the size of the fiel) - 1
+                        Low nibble  -- (number of the size of the field) - 1
         2.	Data is @[TopOfStack + alpha]
         3.	Shift and mask the data.
         4.	<<Exit>>
@@ -82,7 +82,7 @@ LispPTR N_OP_getbitsnfd(int base_addr, int word_offset, int beta) {
   short first;
   short size;
 
-  pword = Addr68k_from_LADDR(base_addr + word_offset);
+  pword = NativeAligned2FromLAddr(base_addr + word_offset);
   size = 0xF & beta;
   first = beta >> 4;
 
@@ -116,7 +116,7 @@ LispPTR N_OP_putbasen(LispPTR base, LispPTR tos, int n) {
   if ((SEGMASK & tos) != S_POSITIVE) {
     ERROR_EXIT(tos);
   } else {
-    GETWORD((DLword *)Addr68k_from_LADDR(base + n)) = GetLoWord(tos);
+    GETWORD(NativeAligned2FromLAddr(base + n)) = GetLoWord(tos);
     return (base);
   }
 }
@@ -139,6 +139,6 @@ LispPTR N_OP_putbasen(LispPTR base, LispPTR tos, int n) {
 
 LispPTR N_OP_putbaseptrn(LispPTR base, LispPTR tos, int n) {
   base = POINTERMASK & base;
-  *((LispPTR *)Addr68k_from_LADDR(base + n)) = tos & POINTERMASK;
+  *NativeAligned4FromLAddr(base + n) = tos & POINTERMASK;
   return (base);
 }

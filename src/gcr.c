@@ -53,7 +53,7 @@
 #include "version.h"
 
 #include "address.h"       // for LOLOC
-#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "adr68k.h"        // for NativeAligned4FromLAddr, LAddrFromNative
 #include "commondefs.h"    // for error
 #include "dspsubrsdefs.h"  // for flip_cursor
 #include "emlglob.h"
@@ -93,7 +93,7 @@ struct interruptstate {
 void gcarrangementstack(void) {
   LispPTR tmpnextblock;
   PushCStack;
-  tmpnextblock = LADDR_from_68k(CurrentStackPTR += DLWORDSPER_CELL);
+  tmpnextblock = LAddrFromNative(CurrentStackPTR += DLWORDSPER_CELL);
   CURRENTFX->nextblock = LOLOC(tmpnextblock);
   if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack block.");
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;
@@ -138,11 +138,11 @@ void disablegc1(int noerror) {
   struct interruptstate *gcinterruptstate;
   int count, i;
   DLword typeword;
-  gcinterruptstate = (struct interruptstate *)Addr68k_from_LADDR(*INTERRUPTSTATE_word);
+  gcinterruptstate = (struct interruptstate *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
   count = (128) * 256; /* This is test value. 128 is *MdsTTsize(\MDSTTsize) */
   for (i = 0; i < count; i++) {
-    typeword = GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl) + i));
-    GETWORD((DLword *)Addr68k_from_LADDR(LADDR_from_68k(MDStypetbl) + i)) = (typeword | TT_NOREF);
+    typeword = GETWORD((DLword *)NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i));
+    GETWORD((DLword *)NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i)) = (typeword | TT_NOREF);
   }
   *Reclaim_cnt_word = NIL;
   *ReclaimMin_word = NIL;

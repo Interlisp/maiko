@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "emlglob.h"
 #include "lispemul.h"     // for state, LispPTR, ERROR_EXIT, SEGMASK, POINTE...
 #include "lispmap.h"      // for S_POSITIVE, S_NEGATIVE
@@ -44,7 +44,7 @@ LispPTR N_OP_addbase(LispPTR base, LispPTR offset) {
       switch ((GetTypeNumber(offset))) {
         case TYPE_FIXP:
           /* overflow or underflow isn't check */
-          return (base + *(int *)Addr68k_from_LADDR(offset));
+          return (base + *(int *)NativeAligned4FromLAddr(offset));
         default: /* floatp also */ ERROR_EXIT(offset);
       } /* end switch */
   }     /* end switch */
@@ -71,12 +71,12 @@ LispPTR N_OP_getbasebyte(LispPTR base_addr, LispPTR byteoffset) {
     case S_NEGATIVE: byteoffset = byteoffset | 0xFFFF0000; break;
     default:
       switch ((GetTypeNumber(byteoffset))) {
-        case TYPE_FIXP: byteoffset = *((int *)Addr68k_from_LADDR(byteoffset)); break;
+        case TYPE_FIXP: byteoffset = *((int *)NativeAligned4FromLAddr(byteoffset)); break;
         default: /* floatp also fall thru */ ERROR_EXIT(byteoffset);
       } /* end switch */
       break;
   } /* end switch */
-  return ((0xFF & (GETBYTE((char *)Addr68k_from_LADDR((POINTERMASK & base_addr)) + byteoffset))) |
+  return ((0xFF & (GETBYTE((char *)NativeAligned2FromLAddr((POINTERMASK & base_addr)) + byteoffset))) |
           S_POSITIVE);
 }
 
@@ -102,6 +102,6 @@ LispPTR N_OP_putbasebyte(LispPTR base_addr, LispPTR byteoffset, LispPTR tos) {
       /* ucode and ufn don't handle displacement not smallp */
       ERROR_EXIT(tos);
   } /* end switch */
-  GETBYTE(((char *)Addr68k_from_LADDR(POINTERMASK & base_addr)) + byteoffset) = 0xFF & tos;
+  GETBYTE(((char *)NativeAligned2FromLAddr(POINTERMASK & base_addr)) + byteoffset) = 0xFF & tos;
   return (tos);
 }

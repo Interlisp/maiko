@@ -27,7 +27,7 @@
 */
 /**********************************************************************/
 
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned2FromLAddr
 #include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage
 #include "commondefs.h"    // for error
 #include "emlglob.h"
@@ -68,7 +68,7 @@ LispPTR N_OP_createcell(LispPTR tos) {
 
 retry:
   if ((tos = newcell = ((dtd68k->dtd_free) & POINTERMASK)) != NIL) {
-    ptr = (DLword *)Addr68k_from_LADDR(newcell);
+    ptr = (DLword *)NativeAligned2FromLAddr(newcell);
     if (917505 == *(LispPTR *)ptr) error("N_OP_createcell E0001 error");
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
@@ -113,7 +113,7 @@ retry:
     if (newcell > POINTERMASK) error("createcell : BAD Lisp address");
 #endif
 
-    ptr = Addr68k_from_LADDR(newcell);
+    ptr = NativeAligned2FromLAddr(newcell);
 
     if (917505 == *(LispPTR *)ptr) error("N_OP_createcell E0001 error");
 
@@ -140,7 +140,7 @@ retry:
     check_dtd_chain(type);
 #endif
 
-    return (Addr68k_from_LADDR(newcell));
+    return (NativeAligned2FromLAddr(newcell)); /* XXX: is it really only aligned(2)? */
 
   } else {
     dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);

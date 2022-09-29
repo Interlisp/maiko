@@ -65,7 +65,7 @@
 
 #include <stdio.h>        // for printf
 #include "address.h"      // for POINTER_PAGE
-#include "adr68k.h"       // for Addr68k_from_LADDR, Addr68k_from_LPAGE
+#include "adr68k.h"       // for NativeAligned4FromLAddr, NativeAligned4FromLPage
 #include "car-cdrdefs.h"  // for car, cdr
 #include "cell.h"         // for conspage, freecons, FREECONS, CDR_INDIRECT
 #include "commondefs.h"   // for error
@@ -130,7 +130,7 @@ LispPTR gcreccell(LispPTR cell) {
   index = -1;
   donext = NIL;
 lp:
-  ptr = (ConsCell *)Addr68k_from_LADDR(tmpptr & -2);
+  ptr = (ConsCell *)NativeAligned4FromLAddr(tmpptr & -2);
 /* # ifdef CHECK
   if (refcnt(tmpptr) != 1) error("reclaiming cell w/refcnt not 1");
  # endif
@@ -153,7 +153,7 @@ lp:
       {
         tmpcell = ptr->car_field; /* Monitor */
         freelistcell(tmpptr);
-        ptr = (ConsCell *)Addr68k_from_LADDR(tmpcell);
+        ptr = (ConsCell *)NativeAligned4FromLAddr(tmpcell);
         tmpptr = tmpcell;
         code = ptr->cdr_code;
       };
@@ -222,11 +222,11 @@ normal:
     carfield = car(ptrfield);
     ptrfield = cdr(ptrfield);
     carfield &= 0x0ffff;
-    REC_GCLOOKUPV((POINTERMASK & *(LispPTR *)Addr68k_from_LADDR(tmpptr + carfield)), DELREF, val);
+    REC_GCLOOKUPV((POINTERMASK & *(LispPTR *)NativeAligned4FromLAddr(tmpptr + carfield)), DELREF, val);
 #ifndef NEWCDRCODING
     if (val != NIL) {
       if (ptrfield != NIL) {
-        ptr = (ConsCell *)Addr68k_from_LADDR(tmpptr);
+        ptr = (ConsCell *)NativeAligned4FromLAddr(tmpptr);
         ptr->car_field = donext;
         ptr->cdr_code = ((car(ptrfield) & 0x0ffff) >> 1);
         donext = tmpptr;
@@ -238,7 +238,7 @@ normal:
     if (val != NIL) {
       if (ptrfield != NIL) {
         if ((carfield = car(ptrfield) & 0x0ffff) >> 1 < 15) {
-          ptr = (ConsCell *)Addr68k_from_LADDR(tmpptr);
+          ptr = (ConsCell *)NativeAligned4FromLAddr(tmpptr);
           ptr->car_field = donext;
           ptr->cdr_code = ((car(ptrfield) & 0x0ffff) >> 1);
           donext = tmpptr;
@@ -253,7 +253,7 @@ normal:
 #endif /* NEWCDRCODING */
   };
 addtofreelist:
-  field = (LispPTR *)Addr68k_from_LADDR(tmpptr);
+  field = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
   *field = typdtd->dtd_free;
   typdtd->dtd_free = tmpptr & POINTERMASK;
 #ifdef DTDDEBUG
@@ -285,7 +285,7 @@ doval:
 trynext:
   if (donext != NIL) {
     tmpptr = donext;
-    ptr = (ConsCell *)Addr68k_from_LADDR(tmpptr);
+    ptr = (ConsCell *)NativeAligned4FromLAddr(tmpptr);
     donext = (LispPTR)ptr->car_field;
     index = ptr->cdr_code;
     goto lp;
@@ -317,8 +317,8 @@ void freelistcell(LispPTR cell) {
   ConsCell *cell68k;
   unsigned int offset, prior, celloffset;
 
-  cell68k = (ConsCell *)Addr68k_from_LADDR(cell);
-  pbase = (struct conspage *)Addr68k_from_LPAGE(POINTER_PAGE(cell));
+  cell68k = (ConsCell *)NativeAligned4FromLAddr(cell);
+  pbase = (struct conspage *)NativeAligned4FromLPage(POINTER_PAGE(cell));
   celloffset = (LispPTR)cell & 0xFF;
 #ifdef NEWCDRCODING
   if (celloffset < 8) error("freeing CONS cell that's really freelist ptr");

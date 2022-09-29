@@ -37,9 +37,9 @@ void tty_init(void)
   TTY_Dev = "/dev/ttyb"; /* Modify device name */
   TTY_Fd = (-1);
 
-  DLTTYPortCmd = (DLTTY_OUT_COMMAND *)Addr68k_from_LADDR(IOPAGE_OFFSET + 20);
-  DLTTYIn = (DLTTY_IN_CSB *)Addr68k_from_LADDR(IOPAGE_OFFSET + 36);
-  DLTTYOut = (DLTTY_OUT_CSB *)Addr68k_from_LADDR(IOPAGE_OFFSET + 34);
+  DLTTYPortCmd = (DLTTY_OUT_COMMAND *)NativeAligned2FromLAddr(IOPAGE_OFFSET + 20);
+  DLTTYIn = (DLTTY_IN_CSB *)NativeAligned2FromLAddr(IOPAGE_OFFSET + 36);
+  DLTTYOut = (DLTTY_OUT_CSB *)NativeAligned2FromLAddr(IOPAGE_OFFSET + 34);
 }
 
 void tty_open(void)
@@ -198,6 +198,6 @@ void tty_debug(const char *name)
 
   printf("DEBUG:\n");
   printf("DEBUG: \t\tSymbol       Address        Contents\n");
-  printf("DEBUG: \t\tIOPAGE       %p\n", (void *)Addr68k_from_LADDR(IOPAGE_OFFSET));
+  printf("DEBUG: \t\tIOPAGE       %p\n", (void *)NativeAligned2FromLAddr(IOPAGE_OFFSET));
   /* In the future, we could print out the various fields of DLTTYOut, DLTTYIn, and DLTTYPortCmd */
 }

@@ -39,14 +39,14 @@
  CSTKPTRL = (LispPTR *) IVAR;						\
  returnFX = (struct  frameex2 *)					\
 	((DLword *)							\
-	    (PVARL = (DLword *) Addr68k_from_StkOffset(alink))		\
+	    (PVARL = (DLword *) NativeAligned2FromStackOffset(alink))	\
 	    - FRAMESIZE);						\
  IVARL = (DLword *)							\
-	    Addr68k_from_StkOffset(GETWORD((DLword *)returnFX -1));	\
+	    NativeAligned2FromStackOffset(GETWORD((DLword *)returnFX -1));\
 	/* Get PC from Returnee's pc slot in FX */			\
  PCMACL = returnFX->pc  + (ByteCode *)					\
 	(FuncObj = (struct fnhead *)					\
-	Addr68k_from_LADDR(SWAP_FNHEAD(returnFX->fnheader) & POINTERMASK)) + 1;\
+	NativeAligned4FromLAddr(SWAP_FNHEAD(returnFX->fnheader) & POINTERMASK)) + 1;\
  Irq_Stk_Check = STK_END_COMPUTE(EndSTKP,FuncObj);			\
   FNCHECKER(if (quick_stack_check()) printf("In RETURN.\n"));	\
  if (((UNSIGNED)(CSTKPTR) >= Irq_Stk_Check) || (Irq_Stk_End <= 0))		\

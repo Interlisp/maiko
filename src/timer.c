@@ -170,7 +170,7 @@ LispPTR subr_gettime(LispPTR args[])
   int result;
   result = gettime(args[0] & 0xffff);
   if (args[1]) {
-    *((int *)Addr68k_from_LADDR(args[1])) = result;
+    *((int *)NativeAligned4FromLAddr(args[1])) = result;
     return (args[1]);
   } else
     N_ARITH_SWITCH(result);
@@ -278,7 +278,7 @@ void subr_settime(LispPTR args[])
   struct dosdate_t dosday;
   struct tm uxtime;
 
-  uxtime = *localtime((time_t *)(*((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF));
+  uxtime = *localtime((time_t *)(*((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF));
   dostime.hsecond = 0;
   dostime.second = uxtime.tm_sec;
   dostime.minute = uxtime.tm_min;
@@ -292,7 +292,7 @@ void subr_settime(LispPTR args[])
   _dos_setdate(&dosday);
 #else
   struct timeval timev;
-  timev.tv_sec = *((int *)Addr68k_from_LADDR(args[0])) - UNIX_ALTO_TIME_DIFF;
+  timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;
   timev.tv_usec = 0;
   settimeofday(&timev, NULL);
 #endif
@@ -313,8 +313,8 @@ void subr_copytimestats(LispPTR args[])
 {
   MISCSTATS *source;
   MISCSTATS *dest;
-  source = (MISCSTATS *)Addr68k_from_LADDR(args[0]);
-  dest = (MISCSTATS *)Addr68k_from_LADDR(args[1]);
+  source = (MISCSTATS *)NativeAligned4FromLAddr(args[0]);
+  dest = (MISCSTATS *)NativeAligned4FromLAddr(args[1]);
   update_miscstats();
   *dest = *source;
 }
@@ -345,7 +345,7 @@ LispPTR N_OP_rclk(LispPTR tos)
   gettimeofday(&timev, NULL);
   usec = (timev.tv_sec * 1000000UL) + timev.tv_usec;
 #endif /* DOS */
-  *((unsigned int *)(Addr68k_from_LADDR(tos))) = usec;
+  *((unsigned int *)(NativeAligned4FromLAddr(tos))) = usec;
   return (tos);
 } /* end N_OP_rclk */
 

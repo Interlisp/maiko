@@ -104,10 +104,10 @@ void ufn(DLword bytecode)
 
   /* Get Next Block offset form OPCODE byte */
   CURRENTFX->nextblock =
-      (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
+      (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
 
   /* Setup IVar */
-  IVar = Addr68k_from_LADDR((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
 
 #ifdef LISPTRACE
   print(entry68k->atom_name);
@@ -133,7 +133,7 @@ void ufn(DLword bytecode)
   }
 
   /* Nov 25 87 take */
-  tmp_fn = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
+  tmp_fn = (struct fnhead *)NativeAligned4FromLAddr(defcell68k->defpointer);
 
   /* stack overflow check STK_SAFE is redundant?? */
   if ((UNSIGNED)(CurrentStackPTR + tmp_fn->stkmin + STK_SAFE) >= (UNSIGNED)StkLimO) {
@@ -166,7 +166,7 @@ void ufn(DLword bytecode)
   /* Set up FX */
   GETWORD(CurrentStackPTR) = FX_MARK;
 
-  ((struct frameex1 *)CurrentStackPTR)->alink = LADDR_from_68k(PVar);
+  ((struct frameex1 *)CurrentStackPTR)->alink = LAddrFromNative(PVar);
   PVar = (DLword *)CurrentStackPTR + FRAMESIZE;
 #ifdef BIGVM
   ((struct frameex1 *)CurrentStackPTR)->fnheader = (defcell68k->defpointer);

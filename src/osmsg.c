@@ -240,8 +240,8 @@ LispPTR mess_read(LispPTR *args)
   SETJMP(NIL);
 
   /* Get buff address from LISP */
-  naddress = (LispPTR *)(Addr68k_from_LADDR(args[0]));
-  base = (char *)(Addr68k_from_LADDR(((OneDArray *)naddress)->base));
+  naddress = (LispPTR *)(NativeAligned4FromLAddr(args[0]));
+  base = (char *)(NativeAligned2FromLAddr(((OneDArray *)naddress)->base));
 
   close(log_id);
   TIMEOUT(log_id = open(logfile, O_RDONLY));

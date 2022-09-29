@@ -198,13 +198,12 @@
       fn_apply = 0;                                                                    \
       goto op_fn_common;                                                               \
     }                                                                                  \
-    LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR((defcell_word &= POINTERMASK));    \
+    LOCFNCELL = (struct fnhead *)NativeAligned4FromLAddr((defcell_word &= POINTERMASK));    \
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FN_OPCODE_SIZE;        \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      UNSIGNED newivar;                                                       \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - (argcount) + 1));              \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
+      IVARL = (DLword *)(CSTKPTR - (argcount) + 1);                                    \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);             \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
@@ -218,7 +217,7 @@
     } /* if end */                                                                     \
     /* Set up BF */                                                                    \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                  \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));              \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));              \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell_word);                \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
@@ -254,13 +253,12 @@
       fn_apply = 0;                                                                    \
       goto op_fn_common;                                                               \
     }                                                                                  \
-    LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(defcell->defpointer);              \
+    LOCFNCELL = (struct fnhead *)NativeAligned4FromLAddr(defcell->defpointer);              \
     BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + FNX_OPCODE_SIZE;       \
     FN_STACK_CHECK;                                                                    \
     {                                                                                  \
-      UNSIGNED newivar;                                                       \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args + 1));                \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);              \
+      IVARL = (DLword *)(CSTKPTR - num_args + 1);                                      \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);             \
     }                                                                                  \
     HARD_PUSH(TOPOFSTACK); /* save TOS */                                              \
     if (LOCFNCELL->na >= 0) {                                                          \
@@ -274,7 +272,7 @@
     } /* if end */                                                                     \
     /* Set up BF */                                                                    \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                  \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));              \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));              \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell->defpointer);         \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                           \
     PVARL = (DLword *)CSTKPTR;                                                         \
@@ -355,7 +353,7 @@
       defcell = fn_defcell;                                                                    \
       if (defcell->ccodep == 0) {                                                              \
         if (GetTypeNumber(defcell->defpointer) == TYPE_COMPILED_CLOSURE) { /* setup closure */ \
-          closure = (CClosure *)Addr68k_from_LADDR(defcell->defpointer);                       \
+          closure = (CClosure *)NativeAligned4FromLAddr(defcell->defpointer);                       \
           defcell = (DefCell *)closure;                                                        \
           /* not  a closure if closure's env is NIL */                                         \
           if (closure->env_ptr) { closure_env = (LispPTR)(closure->env_ptr); }                 \
@@ -366,15 +364,14 @@
           needpush = 1;                                                                        \
         } /*else end */                                                                        \
       }                                                                                        \
-      LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(defcell->defpointer);                    \
+      LOCFNCELL = (struct fnhead *)NativeAligned4FromLAddr(defcell->defpointer);                    \
       BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + fn_opcode_size;              \
       FNTPRINT(("Saving PC = 0%o (%p).\n", BCE_CURRENTFX->pc, (void *)PCMAC + fn_opcode_size)); \
       FN_STACK_CHECK;                                                                          \
       APPLY_POP_PUSH_TEST;                                                                     \
       {                                                                                        \
-        UNSIGNED newivar;                                                             \
-        newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR + (1 - fn_num_args - needpush)));      \
-        BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar);                    \
+        IVARL = (DLword *)(CSTKPTR + (1 - fn_num_args - needpush));                            \
+        BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);                   \
       }                                                                                        \
       HARD_PUSH(TOPOFSTACK); /* save TOS */                                                    \
       if (LOCFNCELL->na >= 0) {                                                                \
@@ -389,7 +386,7 @@
       /* Set up BF */                                                                          \
       HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                                        \
     } /* NEXTBLOCK BLOCK */                                                                    \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR));                      \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR));                      \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(defcell->defpointer);                 \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);                                   \
     PVARL = (DLword *)CSTKPTR;                                                                 \
@@ -433,7 +430,7 @@
     LispPTR closure_env = TOPOFSTACK;                            \
     int num_args;                                                \
     LispPTR Fn_DefCell = GET_TOS_1;                              \
-    LOCFNCELL = (struct fnhead *)Addr68k_from_LADDR(Fn_DefCell);          \
+    LOCFNCELL = (struct fnhead *)NativeAligned4FromLAddr(Fn_DefCell);          \
     FNTPRINT(("ENVCall.\n"));                                             \
     FNCHECKER(if (quick_stack_check()) printf("In ENVCALL.\n"));          \
     N_GETNUMBER(GET_TOS_2, num_args, op_ufn);                             \
@@ -441,9 +438,8 @@
     FN_STACK_CHECK;                                                       \
     CSTKPTRL -= 2;                                                        \
     {                                                                     \
-      UNSIGNED newivar;                                          \
-      newivar = (UNSIGNED)(IVARL = (DLword *)(CSTKPTR - num_args));       \
-      BCE_CURRENTFX->nextblock = NEXTBLOCK = StkOffset_from_68K(newivar); \
+      IVARL = (DLword *)(CSTKPTR - num_args);                             \
+      BCE_CURRENTFX->nextblock = NEXTBLOCK = StackOffsetFromNative(IVARL);\
     }                                                                     \
     if (LOCFNCELL->na >= 0) {                                             \
       int RESTARGS;                                              \
@@ -456,7 +452,7 @@
     } /* if end */                                                        \
     /* Set up BF */                                                       \
     HARD_PUSH(BF_MARK32 | NEXTBLOCK);                                     \
-    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StkOffset_from_68K(PVAR)); \
+    *((LispPTR *)CSTKPTR) = (FX_MARK << 16) | (StackOffsetFromNative(PVAR)); \
     ((struct frameex2 *)CSTKPTR)->fnheader = SWAP_FNHEAD(Fn_DefCell);     \
     CSTKPTRL = (LispPTR *)(((DLword *)CSTKPTR) + FRAMESIZE);              \
     PVARL = (DLword *)CSTKPTR;                                            \
@@ -524,7 +520,7 @@
         goto Hack_Label;                                                       \
       nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
       work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
-      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      lookuped = *((LispPTR *)(NativeAligned4FromLAddr(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
       TOPOFSTACK = lookuped;                                                   \
@@ -564,7 +560,7 @@
         goto Hack_Label;                                                       \
       nnewframe(CURRENTFX, scratch, TOPOFSTACK & 0xffff);                      \
       work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
-      lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                     \
+      lookuped = *((LispPTR *)(NativeAligned4FromLAddr(work)));                     \
       if (lookuped == NOBIND_PTR)                                              \
         goto op_ufn;                                                           \
       TOPOFSTACK = lookuped;                                                   \
@@ -588,7 +584,7 @@
       case TYPE_NEWATOM:                                                       \
         nnewframe(CURRENTFX, scratch, TOPOFSTACK);                             \
         work = POINTERMASK & ((GETBASEWORD(scratch,1) << 16) | GETBASEWORD(scratch,0)); \
-        lookuped = *((LispPTR *)(Addr68k_from_LADDR(work)));                   \
+        lookuped = *((LispPTR *)(NativeAligned4FromLAddr(work)));                   \
         if (lookuped == NOBIND_PTR)                                            \
           goto op_ufn;                                                         \
         TOPOFSTACK = lookuped;                                                 \

@@ -27,7 +27,7 @@
 #include <stdlib.h>      // for getenv
 #include <string.h>      // for strcmp, strcpy, strlen, strncpy
 #include <unistd.h>      // for getuid, gethostid, gethostname, getpgrp
-#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "keyboard.h"    // for KBEVENT, KB_ALLUP, RING, KEYEVENTSIZE, MAXKE...
 #include "lispemul.h"    // for LispPTR, DLword, NIL, ATOM_T
 #include "lspglob.h"
@@ -52,12 +52,12 @@ static int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
 
   if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
 
-  arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
+  arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
   if (arrayp->fillpointer >= length) { return (-1); } /* too long */
 
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
-      base = ((char *)(Addr68k_from_LADDR(arrayp->base))) + ((int)(arrayp->offset));
+      base = ((char *)NativeAligned2FromLAddr(arrayp->base)) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
       strncpy(C, base, arrayp->fillpointer);
 #else
@@ -96,13 +96,13 @@ static int c_string_to_lisp_string(char *C, LispPTR Lisp) {
   length = strlen(C);
   if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
 
-  arrayp = (OneDArray *)(Addr68k_from_LADDR(Lisp));
+  arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
   if (arrayp->totalsize < length + 1) { return (-1); }
   /* too short for C string */
 
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
-      base = ((char *)(Addr68k_from_LADDR(arrayp->base))) + ((int)(arrayp->offset));
+      base = ((char *)NativeAligned2FromLAddr(arrayp->base)) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
       strcpy(base, C);
 #else

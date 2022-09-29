@@ -54,7 +54,7 @@ lispemul.h:	typedef struct {unsigned code : 8;} BYTECODE;
 		{LispPTR *wordp; 			\
 		wordp = (LispPTR *) createcell68k(TYPE_FIXP);	\
 		*((int *)wordp) = result;			\
-		dest = (LADDR_from_68k(wordp));	}		\
+		dest = (LAddrFromNative(wordp));	}		\
 	else dest = (( (unsigned)result <<15) >>15) | S_POSITIVE;}
 
 

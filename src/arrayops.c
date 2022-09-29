@@ -6,7 +6,7 @@
 /************************************************************************/
 
 #include "version.h"
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "arrayopsdefs.h" // for N_OP_misc3, N_OP_misc4, N_OP_aref1, N_OP_aset1, N_OP_aref2, N_OP_aset2
 #include "emlglob.h"
 #include "lispemul.h"     // for state, LispPTR, ERROR_EXIT
@@ -86,7 +86,7 @@ LispPTR N_OP_aref1(LispPTR arrayarg, LispPTR inx) {
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) ERROR_EXIT(inx);
-  arrayblk = (OneDArray *)Addr68k_from_LADDR(arrayarg);
+  arrayblk = (OneDArray *)NativeAligned4FromLAddr(arrayarg);
 
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
@@ -118,7 +118,7 @@ LispPTR N_OP_aset1(LispPTR data, LispPTR arrayarg, int inx) {
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) ERROR_EXIT(inx);
-  arrayblk = (OneDArray *)Addr68k_from_LADDR(arrayarg);
+  arrayblk = (OneDArray *)NativeAligned4FromLAddr(arrayarg);
 
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
@@ -152,7 +152,7 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
-  arrayblk = (LispArray *)Addr68k_from_LADDR(arrayarg);
+  arrayblk = (LispArray *)NativeAligned4FromLAddr(arrayarg);
   baseL = arrayblk->base;
 
   /*  test and setup index  */
@@ -178,7 +178,7 @@ LispPTR N_OP_aset2(LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 
   /*  verify array  */
   if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
-  arrayblk = (LispArray *)Addr68k_from_LADDR(arrayarg);
+  arrayblk = (LispArray *)NativeAligned4FromLAddr(arrayarg);
   base = arrayblk->base;
 
   /*  test and setup index  */

@@ -18,7 +18,7 @@
 /*									*/
 /************************************************************************/
 
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned4FromLAddr
 #ifdef RESWAPPEDCODESTREAM
 #include "byteswapdefs.h"  // for byte_swap_code_block
 #endif
@@ -63,7 +63,7 @@ newframe:
     fnhead = (struct fnhead *)FuncObj;
     pc = (ByteCode *)PC + 3; /* to skip the miscn opcode we're in now */
   } else {
-    fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
+    fnhead = (struct fnhead *)NativeAligned4FromLAddr(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
     pc = (ByteCode *)fnhead + (caller->pc);
   }
 #ifdef RESWAPPEDCODESTREAM
@@ -159,7 +159,7 @@ newframe:
     fnhead = (struct fnhead *)FuncObj;
     pc = (ByteCode *)PC + 3; /* Skip over the miscn opcode we're in now */
   } else {
-    fnhead = (struct fnhead *)Addr68k_from_LADDR(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
+    fnhead = (struct fnhead *)NativeAligned4FromLAddr(POINTERMASK & SWA_FNHEAD((int)caller->fnheader));
     pc = (ByteCode *)fnhead + (caller->pc);
   }
 

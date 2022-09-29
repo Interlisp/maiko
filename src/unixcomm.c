@@ -699,7 +699,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         N_GETNUMBER(args[1], slot, bad);     /* Get job # */
         if (!valid_slot(slot)) return (NIL); /* No fd open; punt the read */
 
-        bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
+        bufp = (NativeAligned2FromLAddr(args[2])); /* User buffer */
         DBPRINT(("Read buffer slot %d, type is %d\n", slot, UJ[slot].type));
 
         switch (UJ[slot].type) {
@@ -854,7 +854,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DLword *bufp;
       int i;
       N_GETNUMBER(args[1], slot, bad);              /* Get job # */
-      bufp = (Addr68k_from_LADDR(args[2])); /* User buffer */
+      bufp = (NativeAligned2FromLAddr(args[2])); /* User buffer */
       N_GETNUMBER(args[3], i, bad);                 /* # to write */
       DBPRINT(("Write buffer, type is %d\n", UJ[slot].type));
 

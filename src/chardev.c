@@ -81,7 +81,7 @@ LispPTR CHAR_openfile(LispPTR *args)
   /* struct stat statbuf; */
   char pathname[MAXPATHLEN];
 
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[2]);
 
   LispStringToCString(args[0], pathname, MAXPATHLEN);
   flags = O_NONBLOCK;
@@ -130,7 +130,7 @@ LispPTR CHAR_closefile(LispPTR *args)
 #ifndef DOS
   int fd; /* file descriptor */
   int rval;
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[1]);
   fd = LispNumToCInt(args[0]);
   ERRSETJMP(NIL);
   TIMEOUT(rval = close(fd));
@@ -175,10 +175,10 @@ LispPTR CHAR_ioctl(LispPTR *args)
   int fd, request;
   void *data;
   int rval;
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
   fd = LispNumToCInt(args[0]);
   request = LispNumToCInt(args[1]);
-  data = (Addr68k_from_LADDR(args[2]));
+  data = NativeAligned4FromLAddr(args[2]);
   ERRSETJMP(NIL);
   TIMEOUT(rval = ioctl(fd, request, data));
   if (rval != 0) {
@@ -206,7 +206,7 @@ LispPTR CHAR_bin(int fd, LispPTR errn)
 #ifndef DOS
   ssize_t rval;
   unsigned char ch[4];
-  Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(errn);
   ERRSETJMP(NIL);
   fd = LispNumToCInt(fd);
 
@@ -238,7 +238,7 @@ LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
 #ifndef DOS
   ssize_t rval;
   char buf[4];
-  Lisp_errno = (int *)(Addr68k_from_LADDR(errn));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(errn);
   ERRSETJMP(NIL);
   fd = LispNumToCInt(fd);
   buf[0] = LispNumToCInt(ch);
@@ -285,10 +285,10 @@ LispPTR CHAR_bins(LispPTR *args)
   ssize_t rval;
   char *buffer;
   int nbytes;
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[4]);
   ERRSETJMP(NIL);
   fd = LispNumToCInt(args[0]);
-  buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
+  buffer = ((char *)(NativeAligned2FromLAddr(args[1]))) + LispNumToCInt(args[2]);
   nbytes = LispNumToCInt(args[3]);
   /* Read PAGE_SIZE bytes file contents from filepointer. */
   TIMEOUT(rval = read(fd, buffer, nbytes));
@@ -337,10 +337,10 @@ LispPTR CHAR_bouts(LispPTR *args)
   ssize_t rval;
   char *buffer;
   int nbytes;
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[4]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[4]);
   ERRSETJMP(NIL);
   fd = LispNumToCInt(args[0]);
-  buffer = ((char *)(Addr68k_from_LADDR(args[1]))) + LispNumToCInt(args[2]);
+  buffer = ((char *)(NativeAligned2FromLAddr(args[1]))) + LispNumToCInt(args[2]);
   nbytes = LispNumToCInt(args[3]);
 /* Write PAGE_SIZE bytes file contents from filepointer. */
 #ifdef BYTESWAP

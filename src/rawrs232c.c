@@ -57,8 +57,8 @@ LispPTR raw_rs232c_open(LispPTR portname)
   int fd;
 
   if (GetTypeNumber(portname) != TYPE_ONED_ARRAY) error("PORTNAME is not string");
-  head = (ONED_ARRAY *)Addr68k_from_LADDR(portname);
-  lispname = (char *)Addr68k_from_LADDR(head->BASE);
+  head = (ONED_ARRAY *)NativeAligned4FromLAddr(portname);
+  lispname = (char *)NativeAligned2FromLAddr(head->BASE);
 
   if ((fd = open(lispname, O_RDWR)) < 0) {
     perror("RS open fail: ");
@@ -80,7 +80,7 @@ LispPTR raw_rs232c_setparams(LispPTR fd, LispPTR data)
     return (NIL);
   }
 
-  ndata = (RawRSParam *)Addr68k_from_LADDR(data);
+  ndata = (RawRSParam *)NativeAligned4FromLAddr(data);
 
   /* Input  */
   termdata.c_iflag |= IXON | IXOFF;
@@ -245,7 +245,7 @@ LispPTR raw_rs232c_write(LispPTR fd, LispPTR baseptr, LispPTR len)
 {
   unsigned char *ptr;
 
-  ptr = (unsigned char *)Addr68k_from_LADDR(baseptr);
+  ptr = (unsigned char *)NativeAligned2FromLAddr(baseptr);
 
   if (write((fd & 0xffff), ptr, (len & 0xffff)) < 0) {
     perror("RS-write :");
@@ -268,7 +268,7 @@ LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
 
   select(32, &readfds, NULL, NULL, &RS_TimeOut);
   if (FD_ISSET(real_fd, &readfds)) {
-    buffptr = (unsigned char *)Addr68k_from_LADDR(buff);
+    buffptr = (unsigned char *)NativeAligned2FromLAddr(buff);
 
     if ((length = read(real_fd, buffptr, (nbytes & 0xffff))) < 0) {
       perror("RS read :");

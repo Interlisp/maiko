@@ -37,18 +37,18 @@ int chatter_fd;
     short *sbase;                                                                                  \
     int i;                                                                                         \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((UNSIGNED)Lisp));                                    \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((UNSIGNED)Lisp));                               \
     Len = min(MaxLen, arrayp->totalsize);                                                          \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
-        base = ((char *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
+        base = ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
         for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
         C[Len] = '\0';                                                                             \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase = ((short *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
         C[Len * 2] = '\0';                                                                         \
@@ -65,17 +65,17 @@ int chatter_fd;
     short *sbase;                                                                                  \
     int idx;                                                                                       \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((UNSIGNED)Lisp));                                    \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((UNSIGNED)Lisp));                               \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
-        base = ((char *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
+        base = ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
         for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase = ((short *)(Addr68k_from_LADDR((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
         arrayp->fillpointer = Len;                                                                 \
@@ -89,7 +89,7 @@ int chatter_fd;
   {                                                   \
     int *base;                                        \
                                                       \
-    base = (int *)Addr68k_from_LADDR((UNSIGNED)Lisp); \
+    base = (int *)NativeAligned4FromLAddr((UNSIGNED)Lisp); \
     *base = C;                                        \
   }
 

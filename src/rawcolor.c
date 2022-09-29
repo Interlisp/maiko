@@ -49,7 +49,7 @@ typedef struct {
 } BIGBM;
 
 #define GetNewFragment(list, frag, type)      \
-  frag = (type)Addr68k_from_LADDR(car(list)); \
+  frag = (type)NativeAligned4FromLAddr(car(list)); \
   list = cdr(list);
 
 LispPTR SLOWBLTCHAR_index;
@@ -143,17 +143,17 @@ C_slowbltchar(LispPTR *args)
 
   extern LispPTR *TOPWDS68k;
 
-  n_dstream = (Stream *)Addr68k_from_LADDR(displaystream);
-  n_dd = (DISPLAYDATA *)Addr68k_from_LADDR(n_dstream->IMAGEDATA);
-  n_fontd = (FONTDESC *)Addr68k_from_LADDR(n_dd->ddfont);
-  n_destbitmap = (BITMAP *)Addr68k_from_LADDR(n_dd->dddestination);
+  n_dstream = (Stream *)NativeAligned4FromLAddr(displaystream);
+  n_dd = (DISPLAYDATA *)NativeAligned4FromLAddr(n_dstream->IMAGEDATA);
+  n_fontd = (FONTDESC *)NativeAligned4FromLAddr(n_dd->ddfont);
+  n_destbitmap = (BITMAP *)NativeAligned4FromLAddr(n_dd->dddestination);
 
   if ((n_fontd->ROTATION & 0xffff) == 0) {
-    if ((csinfo = *(((LispPTR *)Addr68k_from_LADDR(n_fontd->FONTCHARSETVECTOR)) +
+    if ((csinfo = *(((LispPTR *)NativeAligned4FromLAddr(n_fontd->FONTCHARSETVECTOR)) +
                     CharSet(charcode))) == NIL)
       PUNT_TO_SLOWBLTCHAR; /* CSINFO is not cached */
 
-    n_csinfo = (CHARSETINFO *)Addr68k_from_LADDR(csinfo);
+    n_csinfo = (CHARSETINFO *)NativeAligned4FromLAddr(csinfo);
 
     SFGetNum(n_dd->ddxposition, curx);
     SFGetNum(n_dd->ddyposition, cury);
@@ -166,7 +166,7 @@ C_slowbltchar(LispPTR *args)
     cl_bottom = n_dd->ddclippingbottom;
     cl_top = n_dd->ddclippingtop;
 
-    newx = curx + *(DLword *)Addr68k_from_LADDR(n_dd->ddwidthscache + Char8Code(charcode));
+    newx = curx + *(DLword *)NativeAligned2FromLAddr(n_dd->ddwidthscache + Char8Code(charcode));
 
     if (newx > rmargin) PUNT_TO_SLOWBLTCHAR; /* do \DSPPRINTCR/LF */
 
@@ -179,8 +179,8 @@ C_slowbltchar(LispPTR *args)
         COLORSCREEN_index = MAKEATOM("\\COLORSCREEN");
         COLORSCREEN68k = GetVALCELL68k(COLORSCREEN_index);
       }
-      ColorScreenData = (SCREEN *)Addr68k_from_LADDR(*COLORSCREEN68k);
-      window = (WINDOW *)Addr68k_from_LADDR(ColorScreenData->SCTOPW);
+      ColorScreenData = (SCREEN *)NativeAligned4FromLAddr(*COLORSCREEN68k);
+      window = (WINDOW *)NativeAligned4FromLAddr(ColorScreenData->SCTOPW);
       if ((displaystream != ColorScreenData->SCTOPW) && (displaystream != window->DSP) &&
           (displaystream != *TOPWDS68k) && ((fmemb(n_dd->dddestination, *SCREENBITMAPS68k)) != NIL))
         PUNT_TO_SLOWBLTCHAR;
@@ -201,13 +201,13 @@ C_slowbltchar(LispPTR *args)
       extern int ScreenLocked;
       extern int displayheight;
 
-      n_srcBM = (BITMAP *)Addr68k_from_LADDR(n_csinfo->CHARSETBITMAP);
+      n_srcBM = (BITMAP *)NativeAligned4FromLAddr(n_csinfo->CHARSETBITMAP);
       src_h = n_srcBM->bmheight;
       src_w = n_srcBM->bmwidth;
 
-      src_x = *((DLword *)Addr68k_from_LADDR(n_dd->ddoffsetscache + Char8Code(charcode)));
+      src_x = *((DLword *)NativeAligned2FromLAddr(n_dd->ddoffsetscache + Char8Code(charcode)));
       src_y = 0;
-      w = *(DLword *)Addr68k_from_LADDR(n_dd->ddcharimagewidths + Char8Code(charcode));
+      w = *(DLword *)NativeAligned2FromLAddr(n_dd->ddcharimagewidths + Char8Code(charcode));
       h = src_h;
 
       (short)dst_x = (short)curx;
@@ -247,12 +247,12 @@ C_slowbltchar(LispPTR *args)
       }
 
       if (GetTypeNumber(n_dd->dddestination) == TYPE_BITMAP) { /* Bitap */
-        n_destBM = (BITMAP *)Addr68k_from_LADDR(n_dd->dddestination);
+        n_destBM = (BITMAP *)NativeAligned4FromLAddr(n_dd->dddestination);
         ScreenLocked = T;
         /*  xposition is shifted 3 Kludge for cursorin
                in color(8bpp) ** x's meaning  is different from
               bitbltsub's. For now,I use this func with Kludge */
-        displayflg = n_new_cursorin(Addr68k_from_LADDR(n_destBM->bmbase), dst_x << 3,
+        displayflg = n_new_cursorin(NativeAligned2FromLAddr(n_destBM->bmbase), dst_x << 3,
                                     /* Kludge:YCoordination upside down*/
                                     displayheight - cury, w, h);
         if (displayflg) HideCursor;
@@ -307,8 +307,8 @@ void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, D
   sYOffset = sBM->bmheight - (sYOffset + height);
   dYOffset = dBM->bmheight - (dYOffset + height);
 
-  nbase = (DLword *)Addr68k_from_LADDR(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
-  (DLword *)dbase = (DLword *)Addr68k_from_LADDR(dBM->bmbase) + (dBM->bmrasterwidth * dYOffset);
+  nbase = (DLword *)NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
+  (DLword *)dbase = (DLword *)NativeAligned2FromLAddr(dBM->bmbase) + (dBM->bmrasterwidth * dYOffset);
   for (i = 0, dbase += dXOffset; /* 8bpp */
        i < height; i++, nbase += sBM->bmrasterwidth, ((DLword *)dbase) += dBM->bmrasterwidth) {
     lineBlt8(nbase, (int)sXOffset, dbase, (int)width, col0, col1, sourcetype, operation);
@@ -352,7 +352,7 @@ void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *d
   /* search fragment of bitmaps including the destination top. */
   while (dest_fragbottom <= dYOffset) {
     GetNewFragment(dest_bmlist, dest_frag, BITMAP *);
-    if (dest_frag == (BITMAP *)Addr68k_from_LADDR(NIL_PTR)) return;
+    if (dest_frag == (BITMAP *)NativeAligned4FromLAddr(NIL_PTR)) return;
     dest_fragtop = dest_fragbottom;
     dest_fragbottom += dest_frag->bmheight;
   } /* end while */
@@ -371,8 +371,8 @@ loop:
   } /* end if */
 
   dbase =
-      (DLword *)Addr68k_from_LADDR(dest_frag->bmbase) + (dest_frag->bmrasterwidth * dest_yoffset);
-  nbase = (DLword *)Addr68k_from_LADDR(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
+      (DLword *)NativeAligned2FromLAddr(dest_frag->bmbase) + (dest_frag->bmrasterwidth * dest_yoffset);
+  nbase = (DLword *)NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
 
   sYOffset += (DLword)dest_h; /* next src yoffset */
 
@@ -385,7 +385,7 @@ loop:
   height -= dest_h;
   if (height > 0) {
     GetNewFragment(dest_bmlist, dest_frag, BITMAP *);
-    if (dest_frag != (BITMAP *)Addr68k_from_LADDR(NIL_PTR)) {
+    if (dest_frag != (BITMAP *)NativeAligned4FromLAddr(NIL_PTR)) {
       dest_fragtop = dest_fragbottom;
       dest_fragbottom = dest_fragtop + dest_frag->bmheight;
       dest_yoffset = 0; /* y offset must be zero. */
@@ -410,8 +410,8 @@ void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR
   u_char *dbase;
   int i;
 
-  nbase = (DLword *)Addr68k_from_LADDR((pbt->pbtsourcehi << 16) | (pbt->pbtsourcelo));
-  (DLword *)dbase = (DLword *)Addr68k_from_LADDR((pbt->pbtdesthi << 16) | (pbt->pbtdestlo));
+  nbase = (DLword *)NativeAligned2FromLAddr((pbt->pbtsourcehi << 16) | (pbt->pbtsourcelo));
+  (DLword *)dbase = (DLword *)NativeAligned2FromLAddr((pbt->pbtdesthi << 16) | (pbt->pbtdestlo));
   dbase += pbt->pbtdestbit;
   for (i = 0; i < pbt->pbtheight;
        i++, nbase += pbt->pbtsourcebpl / 16, dbase += pbt->pbtdestbpl / 8) {
@@ -437,9 +437,9 @@ void Uncolorize_Bitmap(LispPTR args[])
   int y;
   int s_height, s_width, s_bitsperpixel, s_rasterwidth, d_rasterwidth;
 
-  s_bitmap = (BITMAP *)Addr68k_from_LADDR(args[0]);
-  d_bitmap = (BITMAP *)Addr68k_from_LADDR(args[1]);
-  OnOff = (DLword *)Addr68k_from_LADDR(args[2]);
+  s_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[0]);
+  d_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[1]);
+  OnOff = (DLword *)NativeAligned2FromLAddr(args[2]);
 
   s_height = s_bitmap->bmheight;
   s_width = s_bitmap->bmwidth;
@@ -447,8 +447,8 @@ void Uncolorize_Bitmap(LispPTR args[])
 
   if (s_bitsperpixel != 8) return;
 
-  s_base = (u_char *)Addr68k_from_LADDR(s_bitmap->bmbase);
-  d_base = (DLword *)Addr68k_from_LADDR(d_bitmap->bmbase);
+  s_base = (u_char *)NativeAligned2FromLAddr(s_bitmap->bmbase);
+  d_base = (DLword *)NativeAligned2FromLAddr(d_bitmap->bmbase);
   s_rasterwidth = s_bitmap->bmrasterwidth;
   d_rasterwidth = d_bitmap->bmrasterwidth;
 
@@ -516,10 +516,10 @@ LispPTR Colorize_Bitmap(LispPTR args[])
   N_GETNUMBER(args[10], d_nbits, bad_arg);
   if (d_nbits != 8) return (NIL); /* do nothing. */
 
-  s_bitmap = (BITMAP *)Addr68k_from_LADDR(args[0]);
+  s_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[0]);
   N_GETNUMBER(args[1], s_left, bad_arg);
   N_GETNUMBER(args[2], s_bottom, bad_arg);
-  d_bitmap = (BITMAP *)Addr68k_from_LADDR(args[3]);
+  d_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[3]);
   N_GETNUMBER(args[4], d_left, bad_arg);
   N_GETNUMBER(args[5], d_bottom, bad_arg);
   N_GETNUMBER(args[6], width, bad_arg);
@@ -527,9 +527,9 @@ LispPTR Colorize_Bitmap(LispPTR args[])
   N_GETNUMBER(args[8], color0, bad_arg);
   N_GETNUMBER(args[9], color1, bad_arg);
 
-  s_base = (DLword *)Addr68k_from_LADDR(s_bitmap->bmbase) +
+  s_base = (DLword *)NativeAligned2FromLAddr(s_bitmap->bmbase) +
            s_bitmap->bmrasterwidth * (s_bitmap->bmheight - (s_bottom + height));
-  (DLword *)d_base = (DLword *)Addr68k_from_LADDR(d_bitmap->bmbase) +
+  (DLword *)d_base = (DLword *)NativeAligned2FromLAddr(d_bitmap->bmbase) +
                      d_bitmap->bmrasterwidth * (d_bitmap->bmheight - (d_bottom + height));
 
   for (i = 0, d_base += d_left; i < height;
@@ -612,7 +612,7 @@ void Draw_8BppColorLine(LispPTR *args)
   else
     mode = 0; /* REPLACE_atom */
 
-  n_bmbase = (u_char *)Addr68k_from_LADDR(args[9]);
+  n_bmbase = (u_char *)NativeAligned2FromLAddr(args[9]);
   raster_width = (short)(args[10] & 0xffff);
   color = (u_char)(args[11] & 0xff);
 

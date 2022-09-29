@@ -10,7 +10,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "arith.h"        // for FIXP_VALUE
 #include "car-cdrdefs.h"  // for car, cdr
 #include "cell.h"         // for PLCell, PNCell, GetPnameCell, GetPropCell
@@ -78,24 +78,24 @@ static unsigned short sxhash(LispPTR obj) {
         case TYPE_PATHNAME: return (sxhash_pathname(obj));
         case TYPE_ONED_ARRAY:
         case TYPE_GENERAL_ARRAY:
-          str = (OneDArray *)Addr68k_from_LADDR(obj);
+          str = (OneDArray *)NativeAligned4FromLAddr(obj);
           if (str->stringp) return (sxhash_string(str));
           if (str->bitp) return (sxhash_bitvec(str));
           return (EQHASHINGBITS(obj));
         case TYPE_BIGNUM: {
           LispPTR contents;
-          contents = ((BIGNUM *)Addr68k_from_LADDR(obj))->contents;
+          contents = ((BIGNUM *)NativeAligned4FromLAddr(obj))->contents;
           return ((unsigned short)car(contents) + (((unsigned short)car(cdr(contents))) << 12));
         }
 
         case TYPE_COMPLEX: {
           COMPLEX *object;
-          object = (COMPLEX *)Addr68k_from_LADDR(obj);
+          object = (COMPLEX *)NativeAligned4FromLAddr(obj);
           return (sxhash(object->real) ^ sxhash(object->imaginary));
         }
         case TYPE_RATIO: {
           RATIO *object;
-          object = (RATIO *)Addr68k_from_LADDR(obj);
+          object = (RATIO *)NativeAligned4FromLAddr(obj);
           return (sxhash(object->numerator) ^ sxhash(object->denominator));
         }
 
@@ -119,13 +119,13 @@ static unsigned short sxhash_string(OneDArray *obj) {
     case THIN_CHAR_TYPENUMBER: {
       char *thin;
       unsigned i;
-      thin = ((char *)(Addr68k_from_LADDR(obj->base))) + offset;
+      thin = ((char *)(NativeAligned2FromLAddr(obj->base))) + offset;
       for (i = 0; i < len; i++) hash = sxhash_rotate(hash ^ GETBYTE(thin++));
     } break;
     case FAT_CHAR_TYPENUMBER: {
       unsigned short *fat;
       unsigned i;
-      fat = ((unsigned short *)(Addr68k_from_LADDR(obj->base))) + offset;
+      fat = ((unsigned short *)(NativeAligned2FromLAddr(obj->base))) + offset;
       for (i = 0; i < len; i++) hash = sxhash_rotate(hash ^ GETWORD(fat++));
     } break;
     default: error("SXHASH of a string not made of chars!\n");
@@ -139,7 +139,7 @@ static unsigned short sxhash_bitvec(OneDArray *obj) {
   unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
   offset = (unsigned)obj->offset;
-  base = ((unsigned short *)(Addr68k_from_LADDR(obj->base))) + (offset >> 4);
+  base = ((unsigned short *)(NativeAligned2FromLAddr(obj->base))) + (offset >> 4);
   if (offset == 0) {
     hash = (*base);
     if (len < 16) hash = hash >> (16 - len);
@@ -165,7 +165,7 @@ static unsigned short sxhash_list(LispPTR obj) {
 static unsigned short sxhash_pathname(LispPTR obj) {
   unsigned short hash = 0;
   PATHNAME *path;
-  path = (PATHNAME *)(Addr68k_from_LADDR(obj));
+  path = (PATHNAME *)(NativeAligned4FromLAddr(obj));
   hash = sxhash_rotate(sxhash(path->host) ^ sxhash(path->device));
   hash = sxhash_rotate(hash ^ sxhash(path->type));
   hash = sxhash_rotate(hash ^ sxhash(path->version));
@@ -202,7 +202,7 @@ static unsigned short stringequalhash(LispPTR obj) {
     case TYPE_LITATOM:
       ind = ((int)obj) & POINTERMASK;
       pnptr = (PNCell *)GetPnameCell(ind);
-      base = (DLword *)Addr68k_from_LADDR(pnptr->pnamebase);
+      base = (DLword *)NativeAligned2FromLAddr(pnptr->pnamebase);
       Prop = (PLCell *)GetPropCell(ind);
       fatp = Prop->fatpnamep;
       offset = 1;
@@ -210,10 +210,10 @@ static unsigned short stringequalhash(LispPTR obj) {
       break;
     case TYPE_ONED_ARRAY:
     case TYPE_GENERAL_ARRAY:
-      str = (OneDArray *)Addr68k_from_LADDR(obj);
+      str = (OneDArray *)NativeAligned4FromLAddr(obj);
       if (str->stringp) {
         fatp = (str->typenumber) == FAT_CHAR_TYPENUMBER;
-        base = Addr68k_from_LADDR(str->base);
+        base = NativeAligned2FromLAddr(str->base);
         offset = str->offset;
         len = str->fillpointer;
       } else
@@ -270,7 +270,7 @@ static unsigned short stringhash(LispPTR obj) {
     case TYPE_LITATOM:
       ind = ((int)obj) & POINTERMASK;
       pnptr = (PNCell *)GetPnameCell(ind);
-      base = (DLword *)Addr68k_from_LADDR(pnptr->pnamebase);
+      base = (DLword *)NativeAligned2FromLAddr(pnptr->pnamebase);
       Prop = (PLCell *)GetPropCell(ind);
       fatp = Prop->fatpnamep;
       offset = 1;
@@ -278,10 +278,10 @@ static unsigned short stringhash(LispPTR obj) {
       break;
     case TYPE_ONED_ARRAY:
     case TYPE_GENERAL_ARRAY:
-      str = (OneDArray *)Addr68k_from_LADDR(obj);
+      str = (OneDArray *)NativeAligned4FromLAddr(obj);
       if (str->stringp) {
         fatp = (str->typenumber) == FAT_CHAR_TYPENUMBER;
-        base = Addr68k_from_LADDR(str->base);
+        base = NativeAligned2FromLAddr(str->base);
         offset = str->offset;
         len = str->fillpointer;
       } else

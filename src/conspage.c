@@ -16,7 +16,7 @@
 
 #include <stddef.h>        // for NULL
 #include "address.h"       // for POINTER_PAGE
-#include "adr68k.h"        // for Addr68k_from_LPAGE, LPAGE_from_68k, LADDR_...
+#include "adr68k.h"        // for NativeAligned4FromLPage, LPageFromNative, ...
 #include "allocmdsdefs.h"  // for alloc_mdspage
 #include "car-cdrdefs.h"   // for find_close_prior_cell
 #include "cell.h"          // for conspage, freecons, FREECONS, CDR_NIL, CON...
@@ -128,21 +128,21 @@ struct conspage *next_conspage(void) {
   page2 = (struct conspage *)((DLword *)page1 + DLWORDSPER_PAGE);
 
   init_conspage(page2, 0); /* No next page */
-  init_conspage(page1, LPAGE_from_68k(page2));
+  init_conspage(page1, LPageFromNative(page2));
 
   priorpg = NULL;
   prior = 0;
-  for (pg = (struct conspage *)Addr68k_from_LPAGE(next = ListpDTD->dtd_nextpage);
+  for (pg = (struct conspage *)NativeAligned4FromLPage(next = ListpDTD->dtd_nextpage);
        next && (next != CONSPAGE_LAST);
-       pg = (struct conspage *)Addr68k_from_LPAGE(next = pg->next_page)) {
+       pg = (struct conspage *)NativeAligned4FromLPage(next = pg->next_page)) {
     priorpg = pg;
     prior = next;
   }
 
   if (prior)
-    priorpg->next_page = LPAGE_from_68k(page1);
+    priorpg->next_page = LPageFromNative(page1);
   else
-    ListpDTD->dtd_nextpage = LPAGE_from_68k(page1);
+    ListpDTD->dtd_nextpage = LPageFromNative(page1);
 
   if (page2->next_page) error("page2 has a next page??");
   if (page2 == priorpg) error("loop in conspage next_pages");
@@ -160,12 +160,12 @@ struct conspage *next_conspage(void) {
        * when it was previously commented as "Doesn't exist next page"
        */
       init_conspage(page2, ListpDTD->dtd_nextpage);
-      init_conspage(page1, LPAGE_from_68k(page2));
+      init_conspage(page1, LPageFromNative(page2));
 
-      ListpDTD->dtd_nextpage = LPAGE_from_68k(page1);
+      ListpDTD->dtd_nextpage = LPageFromNative(page1);
       goto ex; /* replaced break */
     } else {
-      page1 = (struct conspage *)Addr68k_from_LPAGE(next); /*Jan-21*/
+      page1 = (struct conspage *)NativeAligned4FromLPage(next); /*Jan-21*/
     }
 
     if (page1->count > 1) break;
@@ -252,8 +252,8 @@ static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
   struct conspage *pg;
   unsigned pgno = ListpDTD->dtd_nextpage;
 
-  for (pg = (struct conspage *)Addr68k_from_LPAGE(pgno); pgno;
-       pg = (struct conspage *)Addr68k_from_LPAGE(pgno = pg->next_page))
+  for (pg = (struct conspage *)NativeAligned4FromLPage(pgno); pgno;
+       pg = (struct conspage *)NativeAligned4FromLPage(pgno = pg->next_page))
     if ((cell = find_pair_in_page(pg, cdrval))) return (cell);
 
   pg = next_conspage();
@@ -266,8 +266,8 @@ static ConsCell *find_free_cons_cell(void) {
   struct conspage *pg;
   unsigned pgno = ListpDTD->dtd_nextpage;
 
-  for (pg = (struct conspage *)Addr68k_from_LPAGE(pgno); pgno;
-       pg = (struct conspage *)Addr68k_from_LPAGE(pgno))
+  for (pg = (struct conspage *)NativeAligned4FromLPage(pgno); pgno;
+       pg = (struct conspage *)NativeAligned4FromLPage(pgno))
     if (pg->count) {
       pg->count--;
       cell = (ConsCell *)(((DLword *)pg) + (pg->next_cell));
@@ -312,7 +312,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
     if ((ListpDTD->dtd_nextpage != 0) &&
         (GetCONSCount(ListpDTD->dtd_nextpage) > 0)) { /* next page has 1 or more free cells */
       new_page = ListpDTD->dtd_nextpage;
-      new_conspage = (struct conspage *)Addr68k_from_LPAGE(new_page);
+      new_conspage = (struct conspage *)NativeAligned4FromLPage(new_page);
       if (new_conspage->next_cell == 0) error("count ne 0, but nothing on free chain.");
       new_cell = GetNewCell_68k(new_conspage); /* get new cell */
 
@@ -346,7 +346,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
   else /* cons_cdr != NIL */
   {
     new_page = POINTER_PAGE(cons_cdr); /* Y's page num */
-    new_conspage = (struct conspage *)Addr68k_from_LPAGE(new_page);
+    new_conspage = (struct conspage *)NativeAligned4FromLPage(new_page);
 #ifdef NEWCDRCODING
     if (Listp(cons_cdr) && (new_conspage->count > 0) &&
         (new_cell = find_close_prior_cell(new_conspage, cons_cdr)))
@@ -360,7 +360,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       new_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (new_cell->car_field != NIL) {
-        printf("CELL 0x%x has non-NIL car = 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CELL 0x%x has non-NIL car = 0x%x \n", LAddrFromNative(new_cell),
                new_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -390,7 +390,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       temp_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (temp_cell->car_field != NIL) {
-        printf("CDR indirect CELL 0x%x has non-NIL car 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CDR indirect CELL 0x%x has non-NIL car 0x%x \n", LAddrFromNative(new_cell),
                temp_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -400,7 +400,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
       new_cell = GetNewCell_68k(new_conspage);
 #ifdef DEBUG
       if (new_cell->car_field != NIL) {
-        printf("CDR ind-2 CELL 0x%x has non-NIL car = 0x%x \n", LADDR_from_68k(new_cell),
+        printf("CDR ind-2 CELL 0x%x has non-NIL car = 0x%x \n", LAddrFromNative(new_cell),
                new_cell->car_field);
         error("QUIT from N_OP_cons");
       }
@@ -416,7 +416,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
 
 #ifndef NEWCDRCODING
       /* culc. cdr code */
-      new_cell->cdr_code = (((LispPTR)LADDR_from_68k(temp_cell)) & 0xff) >> 1;
+      new_cell->cdr_code = (((LispPTR)LAddrFromNative(temp_cell)) & 0xff) >> 1;
 #endif /* NEWCDRCODING */
 
       ListpDTD->dtd_oldcnt++; /* added feb-12 take */
@@ -425,7 +425,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
 
   } /* else (cons_cdr==NIL end) */
 
-  new_page = LADDR_from_68k(new_cell);
+  new_page = LAddrFromNative(new_cell);
   GCLOOKUP(new_page, DELREF);
 #ifdef NEWCDRCODING
   if (254 < ((new_page & 0xff) + ((new_cell->cdr_code & 7) << 1)))

@@ -571,7 +571,7 @@ void start_lisp() {
 /*******************************/
 #ifndef INIT
   {
-    INTSTAT *intstate = ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word));
+    INTSTAT *intstate = ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word));
     intstate->ETHERInterrupt = 0;
     intstate->LogFileIO = 0;
     intstate->IOInterrupt = 0;
@@ -583,9 +583,9 @@ void start_lisp() {
   TopOfStack = 0;
   Error_Exit = 0;
 
-  MState->pvar = (DLword *)Addr68k_from_LADDR(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
+  MState->pvar = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
 
-  freeptr = next68k = Addr68k_from_LADDR(STK_OFFSET | CURRENTFX->nextblock);
+  freeptr = next68k = NativeAligned2FromLAddr(STK_OFFSET | CURRENTFX->nextblock);
 
   if (GETWORD(next68k) != STK_FSB_WORD) error("Starting Lisp: Next stack block isn't free!");
 

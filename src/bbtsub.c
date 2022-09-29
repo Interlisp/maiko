@@ -343,11 +343,11 @@ void bitbltsub(LispPTR *argv) {
     init_kbd_startup;
 #endif
 
-    pbt = (PILOTBBT *)Addr68k_from_LADDR(args[0]);
-    srcebm = (BITMAP *)Addr68k_from_LADDR(args[1]);
+    pbt = (PILOTBBT *)NativeAligned4FromLAddr(args[0]);
+    srcebm = (BITMAP *)NativeAligned4FromLAddr(args[1]);
     sx = (args[2] & 0xFFFF);
     sty = (args[3] & 0xFFFF);
-    destbm = (BITMAP *)Addr68k_from_LADDR(args[4]);
+    destbm = (BITMAP *)NativeAligned4FromLAddr(args[4]);
     dx = (args[5] & 0xFFFF);
     dty = (args[6] & 0xFFFF);
     sourcetype = (args[8] == NIL_PTR ? INPUT_atom : args[8]);
@@ -366,7 +366,7 @@ void bitbltsub(LispPTR *argv) {
       wxoffset = (args[11] == NIL_PTR ? 0 : args[11] & 0xFFFF);
       wyoffset = (args[12] == NIL_PTR ? 0 : args[12] & 0xFFFF);
       sx = ((wxoffset) ? (dx - wxoffset) : dx) % BITSPERWORD;
-      dstbase = (DLword *)Addr68k_from_LADDR(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
+      dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
       gray = 1;
       if (texture == NIL_PTR) { /* White Shade */
         grayword[0] = 0;
@@ -399,8 +399,8 @@ void bitbltsub(LispPTR *argv) {
           goto do_it_now;
         }
       } else { /* A bitmap that is 16 bits wide. */
-        texture68k = (BITMAP *)Addr68k_from_LADDR(texture);
-        srcbase = (DLword *)Addr68k_from_LADDR(texture68k->bmbase);
+        texture68k = (BITMAP *)NativeAligned4FromLAddr(texture);
+        srcbase = (DLword *)NativeAligned2FromLAddr(texture68k->bmbase);
         num_gray = min(texture68k->bmheight, 16);
         curr_gray_line = (dty + wyoffset) % num_gray;
         srcbase += curr_gray_line;
@@ -429,15 +429,15 @@ void bitbltsub(LispPTR *argv) {
       backwardflg = T;
 
     if (backwardflg) {
-      srcbase = (DLword *)Addr68k_from_LADDR(
+      srcbase = (DLword *)NativeAligned2FromLAddr(
           ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * (sty + h - 1)));
-      dstbase = (DLword *)Addr68k_from_LADDR(
+      dstbase = (DLword *)NativeAligned2FromLAddr(
           ADDBASE(destbm->bmbase, destbm->bmrasterwidth * (dty + h - 1)));
       srcbpl = 0 - srcbpl;
       dstbpl = 0 - dstbpl;
     } else {
-      srcbase = (DLword *)Addr68k_from_LADDR(ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * sty));
-      dstbase = (DLword *)Addr68k_from_LADDR(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
+      srcbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * sty));
+      dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
     }
 #ifdef REALCURSOR
     displayflg = n_new_cursorin(srcbase, sx, sty, w, h);
@@ -641,8 +641,8 @@ LispPTR bitblt_bitmap(LispPTR *args) {
 #endif
 
   /* Get arguments  and check the possibilities of PUNT */
-  SourceBitmap = (BITMAP *)Addr68k_from_LADDR(args[0]);
-  DestBitmap = (BITMAP *)Addr68k_from_LADDR(args[3]);
+  SourceBitmap = (BITMAP *)NativeAligned4FromLAddr(args[0]);
+  DestBitmap = (BITMAP *)NativeAligned4FromLAddr(args[3]);
   /* It does not handle COLOR ..... maybe later */
   destbits = DestBitmap->bmbitperpixel;
   sourcebits = SourceBitmap->bmbitperpixel;
@@ -774,17 +774,17 @@ LispPTR bitblt_bitmap(LispPTR *args) {
     backwardflg = T;
 
   if (backwardflg) {
-    srcbase = (DLword *)Addr68k_from_LADDR(
+    srcbase = (DLword *)NativeAligned2FromLAddr(
         ADDBASE(SourceBitmap->bmbase, SourceBitmap->bmrasterwidth * (sty + height - 1)));
-    dstbase = (DLword *)Addr68k_from_LADDR(
+    dstbase = (DLword *)NativeAligned2FromLAddr(
         ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * (dty + height - 1)));
     srcbpl = 0 - srcbpl;
     dstbpl = 0 - dstbpl;
   } else {
-    srcbase = (DLword *)Addr68k_from_LADDR(
+    srcbase = (DLword *)NativeAligned2FromLAddr(
         ADDBASE(SourceBitmap->bmbase, SourceBitmap->bmrasterwidth * sty));
     dstbase =
-        (DLword *)Addr68k_from_LADDR(ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * dty));
+        (DLword *)NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * dty));
   }
 
   displayflg = n_new_cursorin(srcbase, slx, sty, width, height);
@@ -923,7 +923,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
     }
   }
 
-  DestBitmap = (BITMAP *)Addr68k_from_LADDR(args[1]);
+  DestBitmap = (BITMAP *)NativeAligned4FromLAddr(args[1]);
   if ((destbits = DestBitmap->bmbitperpixel) != 1) { PUNT_TO_BLTSHADEBITMAP; }
 
   N_GETNUMBER(args[2], dleft, bad_arg);
@@ -990,7 +990,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
 
   slx = left % BITSPERWORD;
 
-  dstbase = (DLword *)Addr68k_from_LADDR(ADDBASE(DestBitmap->bmbase, (rasterwidth * dty)));
+  dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, (rasterwidth * dty)));
 
   if (GetTypeNumber(texture) == TYPE_LITATOM) {
     if (texture == NIL_PTR) { /* White Shade */
@@ -1029,8 +1029,8 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   } else /**** Need to handle texture = listp case, too ***/
   /* Listp case alway punt to LISP */
   { /* A bitmap that is 16 bits wide. */
-    texture68k = (BITMAP *)Addr68k_from_LADDR(texture);
-    srcbase = (DLword *)Addr68k_from_LADDR(texture68k->bmbase);
+    texture68k = (BITMAP *)NativeAligned4FromLAddr(texture);
+    srcbase = (DLword *)NativeAligned2FromLAddr(texture68k->bmbase);
     num_gray = min(texture68k->bmheight, 16);
     curr_gray_line = (dty) % num_gray;
     srcbase += curr_gray_line;
@@ -1157,12 +1157,12 @@ void bltchar(LispPTR *args)
   int num_gray = 0, curr_gray_line = 0;
 #endif
 
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(((BLTC *)args)->pilotbbt);
-  dspdata = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTC *)args)->displaydata);
+  pbt = (PILOTBBT *)NativeAligned4FromLAddr(((BLTC *)args)->pilotbbt);
+  dspdata = (DISPLAYDATA *)NativeAligned4FromLAddr(((BLTC *)args)->displaydata);
 
-  srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-  dstbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   srcbpl = abs(pbt->pbtsourcebpl);
   dstbpl = abs(pbt->pbtdestbpl);
@@ -1170,7 +1170,7 @@ void bltchar(LispPTR *args)
   w = ((BLTC *)args)->right - ((BLTC *)args)->left;
   if ((h <= 0) || (w <= 0)) return;
 
-  base = GETWORD(Addr68k_from_LADDR(dspdata->ddoffsetscache + ((BLTC *)args)->char8code));
+  base = GETWORD(NativeAligned2FromLAddr(dspdata->ddoffsetscache + ((BLTC *)args)->char8code));
   sx = base + ((BLTC *)args)->left - ((BLTC *)args)->curx;
   dx = ((BLTC *)args)->left;
 
@@ -1332,7 +1332,7 @@ void newbltchar(LispPTR *args) {
   int num_gray = 0, curr_gray_line = 0;
 #endif
 
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((BLTARG *)args)->displaydata);
+  displaydata68k = (DISPLAYDATA *)NativeAligned4FromLAddr(((BLTARG *)args)->displaydata);
 
   if ((displaydata68k->ddcharset & 0xFFFF) != ((BLTARG *)args)->charset) {
     /*if(changecharset_display(displaydata68k, ((BLTARG *)args)->charset) ==-1)*/
@@ -1348,7 +1348,7 @@ void newbltchar(LispPTR *args) {
 
   right =
       curx +
-      GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
+      GETWORD((DLword *)NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
 
   if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
   if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
@@ -1356,7 +1356,7 @@ void newbltchar(LispPTR *args) {
   {
     int newpos;
     newpos = curx +
-             GETWORD((DLword *)Addr68k_from_LADDR(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
+             GETWORD((DLword *)NativeAligned2FromLAddr(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
 
     if ((0 <= newpos) && (newpos < 65536))
       (displaydata68k->ddxposition) = (LispPTR)(S_POSITIVE | newpos);
@@ -1376,21 +1376,21 @@ void newbltchar(LispPTR *args) {
   else
     left = displaydata68k->ddclippingleft;
 
-  pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
+  pbt = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
   h = pbt->pbtheight;
   w = right - left;
   if ((h <= 0) || (w <= 0)) return;
 
-  srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-  dstbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   op = pbt->pbtoperation;
   src_comp = pbt->pbtsourcetype;
 
   srcbpl = abs(pbt->pbtsourcebpl);
   dstbpl = abs(pbt->pbtdestbpl);
-  base = GETWORD(Addr68k_from_LADDR(displaydata68k->ddoffsetscache + ((BLTARG *)args)->char8code));
+  base = GETWORD(NativeAligned2FromLAddr(displaydata68k->ddoffsetscache + ((BLTARG *)args)->char8code));
   sx = base + left - curx;
   dx = left;
 
@@ -1574,14 +1574,14 @@ static LispPTR sfffixy(DISPLAYDATA *displaydata68k, CHARSETINFO *csinfo68k, PILO
   displaydata68k->ddcharsetascent = csinfo68k->CHARSETASCENT;
   chartop = y + displaydata68k->ddcharsetascent;
 
-  bm68k = (BITMAP *)Addr68k_from_LADDR(displaydata68k->dddestination);
+  bm68k = (BITMAP *)NativeAligned4FromLAddr(displaydata68k->dddestination);
   base = bm68k->bmbase;
   top = IMAX(IMIN(displaydata68k->ddclippingtop, chartop), 0);
   base = base + (bm68k->bmrasterwidth * (bm68k->bmheight - top));
   pbt68k->pbtdesthi = base >> 16;
   pbt68k->pbtdestlo = base;
 
-  bm68k = (BITMAP *)Addr68k_from_LADDR(csinfo68k->CHARSETBITMAP);
+  bm68k = (BITMAP *)NativeAligned4FromLAddr(csinfo68k->CHARSETBITMAP);
   base = bm68k->bmbase;
   displaydata68k->ddcharheightdelta = IMIN(IMAX(chartop - top, 0), 65535); /* always positive */
   base = base + bm68k->bmrasterwidth * displaydata68k->ddcharheightdelta;
@@ -1604,12 +1604,12 @@ static LispPTR changecharset_display(DISPLAYDATA *displaydata68k, DLword charset
   BITMAP *bm68k;
   LispPTR *base68k;
 
-  pbt68k = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
-  fontd68k = (FONTDESC *)Addr68k_from_LADDR(displaydata68k->ddfont);
-  base68k = (LispPTR *)Addr68k_from_LADDR(fontd68k->FONTCHARSETVECTOR);
+  pbt68k = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
+  fontd68k = (FONTDESC *)NativeAligned4FromLAddr(displaydata68k->ddfont);
+  base68k = (LispPTR *)NativeAligned4FromLAddr(fontd68k->FONTCHARSETVECTOR);
 
   if ((csinfo = *(base68k + charset)) == NIL) { return (-1); /* punt case */ }
-  csinfo68k = (CHARSETINFO *)Addr68k_from_LADDR(csinfo);
+  csinfo68k = (CHARSETINFO *)NativeAligned4FromLAddr(csinfo);
   /* REF CNT */
 
   FRPLPTR(displaydata68k->ddwidthscache, csinfo68k->WIDTHS);
@@ -1617,7 +1617,7 @@ static LispPTR changecharset_display(DISPLAYDATA *displaydata68k, DLword charset
   FRPLPTR(displaydata68k->ddcharimagewidths, csinfo68k->IMAGEWIDTHS);
   displaydata68k->ddcharset = charset;
 
-  bm68k = (BITMAP *)Addr68k_from_LADDR(csinfo68k->CHARSETBITMAP);
+  bm68k = (BITMAP *)NativeAligned4FromLAddr(csinfo68k->CHARSETBITMAP);
 
   pbt68k->pbtsourcebpl = (bm68k->bmrasterwidth) << 4;
 
@@ -1650,10 +1650,10 @@ void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
   int rest; /* use for alignments */
 
   /* Get Next Block offset from argnum */
-  CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
+  CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
 
-  /* Setup IVar */
-  IVar = Addr68k_from_LADDR((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  /* Setup IVar */ /* XXX: is it really only 2-byte aligned? */
+  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
 
   /* Set PC to the Next Instruction and save into FX */
   CURRENTFX->pc = ((UNSIGNED)PC - (UNSIGNED)FuncObj) + bytenum;
@@ -1663,7 +1663,7 @@ void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
   /* Get DEFCELL 68k address */
   defcell68k = (struct definition_cell *)GetDEFCELL68k(atom_index);
 
-  tmp_fn = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
+  tmp_fn = (struct fnhead *)NativeAligned4FromLAddr(defcell68k->defpointer);
 
   if ((UNSIGNED)(CurrentStackPTR + tmp_fn->stkmin + STK_SAFE) >= (UNSIGNED)EndSTKP) {
     LispPTR test;
@@ -1695,7 +1695,7 @@ void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
   GETWORD(CurrentStackPTR) = FX_MARK;
 
   /* Now SET new FX */
-  ((struct frameex1 *)CurrentStackPTR)->alink = LADDR_from_68k(PVar);
+  ((struct frameex1 *)CurrentStackPTR)->alink = LAddrFromNative(PVar);
   PVar = (DLword *)CurrentStackPTR + FRAMESIZE;
 #ifdef BIGVM
   ((struct frameex1 *)CurrentStackPTR)->fnheader = (defcell68k->defpointer);
@@ -1752,22 +1752,22 @@ void tedit_bltchar(LispPTR *args)
   int num_gray = 0, curr_gray_line = 0;
 #endif
 
-  displaydata68k = (DISPLAYDATA *)Addr68k_from_LADDR(((TBLTARG *)args)->displaydata);
+  displaydata68k = (DISPLAYDATA *)NativeAligned4FromLAddr(((TBLTARG *)args)->displaydata);
   if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {
     /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
     { PUNT_TO_TEDIT_BLTCHAR; }
   }
-  imagewidth = *((DLword *)Addr68k_from_LADDR(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
+  imagewidth = *((DLword *)NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
   newx = ((TBLTARG *)args)->current_x + imagewidth;
   dx = ((TBLTARG *)args)->current_x;
   right = IMIN(newx, ((TBLTARG *)args)->clipright);
 
   if (dx < right) {
-    pbt = (PILOTBBT *)Addr68k_from_LADDR(displaydata68k->ddpilotbbt);
+    pbt = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
     h = pbt->pbtheight;
-    srcbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+    srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-    dstbase = (DLword *)Addr68k_from_LADDR(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+    dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
     srcbpl = abs(pbt->pbtsourcebpl);
     dstbpl = abs(pbt->pbtdestbpl);
 
@@ -1775,7 +1775,7 @@ void tedit_bltchar(LispPTR *args)
     src_comp = pbt->pbtsourcetype;
 
     /*dx=left;  I'll optimize  later*/
-    sx = GETBASE(Addr68k_from_LADDR(displaydata68k->ddoffsetscache), ((TBLTARG *)args)->char8code);
+    sx = GETBASE(NativeAligned2FromLAddr(displaydata68k->ddoffsetscache), ((TBLTARG *)args)->char8code);
     w = IMIN(imagewidth, (right - dx));
 #ifdef NEWBITBLT
     bitblt(srcbase, dstbase, sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray,
@@ -1841,7 +1841,7 @@ static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y
       return (NIL);
   } /* MONO case end */
   else {
-    base68k = (DLword *)Addr68k_from_LADDR(addrhi << 16 | addrlo);
+    base68k = (DLword *)NativeAligned2FromLAddr(addrhi << 16 | addrlo);
     if ((ColorDisplayRegion68k <= base68k) && (base68k <= COLOR_MAX_Address)) {
       y = (base68k - ColorDisplayRegion68k) / displaywidth;
     } else
