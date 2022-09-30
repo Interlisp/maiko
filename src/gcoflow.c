@@ -37,14 +37,16 @@
 #include "lsptypes.h"     // for dtd, GetDTD, TYPE_LISTP
 
 #define Increment_Allocation_Count(n) \
-  if (*Reclaim_cnt_word != NIL) {     \
-    if (*Reclaim_cnt_word > (n))      \
-      (*Reclaim_cnt_word) -= (n);     \
-    else {                            \
-      *Reclaim_cnt_word = NIL;        \
-      doreclaim();                    \
-    }                                 \
-  }
+  do {                                \
+    if (*Reclaim_cnt_word != NIL) {     \
+      if (*Reclaim_cnt_word > (n))      \
+        (*Reclaim_cnt_word) -= (n);     \
+      else {                            \
+        *Reclaim_cnt_word = NIL;        \
+        doreclaim();                    \
+      }                                 \
+    }                                   \
+  } while (0)
 
 DLword gc_handleoverflow(DLword arg) {
   struct htoverflow *cell;
@@ -58,14 +60,14 @@ DLword gc_handleoverflow(DLword arg) {
     cell->ptr = 0;
     cell->pcase = 0;
     ++cell; /* (\ADDBASE CELL WORDSPERCELL) */
-  };
+  }
   ptr = (struct dtd *)GetDTD(TYPE_LISTP);
   /* same as "extern struct dtd *ListpDTD" */
   if ((cellcnt = ptr->dtd_cnt0) > 1024) {
     Increment_Allocation_Count(cellcnt);
     ptr->dtd_oldcnt += cellcnt;
     ptr->dtd_cnt0 = 0;
-  };
+  }
   return (arg);
 }
 
@@ -82,7 +84,7 @@ DLword gcmaptable(DLword arg) {
     cell->ptr = 0;
     cell->pcase = 0;
     ++cell; /* (\ADDBASE CELL WORDSPERCELL) */
-  };
+  }
   for (typnum = 1; typnum <= *MaxTypeNumber_word; ++typnum)
   /* applied alltype */
   {
@@ -91,7 +93,7 @@ DLword gcmaptable(DLword arg) {
       ptr->dtd_oldcnt += cellcnt;
       ptr->dtd_cnt0 = 0;
       Increment_Allocation_Count(cellcnt);
-    };
-  };
+    }
+  }
   return (arg);
 }

@@ -165,12 +165,12 @@ void flip_cursor() {
      except those who want to try building loadups.  */
 
   if (!for_makeinit) {
-    for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; };
-  };
+    for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; }
+  }
 
 #else
 
-  for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; };
+  for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; }
 
 #endif
 

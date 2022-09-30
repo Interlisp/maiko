@@ -75,10 +75,11 @@ extern IOPAGE *IOPage68K;
 extern int  kbd_for_makeinit;
 
 #define init_kbd_startup   \
-  if (!kbd_for_makeinit) { \
+  do {			   \
+    if (!kbd_for_makeinit) { \
     init_keyboard(0);      \
     kbd_for_makeinit = 1;  \
-  };
+  } while (0)
 #endif
 
 #include "devif.h"
@@ -579,7 +580,7 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
 
 #define BITBLTBITMAP_argnum 14
 #define PUNT_TO_BITBLTBITMAP                                                                  \
-  {                                                                                           \
+  do {                                                                                           \
     if (BITBLTBITMAP_index == 0xffffffff) {                                                   \
       BITBLTBITMAP_index = get_package_atom("\\PUNT.BITBLT.BITMAP", 19, "INTERLISP", 9, NIL); \
       if (BITBLTBITMAP_index == 0xffffffff) {                                                 \
@@ -590,7 +591,7 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
     CurrentStackPTR += (BITBLTBITMAP_argnum - 1) * DLWORDSPER_CELL;                           \
     ccfuncall(BITBLTBITMAP_index, BITBLTBITMAP_argnum, 3);                                    \
     return (ATOM_T);                                                                               \
-  }
+  } while (0)
 
 LispPTR BITBLTBITMAP_index;
 /************************************************************************/
@@ -856,7 +857,7 @@ bad_arg:
 
 #define BLTSHADEBITMAP_argnum 8
 #define PUNT_TO_BLTSHADEBITMAP                                                                    \
-  {                                                                                               \
+  do {                                                                                               \
     if (BLTSHADEBITMAP_index == 0xffffffff) {                                                     \
       BLTSHADEBITMAP_index = get_package_atom("\\PUNT.BLTSHADE.BITMAP", 21, "INTERLISP", 9, NIL); \
       if (BLTSHADEBITMAP_index == 0xffffffff) {                                                   \
@@ -867,7 +868,7 @@ bad_arg:
     CurrentStackPTR += (BLTSHADEBITMAP_argnum - 1) * DLWORDSPER_CELL;                             \
     ccfuncall(BLTSHADEBITMAP_index, BLTSHADEBITMAP_argnum, 3);                                    \
     return (ATOM_T);                                                                                   \
-  }
+  } while (0)
 
 LispPTR BLTSHADEBITMAP_index;
 
@@ -1195,7 +1196,7 @@ void bltchar(LispPTR *args)
   bitblt(srcbase, dstbase, sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray, num_gray,
          curr_gray_line);
 #else
-  new_char_bitblt_code
+  new_char_bitblt_code;
 #endif
 
 #ifdef DISPLAYBUFFER
@@ -1238,7 +1239,7 @@ void bltchar(LispPTR *args)
 #define BLTCHAR_argnum 3
 #ifndef INIT
 #define PUNT_TO_BLTCHAR                                                                 \
-  {                                                                                     \
+  do {                                                                                     \
     if ((BLTCHAR_index == 0)) {                                                         \
       BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL); \
       if (BLTCHAR_index == 0xffffffff) {                                                \
@@ -1249,10 +1250,10 @@ void bltchar(LispPTR *args)
     CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                          \
     ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                        \
     return;                                                                             \
-  }
+  } while (0)
 #else
 #define PUNT_TO_BLTCHAR                                                                 \
-  { /* Version that is silent instead of erroring for init */                           \
+  do { /* Version that is silent instead of erroring for init */                           \
     if ((BLTCHAR_index == 0)) {                                                         \
       BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, "INTERLISP", 9, NIL); \
       if (BLTCHAR_index == 0xffffffff) {                                                \
@@ -1263,12 +1264,12 @@ void bltchar(LispPTR *args)
     CurrentStackPTR += (BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                          \
     ccfuncall(BLTCHAR_index, BLTCHAR_argnum, 3);                                        \
     return;                                                                             \
-  }
+  } while (0)
 #endif /* INIT */
 
 #define TEDIT_BLTCHAR_argnum 6
 #define PUNT_TO_TEDIT_BLTCHAR                                                             \
-  {                                                                                       \
+  do {                                                                                       \
     if (TEDIT_BLTCHAR_index == 0xffffffff) {                                              \
       TEDIT_BLTCHAR_index = get_package_atom("\\TEDIT.BLTCHAR", 14, "INTERLISP", 9, NIL); \
       if (TEDIT_BLTCHAR_index == 0xffffffff) {                                            \
@@ -1279,10 +1280,10 @@ void bltchar(LispPTR *args)
     CurrentStackPTR += (TEDIT_BLTCHAR_argnum - 1) * DLWORDSPER_CELL;                      \
     ccfuncall(TEDIT_BLTCHAR_index, TEDIT_BLTCHAR_argnum, 3);                              \
     return;                                                                               \
-  }
+  } while (0)
 
 #define FGetNum(ptr, place)                     \
-  {                                             \
+  do {                                          \
     if (((ptr)&SEGMASK) == S_POSITIVE) {        \
       (place) = ((ptr)&0xffff);                 \
     } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
@@ -1290,9 +1291,9 @@ void bltchar(LispPTR *args)
     } else {                                    \
       PUNT_TO_BLTCHAR;                          \
     }                                           \
-  }
+  } while (0)
 #define FGetNum2(ptr, place)                    \
-  {                                             \
+  do {                                          \
     if (((ptr)&SEGMASK) == S_POSITIVE) {        \
       (place) = ((ptr)&0xffff);                 \
     } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
@@ -1300,7 +1301,7 @@ void bltchar(LispPTR *args)
     } else {                                    \
       return (-1);                              \
     }                                           \
-  }
+  } while (0)
 
 LispPTR *TOPWDS68k;          /* Top of window stack's DS */
 LispPTR BLTCHAR_index;       /* Atom # for \PUNTBLTCHAR punt fn */
@@ -1406,7 +1407,7 @@ void newbltchar(LispPTR *args) {
   bitblt(srcbase, dstbase, sx, dx, w, h, srcbpl, dstbpl, backwardflg, src_comp, op, gray, num_gray,
          curr_gray_line);
 #else
-  new_char_bitblt_code
+  new_char_bitblt_code;
 #endif
 
 #ifdef DISPLAYBUFFER

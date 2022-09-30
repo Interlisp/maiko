@@ -65,21 +65,22 @@
 /** in CONTEXTSW , for exchanging context **/
 
 #define Midpunt(fxnum) 							\
-  { DLword midpunt; 					\
+  do { DLword midpunt; 					\
     midpunt = LOLOC(LAddrFromNative(CURRENTFX));			\
     PVar=(DLword *)							\
 	    NativeAligned2FromStackOffset(					\
                         (GETWORD(((DLword *)InterfacePage) + (fxnum)))) \
 		+ FRAMESIZE; 						\
     GETWORD(((DLword *)InterfacePage) + (fxnum)) = midpunt ;		\
-  }
+  } while (0)
 
 
 #define CHECKFX							\
-  if (((UNSIGNED)PVar -(UNSIGNED)CURRENTFX) != 20)			\
+  do { if (((UNSIGNED)PVar -(UNSIGNED)CURRENTFX) != 20)          \
     { printf("Invalid FX(0x%x) and PV(0x%x) \n",		\
 	     LAddrFromNative(CURRENTFX),LAddrFromNative(PVar));	\
-    }
+    }                                                           \
+  } while (0)
 
 
 
@@ -87,16 +88,16 @@
 	that it is called by CONTEXTSW in original LISP code **/
 
 #define BEFORE_CONTEXTSW						\
-  { CurrentStackPTR += 2; 						\
+  do { CurrentStackPTR += 2; 						\
     CURRENTFX->nextblock=StackOffsetFromNative(CurrentStackPTR); 		\
     GETWORD(CurrentStackPTR)=STK_FSB_WORD; 				\
     GETWORD(CurrentStackPTR+1)= (((UNSIGNED)EndSTKP-(UNSIGNED)(CurrentStackPTR))>>1); \
     if (GETWORD(CurrentStackPTR+1) == 0) error("0-long free block."); \
-  }
+  } while (0)
 
 
 #define AFTER_CONTEXTSW							\
-  { DLword *ac_ptr68k,*ac_freeptr;					\
+  do { DLword *ac_ptr68k,*ac_freeptr;					\
     ac_ptr68k = (DLword*)NativeAligned2FromStackOffset(CURRENTFX->nextblock);	\
     if(GETWORD(ac_ptr68k) != STK_FSB_WORD) error("pre_moveframe: MP9316");	\
     CHECK_FX(CURRENTFX);						\
@@ -109,5 +110,5 @@
     CHECK_FX(CURRENTFX);						\
     S_CHECK( EndSTKP > CurrentStackPTR, 				\
 		"End of stack isn't beyond current stk pointer."); 	\
-  }
+  } while (0)
 #endif /* RETURN_H */

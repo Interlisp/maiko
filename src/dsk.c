@@ -2811,7 +2811,7 @@ static int make_directory(char *dir)
  */
 #ifdef DOS
 #define FindHighestVersion(varray, mentry, max_no)                                         \
-  {                                                                                        \
+  do {                                                                                        \
     FileName *centry;                                                             \
     for (centry = varray, max_no = -1; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no > max_no) {                                                   \
@@ -2819,10 +2819,10 @@ static int make_directory(char *dir)
         mentry = centry;                                                                   \
       }                                                                                    \
     }                                                                                      \
-  }
+    } while (0)
 #else
 #define FindHighestVersion(varray, mentry, max_no)                                        \
-  {                                                                                       \
+  do {                                                                                       \
     FileName *centry;                                                            \
     for (centry = (varray), (max_no) = 0; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no > (max_no)) {                                                  \
@@ -2830,7 +2830,7 @@ static int make_directory(char *dir)
         (mentry) = centry;                                                                  \
       }                                                                                   \
     }                                                                                     \
-  }
+    } while (0)
 #endif /* DOS */
 
 /*
@@ -2859,7 +2859,7 @@ static int make_directory(char *dir)
  */
 #ifdef DOS
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
-  {                                                                                                \
+  do {                                                                                                \
     FileName *centry;                                                                     \
     for (centry = varray, min_no = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no < min_no) {                                                           \
@@ -2867,10 +2867,10 @@ static int make_directory(char *dir)
         mentry = centry;                                                                           \
       }                                                                                            \
     }                                                                                              \
-  }
+    } while (0)
 #else
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
-  {                                                                                                \
+  do {                                                                                                \
     FileName *centry;                                                                     \
     for (centry = (varray), (min_no) = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no < (min_no) && centry->version_no != 0) {                                \
@@ -2878,7 +2878,7 @@ static int make_directory(char *dir)
         (mentry) = centry;                                                                           \
       }                                                                                            \
     }                                                                                              \
-  }
+  } while (0)
 #endif /* DOS */
 
 /*
@@ -2906,7 +2906,7 @@ static int make_directory(char *dir)
  */
 
 #define FindSpecifiedVersion(varray, sentry, ver_no)                        \
-  {                                                                         \
+  do {                                                                         \
     FileName *centry;                                              \
                                                                             \
     (sentry) = (FileName *)NULL;                                              \
@@ -2915,7 +2915,7 @@ static int make_directory(char *dir)
         (sentry) = centry;                                                    \
         break;                                                              \
       }                                                                     \
-  }
+  } while (0)
 
 /************************************************************************/
 /*									*/

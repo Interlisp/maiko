@@ -492,7 +492,6 @@ LispPTR native_newframe(int slot)
             ppvar = (DLword *)newpfra2 - 1;
             /* ppvar points to IVAR field in Basic frame */
             return (*((LispPTR *)achain) = STK_HI_RET(GETWORD(ppvar) + fvaroffset));
-            ;
           default: error("Stack corrupted: bad value in name table");
         } /* end switch */
       }   /* end if */

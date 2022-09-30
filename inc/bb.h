@@ -738,7 +738,7 @@ int srcRshift;
 /************************************************************************/
 
 #define  new_bitblt_code			\
-{						\
+do {						\
 variables					\
 some_init					\
 while (num_lines_remaining-- > 0)		\
@@ -778,7 +778,7 @@ next_line:					\
     continue;					\
   }						\
 } /* end line loop */				\
-}
+} while (0)
 
 
 
@@ -791,7 +791,7 @@ next_line:					\
 /************************************************************************/
 
 #define  new_gray_bitblt_code			\
-{						\
+do {						\
 variables					\
 some_init					\
 while (num_lines_remaining-- > 0)		\
@@ -803,7 +803,7 @@ do_fpt:						\
 next_line:					\
   do_gray_advance				\
 } /* end line loop */				\
-}
+} while (0)
 
 
 
@@ -816,7 +816,7 @@ next_line:					\
 /************************************************************************/
 
 #define  new_char_bitblt_code			\
-{						\
+do {						\
 variables					\
 some_init					\
 while (num_lines_remaining-- > 0)		\
@@ -828,7 +828,7 @@ do_fpt:						\
 next_line:					\
   F_do_advance					\
 } /* end line loop */				\
-}
+} while (0)
 
 
 

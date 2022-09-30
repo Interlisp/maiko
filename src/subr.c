@@ -498,7 +498,7 @@ void OP_subrcall(int subr_no, int argnum) {
         N_GETNUMBER(args[0], iarg, ret_nil);
         ARITH_SWITCH(LAddrFromNative(iarg), TopOfStack);
         break;
-      };
+      }
       */
       TopOfStack = NIL_PTR;
       break;

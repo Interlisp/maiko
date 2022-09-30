@@ -77,7 +77,7 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   case OP_ERASE: GETWORDBASEWORD(base, offset) = bmdata & ~bmmask; break;
   case OP_READ: break;
   default: GETWORDBASEWORD(base, offset) = bmdata | bmmask;
-  };
+  }
 
 
 #ifdef XWINDOW

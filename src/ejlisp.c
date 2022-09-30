@@ -37,7 +37,7 @@
 #define CHAR_SIZE CHAR_MAXLEN *(sizeof(char) / sizeof(int))
 
 #define LStringToCString(Lisp, C, MaxLen, Len)                                                     \
-  {                                                                                                \
+  do {                                                                                                \
     OneDArray *arrayp;                                                                             \
     char *base;                                                                                    \
     short *sbase;                                                                                  \
@@ -64,10 +64,10 @@
                                                                                                    \
       default: error("LStringToCString can not handle\n");                                         \
     }                                                                                              \
-  }
+  } while (0)
 
 #define CStringToLString(C, Lisp, Len)                                                             \
-  {                                                                                                \
+  do {                                                                                                \
     OneDArray *arrayp;                                                                             \
     char *base;                                                                                    \
     short *sbase;                                                                                  \
@@ -93,18 +93,18 @@
                                                                                                    \
       default: error("CStringToLString can not handle\n");                                         \
     }                                                                                              \
-  }
+  } while (0)
 
 #define IntToFixp(C, Lisp)                                \
-  {                                                       \
+  do {                                                       \
     int *base;                                            \
                                                           \
     base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
     *base = C;                                            \
-  }
+  } while (0)
 
 #define ZeroFix(C)                                       \
-  {                                                      \
+  do {                                                      \
     int k, j;                                            \
                                                          \
     if (C[0] == 0 && C[1] != 0) {                        \
@@ -113,15 +113,15 @@
       }                                                  \
       C[j] = 0;                                          \
     }                                                    \
-  }
+  } while (0)
 
 #define EJLISP_SETJMP(x)       \
-  {                            \
+  do {                            \
     if (setjmp(jmpbuf) != 0) { \
       ejlisp_buf = NULL;       \
       return (x);              \
     }                          \
-  }
+  } while (0)
 
 typedef struct first_array {
   unsigned int orig : 1;

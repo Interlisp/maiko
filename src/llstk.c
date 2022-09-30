@@ -335,7 +335,7 @@ SCAN:
       while (STKWORD(scanptr68k)->flags != STK_BF) {
         S_WARN(STKWORD(scanptr68k)->flags == STK_NOTFLG, "NOTFLG not on", (void *)scanptr68k);
         scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
-      };
+      }
 
 #ifdef STACKCHECK
       if (((Bframe *)scanptr68k)->residual) {
@@ -605,7 +605,7 @@ void stack_check(StackWord *start68k) {
             WARN("StackCheck:!=STK_NOTFLG", printf("content:0x%x\n", GETWORD((DLword *)scanptr68k)));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
-        } /* while end */;
+        } /* while end */
         CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)
@@ -774,7 +774,7 @@ void walk_stack(StackWord *start68k) {
                    GETWORD((DLword *)scanptr68k));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
-        } /* while end */;
+        } /* while end */
         /* CHECK_BF(scanptr68k); */
         {
           Bframe *bf = (Bframe *)scanptr68k;
@@ -900,7 +900,7 @@ int quick_stack_check(void) {
             return(1);
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
-        } /* while end */;
+        } /* while end */
         CHECK_BF((Bframe *)scanptr68k);
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar)

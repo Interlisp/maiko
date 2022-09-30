@@ -457,7 +457,7 @@ void init_for_bltchar(void) {
   if (!for_makeinit) {
     BLTCHAR_index = get_package_atom("\\MAIKO.PUNTBLTCHAR", 18, IL, 9, NIL);
     TEDIT_BLTCHAR_index = get_package_atom("\\TEDIT.BLTCHAR", 14, IL, 9, NIL);
-  };
+  }
   TOPWDS68k = MakeAtom68k("\\TOPWDS");
 
 #ifdef COLOR

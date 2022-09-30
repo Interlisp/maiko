@@ -128,7 +128,7 @@ LispPTR aref1(LispPTR array, int index) {
       break;
     case 38: retval = (*(((LispPTR *)NativeAligned4FromLAddr(base)) + index)); break;
     default: error("Not Implemented in gc's aref1 (other types)");
-  };
+  }
   return (retval);
 }
 

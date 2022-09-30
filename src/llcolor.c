@@ -178,7 +178,7 @@ LispPTR cgfour_change_screen_mode(LispPTR which_screen)
       break;
     }
     default: { error("cgfour_change_screen_mode:Unknown mode:"); }
-  };
+  }
 
 #ifndef DISPLAYBUFFER
   pr_close(ColorFb);

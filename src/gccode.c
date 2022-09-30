@@ -151,8 +151,8 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
         {
           REC_GCLOOKUP(reclaimed, casep);
         }
-      };
-    };
+      }
+    }
     if ((len = oplength[opnum]) >
         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
       char errtext[200];
@@ -164,7 +164,7 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
     }
     codeptr += len + 1;
-  };
+  }
 }
 
 /************************************************************************/
@@ -190,20 +190,20 @@ LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   value = Getikvalue(base, index);
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
-      if (item == getikkey(value)) { goto found; };
+      if (item == getikkey(value)) { goto found; }
     } else
       return (NIL);
-  };
+  }
   reprobe = Reprobefn(bits, limits);
 lp:
   index = Fn16bits(index, reprobe) & limits;
   value = Getikvalue(base, index);
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
-      if (item == getikkey(value)) { goto found; };
+      if (item == getikkey(value)) { goto found; }
     } else
       return (NIL);
-  };
+  }
   goto lp;
 found:
   /*
@@ -235,7 +235,7 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
   if ((*Closure_Cache_Enabled_word != NIL) &&
       (remimplicitkeyhash(codebase, *Closure_Cache_word) != NIL)) {
     return (T);
-  };
+  }
   fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
   REC_GCLOOKUP((POINTERMASK & fnbase->framename), DELREF);
   if (fnbase->startpc != 0) map_code_pointers(codebase, DELREF);
@@ -260,7 +260,7 @@ int code_block_size(long unsigned int codeblock68k) {
   while (T) {
     switch (opnum = Get_BYTE(codeptr)) {
       case ENDOFX: /* -X- */ return (codeptr - initcodeptr);
-    };
+    }
     if ((len = oplength[opnum]) >
         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
       char errtext[200];
@@ -272,5 +272,5 @@ int code_block_size(long unsigned int codeblock68k) {
       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
     }
     codeptr += len + 1;
-  };
+  }
 }

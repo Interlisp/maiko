@@ -302,13 +302,13 @@ dostaking_mouse_up(int newx, int newy)
     currentmouse->Cursor.Last.width = w = currentdsp->Display.width - newx;
   } else {
     currentmouse->Cursor.Last.width = w = 16;
-  };
+  }
 
   if (currentdsp->Display.height < (newy + 16)) {
     currentmouse->Cursor.Last.height = h = currentdsp->Display.height - newy;
   } else {
     currentmouse->Cursor.Last.height = h = 16;
-  };
+  }
 
   srcbpl = currentdsp->Display.width;
   dstbpl = 16;

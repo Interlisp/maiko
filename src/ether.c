@@ -727,13 +727,13 @@ static int check_filter(u_char *buffer)
       case PacketTypeIP: return (0);
       case PacketTypeARP: return (0);
       default: return (1);
-    };
+    }
   /* my address */
   if (ether_addr_equal(buffer, ether_host)) switch (((short *)buffer)[6]) {
       case PacketTypeIP: return (0);
       case PacketTypeARP: return (0);
       default: return (1);
-    };
+    }
   return (0);
 }
 

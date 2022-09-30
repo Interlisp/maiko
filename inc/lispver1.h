@@ -4,7 +4,7 @@
 
 /* DOS version of LispVersionToUnixVersion */
 #define LispVersionToUnixVersion(pathname, ver)				\
-  {									\
+  do {									\
 									\
     char	*cp;						\
     char	*vp;						\
@@ -43,5 +43,5 @@
 	else ver = -1;							\
       }									\
       else ver = -1;							\
-  }
+    } while (0)
 #endif /* LISPVER1_H */

@@ -65,21 +65,21 @@ static const char il_string[] = "INTERLISP";
 #define CLASSP(obj) (LC_TYPEP((obj), atom_class))
 
 #define INSTANCE_OR_PUNT(obj, fn, argnum)                     \
-  {                                                           \
+  do {                                                        \
     if (!LC_TYPEP((obj), atom_instance)) RETCALL(fn, argnum); \
-  }
+  } while (0)
 
 #define INSTANCE_CLASS_OR_PUNT(obj, fn, argnum)                         \
-  {                                                                     \
+  do {                                                                  \
     LispPTR tmp = DTD_FROM_LADDR(obj);                         \
     if (tmp != atom_instance && tmp != atom_class) RETCALL(fn, argnum); \
-  }
+  } while (0)
 
 #define LC_INIT \
   if (atom_instance == 0) LCinit()
 
 #define GET_IV_INDEX(objptr, iv, dest, otherwise)                 \
-  {                                                               \
+  do {                                                            \
     struct LCIVCacheEntry *ce;                           \
     LispPTR iNames = (objptr)->iNames;                   \
                                                                   \
@@ -105,7 +105,7 @@ static const char il_string[] = "INTERLISP";
         }                                                         \
       }                                                           \
     }                                                             \
-  }
+  } while (0)
 
 struct LCClass { /* class datatype */
   LispPTR metaClass, ivNames, ivDescrs, classUnitRec, localIVs, cvNames, cvDescrs, className,
@@ -206,7 +206,7 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
           ce->selector = selector;
           return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
-      };
+      }
 
     next_class:
       if ((cur_class = car(supers)) == NIL_PTR) break;
@@ -255,7 +255,7 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
           ce->selector = selector;
           return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
-      };
+      }
 
     next_class:
       if ((cur_class = car(supers)) == NIL_PTR) break;

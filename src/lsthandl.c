@@ -73,19 +73,19 @@ LispPTR fmemb(LispPTR item, LispPTR list) {
 /**********************************************************************/
 
 #define SAVE_ERROR_EXIT2(topcstk, tos) \
-  {                                    \
+  do {                                  \
     Scratch_CSTK = topcstk;            \
     ERROR_EXIT(tos);                   \
-  }
+  } while (0)
 
 #define S_N_CHECKANDCADR2(sour, dest, tos, tcstk) \
-  {                                               \
+  do {                                            \
     LispPTR parm = sour;                 \
     if (GetTypeNumber(parm) != TYPE_LISTP) {      \
       SAVE_ERROR_EXIT2(tcstk, tos);               \
     } else                                        \
       (dest) = cadr(parm);                        \
-  }
+  } while (0)
 
 LispPTR N_OP_listget(LispPTR plist, LispPTR tos) {
   struct cadr_cell cadrobj;

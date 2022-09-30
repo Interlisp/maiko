@@ -305,51 +305,51 @@ typedef struct stackp {
 #define SLOWP(fx) (((FXBLOCK *)(fx))->slowp)
 #define FASTP(fx) (!SLOWP(fx))
 #define SET_FASTP_NIL(fx68k)                                       \
-  {                                                                \
+  do {                                                             \
     if (FASTP(fx68k)) {                                            \
       ((FX *)(fx68k))->blink = StackOffsetFromNative(DUMMYBF(fx68k)); \
       ((FX *)(fx68k))->clink = ((FX *)(fx68k))->alink;             \
       SLOWP(fx68k) = T;                                            \
     }                                                              \
-  }
+  } while (0)
 
 #define GETALINK(fx) ((((fx)->alink) & 0xfffe) - FRAMESIZE)
 #define SETALINK(fx, val)                                \
-  {                                                      \
+  do {                                                   \
     if (FASTP(fx)) {                                     \
       ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); \
       ((FX *)(fx))->clink = ((FX *)(fx))->alink;         \
     }                                                    \
     ((FX *)(fx))->alink = (val) + FRAMESIZE + 1;         \
-  }
+  } while (0)
 
 #define GETBLINK(fx) (SLOWP(fx) ? ((FX *)(fx))->blink : LOLOC(LAddrFromNative(DUMMYBF(fx))))
 #define SETBLINK(fx, val)                        \
-  {                                              \
+  do {                                           \
     ((FX *)(fx))->blink = (val);                 \
     if (FASTP(fx)) {                             \
       ((FX *)(fx))->clink = ((FX *)(fx))->alink; \
       SLOWP(fx) = 1;                             \
     }                                            \
-  }
+  } while (0)
 
 #define GETCLINK(fx) \
   (SLOWP(fx) ? (((FX *)(fx))->clink - FRAMESIZE) : (((FX *)(fx))->alink - FRAMESIZE))
 #define SETCLINK(fx, val)                                \
-  {                                                      \
+  do {                                                   \
     ((FX *)(fx))->clink = (val) + FRAMESIZE;             \
     if (FASTP((fx))) {                                   \
       ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); \
       SLOWP(fx) = 1;                                     \
     }                                                    \
-  }
+  } while (0)
 
 #define SETACLINK(fx, val)                                                \
-  {                                                                       \
+  do {                                                                    \
     if (FASTP(fx)) { ((FX *)(fx))->blink = LAddrFromNative(DUMMYBF(fx)); } \
     ((FX *)(fx))->clink = (val) + FRAMESIZE;                              \
     ((FX *)(fx))->alink = ((FX *)(fx))->clink + 1;                        \
-  }
+  } while (0)
 
 #ifdef BIGVM
 #define SWAP_FNHEAD
@@ -364,16 +364,16 @@ typedef struct stackp {
       POINTERMASK))
 
 #define MAKEFREEBLOCK(ptr68k, size)                                   \
-  {                                                                   \
+  do {                                                                \
     if ((size) <= 0) error("creating 0 long FSP");                    \
     *((LispPTR *)(ptr68k)) = (STK_FSB_WORD << 16) | ((DLword)(size)); \
-  }
+  } while (0)
 
 #define SETUPGUARDBLOCK(ptr68k, size)                                     \
-  {                                                                       \
+  do {                                                                    \
     if ((size) <= 0) error("creating 0 long Guard block");                \
     (*((LispPTR *)(ptr68k)) = (STK_GUARD_WORD << 16) | ((DLword)(size))); \
-  }
+  } while (0)
 
 /************************************************************************/
 /*									*/
@@ -389,24 +389,24 @@ typedef struct stackp {
 #include "testtooldefs.h"
 
 #define S_CHECK(condition, msg)                          \
-  {                                                      \
+  do {                                                   \
     if (!(condition)) {                                  \
       printf("\n\nStack check failed:  %s.\n\n", (msg)); \
       error("S_Check..");                                \
     }                                                    \
-  }
+  } while (0)
 
 #define S_WARN(condition, msg, scanptr)                                                       \
-  {                                                                                           \
+  do {                                                                                           \
     if (!(condition)) { printf("\n\nStack check failed at %p:  %s.\n\n", (scanptr), (msg)); } \
-  }
+  } while (0)
 
 #define CHECK_BF(bf68k) check_BF(bf68k)
 
 #define CHECK_FX(fx68k) check_FX(fx68k)
 
 #define PreMoveFrameCheck(fx68k)                                                \
-  {                                                                             \
+  do {                                                                          \
     LispPTR *tos_on_stack;                                                      \
     if (check_stack_rooms(fx68k) > 1000) {                                      \
       warn("moveframe:there is more than 100 words SPACE for FX");              \
@@ -416,20 +416,20 @@ typedef struct stackp {
       printf("\n");                                                             \
       stack_check(0);                                                           \
     }                                                                           \
-  }
+    } while (0)
 
 #else /* STACKCHECK */
 
 #define S_CHECK(condition, msg) \
-  {}
+  do {} while (0)
 #define S_WARN(condition, msg, scanptr) \
-  {}
+  do {} while (0)
 #define PreMoveFrameCheck(fx68k) \
-  {}
+  do {} while (0)
 #define CHECK_BF(bf68k) \
-  {}
+  do {} while (0)
 #define CHECK_FX(fx68k) \
-  {}
+  do {} while (0)
 
 #endif /* STACKCHECK */
 

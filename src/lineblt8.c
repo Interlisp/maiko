@@ -56,7 +56,7 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
        therefore, width indicates the rest bits in source bitmap */
 
 #define LineBLT8(srcWptr, offset, width, dstLptr, op1, op2)                                \
-  {                                                                                        \
+  do {                                                                                     \
     DLword *srcw;                                                                 \
     u_int temp1;                                                                  \
     for (srcw = (srcWptr) + (offset) / BITSPERDLWORD; ((width)-BITSPERNIBBLE) >= 0;        \
@@ -116,7 +116,7 @@ unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
         break;                                                                             \
       default:; /* error */                                                                \
     }           /* switch end */                                                           \
-  }             /* MACRO END */
+  } while (0)   /* MACRO END */
 
 /************************************************************************/
 /*									*/
