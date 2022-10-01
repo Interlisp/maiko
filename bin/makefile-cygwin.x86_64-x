@@ -1,7 +1,7 @@
 # Options for Linux, Intel x86_64 and X-Window
 
 #CC = gcc -m64 $(GCC_CFLAGS)
-CC = clang -m64 $(CLANG_CFLAGS)
+CC = clang -m64 $(CLANG_CFLAGS) -DCYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN=20000 -DMAIKO_ENABLE_NETHUB
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

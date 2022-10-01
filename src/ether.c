@@ -217,9 +217,11 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
 }
 
 static void asyncFd(int fd) {
+#ifdef O_ASYNC
   if (fcntl(ether_fd, F_SETOWN, getpid()) == -1) perror("fcntl F_SETOWN error");
   if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC) == -1) perror("fcntl F_SETFL on error");
   log_debug(("  async io enabled for ether_fd\n"));
+#endif
 }
 
 /*

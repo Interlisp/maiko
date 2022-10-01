@@ -162,6 +162,10 @@ static const int n_mask_array[16] = {
 
 extern int TIMER_INTERVAL;
 
+#ifdef CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN
+static int pseudoTimerCountdown = CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+#endif
+
 void dispatch(void) {
   InstPtr pccache;
 
@@ -260,6 +264,15 @@ nextopcode:
 #endif /* PCTRACE */
 
   /* quick_stack_check();*/ /* JDS 2/12/98 */
+  
+#ifdef CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN
+  if (--pseudoTimerCountdown <= 0) {
+	  Irq_Stk_Check = 0;
+	  Irq_Stk_End = 0;
+	  IO_Signalled = TRUE;
+	  pseudoTimerCountdown = CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+  }
+#endif
 
   switch (Get_BYTE_PCMAC0) {
     case 000:
