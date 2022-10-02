@@ -79,6 +79,7 @@ extern int  kbd_for_makeinit;
     if (!kbd_for_makeinit) { \
     init_keyboard(0);      \
     kbd_for_makeinit = 1;  \
+    }                      \
   } while (0)
 #endif
 
