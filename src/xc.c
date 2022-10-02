@@ -162,8 +162,15 @@ static const int n_mask_array[16] = {
 
 extern int TIMER_INTERVAL;
 
-#ifdef CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN
-static int pseudoTimerCountdown = CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+
+#  if !defined(MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN)
+#    define MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN 20000
+#  endif
+
+int timerAsyncEmulationInsnsCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+static int pseudoTimerAsyncCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+
 #endif
 
 void dispatch(void) {
@@ -265,12 +272,14 @@ nextopcode:
 
   /* quick_stack_check();*/ /* JDS 2/12/98 */
   
-#ifdef CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN
-  if (--pseudoTimerCountdown <= 0) {
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+  if (--pseudoTimerAsyncCountdown <= 0) {
 	  Irq_Stk_Check = 0;
 	  Irq_Stk_End = 0;
+#if defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 	  IO_Signalled = TRUE;
-	  pseudoTimerCountdown = CYGWIN_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+#endif
+	  pseudoTimerAsyncCountdown = timerAsyncEmulationInsnsCountdown;
   }
 #endif
 

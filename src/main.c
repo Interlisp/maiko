@@ -293,6 +293,10 @@ extern void setNethubLogLevel(int ll);
 extern void connectToHub();
 #endif /* MAIKO_ENABLE_NETHUB */
 
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+extern int timerAsyncEmulationInsnsCountdown;
+#endif
+
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
@@ -517,6 +521,24 @@ int main(int argc, char *argv[])
       }
     }
 #endif /* MAIKO_ENABLE_NETHUB */
+
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+    else if (!strcmp(argv[i], "-intr-emu-insns")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 1000) {
+          timerAsyncEmulationInsnsCountdown = tmpint;
+        } else {
+          fprintf(stderr, "Bad value for -intr-emu-insns (integer > 1000)\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -intr-emu-insns\n");
+        exit(1);
+      }
+    }
+#endif
 
     /* diagnostic flag for big vmem write() calls */
     else if (!strcmp(argv[i], "-xpages")) {

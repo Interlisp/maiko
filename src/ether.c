@@ -263,7 +263,6 @@ void connectToHub() {
   hubaddr.sin_port = htons(nethubPort);
 
   ether_fd = socket(AF_INET, SOCK_STREAM, 0);
-  asyncFd(ether_fd);
 
   if (connect(ether_fd, (struct sockaddr*)&hubaddr, sizeof(hubaddr)) < 0) {
     perror("connectToHub() - connect failed");
@@ -578,7 +577,7 @@ LispPTR ether_get(LispPTR args[])
   }
   log_debug(("ether_get() - begin\n"));
 
-  u_char *target = (u_char *)Addr68k_from_LADDR(args[1]);
+  u_char *target = (u_char *)NativeAligned2FromLAddr(args[1]);
   int maxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
   log_debug(("  target = 0x%016lX maxBytecount: %d bytes\n", (unsigned long)target, maxByteCount));
 
@@ -618,7 +617,7 @@ LispPTR ether_send(LispPTR args[])
   }
   log_debug(("ether_send() - begin\n"));
 
-  u_char *source = (u_char *)Addr68k_from_LADDR(args[1]);
+  u_char *source = (u_char *)NativeAligned2FromLAddr(args[1]);
   int byteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
 
   log_debug(("   source = 0x%08X , bytecount: %d bytes\n", (unsigned int)source, byteCount));
@@ -674,16 +673,16 @@ LispPTR check_ether()
     log_debug(("check_ether() - begin\n"));
     int receivedBytes = recvPacket();
     if (receivedBytes > 0) {
-      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
-      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->IOInterrupt = 1;
+      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
+      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->IOInterrupt = 1;
       ETHEREventCount++;
       Irq_Stk_Check = Irq_Stk_End = 0; /* ??? */
       *PENDINGINTERRUPT68k = (ATOM_T);
       log_debug(("check_ether() :: raised LISP interrupt\n"));
       log_debug(("check_ether() :: INTERRUPTSTATE_word   = 0x%08X\n",
-		 *((int*)Addr68k_from_LADDR(*INTERRUPTSTATE_word))));
+		 *((int*)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))));
       log_debug(("check_ether() :: PENDINGINTERRUPT_word = 0x%08X\n",
-		 *((int*)Addr68k_from_LADDR(*PENDINGINTERRUPT_word))));
+		 *((int*)PENDINGINTERRUPT68k)));
       result = (ATOM_T);
       log_debug(("check_ether() - end -> ATOM_T\n\n"));
       log_info(("check_ether(): received packet, len = %d bytes\n", receivedBytes));
