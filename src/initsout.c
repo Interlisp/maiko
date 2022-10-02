@@ -25,7 +25,7 @@
 #include <string.h>        // for strlen, strncpy
 #include <time.h>          // for time_t
 #include <unistd.h>        // for gethostid, getuid
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #ifdef BYTESWAP
 #include "byteswapdefs.h"   // for word_swap_page
 #endif
@@ -81,13 +81,13 @@ LispPTR *fixp_value(LispPTR *ptr) {
   if (val < (S_NEGATIVE | 0xFFFF)) {
     LispPTR newval = N_OP_createcell(S_POSITIVE | TYPE_FIXP);
     LispPTR *newcell;
-    newcell = (LispPTR *)Addr68k_from_LADDR(newval);
+    newcell = (LispPTR *)NativeAligned4FromLAddr(newval);
     *newcell = val & 0xFFFF; /* it was smallp, so fill in */
     *ptr = newval;
     GCLOOKUP(newval, ADDREF); /* so it has a refcount */
     return ((LispPTR *)newcell);
   }
-  return ((LispPTR *)Addr68k_from_LADDR(val));
+  return ((LispPTR *)NativeAligned4FromLAddr(val));
 }
 
 #else
@@ -159,7 +159,7 @@ are null terminated instead */
     /*  \MAIKO.NEWFAULTINIT and \MAIKO.ASSIGNBUFFERS */
     if ((pwd = getpwuid(getuid())) != NULL) {
       InterfacePage->usernameaddr = 0155001;
-      s = (char *)Addr68k_from_LADDR(InterfacePage->usernameaddr);
+      s = (char *)NativeAligned2FromLAddr(InterfacePage->usernameaddr);
       len = (int)strlen(pwd->pw_name);
       /* Lisp reserves 32 words for the BCPL String */
       len = (len < 32 * BYTESPER_DLWORD) ? len : 32 * BYTESPER_DLWORD - 1;
@@ -168,7 +168,7 @@ are null terminated instead */
 #ifdef BYTESWAP
       /* we must swap the area we have written into, starting at 0155000 */
       /* rounding up to 4-byte words					 */
-      word_swap_page(Addr68k_from_LADDR(0155000), (len + 1 + 2 + 3) / 4);
+      word_swap_page(NativeAligned2FromLAddr(0155000), (len + 1 + 2 + 3) / 4);
 #endif
     }
 
@@ -219,15 +219,15 @@ extern int for_makeinit;
 void build_lisp_map(void) {
   DLword index;
 
-  Stackspace = (DLword *)Addr68k_from_LADDR(STK_OFFSET);
-  Plistspace = (DLword *)Addr68k_from_LADDR(PLIS_OFFSET);
-  DTDspace = (DLword *)Addr68k_from_LADDR(DTD_OFFSET);
-  MDStypetbl = (DLword *)Addr68k_from_LADDR(MDS_OFFSET);
-  AtomHT = (DLword *)Addr68k_from_LADDR(ATMHT_OFFSET);
-  Pnamespace = (DLword *)Addr68k_from_LADDR(PNP_OFFSET);
-  AtomSpace = (DLword *)Addr68k_from_LADDR(ATOMS_OFFSET);
-  Defspace = (DLword *)Addr68k_from_LADDR(DEFS_OFFSET);
-  Valspace = (DLword *)Addr68k_from_LADDR(VALS_OFFSET);
+  Stackspace = (DLword *)NativeAligned2FromLAddr(STK_OFFSET);
+  Plistspace = (DLword *)NativeAligned2FromLAddr(PLIS_OFFSET);
+  DTDspace = (DLword *)NativeAligned2FromLAddr(DTD_OFFSET);
+  MDStypetbl = (DLword *)NativeAligned2FromLAddr(MDS_OFFSET);
+  AtomHT = (DLword *)NativeAligned2FromLAddr(ATMHT_OFFSET);
+  Pnamespace = (DLword *)NativeAligned2FromLAddr(PNP_OFFSET);
+  AtomSpace = (DLword *)NativeAligned2FromLAddr(ATOMS_OFFSET);
+  Defspace = (DLword *)NativeAligned2FromLAddr(DEFS_OFFSET);
+  Valspace = (DLword *)NativeAligned2FromLAddr(VALS_OFFSET);
 
   DBPRINT(("Stackspace = %p.\n", (void *)Stackspace));
   DBPRINT(("AtomHT = %p.\n", (void *)AtomHT));
@@ -235,21 +235,21 @@ void build_lisp_map(void) {
   ListpDTD = (struct dtd *)GetDTD(TYPE_LISTP);
 
 #ifdef BIGVM
-  FPtoVP = (LispPTR *)Addr68k_from_LADDR(FPTOVP_OFFSET);
+  FPtoVP = (LispPTR *)NativeAligned4FromLAddr(FPTOVP_OFFSET);
 #else
-  FPtoVP = (DLword *)Addr68k_from_LADDR(FPTOVP_OFFSET);
+  FPtoVP = (DLword *)NativeAligned2FromLAddr(FPTOVP_OFFSET);
 #endif /* BIGVM */
-  IOPage = (IOPAGE *)Addr68k_from_LADDR(IOPAGE_OFFSET);
-  InterfacePage = (IFPAGE *)Addr68k_from_LADDR(IFPAGE_OFFSET);
-  MiscStats = (MISCSTATS *)Addr68k_from_LADDR(MISCSTATS_OFFSET);
+  IOPage = (IOPAGE *)NativeAligned4FromLAddr(IOPAGE_OFFSET);
+  InterfacePage = (IFPAGE *)NativeAligned4FromLAddr(IFPAGE_OFFSET);
+  MiscStats = (MISCSTATS *)NativeAligned4FromLAddr(MISCSTATS_OFFSET);
 
-  UFNTable = (DLword *)Addr68k_from_LADDR(UFNTBL_OFFSET);
-  DisplayRegion = (DLword *)Addr68k_from_LADDR(DISPLAY_OFFSET);
+  UFNTable = (DLword *)NativeAligned2FromLAddr(UFNTBL_OFFSET);
+  DisplayRegion = (DLword *)NativeAligned2FromLAddr(DISPLAY_OFFSET);
 
-  HTmain = (GCENTRY *)Addr68k_from_LADDR(HTMAIN_OFFSET);
-  HToverflow = (GCENTRY *)Addr68k_from_LADDR(HTOVERFLOW_OFFSET);
-  HTbigcount = (GCENTRY *)Addr68k_from_LADDR(HTBIG_OFFSET);
-  HTcoll = (GCENTRY *)Addr68k_from_LADDR(HTCOLL_OFFSET);
+  HTmain = (GCENTRY *)NativeAligned4FromLAddr(HTMAIN_OFFSET);
+  HToverflow = (GCENTRY *)NativeAligned4FromLAddr(HTOVERFLOW_OFFSET);
+  HTbigcount = (GCENTRY *)NativeAligned4FromLAddr(HTBIG_OFFSET);
+  HTcoll = (GCENTRY *)NativeAligned4FromLAddr(HTCOLL_OFFSET);
 
   /**** cache values *****/
   Reclaim_cnt_word = MakeAtom68k("\\RECLAIM.COUNTDOWN");
@@ -410,12 +410,12 @@ void init_for_keyhandle(void) {
   MOUSECHORDTICKS68k = MakeAtom68k("\\MOUSECHORDTICKS");
   LASTUSERACTION68k = MakeAtom68k("\\LASTUSERACTION");
 
-  CLastUserActionCell68k = (LispPTR *)Addr68k_from_LADDR(*LASTUSERACTION68k & 0xffffff);
+  CLastUserActionCell68k = (LispPTR *)NativeAligned4FromLAddr(*LASTUSERACTION68k & 0xffffff);
 
   DOBUFFEREDTRANSITION_index = MAKEATOM("\\DOBUFFEREDTRANSITIONS");
   INTERRUPTFRAME_index = MAKEATOM("\\INTERRUPTFRAME");
 
-  CTopKeyevent = (DLword *)Addr68k_from_LADDR(*KEYBOARDEVENTQUEUE68k);
+  CTopKeyevent = (DLword *)NativeAligned2FromLAddr(*KEYBOARDEVENTQUEUE68k);
 
   PERIODIC_INTERRUPT68k = MakeAtom68k("\\PERIODIC.INTERRUPT");
   PERIODIC_INTERRUPT_FREQUENCY68k = MakeAtom68k("\\PERIODIC.INTERRUPT.FREQUENCY");

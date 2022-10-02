@@ -26,7 +26,7 @@
 #include "lispemul.h"
 #include "lspglob.h"
 #include "lispmap.h"
-#include "adr68k.h"
+#include "adr68k.h" // for NativeAligned4FromLAddr, NativeAligned2FromLAddr
 #include "arith.h"
 
 #define CFREE(x)     \
@@ -198,7 +198,7 @@ static lprec *initmilp(lprec *lp) {
 
 int lpmain(LispPTR lispresults) {
   int i, failure;
-  float *results = (float *)Addr68k_from_LADDR(lispresults);
+  float *results = (float *)NativeAligned4FromLAddr(lispresults);
 
   /* solve it */
 
@@ -240,9 +240,9 @@ int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int m
   printf("Rows = %d.  Cols = %d.  Non-zeros = %d.\n", Rows, Columns, Non_zeros);
 
   Medley_lp = initmilp(Medley_lp);
-  readlispinput(Medley_lp, Addr68k_from_LADDR(rhs), Addr68k_from_LADDR(relns),
-                Addr68k_from_LADDR(cend), Addr68k_from_LADDR(mat), Addr68k_from_LADDR(ints),
-                Addr68k_from_LADDR(lowbo), Addr68k_from_LADDR(upbo));
+  readlispinput(Medley_lp, NativeAligned4FromLAddr(rhs), NativeAligned2FromLAddr(relns),
+                NativeAligned4FromLAddr(cend), NativeAligned4FromLAddr(mat), NativeAligned2FromLAddr(ints),
+                NativeAligned4FromLAddr(lowbo), NativeAligned4FromLAddr(upbo));
 
   auto_scale(Medley_lp); /* Scale values */
 
@@ -253,7 +253,7 @@ int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int m
   set_globals(Medley_lp); /* Set global vars for the run */
   if (Isvalid(Medley_lp)) {
     if (objbound) {
-      Medley_lp->obj_bound = Best_solution[0] = *((float *)Addr68k_from_LADDR(objbound));
+      Medley_lp->obj_bound = Best_solution[0] = *((float *)NativeAligned4FromLAddr(objbound));
     } else if (Maximise && Medley_lp->obj_bound == Infinite)
       Best_solution[0] = -Infinite;
     else if (!Maximise && Medley_lp->obj_bound == -Infinite)

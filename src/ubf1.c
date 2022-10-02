@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"      // for LADDR_from_68k
+#include "adr68k.h"      // for LAddrFromNative
 #include "arith.h"       // for N_ARITH_SWITCH
 #include "lispemul.h"    // for state, ERROR_EXIT, DLword, LispPTR
 #include "lspglob.h"
@@ -34,7 +34,7 @@ LispPTR N_OP_ubfloat1(int arg, int alpha) {
       DLword *wordp;
       wordp = createcell68k(TYPE_FLOATP);
       *((int *)wordp) = arg;
-      return (LADDR_from_68k(wordp));
+      return (LAddrFromNative(wordp));
     }
     case 1: /* unbox */
     {

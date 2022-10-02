@@ -50,8 +50,8 @@ LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, LispPTR wordcount) {
   if ((wordcount & SEGMASK) != S_POSITIVE) ERROR_EXIT(wordcount);
   nw = wordcount & 0xffff;
 
-  source68k = Addr68k_from_LADDR(sourceptr) + nw;
-  dest68k = Addr68k_from_LADDR(destptr) + nw;
+  source68k = NativeAligned2FromLAddr(sourceptr) + nw;
+  dest68k = NativeAligned2FromLAddr(destptr) + nw;
 
   while (nw) {
     (GETWORD(--dest68k)) = GETWORD(--source68k);

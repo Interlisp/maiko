@@ -11,7 +11,7 @@
 
 /*	misc7.c
  */
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned2FromLAddr
 #include "arith.h"        // for N_GETNUMBER
 #include "bbtsubdefs.h"   // for n_new_cursorin
 #include "dbprint.h"      // for DBPRINT
@@ -50,7 +50,7 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 
   if (alpha != 1) ERROR_EXIT(arg7);
 
-  base = Addr68k_from_LADDR(arg1);
+  base = NativeAligned2FromLAddr(arg1);
   N_GETNUMBER(arg2, x, doufn);
   N_GETNUMBER(arg3, y, doufn);
   N_GETNUMBER(arg4, operation, doufn);

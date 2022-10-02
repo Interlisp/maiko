@@ -33,7 +33,7 @@
 #ifndef BYTESWAP
 #include <string.h>      // for memcmp
 #endif
-#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "adr68k.h"      // for NativeAligned2FromLAddr
 #include "cell.h"        // for PNCell, GetPnameCell
 #include "dbprint.h"     // for DBPRINT
 #include "lispemul.h"    // for DLword, LispPTR, T, NIL, POINTERMASK
@@ -309,7 +309,7 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length)
     atom_index = hash_entry - 1;
     /* get pname pointer */
     pnptr = (PNCell *)GetPnameCell(atom_index);
-    pname_base = (char *)Addr68k_from_LADDR(POINTERMASK & pnptr->pnamebase);
+    pname_base = (char *)NativeAligned2FromLAddr(POINTERMASK & pnptr->pnamebase);
 
     if ((length == GETBYTE(pname_base)) &&
         (compare_chars(++pname_base, char_base + offset, length) == T)) {

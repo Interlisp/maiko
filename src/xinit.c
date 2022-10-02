@@ -16,7 +16,7 @@
 #include <signal.h>       // for sig_atomic_t
 #include <stdbool.h>      // for false, bool, true
 #include <stdio.h>        // for NULL
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "dbprint.h"      // for TPRINT
 #include "devif.h"        // for (anonymous), MRegion, DspInterface, OUTER_S...
 #include "dspifdefs.h"    // for GenericReturnT
@@ -288,7 +288,7 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int he
   dsp->ScreenBitmap.byte_order = MSBFirst;
 #endif /* BYTESWAP */
 
-  dsp->ScreenBitmap.data = (char *)(lispbitmap ? Addr68k_from_LADDR((LispPTR)lispbitmap) : 0);
+  dsp->ScreenBitmap.data = (char *)(lispbitmap ? NativeAligned4FromLAddr((LispPTR)lispbitmap) : 0);
 
   switch (depth_hint) {
     case 8: /* Color Screen */

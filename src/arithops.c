@@ -7,7 +7,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"      // for Addr68k_from_LADDR
+#include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "arith.h"       // for N_IGETNUMBER, N_ARITH_SWITCH, N_GETNUMBER
 #include "arithopsdefs.h"  // for N_OP_difference, N_OP_greaterp, N_OP_idiffer...
 #include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
@@ -331,7 +331,7 @@ LispPTR N_OP_boxiplus(LispPTR a, LispPTR tos) {
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
     N_GETNUMBER(tos, arg2, bad);
-    *((int *)Addr68k_from_LADDR(a)) += arg2;
+    *((int *)NativeAligned4FromLAddr(a)) += arg2;
     return (a);
   }
 bad:
@@ -354,7 +354,7 @@ LispPTR N_OP_boxidiff(LispPTR a, LispPTR tos) {
 
   if (GetTypeNumber(a) == TYPE_FIXP) {
     N_GETNUMBER(tos, arg2, bad);
-    *((int *)Addr68k_from_LADDR(a)) -= arg2;
+    *((int *)NativeAligned4FromLAddr(a)) -= arg2;
     return (a);
   }
 bad:

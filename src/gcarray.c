@@ -44,7 +44,7 @@
 
 #include <stdio.h>         // for printf
 #include <string.h>        // for strncmp
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "array.h"         // for arrayheader
 #include "car-cdrdefs.h"   // for car, cdr
 #include "cell.h"          // for PNCell, PLCell, GetPnameCell, GetPropCell
@@ -102,7 +102,7 @@ LispPTR aref1(LispPTR array, int index) {
   short typenumber;
   struct arrayheader *actarray;
 
-  actarray = (struct arrayheader *)Addr68k_from_LADDR(array);
+  actarray = (struct arrayheader *)NativeAligned4FromLAddr(array);
   if (index >= actarray->totalsize) {
     printf("Invalid index in GC's AREF1:  0x%x\n", index);
     printf(" Array size limit:  0x%x\n", actarray->totalsize);
@@ -119,14 +119,14 @@ LispPTR aref1(LispPTR array, int index) {
   base = actarray->base;
   switch (typenumber) {
     case 3: /* unsigned 8bits */
-      retval = (GETBYTE(((char *)Addr68k_from_LADDR(base)) + index)) & 0x0ff;
+      retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
       retval |= S_POSITIVE;
       break;
     case 4: /* unsigned 16bits */
-      retval = (GETWORD(((DLword *)Addr68k_from_LADDR(base)) + index)) & 0x0ffff;
+      retval = (GETWORD(((DLword *)NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
       retval |= S_POSITIVE;
       break;
-    case 38: retval = (*(((LispPTR *)Addr68k_from_LADDR(base)) + index)); break;
+    case 38: retval = (*(((LispPTR *)NativeAligned4FromLAddr(base)) + index)); break;
     default: error("Not Implemented in gc's aref1 (other types)");
   };
   return (retval);
@@ -165,7 +165,7 @@ LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR
     hashval = compute_hash(char_base, offset, length);
 
   ehashval = Entry_hash(length, hashval);
-  hashtbladdr = (struct hashtable *)Addr68k_from_LADDR(hashtbl);
+  hashtbladdr = (struct hashtable *)NativeAligned4FromLAddr(hashtbl);
 
   /* Move our string ptr up by offset, allowing for fatness */
   if (fatp)
@@ -183,7 +183,7 @@ loop_thru_hashtables:
   vecs = cdr(vecs);
   hash = car(hashes);
   hashes = cdr(hashes);
-  vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
+  vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
   if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
   h2 = Rehash_factor(hashval, arraylen);
@@ -191,7 +191,7 @@ loop_thru_hashtables:
 #else
   vec = hashtbladdr->table;
   hash = hashtbladdr->hash;
-  vec68k = (struct arrayheader *)Addr68k_from_LADDR(vec);
+  vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
   if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
   h2 = Rehash_factor(hashval, arraylen);
@@ -222,7 +222,7 @@ retry:
 
     pnptr = (PNCell *)GetPnameCell(index);
     fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
-    pname_base = (char *)Addr68k_from_LADDR(pnptr->pnamebase);
+    pname_base = (char *)NativeAligned2FromLAddr(pnptr->pnamebase);
     if ((length == GETBYTE(pname_base)) &&
         (T == ((lispp) ? compare_lisp_chars((pname_base + 1 + fatpnamep), char_base, length,
                                             fatpnamep, fatp)
@@ -277,8 +277,8 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
   }
 
   /* if (packindex != 7)  Not necessary (Take)*/
-  packaddr = (PACKAGE *)Addr68k_from_LADDR(aref1(*Package_from_Index_word, packindex));
-  /* else packaddr = (PACKAGE *)Addr68k_from_LADDR(
+  packaddr = (PACKAGE *)NativeAligned4FromLAddr(aref1(*Package_from_Index_word, packindex));
+  /* else packaddr = (PACKAGE *)NativeAligned4FromLAddr(
                           *Keyword_Package_word);	*/
   /* hashtbladdr =	((externalp == T)?(packaddr->EXTERNAL_SYMBOLS):
                            (packaddr->INTERNAL_SYMBOLS));
@@ -300,8 +300,8 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 
 LispPTR with_symbol(LispPTR char_base, LispPTR offset, LispPTR charlen, LispPTR fatp,
                     LispPTR hashtbl, LispPTR result) {
-  char *charbase68k = (char *)Addr68k_from_LADDR(char_base);
-  LispPTR *resultptr = (LispPTR *)Addr68k_from_LADDR(result);
+  char *charbase68k = (char *)NativeAligned2FromLAddr(char_base);
+  LispPTR *resultptr = (LispPTR *)NativeAligned4FromLAddr(result);
   DLword chars = charlen & 0xFFFF; /* charlen must be a SMALLP! */
   DLword offst = offset & 0xFFFF;
   int symbol; /* Where the symbol goes pro tem */

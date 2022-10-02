@@ -35,7 +35,7 @@
 
 #include <stdio.h>        // for sprintf
 #include "address.h"      // for VAG2
-#include "adr68k.h"       // for Addr68k_from_LADDR, Addr68k_from_StkOffset
+#include "adr68k.h"       // for NativeAligned4FromLAddr, NativeAligned2FromStackOffset
 #include "commondefs.h"   // for error
 #include "emlglob.h"
 #include "gcdata.h"       // for GCENTRY, REC_GCLOOKUP, STKREF, hashentry
@@ -189,8 +189,8 @@ LispPTR gcscanstack(void) {
 
   scanptr = VAG2(STK_HI, InterfacePage->stackbase);
   scanend = VAG2(STK_HI, InterfacePage->endofstack);
-  scanend68K = (UNSIGNED)Addr68k_from_LADDR(scanend);
-  basicframe = (Bframe *)Addr68k_from_LADDR(scanptr);
+  scanend68K = (UNSIGNED)NativeAligned2FromLAddr(scanend);
+  basicframe = (Bframe *)NativeAligned4FromLAddr(scanptr);
 
   if (0 != (3 & (UNSIGNED)basicframe)) {
     char debugStr[100];
@@ -218,7 +218,7 @@ LispPTR gcscanstack(void) {
             fn_head = (LispPTR)VAG2(frameex->hi2fnheader, frameex->lofnheader);
 #endif /* BIGVM */
             Stkref(fn_head);
-            fnheader = (struct fnhead *)Addr68k_from_LADDR(fn_head);
+            fnheader = (struct fnhead *)NativeAligned4FromLAddr(fn_head);
           };
           {
             int pcou;
@@ -238,7 +238,7 @@ LispPTR gcscanstack(void) {
             UNSIGNED next;
             UNSIGNED ntend;
 
-            next = qtemp = (UNSIGNED)Addr68k_from_StkOffset(frameex->nextblock);
+            next = qtemp = (UNSIGNED)NativeAligned2FromStackOffset(frameex->nextblock);
             /* this is offset */
             ntend = 0; /* init flag */
             if (frameex->validnametable) {
@@ -256,9 +256,9 @@ LispPTR gcscanstack(void) {
               if (STK_HI == hi2nametable) {
                 Stkref(fnheader->framename);
 #ifdef BIGVM
-                qtemp = (UNSIGNED)Addr68k_from_StkOffset(nametable & 0xFFFF);
+                qtemp = (UNSIGNED)NativeAligned2FromStackOffset(nametable & 0xFFFF);
 #else
-                qtemp = (UNSIGNED)Addr68k_from_StkOffset(lonametable);
+                qtemp = (UNSIGNED)NativeAligned2FromStackOffset(lonametable);
 #endif
                 ntend = (UNSIGNED)(((DLword *)qtemp) + FNHEADSIZE +
                                    (((struct fnhead *)qtemp)->ntsize) * 2);

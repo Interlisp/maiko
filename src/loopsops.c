@@ -19,7 +19,7 @@
         PutValue(object, iv, val)
 */
 
-#include "adr68k.h"        // for Addr68k_from_LADDR, LADDR_from_68k
+#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr, LAddrFromNative
 #include "car-cdrdefs.h"   // for car, cdr
 #include "cell.h"          // for GetVALCELL68k, definition_cell, GetDEFCELL68k
 #include "commondefs.h"    // for error
@@ -38,7 +38,7 @@ struct LCInstance;
 static const char il_string[] = "INTERLISP";
 #define GET_IL_ATOM(string) get_package_atom((string), (sizeof(string) - 1), il_string, 9, NIL)
 
-#define AtomValPtr(index) Addr68k_from_LADDR(*(GetVALCELL68k(index)))
+#define AtomValPtr(index) NativeAligned4FromLAddr(*(GetVALCELL68k(index)))
 
 #ifdef BIGVM
 #define DTD_FROM_LADDR(x) (((struct dtd *)GetDTD(GetTypeNumber((x))))->dtd_name)
@@ -179,13 +179,13 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
 
   INSTANCE_CLASS_OR_PUNT(object, atom_FetchMethodOrHelp_LCUFN, 2);
 
-  objptr = (struct LCInstance *)Addr68k_from_LADDR(object);
+  objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCMethodCache[METH_CACHE_INDEX((cur_class = objptr->class), selector)]);
   if (ce->class == cur_class && ce->selector == selector) return ce->method_fn;
 
   /* not in cache, search class then supers */
   {
-    LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
+    LispPTR supers = ((struct LCClass *)NativeAligned4FromLAddr(cur_class))->supers;
 
     for (;;) {
       int i = 0;
@@ -193,18 +193,18 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
       LispPTR *selectorptr;
       struct LCClass *classptr;
 
-      classptr = (struct LCClass *)Addr68k_from_LADDR(cur_class);
+      classptr = (struct LCClass *)NativeAligned4FromLAddr(cur_class);
       if (classptr->selectors == NIL_PTR) {
         goto next_class;
       } else {
-        selectorptr = (LispPTR *)Addr68k_from_LADDR(classptr->selectors);
+        selectorptr = (LispPTR *)NativeAligned4FromLAddr(classptr->selectors);
       }
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
           ce->class = objptr->class;
           ce->selector = selector;
-          return (ce->method_fn = ((LispPTR *)Addr68k_from_LADDR(classptr->methods))[i - 1]);
+          return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
       };
 
@@ -235,7 +235,7 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
   if (!LC_TYPEP(class, atom_class)) RETCALL(atom_FetchMethod_LCUFN, 2);
   {
     LispPTR cur_class = class;
-    LispPTR supers = ((struct LCClass *)Addr68k_from_LADDR(cur_class))->supers;
+    LispPTR supers = ((struct LCClass *)NativeAligned4FromLAddr(cur_class))->supers;
 
     for (;;) {
       int i = 0;
@@ -243,17 +243,17 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       struct LCClass *classptr;
       LispPTR *selectorptr;
 
-      classptr = (struct LCClass *)Addr68k_from_LADDR(cur_class);
+      classptr = (struct LCClass *)NativeAligned4FromLAddr(cur_class);
       if (classptr->selectors == NIL_PTR)
         goto next_class;
       else
-        selectorptr = (LispPTR *)Addr68k_from_LADDR(classptr->selectors);
+        selectorptr = (LispPTR *)NativeAligned4FromLAddr(classptr->selectors);
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
           ce->class = class;
           ce->selector = selector;
-          return (ce->method_fn = ((LispPTR *)Addr68k_from_LADDR(classptr->methods))[i - 1]);
+          return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
       };
 
@@ -276,7 +276,7 @@ LispPTR LCFindVarIndex(LispPTR iv, LispPTR object) {
 
   INSTANCE_CLASS_OR_PUNT(object, atom_FindVarIndex_LCUFN, 2);
 
-  objptr = (struct LCInstance *)Addr68k_from_LADDR(object);
+  objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCIVCache[IV_CACHE_INDEX((iNames = objptr->iNames), iv)]);
   if (ce->iNames == iNames && ce->iv == iv) return ce->index;
 
@@ -306,9 +306,9 @@ LispPTR LCGetIVValue(LispPTR object, LispPTR iv) {
   LC_INIT;
   INSTANCE_OR_PUNT(object, atom_GetIVValue_LCUFN, 2);
 
-  objptr = (struct LCInstance *)Addr68k_from_LADDR(object);
+  objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
-  val = ((LispPTR *)Addr68k_from_LADDR(objptr->iDescrs))[index];
+  val = ((LispPTR *)NativeAligned4FromLAddr(objptr->iDescrs))[index];
   if (!LC_TYPEP(val, atom_annotatedValue)) return val;
 pnut:
   RETCALL(atom_GetIVValue_LCUFN, 2);
@@ -325,9 +325,9 @@ LispPTR LCPutIVValue(LispPTR object, LispPTR iv, LispPTR val) {
   LC_INIT;
   INSTANCE_OR_PUNT(object, atom_PutIVValue_LCUFN, 3);
 
-  objptr = (struct LCInstance *)Addr68k_from_LADDR(object);
+  objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
-  valptr = &(((LispPTR *)Addr68k_from_LADDR(objptr->iDescrs))[index]);
+  valptr = &(((LispPTR *)NativeAligned4FromLAddr(objptr->iDescrs))[index]);
   if (!LC_TYPEP(*valptr, atom_annotatedValue)) {
     FRPLPTR((*valptr), val);
     return val;
@@ -355,10 +355,10 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   if (atom_index == 0xffffffff) error("Loops punt to nonexistent fn");
 
   /* Get Next Block offset from argnum */
-  CURRENTFX->nextblock = (LADDR_from_68k(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
+  CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
 
   /* Setup IVar */
-  IVar = Addr68k_from_LADDR((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
 
   /* Set PC to the Next Instruction and save into FX */
   CURRENTFX->pc = ((UNSIGNED)PC - (UNSIGNED)FuncObj) + bytenum;
@@ -368,7 +368,7 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   /* Get DEFCELL 68k address */
   defcell68k = (struct definition_cell *)GetDEFCELL68k(atom_index);
 
-  tmp_fn = (struct fnhead *)Addr68k_from_LADDR(defcell68k->defpointer);
+  tmp_fn = (struct fnhead *)NativeAligned4FromLAddr(defcell68k->defpointer);
 
   if ((UNSIGNED)(CurrentStackPTR + tmp_fn->stkmin + STK_SAFE) >= (UNSIGNED)EndSTKP) {
     LispPTR test;
@@ -400,7 +400,7 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   GETWORD(CurrentStackPTR) = FX_MARK;
 
   /* Now SET new FX */
-  ((struct frameex1 *)CurrentStackPTR)->alink = LADDR_from_68k(PVar);
+  ((struct frameex1 *)CurrentStackPTR)->alink = LAddrFromNative(PVar);
   PVar = (DLword *)CurrentStackPTR + FRAMESIZE;
 #ifdef BIGVM
   ((struct frameex1 *)CurrentStackPTR)->fnheader = (defcell68k->defpointer);

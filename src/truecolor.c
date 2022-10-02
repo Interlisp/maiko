@@ -33,7 +33,7 @@
 #define IntToFixp(C, Lisp)                                \
   {                                                       \
     int *base;                                            \
-    base = (int *)Addr68k_from_LADDR((unsigned int)Lisp); \
+    base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
     *base = C;                                            \
   }
 
@@ -152,7 +152,7 @@ int TrueColor_Initialize(LispPTR overlay_bmbase)
     error("cgeight_init_color_display: Unsupported FBreal_type %d\n", DisplayType);
   } /* end if( DisplayType ) */
 
-  OverlayRegion68k = Addr68k_from_LADDR(overlay_bmbase);
+  OverlayRegion68k = NativeAligned2FromLAddr(overlay_bmbase);
   size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
 
   ScreenLocked = T;
@@ -188,7 +188,7 @@ int TrueColor_Initialize(LispPTR overlay_bmbase)
 
   ret_value = (unsigned int *)createcell68k(TYPE_FIXP);
   *ret_value = pict;
-  return (LADDR_from_68k(ret_value));
+  return (LAddrFromNative(ret_value));
 
 } /* end TrueColor_Initialize */
 
@@ -204,7 +204,7 @@ int TrueColor_VideoInitialize(LispPTR videoenable_bmbase)
   clear_video_region();
   Video_Initialize(FrameBufferFd);
 
-  VideoEnableRegion68k = Addr68k_from_LADDR(videoenable_bmbase);
+  VideoEnableRegion68k = NativeAligned2FromLAddr(videoenable_bmbase);
   size = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
 
   source = mem_point(displaywidth, displayheight, 1, VideoEnableRegion68k);

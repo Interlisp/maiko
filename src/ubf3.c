@@ -11,7 +11,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"    // for Addr68k_from_LADDR
+#include "adr68k.h"    // for NativeAligned4FromLAddr
 #include "lispemul.h"  // for state, ERROR_EXIT, LispPTR, SEGMASK
 #include "lispmap.h"   // for S_POSITIVE
 #include "lspglob.h"
@@ -36,7 +36,7 @@ LispPTR N_OP_ubfloat3(int arg3, LispPTR arg2, LispPTR arg1, int alpha) {
   FPCLEAR;
   if ((arg1 & SEGMASK) != S_POSITIVE) ERROR_EXIT(arg1);
   degree = 0xFFFF & arg1;
-  fptr = (float *)Addr68k_from_LADDR(arg2);
+  fptr = (float *)NativeAligned4FromLAddr(arg2);
   ans = *((float *)fptr);
   while (degree--) ans = (ans * val) + *((float *)(++fptr));
   if (FPTEST(ans)) ERROR_EXIT(arg1); /* relies on contagion of inf, nan? */

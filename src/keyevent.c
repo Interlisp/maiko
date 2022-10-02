@@ -276,7 +276,7 @@ void process_io_events()
     if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
       flush_pty();          /* move the msg(s) to the log file */
 
-      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->LogFileIO = 1;
+      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->LogFileIO = 1;
 
       *PENDINGINTERRUPT68k = ATOM_T;
       Irq_Stk_End = Irq_Stk_Check = 0;
@@ -287,10 +287,10 @@ void process_io_events()
         if (FD_ISSET(i, &rfds) & FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
     if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
       u_int *flags;
-      flags = (u_int *)Addr68k_from_LADDR(*IOINTERRUPTFLAGS_word);
+      flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
       *flags = iflags;
 
-      ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word))->IOInterrupt = 1;
+      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->IOInterrupt = 1;
 
       *PENDINGINTERRUPT68k = ATOM_T;
       Irq_Stk_End = Irq_Stk_Check = 0;
@@ -505,9 +505,9 @@ void copy_cursor(int newx, int newy)
     srcbpl = HARD_CURSORWIDTH;
     dstbpl = displaywidth;
   } else {
-    cursor68k = (CURSOR *)Addr68k_from_LADDR(*CURRENTCURSOR68k);
-    bitmap68k = (BITMAP *)Addr68k_from_LADDR(cursor68k->CUIMAGE);
-    srcbase = (DLword *)Addr68k_from_LADDR(bitmap68k->bmbase);
+    cursor68k = (CURSOR *)NativeAligned4FromLAddr(*CURRENTCURSOR68k);
+    bitmap68k = (BITMAP *)NativeAligned4FromLAddr(cursor68k->CUIMAGE);
+    srcbase = (DLword *)NativeAligned2FromLAddr(bitmap68k->bmbase);
     dstbase = ColorDisplayRegion68k + (newy * DLWORD_PERLINE * COLOR_BITSPER_PIXEL);
     sx = 0;
     dx = newx * COLOR_BITSPER_PIXEL;

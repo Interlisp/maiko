@@ -11,7 +11,7 @@
 #include "version.h"
 
 #include "address.h"       // for LOLOC
-#include "adr68k.h"        // for LADDR_from_68k
+#include "adr68k.h"        // for LAddrFromNative
 #include "commondefs.h"    // for error
 #include "gcdata.h"        // for GETGC, GCENTRY, ADDREF, DELREF, gc_ovfl
 #include "gchtfinddefs.h"  // for enter_big_reference_count, htfind, modify_...
@@ -234,9 +234,9 @@ void enter_big_reference_count(LispPTR ptr) {
   };
 
   if (tmp == NIL) {
-    if (Evenp(LADDR_from_68k(oventry + 1), DLWORDSPER_PAGE)) {
+    if (Evenp(LAddrFromNative(oventry + 1), DLWORDSPER_PAGE)) {
       if ((UNSIGNED)oventry + 1 >= (UNSIGNED)HTcoll) error("GC big reference count table overflow");
-      newpage(LADDR_from_68k(oventry + 1));
+      newpage(LAddrFromNative(oventry + 1));
     }
   }
 

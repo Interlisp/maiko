@@ -161,7 +161,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   char lfname[MAXPATHLEN], file[MAXPATHLEN];
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[3]));
+  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[3]));
 
   LispStringLength(args[0], len, rval);
   len += 1; /* Add 1 for terminating NULL char. */
@@ -248,7 +248,7 @@ LispPTR UFS_deletefile(LispPTR *args)
   int len, rval;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[1]));
+  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[1]));
 
   LispStringLength(args[0], len, rval);
   len += 1;
@@ -313,7 +313,7 @@ LispPTR UFS_renamefile(LispPTR *args)
   int rval, len;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[2]));
 
   LispStringLength(args[0], len, rval);
   len += 1;
@@ -387,7 +387,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
   struct stat sbuf;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(Addr68k_from_LADDR(args[2]));
+  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[2]));
 
   LispStringLength(args[0], len, rval);
   len += 1;

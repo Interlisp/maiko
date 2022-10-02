@@ -87,8 +87,8 @@ LispPTR rpc(LispPTR *args)
   N_GETNUMBER(args[1], port, handle_error);
 
   /* Translate the buffer pointer into C pointers */
-  outbuf = (char *)(Addr68k_from_LADDR(args[2]));
-  inbuf = (char *)(Addr68k_from_LADDR(args[3]));
+  outbuf = (char *)(NativeAligned2FromLAddr(args[2]));
+  inbuf = (char *)(NativeAligned2FromLAddr(args[3]));
 
   N_GETNUMBER(args[4], msec_until_timeout, handle_error);
 

@@ -140,7 +140,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case TCPsend: /* args: conn, buffer, len */
       sock = LispNumToCInt(nameConn);
-      buffer = Addr68k_from_LADDR(proto);
+      buffer = NativeAligned2FromLAddr(proto);
       len = LispNumToCInt(length);
       DBPRINT(("sock: %d, len %d.\n", sock, len));
 
@@ -163,7 +163,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case TCPrecv: /* args: conn, buffer, maxlen */
       sock = LispNumToCInt(nameConn);
-      buffer = Addr68k_from_LADDR(proto);
+      buffer = NativeAligned2FromLAddr(proto);
       len = LispNumToCInt(length);
       result = read(sock, buffer, len);
       if (result < 0) {
@@ -238,7 +238,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case INETpeername: /* socket#, buffer for name string */
       sock = LispNumToCInt(nameConn);
-      buffer = Addr68k_from_LADDR(proto);
+      buffer = NativeAligned2FromLAddr(proto);
       ures = sizeof(addr);
       getpeername(sock, (struct sockaddr *)&addr, &ures);
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
@@ -248,7 +248,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case INETgetname: /* host addr, buffer for name string */
       sock = LispNumToCInt(nameConn);
-      buffer = Addr68k_from_LADDR(proto);
+      buffer = NativeAligned2FromLAddr(proto);
       ures = sizeof(addr);
       addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
@@ -282,7 +282,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       farend.sin_family = AF_INET;
       farend.sin_port = htons(LispNumToCInt(length));
       farend.sin_addr.s_addr = htonl(LispNumToCInt(proto));
-      buffer = Addr68k_from_LADDR(bufaddr);
+      buffer = NativeAligned2FromLAddr(bufaddr);
       buflen = LispNumToCInt(maxlen);
 
       DBPRINT(("UDP send:  socket = %d, remote-port = %d.\n", sock, farend.sin_port));
@@ -305,7 +305,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 
     case UDPRecvfrom: /* fd-socket# buffer len addr-cell port-cell*/
       sock = LispNumToCInt(nameConn);
-      buffer = Addr68k_from_LADDR(proto);
+      buffer = NativeAligned2FromLAddr(proto);
       buflen = LispNumToCInt(length);
       ures = sizeof farend;
       if ((result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &ures)) < 0) {
@@ -320,8 +320,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
                maxlen));
 
       /* XXX NBriggs: 12 Aug 2020 -- WHAT IS GOING ON HERE? */
-      *((int *)Addr68k_from_LADDR(bufaddr)) = (int)farend.sin_addr.s_addr;
-      *((int *)Addr68k_from_LADDR(maxlen)) = (int)farend.sin_port;
+      *((int *)NativeAligned4FromLAddr(bufaddr)) = (int)farend.sin_addr.s_addr;
+      *((int *)NativeAligned4FromLAddr(maxlen)) = (int)farend.sin_port;
 
 #ifdef BYTESWAP
       word_swap_page(buffer, (result + 3) >> 2);

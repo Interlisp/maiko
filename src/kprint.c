@@ -12,7 +12,7 @@
 
 #include <stdio.h>         // for printf
 #include "address.h"       // for LOLOC
-#include "adr68k.h"        // for Addr68k_from_LADDR
+#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "car-cdrdefs.h"   // for cdr, car
 #include "emlglob.h"
 #include "kprintdefs.h"    // for prindatum, print, print_NEWstring, print_fixp
@@ -98,7 +98,7 @@ void prindatum(LispPTR x) {
       break;
     case TYPE_ONED_ARRAY:
     case TYPE_GENERAL_ARRAY:
-      newstring = (NEWSTRINGP *)Addr68k_from_LADDR(x);
+      newstring = (NEWSTRINGP *)NativeAligned4FromLAddr(x);
       if (newstring->stringp) {
         print_NEWstring(x);
         break;
@@ -148,9 +148,9 @@ void print_string(LispPTR x) {
 
   int i;
 
-  string_point = (struct stringp *)Addr68k_from_LADDR(x);
+  string_point = (struct stringp *)NativeAligned4FromLAddr(x);
   st_length = string_point->length;
-  string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
+  string_base = (DLbyte *)NativeAligned2FromLAddr(string_point->base);
 
   printf("%c", DOUBLEQUOTE); /* print %" */
 
@@ -178,9 +178,9 @@ void print_NEWstring(LispPTR x) {
 
   int i;
 
-  string_point = (NEWSTRINGP *)Addr68k_from_LADDR(x);
+  string_point = (NEWSTRINGP *)NativeAligned4FromLAddr(x);
   st_length = string_point->fillpointer;
-  string_base = (DLbyte *)Addr68k_from_LADDR(string_point->base);
+  string_base = (DLbyte *)NativeAligned2FromLAddr(string_point->base);
   string_base += string_point->offset;
 
   printf("%c", DOUBLEQUOTE); /* print %" */
@@ -204,7 +204,7 @@ void print_NEWstring(LispPTR x) {
 void print_fixp(LispPTR x) {
   int *addr_fixp;
 
-  addr_fixp = (int *)Addr68k_from_LADDR(x);
+  addr_fixp = (int *)NativeAligned4FromLAddr(x);
   printf("%d", *addr_fixp);
 }
 
@@ -219,6 +219,6 @@ void print_fixp(LispPTR x) {
 void print_floatp(LispPTR x) {
   float *addr_floatp;
 
-  addr_floatp = (float *)Addr68k_from_LADDR(x);
+  addr_floatp = (float *)NativeAligned4FromLAddr(x);
   printf("%f", *addr_floatp);
 }

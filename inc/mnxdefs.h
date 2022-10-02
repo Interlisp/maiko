@@ -501,7 +501,7 @@ typedef union mnwevenT
 /* to a Medley window structure.                   */
 /* The result of the calculation is a C pointer.   */
 /***************************************************/
-#define Cptr(LADDR) Addr68k_from_LADDR(LADDR)
+#define Cptr(LADDR) NativeAligned4FromLAddr(LADDR)
 #define WIfFromMw(win) (((MedleyWindow)Cptr(win))->NativeIf)
 #define ScrnFromMw(win) ((MedleyScreenRec *)Cptr(((MedleyWindow)Cptr(win))->SCREEN))
 #define DspstreamFromMw(win) ((Stream *)Cptr(((MedleyWindow)Cptr(win))->DSP))

@@ -43,20 +43,20 @@
     short *sbase;                                                                                  \
     int i, j;                                                                                      \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
     Len = min(MaxLen, arrayp->totalsize);                                                          \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
-            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
         for (i = 0; i < Len; i++) { C[i] = base[i]; }                                              \
         C[Len] = '\0';                                                                             \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase =                                                                                    \
-            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
         C[Len * 2] = '\0';                                                                         \
@@ -73,19 +73,19 @@
     short *sbase;                                                                                  \
     int idx;                                                                                       \
                                                                                                    \
-    arrayp = (OneDArray *)(Addr68k_from_LADDR((unsigned int)Lisp));                                \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
         base =                                                                                     \
-            ((char *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
+            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
         for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
         sbase =                                                                                    \
-            ((short *)(Addr68k_from_LADDR((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
+            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
         base = (char *)sbase;                                                                      \
         for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
         arrayp->fillpointer = Len;                                                                 \
@@ -99,7 +99,7 @@
   {                                                       \
     int *base;                                            \
                                                           \
-    base = (int *)Addr68k_from_LADDR((unsigned int)Lisp); \
+    base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
     *base = C;                                            \
   }
 
@@ -249,9 +249,9 @@ ejlisp(int args[])
       result = ejlisp_get_kouho(c_number1, c_char3, &c_number2);
       if (result != 0) break;
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[2]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[2]));
       base1 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
       for (i = 0; i < ejlisp_kouho_max; i++, base1++, base2++) {
         ZeroFix(c_char3[i]);
@@ -363,17 +363,17 @@ ejlisp(int args[])
       result = ejlisp_get_userdic(c_char3, c_number5, c_number6);
       if (result != 0) break;
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[1]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[1]));
       base1 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[2]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[2]));
       base2 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[3]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[3]));
       base3 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
       for (i = 0; i < ejlisp_jdp_num; i++, base1++, base2++, base3++) {
         ZeroFix(c_char3[i]);
@@ -390,17 +390,17 @@ ejlisp(int args[])
       result = ejlisp_get_userdic_name(c_char3, c_number5, c_number6);
       if (result != 0) break;
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[1]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[1]));
       base1 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[2]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[2]));
       base2 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
-      a_ptr = (FirstArray *)(Addr68k_from_LADDR((unsigned int)args[3]));
+      a_ptr = (FirstArray *)(NativeAligned4FromLAddr((unsigned int)args[3]));
       base3 =
-          ((unsigned int *)(Addr68k_from_LADDR((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
+          ((unsigned int *)(NativeAligned4FromLAddr((unsigned int)a_ptr->base))) + (int)(a_ptr->offset);
 
       for (i = 0; c_char3[i][0] != NULL; i++, base1++, base2++, base3++) {
         ZeroFix(c_char3[i]);

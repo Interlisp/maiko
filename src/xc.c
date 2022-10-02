@@ -247,7 +247,7 @@ op_ufn : {
 
 nextopcode:
 #ifdef MYOPTRACE
-  if ((struct fnhead *)Addr68k_from_LADDR(0x2ed600) == FuncObj) {
+  if ((struct fnhead *)NativeAligned4FromLAddr(0x2ed600) == FuncObj) {
     quick_stack_check();
 #endif /* MYOPTRACE */
     OPTPRINT(("PC= %p (fn+%td) op= %02x TOS= 0x%x\n", (void *)PCMAC, PCMAC - (char *)FuncObj, Get_BYTE_PCMAC0, TOPOFSTACK));
@@ -258,7 +258,7 @@ nextopcode:
 #ifdef PCTRACE
   /* Tracing PC/Function/Opcode in a ring buffer */
   pc_table[pccounter] = (int)PCMAC - (int)FuncObj;
-  fn_table[pccounter] = (LispPTR)LADDR_from_68k(FuncObj);
+  fn_table[pccounter] = (LispPTR)LAddrFromNative(FuncObj);
   op_table[pccounter] = Get_BYTE_PCMAC0;
   if (99 == pccounter++) pccounter = 0;
 #endif /* PCTRACE */
@@ -1135,7 +1135,7 @@ check_interrupt:
     }
 
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
-      if (StkOffset_from_68K(CSTKPTR) > InterfacePage->stackbase) {
+      if (StackOffsetFromNative(CSTKPTR) > InterfacePage->stackbase) {
         /* Interrupts not Disabled */
         EXT;
         update_timer();
@@ -1212,7 +1212,7 @@ check_interrupt:
           *Reclaim_cnt_word = NIL;
           cause_interruptcall(DORECLAIM_index);
         } else if (*PENDINGINTERRUPT68k != NIL) {
-          INTSTAT2 *intstate = ((INTSTAT2 *)Addr68k_from_LADDR(*INTERRUPTSTATE_word));
+          INTSTAT2 *intstate = ((INTSTAT2 *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word));
           /*unsigned char newints = (intstate->pendingmask) & ~(intstate->handledmask);
           if (newints) */
           {
@@ -1221,7 +1221,7 @@ check_interrupt:
             cause_interruptcall(INTERRUPTFRAME_index);
           }
         } else if (ETHEREventCount > 0) {
-          INTSTAT *intstate = ((INTSTAT *)Addr68k_from_LADDR(*INTERRUPTSTATE_word));
+          INTSTAT *intstate = ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word));
           if (!(intstate->ETHERInterrupt) && !(((INTSTAT2 *)intstate)->handledmask & 0x40)) {
             intstate->ETHERInterrupt = 1;
             ((INTSTAT2 *)intstate)->handledmask |= ((INTSTAT2 *)intstate)->pendingmask;

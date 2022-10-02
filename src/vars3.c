@@ -9,7 +9,7 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for Addr68k_from_LADDR
+#include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "car-cdrdefs.h"  // for car, cdr
 #include "cell.h"         // for cadr_cell, CDR_NIL, CDR_INDIRECT, S_N_CHECK...
 #include "emlglob.h"
@@ -47,11 +47,11 @@ struct cadr_cell cadr(LispPTR cell_adr)
       return (cadr1);
     }
   }
-  pcons = (ConsCell *)Addr68k_from_LADDR(cell_adr);
+  pcons = (ConsCell *)NativeAligned4FromLAddr(cell_adr);
   while (pcons->cdr_code == CDR_INDIRECT) {
     /* CDR indirect */
     cell_adr = pcons->car_field;
-    pcons = (ConsCell *)Addr68k_from_LADDR(pcons->car_field);
+    pcons = (ConsCell *)NativeAligned4FromLAddr(pcons->car_field);
   } /* skip CDR_INDIRECT cell */
 
   cadr1.car_cell = pcons->car_field;
@@ -68,7 +68,7 @@ struct cadr_cell cadr(LispPTR cell_adr)
     cadr1.cdr_cell = cell_adr + offset;
   } else {
     /* CDR different page */
-    pcons = (ConsCell *)Addr68k_from_LADDR((cell_adr) + offset);
+    pcons = (ConsCell *)NativeAligned4FromLAddr((cell_adr) + offset);
     cadr1.cdr_cell = pcons->car_field;
   }
 #else
@@ -78,7 +78,7 @@ struct cadr_cell cadr(LispPTR cell_adr)
     cadr1.cdr_cell = (mPAGEMASK & cell_adr) | offset;
   } else {
     /* CDR different page */
-    pcons = (ConsCell *)Addr68k_from_LADDR(((mPAGEMASK & cell_adr) | offset));
+    pcons = (ConsCell *)NativeAligned4FromLAddr(((mPAGEMASK & cell_adr) | offset));
     cadr1.cdr_cell = pcons->car_field;
   }
 #endif /* NEWCDRCODING */

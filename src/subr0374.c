@@ -41,7 +41,7 @@ LispPTR subr_k_trace(LispPTR *args) {
   char *base;
 
   len = 0xFFFF & args[1];
-  base = (char *)Addr68k_from_LADDR(args[0]);
+  base = (char *)NativeAligned2FromLAddr(args[0]);
   while (len-- > 0) putc(*base++, stderr);
   putc('\n', stderr);
   return (NIL);
