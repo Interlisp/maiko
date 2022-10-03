@@ -128,6 +128,7 @@ int ETHEREventCount = 0;
 #include <fcntl.h>
 #include <errno.h>
 #include <netdb.h>
+#include <netinet/in.h>
 
 /*
 **  --- nethub configuration data --------------------------------------------------
