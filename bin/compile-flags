@@ -134,6 +134,24 @@ PKTFILTER	True if the ethernet packets are to be filtered before being
 		passed to the Lisp ethernet handler.  Available on Sun systems
 		for both the NIT and DLPI cases.
 
+MAIKO_ENABLE_NETHUB enables the support for Dodo Nethub networking for Dodo
+		XNS services, see documentation: using-dodo-networking-with-maiko.md
+		(implicitely disables USE_DLPI and USE_NIT)
+
+MAIKO_EMULATE_TIMER_INTERRUPTS enables emulation of recurring timer interrupts for
+		platforms where SIGVTALRM/ITIMER_VIRTUAL or SIGALRM/ITIMER_REAL
+		do not work as expected (like cygwin)
+		timer is emulated by signaling an interrupt after a number of
+		executed instructions, by default 20.000 instructions, this can be
+		overriden by defining MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN
+		with the number of instructions between 2 interrupts
+		additionally this adds the command line arguments -intr-emu-insns
+		for overriding the compiled in instruction interval
+		(not working if OPDISP (fast opcode dispatch) is used)
+
+MAIKO_EMULATE_ASYNC_INTERRUPTS same as MAIKO_EMULATE_TIMER_INTERRUPTS, but also
+		signals an I/O interrupt after each instruction interval
+
 
 bitbltsub.c:#ifdef GETBASE
 testdisplay.c:#ifdef NOTUSED
