@@ -65,23 +65,27 @@ jmp_buf BT_jumpbuf;
 #define BTMAXLINE 24
 /* DOS has a 25-line screen, and getchar discards ESC for some reason */
 #define BT_morep                                              \
-  if ((BT_temp != '!') && (++BT_lines > BTMAXLINE)) {         \
-    printf("Press Return(Esc & Ret to quit, ! don't stop):"); \
-    BT_temp = getch();                                        \
-    fflush(stdin);                                            \
-    BT_lines = 0;                                             \
-    if (BT_temp == 27) longjmp(BT_jumpbuf, 1);                \
-  }
+  do {                                              	      \
+    if ((BT_temp != '!') && (++BT_lines > BTMAXLINE)) {         \
+      printf("Press Return(Esc & Ret to quit, ! don't stop):"); \
+      BT_temp = getch();                                        \
+      fflush(stdin);                                            \
+      BT_lines = 0;                                             \
+      if (BT_temp == 27) longjmp(BT_jumpbuf, 1);                \
+    }                                                           \
+  } while (0)
 #else /* DOS */
 #define BTMAXLINE 30
 #define BT_morep                                  \
-  if (++BT_lines > BTMAXLINE) {                   \
-    printf("Press Return(to quit Esc and Ret):"); \
-    BT_temp = getchar();                          \
-    fflush(stdin);                                \
-    BT_lines = 0;                                 \
-    if (BT_temp == 27) longjmp(BT_jumpbuf, 1);    \
-  }
+  do {                                            \
+    if (++BT_lines > BTMAXLINE) {                   \
+      printf("Press Return(to quit Esc and Ret):"); \
+      BT_temp = getchar();                          \
+      fflush(stdin);                                \
+      BT_lines = 0;                                 \
+      if (BT_temp == 27) longjmp(BT_jumpbuf, 1);    \
+    }                                               \
+  } while (0)
 #endif /* DOS */
 
 /***************************************************************/

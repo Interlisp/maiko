@@ -82,7 +82,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   if (!kbd_for_makeinit) {
     init_keyboard(0);
     kbd_for_makeinit = 1;
-  };
+  }
 
 #endif
 
@@ -122,7 +122,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   ;
 #endif /* SUNDISPLAY / DOS */
 
-  new_bitblt_code
+  new_bitblt_code;
 
 #if   DOS
       flush_display_lineregion(dx, dstbase, w, h);

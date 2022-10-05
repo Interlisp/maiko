@@ -143,7 +143,7 @@ gotpty:
 #ifdef DEBUG
     perror("fcntl F_SETOWN of log PTY");
 #endif
-  };
+  }
   FD_SET(LogFileFd, &LispReadFds);
   flush_pty();
 #endif

@@ -17,9 +17,6 @@
 /** User defined subrs here.  Do NOT attempt to use this unless you FULLY
     understand the dependencies of the LDE architecture.                 **/
 
-#define DO_UFN \
-  { return (-1); }
-
 int UserSubr(int user_subr_index, int num_args, unsigned *args) {
   int result = 0;
 
@@ -29,14 +26,15 @@ int UserSubr(int user_subr_index, int num_args, unsigned *args) {
   {
     int i;
     for (i = 0; i < num_args; i++) printf("debug: arg[%d]: 0x%x\n", i, args[i]);
-  };
+  }
 
   switch (user_subr_index) {
     case 0:
       printf("sample UFN\n");
       result = args[0];
       break;
-    default: DO_UFN;
+  default:
+      return (-1); /* DO UFN */
   }
 
   return (result);

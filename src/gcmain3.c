@@ -219,7 +219,7 @@ LispPTR gcscanstack(void) {
 #endif /* BIGVM */
             Stkref(fn_head);
             fnheader = (struct fnhead *)NativeAligned4FromLAddr(fn_head);
-          };
+          }
           {
             int pcou;
             LispPTR *pvars;
@@ -230,8 +230,8 @@ LispPTR gcscanstack(void) {
               if
                 Boundp(BIND_BITS(value)) Stkref(value);
               ++pvars;
-            }; /* for */
-          };   /* int pcou */
+            } /* for */
+          }   /* int pcou */
 
           {
             UNSIGNED qtemp;
@@ -264,7 +264,7 @@ LispPTR gcscanstack(void) {
                                    (((struct fnhead *)qtemp)->ntsize) * 2);
               } else
                 Stkref(nametable);
-            }; /* frameex->validnametable */
+            } /* frameex->validnametable */
 
             obasicframe = basicframe;
             basicframe =
@@ -286,7 +286,7 @@ LispPTR gcscanstack(void) {
               if
                 Boundp(BIND_BITS(value)) Stkref(value);
               basicframe++;
-            }; /* while */
+            } /* while */
 
             if (ntend != 0) {
               obasicframe = basicframe;
@@ -303,7 +303,7 @@ LispPTR gcscanstack(void) {
               qtemp = next;
               ntend = 0;
               goto scantemps;
-            };
+            }
 
             obasicframe = basicframe;
             basicframe = (Bframe *)next;
@@ -317,10 +317,10 @@ LispPTR gcscanstack(void) {
               error(debugStr);
             }
 
-          }; /* LOCAL regs qtemp next */
-        };   /* local regs fnheader frameex */
+          } /* LOCAL regs qtemp next */
+        }   /* local regs fnheader frameex */
         break;
-      };
+      }
       case STK_GUARD: /* stack's tail ? */ {
         if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K)
           return (NIL);
@@ -336,9 +336,9 @@ LispPTR gcscanstack(void) {
                     (void *)basicframe, (void *)obasicframe);
             error(debugStr);
           }
-        };
+        }
         break;
-      };
+      }
       case STK_FSB: {
         obasicframe = basicframe;
         basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
@@ -353,25 +353,25 @@ LispPTR gcscanstack(void) {
         }
 
         break;
-      };
+      }
       default: /* must be basic frame !! */
       {
         LispPTR bf_word;
         while (STK_BF != BF_FLAGS(bf_word = *((LispPTR *)basicframe))) {
           Stkref(PTR_BITS(bf_word));
           basicframe++;
-        };
+        }
         basicframe++;
-      };
+      }
 
         /* **** NOTE THIS CODE DOES NOT COMPILE CORRECTLY ON THE SUN 4
            {LispPTR bf_word;
            while(STK_BF != BF_FLAGS(
            bf_word = *((LispPTR *)basicframe++)))
            { Stkref(PTR_BITS(bf_word));
-           };
-           };
+           }
+           }
            **** */
-    }; /* switch */
-  };   /* while(1) */
+    } /* switch */
+  }   /* while(1) */
 }

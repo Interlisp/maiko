@@ -416,11 +416,11 @@ struct cadr_cell {
 /* When cadr() function is called, type check should be done. */
 
 #define S_N_CHECKANDCADR(sour, dest, tos)    \
-  {                                          \
+  do {                                        \
     LispPTR parm = sour;            \
     if (GetTypeNumber(parm) != TYPE_LISTP) { \
       ERROR_EXIT(tos);                       \
     } else                                   \
       (dest) = cadr(parm);                   \
-  }
+  } while (0)
 #endif

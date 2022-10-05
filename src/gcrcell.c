@@ -87,16 +87,18 @@
 
 #define TODO_LIMIT 1000
 #define ADD_TO_DO(ptr, offset)                               \
-  if (do_count < TODO_LIMIT) {                               \
-    if ((ptr) & 0xF0000000) error("illegal ptr in addtodo"); \
-    to_do[do_count] = (ptr);                                 \
-    to_do_offset[do_count] = offset;                         \
-    todo_uses++;                                             \
-    /*REC_GCLOOKUP((ptr), ADDREF);*/                         \
-    do_count++;                                              \
-  } else { /* error("GC missing some to-do's"); */           \
-    todo_misses++;                                           \
-  }
+  do {                                                       \
+    if (do_count < TODO_LIMIT) {                               \
+      if ((ptr) & 0xF0000000) error("illegal ptr in addtodo"); \
+      to_do[do_count] = (ptr);                                 \
+      to_do_offset[do_count] = offset;                         \
+      todo_uses++;                                             \
+      /*REC_GCLOOKUP((ptr), ADDREF);*/                         \
+      do_count++;                                              \
+    } else { /* error("GC missing some to-do's"); */           \
+      todo_misses++;                                           \
+    }                                                          \
+  } while (0)
 
 unsigned todo_uses = 0;
 unsigned todo_misses = 0;
@@ -156,7 +158,7 @@ lp:
         ptr = (ConsCell *)NativeAligned4FromLAddr(tmpcell);
         tmpptr = tmpcell;
         code = ptr->cdr_code;
-      };
+      }
       if (index != -1) /* car part */
         index = -1;
       else {
@@ -166,7 +168,7 @@ lp:
           ptr->cdr_code = code;
           donext = tmpptr;
           goto doval;
-        };
+        }
       }
       REC_GCLOOKUPV(cdr(tmpptr), DELREF, val);
       if (code <= CDR_MAXINDIRECT) {
@@ -176,10 +178,10 @@ lp:
         tmpcell = POINTER_PAGEBASE(tmpptr) + ((code - CDR_INDIRECT) << 1);
 #endif /* NEWCDRCODING */
         freelistcell(tmpcell);
-      };
+      }
       freelistcell(tmpptr);
       goto doval;
-    };
+    }
     case TYPE_ARRAYBLOCK:
       if ((index == -1) && reclaimarrayblock(tmpptr))
         goto trynext;
@@ -208,7 +210,7 @@ lp:
       else
         break;
     default:;
-  };
+  }
 normal:
   typdtd = (struct dtd *)GetDTD(typ);
   ptrfield = typdtd->dtd_ptrs;
@@ -217,7 +219,7 @@ normal:
     ptrfield = cdr(ptrfield);
     while ((car(ptrfield) & 0x0ffff) != index) ptrfield = cdr(ptrfield);
     index = -1;
-  };
+  }
   while (ptrfield != NIL) {
     carfield = car(ptrfield);
     ptrfield = cdr(ptrfield);
@@ -233,7 +235,7 @@ normal:
         goto doval;
       } else
         goto addtofreelist;
-    };
+    }
 #else
     if (val != NIL) {
       if (ptrfield != NIL) {
@@ -249,9 +251,9 @@ normal:
         }
       } else
         goto addtofreelist;
-    };
+    }
 #endif /* NEWCDRCODING */
-  };
+  }
 addtofreelist:
   field = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
   *field = typdtd->dtd_free;
@@ -273,7 +275,7 @@ doval:
     /*	GCLOOKUP(0x8000, ADDREF,tmpptr); */
     val = NIL;
     goto lp;
-  };
+  }
 
 /***************************************************************/
 /*									*/
@@ -289,7 +291,7 @@ trynext:
     donext = (LispPTR)ptr->car_field;
     index = ptr->cdr_code;
     goto lp;
-  };
+  }
 #ifdef NEWCDRCODING
   if (do_count) /* If there are other cells to collect */
   {
@@ -354,5 +356,5 @@ void freelistcell(LispPTR cell) {
   if ((++pbase->count > 32) && (pbase->next_page == CONSPAGE_LAST)) {
     pbase->next_page = ListpDTD->dtd_nextpage;
     ListpDTD->dtd_nextpage = POINTER_PAGE(cell);
-  };
+  }
 }

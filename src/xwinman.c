@@ -73,7 +73,7 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
     case NorthEastGravity: OldWindow = dsp->NEGrav; break;
     case SouthWestGravity: OldWindow = dsp->SWGrav; break;
     case SouthEastGravity: OldWindow = dsp->SEGrav; break;
-  };
+  }
 
   dsp->BitGravity = grav;
 

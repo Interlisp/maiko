@@ -851,7 +851,7 @@ void dump_bf(Bframe *bf) {
   if (BFRAMEPTR(bf)->flags != 4) {
     printf("\nInvalid basic frame");
     return;
-  };
+  }
 
   if (BFRAMEPTR(bf)->residual) { goto printflags; }
 
@@ -885,7 +885,7 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   if (fx_addr68k->flags != 6) {
     printf("\nInvalid frame,NOT FX");
     return;
-  };
+  }
 
   atomindex = get_framename((struct frameex1 *)fx_addr68k);
   printf("\n*** Frame Extension for ");
@@ -971,7 +971,7 @@ loop:
   if (fx_addr68k->alink == 0) {
     printf("\n BTV end");
     return;
-  };
+  }
 
   fx_addr68k = get_nextFX(fx_addr68k);
   goto loop;
@@ -1065,14 +1065,16 @@ jmp_buf SD_jumpbuf;
 
 #define SDMAXLINE 30
 #define SD_morep                                     \
-  if (++sdlines > SDMAXLINE) {                       \
-    int temp;                                        \
-    printf("\nPress Return:(to quit Esc and Ret):"); \
-    temp = getchar();                                \
-    fflush(stdin);                                   \
-    sdlines = 0;                                     \
-    if (temp == 27) longjmp(SD_jumpbuf, 1);          \
-  }
+  do {                                               \
+    if (++sdlines > SDMAXLINE) {                       \
+      int temp;                                        \
+      printf("\nPress Return:(to quit Esc and Ret):"); \
+      temp = getchar();                                \
+      fflush(stdin);                                   \
+      sdlines = 0;                                     \
+      if (temp == 27) longjmp(SD_jumpbuf, 1);          \
+    }                                                  \
+  } while (0)
 
 #ifndef BYTESWAP
 typedef struct stack_header {
@@ -1119,19 +1121,19 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
     switch (STKHPTR(stkptr)->flags1) {
       case STK_GUARD:
       case STK_FSB:
-        if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) { goto badblock; };
+        if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) { goto badblock; }
         size = GETWORD(((DLword *)stkptr) + 1);
         if (STKHPTR(stkptr)->flags1 == STK_GUARD)
           printf("\n0x%x GUARD, size : 0x%x", LAddrFromNative(stkptr), size);
         else
           printf("\n0x%x FSB,   size : 0x%x", LAddrFromNative(stkptr), size);
 
-        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; };
+        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; }
 
         SD_morep;
         size = GETWORD(((DLword *)stkptr) + 1);
       checksize:
-        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; };
+        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; }
         stkptr = (STKH *)(((DLword *)stkptr) + size);
         break;
 
@@ -1159,15 +1161,15 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           size = EndSTKP - (DLword *)stkptr;
         } else {
           size = NativeAligned2FromLAddr(STK_OFFSET | ((FX *)stkptr)->nextblock) - (DLword *)stkptr;
-        };
+        }
         goto checksize;
       default:
         orig68k = (DLword *)stkptr;
 
         while (STKHPTR(stkptr)->flags1 != STK_BF) {
-          if (STKHPTR(stkptr)->flags1 != STK_NOTFLG) { goto badblock; };
+          if (STKHPTR(stkptr)->flags1 != STK_NOTFLG) { goto badblock; }
           stkptr = (STKH *)(((DLword *)stkptr) + DLWORDSPER_CELL);
-        };
+        }
 
         if ((BFRAMEPTR(stkptr))->residual) {
           if ((DLword *)stkptr != orig68k) {

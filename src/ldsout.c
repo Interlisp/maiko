@@ -302,7 +302,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
         perror("sysout_loader: can't seek sysout file");
         free(fptovp);
         exit(-1);
-      };
+      }
       lispworld_offset = GETFPTOVP(fptovp, i) * BYTESPER_PAGE;
       if (read(sysout, lispworld_scratch + lispworld_offset, BYTESPER_PAGE) == -1) {
         printf("sysout_loader: can't read sysout file at %d\n", i);
@@ -314,11 +314,11 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
         }
         free(fptovp);
         exit(-1);
-      };
+      }
 #ifdef BYTESWAP
       word_swap_page((DLword *)(lispworld_scratch + lispworld_offset), 128);
 #endif
-    };
+    }
   }
   free(fptovp);
   DBPRINT(("sysout file is read completely.\n"));

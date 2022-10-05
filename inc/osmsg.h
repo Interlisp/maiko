@@ -18,9 +18,9 @@
 #include "osmsgdefs.h"   // for flush_pty
 
 #define	OSMESSAGE_PRINT(print_exp)		\
-  {						\
+  do {						\
     flush_pty();				\
     print_exp;					\
-  }
+  } while (0)
 
 #endif /* OSMSG_H */

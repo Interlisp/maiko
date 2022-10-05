@@ -48,23 +48,23 @@
 
    /* IncAllocCnt is called only when *Reclaim_cnt_word != NIL */
 
-#define IncAllocCnt(n) {\
+#define IncAllocCnt(n) do { \
 	if ((*Reclaim_cnt_word -= (n)) <= S_POSITIVE) { \
-		/* time for GC */\
-		Irq_Stk_Check = Irq_Stk_End = 0;\
-		*Reclaim_cnt_word = S_POSITIVE;\
-	};\
-}
+		/* time for GC */ \
+		Irq_Stk_Check = Irq_Stk_End = 0; \
+		*Reclaim_cnt_word = S_POSITIVE; \
+	} \
+  } while (0)
 
    /* DecAllocCnt only called when *Reclaim_cnt_word != NIL */
 
-#define DecAllocCnt(n) { *Reclaim_cnt_word += (n); }
+#define DecAllocCnt(n) do { *Reclaim_cnt_word += (n); } while (0)
 
-#define FreeLink(link) {                        \
+#define FreeLink(link) do {                        \
 	GETGC(link) = 0;                        \
 	GETGC((link)+1) = GETGC(HTcoll);        \
 	GETGC(HTcoll) = ((link) - HTcoll);      \
-}
+  } while (0)
 
 
   /* Given the contents of an HTMAIN or HTCOLL entry,
@@ -72,7 +72,7 @@
 #define GetLinkptr(entry)       ((entry) & 0x0fffffffe)
 
 
-#define DelLink(link, prev, entry) {                                    \
+#define DelLink(link, prev, entry) do {                                    \
   if ((prev) != (GCENTRY *)0)                                           \
     {                                                                   \
       GETGC((GCENTRY *)(prev) + 1) = GETGC((GCENTRY *)(link) + 1);      \
@@ -88,41 +88,41 @@
       GETGC((GCENTRY *)(entry)) = GETGC((GCENTRY *)(link));             \
       FreeLink((GCENTRY *)(link));                                      \
     }                                                                   \
-}
+  } while (0)
 
 #define RefCntP(ptr) (!(GetTypeEntry((ptr)) & TT_NOREF) &&              \
 		      (*GcDisabled_word != ATOM_T))
 
-#define GCLOOKUP(ptr, case) {                                                \
+#define GCLOOKUP(ptr, case) do {                                                \
 	if (RefCntP(ptr)) {                                                  \
 		if (*Reclaim_cnt_word != NIL)                                \
 		  htfind(ptr, case);                                         \
 		else                                                         \
 		  rec_htfind(ptr, case);                                     \
 	}                                                                    \
-}
+  } while (0)
 
-#define GCLOOKUPV(ptr, case, val) {                                          \
+#define GCLOOKUPV(ptr, case, val) do {                                          \
 	if (RefCntP(ptr)) {                                                  \
 		if (*Reclaim_cnt_word != NIL)                                \
                   (val) = htfind((ptr), (case));                             \
 		else                                                         \
                   (val) = rec_htfind((ptr), (case));                         \
 	} else (val) = NIL;                                                  \
-}
+  } while (0)
 
-#define REC_GCLOOKUP(ptr, case) { if (RefCntP(ptr)) rec_htfind(ptr, case); }
-#define REC_GCLOOKUPV(ptr, case, val) {                                      \
+#define REC_GCLOOKUP(ptr, case) do { if (RefCntP(ptr)) rec_htfind(ptr, case); } while (0)
+#define REC_GCLOOKUPV(ptr, case, val) do {                                      \
 	if (RefCntP(ptr))                                                    \
           (val) = rec_htfind((ptr), (case));                                 \
 	else                                                                 \
           (val) = NIL;                                                       \
-}
+  } while (0)
 
-#define FRPLPTR(old , new) { \
+#define FRPLPTR(old , new) do { \
 		GCLOOKUP(new, ADDREF); \
 		GCLOOKUP(old, DELREF); \
-		(old) = (new) ; }
+		(old) = (new) ; } while (0)
 
 
 #ifndef BYTESWAP

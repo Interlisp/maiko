@@ -123,7 +123,7 @@ int integerlength(unsigned int n) {
       n = (n >> 1);
     } while (n != 1);
     return (cnt);
-  };
+  }
 }
 
 /************* The above procedure is common !! **************************/
@@ -146,7 +146,7 @@ LispPTR findptrsbuffer(LispPTR ptr) {
       return (LAddrFromNative(bptr));
     else
       bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
-  };
+  }
   return (NIL);
 }
 
@@ -229,8 +229,8 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
         rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
       } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
       return (NIL);
-    };
-  };
+    }
+  }
   return (NIL);
 }
 
@@ -299,11 +299,11 @@ LispPTR linkblock(LispPTR base) {
         tmpbase = (struct arrayblock *)NativeAligned4FromLAddr(fbbase->bkwd);
         tmpbase->fwd = base;
         fbbase->bkwd = base;
-      };
+      }
       *freeblock = base;
       checkarrayblock(base, T, T);
-    };
-  };
+    }
+  }
   return (base);
 }
 
@@ -357,10 +357,10 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
       narlens = minblocksize;
       arlens += shaveback;
       secondbite += shaveback;
-    };
+    }
     linkblock(makefreearrayblock(nbase + 2 * secondbite, narlens));
     narlens = 0;
-  };
+  }
   return (linkblock(makefreearrayblock(base, arlens + narlens)));
 }
 
@@ -457,7 +457,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       ((ARRAYBLOCKPASSWORD != base->password) || (base->inuse == NIL))) {
     error("Bad array block reclaimed--continue with 'q' but save state ASAP. \n");
     return (T);
-  };
+  }
 #endif /* ARRAYCHECK */
 
   switch (base->gctype) {
@@ -472,12 +472,12 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
         tmpptr += 2;
       } while (tmpptr != btrailer);
       break;
-    };
+    }
     case CODEBLOCK_GCT:
       reclaim_p = ((reclaimcodeblock(ptr) == NIL) ? T : NIL);
 
       /* default:   No Action */
-  };
+  }
   if (reclaim_p == T)
     mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base->arlen)));
   return (T);
