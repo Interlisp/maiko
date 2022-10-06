@@ -142,7 +142,9 @@ SET(MAIKO_SRCS
     src/dspif.c
     src/dspsubrs.c
     src/eqf.c
-    src/ether.c
+    src/ether_common.c
+    src/ether_sunos.c
+    src/ether_nethub.c
     src/findkey.c
     src/foreign.c
     src/fp.c

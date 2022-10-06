@@ -115,7 +115,9 @@ DEVICES = $(OBJECTDIR)dspsubrs.o \
 	$(OBJECTDIR)dir.o \
 	$(OBJECTDIR)keyevent.o \
 	$(OBJECTDIR)kbdsubrs.o \
-	$(OBJECTDIR)ether.o \
+	$(OBJECTDIR)ether_common.o \
+	$(OBJECTDIR)ether_sunos.o \
+	$(OBJECTDIR)ether_nethub.o \
 	$(OBJECTDIR)tty.o \
 	$(OBJECTDIR)initkbd.o
 
@@ -472,12 +474,26 @@ $(OBJECTDIR)mouseif.o: $(SRCDIR)mouseif.c $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	$(INCDIR)dbprint.h $(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)mouseif.c -o $(OBJECTDIR)mouseif.o
 
-$(OBJECTDIR)ether.o: $(SRCDIR)ether.c $(REQUIRED-INCS) \
+$(OBJECTDIR)ether_common.o: $(SRCDIR)ether_common.c $(REQUIRED-INCS) \
 	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
 	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
-	$(CC) $(RFLAGS) $(SRCDIR)ether.c -o $(OBJECTDIR)ether.o
+	$(CC) $(RFLAGS) $(SRCDIR)ether_common.c -o $(OBJECTDIR)ether_common.o
+
+$(OBJECTDIR)ether_sunos.o: $(SRCDIR)ether_sunos.c $(REQUIRED-INCS) \
+	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
+	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)ether_sunos.c -o $(OBJECTDIR)ether_sunos.o
+
+$(OBJECTDIR)ether_nethub.o: $(SRCDIR)ether_nethub.c $(REQUIRED-INCS) \
+	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
+	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)ether_nethub.c -o $(OBJECTDIR)ether_nethub.o
 
 $(OBJECTDIR)findkey.o: $(SRCDIR)findkey.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
