@@ -221,7 +221,7 @@ static int recvPacket() {
 
   if (nextPacket == NULL) {
 
-    /* try to get the next packet(s) form network */
+    /* try to get the next packet(s) from network */
     rcvLen = recv(ether_fd, multiBuffer, sizeof(multiBuffer), MSG_DONTWAIT);
     if (rcvLen < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
       perror("recvPacket() :: recv(ether_fd, rcvBuffer, sizeof(rcvBuffer), MSG_DONTWAIT)");
@@ -289,7 +289,7 @@ static int recvPacket() {
 
   DLword copyLen = (bLen < ether_bsize) ? bLen : ether_bsize;
 
-#if BYTESWAP
+#if defined(BYTESWAP)
   log_debug(("  recvPacket() :: byte-swap copying %d bytes to 0x%016lX\n", copyLen, (unsigned long)ether_buf));
 
   dblwordsSwap(ether_buf, copyLen);
@@ -305,7 +305,7 @@ static int recvPacket() {
 
   ether_bsize = 0;
 
-#if BYTESWAP
+#if defined(BYTESWAP)
   log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (before)\n", IOPage->dlethernet[2]));
 
   /* byte-order in IOPage->dlethernet[2] does not seem to matter ... boolean ? */
@@ -523,7 +523,7 @@ LispPTR ether_send(LispPTR args[])
 
   log_debug(("   source = 0x%08X , bytecount: %d bytes\n", (unsigned int)source, byteCount));
 
-#ifdef BYTESWAP
+#if defined(BYTESWAP)
   dblwordsSwap(source, byteCount);
   int bytesSent = sendPacket(source, byteCount);
   dblwordsSwap(source, byteCount);
