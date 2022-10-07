@@ -34,6 +34,9 @@
 #include "etherdefs.h"
 #include "ifpage.h"
 #include "iopage.h"
+#include "byteswapdefs.h"
+#include "dbprint.h"
+#include "timerdefs.h"
 
 /*
 **  --- ether implementation common data -------------------------------------------
@@ -65,14 +68,14 @@ static int   mac5 = 0x56;
 void setNethubHost(char* host) {
   if (host && *host) {
     nethubHost = host;
-/*    printf("nh :: host now: '%s'\n", nethubHost); */
+    DBPRINT(("nh :: host now: '%s'\n", nethubHost));
   }
 }
 
 void setNethubPort(int port) {
   if (port > 0 && port <= 65535) {
     nethubPort = port;
-/*    printf("nh :: port now: %d\n", nethubPort); */
+    DBPRINT(("nh :: port now: %d\n", nethubPort));
   }
 }
 
@@ -89,7 +92,7 @@ void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5) {
     mac3 = m3;
     mac4 = m4;
     mac5 = m5;
-/*    printf("nh :: mac now: %02X-%02X-%02X-%02X-%02X-%02X\n", mac0, mac1, mac2, mac3, mac4, mac5); */
+    DBPRINT(("nh :: mac now: %02X-%02X-%02X-%02X-%02X-%02X\n", mac0, mac1, mac2, mac3, mac4, mac5));
   }
 }
 
@@ -102,7 +105,7 @@ static int logcnt = 0;
 
 void setNethubLogLevel(int ll) {
   loglevel = ll;
-  printf("nh :: leglevel now: %d\n", loglevel);
+  DBPRINT(("nh :: loglevel now: %d\n", loglevel));
 }
 
 #define log_info(line) { if (loglevel == 1) \
@@ -122,26 +125,7 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
   u_char* wordsPtr = (u_char*)((long)basePtr & LONG_PTR_MASK);
   int neededBytes = forBytes + (basePtr - wordsPtr);
   int wordCount = (neededBytes + 3) / 4;
-  while (wordCount > 0) {
-    u_char b0 = wordsPtr[0];
-    u_char b1 = wordsPtr[1];
-    u_char b2 = wordsPtr[2];
-    u_char b3 = wordsPtr[3];
-    wordsPtr[0] = b3;
-    wordsPtr[1] = b2;
-    wordsPtr[2] = b1;
-    wordsPtr[3] = b0;
-    wordsPtr += 4;
-    wordCount--;
-  }
-}
-
-static void asyncFd(int fd) {
-#ifdef O_ASYNC
-  if (fcntl(ether_fd, F_SETOWN, getpid()) == -1) perror("fcntl F_SETOWN error");
-  if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC) == -1) perror("fcntl F_SETFL on error");
-  log_debug(("  async io enabled for ether_fd\n"));
-#endif
+  word_swap_page((unsigned short*)wordsPtr, wordCount);
 }
 
 /*
@@ -183,6 +167,10 @@ void connectToHub() {
   hubaddr.sin_port = htons(nethubPort);
 
   ether_fd = socket(AF_INET, SOCK_STREAM, 0);
+  if (ether_fd < 0) {
+    log_info(("connectToHub(): FAILED to create AF_INET/SOCK_STREAM socket\n"));
+    return;
+  }
 
   if (connect(ether_fd, (struct sockaddr*)&hubaddr, sizeof(hubaddr)) < 0) {
     perror("connectToHub() - connect failed");
@@ -318,24 +306,17 @@ static int recvPacket() {
   ether_bsize = 0;
 
 #if BYTESWAP
-log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (before)\n", IOPage->dlethernet[2]));
+  log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (before)\n", IOPage->dlethernet[2]));
 
-#if 1 /* byte-order in OPage->dlethernet[2] does not seem to matter ... boolean ? */
+  /* byte-order in IOPage->dlethernet[2] does not seem to matter ... boolean ? */
   IOPage->dlethernet[2] = copyLen;
-#else
-  int b0 = copyLen & 0x000F;
-  int b1 = (copyLen >> 4) & 0x000F;
-  int b2 = (copyLen >> 8) & 0x000F;
-  int b3 = (copyLen >> 12) & 0x000F;
-  IOPage->dlethernet[2] = (b0 << 12) | (b1 << 8) | (b2 << 4) | b3;
-#endif
 
-log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (after)\n", IOPage->dlethernet[2]));
+  log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (after)\n", IOPage->dlethernet[2]));
 #else
 
-log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (before)\n", IOPage->dlethernet[3]));
+  log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (before)\n", IOPage->dlethernet[3]));
   IOPage->dlethernet[3] = copyLen;
-log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (after)\n", IOPage->dlethernet[3]));
+  log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (after)\n", IOPage->dlethernet[3]));
 
 #endif
 
@@ -413,7 +394,7 @@ LispPTR ether_resume(LispPTR args[])
     return (ATOM_T);
   }
   log_debug(("ether_resume() - begin\n"));
-  asyncFd(ether_fd);
+  int_io_open(ether_fd);
   log_debug(("ether_resume() - end\n\n"));
   log_info(("ether_resume()\n"));
   return (ATOM_T);
@@ -441,7 +422,7 @@ LispPTR ether_ctrlr(LispPTR args[])
     log_info(("ether_ctrlr() -> NIL\n"));
     return (NIL);
   } else {
-    asyncFd(ether_fd);
+    int_io_open(ether_fd);
     log_debug(("ether_ctrlr() - end -> ATOM_T\n\n"));
     log_info(("ether_ctrlr() -> ATOM_T\n"));
     return (ATOM_T);

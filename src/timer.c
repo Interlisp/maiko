@@ -492,7 +492,7 @@ void int_io_open(int fd)
 {
 #ifdef DOS
 /* would turn on DOS kbd signal handler here */
-#elseif defined(O_ASYNC)
+#elif defined(O_ASYNC)
   DBPRINT(("int_io_opening %d\n", fd));
   if (fcntl(fd, F_SETOWN, getpid()) == -1) perror("fcntl F_SETOWN error");
   if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_ASYNC) == -1) perror("fcntl F_SETFL on error");
@@ -503,7 +503,7 @@ void int_io_close(int fd)
 {
 #ifdef DOS
 /* Turn off signaller here */
-#elseif defined(O_ASYNC)
+#elif defined(O_ASYNC)
   if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_ASYNC) == -1) perror("fcntl_F_SETFL off error");
 #endif
 }

@@ -168,7 +168,7 @@ extern int TIMER_INTERVAL;
 #    define MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN 20000
 #  endif
 
-int timerAsyncEmulationInsnsCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
+int insnsCountdownForTimerAsyncEmulation = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
 static int pseudoTimerAsyncCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
 
 #endif
@@ -279,7 +279,7 @@ nextopcode:
 #if defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 	  IO_Signalled = TRUE;
 #endif
-	  pseudoTimerAsyncCountdown = timerAsyncEmulationInsnsCountdown;
+	  pseudoTimerAsyncCountdown = insnsCountdownForTimerAsyncEmulation;
   }
 #endif
 

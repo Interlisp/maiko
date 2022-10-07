@@ -14,4 +14,10 @@ LispPTR check_ether(void);
 void init_ifpage_ether(void);
 void init_ether(void);
 LispPTR check_sum(LispPTR *args);
+
+void setNethubHost(char* host);
+void setNethubPort(int port);
+void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5);
+void setNethubLogLevel(int ll);
+void connectToHub();
 #endif

@@ -285,16 +285,20 @@ const char *helpstring =
  -help        Print this message\n";
 #endif /* DOS */
 
-#ifdef MAIKO_ENABLE_NETHUB
-extern void setNethubHost(char* host);
-extern void setNethubPort(int port);
-extern void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5);
-extern void setNethubLogLevel(int ll);
-extern void connectToHub();
-#endif /* MAIKO_ENABLE_NETHUB */
+#if defined(MAIKO_ENABLE_NETHUB)
+const char *nethubHelpstring =
+ "\
+ -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
+ -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
+ -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
+ -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\
+ ";
+#elif
+const char *nethubHelpstring = "";
+#endif
 
 #if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
-extern int timerAsyncEmulationInsnsCountdown;
+extern int insnsCountdownForTimerAsyncEmulation;
 #endif
 
 /************************************************************************/
@@ -345,7 +349,7 @@ int main(int argc, char *argv[])
   }
 
   if (argv[i] && ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-HELP") == 0))) {
-    fprintf(stderr, "%s", helpstring);
+    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(0);
   }
 
@@ -368,7 +372,7 @@ int main(int argc, char *argv[])
   }
   if (access(sysout_name, R_OK)) {
     perror("Couldn't find a sysout to run");
-    fprintf(stderr, "%s", helpstring);
+    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(1);
   }
   /* OK, sysout name is now in sysout_name, and i is moved past a supplied name */
@@ -528,7 +532,7 @@ int main(int argc, char *argv[])
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
         if (errno == 0 && tmpint > 1000) {
-          timerAsyncEmulationInsnsCountdown = tmpint;
+          insnsCountdownForTimerAsyncEmulation = tmpint;
         } else {
           fprintf(stderr, "Bad value for -intr-emu-insns (integer > 1000)\n");
           exit(1);
