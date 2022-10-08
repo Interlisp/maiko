@@ -123,10 +123,10 @@ void setNethubLogLevel(int ll) {
 #define LONG_PTR_MASK ((long)(~((long)3)))
 
 static void dblwordsSwap(u_char* basePtr, int forBytes) {
-  u_char* wordsPtr = (u_char*)((long)basePtr & LONG_PTR_MASK);
-  int neededBytes = forBytes + (basePtr - wordsPtr);
-  int wordCount = (neededBytes + 3) / 4;
-  word_swap_page((unsigned short*)wordsPtr, wordCount);
+  u_char* dblwordPtr = (u_char*)((long)basePtr & LONG_PTR_MASK);
+  int neededBytes = forBytes + (basePtr - dblwordPtr);
+  int dblwordCount = (neededBytes + 3) / 4;
+  word_swap_page((unsigned short*)dblwordPtr, dblwordCount);
 }
 
 /*
