@@ -37,6 +37,7 @@
 #include "byteswapdefs.h"
 #include "dbprint.h"
 #include "timerdefs.h"
+#include "lisp2cdefs.h"
 
 /*
 **  --- ether implementation common data -------------------------------------------
@@ -479,7 +480,7 @@ LispPTR ether_get(LispPTR args[])
   log_debug(("ether_get() - begin\n"));
 
   u_char *target = (u_char *)NativeAligned2FromLAddr(args[1]);
-  int maxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
+  int maxByteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
   log_debug(("  target = 0x%016lX maxBytecount: %d bytes\n", (unsigned long)target, maxByteCount));
 
   sigset_t signals;
@@ -519,7 +520,7 @@ LispPTR ether_send(LispPTR args[])
   log_debug(("ether_send() - begin\n"));
 
   u_char *source = (u_char *)NativeAligned2FromLAddr(args[1]);
-  int byteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
+  int byteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
 
   log_debug(("   source = 0x%08X , bytecount: %d bytes\n", (unsigned int)source, byteCount));
 
