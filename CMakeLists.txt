@@ -72,10 +72,30 @@ IF(MAIKO_DISPLAY_X11)
   )
 ENDIF()
 
+# according to: https://cmake.org/pipermail/cmake/2016-October/064342.html
+# the following 2 lines should produce a dropdown-box in the cmake-gui
+# but this will happen only after running the command line version of cmake,
+# possibly after "clearing the cache" (i.e. starting with a fresh build directory)
+SET(MAIKO_NETWORK_TYPE NONE CACHE STRING "Type of networking to use: one of: NONE, SUN_DLPI, SUN_NIT, NETHUB")
+SET_PROPERTY(CACHE MAIKO_NETWORK_TYPE PROPERTY STRINGS NONE SUN_DLPI SUN_NIT NETHUB)
+
+# configure networking implementation to use
+IF(MAIKO_NETWORK_TYPE STREQUAL "NETHUB")
+  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_NETHUB")
+  MESSAGE("-- Configured for NETHUB network support")
+ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "SUN_DLPI")
+  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_DLPI")
+  MESSAGE("-- Configured for (SunOS) DLPI networking")
+ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "SUN_NIT")
+  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_NIT")
+  MESSAGE("-- Configured for (SunOS) NIT networking")
+ELSEIF(NOT MAIKO_NETWORK_TYPE STREQUAL "NONE")
+  MESSAGE(WARNING "Invalid option given for MAIKO_NETWORK_TYPE, must be one of:\nNONE, SUN_DLPI, SUN_NIT, NETHUB")
+ENDIF()
+
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   LIST(APPEND MAIKO_DEFINITIONS
     "-DOS5"
-    "-DUSE_DLPI"
   )
 ENDIF()
 

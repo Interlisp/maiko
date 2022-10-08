@@ -522,7 +522,7 @@ LispPTR ether_send(LispPTR args[])
   u_char *source = (u_char *)NativeAligned2FromLAddr(args[1]);
   int byteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
 
-  log_debug(("   source = 0x%08X , bytecount: %d bytes\n", (unsigned int)source, byteCount));
+  log_debug(("   source = 0x%08lX , bytecount: %d bytes\n", (unsigned long)source, byteCount));
 
 #if defined(BYTESWAP)
   dblwordsSwap(source, byteCount);
