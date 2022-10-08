@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
   } else {
     perror("lde: This Display Model does not supported\n");
     exit(-1);
-  }; /* endif( my_screen... */
+  } /* endif( my_screen... */
 
   close(FrameBufferFd);
 

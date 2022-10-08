@@ -69,7 +69,7 @@ extern int Dummy_errno;
  */
 
 #define SetupMatch(tname, pname, text, pext, tver)   \
-  {                                                  \
+  do {                                                  \
     char *pp;                               \
                                                      \
     separate_version(tname, tver, 0);                \
@@ -87,10 +87,10 @@ extern int Dummy_errno;
       *pp = '\0';                                    \
       strcpy(pext, pp + 1);                          \
     }                                                \
-  }
+  } while (0)
 
 #define MatchP(target, name, ver, matchtag, unmatchtag)                                       \
-  {                                                                                           \
+  do {                                                                                           \
     char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
     char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
                                                                                               \
@@ -105,10 +105,10 @@ extern int Dummy_errno;
       goto matchtag; /* NOLINT(bugprone-macro-parentheses) */                                 \
     else                                                                                      \
       goto unmatchtag; /* NOLINT(bugprone-macro-parentheses) */                               \
-  }
+  } while (0)
 
 #define MatchP_Case(target, name, ver, matchtag, unmatchtag)                                  \
-  {                                                                                           \
+  do {                                                                                           \
     char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
     char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
                                                                                               \
@@ -121,7 +121,7 @@ extern int Dummy_errno;
       goto matchtag; /* NOLINT(bugprone-macro-parentheses) */                                 \
     else                                                                                      \
       goto unmatchtag; /* NOLINT(bugprone-macro-parentheses) */                               \
-  }
+  } while (0)
 
 /*
  * Name:	match_pattern
@@ -232,7 +232,7 @@ int MAXFINFO;
 #define FINFOARRAYRSIZE 16
 
 #define AllocFinfo(fp)                                                   \
-  {                                                                      \
+  do {                                                                      \
     if (FreeFinfoList != (FINFO *)NULL) {                                \
       (fp) = FreeFinfoList;                                                \
       FreeFinfoList = (fp)->next;                                          \
@@ -242,15 +242,15 @@ int MAXFINFO;
       free(fp);                                                          \
       (fp) = (FINFO *)NULL;                                                \
     }                                                                    \
-  }
+  } while (0)
 
 #define FreeFinfo(fp)                                                      \
-  {                                                                        \
+  do {                                                                        \
     FINFO *lastp;                                                 \
     for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {} \
     lastp->next = FreeFinfoList;                                           \
     FreeFinfoList = fp;                                                    \
-  }
+  } while (0)
 
 
 /*

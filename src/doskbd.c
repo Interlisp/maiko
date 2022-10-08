@@ -85,10 +85,10 @@ extern LispPTR *KEYBUFFERING68k;
 /*  of the handler, so let's do it once, correctly.)  */
 /******************************************************/
 #define ENABLE_KBD                                               \
-  {                                                              \
+  do {                                                              \
     outp(INTA00, ENDOFINTERRUPT);                                \
     outp(KBD_COMMAND_PORT, KBD_ENABLE); /* Turn kbd on again. */ \
-  }
+  } while (0)
 
 /************************************************************************/
 /*                                                                      */

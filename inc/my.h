@@ -34,7 +34,7 @@
 /*	from SMALLP or FIXP, if necessary.				*/
 /*									*/
 /************************************************************************/
-#define	N_MakeFloat(arg, dest, tos){					\
+#define	N_MakeFloat(arg, dest, tos) do {				\
 	switch (SEGMASK & (LispPTR)(arg)) {				\
 	case S_POSITIVE:						\
 		(dest) = (float)(0xFFFF & (LispPTR)(arg));		\
@@ -53,11 +53,11 @@
 		  default: ERROR_EXIT(tos);				\
 		}							\
 	}								\
-}
+} while (0)
 
 
 
-#define	N_GetPos(arg, dest, tos){					\
+#define	N_GetPos(arg, dest, tos) do {					\
 	if (((arg) & SEGMASK) == S_POSITIVE)				\
 		(dest) = (arg) & 0xFFFF;				\
 	else	{							\
@@ -65,7 +65,7 @@
 	if (((dest) = *((int *)NativeAligned4FromLAddr(arg))) & 0x80000000)	\
 		ERROR_EXIT(tos);					\
 		}							\
-	}
+} while (0)
 
 static inline LispPTR
 aref_switch(unsigned type, LispPTR tos, LispPTR baseL, int index)
@@ -117,7 +117,7 @@ aref_switch(unsigned type, LispPTR tos, LispPTR baseL, int index)
 }
 
 #define aset_switch(type, tos)						\
-{									\
+do {									\
    switch (type) {							\
       case 38: /* pointer : 32 bits */					\
 	GCLOOKUP(*(((int *)NativeAligned4FromLAddr(base)) + index), DELREF); \
@@ -178,5 +178,5 @@ aref_switch(unsigned type, LispPTR tos, LispPTR baseL, int index)
       default: /* Illegal or Unimplemented */				\
         ERROR_EXIT(tos);						\
     }/* end switch typenumber */					\
-}
+} while (0)
 #endif /* MY_H */

@@ -50,7 +50,7 @@ LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset,
   if (beta > 0xFF) { error("bad beta argument to PUTBITS"); }
 #endif
 
-  if ((SEGMASK & data) != S_POSITIVE) { ERROR_EXIT(data); };
+  if ((SEGMASK & data) != S_POSITIVE) { ERROR_EXIT(data); }
 
   pword = NativeAligned2FromLAddr(base + word_offset);
   field_size = 0xF & beta;

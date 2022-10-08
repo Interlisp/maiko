@@ -64,12 +64,14 @@ BIGNUM  (integer that can't be represented bigger than 32 bits)
 */
 
 #define IF_IMMEDIATE(arg, doit, doitsmall)                                 \
-  switch (SEGMASK & (arg)) {                                               \
-    case ATOM_OFFSET: doit;       /* NOLINT(bugprone-macro-parentheses) */ \
-    case S_CHARACTER: doit;       /* NOLINT(bugprone-macro-parentheses) */ \
-    case S_POSITIVE: doitsmall;   /* NOLINT(bugprone-macro-parentheses) */ \
-    case S_NEGATIVE: doitsmall;   /* NOLINT(bugprone-macro-parentheses) */ \
-  }
+  do {                                                                     \
+    switch (SEGMASK & (arg)) {                                             \
+      case ATOM_OFFSET: doit;       /* NOLINT(bugprone-macro-parentheses) */ \
+      case S_CHARACTER: doit;       /* NOLINT(bugprone-macro-parentheses) */ \
+      case S_POSITIVE: doitsmall;   /* NOLINT(bugprone-macro-parentheses) */ \
+      case S_NEGATIVE: doitsmall;   /* NOLINT(bugprone-macro-parentheses) */ \
+    }                                                                      \
+  } while (0)
 
 /************************************************************************/
 /*									*/

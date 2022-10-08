@@ -78,28 +78,28 @@ extern IOPAGE *IOPage68K;
 
 /*  EmMouseX68K are already swapped, no need for GETWORD */
 #define MouseMove(x, y)           \
-  {                               \
+  do {                               \
     *((DLword *)EmMouseX68K) = x; \
     *((DLword *)EmMouseY68K) = y; \
-  }
+  } while (0)
 #ifdef NEVER
 #ifndef BYTESWAP
 #define PUTBASEBIT68K(base68k, offset, bitvalue)               \
-  {                                                            \
+  do {                                                            \
     if (bitvalue)                                              \
       *((DLword *)(base68k) + (((u_short)(offset)) >> 4)) |=   \
           1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD);    \
     else                                                       \
       *((DLword *)(base68k) + (((u_short)(offset)) >> 4)) &=   \
           ~(1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD)); \
-  }
+  } while (0)
 #else
 
 /* convert to real 68 k address, then do arithmetic, and convert
    back to i386 address pointer */
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)                       \
-  {                                                                    \
+  do {                                                                    \
     int real68kbase;                                                   \
     real68kbase = 2 ^ ((int)(base68k));                                \
     if (bitvalue)                                                      \
@@ -108,7 +108,7 @@ extern IOPAGE *IOPage68K;
     else                                                               \
       GETWORD((DLword *)(real68kbase) + (((u_short)(offset)) >> 4)) &= \
           ~(1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD));         \
-  }
+  } while (0)
 #endif
 #endif /* NEVER */
 
@@ -340,22 +340,22 @@ typedef struct {
 } CURSOR;
 
 #define CursorClippingX(posx, width)                         \
-  {                                                          \
+  do {                                                       \
     if (displaywidth < ((posx) + HARD_CURSORWIDTH)) {        \
       LastCursorClippingX = (width) = displaywidth - (posx); \
     } else {                                                 \
       LastCursorClippingX = (width) = HARD_CURSORWIDTH;      \
     }                                                        \
-  }
+  } while (0)
 
 #define CursorClippingY(posy, height)                          \
-  {                                                            \
+  do {                                                         \
     if (displayheight < ((posy) + HARD_CURSORHEIGHT)) {        \
       LastCursorClippingY = (height) = displayheight - (posy); \
     } else {                                                   \
       LastCursorClippingY = (height) = HARD_CURSORHEIGHT;      \
     }                                                          \
-  }
+  } while (0)
 
 extern int displaywidth, displayheight;
 extern int DisplayInitialized;
@@ -452,7 +452,7 @@ void copy_cursor(int newx, int newy)
   dx = newx;
   w = LastCursorClippingX;
   h = LastCursorClippingY;
-  ;
+
   srcbpl = HARD_CURSORWIDTH;
   dstbpl = displaywidth;
   op = 2; /* OR-in */

@@ -80,8 +80,8 @@ LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
       lastpvar = (LispPTR *)(2 + PVar + (unsigned short)num);
       num = ~(num >> 16) + 1;
       for (; --num > 0;) { *--lastpvar = 0xffffffff; /* Mark as UNBOUND */ }
-    };
-  };
+    }
+  }
 
   /* endptr = cstkptr */
 
@@ -127,11 +127,11 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
         }
         goto cons_result;
       } else if (var_name_in_frame == CATCH_RETURN_FROM_ATOM) {
-        if (throwp) { target = GETCLINK(target_addr); };
+        if (throwp) { target = GETCLINK(target_addr); }
         goto cons_result;
       }
     } /* if blip */
-  };  /* for */
+  }  /* for */
 
 no_result:
   return (NIL_PTR);
@@ -151,8 +151,8 @@ LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
   name_table_base = name_ptr + ((FNHEAD *)name_table_base)->ntsize;
 
   while (value = GETWORD(name_ptr++)) do {
-      if (code == GETWORD(name_bind_ptr++)) { return (value) };
-    }; /* while */
+      if (code == GETWORD(name_bind_ptr++)) { return (value) }
+    } /* while */
   return (NIL_PTR);
 }; /* variable_name_in_frame */
 
@@ -184,11 +184,11 @@ LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
           LispPTR slot_value = *((LispPTR *)(FRAMESIZE + (DLword *)frame_addr) +
                                           (bind_info - (FVPVAR << 8))) if (slot_value > 0) {
             return (slot_value & POINTERMASK);
-          };
-        };
-      };
+          }
+        }
+      }
       name_bind_ptr++;
-    }; /* while */
+    } /* while */
   return (NIL_PTR);
 
 }; /* pvar_value_in_frame */

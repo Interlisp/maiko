@@ -76,13 +76,13 @@ extern DLword *EmCursorX68K,*EmCursorY68K;
 /* Macro for locking and unlocking screen to prevent multiple updates */
 
 #ifdef DOS
-#define LOCKSCREEN currentdsp->device.locked++;
-#define UNLOCKSCREEN currentdsp->device.locked--;
+#define LOCKSCREEN currentdsp->device.locked++
+#define UNLOCKSCREEN currentdsp->device.locked--
 
 #else
 
-#define LOCKSCREEN ScreenLocked = T;
-#define UNLOCKSCREEN ScreenLocked = NIL;
+#define LOCKSCREEN ScreenLocked = T
+#define UNLOCKSCREEN ScreenLocked = NIL
 
 #endif /* DOS */
 #endif /* BITBLT_H */

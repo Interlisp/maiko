@@ -149,6 +149,6 @@ void disablegc1(int noerror) {
   if ((noerror == NIL) && (*GcDisabled_word == NIL)) {
     gcinterruptstate->gcdisabled = T;
     *PENDINGINTERRUPT_word = ATOM_T;
-  };
+  }
   *GcDisabled_word = ATOM_T;
 }

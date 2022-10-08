@@ -220,7 +220,7 @@ static unsigned short stringequalhash(LispPTR obj) {
         return (EQHASHINGBITS(obj));
       break;
     default: return (EQHASHINGBITS(obj));
-  };
+  }
 
   if (fatp) {
     unsigned short *fat;
@@ -288,7 +288,7 @@ static unsigned short stringhash(LispPTR obj) {
         return (EQHASHINGBITS(obj));
       break;
     default: return (EQHASHINGBITS(obj));
-  }; /* switch */
+  } /* switch */
 
   if (fatp) {
     unsigned short *fat;

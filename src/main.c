@@ -320,7 +320,7 @@ int main(int argc, char *argv[])
     perror("Name of executable not found.");
   } else if (dld_init(dld_find_executable(argv[0])) != 0) {
     dld_perror("Can't init DLD.");
-  };
+  }
 #endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
 
 #ifdef XWINDOW

@@ -43,7 +43,7 @@
 /***********************************************************/
 
 #define LStringToCString(Lisp, C, MaxLen, Len)                                                     \
-  {                                                                                                \
+  do {                                                                                                \
     OneDArray *arrayp;                                                                             \
     char *base;                                                                                    \
     short *sbase;                                                                                  \
@@ -70,7 +70,7 @@
                                                                                                    \
       default: error("LStringToCString can not handle\n");                                         \
     }                                                                                              \
-  }
+  } while (0)
 
 /************************************************************************/
 /*									*/
@@ -134,7 +134,7 @@ LispPTR call_c_fn(LispPTR *args) {
   *errorflag = 0;
 
   /* Initialize the argvector */
-  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; };
+  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; }
 
   /* Test the function addr. If it is 0 we can not execute. */
   if (fnaddr == 0) {
@@ -329,7 +329,7 @@ LispPTR call_c_fn(LispPTR *args) {
                           intarg[24], intarg[25], intarg[26], intarg[27], intarg[28], intarg[29],
                           intarg[30], intarg[31]);
       return (CIntToLispInt(tmp));
-    }; break;
+    } break;
     case TYPE_CHARACTERP: {
       int tmp;
       tmp = ((PFC)fnaddr)(intarg[0], intarg[1], intarg[2], intarg[3], intarg[4], intarg[5],
@@ -339,7 +339,7 @@ LispPTR call_c_fn(LispPTR *args) {
                           intarg[24], intarg[25], intarg[26], intarg[27], intarg[28], intarg[29],
                           intarg[30], intarg[31]);
       return (S_CHARACTER | tmp);
-    }; break;
+    } break;
     case TYPE_FLOATP:
       fresult = ((PFF)fnaddr)(intarg[0], intarg[1], intarg[2], intarg[3], intarg[4], intarg[5],
                               intarg[6], intarg[7], intarg[8], intarg[9], intarg[10], intarg[11],
@@ -416,7 +416,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
   valueplace = (int *)NativeAligned4FromLAddr(args[1]);
 
   /* Initialize the argvector */
-  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; };
+  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; }
 
   /* Test the function addr. If it is 0 we can not execute. */
   if (fnaddr == 0) {
@@ -597,7 +597,7 @@ LispPTR smashing_c_fn(LispPTR *args) {
                           intarg[30], intarg[31]);
       *valueplace = tmp;
       return (NIL);
-    }; break;
+    } break;
     case TYPE_CHARACTERP:
       return (S_CHARACTER |
               (((PFC)fnaddr)(intarg[0], intarg[1], intarg[2], intarg[3], intarg[4], intarg[5],
@@ -867,7 +867,7 @@ int put_c_basebyte(LispPTR *args) {
         GETBYTE((char *)(addr + (offset >> 3))) &= (~(1 << (0x7 & offset)));
       } else {
         GETBYTE((char *)(addr + (offset >> 3))) |= (1 << (0x7 & offset));
-      };
+      }
       break;
     case 1: /* byte */ GETBYTE((char *)(addr + offset)) = 0xFF & newval; break;
     case 2: /* word */
@@ -917,7 +917,7 @@ int get_c_basebyte(LispPTR *args) {
         return (ATOM_T);
       } else {
         return (NIL);
-      };
+      }
       break;
     case 1: /* byte */ return ((0xFF & (GETBYTE((char *)(addr + offset)))) | S_POSITIVE); break;
     case 2: /* word */

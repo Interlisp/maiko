@@ -19,37 +19,37 @@ extern jmp_buf jmpbuf;
 extern	unsigned int TIMEOUT_TIME;
 
 #define	SETJMP(x)	\
-  {				\
+  do {				\
     if(setjmp(jmpbuf) != 0) return(x);		\
-  }
+  } while (0)
 
 #define	TIMEOUT(exp)			\
-  {			\
+  do {			\
     alarm(TIMEOUT_TIME);	\
     INTRSAFE(exp);			\
     alarm(0);		\
-  }
+  } while (0)
 
 #define	TIMEOUT0(exp)			\
-  {			\
+  do {			\
     alarm(TIMEOUT_TIME);	\
     INTRSAFE0(exp);			\
     alarm(0);		\
-  }
+  } while (0)
 
 #define	S_TOUT(exp)	\
-		alarm(TIMEOUT_TIME),\
-		(exp),			\
-		alarm(0)
+  alarm(TIMEOUT_TIME),                  \
+    (exp),                              \
+    alarm(0)
 
 #define	ERRSETJMP(rval)					\
-  {							\
+  do {							\
     if(setjmp(jmpbuf) != 0)				\
       {							\
 	*Lisp_errno = 100;				\
 	return(rval);					\
       }							\
-  }
+  } while (0)
 
 
 /************************************************************************/

@@ -32,21 +32,21 @@
 
 /* GetLink gets a new entry from the GC collision table */
 #define GetLink(var)                                               \
-  {                                                                \
+  do {                                                                \
     GCENTRY linkoff;                                      \
     linkoff = GETGC(HTcoll);                                       \
     if (linkoff == 0) {                                            \
       if ((linkoff = GETGC((GCENTRY *)HTcoll + 1)) >= HTCOLLMAX) { \
         disablegc1(NIL);                                           \
         return (NIL);                                              \
-      };                                                           \
+      }                                                           \
       GETGC((GCENTRY *)HTcoll + 1) = linkoff + 2;                  \
       (var) = (GCENTRY *)(HTcoll + linkoff);                       \
     } else {                                                       \
       GETGC(HTcoll) = GETGC((GCENTRY *)(HTcoll + linkoff + 1));    \
       (var) = (GCENTRY *)(HTcoll + linkoff);                       \
     }                                                              \
-  }
+  } while (0)
 
 #ifdef BIGVM
 #define HTCNTSHIFT 17           /* amount to shift to get hash table count */
@@ -81,7 +81,7 @@
  * Thus STKREF case is not needed.
  */
 #define NewEntry(entry, hiptr, casep, ptr)                              \
-  {                                                                     \
+  do {                                                                     \
     switch (casep) {                                                    \
       case ADDREF:                                                      \
         GETGC(entry) = (hiptr) | (2 << HTCNTSHIFT); /* set count = 2 */ \
@@ -94,14 +94,14 @@
       default: error("GC error: new entry touches stack bit");          \
         return NIL; /* NOT REACHED */                                   \
     }                                                                   \
-  }
+  } while (0)
 
 /*
  * RecNewEntry is called in the course of the reclamation.
  * Does not maintain the allocation count.
  */
 #define RecNewEntry(entry, hiptr, casep, ptr)                           \
-  {                                                                     \
+  do {                                                                     \
     switch (casep) {                                                    \
       case ADDREF:                                                      \
         GETGC(entry) = (hiptr) | (2 << HTCNTSHIFT); /* set count = 2 */ \
@@ -115,7 +115,7 @@
       default: error("GC error: new entry when turning off stack bit"); \
         return NIL; /* NOT REACHED */                                   \
     }                                                                   \
-  }
+  } while (0)
 
 /* ModEntry is a macro to modify an old gc hash table entry.
      entry is a pointer to the entry
@@ -131,7 +131,7 @@
  * Thus STKREF and UNSTKREF cases are not needed.
  */
 #define ModEntry(entry, contents, ptr, casep, remove)                                       \
-  {                                                                                         \
+  do {                                                                                         \
     if (((contents) & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */            \
       modify_big_reference_count(entry, casep, ptr);                                        \
       return NIL;                                                                           \
@@ -161,14 +161,14 @@
     }                                                                                       \
     GETGC(entry) = contents;                                                                \
     return NIL;                                                                             \
-  }
+  } while (0)
 
 /*
  * RecModEntry is called in the course of the reclamation.
  * Does not maintain the allocation count.
  */
 #define RecModEntry(entry, contents, ptr, casep, remove)                                    \
-  {                                                                                         \
+  do {                                                                                         \
     if (((contents) & HTCNTMASK) == HTCNTMASK) { /* overflow; return non-zero */            \
       modify_big_reference_count(entry, casep, ptr);                                        \
       return NIL;                                                                           \
@@ -200,7 +200,7 @@
     if (((contents) & HTCNTSTKMASK) == (1 << HTCNTSHIFT)) goto remove;                      \
     GETGC(entry) = contents;                                                                \
     return NIL;                                                                             \
-  }
+  } while (0)
 
 /************************************************************************/
 /*									*/
@@ -231,7 +231,7 @@ void enter_big_reference_count(LispPTR ptr) {
       return;
     } else
       ++oventry;
-  };
+  }
 
   if (tmp == NIL) {
     if (Evenp(LAddrFromNative(oventry + 1), DLWORDSPER_PAGE)) {

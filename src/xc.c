@@ -210,7 +210,7 @@ void dispatch(void) {
     &&case350, &&case351, &&case352, &&case353, &&case354, &&case355, &&case356, &&case357,
     &&case360, &&case361, &&case362, &&case363, &&case364, &&case365, &&case366, &&case367,
     &&case370, &&case371, &&case372, &&case373, &&case374, &&case375, &&case376, &&case377,
-  };
+  }
 #endif
 
 #if (DOS && OPDISP)
@@ -669,7 +669,7 @@ nextopcode:
       OP_subrcall(Get_BYTE_PCMAC1, Get_BYTE_PCMAC2);
       RET;
       nextop0;
-    };
+    }
     case 0176:
     case176 : { CONTEXTSWITCH; }
     case 0177:

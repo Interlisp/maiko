@@ -274,7 +274,6 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
       ; /* find the binding mark */
     value = (int)*stackptr;
     lastpvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
-    ;
     bindnvalues = (~value) >> 16;
     for (value = bindnvalues; --value >= 0;) { *--lastpvar = 0xffffffff; }
     /* This line caused \NSMAIL.READ.HEADING to smash memory, */

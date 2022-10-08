@@ -506,7 +506,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  * in the course of the following conversion.
  */
 #ifdef DOS
-  if (versionp) LispVersionToUnixVersion(lfname, version) else version = -1;
+  if (versionp) LispVersionToUnixVersion(lfname, version); else version = -1;
 #else
   if (versionp) LispVersionToUnixVersion(lfname);
 #endif /* DOS */
