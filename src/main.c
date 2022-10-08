@@ -293,7 +293,7 @@ const char *nethubHelpstring =
  -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
  -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\
  ";
-#elif
+#else
 const char *nethubHelpstring = "";
 #endif
 
