@@ -327,14 +327,16 @@ static int recvPacket() {
 
 /* -1: failed/not connected; >= 0: packet bytes sent */
 static int sendPacket(u_char *source, int sourceLen) {
+  struct msghdr msg = {0};
+  struct iovec iov[2];
+  uint16_t nhlength;
+
   if (ether_fd < 0) {
     log_debug(("  sendPacket() :: not connected to hub !!!\n"));
     return -1;
   }
-
-  u_char sndBuffer[2050];
   
-  if (sourceLen < 14 || sourceLen > (sizeof(sndBuffer) - 2)) {
+  if (sourceLen < 14) {
     log_debug(("  sendPacket() :: invalid packet length: %d !!!\n", sourceLen));
     return -1;
   }
@@ -344,18 +346,15 @@ static int sendPacket(u_char *source, int sourceLen) {
     return -1;
   }
 
-  sndBuffer[0] = (sourceLen >> 8) & 0x00FF;
-  sndBuffer[1] = sourceLen & 0x00FF;
-  int resLen = 0;
-  u_char *sPos = source;
-  u_char *dPos = &sndBuffer[2];
-  while(resLen < sourceLen) {
-    *dPos++ = *sPos++;
-    *dPos++ = *sPos++;
-    resLen += 2;
-  }
+  nhlength = htons(sourceLen);
+  iov[0].iov_base = &nhlength;
+  iov[0].iov_len = 2;
+  iov[1].iov_base = source;
+  iov[1].iov_len = sourceLen;
+  msg.msg_iov = iov;
+  msg.msg_iovlen = 2;
 
-  int result = send(ether_fd, sndBuffer, sourceLen + 2, 0);
+  int result = sendmsg(ether_fd, &msg, 0);
   return result;
 }
 
