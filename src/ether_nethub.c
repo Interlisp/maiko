@@ -164,7 +164,7 @@ void connectToHub() {
 
   struct sockaddr_in hubaddr;
   hubaddr.sin_family = AF_INET;
-  hubaddr.sin_addr.s_addr = *((unsigned long *)host->h_addr);
+  hubaddr.sin_addr.s_addr = *(in_addr_t *)host->h_addr_list[0];
   hubaddr.sin_port = htons(nethubPort);
 
   ether_fd = socket(AF_INET, SOCK_STREAM, 0);
