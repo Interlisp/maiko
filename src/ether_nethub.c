@@ -575,7 +575,6 @@ LispPTR check_ether()
     int receivedBytes = recvPacket();
     if (receivedBytes > 0) {
       ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
-      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->IOInterrupt = 1;
       ETHEREventCount++;
       Irq_Stk_Check = Irq_Stk_End = 0; /* ??? */
       *PENDINGINTERRUPT68k = (ATOM_T);
