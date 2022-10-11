@@ -46,7 +46,7 @@
 #include "mkcelldefs.h"    // for N_OP_createcell
 #include "testtooldefs.h"  // for MakeAtom68k, MAKEATOM
 
-#ifdef MAIKO_ENABLE_ETHERNET
+#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
 #include "etherdefs.h"
 #endif
 
@@ -117,9 +117,9 @@ void init_ifpage(int sysout_size) {
     Initialize IFPAGE
    */
   InterfacePage->machinetype = KATANA; /* 3 is katana */
-#ifdef MAIKO_ENABLE_ETHERNET
+#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
   init_ifpage_ether(); /* store ethernet ID in IF page */
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
   /*InterfacePage->dl24bitaddressable = (sysout_size == 32? 0xffff : 0);*/
   InterfacePage->dl24bitaddressable = (sysout_size == 8 ? 0 : 0xffff);
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;

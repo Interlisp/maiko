@@ -17,6 +17,8 @@
 #  define MAIKO_OS_CYGWIN 1
 #  define MAIKO_OS_NAME "Cygwin"
 #  define MAIKO_OS_UNIX_LIKE 1
+#  define MAIKO_EMULATE_TIMER_INTERRUPTS 1
+#  define MAIKO_EMULATE_ASYNC_INTERRUPTS 1
 #  define MAIKO_OS_DETECTED 1
 #endif
 

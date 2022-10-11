@@ -7,6 +7,8 @@
 /*									*/
 /************************************************************************/
 
+#if defined(MAIKO_ENABLE_ETHERNET) && !defined(MAIKO_ENABLE_NETHUB)
+
 #include "version.h"
 
 #if defined(USE_DLPI)
@@ -79,17 +81,17 @@
 #define NIOCSETF PFIOCSETF
 #endif
 
-int ether_fd = -1; /* file descriptor for ether socket */
-int ether_intf_type = 0;
-u_char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
-u_char broadcast[6] = {255, 255, 255, 255, 255, 255};
-int ether_bsize = 0;  /* if nonzero then a receive is pending */
-u_char *ether_buf;    /* address of receive buffer */
-u_char nit_buf[3000]; /* the current chunk read from NIT (one packet) */
+extern int      ether_fd;      /* file descriptor for ether socket */
+static int      ether_intf_type = 0;
+extern u_char   ether_host[6]; /* 48 bit address of this node */
+extern u_char   broadcast[6];
+extern int      ether_bsize;   /* if nonzero then a receive is pending */
+extern u_char  *ether_buf;     /* address of receive buffer */
+static u_char   nit_buf[3000]; /* the current chunk read from NIT (one packet) */
 extern LispPTR *PENDINGINTERRUPT68k;
-extern fd_set LispReadFds;
+extern fd_set   LispReadFds;
 
-int ETHEREventCount = 0;
+extern int ETHEREventCount;
 
 #define PacketTypeIP 0x0800
 #define PacketTypeARP 0x0806
@@ -120,7 +122,6 @@ int ETHEREventCount = 0;
      ments of the stack and replaces them with its result.   When
      both an action and operator are specified in the same short-
      word, the action is performed followed by the operation.
-
      The binary operator can also be  from  the  set  {  ENF_COR,
      ENF_CAND,  ENF_CNOR, ENF_CNAND }.  These are "short-circuit"
      operators, in that  they  terminate  the  execution  of  the
@@ -132,7 +133,6 @@ int ETHEREventCount = 0;
      false; ENF_CNOR returns false if the result is true.  Unlike
      the other binary operators, these four do not leave a result
      on the stack, even if they continue.
-
      The short-circuit operators should be used when possible, to
      reduce  the  amount  of time spent evaluating filters.  When
      they are used, you should also  arrange  the  order  of  the
@@ -140,7 +140,6 @@ int ETHEREventCount = 0;
      possible; for example, checking the IP destination field  of
      a  UDP  packet  is  more likely to indicate failure than the
      packet type field.
-
      The special  action  ENF_NOPUSH  and  the  special  operator
      ENF_NOP  can be used to only perform the binary operation or
      to only push a value on the stack.   Since  both  are  (con-
@@ -148,7 +147,6 @@ int ETHEREventCount = 0;
      actually specifies the action followed by ENF_NOP, and indi-
      cating  only an operation actually specifies ENF_NOPUSH fol-
      lowed by the operation.
-
      After executing the filter command list,  a  non-zero  value
      (true)  left  on top of the stack (or an empty stack) causes
      the incoming packet to be accepted and a zero value  (false)
@@ -746,23 +744,7 @@ static void init_uid() {
   rid = getuid();
   setuid(rid);
 }
-#endif /* MAIKO_ENABLE_ETHERNET */
 
-/************************************************************************/
-/*		i n i t _ i f p a g e _ e t h e r			*/
-/*									*/
-/*      sets Lisp's idea of \my.nsaddress. Clears it if ether not	*/
-/*      enabled								*/
-/*									*/
-/************************************************************************/
-
-void init_ifpage_ether() {
-  InterfacePage->nshost0 = (DLword)((ether_host[0] << 8) + ether_host[1]);
-  InterfacePage->nshost1 = (DLword)((ether_host[2] << 8) + ether_host[3]);
-  InterfacePage->nshost2 = (DLword)((ether_host[4] << 8) + ether_host[5]);
-}
-
-#ifdef MAIKO_ENABLE_ETHERNET
 /* this needs to be a global so the name can be set by main() in Ctest */
 /* But MAIKO_ENABLE_ETHERNET doesn't support NIT, so dyke it out for MAIKO_ENABLE_ETHERNET */
 #if defined(USE_NIT)
@@ -1085,49 +1067,4 @@ void init_ether() {
 #endif /* MAIKO_ENABLE_ETHERNET */
 }
 
-#define MASKWORD1 0xffff
-
-/************************************************************************/
-/*									*/
-/*			c h e c k _ s u m				*/
-/*									*/
-/*	Implements the CHECKSUM opcode; compute the checksum for an	*/
-/*	ethernet packet.						*/
-/*									*/
-/*	args[0] LispPTR base;						*/
-/*	args[1] LispPTR nwords;						*/
-/*	args[2] LispPTR initsum;					*/
-/*									*/
-/*									*/
-/************************************************************************/
-
-LispPTR check_sum(LispPTR *args)
-{
-  LispPTR checksum;
-  DLword *address;
-  int nwords;
-
-  address = (DLword *)NativeAligned2FromLAddr(*args++);
-  nwords = *args++;
-
-  if (*args != NIL)
-    checksum = (*args) & MASKWORD1;
-  else
-    checksum = 0;
-
-  for (; nwords > (S_POSITIVE); address++, nwords--) {
-    checksum = checksum + GETWORD(address);
-    if (checksum > 0xffff) checksum = (checksum & 0xffff) + 1; /* add carry */
-
-    if (checksum > 0x7fff) /* ROTATE LEFT 1 */
-      checksum = ((checksum & 0x7fff) << 1) | 1;
-    else
-      checksum = checksum << 1;
-  }
-
-  if (checksum == MASKWORD1)
-    return (S_POSITIVE); /* ret 0 */
-  else
-    return (S_POSITIVE | checksum);
-
-} /*check_sum */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) */

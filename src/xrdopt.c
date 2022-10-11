@@ -121,6 +121,13 @@ void print_Xusage(const char *prog)
   fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   fprintf(stderr,
           " -xsync                               -turn  XSynchronize on. (default is off)\n\n");
+#if defined(MAIKO_ENABLE_NETHUB)
+  fprintf(stderr,"\
+ -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
+ -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
+ -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
+ -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\n");
+#endif
   fprintf(stderr, "Please refer to the manual for further information.\n\n");
   exit(0);
 } /* end print_Xusage() */

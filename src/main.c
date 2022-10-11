@@ -285,6 +285,22 @@ const char *helpstring =
  -help        Print this message\n";
 #endif /* DOS */
 
+#if defined(MAIKO_ENABLE_NETHUB)
+const char *nethubHelpstring =
+ "\
+ -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
+ -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
+ -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
+ -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\
+ ";
+#else
+const char *nethubHelpstring = "";
+#endif
+
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+extern int insnsCountdownForTimerAsyncEmulation;
+#endif
+
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
@@ -333,7 +349,7 @@ int main(int argc, char *argv[])
   }
 
   if (argv[i] && ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-HELP") == 0))) {
-    fprintf(stderr, "%s", helpstring);
+    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(0);
   }
 
@@ -356,7 +372,7 @@ int main(int argc, char *argv[])
   }
   if (access(sysout_name, R_OK)) {
     perror("Couldn't find a sysout to run");
-    fprintf(stderr, "%s", helpstring);
+    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(1);
   }
   /* OK, sysout name is now in sysout_name, and i is moved past a supplied name */
@@ -454,6 +470,80 @@ int main(int argc, char *argv[])
 #endif /* MAIKO_ENABLE_ETHERNET */
 
     }
+
+#ifdef MAIKO_ENABLE_NETHUB
+    else if (!strcmp(argv[i], "-nh-host")) {
+      if (argc > ++i) {
+        setNethubHost(argv[i]);
+      } else {
+        fprintf(stderr, "Missing argument after -nh-host\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-port")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 0) {
+          setNethubPort(tmpint);
+        } else {
+          fprintf(stderr, "Bad value for -nh-port\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-port\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-mac")) {
+      if (argc > ++i) {
+        int b0, b1, b2, b3, b4, b5;
+        if (sscanf(argv[i], "%x-%x-%x-%x-%x-%x",  &b0, &b1, &b2, &b3, &b4, &b5) == 6) {
+          setNethubMac(b0, b1, b2, b3, b4, b5);
+        } else {
+          fprintf(stderr, "Invalid argument for -nh-mac\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-mac\n");
+        exit(1);
+      }
+    }
+    else if (!strcmp(argv[i], "-nh-loglevel")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint >= 0) {
+          setNethubLogLevel(tmpint);
+        } else {
+          fprintf(stderr, "Bad value for -nh-loglevel\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -nh-loglevel\n");
+        exit(1);
+      }
+    }
+#endif /* MAIKO_ENABLE_NETHUB */
+
+#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+    else if (!strcmp(argv[i], "-intr-emu-insns")) {
+      if (argc > ++i) {
+        errno = 0;
+        tmpint = strtol(argv[i], (char **)NULL, 10);
+        if (errno == 0 && tmpint > 1000) {
+          insnsCountdownForTimerAsyncEmulation = tmpint;
+        } else {
+          fprintf(stderr, "Bad value for -intr-emu-insns (integer > 1000)\n");
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -intr-emu-insns\n");
+        exit(1);
+      }
+    }
+#endif
+
     /* diagnostic flag for big vmem write() calls */
     else if (!strcmp(argv[i], "-xpages")) {
       if (argc > ++i) {
@@ -490,6 +580,10 @@ int main(int argc, char *argv[])
 #ifdef MAIKO_ENABLE_ETHERNET
   init_ether(); /* modified by kiuchi Nov. 4 */
 #endif          /* MAIKO_ENABLE_ETHERNET */
+
+#ifdef MAIKO_ENABLE_NETHUB
+  connectToHub();
+#endif
 
 #ifdef DOS
   init_host_filesystem();
