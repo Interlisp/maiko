@@ -19,19 +19,9 @@
 /*                                                                         */
 /***************************************************************************/
 
+#include <arpa/inet.h>
 #include "byteswapdefs.h"
 #include "lsptypes.h"
-
-/****************************************************************/
-/*                                                              */
-/*            Byte-swap a region wordcount words long           */
-/*            This does NOT swap words in a long-word!          */
-/*                                                              */
-/****************************************************************/
-void byte_swap_page(unsigned short *page, int wordcount) {
-  int i;
-  for (i = 0; i < wordcount; i++) { *(page + i) = byte_swap_word(*(page + i)); }
-}
 
 /****************************************************************/
 /*                                                              */
@@ -39,13 +29,8 @@ void byte_swap_page(unsigned short *page, int wordcount) {
 /*                                                              */
 /****************************************************************/
 void word_swap_page(unsigned short *page, int longwordcount) {
-  int i;
-  unsigned int *longpage;
-  longpage = (unsigned int *)page;
-  for (i = 0; i < (longwordcount + longwordcount); i++) {
-    *(page + i) = byte_swap_word(*(page + i));
-  }
-  for (i = 0; i < longwordcount; i++) { *(longpage + i) = swapx(*(longpage + i)); }
+  unsigned int *longpage = (unsigned int *)page;
+  for (int i = 0; i < longwordcount; i++) { *(longpage + i) = ntohl(*(longpage + i)); }
 }
 
 /****************************************************************/
