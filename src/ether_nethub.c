@@ -51,8 +51,6 @@ extern u_char  *ether_buf;     /* address of receive buffer */
 extern LispPTR *PENDINGINTERRUPT68k;
 extern fd_set   LispReadFds;
 
-extern int ETHEREventCount;
-
 /*
 **  --- nethub configuration data --------------------------------------------------
 */
@@ -200,16 +198,24 @@ static void disconnectFromHub() {
   }
 }
 
-/* buffering for multipe packets:
-** if interrupts are'nt processed fast enough, recv() may deliver >1 packets at once
-*/
-static u_char multiBuffer[65536]; /* should be enough for > 100 IDP packets with ~ 600 bytes */
-static u_char* nextPacket = NULL;
-static u_char* rcvBuffer = multiBuffer;
-static int rcvLen = 0;
 
-/* -1: failed/not connected, 0: no packet available, > 0: received byte count */
+
+/* Input:
+ *    ether_fd: fd to read Nethub format packets from
+ *    ether_bsize: size of ether_buf storage
+ * Output:
+ *    ether_buf: buffer to copy XIP packet into
+ *    ether_bsize: set to 0 if packet returned
+ * Returns:
+ *    -1: failed/not connected
+ *     0: no packet available
+ *    >0: number of bytes received and placed in ether_buf
+ */
+
 static int recvPacket() {
+  int rcvLen;
+  unsigned short bLen;
+
   if (ether_fd < 0) {
     log_debug(("  recvPacket() :: not connected to hub !!!\n"));
     return -1;
@@ -220,46 +226,57 @@ static int recvPacket() {
     return 0;
   }
 
-  if (nextPacket == NULL) {
-
-    /* try to get the next packet(s) from network */
-    rcvLen = recv(ether_fd, multiBuffer, sizeof(multiBuffer), MSG_DONTWAIT);
-    if (rcvLen < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
-      perror("recvPacket() :: recv(ether_fd, rcvBuffer, sizeof(rcvBuffer), MSG_DONTWAIT)");
-      disconnectFromHub();
-      return -1;
-    }
-
-    if (rcvLen <= 0) {
-      log_debug(("  recvPacket() :: no network packet available -> return 0\n"));
-      return 0;
-    }
-
-    rcvBuffer = multiBuffer;
-
-  } else {
-    
-    /* move to next packet in multi packet buffer */
-    rcvBuffer = nextPacket;
-
+  /* start by reading the (network byte order) short value indicating the size of the
+   * XIP packet being received
+   */
+  rcvLen = recv(ether_fd, &bLen, sizeof(bLen), MSG_DONTWAIT);
+  if (rcvLen < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
+    perror("recvPacket() :: recv(ether_fd, &bLen, sizeof(bLen), MSG_DONTWAIT)");
+    disconnectFromHub();
+    return -1;
   }
-  nextPacket = NULL;
+  if (rcvLen <= 0) {
+    log_debug(("  recvPacket() :: no network packet available -> return 0\n"));
+    return 0;
+  }
 
-  int bLen = ((rcvBuffer[0] << 8) & 0xFF00) | (rcvBuffer[1] & 0x00FF);
+  bLen = ntohs(bLen);
   log_debug(("  recvPacket() :: received %d bytes, logical packet length = %d bytes\n", rcvLen, bLen));
+
   if (bLen & 0x0001) {
-    log_debug(("recvPacket() ERROR :: odd byte byte length of logical packet -> disconnecting from nethub\n"));
-    log_info(("recvPacket() ERROR :: odd byte byte length of logical packet -> disconnecting from nethub\n"));
-    log_all(("recvPacket() ERROR :: odd byte byte length of logical packet -> disconnecting from nethub\n"));
+    log_debug(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
+    log_info(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
+    log_all(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
     disconnectFromHub();
     return -1;
   }
-  if (bLen > (rcvLen - 2)) {
-    log_debug(("  recvPacket() ERROR :: logical packet larger than packet -> disconnecting from nethub\n"));
-    log_info(("recvPacket() ERROR :: logical packet larger than packet -> disconnecting from nethub\n"));
-    log_all(("recvPacket() ERROR :: logical packet larger than packet -> disconnecting from nethub\n"));
+  if (bLen > ether_bsize) {
+    log_debug(("  recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
+    log_info(("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
+    log_all(("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
     disconnectFromHub();
     return -1;
+  }
+
+
+  /* continue reading the XIP packet of the just determined size
+   */
+  rcvLen = recv(ether_fd, ether_buf, bLen, MSG_DONTWAIT);
+  if (rcvLen < 0 && errno != EAGAIN && errno != EWOULDBLOCK) {
+    perror("recvPacket() :: recv(ether_fd, ether_buf, bLen, MSG_DONTWAIT)");
+    disconnectFromHub();
+    return -1;
+  }
+  if (rcvLen <= 0) {
+    log_debug(("  recvPacket() :: no network packet available -> return 0\n"));
+    return 0;
+  }
+
+  if (bLen != rcvLen) {
+    log_debug(("  recvPacket() WARNING :: packet size mismatch -> discard packet -> return 0\n"));
+    log_info(("recvPacket() WARNING :: packet size mismatch -> discard packet -> return 0\n"));
+    log_all(("recvPacket() WARNING :: packet size mismatch -> discard packet -> return 0\n"));
+    return 0;
   }
 
   if (bLen < 14) {
@@ -271,57 +288,25 @@ static int recvPacket() {
     return 0;
   }
 
-  if ((bLen + 2) != rcvLen) {
-    log_debug(("  recvPacket() ***** :: logical/physical length differ -> preserving next packet in multiBuffer\n"));
-    log_info(("recvPacket() ***** :: logical/physical length differ -> preserving next packet in multiBuffer\n"));
-    nextPacket = &rcvBuffer[bLen + 2];
-    rcvLen -= bLen + 2;
-    log_debug(("  recvPacket() ***** :: next packet in multiBuffer at +%d , remaining length = %d\n", 
-	       (int)(nextPacket - multiBuffer), rcvLen));
-    log_info(("recvPacket() ***** :: next packet in multiBuffer at +%d , remaining length = %d\n", 
-	       (int)(nextPacket - multiBuffer), rcvLen));
-  }
-
-  if (   memcmp(&rcvBuffer[2], ether_host, 6) != 0
-      && memcmp(&rcvBuffer[2], broadcast, 6) != 0) {
+  if (   memcmp(ether_buf, ether_host, 6) != 0
+      && memcmp(ether_buf, broadcast, 6) != 0) {
     log_debug(("  recvPacket() :: packet is not for us and not a broadcast, ignoring packet\n"));
     return 0;
   }
 
-  DLword copyLen = (bLen < ether_bsize) ? bLen : ether_bsize;
-
 #if defined(BYTESWAP)
-  log_debug(("  recvPacket() :: byte-swap copying %d bytes to 0x%016lX\n", copyLen, (unsigned long)ether_buf));
-
-  dblwordsSwap(ether_buf, copyLen);
-  memcpy(ether_buf, &rcvBuffer[2], copyLen);
-  dblwordsSwap(ether_buf, copyLen);
-
+  log_debug(("  recvPacket() :: byte-swapping %d bytes at %p\n", bLen, (void *)ether_buf));
+  dblwordsSwap(ether_buf, bLen);
+  IOPage->dlethernet[2] = bLen;
 #else
-  log_debug(("  recvPacket() :: copying %d bytes to 0x%016X\n", copyLen, (unsigned long)ether_buf));
-
-  memcpy(ether_buf, &rcvBuffer[2], copyLen);
-
+  log_debug(("  recvPacket() :: %d bytes at %p\n", bLen, (void *)ether_buf));
+  IOPage->dlethernet[3] = bLen;
 #endif
 
   ether_bsize = 0;
 
-#if defined(BYTESWAP)
-  log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (before)\n", IOPage->dlethernet[2]));
 
-  /* byte-order in IOPage->dlethernet[2] does not seem to matter ... boolean ? */
-  IOPage->dlethernet[2] = copyLen;
-
-  log_debug(("  recvPacket() :: IOPage->dlethernet[2] = 0x%04X (after)\n", IOPage->dlethernet[2]));
-#else
-
-  log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (before)\n", IOPage->dlethernet[3]));
-  IOPage->dlethernet[3] = copyLen;
-  log_debug(("  recvPacket() :: IOPage->dlethernet[3] = 0x%04X (after)\n", IOPage->dlethernet[3]));
-
-#endif
-
-  return copyLen;
+  return bLen;
 }
 
 
@@ -473,26 +458,23 @@ LispPTR ether_reset(LispPTR args[])
 /************************************************************************/
 LispPTR ether_get(LispPTR args[])
 {
+  int receivedBytes;
+  u_char *target;
+  int maxByteCount;
+
   if (nethubHost == NULL) {
     return (NIL);
   }
   log_debug(("ether_get() - begin\n"));
 
-  u_char *target = (u_char *)NativeAligned2FromLAddr(args[1]);
-  int maxByteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
-  log_debug(("  target = 0x%016lX maxBytecount: %d bytes\n", (unsigned long)target, maxByteCount));
-
-  sigset_t signals;
-  sigemptyset(&signals);
-  sigaddset(&signals, SIGIO);
-  sigprocmask(SIG_BLOCK, &signals, NULL);
+  target = (u_char *)NativeAligned2FromLAddr(args[1]);
+  maxByteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
+  log_debug(("  target = %p maxBytecount: %d bytes\n", (void *)target, maxByteCount));
 
   ether_buf = target;
   ether_bsize = maxByteCount;
 
-  int receivedBytes = recvPacket();
-
-  sigprocmask(SIG_UNBLOCK, &signals, NULL);
+  receivedBytes = recvPacket();
 
   log_debug(("ether_get() ::  receivedBytes: %d bytes\n", receivedBytes));
   if (receivedBytes <= 0) {
@@ -521,7 +503,7 @@ LispPTR ether_send(LispPTR args[])
   u_char *source = (u_char *)NativeAligned2FromLAddr(args[1]);
   int byteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
 
-  log_debug(("   source = 0x%08lX , bytecount: %d bytes\n", (unsigned long)source, byteCount));
+  log_debug(("   source = %p , bytecount: %d bytes\n", (void *)source, byteCount));
 
 #if defined(BYTESWAP)
   dblwordsSwap(source, byteCount);
@@ -559,39 +541,36 @@ LispPTR ether_setfilter(LispPTR args[])
  **********************************************************************/
 LispPTR check_ether()
 {
-  LispPTR result = (NIL);
+  int receivedBytes;
+  struct pollfd pfds[1];
 
   if (ether_fd < 0) {
-    return result;
+    return (NIL);
   }
-
-  struct pollfd pfds[1];
+  log_debug(("check_ether() - begin\n"));
   pfds[0].fd = ether_fd;
   pfds[0].events = POLLIN;
   pfds[0].revents = 0;
   poll(pfds, 1, 0);
-  if (pfds[0].revents & POLLIN) {
-    log_debug(("check_ether() - begin\n"));
-    int receivedBytes = recvPacket();
-    if (receivedBytes > 0) {
-      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
-      ETHEREventCount++;
-      Irq_Stk_Check = Irq_Stk_End = 0; /* ??? */
-      *PENDINGINTERRUPT68k = (ATOM_T);
-      log_debug(("check_ether() :: raised LISP interrupt\n"));
-      log_debug(("check_ether() :: INTERRUPTSTATE_word   = 0x%08X\n",
-		 *((int*)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))));
-      log_debug(("check_ether() :: PENDINGINTERRUPT_word = 0x%08X\n",
-		 *((int*)PENDINGINTERRUPT68k)));
-      result = (ATOM_T);
-      log_debug(("check_ether() - end -> ATOM_T\n\n"));
-      log_info(("check_ether(): received packet, len = %d bytes\n", receivedBytes));
-    } else {
-      log_debug(("check_ether() - end -> NIL\n\n"));
-    }
+  if (!(pfds[0].revents & POLLIN)) {
+    log_debug(("check_ether() - poll end -> NIL\n\n"));
+    return (NIL);
+  }
+  receivedBytes = recvPacket();
+  if (receivedBytes <= 0) {
+    log_debug(("check_ether() - data end -> NIL\n\n"));
+    return (NIL);
   }
 
-  return result;
+  ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
+  Irq_Stk_Check = Irq_Stk_End = 0; /* ??? */
+  *PENDINGINTERRUPT68k = (ATOM_T);
+  log_debug(("check_ether() :: raised LISP interrupt\n"));
+  log_debug(("check_ether() :: INTERRUPTSTATE_word   = 0x%08X\n",
+             *((int*)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))));
+  log_info(("check_ether(): received packet, len = %d bytes\n", receivedBytes));
+  log_debug(("check_ether() - end -> ATOM_T\n\n"));
+  return (ATOM_T);
 }
 
 #endif /* MAIKO_ENABLE_NETHUB */
