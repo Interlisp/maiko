@@ -15,6 +15,7 @@ build/**
 *.sparc-x/**
 *.sparc/**
 *.x86_64-x/**
+*.x86_64-sdl/**
 *.x86_64/**
 *.armv7l-x/**
 *.armv7l/**
