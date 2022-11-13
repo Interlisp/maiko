@@ -1,0 +1,19 @@
+# Options for MacOS, x86 processor, X windows
+
+CC = clang -m64 $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)sdl.o
+
+SDLFLAGS = -DSDL -I/Library/Frameworks/SDL2.framework/Headers
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O1 -g
+DEBUGFLAGS = # -DDEBUG -DOPTRACE
+DFLAGS = $(DEBUGFLAGS) $(SDLFLAGS) -DRELEASE=351
+
+LDFLAGS = -F/Library/Frameworks -framework SDL2
+LDELDFLAGS =
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl
