@@ -45,6 +45,7 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "adr68k.h"
 #include "address.h"
 #include "stack.h"
+#include "initdspdefs.h"
 #include "keyboard.h"
 #include "display.h"
 #include "lsptypes.h"
