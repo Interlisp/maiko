@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, SDL
 
-CC = clang -m64 $(CLANG_CFLAGS)
+CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 

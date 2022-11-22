@@ -1,5 +1,5 @@
-#include <SDL.h>
-#include <SDL_keycode.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
 #include <assert.h>
 #include <limits.h>
 #include "sdldefs.h"
@@ -482,7 +482,7 @@ static void handle_keydown(SDL_Keycode k, unsigned short mod) {
   if (lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
   } else {
-    printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
+    // printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, FALSE);
     DoRing();
     if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
@@ -493,7 +493,7 @@ static void handle_keyup(SDL_Keycode k, unsigned short mod) {
   if (lk == -1) {
     printf("No mapping for key %s\n", SDL_GetKeyName(k));
   } else {
-    printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
+    // printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, TRUE);
     DoRing();
     if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
@@ -592,10 +592,12 @@ void process_SDLevents() {
         }
         break;
       case SDL_KEYDOWN:
+#if 0
         printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
                event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
                event.key.keysym.scancode, event.key.keysym.sym,
                SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
+#endif
         if (event.key.repeat) {
           /* Lisp needs to see the UP transition before the DOWN transition */
           handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
@@ -603,10 +605,12 @@ void process_SDLevents() {
         handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
         break;
       case SDL_KEYUP:
+#if 0
         printf("up ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
                event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
                event.key.keysym.scancode, event.key.keysym.sym,
                SDL_GetKeyName(event.key.keysym.sym), event.key.keysym.mod);
+#endif
         handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
         break;
       case SDL_MOUSEMOTION: {
@@ -660,7 +664,7 @@ void process_SDLevents() {
         /*   printf("SDL_KEYMAPCHANGED\n"); break; */
         /* case SDL_TEXTINPUT: */
         /*   printf("SDL_TEXTINPUT\n"); break; */
-      default: printf("other event type: %d\n", event.type);
+    default: /* printf("other event type: %d\n", event.type); */ break;
     }
   }
   if (display_update_needed) {

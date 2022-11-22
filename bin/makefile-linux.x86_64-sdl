@@ -1,0 +1,19 @@
+# Options for Linux, Intel x86_64 and SDL
+
+CC = gcc -m64 $(GCC_CFLAGS)
+# CC = clang -m64 $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)sdl.o
+
+XFLAGS = -DSDL
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g3
+DFLAGS = $(XFLAGS) -DRELEASE=351
+
+LDFLAGS = -lm -lSDL2
+LDELDFLAGS =
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl
