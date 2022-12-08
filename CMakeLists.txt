@@ -72,6 +72,7 @@ IF(MAIKO_DISPLAY_X11)
     inc/xscroll.h
     inc/xwinmandefs.h
   )
+  MESSAGE("-- Configured for X11 display")
 ENDIF()
 
 # according to: https://cmake.org/pipermail/cmake/2016-October/064342.html
@@ -108,6 +109,7 @@ IF(MAIKO_DISPLAY_SDL)
   SET(MAIKO_DISPLAY_SDL_HDRS
     inc/sdldefs.h
   )
+  MESSAGE("-- Configured for SDL display")
 ENDIF()
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
