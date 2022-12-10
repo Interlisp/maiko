@@ -54,7 +54,7 @@ int Current_Hot_X = 0, Current_Hot_Y = 0;
 /*									*/
 /************************************************************************/
 
-void Init_XCursor() {
+void Init_XCursor(void) {
   int i;
   DLword *newbm = (DLword *)(IOPage->dlcursorbitmap);
 
