@@ -335,7 +335,7 @@ void set_Xmouseposition(int x, int y)
 /*									*/
 /************************************************************************/
 
-void DoRing() {
+void DoRing(void) {
   DLword w, r;
   KBEVENT *kbevent;
 
