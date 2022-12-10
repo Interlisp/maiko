@@ -31,8 +31,8 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
 {
   int temp_x, temp_y, LowerRightX, LowerRightY;
 
-  LowerRightX = dsp->Visible.x + dsp->Visible.width - 1;
-  LowerRightY = dsp->Visible.y + dsp->Visible.height - 1;
+  LowerRightX = dsp->Visible.x + (int)dsp->Visible.width - 1;
+  LowerRightY = dsp->Visible.y + (int)dsp->Visible.height - 1;
 
   /* display region of interest lower right x, y pixel */
   temp_x = x + w - 1;
@@ -48,7 +48,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
       (temp_y <= LowerRightY)) {
     XLOCK;
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
-              x - dsp->Visible.x, y - dsp->Visible.y, w, h);
+              x - dsp->Visible.x, y - dsp->Visible.y, (unsigned)w, (unsigned)h);
     XFlush(dsp->display_id);
     XUNLOCK(dsp);
     return (1);
@@ -75,7 +75,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
   if ((w > 0) && (h > 0)) {
     XLOCK;
     XPutImage(dsp->display_id, dsp->DisplayWindow, dsp->Copy_GC, &dsp->ScreenBitmap, x, y,
-              x - dsp->Visible.x, y - dsp->Visible.y, w, h);
+              x - dsp->Visible.x, y - dsp->Visible.y, (unsigned)w, (unsigned)h);
     XFlush(dsp->display_id);
     XUNLOCK(dsp);
   }

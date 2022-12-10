@@ -77,9 +77,13 @@ static XrmOptionDescRec opTable[] = {
  reasons /jarl
  */
 
+extern char Display_Name[128];
 char Display_Name[128];
+extern char iconpixmapfile[1024];
 char iconpixmapfile[1024];
+extern char Window_Title[255];
 char Window_Title[255];
+extern char Icon_Title[255];
 char Icon_Title[255];
 
 extern char sysout_name[];
@@ -200,7 +204,7 @@ void read_Xoption(int *argc, char *argv[])
   /* protocol. */
 
   if (XrmGetResource(commandlineDB, "ldex.display", "Ldex.Display", str_type, &value) == True) {
-    (void)strncpy(Display_Name, value.addr, (int)value.size);
+    (void)strncpy(Display_Name, value.addr, value.size);
   } else if (getenv("DISPLAY") == (char *)NULL) {
     fprintf(stderr, "Can't find a display. Either set the shell\n");
     fprintf(stderr, "variable DISPLAY to an appropriate display\n");
@@ -241,7 +245,7 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
     /* Get Sysout */
-    (void)strncpy(sysout_name, value.addr, (int)value.size);
+    (void)strncpy(sysout_name, value.addr, value.size);
   }
   if (sysout_name[0] == '\0') {
     fprintf(stderr, "Couldn't find a sysout to run;\n");
@@ -249,30 +253,30 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   if (XrmGetResource(rDB, "ldex.title", "Ldex.Title", str_type, &value) == True) {
-    (void)strncpy(Window_Title, value.addr, (int)value.size);
+    (void)strncpy(Window_Title, value.addr, value.size);
   } else {
     (void)strcpy(Window_Title, WINDOW_NAME);
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
-    (void)strncpy(Icon_Title, value.addr, (int)value.size);
+    (void)strncpy(Icon_Title, value.addr, value.size);
   } else {
     (void)strcpy(Icon_Title, "Medley");
   }
 
   if (XrmGetResource(rDB, "ldex.iconbitmap", "Ldex.Iconbitmap", str_type, &value) == True) {
-    (void)strncpy(iconpixmapfile, value.addr, (int)value.size);
+    (void)strncpy(iconpixmapfile, value.addr, value.size);
   }
 
   /* Old style geometry definition. */
   if (XrmGetResource(rDB, "ldex.geometry", "Ldex.geometry", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, (int)value.size);
+    (void)strncpy(tmp, value.addr, value.size);
     bitmask = XParseGeometry(tmp, &LispWindowRequestedX, &LispWindowRequestedY,
                              &LispWindowRequestedWidth, &LispWindowRequestedHeight);
   }
   if (XrmGetResource(rDB, "ldex.screen", "Ldex.screen", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, (int)value.size);
+    (void)strncpy(tmp, value.addr, value.size);
     bitmask = XParseGeometry(tmp, &LispDisplayRequestedX, &LispDisplayRequestedY,
                              &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
   }
@@ -291,12 +295,12 @@ void read_Xoption(int *argc, char *argv[])
                          "ldex.maxpages",
                          "Ldex.maxpages",
                          str_type, &value) == True) {
-        (void)strncpy(tmp, value.addr, (int)value.size);
+        (void)strncpy(tmp, value.addr, value.size);
         maxpages = atoi(tmp);
       }
   */
   if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
-    (void)strncpy(tmp, value.addr, (int)value.size);
+    (void)strncpy(tmp, value.addr, value.size);
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
@@ -309,7 +313,7 @@ void read_Xoption(int *argc, char *argv[])
 #ifdef MAIKO_ENABLE_ETHERNET
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5;
-    (void)strncpy(tmp, value.addr, (int)value.size);
+    (void)strncpy(tmp, value.addr, value.size);
 #if defined(USE_DLPI)
     if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
 #elif defined(USE_NIT)

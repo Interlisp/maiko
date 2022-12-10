@@ -23,7 +23,7 @@
 #include "xdefs.h"         // for XLOCK, XUNLOCK
 #include "xlspwindefs.h"   // for DoRing
 #include "xscrolldefs.h"   // for JumpScrollHor, JumpScrollVer, Scroll, Scro...
-#include "xwinmandefs.h"   // for Set_BitGravity, beep_Xkeyboard, bound, dis...
+#include "xwinmandefs.h"   // for Set_BitGravity, beep_Xkeyboard, dis...
 
 int Mouse_Included = FALSE;
 
@@ -51,15 +51,15 @@ extern u_char *SUNLispKeyMap;
 #define MOUSE_RIGHT 14
 #define MOUSE_MIDDLE 15
 
-/* bound: return b if it is between a and c otherwise it returns a or c */
-int bound(int a, int b, int c)
+/* ubound: return (unsigned) value if it is between lower and upper otherwise lower or upper */
+static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
 {
-  if (b <= a)
-    return (a);
-  else if (b >= c)
-    return (c);
+  if (value <= lower)
+    return (lower);
+  else if (value >= upper)
+    return (upper);
   else
-    return (b);
+    return (value);
 }
 
 void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)
@@ -85,50 +85,51 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
   XUNLOCK(dsp);
 } /* end Set_BitGravity */
 
-static void lisp_Xconfigure(DspInterface dsp, int x, int y, int lspWinWidth, int lspWinHeight)
+static void lisp_Xconfigure(DspInterface dsp, int x, int y, unsigned lspWinWidth, unsigned lspWinHeight)
 {
-  int GravSize, Col2, Row2, Col3, Row3;
+  int Col2, Row2, Col3, Row3;
+  unsigned int GravSize;
 
   /* The Visible width and height changes when */
   /* we configure the window. Make them */
   /* stay within bounds. */
   dsp->Visible.width =
-      bound(OUTER_SB_WIDTH(dsp) + 2, lspWinWidth, dsp->Display.width + OUTER_SB_WIDTH(dsp)) -
+      ubound(OUTER_SB_WIDTH(dsp) + 2, lspWinWidth, dsp->Display.width + OUTER_SB_WIDTH(dsp)) -
       OUTER_SB_WIDTH(dsp);
   dsp->Visible.height =
-      bound(OUTER_SB_WIDTH(dsp) + 2, lspWinHeight, dsp->Display.height + OUTER_SB_WIDTH(dsp)) -
+      ubound(OUTER_SB_WIDTH(dsp) + 2, lspWinHeight, dsp->Display.height + OUTER_SB_WIDTH(dsp)) -
       OUTER_SB_WIDTH(dsp);
 
-  GravSize = (int)(dsp->ScrollBarWidth / 2) - (dsp->InternalBorderWidth);
-  Col2 = dsp->Visible.width;
-  Row2 = dsp->Visible.height;
-  Col3 = dsp->Visible.width + (int)(OUTER_SB_WIDTH(dsp) / 2);
-  Row3 = dsp->Visible.height + (int)(OUTER_SB_WIDTH(dsp) / 2);
+  GravSize = (dsp->ScrollBarWidth / 2) - (dsp->InternalBorderWidth);
+  Col2 = (int)dsp->Visible.width;
+  Row2 = (int)dsp->Visible.height;
+  Col3 = (int)(dsp->Visible.width + (OUTER_SB_WIDTH(dsp) / 2));
+  Row3 = (int)(dsp->Visible.height + (OUTER_SB_WIDTH(dsp) / 2));
 
   XLOCK;
   XMoveResizeWindow(dsp->display_id, dsp->DisplayWindow, 0, 0, dsp->Visible.width,
                     dsp->Visible.height);
   if (noscroll == 0) {
     /* Scroll bars */
-    XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - dsp->InternalBorderWidth, /* y */
+    XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - (int)dsp->InternalBorderWidth, /* y */
                       dsp->ScrollBarWidth,   /* width */
                       dsp->Visible.height); /* height */
-    XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - dsp->InternalBorderWidth, Row2, /* y */
+    XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - (int)dsp->InternalBorderWidth, Row2, /* y */
                       dsp->Visible.width,  /* width */
                       dsp->ScrollBarWidth); /* height */
 
     /* Scroll buttons */
     XMoveResizeWindow(
                       dsp->display_id, dsp->HorScrollButton,
-                      (int)((dsp->Visible.x * dsp->Visible.width) / dsp->Display.width),         /* x */
-                      0 - dsp->InternalBorderWidth,                                                /* y */
-                      (int)((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
+                      (dsp->Visible.x * (int)dsp->Visible.width) / (int)dsp->Display.width,         /* x */
+                      0 - (int)dsp->InternalBorderWidth,                                                /* y */
+                      ((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
                       dsp->ScrollBarWidth);                                                        /* height */
     XMoveResizeWindow(
-                      dsp->display_id, dsp->VerScrollButton, 0 - dsp->InternalBorderWidth,             /* x */
-                      (int)((dsp->Visible.y * dsp->Visible.height) / dsp->Display.height),           /* y */
+                      dsp->display_id, dsp->VerScrollButton, 0 - (int)dsp->InternalBorderWidth,             /* x */
+                      (dsp->Visible.y * (int)dsp->Visible.height) / (int)dsp->Display.height,           /* y */
                       dsp->ScrollBarWidth,                                                             /* width */
-                      (int)((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
+                      ((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
 
     /* Gravity windows */
     XMoveResizeWindow(dsp->display_id, dsp->NWGrav, Col2, Row2, GravSize, GravSize);
@@ -245,8 +246,8 @@ void process_Xevents(DspInterface dsp)
     else if (report.xany.window == dsp->LispWindow)
       switch (report.xany.type) {
         case ConfigureNotify:
-          lisp_Xconfigure(dsp, report.xconfigure.x, report.xconfigure.y, report.xconfigure.width,
-                          report.xconfigure.height);
+          lisp_Xconfigure(dsp, report.xconfigure.x, report.xconfigure.y, (unsigned)report.xconfigure.width,
+                          (unsigned)report.xconfigure.height);
           break;
         case EnterNotify: enable_Xkeyboard(currentdsp); break;
         case LeaveNotify: break;
@@ -290,6 +291,7 @@ void process_Xevents(DspInterface dsp)
               break;
             default: break;
           } /* end switch */
+	  break;
         default: break;
       }
     else if (report.xany.window == dsp->VerScrollBar)

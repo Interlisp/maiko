@@ -216,8 +216,8 @@ typedef struct dspifrec
 {
   int		error;		/* A generic errornumber */
   Display	*handle;	/* The X Display this dspif describes */
-  Mask		DisableEventMask;
-  Mask		EnableEventMask;
+  long		DisableEventMask;
+  long		EnableEventMask;
   XImage	image;		/* The scratch image structure (used in blt'ing) */
   XImage	tmpimage;	/* The tmp image (used for depth conversion) */
   GC		TitleGC;	/* The gc for title blitting. */

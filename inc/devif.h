@@ -52,8 +52,8 @@ typedef struct
   {
     int	x;
     int	y;
-    int	width;
-    int	height;
+    unsigned width;
+    unsigned height;
   } MRegion;
 
 
@@ -216,8 +216,9 @@ typedef struct
 				   This method makes the mouse visible on the screen. Note that
 				   the dsp supplies the method and the iop supplies the data. */
     MRegion Display;		/* Dimensions of the physical display. */
+    unsigned short unused0;	/* alignment padding for next field */
     unsigned short bitsperpixel;
-    unsigned long colors;	/* cash for the available_colors */
+    unsigned long colors;	/* cache for the available_colors */
     unsigned long oldstate; /* Keep the old state around */
     unsigned long graphicsmode; /* Magic cookie used to set the state. */
     unsigned long numberofbanks;
@@ -256,8 +257,8 @@ typedef struct
     Pixmap GravityOnPixmap;
     Pixmap GravityOffPixmap;
     XImage ScreenBitmap;
-    Mask   DisableEventMask;
-    Mask   EnableEventMask;
+    long   DisableEventMask;
+    long   EnableEventMask;
 #endif /* XWINDOW */
   } DspInterfaceRec, *DspInterface;
 
