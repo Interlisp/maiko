@@ -474,7 +474,7 @@ LispPTR ether_setfilter(LispPTR args[])
 
 int estat[3];
 
-int *ether_debug() {
+int *ether_debug(void) {
 #ifdef MAIKO_ENABLE_ETHERNET
   estat[0] = 0;
   if (ether_fd < 0) return (NIL);
@@ -500,7 +500,7 @@ static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
 #endif
 #endif
 
-LispPTR check_ether() {
+LispPTR check_ether(void) {
 /*
  *	If receiver active then check if any packets are
  *	available from the ethernet.  If so, read the packet
@@ -615,7 +615,7 @@ LispPTR check_ether() {
 /*									*/
 /************************************************************************/
 
-LispPTR get_packet() {
+LispPTR get_packet(void) {
 #ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
   fd_set rfds;
@@ -739,7 +739,7 @@ static int check_filter(u_char *buffer)
  *	init_uid()
  *	sets effective user-id to real user-id
  **********************************************************************/
-static void init_uid() {
+static void init_uid(void) {
   int rid;
   rid = getuid();
   setuid(rid);
@@ -758,7 +758,7 @@ struct sockaddr_nit snit;
 /*	open nit socket, called from main before starting BCE.		*/
 /*      								*/
 /************************************************************************/
-void init_ether() {
+void init_ether(void) {
 #ifdef MAIKO_ENABLE_ETHERNET
 
   /* JRB - This code will have to be a bit different for SUN 4.0; the			probable
