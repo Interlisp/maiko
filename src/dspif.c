@@ -21,7 +21,8 @@
 #include "dspifdefs.h"
 #include "xinitdefs.h"
 
-DspInterfaceRec curdsp;
+static DspInterfaceRec curdsp = {0};
+extern DspInterface currentdsp;
 DspInterface currentdsp = &curdsp;
 
 #ifdef XWINDOW
