@@ -7,5 +7,5 @@ void lisp_Xexit(DspInterface dsp);
 void Xevent_before_raid(DspInterface dsp);
 void Xevent_after_raid(DspInterface dsp);
 void Open_Display(DspInterface dsp);
-DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int height_hint, int depth_hint);
+DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, unsigned height_hint, unsigned depth_hint);
 #endif

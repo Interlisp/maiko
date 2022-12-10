@@ -57,8 +57,8 @@ extern DspInterface currentdsp;
 int LispWindowFd = -1;
 int FrameBufferFd = -1;
 
-int displaywidth, displayheight, DisplayRasterWidth, DisplayType;
-int DisplayByteSize;
+extern unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
+unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
 
 #ifdef DISPLAYBUFFER
@@ -158,7 +158,7 @@ void clear_display() {
 /*  ================================================================  */
 /*  Now takes 68k address, function renamed for safety  */
 
-void init_display2(DLword *display_addr, int display_max)
+void init_display2(DLword *display_addr, unsigned display_max)
 {
 
 
@@ -187,7 +187,7 @@ void init_display2(DLword *display_addr, int display_max)
 #endif /* XWINDOW */
 
   init_cursor();
-  DisplayByteSize = ((displaywidth * displayheight / 8 + (getpagesize() - 1)) & -getpagesize());
+  DisplayByteSize = ((displaywidth * displayheight / 8 + ((unsigned)getpagesize() - 1)) & (unsigned)-getpagesize());
 
   DBPRINT(("Display address: %p\n", (void *)DisplayRegion68k));
   DBPRINT(("        length : 0x%x\n", DisplayByteSize));

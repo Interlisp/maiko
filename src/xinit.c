@@ -25,7 +25,6 @@
 #include "xdefs.h"        // for XLOCK, XUNLOCK, DEF_BDRWIDE, DEF_WIN_HEIGHT
 #include "xinitdefs.h"    // for Open_Display, X_init, Xevent_after_raid
 #include "xlspwindefs.h"  // for Create_LispWindow
-#include "xwinmandefs.h"  // for bound
 
 /* DISPLAY_MAX same magic number is in ldsout.c */
 #define DISPLAY_MAX (65536 * 16 * 2)
@@ -34,21 +33,44 @@ extern DLword *Lisp_world;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
 extern int noscroll;
+
+extern bool Lisp_Xinitialized;
 bool Lisp_Xinitialized = false;
+extern int xsync;
 int xsync = False;
 
+extern int LispWindowRequestedX;
+extern int LispWindowRequestedY;
+extern unsigned LispWindowRequestedWidth;
+extern unsigned LispWindowRequestedHeight;
 int LispWindowRequestedX = 0;
 int LispWindowRequestedY = 0;
 unsigned LispWindowRequestedWidth = DEF_WIN_WIDTH;
 unsigned LispWindowRequestedHeight = DEF_WIN_HEIGHT;
 
+extern int LispDisplayRequestedX, LispDisplayRequestedY;
+extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 int LispDisplayRequestedX, LispDisplayRequestedY;
 unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
+extern Colormap Colors;
 Colormap Colors;
 
+extern volatile sig_atomic_t XLocked;
 volatile sig_atomic_t XLocked = 0; /* non-zero while doing X ops, to avoid signals */
+extern volatile sig_atomic_t XNeedSignal;
 volatile sig_atomic_t XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
+
+/* ubound: return (unsigned) value if it is between lower and upper otherwise lower or upper */
+static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
+{
+  if (value <= lower)
+    return (lower);
+  else if (value >= upper)
+    return (upper);
+  else
+    return (value);
+}
 
 /************************************************************************/
 /*									*/
@@ -205,8 +227,8 @@ void Open_Display(DspInterface dsp)
 /*                                                                   */
 /*********************************************************************/
 
-DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int height_hint,
-                    int depth_hint)
+DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, unsigned height_hint,
+                    unsigned depth_hint)
 {
   Screen *Xscreen;
 
@@ -236,17 +258,17 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int he
   /* Set the width and height of the display.  */
   if (height_hint == 0) {
     dsp->Display.height =
-        HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+      (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
                                                           adjust for scroll gadgets*/
   } else
-    dsp->Display.height = bound(WIN_MIN_HEIGHT, height_hint, WIN_MAX_HEIGHT);
+    dsp->Display.height = ubound(WIN_MIN_HEIGHT, height_hint, WIN_MAX_HEIGHT);
 
   if (width_hint == 0) {
     dsp->Display.width =
-        WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+      (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
                                                          adjust for scroll gadgets*/
   } else
-    dsp->Display.width = bound(WIN_MIN_WIDTH, width_hint, WIN_MAX_WIDTH);
+    dsp->Display.width = ubound(WIN_MIN_WIDTH, width_hint, WIN_MAX_WIDTH);
 
   /************************************************************/
   /* 		Set the size of ScreenBitMap                  */
@@ -270,18 +292,18 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int he
 
   /* Set the geometry of the Visible (Lisp) window. */
   dsp->Visible.width =
-      bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedWidth,
-            min(dsp->Display.width, (WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
+      ubound(OUTER_SB_WIDTH(dsp), LispWindowRequestedWidth,
+            min(dsp->Display.width, (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
   dsp->Visible.height =
-      bound(OUTER_SB_WIDTH(dsp), LispWindowRequestedHeight,
-            min(dsp->Display.height, (HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp))));
+      ubound(OUTER_SB_WIDTH(dsp), LispWindowRequestedHeight,
+            min(dsp->Display.height, (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
 
   /* Initialize the screen image structure. */
-  dsp->ScreenBitmap.width = dsp->Display.width;
-  dsp->ScreenBitmap.height = dsp->Display.height;
+  dsp->ScreenBitmap.width = (int)dsp->Display.width;
+  dsp->ScreenBitmap.height = (int)dsp->Display.height;
   dsp->ScreenBitmap.xoffset = 0;
   dsp->bitsperpixel =
-      DefaultDepthOfScreen(ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
+    (unsigned short)DefaultDepthOfScreen(ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
 #if (defined(BYTESWAP))
   dsp->ScreenBitmap.byte_order = LSBFirst;
 #else  /* BYTESWAP */
@@ -298,7 +320,7 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, int width_hint, int he
       dsp->ScreenBitmap.bitmap_pad = 32;
       dsp->ScreenBitmap.depth = 8;
       dsp->ScreenBitmap.bits_per_pixel = 8;
-      dsp->ScreenBitmap.bytes_per_line = (dsp->Display.width);
+      dsp->ScreenBitmap.bytes_per_line = (int)dsp->Display.width;
       dsp->ScreenBitmap.red_mask = 7;
       dsp->ScreenBitmap.green_mask = 7;
       dsp->ScreenBitmap.blue_mask = 3;
