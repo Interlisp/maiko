@@ -81,13 +81,11 @@ static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
 /************************************************************************/
 void init_Xevent(DspInterface dsp)
 {
-  int GravMask, BarMask, LispMask, DisplayMask;
+  int GravMask, BarMask;
 
   GravMask =
       ButtonPressMask | ButtonReleaseMask | EnterWindowMask | LeaveWindowMask | StructureNotifyMask;
   BarMask = GravMask;
-  DisplayMask = GravMask | PointerMotionMask | ExposureMask | KeyPressMask | KeyReleaseMask;
-  LispMask = StructureNotifyMask;
 
   XSelectInput(dsp->display_id, dsp->LispWindow, dsp->EnableEventMask);
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
