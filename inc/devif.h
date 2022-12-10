@@ -64,7 +64,7 @@ typedef struct
 /* Definition common to all devices. Used for mouse, kbd and  */
 /* display.                                                   */
 /**************************************************************/
-typedef struct
+typedef struct DevRec
   {
     int	active;		/* ACTIVE, a flag.
 			   TRUE if this device is activated. Use this
@@ -130,7 +130,7 @@ typedef struct {
 			   the mouse here.*/
   } MCursor;
 
-typedef struct
+typedef struct MouseInterfaceRec
   {
     DevRec device;
     void   (* Handler)();	/* Event handler for the mouse. */
@@ -140,7 +140,8 @@ typedef struct
     unsigned int keyeventsize;	/* The sizeof() one kbd event */
     unsigned int maxkeyevent;	/* Offset to the end of the ringbuffer. */
     int eurokbd;		/* Keep tabs of the euro-ness of the kbd */
-  } MouseInterfaceRec, *MouseInterface;
+  } MouseInterfaceRec;
+typedef MouseInterfaceRec *MouseInterface;
 
 
 
@@ -150,7 +151,7 @@ typedef struct
 /* Definition of the keyboard. Note that the keyboard is also */
 /* dependent on the IOPage68K                                 */
 /**************************************************************/
-typedef struct
+typedef struct KbdInterfaceRec
   {
     DevRec device;
     PFV device_event;		/* Event handler for the keyboard. */
@@ -167,9 +168,8 @@ typedef struct
 				   to restore when we exit Medley */
     int	URaid;			/* Put this in a better place later.. /jarl */
 #endif /* DOS */
-  } KbdInterfaceRec, *KbdInterface;
-
-
+  } KbdInterfaceRec;
+typedef KbdInterfaceRec *KbdInterface;
 
 /**************************************************************/
 /*                  D s p I n t e r f a c e                   */
@@ -177,7 +177,7 @@ typedef struct
 /* Definition of the display. This structure collects all the */
 /* special knowledge needed to manipulate the screen.         */
 /**************************************************************/
-typedef struct
+typedef struct DspInterfaceRec
   {
     DevRec device;
   
@@ -260,7 +260,8 @@ typedef struct
     long   DisableEventMask;
     long   EnableEventMask;
 #endif /* XWINDOW */
-  } DspInterfaceRec, *DspInterface;
+  } DspInterfaceRec;
+typedef DspInterfaceRec *DspInterface;
 
 
 
