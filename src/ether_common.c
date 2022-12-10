@@ -15,6 +15,7 @@
 #include "lsptypes.h"
 #include "lspglob.h"
 #include "adr68k.h"
+#include "etherdefs.h"
 
 /*
  * global variables exported to ether_*.c and possibly others
