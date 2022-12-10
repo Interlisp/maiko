@@ -19,5 +19,5 @@ void setNethubHost(char* host);
 void setNethubPort(int port);
 void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5);
 void setNethubLogLevel(int ll);
-void connectToHub();
+void connectToHub(void);
 #endif

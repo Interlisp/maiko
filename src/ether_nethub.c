@@ -131,7 +131,7 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
 **  --- connect, disconnect and transmit packets -----------------------------------
 */
 
-void connectToHub() {
+void connectToHub(void) {
   if (nethubHost == NULL) {
     return;
   }
