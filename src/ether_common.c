@@ -43,7 +43,7 @@ int     ETHEREventCount = 0;
 /*                                                                      */
 /************************************************************************/
 
-void init_ifpage_ether() {
+void init_ifpage_ether(void) {
   InterfacePage->nshost0 = (DLword)((ether_host[0] << 8) + ether_host[1]);
   InterfacePage->nshost1 = (DLword)((ether_host[2] << 8) + ether_host[3]);
   InterfacePage->nshost2 = (DLword)((ether_host[4] << 8) + ether_host[5]);
@@ -196,7 +196,7 @@ LispPTR ether_setfilter(LispPTR args[])
  *      check_ether() 175/77/0
  *      checks an incoming packet
  **********************************************************************/
-LispPTR check_ether()
+LispPTR check_ether(void)
 {
   return (NIL);
 }

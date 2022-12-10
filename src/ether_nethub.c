@@ -188,7 +188,7 @@ void connectToHub(void) {
   log_all(("connectToHub() - connected to nethub\n"));
 }
 
-static void disconnectFromHub() {
+static void disconnectFromHub(void) {
   if (ether_fd > -1) {
     close(ether_fd);
     ether_fd = -1;
@@ -212,7 +212,7 @@ static void disconnectFromHub() {
  *    >0: number of bytes received and placed in ether_buf
  */
 
-static int recvPacket() {
+static int recvPacket(void) {
   int rcvLen;
   unsigned short bLen;
 
@@ -539,7 +539,7 @@ LispPTR ether_setfilter(LispPTR args[])
  *	check_ether() 175/77/0
  *	checks an incoming packet
  **********************************************************************/
-LispPTR check_ether()
+LispPTR check_ether(void)
 {
   int receivedBytes;
   struct pollfd pfds[1];
