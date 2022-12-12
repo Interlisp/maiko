@@ -36,10 +36,10 @@
 /******************************************************************************
 *   Global variables
 ******************************************************************************/
-void (*prev_int_1c)(); /* keeps address of previous 1c handlr*/
+void (*prev_int_1c)(void); /* keeps address of previous 1c handlr*/
                        /* used for chaining & restore at exit*/
 #pragma interrupt(DOStimer)
-void DOStimer();
+void DOStimer(void);
 
 unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #else /* DOS */
@@ -104,7 +104,7 @@ static int gettime(int casep);
 /*									*/
 /************************************************************************/
 
-void update_miscstats() {
+void update_miscstats(void) {
 #ifdef DOS
   struct dostime_t dtm; /* holds DOS time, so we can get .01 secs */
   _dos_gettime(&dtm);
@@ -146,7 +146,7 @@ void update_miscstats() {
 /*									*/
 /************************************************************************/
 
-void init_miscstats() {
+void init_miscstats(void) {
   MiscStats->starttime = gettime(0);
   MiscStats->gctime = 0;
   update_miscstats();
@@ -163,8 +163,6 @@ void init_miscstats() {
 /*	or FIXP, as appropriate.					*/
 /*									*/
 /************************************************************************/
-
-DLword *createcell68k();
 
 LispPTR subr_gettime(LispPTR args[])
 {
@@ -364,7 +362,7 @@ LispPTR N_OP_rclk(LispPTR tos)
 /*									*/
 /************************************************************************/
 
-void update_timer() {
+void update_timer(void) {
 #ifdef DOS
   MiscStats->secondstmp = MiscStats->secondsclock = time(0) + UNIX_ALTO_TIME_DIFF;
 #else
@@ -437,7 +435,7 @@ static void int_timer_service(int sig)
 /*									*/
 /************************************************************************/
 
-static void int_timer_init()
+static void int_timer_init(void)
 
 {
 #ifdef DOS
@@ -544,7 +542,7 @@ static void int_io_service(int sig)
 /*									*/
 /************************************************************************/
 
-static void int_io_init() {
+static void int_io_init(void) {
 #ifndef DOS
   struct sigaction io_action;
   io_action.sa_handler = int_io_service;
@@ -581,7 +579,7 @@ static void int_io_init() {
 /*									*/
 /************************************************************************/
 
-void int_block() {
+void int_block(void) {
 /* temporarily turn off interrupts */
 #ifdef DOS
   _dos_setvect(0x1c, prev_int_1c);
@@ -610,7 +608,7 @@ void int_block() {
 /*									*/
 /************************************************************************/
 
-void int_unblock() {
+void int_unblock(void) {
 #ifdef DOS
   _dos_setvect(0x1c, DOStimer);
 #else /* DOS */
@@ -664,7 +662,7 @@ void int_fp_service(int sig, siginfo_t *info, void *context)
   }
 }
 
-void int_fp_init() {
+void int_fp_init(void) {
   struct sigaction fpe_action;
 
   fpe_action.sa_handler = int_fp_service;
@@ -707,7 +705,7 @@ static void timeout_error(int sig) {
 /*									*/
 /************************************************************************/
 
-static void int_file_init() {
+static void int_file_init(void) {
   char *envtime;
   int timeout_time;
   struct sigaction timer_action;
@@ -782,7 +780,7 @@ and do a 'v' before trying anything else.";
 /*     uraid and get a clue about why you're dying.                     */
 /*                                                                      */
 /************************************************************************/
-static void int_panic_init() {
+static void int_panic_init(void) {
 #ifndef DOS
   struct sigaction panic_action, ignore_action;
 
@@ -820,7 +818,7 @@ static void int_panic_init() {
 /*									*/
 /************************************************************************/
 
-void int_init() {
+void int_init(void) {
   int_timer_init(); /* periodic interrupt timer */
   int_io_init();    /* SIGIO async I/O handlers */
   int_file_init();  /* file-io TIMEOUT support */
@@ -851,7 +849,7 @@ void int_init() {
 *  Note that as little as possible should be done within a timer interrupt,
 *  since further clock ticks are disabled until the interrupt returns.
 ******************************************************************************/
-void DOStimer() {
+void DOStimer(void) {
   /* if (--tick_count == 0) { */
   Irq_Stk_Check = 0;
   Irq_Stk_End = 0;
