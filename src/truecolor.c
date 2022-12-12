@@ -267,14 +267,14 @@ void overlay_mouse_up(int newx, int newy)
 
 extern int LastCursorX, LastCursorY;
 
-void overlay_mouse_down() {
+void overlay_mouse_down(void) {
   pr_set_plane_group(TrueColorFb, PIXPG_OVERLAY_ENABLE);
   pr_rop(OverlaySave, 0, 0, 16, 16, PIX_SRC, TrueColorFb, LastCursorX, LastCursorY);
   pr_set_plane_group(TrueColorFb, PIXPG_24BIT_COLOR);
 
 } /* end overlay_mouse_down */
 
-void truecolor_before_exit() {
+void truecolor_before_exit(void) {
   if (Inited_TrueColor) {
     { /* fill region */
       int h, w;
@@ -317,7 +317,7 @@ extern int Video_OnOff_Flg;
 static int video_onoff;
 #endif /* VIDEO */
 
-void truecolor_before_raid() {
+void truecolor_before_raid(void) {
   int size;
 
   if (Inited_TrueColor) {
@@ -363,7 +363,7 @@ void truecolor_before_raid() {
 
 } /* end truecolor_before_raid */
 
-void truecolor_after_raid() {
+void truecolor_after_raid(void) {
   int size, mmapstat;
 
   if (Inited_TrueColor) {
