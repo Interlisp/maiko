@@ -227,7 +227,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 
 /*  ----------------------------------------------------------------*/
 
-void device_before_exit() {
+void device_before_exit(void) {
 #if   DOS
   (currentmouse->device.exit)(currentmouse, currentdsp);
   (currentkbd->device.exit)(currentkbd);
@@ -237,7 +237,7 @@ void device_before_exit() {
 
 /*  ----------------------------------------------------------------*/
 
-void set_kbd_iopointers() {
+void set_kbd_iopointers(void) {
   IOPage68K = (IOPAGE *)IOPage;
   EmMouseX68K = (DLword *)&(IOPage68K->dlmousex);
   EmMouseY68K = (DLword *)&(IOPage68K->dlmousey);
@@ -325,7 +325,7 @@ static int find_unused_key(KeySym *map, int minkey, int codecount, int symsperco
 /*									*/
 /************************************************************************/
 
-static u_char *make_X_keymap() {
+static u_char *make_X_keymap(void) {
   u_char *table = (u_char *)malloc(256); /* the final result table */
   int lisp_codes_used[256];              /* Keep track of the Lisp key #s we've used */
   int last_KEYSYM = -1;
