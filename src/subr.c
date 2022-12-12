@@ -77,8 +77,6 @@ extern LispPTR *PENDINGINTERRUPT68k;
 */
 /***********************************************************/
 
-LispPTR subr_lisperror(); /* 0377 */
-
 char *atom_to_str(LispPTR atom_index) {
   PNCell *pnptr;
   char *pname_base;
