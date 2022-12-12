@@ -243,8 +243,6 @@ extern const time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
 #ifdef DOS
-extern void dispatch();
-
 int dosdisplaymode = 0;
 int twobuttonflag = FALSE;
 int eurokbd = TRUE; /* Assume eurokbd by default. */
@@ -656,7 +654,7 @@ int main(int argc, char *argv[])
 /*									*/
 /************************************************************************/
 
-void start_lisp() {
+void start_lisp(void) {
   DLword *freeptr, *next68k;
 
 /*******************************/
@@ -699,7 +697,7 @@ void start_lisp() {
   dispatch();
 }
 
-void print_info_lines() {
+void print_info_lines(void) {
 #if (RELEASE == 200)
   printf("Emulator for Medley release 2.0\n");
 #elif (RELEASE == 201)
