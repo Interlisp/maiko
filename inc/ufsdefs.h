@@ -14,4 +14,8 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp);
 int quote_fname(char *file);
 int quote_fname_ufs(char *file);
 int quote_dname(char *dir);
+#ifdef DOS
+init_host_filesystem(void);
+exit_host_filesystem(void);
+#endif
 #endif
