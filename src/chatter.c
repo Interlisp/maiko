@@ -176,7 +176,7 @@ chatter_open(char *dev)
   return (0);
 }
 
-chatter_close() {
+chatter_close(void) {
   if (close(chatter_fd) < 0) {
     perror("CHATTER CLOSE ERROR");
     return (-1);
