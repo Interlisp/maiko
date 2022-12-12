@@ -94,7 +94,7 @@ extern int *Xdisplay; /* DAANGER -jarl nilsson 27-apr-92 */
 /*									*/
 /************************************************************************/
 
-void init_cursor() {
+void init_cursor(void) {
 }
 
 /************************************************************************/
@@ -104,7 +104,7 @@ void init_cursor() {
 /*									*/
 /*									*/
 /************************************************************************/
-void set_cursor() {
+void set_cursor(void) {
 
 #ifdef XWINDOW
   Init_XCursor();
@@ -122,7 +122,7 @@ void set_cursor() {
 /************************************************************************/
 
 #ifndef COLOR
-void clear_display() {
+void clear_display(void) {
 
 #ifdef DOS
   TPRINT(("Enter Clear_display\n"));
@@ -133,7 +133,7 @@ void clear_display() {
 
 #else /* COLOR */
 
-void clear_display() {
+void clear_display(void) {
   short *word;
   int w, h;
   if (MonoOrColor == MONO_SCREEN) {
@@ -213,7 +213,7 @@ void init_display2(DLword *display_addr, unsigned display_max)
 /*									*/
 /*									*/
 /************************************************************************/
-void display_before_exit() {
+void display_before_exit(void) {
 
 #ifdef TRUECOLOR
   truecolor_before_exit();
@@ -256,7 +256,7 @@ in_display_segment(baseaddr)
 /*									*/
 /************************************************************************/
 
-void flush_display_buffer() {
+void flush_display_buffer(void) {
 
 #ifdef XWINDOW
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
