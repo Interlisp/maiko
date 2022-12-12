@@ -27,13 +27,13 @@ extern DLword *Lisp_world;
 extern LispPTR *LASTUSERACTION68k;
 extern int twobuttonflag;
 
-extern void EnterDosMouse();
-extern void ExitDosMouse();
-extern void DosMouseAfterRaid();
-extern void DosMouseBeforeRaid();
-extern unsigned long GenericReturnT();
-extern void ThreeButtonHandler();
-extern void TwoButtonHandler();
+extern void EnterDosMouse(void);
+extern void ExitDosMouse(void);
+extern void DosMouseAfterRaid(void);
+extern void DosMouseBeforeRaid(void);
+extern unsigned long GenericReturnT(void);
+extern void ThreeButtonHandler(void);
+extern void TwoButtonHandler(void);
 #endif /* DOS */
 
 #ifdef DOS
@@ -42,7 +42,7 @@ extern void TwoButtonHandler();
 /*                                                               */
 /* Probe for mouse and return the number of buttons available.   */
 /*****************************************************************/
-int probemouse() {
+int probemouse(void) {
   union REGS regs;
   char c;
   /***************************************************************************
