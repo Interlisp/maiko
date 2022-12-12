@@ -80,7 +80,7 @@ extern fd_set LispReadFds;
 /*									*/
 /************************************************************************/
 
-void mess_init() {
+void mess_init(void) {
 #ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct passwd *pwd;
   int ttyfd;
@@ -162,7 +162,7 @@ gotpty:
 /*									*/
 /************************************************************************/
 
-void mess_reset() {
+void mess_reset(void) {
 #ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   int console_fd;
   close(log_id);
@@ -188,7 +188,7 @@ void mess_reset() {
 /*	has been set by flush_pty().					*/
 /*									*/
 /************************************************************************/
-LispPTR mess_readp() {
+LispPTR mess_readp(void) {
 #ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct stat sbuf;
   int size;
@@ -302,7 +302,7 @@ LispPTR mess_read(LispPTR *args)
 /*									*/
 /************************************************************************/
 
-LispPTR flush_pty() {
+LispPTR flush_pty(void) {
 #ifdef MAIKO_HANDLE_CONSOLE_MESSAGES
   struct stat sbuf;
   char buf[MESSAGE_BUFFER_SIZE]; /* Buffer between pty and log file */
