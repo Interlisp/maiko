@@ -26,7 +26,7 @@
 #include "uraiddefs.h"     // for device_after_raid, device_before_raid, ura...
 #include "uraidextdefs.h"  // for URMAXFXNUM, URaid_inputstring, URaid_FXarray
 
-void stab() { DBPRINT(("Now in stab\n")); }
+void stab(void) { DBPRINT(("Now in stab\n")); }
 
 /***************************************************************
 error
