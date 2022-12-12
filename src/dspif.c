@@ -32,6 +32,13 @@ extern unsigned LispDisplayRequestedHeight;
 
 #ifdef DOS
 extern int dosdisplaymode;
+
+static VESA_p(void) {
+  /* Magic. Do a vesa call to determine the current mode. */
+  return (VESA_call(3, 0));
+}
+
+static VGA_p(void) { return (TRUE); }
 #endif /* DOS */
 
 void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
@@ -67,15 +74,6 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
   }
 #endif /* DOS | XWINDOW */
 } /* Now we know the maximum capabilities of the hardware. */
-
-#ifdef DOS
-VESA_p() {
-  /* Magic. Do a vesa call to determine the current mode. */
-  return (VESA_call(3, 0));
-}
-
-VGA_p() { return (TRUE); }
-#endif /* DOS */
 
 /*********************************************************************/
 /*                                                                   */
