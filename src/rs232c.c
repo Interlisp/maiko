@@ -49,19 +49,19 @@ static struct termios RS232C_Mode;
 static struct sigvec rs_hup_sv;
 static struct sigvec prev_hup_sv;
 
-void rs232c_hup_handler() {
+void rs232c_hup_handler(void) {
   printf("Modem disconnect is detected.\n");
   fflush(stdout);
   return;
 }
 
-rs_install_hup_handler() {
+rs_install_hup_handler(void) {
   rs_hup_sv.sv_handler = rs232c_hup_handler;
   rs_hup_sv.sv_mask = rs_hup_sv.sv_flags = 0;
   sigvec(SIGHUP, &rs_hup_sv, &prev_hup_sv);
 }
 
-rs_restore_hup_handler() { sigvec(SIGHUP, &prev_hup_sv, (struct sigvec *)NULL); }
+rs_restore_hup_handler(void) { sigvec(SIGHUP, &prev_hup_sv, (struct sigvec *)NULL); }
 
 /*
  * Fatal Error, enter URAID
@@ -78,7 +78,7 @@ void rs_cerror(char *msg)
 /*
  * Invoked at boot time
  */
-void rs232c_init() {
+void rs232c_init(void) {
   RS232C_Dev = "/dev/ttyb"; /*Modify for target system */
   RS232C_Fd = -1;
 
@@ -163,7 +163,7 @@ int rs232_fd_init(int fd)
   }
 }
 
-rs232c_open() {
+rs232c_open(void) {
   if (RS232C_Fd < 0) {
     if ((RS232C_Fd = open(RS232C_Dev, O_RDWR)) < 0)
       rs_error("RS232C: rs232c_open: cannot open");
@@ -182,7 +182,7 @@ rs232c_open() {
   }
 }
 
-rs232c_close() {
+rs232c_close(void) {
   if (RS232C_Fd >= 0) {
     rs232c_abortinput();
     rs232c_abortoutput();
@@ -200,7 +200,7 @@ rs232c_close() {
   }
 }
 
-RS232C_readinit() {
+RS232C_readinit(void) {
   if (RS232C_remain_data) {
     /*
      * There are other data which we have not read yet.
@@ -210,11 +210,11 @@ RS232C_readinit() {
   }
 }
 
-rs232c_lisp_is_ready() { return (RS232CGetFlag->busy); }
+rs232c_lisp_is_ready(void) { return (RS232CGetFlag->busy); }
 
 static struct timeval sel_tv = {0, 0};
 
-rs232c_read() {
+rs232c_read(void) {
   DLRS232C_IOCB *iocb;
   int count;
   fd_set readfds;
@@ -265,7 +265,7 @@ rs232c_read() {
 
 #define MAX_WRITE_TRY 5
 
-RS232C_write() {
+RS232C_write(void) {
   int size, count, trynum;
   char *buf;
   DLRS232C_IOCB *iocb;
@@ -304,7 +304,7 @@ RS232C_write() {
   }
 }
 
-RS232C_cmd() {
+RS232C_cmd(void) {
   if (RS232CMiscCommand->busy) {
     switch (RS232CMiscCommand->command) {
       case ON: rs232c_open(); break;
@@ -324,19 +324,19 @@ RS232C_cmd() {
   }
 }
 
-rs232c_breakon() {
+rs232c_breakon(void) {
   if (RS232C_Fd >= 0) {
     if (ioctl(RS232C_Fd, TIOCSBRK, 0) < 0) rs_cerror("RS232C: rs232c_breakon");
   }
 }
 
-rs232c_breakoff() {
+rs232c_breakoff(void) {
   if (RS232C_Fd >= 0) {
     if (ioctl(RS232C_Fd, TIOCCBRK, 0) < 0) rs_cerror("RS232C: rs232c_breakoff");
   }
 }
 
-rs232c_abortinput() {
+rs232c_abortinput(void) {
   if (RS232C_Fd >= 0) {
     if (ioctl(RS232C_Fd, TCFLSH, 0) < 0)
       rs_cerror("RS232C: rs232c_abortinput");
@@ -345,13 +345,13 @@ rs232c_abortinput() {
   }
 }
 
-rs232c_abortoutput() {
+rs232c_abortoutput(void) {
   if (RS232C_Fd >= 0) {
     if (ioctl(RS232C_Fd, TCFLSH, 1) < 0) rs_cerror("RS232C: rs232c_abortoutput");
   }
 }
 
-rs232c_getstatus() {
+rs232c_getstatus(void) {
   int status;
 
   if (RS232C_Fd >= 0) {
@@ -413,7 +413,7 @@ void rs_sbit(u_int sbit)
   }
 }
 
-void rs232c_majorparam() {
+void rs232c_majorparam(void) {
   int baud, csize, sbit;
 
   if (RS232C_Fd >= 0) {
@@ -528,7 +528,7 @@ void rs232c_majorparam() {
   }
 }
 
-void rs232c_minorparam() {
+void rs232c_minorparam(void) {
   int status;
 
   if (RS232C_Fd >= 0) {
@@ -723,7 +723,7 @@ void check_oflag(u_long of)
 /*
  * In dbx, "call rsc()".
  */
-void rsc() {
+void rsc(void) {
   if (RS232C_Fd >= 0) check_params(RS232C_Fd);
 }
 
