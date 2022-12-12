@@ -192,7 +192,7 @@ of the packet received except:
    C:        Always the same
 */
 
-int fork_Unix() {
+int fork_Unix(void) {
   int LispToUnix[2], /* Incoming pipe from LISP */
       UnixToLisp[2], /* Outgoing pipe to LISP */
       UnixPID, LispPipeIn, LispPipeOut, slot;
