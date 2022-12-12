@@ -244,7 +244,7 @@ LispPTR cgfour_set_colormap(LispPTR args[])
 static struct pixrect *saved_screen;
 static int Screen_Saved = T;
 
-void save_color_screen() {
+void save_color_screen(void) {
   if (!Screen_Saved) {
     saved_screen = mem_point(displaywidth, displayheight, 8, ColorDisplayRegion68k);
     pr_rop(saved_screen, 0, 0, displaywidth, displayheight, PIX_SRC, ColorDisplayPixrect, 0, 0);
@@ -252,7 +252,7 @@ void save_color_screen() {
   } /* end if(!Screen_Saved) */
 } /* end save_color_screen() */
 
-void restore_color_screen() {
+void restore_color_screen(void) {
   if (Screen_Saved) {
     saved_screen = mem_point(displaywidth, displayheight, 8, ColorDisplayRegion68k);
     pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight, PIX_SRC, saved_screen, 0, 0);
@@ -263,7 +263,7 @@ void restore_color_screen() {
 
 static unsigned char red_colormap[256], green_colormap[256], blue_colormap[256];
 static int Saved_Colormap = NIL;
-void save_colormap() {
+void save_colormap(void) {
   struct pixrect *Color_Fb;
 
   if (!Saved_Colormap) {
@@ -277,7 +277,7 @@ void save_colormap() {
   } /* end if( !Saved_Colormap ) */
 } /* end save_colormap() */
 
-void restore_colormap() {
+void restore_colormap(void) {
   struct pixrect *Color_Fb;
 
   if (Saved_Colormap) {
