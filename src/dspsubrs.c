@@ -148,7 +148,7 @@ extern int for_makeinit;
 extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
-void flip_cursor() {
+void flip_cursor(void) {
   DLword *word;
   int cnt;
   extern int ScreenLocked;
