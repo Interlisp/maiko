@@ -72,7 +72,7 @@ int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. 
 
 #ifdef DOS
 
-void (*prev_int_24)(); /* keeps address of previous 24 handlr*/
+void (*prev_int_24)(void); /* keeps address of previous 24 handlr*/
 #pragma interrupt(Int24)
 
 /*
@@ -105,7 +105,7 @@ void Int24(void) {
  * Description: Initialize the hosts filesystem by installing
  *        the "critical error handler".
  */
-init_host_filesystem() {
+init_host_filesystem(void) {
   prev_int_24 = _dos_getvect(0x24); /* get addr of current handler, if any */
   _dos_setvect(0x24, Int24);        /* hook our int handler to interrupt   */
   _dpmi_lockregion((void *)prev_int_24, sizeof(prev_int_24));
@@ -118,7 +118,7 @@ init_host_filesystem() {
  * Description: Cleanup the filesystem specific patches.
  *
  */
-exit_host_filesystem() {
+exit_host_filesystem(void) {
   _dos_setvect(0x24, prev_int_24); /* unhook our handlr, install previous*/
   _dpmi_unlockregion((void *)prev_int_24, sizeof(prev_int_24));
   _dpmi_unlockregion((void *)&Int24, 4096);
