@@ -292,7 +292,7 @@ void print_finfo(FINFO *fp)
  * This routine is invoked at very first stage of emulator start up.
  */
 
-int init_finfo() {
+int init_finfo(void) {
   FINFO *cp;
   int n;
 
@@ -340,7 +340,7 @@ int init_finfo() {
  * FINFOARRAYRSIZE.
  */
 
-static int get_finfo_id() {
+static int get_finfo_id(void) {
   int i;
   DFINFO *dfap;
 
@@ -1829,7 +1829,7 @@ static int unix_filecmp(FINFO **f1, FINFO **f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-static int file_sort(FINFO **fpp, int n, int (*sortfn)())
+static int file_sort(FINFO **fpp, int n, int (*sortfn)(void))
 {
   FINFO **fp;
   FINFO **sort_bufp;
@@ -1974,7 +1974,6 @@ LispPTR COM_gen_files(LispPTR *args)
   unsigned propp, version;
   char *cp;
   FINFO *fp;
-  int dsk_filecmp(), unix_filecmp();
 
   ERRSETJMP(GetSmallp(-1));
 
