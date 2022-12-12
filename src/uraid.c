@@ -312,7 +312,7 @@ LispPTR parse_atomstring(char *string)
 */
 /***********************************************************************/
 
-void uraid_commclear() {
+void uraid_commclear(void) {
   memset(URaid_inputstring, 0, URMAXCOMM);
   memset(URaid_arg1, 0, URMAXCOMM / 2);
   memset(URaid_arg2, 0, URMAXCOMM / 2);
@@ -350,7 +350,7 @@ unsigned int uGetTN(unsigned int address) {
 */
 /***********************************************************************/
 
-LispPTR uraid_commands() {
+LispPTR uraid_commands(void) {
   int num, val;
   LispPTR address;
   char *endpointer;
@@ -859,7 +859,7 @@ extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif
 
 
-int device_before_raid() {
+int device_before_raid(void) {
 #ifdef XWINDOW
   sigset_t signals;
 #endif
@@ -961,7 +961,7 @@ char *alloc_hideDISP(int size)
 
 static int re_init_display(int, int);
 
-int device_after_raid() {
+int device_after_raid(void) {
   extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
   extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
   FD_ZERO(&LispReadFds);
