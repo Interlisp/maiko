@@ -8,6 +8,7 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include <errno.h>
 #include "lispemul.h" /* for DLword */
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
@@ -542,9 +543,6 @@ do  {				\
 		}							\
   } while (0)
 		
-
-extern	int	errno;
-
 #define	ChangeToVersionless(pathname) do {			\
 		char	*lf_cp;			\
 		if( (lf_cp=strrchr(pathname, ';')) != 0)	\
