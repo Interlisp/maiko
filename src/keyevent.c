@@ -245,7 +245,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void process_io_events()
+void process_io_events(void)
 {
 #ifndef DOS
   fd_set rfds;
@@ -369,7 +369,7 @@ void cursor_hidden_bitmap(int, int);
 
 #ifndef COLOR
 /* FOR MONO ONLY */
-void taking_mouse_down() {
+void taking_mouse_down(void) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
@@ -400,7 +400,7 @@ void taking_mouse_down() {
 /* For COLOR & MONO */
 extern DLword *ColorDisplayRegion68k;
 /* It assumes that MONO screen size and COLOR screen size are identical */
-void taking_mouse_down() {
+void taking_mouse_down(void) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
