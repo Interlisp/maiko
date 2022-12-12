@@ -518,7 +518,7 @@ extern int UnixPID;
 
 /* Make sure that we kill off any Unix subprocesses before we go away */
 
-void lisp_finish() {
+void lisp_finish(void) {
   char d[4];
 
   DBPRINT(("finish lisp_finish\n"));
