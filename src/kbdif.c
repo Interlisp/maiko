@@ -20,10 +20,10 @@ KbdInterfaceRec curkbd;
 KbdInterface currentkbd = &curkbd;
 
 #ifdef DOS
-extern void Kbd_event();
-extern void EnterDosKbd();
-extern void ExitDosKbd();
-extern unsigned long GenericReturnT();
+extern void Kbd_event(void);
+extern void EnterDosKbd(void);
+extern void ExitDosKbd(void);
+extern unsigned long GenericReturnT(void);
 #endif /* DOS */
 
 void make_kbd_instance(KbdInterface kbd) {

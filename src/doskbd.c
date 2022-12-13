@@ -100,7 +100,7 @@ extern DLword *DisplayRegion68k;
 
 #pragma interrupt(Kbd_event)
 
-void Kbd_event() {
+void Kbd_event(void) {
   _XSTACK *ebp; /* Real-mode handler stack frame */
   DLword w, r;
   KBEVENT *kbevent;
