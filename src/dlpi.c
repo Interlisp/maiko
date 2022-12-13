@@ -78,17 +78,18 @@
 
 #include "nfswatch.h"
 
-static void dlbindreq();
-static void dlinforeq();
-static void dlattachreq();
-static void dlpromisconreq();
-static void sigalrm();
-static int dlokack();
-static int dlinfoack();
-static int dlbindack();
-static int expecting();
-static int strgetmsg();
-static char *savestr();
+static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt, u_long xidtest);
+static void dlinforeq(int fd);
+static void dlattachreq(int fd, u_long ppa);
+static void dlpromisconreq(int fd, u_long level);
+static void sigalrm(int sig);
+static int dlokack(int fd, char *bufp);
+static int dlinfoack(int fd, char *bufp);
+static int dlbindack(int fd, char *bufp);
+static int expecting(int prim, union DL_primitives *dlp);
+static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller);
+static char *savestr(char *s)
+
 static char *pname;
 
 extern unsigned char ether_host[6];
@@ -538,7 +539,6 @@ static int expecting(int prim, union DL_primitives *dlp)
 static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller)
 {
   int rc;
-  void sigalrm();
 
   /*
    * Start timer.
@@ -585,12 +585,12 @@ static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *fla
 /*
  * sigalrm - handle alarms.
  */
-static void sigalrm() { (void)fprintf(stderr, "dlpi: timeout\n"); }
+static void sigalrm(int sig) { (void)fprintf(stderr, "dlpi: timeout\n"); }
 
 /*
  * savestr - save string in dynamic memory.
  */
-char *savestr(char *s)
+static char *savestr(char *s)
 {
   char *t;
 
