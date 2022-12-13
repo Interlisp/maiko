@@ -53,13 +53,13 @@ struct yysvf {
 };
 struct yysvf *yyestate;
 extern struct yysvf yysvec[], *yybgin;
-extern int yylook();
+extern int yylook(void);
 #ifdef __cplusplus
 extern "C" {
 #endif
 #define yywrap() (1)
-extern int yylex();
-extern int yyreject();
+extern int yylex(void);
+extern int yyreject(void);
 extern int yyracc(int);
 extern int yyless(int);
 #ifdef __cplusplus
@@ -67,7 +67,7 @@ extern int yyless(int);
 #endif
 #define COMMENT 2
 #define YYNEWLINE 10
-yylex() {
+yylex(void) {
   int nstr;
   extern int yyprevious;
   while ((nstr = yylook()) >= 0)
@@ -489,11 +489,11 @@ int yyback(int *p, int m) {
   return (0);
 }
 /* the following are only used in the lex library */
-int yyinput() { return (input()); }
+int yyinput(void) { return (input()); }
 void yyoutput(int c) { output(c); }
 void yyunput(int c) { unput(c); }
 
-int yylook() {
+int yylook(void) {
   struct yysvf *yystate, **lsp;
   struct yywork *yyt;
   struct yysvf *yyz;
