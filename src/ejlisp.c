@@ -512,7 +512,7 @@ int ejlisp_bunsetsu_yomi(int bunsetsu_no, int bunsetsu_no2, int *yomi_len)
   return (wnn_errorno);
 }
 
-int ejlisp_close() {
+int ejlisp_close(void) {
 #ifdef DEBUG
   printf("ejlisp_close start\n");
 #endif
@@ -556,7 +556,7 @@ int ejlisp_conv(unsigned short *yomi, unsigned short *kanji, int *kanji_len, int
   return (wnn_errorno);
 }
 
-int ejlisp_conv_end() {
+int ejlisp_conv_end(void) {
 #ifdef DEBUG
   printf("ejlisp_conv_end start\n");
 #endif
