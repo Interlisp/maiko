@@ -16,17 +16,17 @@
 #include "lispemul.h"
 #include "devif.h"
 
-extern unsigned long Dosbbt1();
-extern unsigned long Dosbbt2();
-extern int dostaking_mouse_down();
-extern int dostaking_mouse_up();
+extern unsigned long Dosbbt1(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern unsigned long Dosbbt2(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern int dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
+extern int dostaking_mouse_up(int newx, int newy);
 
 extern DLword *DisplayRegion68k;
 extern DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
-extern void docopy();
+extern void docopy(int newx, int newy);
 
-extern void GenericPanic();
+extern void GenericPanic(void);
 
 void VGA_setmax(DspInterface dsp)
 {
