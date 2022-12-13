@@ -30,7 +30,7 @@ struct rgb {
   unsigned char b;
 };
 
-Pixrect *PPM_to_Pixrect(), *PBM_to_Pixrect(), *SunRaster_to_Pixrect();
+Pixrect *PPM_to_Pixrect(FILE *f), *PBM_to_Pixrect(FILE *f), *SunRaster_to_Pixrect(FILE *f);
 
 #define MAX_BUFF_SIZE 1024
 static char buff[MAX_BUFF_SIZE];
