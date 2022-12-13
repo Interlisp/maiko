@@ -29,6 +29,7 @@
 #include "dbprint.h"
 #include "lispemul.h"
 #include "devif.h"
+#include "iopage.h"
 
 #define VESA 0x4f
 #define SUCESS 0x00
@@ -65,20 +66,20 @@
 extern DLword *DisplayRegion68k;
 extern DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
-extern void docopy();
+extern void docopy(int newx, int newy);
 
-extern PFUL GenericReturnT();
-extern void GenericPanic();
-extern unsigned long VGA_not_color();
-extern void VGA_exit();
-extern unsigned long Dosbbt1();
-extern unsigned long Dosbbt2();
-extern unsigned long Dosbbt3();
-extern void Dosclearbanks();
-extern long DOSCursorVisible();
-extern long dos_cursor_invisible();
-extern int dostaking_mouse_down();
-extern int dostaking_mouse_up();
+extern PFUL GenericReturnT(void);
+extern void GenericPanic(void);
+extern unsigned long VGA_not_color(DspInterface dsp);
+extern void VGA_exit(DspInterface dsp);
+extern unsigned long Dosbbt1(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern unsigned long Dosbbt2(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern unsigned long Dosbbt3(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern void Dosclearbanks(DspInterface dsp);
+extern long DOSCursorVisible(DspInterface dsp, IOPAGE *iop);
+extern long dos_cursor_invisible(DspInterface dsp, IOPAGE *iop);
+extern int dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
+extern int dostaking_mouse_up(int newx, int newy);
 
 void VESA_Intrpt_Hndlr(void);
 void *VESA_prev_hndlr; /* addr of previous 0x10 intercept      */
@@ -130,7 +131,7 @@ unsigned long set_DAC_color(LispPTR args[])
 /* 0x107      1280x1024 & 256 colors  (Not tested yet)        */
 /*                                                            */
 /**************************************************************/
-int VESA_currentmode() {
+int VESA_currentmode(void) {
   union REGS inregs, outregs;
 
   inregs.h.ah = VESA;
