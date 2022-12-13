@@ -52,8 +52,8 @@ extern LispPTR *LASTUSERACTION68k;
 #pragma interrupt(TwoButtonHandler)
 #pragma interrupt(ThreeButtonHandler)
 #pragma interrupt(ButtonTimer)
-void ButtonTimer();
-void MouseButtonSignal();
+void ButtonTimer(void);
+void MouseButtonSignal(void);
 
 void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
 {
@@ -421,7 +421,7 @@ void MouseButtonSignal(MouseInterface mouse)
 /* timeout happens. We will thus obtain the ``rubbery feeling''*/
 /* that proponents of chording so desire.                      */
 /***************************************************************/
-void ButtonTimer() {
+void ButtonTimer(void) {
   if (currentmouse->Button.RunTimer)
     if (currentmouse->Button.tick-- <= 0) {
       currentmouse->Button.RunTimer = FALSE; /* Turn the timer off. */
@@ -589,7 +589,7 @@ void TwoButtonHandler(void) {
 /* signals the dispatch loop to take care of the matter. This  */
 /* awkward solution is due to the severe braindamage in DOS.   */
 /***************************************************************/
-void ThreeButtonHandler()
+void ThreeButtonHandler(void)
 
 {
   _XSTACK *stk_ptr;
