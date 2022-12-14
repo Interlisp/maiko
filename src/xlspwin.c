@@ -277,7 +277,7 @@ void Create_LispWindow(DspInterface dsp)
 void lisp_Xvideocolor(int flag)
 {
   Screen *screen;
-  XEvent event;
+  XEvent event = {0};
   XGCValues gcv = {0};
   unsigned long newForeground;
 

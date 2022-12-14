@@ -99,7 +99,7 @@ Pixmap make_Xicon(DspInterface dsp)
 {
   unsigned int width, height;
   int value, x_hot, y_hot;
-  XImage IconImage;
+  XImage IconImage = {0};
 
 
 #ifdef TRACE
