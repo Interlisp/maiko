@@ -64,7 +64,7 @@ static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
 
 void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)
 {
-  Window OldWindow;
+  Window OldWindow = 0;
 
   /* Change Background Pixmap of Gravity Window */
   XLOCK;
@@ -259,6 +259,7 @@ void process_Xevents(DspInterface dsp)
           break;
         default: break;
       }
+    else if (noscroll) continue;
     else if (report.xany.window == dsp->HorScrollBar)
       switch (report.type) {
         case ButtonPress:
