@@ -1775,8 +1775,10 @@ static FINFO **prepare_sort_buf(FINFO *fp, int n)
  * Note that the result is in the reversed order.
  */
 
-static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
+static int dsk_filecmp(const void *p1, const void *p2)
 {
+  FINFO **fp1 = (FINFO **)p1;
+  FINFO **fp2 = (FINFO **)p2;
   int res;
   unsigned v1, v2;
 
@@ -1807,8 +1809,10 @@ static int dsk_filecmp(FINFO **fp1, FINFO **fp2)
  * Note that the result is in the reversed order.
  */
 
-static int unix_filecmp(FINFO **f1, FINFO **f2)
-{ return (strcmp((*f1)->lname, (*f2)->lname)); }
+static int unix_filecmp(const void *f1, const void *f2)
+{
+  return (strcmp((*(FINFO **)f1)->lname, (*(FINFO **)f2)->lname));
+}
 
 /*
  * Name:	file_sort
@@ -1829,7 +1833,7 @@ static int unix_filecmp(FINFO **f1, FINFO **f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-static int file_sort(FINFO **fpp, int n, int (*sortfn)(void))
+static int file_sort(FINFO **fpp, int n, int (*sortfn)(const void *, const void *))
 {
   FINFO **fp;
   FINFO **sort_bufp;
