@@ -332,7 +332,7 @@ void bitbltsub(LispPTR *argv) {
   int backwardflg = 0, sx, dx, srcbpl=2147483647, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;
   int gray = 0, num_gray = 0, curr_gray_line = 0;
-  DLword grayword[4];
+  DLword grayword[4] = {0, 0, 0, 0};
 
   { /* Initialization code, in a block so it optimizes independently */
     LispPTR *args = argv;
@@ -914,7 +914,7 @@ LispPTR bitshade_bitmap(LispPTR *args) {
 #endif
   int rasterwidth;
   int num_gray, curr_gray_line;
-  DLword grayword[4];
+  DLword grayword[4] = {0, 0, 0, 0};
 
   texture = args[0];
   {
