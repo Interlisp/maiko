@@ -55,7 +55,7 @@
 int main(int argc, char *argv[])
 {
   int i;
-  char filetorun[30];
+  char filetorun[30] = {0};
 #ifdef USESUNSCREEN
   int FrameBufferFd;
   struct fbtype my_screen;
