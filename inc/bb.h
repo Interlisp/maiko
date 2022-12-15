@@ -714,7 +714,7 @@ unsigned int *OrigSrcAddr, *OrigDstAddr;			\
 int bb_fast;							\
 unsigned int preloop_mask, postloop_mask, sdw_mask;		\
 unsigned int *dst32addr, *src32addr;			\
-unsigned int shS, savedS, newS;			\
+unsigned int shS, savedS = 0, newS;			\
 int srcRshift;
 
 
