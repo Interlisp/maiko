@@ -21,6 +21,7 @@ MouseInterface currentmouse = &curmouse;
 #ifdef DOS
 #include <dos.h>
 #include "lispemul.h"
+#include "dspifdefs.h"  /* for GenericReturnVoid */
 
 int nomouseflag = FALSE;
 extern DLword *Lisp_world;
@@ -31,7 +32,6 @@ extern void EnterDosMouse(void);
 extern void ExitDosMouse(void);
 extern void DosMouseAfterRaid(void);
 extern void DosMouseBeforeRaid(void);
-extern unsigned long GenericReturnT(void);
 extern void ThreeButtonHandler(void);
 extern void TwoButtonHandler(void);
 #endif /* DOS */
@@ -67,10 +67,10 @@ void make_mouse_instance(MouseInterface mouse)
 
   int NumberOfButtons;
   if (nomouseflag) {
-    mouse->device.enter = &GenericReturnT;
-    mouse->device.exit = &GenericReturnT;
-    mouse->device.before_raid = &GenericReturnT;
-    mouse->device.after_raid = &GenericReturnT;
+    mouse->device.enter = GenericReturnVoid;
+    mouse->device.exit = GenericReturnVoid;
+    mouse->device.before_raid = GenericReturnVoid;
+    mouse->device.after_raid = GenericReturnVoid;
     mouse->device.active = FALSE;
     NumberOfButtons = 3;
   } else {

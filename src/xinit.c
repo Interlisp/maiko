@@ -275,18 +275,20 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
   /************************************************************/
   dsp->Display.width = ((dsp->Display.width + 31) >> 5) << 5;
 
-  dsp->device.enter = (PFV)Open_Display;
-  dsp->device.exit = (PFV)lisp_Xexit;
+  /*
+   * Device methods
+   */
+  dsp->device.enter = (void (*)(void *))Open_Display;
+  dsp->device.exit = (void (*)(void *))lisp_Xexit;
+  dsp->device.before_raid = (void (*)(void *))Xevent_before_raid;
+  dsp->device.after_raid = (void (*)(void *))Xevent_after_raid;
 
-  dsp->bitblt_to_screen = (PFUL)clipping_Xbitblt;
-
-  dsp->device.before_raid = (PFV)Xevent_before_raid;
-  dsp->device.after_raid = (PFV)Xevent_after_raid;
+  dsp->bitblt_to_screen = clipping_Xbitblt;
 
   dsp->BitGravity = NorthWestGravity;
 
-  dsp->cleardisplay = (PFV)GenericReturnT;
-  dsp->set_color_map_entry = (PFUL)GenericReturnT;
+  dsp->cleardisplay = (unsigned long (*)(DspInterface))GenericReturnT;
+  dsp->set_color_map_entry = GenericReturnT;
 
   /* Set the geometry of the Visible (Lisp) window. */
   dsp->Visible.width =

@@ -27,6 +27,7 @@
 #include <graph.h>
 
 #include "dbprint.h"
+#include "dspifdefs.h"
 #include "lispemul.h"
 #include "devif.h"
 #include "iopage.h"
@@ -68,8 +69,6 @@ extern DLword *DisplayRegion68k_end_addr;
 extern DspInterface currentdsp;
 extern void docopy(int newx, int newy);
 
-extern PFUL GenericReturnT(void);
-extern void GenericPanic(void);
 extern unsigned long VGA_not_color(DspInterface dsp);
 extern void VGA_exit(DspInterface dsp);
 extern unsigned long Dosbbt1(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
@@ -78,8 +77,8 @@ extern unsigned long Dosbbt3(DspInterface dsp,  DLword *buf, DLword left, DLword
 extern void Dosclearbanks(DspInterface dsp);
 extern long DOSCursorVisible(DspInterface dsp, IOPAGE *iop);
 extern long dos_cursor_invisible(DspInterface dsp, IOPAGE *iop);
-extern int dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
-extern int dostaking_mouse_up(int newx, int newy);
+extern unsigned long dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
+extern unsigned long dostaking_mouse_up(int newx, int newy);
 
 void VESA_Intrpt_Hndlr(void);
 void *VESA_prev_hndlr; /* addr of previous 0x10 intercept      */
