@@ -18,8 +18,8 @@
 
 extern unsigned long Dosbbt1(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
 extern unsigned long Dosbbt2(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
-extern int dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
-extern int dostaking_mouse_up(int newx, int newy);
+extern unsigned long dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
+extern unsigned long dostaking_mouse_up(int newx, int newy);
 
 extern DLword *DisplayRegion68k;
 extern DLword *DisplayRegion68k_end_addr;
@@ -139,8 +139,8 @@ VGA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, in
   dsp->BytesPerLine = 80;
   dsp->LinesPerBank = 512;
 
-  dsp->mouse_invisible = (PFV)&dostaking_mouse_down;
-  dsp->mouse_visible = (PFV)&dostaking_mouse_up;
+  dsp->mouse_invisible = &dostaking_mouse_down;
+  dsp->mouse_visible = &dostaking_mouse_up;
 
   dsp->device.locked = FALSE;
   dsp->device.active = FALSE;

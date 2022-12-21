@@ -280,7 +280,7 @@ void docopy(int newx, int newy)
 #endif /* NEWBITBLT */
 }
 
-dostaking_mouse_up(int newx, int newy)
+unsigned long dostaking_mouse_up(int newx, int newy)
 {
   /* save hidden bitmap */
 
@@ -329,6 +329,7 @@ dostaking_mouse_up(int newx, int newy)
 
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentmouse->Cursor.Last.x,
                                  currentmouse->Cursor.Last.y, w, h);
+  return (T);
 }
 
 dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
@@ -357,6 +358,7 @@ dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
 
   (dsp->bitblt_to_screen)(dsp, DisplayRegion68k, currentmouse->Cursor.Last.x,
                           currentmouse->Cursor.Last.y, w, h);
+  return (T);
 }
 
 /************************************************************************/

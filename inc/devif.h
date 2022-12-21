@@ -56,37 +56,36 @@ typedef struct
     unsigned height;
   } MRegion;
 
-
-
 /**************************************************************/
 /*		           D e v R e c                        */
 /*                                                            */
 /* Definition common to all devices. Used for mouse, kbd and  */
-/* display.                                                   */
+/* display. The xxxInterfaceRec containing this device is     */
+/* passed as the only argument to the device methods          */
 /**************************************************************/
-typedef struct DevRec
+typedef struct
   {
     int	active;		/* ACTIVE, a flag.
 			   TRUE if this device is activated. Use this
 			   to prevent multiple consecutive initializations. */
     int	locked;		/* LOCK, a semaphore:  0 if dev is free.
 			   Test and increment to use this device. */
-    void (* enter)();	/* ENTER, a function
-			   args: self
+    void (* enter)(void *);	/* ENTER, a function
+			   args: interface rec (Kbd, Dsp, Mouse)
 			   Called to set up the device. Has to be called before
 			   anything else is done to the device. */
-    void (* exit)();	/* EXIT, a function
-			   args: self
+    void (* exit)(void *);	/* EXIT, a function
+			   args: interface rec (Kbd, Dsp, Mouse)
 			   Called to deactivate the device and restore the
 			   device to its previous state */
-    void (* before_raid)(); /* BEFORE_RAID, a function.
-			   args: self
+    void (* before_raid)(void *); /* BEFORE_RAID, a function.
+			   args: interface rec (Kbd, Dsp, Mouse)
 			   Prepare this device for uraid. */
-    void (* after_raid)(); /* BEFORE_RAID, a function.
-			   args: self
+    void (* after_raid)(void *); /* BEFORE_RAID, a function.
+			   args: interface rec (Kbd, Dsp, Mouse)
 			   Cleanup and restart device after uraid. */
-    void (* sync_device)(); /* SYNC_DEVICE, a function.
-			   args: self
+    void (* sync_device)(void *); /* SYNC_DEVICE, a function.
+			   args: interface rec (Kbd, Dsp, Mouse)
 			   Make reality and emulator coincide with each other */
   } DevRec;
 
@@ -130,7 +129,7 @@ typedef struct {
 			   the mouse here.*/
   } MCursor;
 
-typedef struct MouseInterfaceRec
+typedef struct
   {
     DevRec device;
     void   (* Handler)();	/* Event handler for the mouse. */
@@ -151,7 +150,7 @@ typedef MouseInterfaceRec *MouseInterface;
 /* Definition of the keyboard. Note that the keyboard is also */
 /* dependent on the IOPage68K                                 */
 /**************************************************************/
-typedef struct KbdInterfaceRec
+typedef struct
   {
     DevRec device;
     PFV device_event;		/* Event handler for the keyboard. */
@@ -177,13 +176,19 @@ typedef KbdInterfaceRec *KbdInterface;
 /* Definition of the display. This structure collects all the */
 /* special knowledge needed to manipulate the screen.         */
 /**************************************************************/
+/*
+ * NOTE: At this time only the DspInterface methods
+ *       bitblt_to_screen(), clearscreen(), mouse_visible(), and mouse_invisible()
+ *       are called, and the mouse_* are only used for DOS.
+ *       All the other methods are not implemented and not called.
+ */
 typedef struct DspInterfaceRec
   {
     DevRec device;
   
-    void (* drawline)();	/* DRAWLINE
+    unsigned long (* drawline)();	/* DRAWLINE
 				 args: dont know yet. Not yet implemented.*/
-    void (* cleardisplay)();	/* CLEARDISPLAY, a function
+    unsigned long (* cleardisplay)(struct DspInterfaceRec *);	/* CLEARDISPLAY, a function
 				 args: self
 				 clears the screen.*/
 
@@ -201,20 +206,19 @@ typedef struct DspInterfaceRec
     unsigned long (* medley_to_native_bm)(); /* 1 bit/pix to native bit/pix */
     unsigned long (* native_to_medley_bm)(); /* native bit/pix to 1 bit/pix */
 
-    unsigned long (* bitblt_to_screen)();	/* BITBLT_TO_SCREEN, a function
+    unsigned long (* bitblt_to_screen)(struct DspInterfaceRec *, DLword *, int, int, int, int);	/* BITBLT_TO_SCREEN, a function
 					   args: self, buffer left top width height.
 					   biblt's buffer to the screen. */
     unsigned long (* bitblt_from_screen)();
     unsigned long (* scroll_region)(); /* ie. bbt from screen to screen */
-
-    void (* mouse_invisible)();	/* MOUSE_INVISIBLE
+    unsigned long (* mouse_invisible)(struct DspInterfaceRec *, void *);	/* MOUSE_INVISIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
 				   This method makes the mouse invisible on the screen. Note that
 				   the dsp supplies the method and the iop supplies the data. */
-  void	(* mouse_visible)();	/* MOUSE_VISIBLE
-				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
-				   This method makes the mouse visible on the screen. Note that
-				   the dsp supplies the method and the iop supplies the data. */
+    unsigned long (* mouse_visible)(int x, int y);	/* MOUSE_VISIBLE
+				   args: x, y position where the mouse/cursor should be displayed.
+				   NOTE: this should probably include the DspInterface as the first arg?
+							*/
     MRegion Display;		/* Dimensions of the physical display. */
     unsigned short unused0;	/* alignment padding for next field */
     unsigned short bitsperpixel;

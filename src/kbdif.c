@@ -15,6 +15,7 @@
 #include "lispemul.h"
 #include "dbprint.h"
 #include "devif.h"
+#include "dspifdefs.h"
 
 KbdInterfaceRec curkbd;
 KbdInterface currentkbd = &curkbd;
@@ -23,7 +24,6 @@ KbdInterface currentkbd = &curkbd;
 extern void Kbd_event(void);
 extern void EnterDosKbd(void);
 extern void ExitDosKbd(void);
-extern unsigned long GenericReturnT(void);
 #endif /* DOS */
 
 void make_kbd_instance(KbdInterface kbd) {

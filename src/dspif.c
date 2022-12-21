@@ -82,9 +82,10 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
 /* Utility function that just returns T                              */
 /*                                                                   */
 /*********************************************************************/
-unsigned long GenericReturnT(void) { return (T); }
-
-void GenericPanic(DspInterface dsp) {
+unsigned long GenericReturnT(void *d) { (void)d; return (T); }
+void GenericReturnVoid(void *d) {(void)d; return; }
+void GenericPanic(void *d) {
+  (void)d;
   TPRINT(("Enter GenericPanic\n"));
   fprintf(stderr, "Panic! Call to uninitialized display slot!");
   exit(0);
