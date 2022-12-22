@@ -171,7 +171,7 @@ LispPTR compare_chars(const char *char1, const char *char2, DLword length) {
 
 } /* end compare_chars */
 
-int lispcmp(const DLword *char1, const char *char2, int len) {
+static int lispcmp(const DLword *char1, const char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
       if (GETWORD(char1++) != GETBYTE(char2++)) return (0);
