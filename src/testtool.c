@@ -693,7 +693,6 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
     case 0:
       putchar('\n'); /* End of function */
       return (-1);
-      break;
     case 015:
       printf("(%d)", (unsigned char)GETBYTE(addr + 1));
       addr += 1; /* FNX uses an extra byte */
