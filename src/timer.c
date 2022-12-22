@@ -739,7 +739,7 @@ static void int_file_init(void) {
 /*      about what killed you.                                          */
 /*                                                                      */
 /************************************************************************/
-void panicuraid(int sig, siginfo_t *info, void *context)
+static void panicuraid(int sig, siginfo_t *info, void *context)
 {
   static char errormsg[200];
   static char *stdmsg =
