@@ -68,13 +68,13 @@ DLword compute_hash(const char *char_base, DLword offset, DLword length) {
   DLword temp1;
 
   char_base += offset;
-  hash = (int)(*(char_base)) << 8; /* get first byte */
+  hash = (DLword)((*char_base) << 8); /* get first byte */
   char_base++;                     /* skip length area */
 
   for (number = 1; number <= length - 1; char_base++, number++) {
     hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
     temp1 = (hash + ((hash & 255) << 8)) & 0x0ffff;
-    hash = (int)(temp1 + (*(char_base))) & 0x0ffff;
+    hash = (temp1 + (*char_base)) & 0x0ffff;
   }
 
   return (hash);
@@ -97,30 +97,30 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
   DLword hash;
   DLword number;
   DLword temp1;
-  DLword *word_base;
+  const DLword *word_base;
 
   if (length == 0) return (0);
 
   if (fatp) { /* fat characters in the string to be searched. */
-    word_base = (DLword *)char_base;
+    word_base = (const DLword *)char_base;
     word_base += offset;
-    hash = (DLword)(0xFF & GETWORD(word_base)) << 8; /* get first byte */
+    hash = (DLword)((0xFF & GETWORD(word_base)) << 8); /* get first byte */
     word_base++;                                     /* skip length area */
 
     for (number = 1; number <= length - 1; word_base++, number++) {
       hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
       temp1 = (hash + ((hash & 255) << 8)) & 0x0ffff;
-      hash = (int)(temp1 + (0xFF & GETWORD(word_base))) & 0x0ffff;
+      hash = (temp1 + (0xFF & GETWORD(word_base))) & 0x0ffff;
     }
   } else {
     char_base += offset;
-    hash = (int)(0xFF & GETBYTE(char_base)) << 8; /* get first byte */
+    hash = (DLword)((0xFF & GETBYTE(char_base)) << 8); /* get first byte */
     char_base++;                                  /* skip length area */
 
     for (number = 1; number <= length - 1; char_base++, number++) {
       hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
       temp1 = (hash + ((hash & 255) << 8)) & 0x0ffff;
-      hash = (int)(temp1 + (0xFF & GETBYTE(char_base))) & 0x0ffff;
+      hash = (temp1 + (0xFF & GETBYTE(char_base))) & 0x0ffff;
     }
   }
   return (hash);
@@ -132,7 +132,7 @@ static int bytecmp(const char *char1, const char *char2, int len)
 {
   int index;
   for (index = 0; index < len; index++) {
-      if (GETBYTE(char1++) != *(uint8_t *)(char2++)) return (0);
+      if (GETBYTE(char1++) != *(const uint8_t *)(char2++)) return (0);
   }
   return (1);
 }
@@ -226,12 +226,12 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
 #endif /* BYTESWAP */
 
   } else if (fat1) { /* char1 is fat, char2 isn't */
-      if (lispcmp((DLword *)char1, char2, length))
+      if (lispcmp((const DLword *)char1, char2, length))
       return (T);
     else
       return (NIL);
   } else { /* char2 is fat, char1 isn't */
-      if (lispcmp((DLword *)char2, char1, length))
+      if (lispcmp((const DLword *)char2, char1, length))
       return (T);
     else
       return (NIL);
@@ -306,7 +306,7 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length)
   /* following for loop does not exit until it finds new hash entry or same atom */
   for (reprobe = Atom_reprobe(hash, first_char); (hash_entry = GETWORD(AtomHT + hash)) != 0;
        hash = ((hash + reprobe) & 0xffff)) {
-    atom_index = hash_entry - 1;
+    atom_index = (DLword)(hash_entry - 1);
     /* get pname pointer */
     pnptr = (PNCell *)GetPnameCell(atom_index);
     pname_base = (char *)NativeAligned2FromLAddr(POINTERMASK & pnptr->pnamebase);
