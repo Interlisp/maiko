@@ -33,10 +33,6 @@
 #define	EOL			(S_POSITIVE | 7)
 #define	ALL			(S_POSITIVE | 8)
 
-
-extern	DLword	*Lisp_world;	/* To access LispSysout area */
-
-
 #define	ToLispTime(x)	((int)(x) + 29969152)
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */

@@ -29,7 +29,6 @@
 /* DISPLAY_MAX same magic number is in ldsout.c */
 #define DISPLAY_MAX (65536 * 16 * 2)
 
-extern DLword *Lisp_world;
 extern char Display_Name[128];
 extern DLword *DisplayRegion68k;
 extern int noscroll;

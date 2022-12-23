@@ -35,7 +35,6 @@ extern KbdInterface currentkbd;
 
 extern keybuffer *CTopKeyevent;
 extern DLword *DisplayRegion68k;
-extern DLword *Lisp_world;
 
 extern LispPTR *KEYBOARDEVENTQUEUE68k;
 extern LispPTR *KEYBUFFERING68k;

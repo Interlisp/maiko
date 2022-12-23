@@ -46,8 +46,6 @@
 
 #define Atom_reprobe(hash, char) ((((char)^(hash)) | 1) & 63)
 
-extern DLword *Lisp_world;
-
 /**********************************************************************/
 /*
         Func name :	compute_hash
