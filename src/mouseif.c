@@ -24,7 +24,6 @@ MouseInterface currentmouse = &curmouse;
 #include "dspifdefs.h"  /* for GenericReturnVoid */
 
 int nomouseflag = FALSE;
-extern DLword *Lisp_world;
 extern LispPTR *LASTUSERACTION68k;
 extern int twobuttonflag;
 
