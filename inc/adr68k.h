@@ -38,7 +38,7 @@ static inline LispPTR LAddrFromNative(void *NAddr)
   if ((uintptr_t)NAddr & 1) {
     printf("Misaligned pointer in LAddrFromNative %p\n", NAddr);
   }
-  return ((DLword *)NAddr) - Lisp_world;
+  return (LispPTR)(((DLword *)NAddr) - Lisp_world);
 }
 
 static inline DLword *NativeAligned2FromLAddr(LispPTR LAddr)
@@ -84,6 +84,6 @@ static inline LispPTR LPageFromNative(void *NAddr)
   if ((uintptr_t)NAddr & 1) {
     printf("Misaligned pointer in LPageFromNative %p\n", NAddr);
   }
-  return (((DLword *)NAddr) - Lisp_world) >> 8;
+  return (LispPTR)((((DLword *)NAddr) - Lisp_world) >> 8);
 }
 #endif /* ADR68K_H */
