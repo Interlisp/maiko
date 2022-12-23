@@ -23,6 +23,7 @@
 #include "lspglob.h"
 #include "commondefs.h"
 #include "tty.h"
+#include "ttydefs.h"
 
 DLTTY_OUT_COMMAND *DLTTYPortCmd;
 DLTTY_IN_CSB *DLTTYIn;
@@ -108,7 +109,7 @@ void tty_put(void)
   }
 }
 
-speed_t tty_baudtosymbol(short aBaud)
+static speed_t tty_baudtosymbol(short aBaud)
 {
   /* This matches the constants in DLTTY where possible. */
   if (aBaud == 0) return (B50);
