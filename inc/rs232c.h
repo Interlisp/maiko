@@ -160,7 +160,4 @@ typedef struct {
 	DLword rs232c_length;
 	char   rs232c_data;
 } RS232C_ENCAPSULATION;
-
-extern DLword *Lisp_world;
-
 #endif
