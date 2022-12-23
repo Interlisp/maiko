@@ -111,27 +111,27 @@ VGA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, in
 {
   struct videoconfig vc;
 
-  dsp->device.enter = (PFV)&VGA_setmax;
-  dsp->device.exit = (PFV)&VGA_exit;
+  dsp->device.enter = &VGA_setmax;
+  dsp->device.exit = &VGA_exit;
 
-  dsp->device.before_raid = (PFV)&VGA_exit;
-  dsp->device.after_raid = (PFV)&VGA_setmax;
+  dsp->device.before_raid = &VGA_exit;
+  dsp->device.after_raid = &VGA_setmax;
 
-  dsp->drawline = (PFV)&VGA_mono_drawline;
+  dsp->drawline = &VGA_mono_drawline;
 
-  dsp->cleardisplay = (PFV)&VGA_cleardisplay;
+  dsp->cleardisplay = &VGA_cleardisplay;
 
-  dsp->get_color_map_entry = (PFUL)&VGA_not_color;
-  dsp->set_color_map_entry = (PFUL)&VGA_not_color;
-  dsp->available_colors = (PFUL)&VGA_not_color;
-  dsp->possible_colors = (PFUL)&VGA_not_color;
+  dsp->get_color_map_entry = &VGA_not_color;
+  dsp->set_color_map_entry = &VGA_not_color;
+  dsp->available_colors = &VGA_not_color;
+  dsp->possible_colors = &VGA_not_color;
 
-  dsp->medley_to_native_bm = (PFUL)&GenericPanic;
-  dsp->native_to_medley_bm = (PFUL)&GenericPanic;
+  dsp->medley_to_native_bm = &GenericPanic;
+  dsp->native_to_medley_bm = &GenericPanic;
 
-  dsp->bitblt_to_screen = (PFUL)&Dosbbt1;
-  dsp->bitblt_from_screen = (PFUL)&GenericPanic;
-  dsp->scroll_region = (PFUL)&GenericPanic;
+  dsp->bitblt_to_screen = &Dosbbt1;
+  dsp->bitblt_from_screen = &GenericPanic;
+  dsp->scroll_region = &GenericPanic;
 
   dsp->DisplayStartAddr = 0xa0000;
   dsp->DisplaySegSize = 0x10000;   /* 64K segments */

@@ -49,7 +49,7 @@
 #define VESA_OPT_INFO_P(vector) ((((short *)vector)[0] & 2) ? TRUE : FALSE)
 #define VESA_COLOR_MODE_P(vector) ((((short *)vector)[0] & 4) ? TRUE : FALSE)
 #define VESA_GRAPHICS_MODE_P(vector) ((((short *)vector)[0] & 8) ? TRUE : FALSE)
-#define VESA_SWITCH_BANK(vector) ((PFV)(((long *)vector)[3]))
+#define VESA_SWITCH_BANK(vector) ((((long *)vector)[3]))
 #define VESA_DSP_SEGSIZE(vector) ((long)(0xffff & ((short *)vector)[3]))
 #define VESA_DSP_STARTSEG_A(vector) ((long)(0xffff & ((short *)vector)[4]))
 #define VESA_DSP_WIDTH(vector) ((long)(((short *)vector)[9]))
@@ -81,7 +81,7 @@ extern unsigned long dostaking_mouse_down(DspInterface dsp, IOPAGE *iop);
 extern unsigned long dostaking_mouse_up(int newx, int newy);
 
 void VESA_Intrpt_Hndlr(void);
-void *VESA_prev_hndlr; /* addr of previous 0x10 intercept      */
+void (*VESA_prev_hndlr)(void); /* addr of previous 0x10 intercept      */
 
 extern int dosdisplaymode;
 
@@ -204,7 +204,7 @@ void VESA_Intrpt_Hndlr(void) {
     stk_ptr->edi = MAKE_OFF(inbuffer); /* convert to seg:off form         */
     stk_ptr->es = MAKE_SEG(inbuffer);  /* service requires it in es:di    */
 
-    ((PFV)VESA_prev_hndlr)(); /* call VESA getmode */
+    (*VESA_prev_hndlr)(); /* call VESA getmode */
   } else {
     _chain_intr(VESA_prev_hndlr); /* always best to chain to prev int*/
   }
@@ -439,14 +439,14 @@ void VESA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hi
   dsp->available_colors = &VGA_not_color;
   dsp->possible_colors = &VGA_not_color;
 
-  dsp->medley_to_native_bm = (PFUL)&GenericPanic;
-  dsp->native_to_medley_bm = (PFUL)&GenericPanic;
+  dsp->medley_to_native_bm = &GenericPanic;
+  dsp->native_to_medley_bm = &GenericPanic;
 
-  dsp->bitblt_from_screen = (PFUL)&GenericPanic;
-  dsp->scroll_region = (PFUL)&GenericPanic;
+  dsp->bitblt_from_screen = &GenericPanic;
+  dsp->scroll_region = &GenericPanic;
 
-  dsp->mouse_invisible = (PFV)&dostaking_mouse_down;
-  dsp->mouse_visible = (PFV)&dostaking_mouse_up;
+  dsp->mouse_invisible = &dostaking_mouse_down;
+  dsp->mouse_visible = &dostaking_mouse_up;
 
   TPRINT(("Exit VESA_init\n"));
 }

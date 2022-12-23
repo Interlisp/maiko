@@ -11,13 +11,6 @@
 /************************************************************************/
 #include "lispemul.h" /* for LispPTR, DLword */
 
-typedef void (*PFV)();		/* Pointer to Function returning Void */
-typedef int (*PFI)();		/* Pointer to Function returning Int */
-typedef char (*PFC)();		/* Pointer to Function returning Char */
-typedef float (*PFF)();		/* Pointer to Function returning Float */
-typedef int (*PFP)();		/* Pointer to Function returning a Pointer */
-typedef unsigned long (*PFUL)(); /* Pointer to Function returning an unsigned long */
-
 #ifdef XWINDOW
 #include <X11/Xlib.h>
 #endif /* XWINDOW */
@@ -113,7 +106,7 @@ typedef struct
     short tick;		/* Clock for timeout. */
     long StartTime;	/* The maximum timeout */
     long RunTimer;	/* Chording timer activate flag. */
-    PFV     NextHandler;	/* Pointer to the next timer (used with 2button) */
+    void (* NextHandler)(void);	/* Pointer to the next timer (used with 2button) */
   } Button;
 
 
@@ -132,7 +125,7 @@ typedef struct {
 typedef struct
   {
     DevRec device;
-    void   (* Handler)();	/* Event handler for the mouse. */
+    void   (* Handler)(void);	/* Event handler for the mouse. */
     MCursor Cursor;
     Button Button;
     LispPTR *timestamp;
@@ -153,7 +146,7 @@ typedef MouseInterfaceRec *MouseInterface;
 typedef struct
   {
     DevRec device;
-    PFV device_event;		/* Event handler for the keyboard. */
+    void (*device_event)(void);	/* Event handler for the keyboard. */
 #ifdef DOS
     u_char KeyMap[0x80];	/* The key translation table. Use the keycode you
 				   get from the keyboard as an index. The value
@@ -162,7 +155,7 @@ typedef struct
     unsigned int keyeventsize;	/* The sizeof() one kbd event */
     unsigned int maxkeyevent;	/* Offset to the end of the ringbuffer. */
     int eurokbd;		/* Keep tabs of the euro-ness of the kbd */
-    PFV prev_handler;		/* The previous keyboard handler.
+    void (* prev_handler)(void);/* The previous keyboard handler.
 				   Keep this around
 				   to restore when we exit Medley */
     int	URaid;			/* Put this in a better place later.. /jarl */
@@ -186,31 +179,31 @@ typedef struct DspInterfaceRec
   {
     DevRec device;
   
-    unsigned long (* drawline)();	/* DRAWLINE
+    unsigned long (* drawline)(void);	/* DRAWLINE
 				 args: dont know yet. Not yet implemented.*/
     unsigned long (* cleardisplay)(struct DspInterfaceRec *);	/* CLEARDISPLAY, a function
 				 args: self
 				 clears the screen.*/
 
-    unsigned long (* get_color_map_entry)();
-    unsigned long (* set_color_map_entry)();
-    unsigned long (* available_colors)();	/* How many colors do I have on my palette */
-    unsigned long (* possible_colors)(); /* How many colors is it possible to select from */
+    unsigned long (* get_color_map_entry)(void);
+    unsigned long (* set_color_map_entry)(void *);
+    unsigned long (* available_colors)(void);	/* How many colors do I have on my palette */
+    unsigned long (* possible_colors)(void); /* How many colors is it possible to select from */
 
 #ifdef NOTYET
-    unsigned long (* get_color_map)(); /* get a pointer to a colormap */
-    unsigned long (* set_color_map)(); /* set the current colormap */
-    unsigned long (* make_color_map)(); /* return a brand new colormap */
+    unsigned long (* get_color_map)(void); /* get a pointer to a colormap */
+    unsigned long (* set_color_map)(void); /* set the current colormap */
+    unsigned long (* make_color_map)(void); /* return a brand new colormap */
 #endif /* NOTYET */
 
-    unsigned long (* medley_to_native_bm)(); /* 1 bit/pix to native bit/pix */
-    unsigned long (* native_to_medley_bm)(); /* native bit/pix to 1 bit/pix */
+    unsigned long (* medley_to_native_bm)(void); /* 1 bit/pix to native bit/pix */
+    unsigned long (* native_to_medley_bm)(void); /* native bit/pix to 1 bit/pix */
 
     unsigned long (* bitblt_to_screen)(struct DspInterfaceRec *, DLword *, int, int, int, int);	/* BITBLT_TO_SCREEN, a function
 					   args: self, buffer left top width height.
 					   biblt's buffer to the screen. */
-    unsigned long (* bitblt_from_screen)();
-    unsigned long (* scroll_region)(); /* ie. bbt from screen to screen */
+    unsigned long (* bitblt_from_screen)(void);
+    unsigned long (* scroll_region)(void); /* ie. bbt from screen to screen */
     unsigned long (* mouse_invisible)(struct DspInterfaceRec *, void *);	/* MOUSE_INVISIBLE
 				   args: self (a dsp), iop (an IOPAGE preferably the one and only)
 				   This method makes the mouse invisible on the screen. Note that
