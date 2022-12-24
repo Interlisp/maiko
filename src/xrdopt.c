@@ -87,7 +87,8 @@ extern char Icon_Title[255];
 char Icon_Title[255];
 
 extern char sysout_name[];
-extern int sysout_size, for_makeinit, please_fork, noscroll;
+extern unsigned sysout_size;
+extern int for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
 /* extern int maxpages; */
 
@@ -304,7 +305,7 @@ void read_Xoption(int *argc, char *argv[])
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
-      sysout_size = i;
+      sysout_size = (unsigned)i;
   }
 
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }

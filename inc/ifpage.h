@@ -91,10 +91,10 @@ typedef struct ifpage {
 	LispPTR	dlnilp1;
 	LispPTR	dlnilp2;
 	LispPTR	dlnilp3;
-	int    dllastvmempage;
+	unsigned dllastvmempage;
 	int	    nactivepages;
 	int    ndirtypages;
-	int    process_size; /* was lastnumchars */
+	unsigned  process_size; /* was lastnumchars */
 } IFPAGE;
 #else
 /* Normal definition, for big-endian machines */
@@ -248,10 +248,10 @@ typedef struct ifpage {
 	LispPTR	dlnilp1;
 	LispPTR	dlnilp2;
 	LispPTR	dlnilp3;
-	int    dllastvmempage;
+	unsigned dllastvmempage;
 	int	    nactivepages;
 	int    ndirtypages;
-	int    process_size; /* was lastnumchars */
+	unsigned process_size; /* was lastnumchars */
 } IFPAGE;
 #else
 	/***********************************************************/

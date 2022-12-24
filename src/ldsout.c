@@ -54,7 +54,7 @@ extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 
 /* sys_size is sysout size in megabytes */
-int sysout_loader(const char *sysout_file_name, int sys_size) {
+unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
   int sysout; /* SysoutFile descriptor */
 
   IFPAGE ifpage; /* IFPAGE */
@@ -72,7 +72,6 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 
   unsigned sysout_size; /* sysout size in page */
   struct stat stat_buf; /* file stat buf */
-  int i;
 
   char errmsg[255];
 
@@ -199,7 +198,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
     perror("sysout_loader: can't get sysout file size");
     exit(-1);
   }
-  sysout_size = stat_buf.st_size / BYTESPER_PAGE * 2;
+  sysout_size = (unsigned)(stat_buf.st_size / BYTESPER_PAGE * 2);
 
   DBPRINT(("sysout size / 2 = 0x%x\n", sysout_size / 2));
   DBPRINT(("vmem size = 0x%x\n", ifpage.nactivepages));
@@ -274,7 +273,7 @@ int sysout_loader(const char *sysout_file_name, int sys_size) {
 
   /* read sysout file to lispworld */
 
-  for (i = 0; i < (sysout_size / 2); i++) {
+  for (unsigned i = 0; i < (sysout_size / 2); i++) {
 #ifdef DOS
     /* Dial that floats from left to right on the top line of the */
     /* displaty. Dial shows % of sysout loaded by digits and */

@@ -230,7 +230,7 @@ int display_max = 65536 * 16 * 2;
 extern int maxpages;
 
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
-int sysout_size = 0;    /* ditto */
+unsigned sysout_size = 0;    /* ditto */
 
 int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
 
@@ -400,7 +400,7 @@ int main(int argc, char *argv[])
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
         if (errno == 0 && tmpint > 0) {
-          sysout_size = tmpint;
+          sysout_size = (unsigned)tmpint;
         } else {
           fprintf(stderr, "Bad value for -m (integer > 0)\n");
           exit(1);
