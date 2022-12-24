@@ -28,6 +28,7 @@
 
 #include "dbprint.h"
 #include "dspifdefs.h"
+#include "lspglob.h"
 #include "lispemul.h"
 #include "devif.h"
 #include "iopage.h"

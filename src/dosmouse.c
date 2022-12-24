@@ -16,6 +16,7 @@
 #include <dos.h> /* Defines REGS & other structs */
 
 #include "lispemul.h"
+#include "lspglob.h"
 #include "display.h"
 #include "bb.h"
 
@@ -23,9 +24,9 @@
 #include "devif.h"
 #include "keyboard.h"
 #include "ifpage.h"
+#include "iopage.h"
 
 extern int eurokbd;
-extern IOPAGE *IOPage68K;
 extern MISCSTATS *MiscStats;
 extern IFPAGE *InterfacePage;
 extern int KBDEventFlg;
@@ -81,8 +82,8 @@ void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
   if (mouse->Button.TwoButtonP) { _dpmi_lockregion((void *)&ButtonTimer, 4096); }
 
   /* Lock the structures used, both pointers to 'em & the whole structure. */
-  _dpmi_lockregion((void *)&IOPage68K, sizeof(IOPage68K));
-  _dpmi_lockregion((void *)IOPage68K, sizeof(IOPAGE));
+  _dpmi_lockregion((void *)&IOPage, sizeof(IOPage));
+  _dpmi_lockregion((void *)IOPage, sizeof(IOPAGE));
   _dpmi_lockregion((void *)&InterfacePage, sizeof(InterfacePage));
   _dpmi_lockregion((void *)InterfacePage, sizeof(IFPAGE));
   _dpmi_lockregion((void *)&MiscStats, sizeof(MiscStats));
@@ -155,7 +156,7 @@ void ExitDosMouse(MouseInterface mouse)
     _dpmi_unlockregion((void *)&MouseButtonSignal, 4096);
 
     /* Unlock the structures used. */
-    _dpmi_unlockregion((void *)&IOPage68K, sizeof(IOPage68K));
+    _dpmi_unlockregion((void *)&IOPage, sizeof(IOPage));
     _dpmi_unlockregion((void *)&InterfacePage, sizeof(InterfacePage));
     _dpmi_unlockregion((void *)&MiscStats, sizeof(MiscStats));
 
@@ -242,14 +243,14 @@ set_DOSmouseposition(DspInterface dsp, int x, int y)
 #endif /* NEVER */
 
   /* Actually move the cursor image */
-  IOPage68K->dlmousex = x;
-  IOPage68K->dlmousey = y;
+  IOPage->dlmousex = x;
+  IOPage->dlmousey = y;
 
   /*  *(currentmouse->timestamp) = MiscStats->secondstmp; */
 
-  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
-  currentmouse->Cursor.New.x = IOPage68K->dlcursorx = x;
-  currentmouse->Cursor.New.y = IOPage68K->dlcursory = y;
+  (currentdsp->mouse_invisible)(currentdsp, IOPage);
+  currentmouse->Cursor.New.x = IOPage->dlcursorx = x;
+  currentmouse->Cursor.New.y = IOPage->dlcursory = y;
   (currentdsp->mouse_visible)(x, y);
 
   dsp->device.locked--;
@@ -262,7 +263,7 @@ void docopy(int newx, int newy)
   static int sx, dx, w = 16, h = 16, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
-  srcbase = IOPage68K->dlcursorbitmap;
+  srcbase = IOPage->dlcursorbitmap;
   dstbase = DisplayRegion68k + (newy * currentdsp->Display.width / 16);
   sx = 0;
   dx = newx;
@@ -378,9 +379,9 @@ void MouseButtonSignal(MouseInterface mouse)
   /* In the mouse device TRUE means button pressed */
   /* In the IOPage 0 means button pressed          */
   /* Hence the ! in the lines below.               */
-  PUTBASEBIT68K(&(IOPage68K->dlutilin), MOUSE_LEFT, !mouse->Button.Left);
-  PUTBASEBIT68K(&(IOPage68K->dlutilin), MOUSE_MIDDLE, !mouse->Button.Middle);
-  PUTBASEBIT68K(&(IOPage68K->dlutilin), MOUSE_RIGHT, !mouse->Button.Right);
+  PUTBASEBIT68K(&(IOPage->dlutilin), MOUSE_LEFT, !mouse->Button.Left);
+  PUTBASEBIT68K(&(IOPage->dlutilin), MOUSE_MIDDLE, !mouse->Button.Middle);
+  PUTBASEBIT68K(&(IOPage->dlutilin), MOUSE_RIGHT, !mouse->Button.Right);
 
   r = CTopKeyevent->ring.vectorindex.read;
   w = CTopKeyevent->ring.vectorindex.write;
@@ -389,13 +390,13 @@ void MouseButtonSignal(MouseInterface mouse)
     kbevent = (KBEVENT *)((DLword *)CTopKeyevent + w);
 
     /* Copy the Hardware bits. */
-    kbevent->W0 = IOPage68K->dlkbdad0;
-    kbevent->W1 = IOPage68K->dlkbdad1;
-    kbevent->W2 = IOPage68K->dlkbdad2;
-    kbevent->W3 = IOPage68K->dlkbdad3;
-    kbevent->W4 = IOPage68K->dlkbdad4;
-    kbevent->W5 = IOPage68K->dlkbdad5;
-    kbevent->WU = IOPage68K->dlutilin;
+    kbevent->W0 = IOPage->dlkbdad0;
+    kbevent->W1 = IOPage->dlkbdad1;
+    kbevent->W2 = IOPage->dlkbdad2;
+    kbevent->W3 = IOPage->dlkbdad3;
+    kbevent->W4 = IOPage->dlkbdad4;
+    kbevent->W5 = IOPage->dlkbdad5;
+    kbevent->WU = IOPage->dlutilin;
 
     /* If queue was empty, update the read pointer */
     if (r == 0) CTopKeyevent->ring.vectorindex.read = w;

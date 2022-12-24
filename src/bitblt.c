@@ -38,9 +38,7 @@ extern int kbd_for_makeinit;
 
 #ifdef DOS
 #include "devif.h"
-#include "iopage.h"
 extern DspInterface currentdsp;
-extern IOPAGE *IOPage68K;
 #endif
 
 extern int LispWindowFd;
@@ -118,7 +116,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   curr_gray_line = ((TEXTUREBBT *)pbt)->pbtgrayoffset;
 
 #if   DOS
-  if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
+  if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage);
   ;
 #endif /* SUNDISPLAY / DOS */
 
@@ -126,7 +124,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 
 #if   DOS
       flush_display_lineregion(dx, dstbase, w, h);
-  if (displayflg) (currentdsp->mouse_visible)(IOPage68K->dlmousex, IOPage68K->dlmousey);
+  if (displayflg) (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
 #endif /* SUNDISPLAY / DOS */
 
 #ifdef XWINDOW

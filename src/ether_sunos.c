@@ -75,7 +75,6 @@
 #include "dbprint.h"
 #include "etherdefs.h"
 #include "ifpage.h"
-#include "iopage.h"
 
 #if defined(USE_DLPI)
 #define NIOCSETF PFIOCSETF

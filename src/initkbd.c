@@ -49,7 +49,6 @@
 #include "address.h"
 
 #include "devconf.h"
-#include "iopage.h"
 #include "ifpage.h"
 #include "keyboard.h"
 
@@ -77,8 +76,6 @@ int DebugKBD = NIL;
 FILE *KBlog;
 
 extern fd_set LispReadFds;
-
-IOPAGE *IOPage68K;
 
 DLword *EmMouseX68K;
 DLword *EmMouseY68K;
@@ -238,22 +235,21 @@ void device_before_exit(void) {
 /*  ----------------------------------------------------------------*/
 
 void set_kbd_iopointers(void) {
-  IOPage68K = (IOPAGE *)IOPage;
-  EmMouseX68K = (DLword *)&(IOPage68K->dlmousex);
-  EmMouseY68K = (DLword *)&(IOPage68K->dlmousey);
-  EmCursorX68K = (DLword *)&(IOPage68K->dlcursorx);
-  EmCursorY68K = (DLword *)&(IOPage68K->dlcursory);
-  EmRealUtilin68K = (DLword *)&(IOPage68K->dlutilin);
+  EmMouseX68K = (DLword *)&(IOPage->dlmousex);
+  EmMouseY68K = (DLword *)&(IOPage->dlmousey);
+  EmCursorX68K = (DLword *)&(IOPage->dlcursorx);
+  EmCursorY68K = (DLword *)&(IOPage->dlcursory);
+  EmRealUtilin68K = (DLword *)&(IOPage->dlutilin);
   /* EmUtilin68K is for KEYDOWNP1 macro or etc. */
   EmUtilin68K = (DLword *)&(InterfacePage->fakemousebits);
-  EmKbdAd068K = (DLword *)&(IOPage68K->dlkbdad0);
-  EmKbdAd168K = (DLword *)&(IOPage68K->dlkbdad1);
-  EmKbdAd268K = (DLword *)&(IOPage68K->dlkbdad2);
-  EmKbdAd368K = (DLword *)&(IOPage68K->dlkbdad3);
-  EmKbdAd468K = (DLword *)&(IOPage68K->dlkbdad4);
-  EmKbdAd568K = (DLword *)&(IOPage68K->dlkbdad5);
-  EmDispInterrupt68K = (DLword *)&(IOPage68K->dldispinterrupt);
-  EmCursorBitMap68K = (DLword *)(IOPage68K->dlcursorbitmap);
+  EmKbdAd068K = (DLword *)&(IOPage->dlkbdad0);
+  EmKbdAd168K = (DLword *)&(IOPage->dlkbdad1);
+  EmKbdAd268K = (DLword *)&(IOPage->dlkbdad2);
+  EmKbdAd368K = (DLword *)&(IOPage->dlkbdad3);
+  EmKbdAd468K = (DLword *)&(IOPage->dlkbdad4);
+  EmKbdAd568K = (DLword *)&(IOPage->dlkbdad5);
+  EmDispInterrupt68K = (DLword *)&(IOPage->dldispinterrupt);
+  EmCursorBitMap68K = (DLword *)(IOPage->dlcursorbitmap);
 
   *EmRealUtilin68K = KB_ALLUP;
   *EmKbdAd068K = KB_ALLUP;
