@@ -50,7 +50,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "lsptypes.h"
 
 #include "ifpage.h"
-#include "miscstat.h"
 
 #include "bb.h"
 #include "bitblt.h"
@@ -132,7 +131,6 @@ extern DLword *DisplayRegion68k;
 static struct timeval SelectTimeout = {0, 0};
 #endif /* DOS */
 
-extern MISCSTATS *MiscStats;
 LispPTR *LASTUSERACTION68k;
 LispPTR *CLastUserActionCell68k;
 LispPTR *CURSORDESTHEIGHT68k;

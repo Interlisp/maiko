@@ -43,7 +43,6 @@ extern LispPTR *MakeAtom68k();
 extern DLword *EmCursorX68K, *EmCursorY68K;
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
 extern LispPTR *CLastUserActionCell68k;
-extern MISCSTATS *MiscStats;
 
 extern int KBDEventFlg;
 LispPTR *MNWBUFFERING68k = 0;

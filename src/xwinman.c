@@ -18,8 +18,7 @@
 #include "devif.h"         // for (anonymous), MRegion, DefineCursor, OUTER_...
 #include "keyeventdefs.h"  // for kb_trans
 #include "lispemul.h"      // for PUTBASEBIT68K, FALSE, TRUE, DLword, state
-#include "miscstat.h"      // for MISCSTATS
-#include "version.h"
+#include "lspglob.h"       // for MiscStats
 #include "xdefs.h"         // for XLOCK, XUNLOCK
 #include "xlspwindefs.h"   // for DoRing
 #include "xscrolldefs.h"   // for JumpScrollHor, JumpScrollVer, Scroll, Scro...
@@ -35,7 +34,6 @@ extern DspInterface currentdsp;
 extern DLword *EmCursorX68K, *EmCursorY68K;
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
 extern LispPTR *CLastUserActionCell68k;
-extern MISCSTATS *MiscStats;
 extern int KBDEventFlg;
 extern u_char *SUNLispKeyMap;
 #define KEYCODE_OFFSET 7 /* Sun Keycode offset */

@@ -25,9 +25,9 @@
 #include "keyboard.h"
 #include "ifpage.h"
 #include "iopage.h"
+#include "miscstat.h"
 
 extern int eurokbd;
-extern MISCSTATS *MiscStats;
 extern IFPAGE *InterfacePage;
 extern int KBDEventFlg;
 extern DspInterface currentdsp;
