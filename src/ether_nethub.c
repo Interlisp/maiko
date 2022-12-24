@@ -33,7 +33,6 @@
 #include "dbprint.h"
 #include "etherdefs.h"
 #include "ifpage.h"
-#include "iopage.h"
 #include "byteswapdefs.h"
 #include "dbprint.h"
 #include "timerdefs.h"

@@ -13,6 +13,7 @@
 
 #include <stdio.h>
 #include <graph.h>
+#include "iopage.h"
 #include "lispemul.h"
 #include "devif.h"
 

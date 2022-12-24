@@ -19,12 +19,10 @@
 #include "dbprint.h"      // for TPRINT
 #include "devif.h"        // for (anonymous), DspInterface, DefineCursor
 #include "display.h"      // for CURSORHEIGHT
-#include "iopage.h"       // for IOPAGE
 #include "lispemul.h"     // for DLword
+#include "lspglob.h"      // for IOPage
 #include "xcursordefs.h"  // for Init_XCursor, Set_XCursor, init_Xcursor
 #include "xdefs.h"        // for XLOCK, XUNLOCK
-
-extern IOPAGE *IOPage;
 
 XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;

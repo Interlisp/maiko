@@ -50,7 +50,6 @@
 #include "return.h"
 #include "cell.h"
 #include "gcdata.h"
-#include "iopage.h"
 
 #include "bbtsubdefs.h"
 #include "car-cdrdefs.h"
@@ -60,8 +59,6 @@
 #include "kprintdefs.h"
 #include "llstkdefs.h"
 #include "returndefs.h"
-
-extern IOPAGE *IOPage68K;
 
 #include "bb.h"
 #include "bitblt.h"

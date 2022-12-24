@@ -99,8 +99,6 @@
 #include "z2defs.h"
 
 #ifdef DOS
-#include "iopage.h"
-extern IOPAGE *IOPage68K;
 #include "devif.h"
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
@@ -1181,7 +1179,7 @@ check_interrupt:
           currentdsp->device.locked++;
 
           /* Remove the mouse from the old place on the screen */
-          (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
+          (currentdsp->mouse_invisible)(currentdsp, IOPage);
 
           /* Find the new delta */
           regs.w.eax = 0x000B; /* Function 0xB = get delta mickeys */
@@ -1199,8 +1197,8 @@ check_interrupt:
           else if (currentmouse->Cursor.New.y > (currentdsp->Display.height - 1))
             currentmouse->Cursor.New.y = currentdsp->Display.height - 1;
 
-          IOPage68K->dlmousex = IOPage68K->dlcursorx = currentmouse->Cursor.New.x;
-          IOPage68K->dlmousey = IOPage68K->dlcursory = currentmouse->Cursor.New.y;
+          IOPage->dlmousex = IOPage->dlcursorx = currentmouse->Cursor.New.x;
+          IOPage->dlmousey = IOPage->dlcursory = currentmouse->Cursor.New.y;
 
           /* Paint the mouse back up on the screen on the new place */
           (currentdsp->mouse_visible)(currentmouse->Cursor.New.x, currentmouse->Cursor.New.y);

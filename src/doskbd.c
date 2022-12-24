@@ -22,7 +22,9 @@
 #include <stk.h>
 #include <conio.h>
 
+#include "iopage.h"
 #include "lispemul.h"
+#include "lspglob.h"
 #include "keyboard.h"
 #include "keysym.h"
 #include "devif.h"
@@ -31,7 +33,6 @@ int nokbdflag = FALSE;
 extern int eurokbd;
 extern KbdInterface currentkbd;
 extern MouseInterface currentmouse;
-extern IOPAGE *IOPage68K;
 extern IFPAGE *InterfacePage;
 extern int KBDEventFlg;
 
@@ -179,11 +180,11 @@ handle:
 
   if (keycode != 0xff) {
     if (keycode < 64) {
-      PUTBASEBIT68K(&(IOPage68K->dlkbdad0), keycode, (currentkbd->lastbyte >> 7) & 1);
+      PUTBASEBIT68K(&(IOPage->dlkbdad0), keycode, (currentkbd->lastbyte >> 7) & 1);
     } else if (keycode >= 80) {
-      PUTBASEBIT68K(&(IOPage68K->dlkbdad0), keycode - 16, (currentkbd->lastbyte >> 7) & 1);
+      PUTBASEBIT68K(&(IOPage->dlkbdad0), keycode - 16, (currentkbd->lastbyte >> 7) & 1);
     } else {
-      PUTBASEBIT68K(&(IOPage68K->dlutilin), (keycode & 0xf), (currentkbd->lastbyte >> 7) & 1);
+      PUTBASEBIT68K(&(IOPage->dlutilin), (keycode & 0xf), (currentkbd->lastbyte >> 7) & 1);
       PUTBASEBIT68K(&(InterfacePage->fakemousebits), (keycode & 0xf),
                     (currentkbd->lastbyte >> 7) & 1);
     }
@@ -191,8 +192,8 @@ handle:
 
   /* In DOS we can't enter uraid inside an exception handler. */
   /* Uraid may touch a swapped out address and that dumps Medley */
-  if (((IOPage68K->dlkbdad2 & 2113) == 0) || /* Ctrl-shift-NEXT */
-      ((IOPage68K->dlkbdad2 & 2114) == 0)) { /* Ctrl-shift-DEL */
+  if (((IOPage->dlkbdad2 & 2113) == 0) || /* Ctrl-shift-NEXT */
+      ((IOPage->dlkbdad2 & 2114) == 0)) { /* Ctrl-shift-DEL */
     currentkbd->URaid = TRUE;                /* Tell the dispatch loop about it. */
     return;
   }
@@ -203,13 +204,13 @@ handle:
   if (r != w) {
     kbevent = (KBEVENT *)((DLword *)CTopKeyevent + w);
     /* Copy the Hardware bits. */
-    kbevent->W0 = IOPage68K->dlkbdad0;
-    kbevent->W1 = IOPage68K->dlkbdad1;
-    kbevent->W2 = IOPage68K->dlkbdad2;
-    kbevent->W3 = IOPage68K->dlkbdad3;
-    kbevent->W4 = IOPage68K->dlkbdad4;
-    kbevent->W5 = IOPage68K->dlkbdad5;
-    kbevent->WU = IOPage68K->dlutilin;
+    kbevent->W0 = IOPage->dlkbdad0;
+    kbevent->W1 = IOPage->dlkbdad1;
+    kbevent->W2 = IOPage->dlkbdad2;
+    kbevent->W3 = IOPage->dlkbdad3;
+    kbevent->W4 = IOPage->dlkbdad4;
+    kbevent->W5 = IOPage->dlkbdad5;
+    kbevent->WU = IOPage->dlutilin;
 
     /* If queue was empty, update the read pointer */
     if (r == 0) CTopKeyevent->ring.vectorindex.read = w;
@@ -249,8 +250,8 @@ void ExitDosKbd(KbdInterface kbd)
     _dpmi_unlockregion((void *)kbd, sizeof(*kbd));
     _dpmi_unlockregion((void *)&InterfacePage, sizeof(InterfacePage));
     _dpmi_unlockregion((void *)InterfacePage, sizeof(IFPAGE));
-    _dpmi_unlockregion((void *)&IOPage68K, sizeof(IOPage68K));
-    _dpmi_unlockregion((void *)IOPage68K, sizeof(IOPAGE));
+    _dpmi_unlockregion((void *)&IOPage, sizeof(IOPage));
+    _dpmi_unlockregion((void *)IOPage, sizeof(IOPAGE));
 
     _dpmi_unlockregion((void *)&CTopKeyevent, sizeof(CTopKeyevent));
     _dpmi_unlockregion((void *)CTopKeyevent, sizeof(*CTopKeyevent));
@@ -293,8 +294,8 @@ void EnterDosKbd(KbdInterface kbd)
     _dpmi_lockregion((void *)kbd, sizeof(*kbd));
     _dpmi_lockregion((void *)&InterfacePage, sizeof(InterfacePage));
     _dpmi_lockregion((void *)InterfacePage, sizeof(IFPAGE));
-    _dpmi_lockregion((void *)&IOPage68K, sizeof(IOPage68K));
-    _dpmi_lockregion((void *)IOPage68K, sizeof(IOPAGE));
+    _dpmi_lockregion((void *)&IOPage, sizeof(IOPage));
+    _dpmi_lockregion((void *)IOPage, sizeof(IOPAGE));
     _dpmi_lockregion((void *)&MachineState, sizeof(MachineState));
 
     _dpmi_lockregion((void *)&CTopKeyevent, sizeof(CTopKeyevent));

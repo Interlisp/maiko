@@ -49,7 +49,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "display.h"
 #include "lsptypes.h"
 
-#include "iopage.h"
 #include "ifpage.h"
 #include "miscstat.h"
 
@@ -69,7 +68,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #if (defined(DOS) || defined(XWINDOW))
 #include "devif.h"
 extern DspInterface currentdsp;
-extern IOPAGE *IOPage68K;
 #endif /* DOS */
 
 /* for contextsw */
@@ -375,7 +373,7 @@ void taking_mouse_down(void) {
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
 #ifdef DOS
-  (currentdsp->mouse_invisible)(currentdsp, IOPage68K);
+  (currentdsp->mouse_invisible)(currentdsp, IOPage);
 #else
   if (!DisplayInitialized) return;
 

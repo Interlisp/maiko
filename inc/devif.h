@@ -88,7 +88,7 @@ typedef struct
 /*                M o u s e I n t e r f a c e                 */
 /*                                                            */
 /* Definition of the mouse. Note that the mouse is also       */
-/* dependent on the IOPage68K                                 */
+/* dependent on the IOPage                                    */
 /**************************************************************/
 typedef struct
   {
@@ -141,7 +141,7 @@ typedef MouseInterfaceRec *MouseInterface;
 /*                  K b d I n t e r f a c e                   */
 /*                                                            */
 /* Definition of the keyboard. Note that the keyboard is also */
-/* dependent on the IOPage68K                                 */
+/* dependent on the IOPage                                    */
 /**************************************************************/
 typedef struct
   {
