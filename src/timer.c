@@ -127,10 +127,7 @@ void update_miscstats(void) {
   MiscStats->pagefaults = ru.ru_minflt + ru.ru_majflt;
   MiscStats->swapwrites = ru.ru_majflt;
   MiscStats->diskiotime = 0; /* ?? not available ?? */
-  MiscStats->diskops = ru.ru_inblock
-      /* ?? this doesn't work ???
-     + ru.ru_outblock   */
-      ;
+  MiscStats->diskops = ru.ru_inblock + ru.ru_oublock;
   gettimeofday(&timev, NULL);
   MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
 #endif /* DOS */
