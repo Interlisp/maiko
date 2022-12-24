@@ -45,20 +45,20 @@
 #ifdef BIGVM
 extern LispPTR *FPtoVP;
 #else
-extern DLword *FPtoVP ;
+extern DLword *FPtoVP;
 #endif /* BIGVM */
 extern DLword *PAGEMap;
-extern DLword *PageMapTBL ;
+extern DLword *PageMapTBL;
 extern DLword *LockedPageTable;
 
 /* For Interface to Micro or Device */
-extern DLword *IOCBPage ;
-extern IOPAGE *IOPage ;
-extern IFPAGE *InterfacePage ;
-extern MISCSTATS *MiscStats ;
+extern DLword *IOCBPage;
+extern IOPAGE *IOPage;
+extern IFPAGE *InterfacePage;
+extern MISCSTATS *MiscStats;
 
 /* UFN Tbl */
-extern DLword *UFNTable ;
+extern DLword *UFNTable;
 
 /* Internal Hash Table for GC */
 #ifdef BIGVM
@@ -75,15 +75,15 @@ extern DLword *UFNTable ;
 
 
 /* DISPLAY */
- extern DLword *DisplayRegion ;
+ extern DLword *DisplayRegion;
 
 
 /* FLEX STORAGES */
  extern  DLword *MDS_space_bottom;  /* Start of MDS (pre -2) */
- extern  DLword *PnCharspace ;	/* Space for PN char codes (Thin only) */
+ extern  DLword *PnCharspace;	/* Space for PN char codes (Thin only) */
 
- extern  struct dtd *ListpDTD ;	/* DTD for LISTP chang. 25-mar-87 take */
- extern  DLword *Next_Array ;	/* Next available ARRAY space */
+ extern  struct dtd *ListpDTD;	/* DTD for LISTP chang. 25-mar-87 take */
+ extern  DLword *Next_Array;	/* Next available ARRAY space */
  extern  DLword *Next_MDSpage;	/* Next available MDS space */
   
  /* Pointers in Cell or any object means DLword offset from Lisp_world.
@@ -100,7 +100,7 @@ extern LispPTR *Next_MDSpage_word;
 extern LispPTR *Next_Array_word;
 extern LispPTR *MDS_free_page_word;
 
-extern LispPTR *Reclaim_cnt_word ;
+extern LispPTR *Reclaim_cnt_word;
 
 /*** cache values for array reclaimer by Tomtom 30-Sep-1987 ***/
 
