@@ -68,8 +68,6 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
 /* keeping top of previous MDS cell */
 
 {
-  extern DLword *MDStypetbl;
-
   int remain_size; /* (IREMAINDER WORDSPERPAGE SIZE) */
   short num_pages;
   int limit;
@@ -122,12 +120,6 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
 /**********************************************************************/
 
 LispPTR *alloc_mdspage(short int type) {
-  extern LispPTR *MDS_free_page_word; /* Free MDS page number */
-
-  extern DLword *Next_MDSpage; /* next vacant(new) MDS page */
-  extern LispPTR *Next_MDSpage_word;
-  extern LispPTR *Next_Array_word;
-
   LispPTR *ptr; /* points Top 32 bit of the MDS page */
   LispPTR next_page;
 
