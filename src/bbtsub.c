@@ -527,7 +527,7 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
   init_kbd_startup; /* MUST START KBD FOR INIT BEFORE FIRST BITBLT */
 #endif
 
-  if ((DisplayRegion68k <= baseaddr) && (baseaddr <= DISP_MAX_Address)) {
+  if (in_display_segment(baseaddr)) {
     if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL))
       return (T);
     else
@@ -550,7 +550,7 @@ LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
 #endif
 
   if (MonoOrColor == MONO_SCREEN) { /* in MONO screen */
-    if ((DisplayRegion68k <= baseaddr) && (baseaddr <= DISP_MAX_Address)) {
+    if (in_display_segment(baseaddr)) {
       if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL)) {
         return (T);
       } else {
