@@ -99,7 +99,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   ScreenLocked = T;
 #endif /* DOS */
 
-#if SUNDISPLAY || DOS
+#if defined(SUNDISPLAY) || defined(DOS)
   displayflg = cursorin(pbt->pbtdesthi, (pbt->pbtdestlo + (dx >> 4)), w, h, backwardflg) ||
                cursorin(pbt->pbtsourcehi, (pbt->pbtsourcelo + (sx >> 4)), w, h, backwardflg);
 #endif /* SUNDISPLAY */
@@ -115,14 +115,14 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   num_gray = ((TEXTUREBBT *)pbt)->pbtgrayheightlessone + 1;
   curr_gray_line = ((TEXTUREBBT *)pbt)->pbtgrayoffset;
 
-#if   DOS
+#ifdef DOS
   if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage);
   ;
 #endif /* SUNDISPLAY / DOS */
 
   new_bitblt_code;
 
-#if   DOS
+#ifdef DOS
       flush_display_lineregion(dx, dstbase, w, h);
   if (displayflg) (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
 #endif /* SUNDISPLAY / DOS */
