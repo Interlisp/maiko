@@ -29,9 +29,9 @@ N_OP_bind(stack_pointer, tos, n1, n2)
 
 ***************************************************/
 
-LispPTR *N_OP_bind(LispPTR *stack_pointer, LispPTR tos, int byte1, int byte2) {
-  int n1;         /* # slots to bind to NIL (0, 0) */
-  int n2;         /* # slots to bind to value in stack */
+LispPTR *N_OP_bind(LispPTR *stack_pointer, LispPTR tos, unsigned byte1, unsigned byte2) {
+  unsigned n1;         /* # slots to bind to NIL (0, 0) */
+  unsigned n2;         /* # slots to bind to value in stack */
   LispPTR *ppvar; /* pointer to argued slot in Pvar area */
   unsigned i;          /* temporary for control */
 
