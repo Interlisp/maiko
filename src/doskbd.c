@@ -33,7 +33,6 @@ int nokbdflag = FALSE;
 extern int eurokbd;
 extern KbdInterface currentkbd;
 extern MouseInterface currentmouse;
-extern IFPAGE *InterfacePage;
 extern int KBDEventFlg;
 
 extern keybuffer *CTopKeyevent;

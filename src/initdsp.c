@@ -71,7 +71,6 @@ DLword *DISP_MAX_Address;
 
 
 extern DLword *EmCursorBitMap68K;
-extern IFPAGE *InterfacePage;
 
 int DebugDSP = T;
 

@@ -1094,7 +1094,6 @@ check_interrupt:
     extern LispPTR *PERIODIC_INTERRUPT68k;
     extern LispPTR *PERIODIC_INTERRUPT_FREQUENCY68k;
     extern LispPTR PERIODIC_INTERRUPTFRAME_index;
-    extern LispPTR *Reclaim_cnt_word;
     extern LispPTR DORECLAIM_index;
     extern int URaid_req;
 

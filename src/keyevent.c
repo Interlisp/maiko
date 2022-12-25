@@ -49,8 +49,6 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "display.h"
 #include "lsptypes.h"
 
-#include "ifpage.h"
-
 #include "bb.h"
 #include "bitblt.h"
 #include "pilotbbt.h"
@@ -307,7 +305,6 @@ void process_io_events(void)
 
 void kb_trans(u_short keycode, u_short upflg)
 {
-  extern IFPAGE *InterfacePage;
   if (keycode < 64) /* DLKBDAD0 ~ 3	*/
   {
     PUTBASEBIT68K(EmKbdAd068K, keycode, upflg);

@@ -55,7 +55,6 @@
 #include "debug.h"         // for PACKAGE
 #include "emlglob.h"
 #include "gcarraydefs.h"   // for aref1
-#include "ifpage.h"        // for IFPAGE
 #include "kprintdefs.h"    // for print, prindatum
 #include "lispemul.h"      // for DLword, LispPTR, DLbyte, state, T, ConsCell
 #include "lispmap.h"       // for STK_OFFSET, ATOMS_HI
@@ -190,7 +189,6 @@ void print_package_name(int index) {
 /************************************************************************/
 
 void dump_dtd(void) {
-  extern DLword *DTDspace;
   struct dtd *dtdp;
   DLword cnt;
 
@@ -1102,7 +1100,6 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
   DLword *start68k, *end68k, *orig68k;
   DLword size;
   int sdlines = 0;
-  extern IFPAGE *InterfacePage;
 
   if (start == 0)
     start68k = Stackspace + InterfacePage->stackbase;
