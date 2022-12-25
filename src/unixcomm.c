@@ -443,7 +443,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         unlink(PipeName);
         return (NIL);
       }
-      break;
     }
 
     case 1: /* Write byte */
@@ -462,7 +461,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
               return (NIL);
             } else
               return (GetSmallp(1));
-            break;
 
           default: return (NIL);
         }
@@ -504,11 +502,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           /* Either way, signal EOF. */
           DBPRINT(("Indicating EOF from PTY desc %d.\n", slot));
           return (NIL);
-          break;
 
-        default: return (NIL); break;
+        default: return (NIL);
       }
-      break;
 
     case 3: /* Kill process */
             /* Maiko uses this as CLOSEF, so "process" is a misnomer */
@@ -559,7 +555,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       /* If status available, return it, otherwise T */
       return (GetSmallp(UJ[slot].status));
-      break;
 
     case 4:
     case 11: /* Fork PTY process */
@@ -615,7 +610,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         close(Master);
         return (NIL);
       }
-      break;
     }
 
     case 5: /* Kill all the subprocesses */ close_unix_descriptors(); return (ATOM_T);
@@ -679,7 +673,6 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         return (ATOM_T);
       else
         return (GetSmallp(UJ[slot].status));
-      break;
 
     case 8: /* Return largest supported command */ return (GetSmallp(15));
 
@@ -804,7 +797,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       UJ[sockFD].type = UJSOCKET;
 
       return (GetSmallp(sockFD));
-    } break;
+    }
 
     case 13: /* try to accept */
     {
@@ -836,7 +829,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         }
       } else
         return (NIL);
-    } break;
+    }
 
     case 14: /* return type of socket */
     {
@@ -847,7 +840,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         return GetSmallp(UJ[streamFD].type);
       else
         return NIL;
-    } break;
+    }
 
     case 15: /* Write buffer */
     {

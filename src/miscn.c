@@ -76,7 +76,6 @@ int OP_miscn(int misc_index, int arg_count) {
       if (arg_count > 255) {
         error("miscn: arg_count too big! continue punts");
         goto do_ufn;
-        break;
       }
       result = values(arg_count, args);
       break;
@@ -86,7 +85,6 @@ int OP_miscn(int misc_index, int arg_count) {
       if (arg_count > 255) {
         error("miscn: arg_count too big! continue punts");
         goto do_ufn;
-        break;
       }
       result = values_list(arg_count, args);
       break;
@@ -156,7 +154,7 @@ int OP_miscn(int misc_index, int arg_count) {
       result = 0;
     break;
 
-    default: goto do_ufn; break;
+    default: goto do_ufn;
 
   } /* switch end */
 

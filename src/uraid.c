@@ -475,7 +475,6 @@ LispPTR uraid_commands(void) {
         print(defcell68k->defpointer);
         return (T);
       }
-      break;
 
     case 'M': /* Machine States */
       printf("TOS   : 0x%x\n", TopOfStack);
