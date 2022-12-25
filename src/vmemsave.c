@@ -42,7 +42,6 @@
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"
-#include "ifpage.h"
 #include "vmemsave.h"
 #include "timeout.h"
 #include "adr68k.h"
@@ -72,7 +71,6 @@
 extern int LispWindowFd;
 extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
 extern struct cursor CurrentCursor, InvisibleCursor;
-extern IFPAGE *InterfacePage;
 #ifdef DOS
 extern DspInterface currentdsp;
 #endif /* DOS */
@@ -512,8 +510,6 @@ LispPTR vmem_save(char *sysout_file_name)
 /*	Kill all forked sub-processes before exiting.			*/
 /*									*/
 /************************************************************************/
-
-extern int UnixPID;
 
 /* Make sure that we kill off any Unix subprocesses before we go away */
 

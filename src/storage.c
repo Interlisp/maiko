@@ -287,9 +287,6 @@ LispPTR newpage(LispPTR base) {
 #endif /* BIGVM */
 
   INTSTAT *int_state;
-
-  extern LispPTR *LASTVMEMFILEPAGE_word;
-  extern LispPTR *VMEM_FULL_STATE_word;
   unsigned int nactive;
 
   vp = base >> 8; /* Compute virtual-page # from Lisp address of the page */

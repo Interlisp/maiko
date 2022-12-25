@@ -28,7 +28,6 @@
 #include "miscstat.h"
 
 extern int eurokbd;
-extern IFPAGE *InterfacePage;
 extern int KBDEventFlg;
 extern DspInterface currentdsp;
 extern MouseInterface currentmouse;

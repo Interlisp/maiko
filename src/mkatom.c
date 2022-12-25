@@ -37,6 +37,7 @@
 #include "cell.h"        // for PNCell, GetPnameCell
 #include "dbprint.h"     // for DBPRINT
 #include "lispemul.h"    // for DLword, LispPTR, T, NIL, POINTERMASK
+#include "lspglob.h"     // for AtomHT
 #include "lispmap.h"     // for S_POSITIVE
 #include "lsptypes.h"    // for GETBYTE, GETWORD
 #include "mkatomdefs.h"  // for compare_chars, compare_lisp_chars, compute_hash
@@ -260,10 +261,6 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
 
 LispPTR make_atom(const char *char_base, DLword offset, DLword length)
 {
-  extern DLword *AtomHT;
-  extern DLword *Pnamespace;
-  extern DLword *AtomSpace;
-
   DLword hash;
   LispPTR hash_entry; /* hash entry contents */
   DLword atom_index;
