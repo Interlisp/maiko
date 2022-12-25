@@ -110,7 +110,7 @@ extern DspInterface currentdsp;
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
 
-#if   (DOS && OPDISP)
+#if defined(DOS) && defined(OPDISP)
 #include "inlndos.h"
 InstPtr pccache asm("si");
 LispPTR *cspcache asm("di");
@@ -211,7 +211,7 @@ void dispatch(void) {
   }
 #endif
 
-#if (DOS && OPDISP)
+#if defined(DOS) && defined(OPDISP)
 #else
   LispPTR *cspcache;
   LispPTR tscache;

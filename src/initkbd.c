@@ -225,7 +225,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 /*  ----------------------------------------------------------------*/
 
 void device_before_exit(void) {
-#if   DOS
+#ifdef   DOS
   (currentmouse->device.exit)(currentmouse);
   (currentkbd->device.exit)(currentkbd);
 #endif /* SUNDISPLAY DOS*/
