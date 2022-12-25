@@ -757,7 +757,6 @@ and do a 'v' before trying anything else.";
       /* Assume that a user tried to exit UNIX shell */
       killpg(getpgrp(), SIGKILL);
       exit(0);
-      break;
     case SIGFPE:
       snprintf(errormsg, sizeof(errormsg), "%s (%d) at address %p.\n%s", strsignal(sig), info->si_code, info->si_addr, stdmsg);
       break;

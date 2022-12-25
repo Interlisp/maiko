@@ -316,7 +316,7 @@ STARTOVER:
 
 SCAN:
   switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
-    case STK_FSB: goto FREESCAN; break;
+    case STK_FSB: goto FREESCAN;
     case STK_GUARD:
       if ((UNSIGNED)scanptr68k < (UNSIGNED)easp68k) goto FREESCAN;
       if (start68k) {
@@ -324,7 +324,6 @@ SCAN:
         goto SCAN;
       } else
         goto NEWPAGE;
-      break;
     case STK_FX:
       scanptr68k = (StackWord *)NativeAligned2FromStackOffset(((FX *)scanptr68k)->nextblock);
       break;

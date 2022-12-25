@@ -102,7 +102,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       service = getservbyname(namestring, servstring);
       if (!service) return (NIL);
       return (GetSmallp(ntohs(service->s_port)));
-      break;
 
     case TCPsocket:
       addr_class = LispNumToCInt(nameConn);
@@ -112,7 +111,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
-      break;
     case TCPconnect: /* args: hostname or (fixp)address, socket# */
       memset(&farend, 0, sizeof farend);
       N_GETNUMBER(nameConn, res, string_host);
@@ -136,7 +134,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
-      break;
 
     case TCPsend: /* args: conn, buffer, len */
       sock = LispNumToCInt(nameConn);
@@ -159,7 +156,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       return (GetSmallp(result));
-      break;
 
     case TCPrecv: /* args: conn, buffer, maxlen */
       sock = LispNumToCInt(nameConn);
@@ -177,7 +173,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 #endif /* BYTESWAP */
 
       return (GetSmallp(result));
-      break;
 
     case TCPclose:
       sock = LispNumToCInt(nameConn);
@@ -221,7 +216,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
-      break;
 
     case TCPAccept: /* Socket we're listening on */
       sock = LispNumToCInt(nameConn);
@@ -234,7 +228,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       fcntl(result, F_SETOWN, getpid());
 
       return (GetSmallp(result));
-      break;
 
     case INETpeername: /* socket#, buffer for name string */
       sock = LispNumToCInt(nameConn);
@@ -244,7 +237,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
       strcpy((char *)buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
-      break;
 
     case INETgetname: /* host addr, buffer for name string */
       sock = LispNumToCInt(nameConn);
@@ -255,7 +247,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       if (!host) return (GetSmallp(0));
       strcpy((char *)buffer, host->h_name);
       return (GetSmallp(strlen(host->h_name)));
-      break;
 
     case UDPListen: /* socket# to listen on */
       sock = LispNumToCInt(nameConn);
@@ -275,7 +266,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
-      break;
 
     case UDPSendto: /* fd-socket# addr remote-socket buffer len*/
       sock = LispNumToCInt(nameConn);
@@ -301,7 +291,6 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       return (GetSmallp(result));
-      break;
 
     case UDPRecvfrom: /* fd-socket# buffer len addr-cell port-cell*/
       sock = LispNumToCInt(nameConn);
@@ -328,9 +317,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 #endif /* BYTESWAP */
 
       return (GetSmallp(result));
-      break;
 
-    default: return (NIL); break;
+    default: return (NIL);
   }
 #endif /* DOS */
 }

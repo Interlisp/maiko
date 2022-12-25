@@ -67,8 +67,8 @@ void LispStringToCStr(LispPTR lispstring, char *cstring) {
 
 int LispIntToCInt(LispPTR lispint) {
   switch ((0xFFFF0000 & lispint)) {
-    case S_POSITIVE: return (lispint & 0xFFFF); break;
-    case S_NEGATIVE: return (lispint | 0xFFFF0000); break;
+    case S_POSITIVE: return (lispint & 0xFFFF);
+    case S_NEGATIVE: return (lispint | 0xFFFF0000);
     default:
       if (GetTypeNumber(lispint) == TYPE_FIXP) {
         return (*((int *)NativeAligned4FromLAddr(lispint)));
@@ -79,7 +79,6 @@ int LispIntToCInt(LispPTR lispint) {
         /* NOTREACHED */
         return(0);
       }
-      break;
   }
 }
 

@@ -87,8 +87,6 @@ void checkfor_storagefull(unsigned int npages) {
 #endif
         return; /*(NIL); */
 
-        break;
-
       case SFS_SWITCHABLE:
         if (npages == NIL) {
           if (pagesleft <= 0) {
