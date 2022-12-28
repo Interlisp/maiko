@@ -675,7 +675,7 @@ void start_lisp(void) {
   TopOfStack = 0;
   Error_Exit = 0;
 
-  MState->pvar = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
+  PVar = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
 
   freeptr = next68k = NativeAligned2FromLAddr(STK_OFFSET | CURRENTFX->nextblock);
 
