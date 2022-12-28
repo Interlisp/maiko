@@ -705,17 +705,17 @@
 /************************************************************************/
 
 #define variables						\
-int num_lines_remaining;					\
-int dstnumL, src32lbit, srcLshift, dst32lbit;			\
-unsigned int srcRmask, dstold, dstdata, mask;			\
-UNSIGNED x32byta, x32nbyt, x32ia;					\
-int abc, dst32rbit, src32rbit, fwd;				\
-unsigned int *OrigSrcAddr, *OrigDstAddr;			\
+int num_lines_remaining = 0;					\
+int dstnumL = 0, src32lbit = 0, srcLshift = 0, dst32lbit = 0;	\
+unsigned int srcRmask = 0, dstold = 0, dstdata = 0, mask = 0;	\
+UNSIGNED x32byta = 0, x32nbyt = 0, x32ia = 0;			\
+int abc, dst32rbit = 0, src32rbit = 0, fwd;			\
+unsigned int *OrigSrcAddr = 0, *OrigDstAddr = 0;		\
 int bb_fast;							\
 unsigned int preloop_mask, postloop_mask, sdw_mask;		\
-unsigned int *dst32addr, *src32addr;			\
-unsigned int shS, savedS = 0, newS;			\
-int srcRshift;
+unsigned int *dst32addr = 0, *src32addr = 0;			\
+unsigned int shS = 0, savedS = 0, newS = 0;			\
+int srcRshift = 0;
 
 
 
