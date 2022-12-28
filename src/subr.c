@@ -77,15 +77,6 @@ extern LispPTR *PENDINGINTERRUPT68k;
 */
 /***********************************************************/
 
-char *atom_to_str(LispPTR atom_index) {
-  PNCell *pnptr;
-  char *pname_base;
-
-  pnptr = (PNCell *)GetPnameCell(atom_index);
-  pname_base = (char *)NativeAligned2FromLAddr(pnptr->pnamebase);
-  return (pname_base + 1);
-} /*atom_to_str*/
-
 #define POP_SUBR_ARGS                                       \
   do {                                                      \
     args[0] = NIL_PTR;                                      \
