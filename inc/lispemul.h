@@ -318,19 +318,18 @@ typedef struct lbits {
 
 extern struct state MachineState;
 
-#define MState (&MachineState)
 #define CURRENTFX ((struct frameex1 *)(((DLword *)PVar) - FRAMESIZE))
-#define IVar (MState->ivar)
-#define PVar (MState->pvar)
-#define CurrentStackPTR (MState->csp)
-#define TopOfStack (MState->tosvalue)
-#define PC (MState->currentpc)
-#define FuncObj (MState->currentfunc)
-#define EndSTKP (MState->endofstack)
-#define Irq_Stk_Check (MState->irqcheck)
-#define Irq_Stk_End (MState->irqend)
-#define Scratch_CSTK (MState->scratch_cstk)
-#define Error_Exit (MState->errorexit)
+#define IVar (MachineState.ivar)
+#define PVar (MachineState.pvar)
+#define CurrentStackPTR (MachineState.csp)
+#define TopOfStack (MachineState.tosvalue)
+#define PC (MachineState.currentpc)
+#define FuncObj (MachineState.currentfunc)
+#define EndSTKP (MachineState.endofstack)
+#define Irq_Stk_Check (MachineState.irqcheck)
+#define Irq_Stk_End (MachineState.irqend)
+#define Scratch_CSTK (MachineState.scratch_cstk)
+#define Error_Exit (MachineState.errorexit)
 
 /****************************************************
  MakeAddr:
