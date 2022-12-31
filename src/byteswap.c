@@ -28,9 +28,9 @@
 /*     Byte- & word-swap a region wordcount long-words long     */
 /*                                                              */
 /****************************************************************/
-void word_swap_page(unsigned short *page, int longwordcount) {
+void word_swap_page(void *page, unsigned longwordcount) {
   unsigned int *longpage = (unsigned int *)page;
-  for (int i = 0; i < longwordcount; i++) { *(longpage + i) = ntohl(*(longpage + i)); }
+  for (unsigned int i = 0; i < longwordcount; i++) { *(longpage + i) = ntohl(*(longpage + i)); }
 }
 
 /****************************************************************/
@@ -39,6 +39,7 @@ void word_swap_page(unsigned short *page, int longwordcount) {
 /*                                                              */
 /****************************************************************/
 
+extern const unsigned char reversedbits[256];
 const unsigned char reversedbits[256] = {
     /* table of bytes with their bits reversed */
     0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0, 0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
@@ -80,10 +81,11 @@ const unsigned char reversedbits[256] = {
     return ((reversedbits[(word>>8) & 0xFF] <<8) | reversedbits[word & 0xff]);
   }
 ******/
-#define reverse_bits(word) ((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word)&0xff])
+#define reverse_bits(word) (DLword)((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word)&0xff])
 
 void bit_reverse_region(unsigned short *top, int width, int height, int rasterwidth) {
-  int i, j, wordwid = ((width + 31) >> 5) << 1;
+  int i;
+  unsigned j, wordwid = (((unsigned)width + 31) >> 5) << 1;
   unsigned short *word;
 
   for (i = 0; i < height; i++) {
