@@ -75,9 +75,6 @@ extern struct cursor CurrentCursor, InvisibleCursor;
 extern DspInterface currentdsp;
 #endif /* DOS */
 
-#undef roundup
-#define roundup(a, b) ((((unsigned)(a) + (b)-1) / (b)) * (b))
-
 extern int *Lisp_errno;
 extern int Dummy_errno; /* Used if errno cell isn't provided by Lisp.*/
 extern int please_fork;
@@ -200,15 +197,16 @@ LispPTR vmem_save0(LispPTR *args)
 /*	virtual pages in it, for speed.					*/
 /*									*/
 /************************************************************************/
-
-int twowords(const void *i, const void *j) /* the difference between two  DLwords. */
+#ifndef BIGVM
+#ifndef BYTESWAP
+static int twowords(const void *i, const void *j) /* the difference between two  DLwords. */
 { return (*(const DLword *)i - *(const DLword *)j); }
 
 #define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
 
-void sort_fptovp(DLword *fptovp, int size)
+static void sort_fptovp(DLword *fptovp, size_t size)
 {
-  int oldsize, i;
+  size_t oldsize, i;
   ptrdiff_t oldloc, newloc;
   DLword *fptr;
 
@@ -264,7 +262,8 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
     }
   }
 }
-
+#endif
+#endif
 /************************************************************************/
 /*									*/
 /*				v m e m _ s a v e			*/
@@ -296,8 +295,8 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
  */
 
 /* diagnostic flag value to limit the size of write() s */
-extern int maxpages;
-int maxpages = 65536;
+extern unsigned maxpages;
+unsigned maxpages = 65536;
 
 LispPTR vmem_save(char *sysout_file_name)
 {
@@ -310,7 +309,9 @@ LispPTR vmem_save(char *sysout_file_name)
   int vmemsize; /* VMEMSIZE */
   int i;
   char tempname[MAXPATHLEN];
-  ssize_t rval;
+  ssize_t rsize;
+  off_t roff;
+  int rval;
 #ifndef DOS
   extern int ScreenLocked;
   extern DLword *EmCursorX68K;
@@ -397,76 +398,76 @@ LispPTR vmem_save(char *sysout_file_name)
       unsigned int oldfptovp = GETFPTOVP(fptovp, i);
       unsigned int saveoldfptovp = oldfptovp;
       unsigned int contig_pages = 0;
-      char *base_addr;
+      DLword *base_addr;
 
-      TIMEOUT(rval = lseek(sysout, i * BYTESPER_PAGE, SEEK_SET));
-      if (rval == -1) {
+      TIMEOUT(roff = lseek(sysout, i * BYTESPER_PAGE, SEEK_SET));
+      if (roff == -1) {
         err_mess("lseek", errno);
         return (FILECANNOTSEEK);
       }
-      base_addr = (char *)(Lisp_world + (GETFPTOVP(fptovp, i) * DLWORDSPER_PAGE));
+      base_addr = Lisp_world + (GETFPTOVP(fptovp, i) * DLWORDSPER_PAGE);
 
       /* Now, let's see how many pages we can dump */
       while (GETFPTOVP(fptovp, i) == oldfptovp && i < vmemsize) {
         contig_pages++; oldfptovp++; i++;
       }
       i--; /* Previous loop always overbumps i */
-      DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, base_addr - (char *)Lisp_world, saveoldfptovp));
+      DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, (char *)base_addr - (char *)Lisp_world, saveoldfptovp));
 
 #ifdef BYTESWAP
-      word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);
+      word_swap_page(base_addr, contig_pages * CELLSPER_PAGE);
 #endif /* BYTESWAP */
 
       if (contig_pages > maxpages) {
-        char *ba = base_addr;
+        DLword *ba = base_addr;
         unsigned int pc = contig_pages;
         while (pc > maxpages) {
-          TIMEOUT(rval = write(sysout, ba, maxpages * BYTESPER_PAGE));
-          if (rval == -1) {
+          TIMEOUT(rsize = write(sysout, ba, (size_t)maxpages * BYTESPER_PAGE));
+          if (rsize == -1) {
             err_mess("write", errno);
-            return (FILECANNOTWRITE);
+            return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
           }
-          ba += maxpages * BYTESPER_PAGE;
+          ba += maxpages * DLWORDSPER_PAGE;
           pc -= maxpages;
         }
-        if (pc > 0) TIMEOUT(rval = write(sysout, ba, pc * BYTESPER_PAGE));
+        if (pc > 0) TIMEOUT(rsize = write(sysout, ba, pc * BYTESPER_PAGE));
       } else {
         unsigned int oldTT = TIMEOUT_TIME;
         /* As we can spend longer than TIMEOUT_TIME doing a big
            write, we adjust the timeout temporarily here */
         TIMEOUT_TIME += contig_pages >> 3;
-        TIMEOUT(rval = write(sysout, base_addr, contig_pages * BYTESPER_PAGE));
+        TIMEOUT(rsize = write(sysout, base_addr, contig_pages * BYTESPER_PAGE));
         TIMEOUT_TIME = oldTT;
       }
 #ifdef BYTESWAP
-      word_swap_page((unsigned short *)base_addr, contig_pages * BYTESPER_PAGE / 4);
+      word_swap_page(base_addr, contig_pages * CELLSPER_PAGE);
 #endif /* BYTESWAP */
 
-      if (rval == -1) {
+      if (rsize == -1) {
         err_mess("write", errno);
-        return (FILECANNOTWRITE);
+	return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
       }
     }
   }
 
   /* seek to IFPAGE */
-  TIMEOUT(rval = lseek(sysout, (long)FP_IFPAGE, SEEK_SET));
-  if (rval == -1) {
+  TIMEOUT(roff = lseek(sysout, (long)FP_IFPAGE, SEEK_SET));
+  if (roff == -1) {
     err_mess("lseek", errno);
     return (FILECANNOTSEEK);
   }
 #ifdef BYTESWAP
-  word_swap_page((unsigned short *)InterfacePage, BYTESPER_PAGE / 4);
+  word_swap_page(InterfacePage, CELLSPER_PAGE);
 #endif /* BYTESWAP */
 
-  TIMEOUT(rval = write(sysout, (char *)InterfacePage, BYTESPER_PAGE));
+  TIMEOUT(rsize = write(sysout, (char *)InterfacePage, BYTESPER_PAGE));
 #ifdef BYTESWAP
-  word_swap_page((unsigned short *)InterfacePage, BYTESPER_PAGE / 4);
+  word_swap_page(InterfacePage, CELLSPER_PAGE);
 #endif /* BYTESWAP */
 
-  if (rval == -1) {
+  if (rsize == -1) {
     err_mess("write", errno);
-    return (FILECANNOTWRITE);
+	return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
   }
 
 #ifdef OS5

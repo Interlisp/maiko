@@ -90,7 +90,7 @@ extern char sysout_name[];
 extern unsigned sysout_size;
 extern int for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
-/* extern int maxpages; */
+/* extern unsigned maxpages; */
 
 /*** Ethernet stuff (JRB) **/
 #ifdef MAIKO_ENABLE_ETHERNET
@@ -297,7 +297,8 @@ void read_Xoption(int *argc, char *argv[])
                          "Ldex.maxpages",
                          str_type, &value) == True) {
         (void)strncpy(tmp, value.addr, value.size);
-        maxpages = atoi(tmp);
+        maxpages = (unsigned)strtol((tmp, (char **)NULL, 10);
+	// should check no error here 
       }
   */
   if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
