@@ -227,7 +227,7 @@ char **save_argv;
 int display_max = 65536 * 16 * 2;
 
 /* diagnostic flag for sysout dumping */
-extern int maxpages;
+extern unsigned maxpages;
 
 char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
 unsigned sysout_size = 0;    /* ditto */
@@ -312,7 +312,7 @@ int main(int argc, char *argv[])
   char *envname;
   extern int TIMER_INTERVAL;
   extern fd_set LispReadFds;
-  int tmpint;
+  long tmpint;
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
     perror("Name of executable not found.");
@@ -548,7 +548,7 @@ int main(int argc, char *argv[])
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
         if (errno == 0 && tmpint > 0) {
-          maxpages = tmpint;
+          maxpages = (unsigned)tmpint;
         } else {
           fprintf(stderr, "Bad value for -xpages (integer > 0)\n");
           exit(1);
