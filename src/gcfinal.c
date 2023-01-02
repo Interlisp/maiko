@@ -63,7 +63,6 @@
 #define Oddp(num) (((num % 2) != 0) ? 1 : 0)
 #define Evenp(num) (((num % 2) != 0) ? 0 : 1)
 #define STK_HI 1 /* This value also */
-#define WORDSPERCELL 2
 #define PADDING 4
 #define Boundp(frame_field) ((frame_field == 0) ? 1 : 0)
 #endif /* NEVER */
