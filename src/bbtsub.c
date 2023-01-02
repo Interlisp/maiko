@@ -1281,6 +1281,8 @@ void bltchar(LispPTR *args)
       PUNT_TO_BLTCHAR;                          \
     }                                           \
   } while (0)
+#if 0
+/* see changecharset_display and sfffixy */
 #define FGetNum2(ptr, place)                    \
   do {                                          \
     if (((ptr)&SEGMASK) == S_POSITIVE) {        \
@@ -1291,6 +1293,7 @@ void bltchar(LispPTR *args)
       return (-1);                              \
     }                                           \
   } while (0)
+#endif
 
 LispPTR *TOPWDS68k;          /* Top of window stack's DS */
 LispPTR BLTCHAR_index;       /* Atom # for \PUNTBLTCHAR punt fn */
@@ -1728,7 +1731,6 @@ void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
 void tedit_bltchar(LispPTR *args)
 {
 #define backwardflg 0
-#define displayflg 0
   DISPLAYDATA *displaydata68k;
   int right;
   PILOTBBT *pbt;
@@ -1775,7 +1777,6 @@ void tedit_bltchar(LispPTR *args)
     new_char_bitblt_code;
 #endif
   }
-#undef displayflg
 #undef backwardflg
 
 } /* end tedit_bltchar */

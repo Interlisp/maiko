@@ -695,7 +695,6 @@ void sff(LispPTR laddr) { sf((FX *)NativeAligned4FromLAddr(laddr)); }
 /* nt(index): print function header and name table               */
 /*            in defcell of Atom index 'index'                   */
 /*****************************************************************/
-#define DUMPSIZE 40
 #define FNOVERHEADWORDS (8)
 
 void nt(LispPTR index)

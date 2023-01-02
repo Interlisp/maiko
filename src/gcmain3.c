@@ -49,10 +49,7 @@
 #include "lsptypes.h"
 #include "stack.h"        // for Bframe, fnhead, frameex1, STK_BF, STK_FSB
 
-#define WORDSPERCELL 2
-#define MAXHTCNT 63
 #define PADDING 4
-#define FNOVERHEADWORDS 8
 #define ADD_OFFSET(ptr, dloffset) ((LispPTR *)(((DLword *)(ptr)) + (dloffset)))
 
 #ifdef BIGVM
@@ -60,7 +57,6 @@
 #define BF_FLAGS(value) ((unsigned int)(value) >> 29)
 #define PTR_BITS(entry) ((unsigned int)(entry)&POINTERMASK)
 #define GetSegnuminColl(entry1) (((entry1)&0xFFFE) >> 1)
-#define GetStkCnt(entry1) ((entry1) >> 16)
 #define StkCntIsZero(entry1) (!((entry1)&0xFFFF0000))
 #define StkrefP(entry1) ((entry1)&0x10000)
 #define SinglerefP(entry1) (((entry1)&0xFFFE0000) == 0x20000)
@@ -78,7 +74,6 @@
 #define BF_FLAGS(value) ((unsigned int)(value) >> 29)
 #define PTR_BITS(entry) ((unsigned int)((unsigned int)((entry) << 8) >> 8))
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1)
-#define GetStkCnt(entry1) ((entry1 & 0x0fe00) >> 9)
 #define StkCntIsZero(entry1) (!((entry1)&0x0fe00))
 #define StkrefP(entry1) ((entry1)&0x0200)
 #define SinglerefP(entry1) (((entry1)&0xFC00) == 0x0400)

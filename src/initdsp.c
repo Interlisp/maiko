@@ -282,9 +282,6 @@ void flush_display_buffer(void) {
 /*	h  the height of the piece to display, in pixels		*/
 /*									*/
 /************************************************************************/
-#define BITEPER_DLBYTE 8
-#define DLBYTE_PERLINE (displaywidth / 8)
-
 void flush_display_region(int x, int y, int w, int h)
 {
 
