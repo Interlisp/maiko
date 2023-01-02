@@ -90,7 +90,7 @@ retry:
 
 } /* N_OP_createcell end */
 
-DLword *createcell68k(unsigned int type) {
+void *createcell68k(unsigned int type) {
   struct dtd *dtd68k;
   DLword *ptr, *lastptr;
   LispPTR newcell;
