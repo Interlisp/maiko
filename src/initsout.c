@@ -366,8 +366,6 @@ void init_for_keyhandle(void) {
   extern DLword *CTopKeyevent;
   extern LispPTR *KEYBOARDEVENTQUEUE68k;
   extern LispPTR *KEYBUFFERING68k;
-  extern LispPTR DOBUFFEREDTRANSITION_index;
-  extern LispPTR INTERRUPTFRAME_index;
   extern LispPTR *TIMER_INTERRUPT_PENDING68k;
   extern LispPTR *PENDINGINTERRUPT68k;
   extern LispPTR *MOUSECHORDTICKS68k;
@@ -387,8 +385,6 @@ void init_for_keyhandle(void) {
 
   extern LispPTR *PERIODIC_INTERRUPT68k;
   extern LispPTR *PERIODIC_INTERRUPT_FREQUENCY68k;
-  extern LispPTR PERIODIC_INTERRUPTFRAME_index;
-  extern LispPTR DORECLAIM_index;
   extern LispPTR *IOINTERRUPTFLAGS_word;
 
   CURSORDESTHEIGHT68k = MakeAtom68k("\\CURSORDESTHEIGHT");
@@ -443,14 +439,9 @@ void init_for_bltchar(void) {
   char *IL;
 
   extern LispPTR *TOPWDS68k;
-  extern LispPTR BLTCHAR_index;
-  extern LispPTR TEDIT_BLTCHAR_index;
-
 #ifdef COLOR
   extern LispPTR *SCREENBITMAPS68k;
-  extern LispPTR SLOWBLTCHAR_index;
   extern LispPTR *COLORSCREEN68k; /*  \\COLORSCREEN */
-  extern LispPTR COLORSCREEN_index;
 #endif
   IL = "INTERLISP";
 
@@ -482,11 +473,8 @@ void init_for_bltchar(void) {
 /************************************************************************/
 
 void init_for_bitblt(void) {
-  extern LispPTR BITBLTBITMAP_index;
-  extern LispPTR BLTSHADEBITMAP_index;
 #ifdef COLOR
   extern LispPTR *COLORSCREEN68k;
-  extern LispPTR COLORSCREEN_index;
 #endif /* COLOR */
 
   if (!for_makeinit) {

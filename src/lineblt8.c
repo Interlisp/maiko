@@ -12,6 +12,7 @@
 
 #include <sys/types.h>
 #include "lispemul.h"
+#include "lspglob.h"
 #include "lineblt8defs.h"
 #include "commondefs.h"
 
@@ -145,12 +146,6 @@ void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width,
   static unsigned char beforecolor0 = 0;
   static unsigned char beforecolor1 = 0;
   static int color_array[COLOR8ARRAYSIZE];
-
-  extern DLword REPLACE_atom;
-  extern DLword INPUT_atom;
-  extern DLword INVERT_atom;
-  extern DLword PAINT_atom;
-  extern DLword ERASE_atom;
 
   if (sourcetype == INVERT_atom) {
     int tempcol;
