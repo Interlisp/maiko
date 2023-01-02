@@ -100,9 +100,9 @@
     }                                                          \
   } while (0)
 
-unsigned todo_uses = 0;
-unsigned todo_misses = 0;
-unsigned todo_reads = 0;
+static unsigned todo_uses = 0;
+static unsigned todo_misses = 0;
+static unsigned todo_reads = 0;
 
 /************************************************************************/
 /*									*/
