@@ -12,7 +12,7 @@
 extern FX *URaid_FXarray[URMAXFXNUM];
 extern char URaid_arg1[URMAXCOMM / 2];
 extern char URaid_arg2[URMAXCOMM / 2];
-extern char URaid_comm;
+extern char URaid_comm[2];
 extern char URaid_inputstring[URMAXCOMM];
 extern const char *URaid_errmess;
 extern int URaid_ArrMAXIndex;

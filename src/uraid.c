@@ -243,7 +243,7 @@ FX *URaid_FXarray[URMAXFXNUM];
 int URaid_ArrMAXIndex;
 
 char URaid_inputstring[URMAXCOMM];
-char URaid_comm;
+char URaid_comm[2];
 char URaid_arg1[URMAXCOMM / 2];
 char URaid_arg2[URMAXCOMM / 2];
 int URaid_argnum;
@@ -317,7 +317,7 @@ void uraid_commclear(void) {
   memset(URaid_arg1, 0, URMAXCOMM / 2);
   memset(URaid_arg2, 0, URMAXCOMM / 2);
 
-  URaid_comm = 0;
+  URaid_comm[0] = 0;
   URaid_argnum = 0;
 }
 
@@ -370,7 +370,7 @@ LispPTR uraid_commands(void) {
       return (T);
     }
   }
-  switch (URaid_comm) {
+  switch (URaid_comm[0]) {
 /*** Displaying STACK stuff */
 #ifdef DOS
     case '1': printf("%s\n", URaid_summary1); break;

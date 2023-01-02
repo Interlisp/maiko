@@ -97,7 +97,7 @@ uraidloop:
     BT_temp = 0; /* So we get the "more" option on screen-full */
     printf("\n< ");
     for (ptr = URaid_inputstring; (*ptr = getchar()) != '\n'; ptr++) {}
-    URaid_argnum = sscanf(URaid_inputstring, "%1s%s%s", &URaid_comm, URaid_arg1, URaid_arg2);
+    URaid_argnum = sscanf(URaid_inputstring, "%1s%s%s", URaid_comm, URaid_arg1, URaid_arg2);
 
     if (uraid_commands() == NIL) break;
     /* XXX: make sure output is flushed so we can see where we are */
