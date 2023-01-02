@@ -24,12 +24,12 @@
 #include "xcursordefs.h"  // for Init_XCursor, Set_XCursor, init_Xcursor
 #include "xdefs.h"        // for XLOCK, XUNLOCK
 
-XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
+static XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;
 
 extern DspInterface currentdsp;
 /* a simple linked list to remember X cursors */
-struct MXCURSOR {
+static struct MXCURSOR {
   struct MXCURSOR *next;
   DLword bitmap[CURSORHEIGHT];
   Cursor Xid;
