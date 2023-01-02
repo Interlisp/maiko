@@ -1086,15 +1086,11 @@ check_interrupt:
     static int period_cnt = 60;
     extern int KBDEventFlg;
     extern int ETHEREventCount;
-    extern LispPTR DOBUFFEREDTRANSITION_index;
-    extern LispPTR INTERRUPTFRAME_index;
     extern LispPTR *KEYBUFFERING68k;
     extern LispPTR *PENDINGINTERRUPT68k;
     extern LispPTR ATOM_STARTED;
     extern LispPTR *PERIODIC_INTERRUPT68k;
     extern LispPTR *PERIODIC_INTERRUPT_FREQUENCY68k;
-    extern LispPTR PERIODIC_INTERRUPTFRAME_index;
-    extern LispPTR DORECLAIM_index;
     extern int URaid_req;
 
   /* Check for an Stack Overflow */

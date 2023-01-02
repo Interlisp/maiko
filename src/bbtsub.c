@@ -281,13 +281,6 @@ extern int ScreenLocked; /* for mouse tracking */
 
 extern struct pixrect *SrcePixRect, *DestPixRect, *TexturePixRect;
 extern struct pixrect *BlackTexturePixRect, *WhiteTexturePixRect;
-extern DLword TEXTURE_atom;
-extern DLword MERGE_atom;
-extern DLword INPUT_atom;
-extern DLword INVERT_atom;
-extern DLword ERASE_atom;
-extern DLword PAINT_atom;
-extern DLword REPLACE_atom;
 
 /************************************************************************/
 /*                                                                      */
@@ -632,8 +625,6 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   LispPTR sourcetype, operation, texture;
   DLword *srcbase, *dstbase;
   int dlx, dty, slx, sty, srcbpl, dstbpl, op, src_comp, backwardflg = 0, displayflg = 0;
-
-  extern DLword MERGE_atom;
 
 #ifdef INIT
   init_kbd_startup;

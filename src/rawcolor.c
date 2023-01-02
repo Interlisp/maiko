@@ -503,8 +503,6 @@ void Uncolorize_Bitmap(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-extern DLword INPUT_atom, REPLACE_atom;
-
 LispPTR Colorize_Bitmap(LispPTR args[])
 {
   BITMAP *s_bitmap, *d_bitmap;
@@ -584,7 +582,6 @@ bad_arg:
 
 void Draw_8BppColorLine(LispPTR *args)
 {
-  extern DLword REPLACE_atom, INVERT_atom, PAINT_atom, ERASE_atom;
   extern int ScreenLocked;
 
   u_char color;

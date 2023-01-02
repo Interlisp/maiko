@@ -59,11 +59,6 @@ extern char *sysout_name;
 extern int save_argc;
 extern char **save_argv;
 
-extern DLword INVERT_atom;
-extern DLword ERASE_atom;
-extern DLword PAINT_atom;
-extern DLword REPLACE_atom;
-
 extern const unsigned char reversedbits[];
 
 /**************************************************************/

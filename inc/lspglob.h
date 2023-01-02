@@ -168,6 +168,31 @@ extern int UnixPipeIn;
 extern int UnixPipeOut;
 extern int UnixPID;
 
+/* Interrupt frame calls */
+extern LispPTR DOBUFFEREDTRANSITION_index;
+extern LispPTR INTERRUPTFRAME_index;
+extern LispPTR PERIODIC_INTERRUPTFRAME_index;
+extern LispPTR DORECLAIM_index;
+
+/* BITBLT related atoms */
+extern LispPTR BITBLTBITMAP_index;
+extern LispPTR BLTSHADEBITMAP_index;
+extern LispPTR BLTCHAR_index;
+extern LispPTR TEDIT_BLTCHAR_index;
+#ifdef COLOR
+extern LispPTR SLOWBLTCHAR_index;
+extern LispPTR COLORSCREEN_index;
+#endif
+
+/* BITBLT operation atoms */
+extern DLword TEXTURE_atom;
+extern DLword MERGE_atom;
+extern DLword INPUT_atom;
+extern DLword INVERT_atom;
+extern DLword ERASE_atom;
+extern DLword PAINT_atom;
+extern DLword REPLACE_atom;
+
 /* Atom index for IL:\MVLIST, for the VALUES opcode */
 extern LispPTR MVLIST_index;
 

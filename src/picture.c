@@ -110,8 +110,6 @@
 #define VIDEOFILE_WRITE 67
 #define VIDEOFILE_POSITION 68
 
-extern DLword REPLACE_atom, INVERT_atom, PAINT_atom, ERASE_atom;
-
 #ifdef VIDEO
 extern int Video_OnOff_Flg;
 #endif /* VIDEO */
