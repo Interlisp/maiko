@@ -412,7 +412,7 @@ Get_BYTE(byteptr)	byteptr: pointer to  8 bit data
 
 /**********************************************************
 DOSTACKOVERFLOW(argnum,bytenum) if it needs hardreturn-cleanup
-        then upnt to contextsw and immediately return
+        then punt to contextsw and immediately return
 **********************************************************/
 #define DOSTACKOVERFLOW(argnum, bytenum) \
   do {                                   \
