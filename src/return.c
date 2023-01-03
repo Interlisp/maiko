@@ -60,8 +60,6 @@
 /***********************************************************************/
 
 void OP_contextsw(void) {
-  void contextsw(DLword fxnum, DLword bytenum, DLword flags);
-
 #ifdef TRACE
   printf("OP_contextsw:\n");
 #endif
