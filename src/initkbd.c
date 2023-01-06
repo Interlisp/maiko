@@ -68,7 +68,6 @@ extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 #endif /* DOS */
 
-extern int LispWindowFd;
 int LispKbdFd = -1;
 
 extern fd_set LispReadFds;
@@ -193,15 +192,14 @@ static u_char DOSLispKeyMap_101[0x80] = {
 
 void init_keyboard(int flg) /* if 0 init else re-init */
 {
-
   set_kbd_iopointers();
-
-
+  /* if using a raw keyboard, LispKbdFd would be the result of opening /dev/kbd
+   * and it would be added to LispReadFds to generate keyboard events
+   */
   if (flg == 0) { keyboardtype(LispKbdFd); }
 
 #if   XWINDOW
   init_Xevent(currentdsp);
-
 #elif DOS
   if (flg == 0) { /* Install the handlers ONLY when we */
     /* init the kbd the init the kbd the */
