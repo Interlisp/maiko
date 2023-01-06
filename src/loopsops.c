@@ -116,15 +116,15 @@ struct LCInstance { /* instance datatype */
   LispPTR class, iNames, iDescrs, instMiscField;
 };
 
-struct LCMethodCacheEntry {
+static struct LCMethodCacheEntry {
   LispPTR class, selector, method_fn, junk;
 } * LCMethodCache;
 
-struct LCIVCacheEntry {
+static struct LCIVCacheEntry {
   LispPTR iNames, iv, index, junk;
 } * LCIVCache;
 
-LispPTR atom_instance = 0, /* various atom indices */
+static LispPTR atom_instance = 0, /* various atom indices */
     atom_class, atom_annotatedValue, atom_FetchMethodOrHelp_LCUFN, atom_FetchMethod_LCUFN,
         atom_FindVarIndex_LCUFN, atom_GetIVValue_LCUFN, atom_PutIVValue_LCUFN;
 
