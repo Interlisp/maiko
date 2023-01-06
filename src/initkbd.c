@@ -68,9 +68,25 @@ extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 #endif /* DOS */
 
+extern int LispKbdFd;
 int LispKbdFd = -1;
 
 extern fd_set LispReadFds;
+
+extern DLword *EmMouseX68K;
+extern DLword *EmMouseY68K;
+extern DLword *EmCursorX68K;
+extern DLword *EmCursorY68K;
+extern DLword *EmRealUtilin68K;
+extern DLword *EmUtilin68K;
+extern DLword *EmKbdAd068K;
+extern DLword *EmKbdAd168K;
+extern DLword *EmKbdAd268K;
+extern DLword *EmKbdAd368K;
+extern DLword *EmKbdAd468K;
+extern DLword *EmKbdAd568K;
+extern DLword *EmDispInterrupt68K;
+extern DLword *EmCursorBitMap68K;
 
 DLword *EmMouseX68K;
 DLword *EmMouseY68K;
@@ -88,6 +104,7 @@ DLword *EmDispInterrupt68K;
 DLword *EmCursorBitMap68K;
 
 /*u_char SUNLispKeyMap[128];*/
+extern u_char *SUNLispKeyMap;
 u_char *SUNLispKeyMap;
 
 /* keymap for type3 */
