@@ -47,13 +47,18 @@ extern char **save_argv;
 
 extern DspInterface currentdsp;
 
-
-Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
-    ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
-
 extern int LispWindowRequestedX, LispWindowRequestedY;
 extern unsigned LispWindowRequestedWidth, LispWindowRequestedHeight;
 extern int noscroll;
+
+/*
+ * globals defined in this module
+ */
+extern Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
+    ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
+Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
+    ScrollDownCursor, HorizScrollCursor, HorizThumbCursor, ScrollLeftCursor, ScrollRightCursor;
+
 
 /************************************************************************/
 /*									*/
