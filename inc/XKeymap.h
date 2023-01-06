@@ -61,7 +61,7 @@
  * triples in this array are interpreted in initkbd.c as
  *  reusable, (Lisp keyboard) code, (X keysym) symbol
  */
-int generic_X_keymap[] = {
+static const int generic_X_keymap[] = {
     0, 107, 0x1000ff10,            /* Un-named KEYSYM used on Sun kbd for F11 */
     0, 108, 0x1000ff11,            /* Un-named KEYSYM used on Sun kbd for F12 */
     0, 107, XK_F11,

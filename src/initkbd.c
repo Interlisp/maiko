@@ -337,7 +337,7 @@ static u_char *make_X_keymap(void) {
   int lisp_codes_used[256];              /* Keep track of the Lisp key #s we've used */
   int last_KEYSYM = -1;
   int sym_used = 0;
-  int *key_sym_pairs = generic_X_keymap;
+  const int *key_sym_pairs = generic_X_keymap;
   int i = 0;
   KeySym *mapping;
   int codecount, symspercode, minkey, maxkey;
