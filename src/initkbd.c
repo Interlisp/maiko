@@ -71,10 +71,6 @@ extern DspInterface currentdsp;
 extern int LispWindowFd;
 int LispKbdFd = -1;
 
-/*   for debug    */
-int DebugKBD = NIL;
-FILE *KBlog;
-
 extern fd_set LispReadFds;
 
 DLword *EmMouseX68K;
@@ -96,7 +92,7 @@ DLword *EmCursorBitMap68K;
 u_char *SUNLispKeyMap;
 
 /* keymap for type3 */
-u_char SUNLispKeyMap_for3[128] = {
+static u_char SUNLispKeyMap_for3[128] = {
     /*   0 */ 255,  61, 255,  91, 255,  97,  99, 255,
     /*   8 */ 100, 255,  67, 255,  68, 255, 101, 255,
     /*  16 */  66, 104,  80,  47, 255,  73,  74,  75,
@@ -117,7 +113,7 @@ u_char SUNLispKeyMap_for3[128] = {
 
 /* for type4 */
 
-u_char SUNLispKeyMap_for4[128] = {
+static u_char SUNLispKeyMap_for4[128] = {
     /*   0 */ 255,  61, 255,  91, 255,  97,  99, 106,
     /*   8 */ 100, 107,  67, 108,  68,  47, 101,  30,
     /*  16 */  66, 104,  80,  31, 255,  75, 110,  74,
@@ -138,7 +134,7 @@ u_char SUNLispKeyMap_for4[128] = {
 
 /* for jle */
 
-u_char SUNLispKeyMap_jle[128] = {
+static u_char SUNLispKeyMap_jle[128] = {
     /*   0 */ 255,  61, 255,  91, 255,  97,  99, 106,
     /*   8 */ 100, 107,  67, 108,  68,  47, 101,  71,
     /*  16 */  66, 104,  80,  31, 255,  75, 110,  74,
@@ -164,7 +160,7 @@ u_char SUNLispKeyMap_jle[128] = {
 /* [116] 255 -> 103 Henkan */
 /* [117] 255 -> 109 Nihongo On-Off */
 
-u_char *XGenericKeyMap; /* filled in with malloc if needed */
+static u_char *XGenericKeyMap; /* filled in with malloc if needed */
 
 /* For the IBM-101 kbd FF marks exceptions */
 
@@ -183,7 +179,7 @@ u_char DOSLispKeyMap_101[0x80] = {
 #endif /* NEVER */
 
 /* For the IBM-101 kbd FF marks exceptions */
-u_char DOSLispKeyMap_101[0x80] = {
+static u_char DOSLispKeyMap_101[0x80] = {
     /*         0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
 
     /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,    4,    53,   22,   8,    10,   59,   15,   34,
