@@ -331,6 +331,7 @@ void build_lisp_map(void) {
   Next_MDSpage_word = fixp_value(MakeAtom68k("\\NxtMDSPage"));
   Next_Array_word = fixp_value(MakeAtom68k("\\NxtArrayPage"));
   MDS_free_page_word = MakeAtom68k("\\MDSFREELISTPAGE");
+  MaxTypeNumber_word = MakeAtom68k("\\MaxTypeNumber");
 
   /*** The following are STK-OVER-FLOW stuff * Take **/
   STACKOVERFLOW_word = MakeAtom68k("\\STACKOVERFLOW");
@@ -385,7 +386,6 @@ void init_for_keyhandle(void) {
 
   extern LispPTR *PERIODIC_INTERRUPT68k;
   extern LispPTR *PERIODIC_INTERRUPT_FREQUENCY68k;
-  extern LispPTR *IOINTERRUPTFLAGS_word;
 
   CURSORDESTHEIGHT68k = MakeAtom68k("\\CURSORDESTHEIGHT");
   CURSORDESTWIDTH68k = MakeAtom68k("\\CURSORDESTWIDTH");

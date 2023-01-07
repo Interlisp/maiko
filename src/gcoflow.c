@@ -29,11 +29,12 @@
 
 #include "version.h"
 
+#include "arith.h"        // for GetSmalldata
 #include "gcdata.h"       // for htoverflow, REC_GCLOOKUP
 #include "gcoflowdefs.h"  // for gc_handleoverflow, gcmaptable
 #include "gcrdefs.h"      // for doreclaim
 #include "lispemul.h"     // for NIL, DLword, LispPTR
-#include "lspglob.h"      // for Reclaim_cnt_word, HToverflow, MaxTypeNumber...
+#include "lspglob.h"      // for Reclaim_cnt_word, HToverflow, MaxTypeNumber_word
 #include "lsptypes.h"     // for dtd, GetDTD, TYPE_LISTP
 
 #define Increment_Allocation_Count(n) \
@@ -77,6 +78,8 @@ DLword gcmaptable(DLword arg) {
   LispPTR cellcnt;
   int typnum;
   LispPTR addr;
+  int maxtypenumber = GetSmalldata(*MaxTypeNumber_word);
+
   cell = (struct htoverflow *)HToverflow;
   /* This proc. protected from interrupt */
   while ((addr = cell->ptr) != NIL) {
@@ -85,7 +88,7 @@ DLword gcmaptable(DLword arg) {
     cell->pcase = 0;
     ++cell; /* (\ADDBASE CELL WORDSPERCELL) */
   }
-  for (typnum = 1; typnum <= *MaxTypeNumber_word; ++typnum)
+  for (typnum = 1; typnum <= maxtypenumber; ++typnum)
   /* applied alltype */
   {
     ptr = (struct dtd *)GetDTD(typnum);

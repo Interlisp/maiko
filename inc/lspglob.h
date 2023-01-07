@@ -145,6 +145,7 @@ extern LispPTR *LeastMDSPage_word;
 extern LispPTR *SecondMDSPage_word;
 extern LispPTR *SecondArrayPage_word;
 extern LispPTR *INTERRUPTSTATE_word;
+extern LispPTR *IOINTERRUPTFLAGS_word;
 extern LispPTR *SYSTEMCACHEVARS_word;
 extern LispPTR *MACHINETYPE_word;
 
