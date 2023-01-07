@@ -221,13 +221,13 @@ int make_old_version(char *old, char *file)
 /************************************************************************/
 
 
-FINFO *FreeFinfoList;
+static FINFO *FreeFinfoList;
 #define INITFINFONUM 1024
 
-DFINFO *FinfoArray;
+static DFINFO *FinfoArray;
 #define INITFINFOARRAY 32
 
-int MAXFINFO;
+static int MAXFINFO;
 
 #define FINFOARRAYRSIZE 16
 
