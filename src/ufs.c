@@ -50,6 +50,8 @@
 #include "commondefs.h"
 #include "dskdefs.h"
 
+extern int *Lisp_errno;
+extern int Dummy_errno;
 int *Lisp_errno;
 int Dummy_errno; /* If errno cell is not provided by Lisp, dummy_errno is used. */
 
