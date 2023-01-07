@@ -20,12 +20,11 @@
 #define BITSPERNIBBLE 4
 #define BITSPERDLWORD 16
 
-DLword BitMaskArray[] = {32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
+static const DLword BitMaskArray[] = {32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
                          128,   64,    32,   16,   8,    4,    2,   1};
-unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0xffff,     0xff0000,   0xff00ff,
+static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0xffff,     0xff0000,   0xff00ff,
                              0xffff00,   0xffffff,   0xff000000, 0xff0000ff, 0xff00ff00, 0xff00ffff,
                              0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
-unsigned int BMask_tbl[] = {0xf, 7, 3, 1};
 
 #define noop 1
 
