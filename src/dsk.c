@@ -63,8 +63,8 @@ typedef struct current_varray {
   time_t mtime;
 } CurrentVArray;
 
-FileName VersionArray[VERSIONARRAYLENGTH];
-CurrentVArray VArrayInfo;
+static FileName VersionArray[VERSIONARRAYLENGTH];
+static CurrentVArray VArrayInfo;
 
 static int locate_file(char *dir, char *name);
 static int make_directory(char *dir);
