@@ -207,15 +207,15 @@ LispPTR cgfour_change_screen_mode(LispPTR which_screen)
         By  Takeshi
 */
 /*******************************************************************/
-unsigned char RED_colormap;
-unsigned char GRN_colormap;
-unsigned char BLU_colormap;
-
 #ifdef COLOR
 LispPTR cgfour_set_colormap(LispPTR args[])
 {
   int index;
   struct pixrect *ColorFb;
+  unsigned char RED_colormap;
+  unsigned char GRN_colormap;
+  unsigned char BLU_colormap;
+
 
   index = args[0] & 0xff;
 
@@ -225,6 +225,12 @@ LispPTR cgfour_set_colormap(LispPTR args[])
 
   ColorFb = pr_open("/dev/fb");
 
+  /*
+   *  pr_putcolormap(pr, index, count, red, green, blue)
+   *     struct pixrect *pr;
+   *     int index, count;
+   *     unsigned char red[], green[], blue[];
+   */
   if (pr_putcolormap(ColorFb, index, 1, &RED_colormap, &GRN_colormap, &BLU_colormap) == -1)
     perror("putcolormap:");
   pr_close(ColorFb);
