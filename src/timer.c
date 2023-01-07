@@ -88,8 +88,10 @@ extern DspInterface currentdsp;
  *	to get Alto time.
  */
 
+extern unsigned int TIMEOUT_TIME;
 unsigned int TIMEOUT_TIME = 10; /* For file system timeout, seconds, default 10 */
 
+extern volatile sig_atomic_t IO_Signalled;
 volatile sig_atomic_t IO_Signalled = FALSE;
 
 static int gettime(int casep);
@@ -399,9 +401,8 @@ void update_timer(void) {
 /* TIMER_INTERVAL usec ~ 20  per second.  This should live in some
         machine-configuration
         file somewhere - it can be changed as the -t parameter to lisp*/
+extern int TIMER_INTERVAL;
 int TIMER_INTERVAL = 10000;
-
-extern int LispWindowFd;
 
 /************************************************************************/
 /*									*/
@@ -686,6 +687,7 @@ void int_fp_init(void) {
 /*									*/
 /************************************************************************/
 
+extern jmp_buf jmpbuf;
 jmp_buf jmpbuf;
 static void timeout_error(int sig) {
   longjmp(jmpbuf, 1);
