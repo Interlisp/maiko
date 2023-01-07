@@ -617,9 +617,9 @@ typedef struct
 
 /* Get DTD pointer(68k) from typenum */
 #ifdef BIGVM
-#define GetDTD(typnum)	(DTDspace + ((typnum)<<4)+((typnum)<<1))
+#define GetDTD(typnum)	(void *)(DTDspace + ((typnum)<<4)+((typnum)<<1))
 #else
-#define GetDTD(typnum)	(DTDspace + ((typnum)<<4))
+#define GetDTD(typnum)	(void *)(DTDspace + ((typnum)<<4))
 #endif /* BIGVM */
 
 /* Get all type entry */
