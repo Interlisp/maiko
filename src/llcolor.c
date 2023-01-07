@@ -34,9 +34,14 @@
 
 #include "llcolordefs.h"
 
+extern int MonoOrColor;
+extern DLword *ColorDisplayRegion68k;
+extern int Dispcolorsize;
+extern int Inited_Color;
+
 int MonoOrColor = MONO_SCREEN;
-DLword *ColorDisplayRegion68k;
-int Dispcolorsize;
+DLword *ColorDisplayRegion68k = NULL;
+int Dispcolorsize = 0;
 int Inited_Color = NIL;
 extern struct pixrect *ColorDisplayPixrect;
 extern int displaywidth, displayheight, FrameBufferFd;
