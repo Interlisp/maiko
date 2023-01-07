@@ -149,8 +149,7 @@ LispPTR fn_table[100]; /* The code block the PC is in (Lisp ptr) */
 int pccounter = 0;     /* ring-buffer counter */
 #endif                 /* PCTRACE */
 
-int dbgflag = 0;
-
+extern int extended_frame;
 int extended_frame; /*indicates if soft stack overflow */
 
 static const int n_mask_array[16] = {
