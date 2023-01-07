@@ -83,7 +83,7 @@
 extern int      ether_fd;      /* file descriptor for ether socket */
 static int      ether_intf_type = 0;
 extern u_char   ether_host[6]; /* 48 bit address of this node */
-extern u_char   broadcast[6];
+extern const u_char   broadcast[6];
 extern int      ether_bsize;   /* if nonzero then a receive is pending */
 extern u_char  *ether_buf;     /* address of receive buffer */
 static u_char   nit_buf[3000]; /* the current chunk read from NIT (one packet) */

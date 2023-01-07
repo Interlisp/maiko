@@ -21,10 +21,17 @@
  * global variables exported to ether_*.c and possibly others
  */
 
+extern int     ether_fd;
+extern u_char  ether_host[6];
+extern const u_char  broadcast[6];
+extern int     ether_bsize;
+extern u_char *ether_buf;
+extern int     ETHEREventCount;
+
 int     ether_fd      = -1;    /* file descriptor for ether socket */
 
 u_char  ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
-u_char  broadcast[6]  = {255, 255, 255, 255, 255, 255};
+const u_char  broadcast[6]  = {255, 255, 255, 255, 255, 255};
 
 int     ether_bsize   = 0;     /* if nonzero then a receive is pending */
 u_char *ether_buf     = NULL;  /* address of receive buffer */

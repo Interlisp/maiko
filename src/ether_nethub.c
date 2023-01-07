@@ -44,7 +44,7 @@
 
 extern int      ether_fd;      /* file descriptor for ether socket */
 extern u_char   ether_host[6]; /* 48 bit address of this node */
-extern u_char   broadcast[6];
+extern const u_char   broadcast[6];
 extern int      ether_bsize;   /* if nonzero then a receive is pending */
 extern u_char  *ether_buf;     /* address of receive buffer */
 extern LispPTR *PENDINGINTERRUPT68k;
