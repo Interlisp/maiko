@@ -151,10 +151,6 @@ extern int displaywidth, displayheight;
 extern DLword *DisplayRegion68k;
 extern int FrameBufferFd, ether_fd, RS232C_Fd;
 
-LispPTR RadiAtomIndex;
-LispPTR RaidPackageIndex;
-DLword *HideDisp68k;
-
 #ifdef COLOR
 DLword *HideColorDisp68k;
 extern int Inited_Color;
