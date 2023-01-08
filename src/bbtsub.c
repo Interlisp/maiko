@@ -224,7 +224,6 @@ typedef struct tbta {
 } TBLTARG;
 #endif /* BYTESWAP */
 
-extern int LispWindowFd;
 extern int ScreenLocked; /* for mouse tracking */
 /*****************************************************************
 (PUTPROPS \SETPBTFUNCTION MACRO

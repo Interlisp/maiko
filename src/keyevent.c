@@ -110,7 +110,6 @@ extern DspInterface currentdsp;
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUtilin68K;
 extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 extern u_char *SUNLispKeyMap;
-extern int LispWindowFd;
 extern int RS232C_Fd, RS232C_remain_data;
 extern fd_set LispIOFds;
 fd_set LispReadFds;
@@ -218,6 +217,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /*		  LispWindowFd	The keyboard/window FD, for keyboard	*/
 /*				and mouse events.			*/
+/*				01/07/2023 - unused, obsolete		*/
 /*									*/
 /*		  LispIOFds	A bit vector of TCP FDs, or other	*/
 /*				FDs Lisp is doing async I/O on.		*/

@@ -68,7 +68,6 @@
 #define FILECANNOTWRITE (S_POSITIVE | 5)
 #define FILETIMEOUT (S_POSITIVE | 6)
 
-extern int LispWindowFd;
 extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
 extern struct cursor CurrentCursor, InvisibleCursor;
 #ifdef DOS

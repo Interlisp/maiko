@@ -466,7 +466,6 @@ void decusecount68k(FX *frame68k) {
 
 #ifdef ORG_FILPCORSORBAR
 extern DLword *EmCursorBitMap68K;
-extern int LispWindowFd;
 
 #ifdef XWINDOW
 extern int Current_Hot_X, Current_Hot_Y;

@@ -55,7 +55,6 @@ extern DspInterface currentdsp;
 #include <X11/Xlib.h>
 #endif /* XWINDOW */
 
-extern int LispWindowFd;
 extern fd_set LispReadFds;
 
 void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag

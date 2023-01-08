@@ -41,7 +41,6 @@ extern int kbd_for_makeinit;
 extern DspInterface currentdsp;
 #endif
 
-extern int LispWindowFd;
 extern int ScreenLocked;
 
 #ifdef COLOR

@@ -37,7 +37,6 @@ extern int displaywidth, displayheight;
 extern int DisplayRasterWidth;
 extern DLword *DisplayRegion68k_end_addr;
 
-extern int LispWindowFd;
 extern int ScreenLocked;
 
 #ifdef COLOR

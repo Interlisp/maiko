@@ -33,7 +33,6 @@
 #define OP_READ 2   /* Just read the bit that's there. */
 #define OP_PAINT 3  /* Turn the bit on. */
 
-extern int LispWindowFd;
 extern int ScreenLocked;
 
 /***	N_OP_misc7  -- pseudocolor or fbitmapbit   ***/
