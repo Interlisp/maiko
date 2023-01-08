@@ -40,6 +40,7 @@ static struct MXCURSOR {
 /* ADD these to the positions we get in SetMouseXY calls.  This    */
 /* way, X and lisp agree where the mouse is                        */
 
+extern int Current_Hot_X, Current_Hot_Y;
 int Current_Hot_X = 0, Current_Hot_Y = 0;
 
 
@@ -83,7 +84,7 @@ void Init_XCursor(void) {
 void Set_XCursor(int x, int y)
 {
   /* compare cursor in IOPage memory with cursors we've seen before */
-  struct MXCURSOR *clp, *clbp;
+  struct MXCURSOR *clp, *clbp = NULL;
   DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
   int i;
 
