@@ -33,7 +33,7 @@
 #include "address.h"     // for LOLOC, HILOC
 #include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "commondefs.h"  // for error
-#include "gccodedefs.h"  // for code_block_size, map_code_pointers, reclaimc...
+#include "gccodedefs.h"  // for code_block_size, reclaimcodeblock
 #include "gcdata.h"      // for REC_GCLOOKUP, DELREF, ADDREF
 #include "lspglob.h"     // for Deleted_Implicit_Hash_Slot_word, UFNTable
 #include "lsptypes.h"    // for LispPTR, NIL, UFN, Get_code_BYTE, POINTERMASK
@@ -121,7 +121,7 @@ typedef ByteCode *InstPtr;
 /*									*/
 /************************************************************************/
 
-LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
+static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
   InstPtr codeptr;
   unsigned int opnum;
   unsigned int len;
@@ -180,7 +180,7 @@ LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
         shouldn't be looked at */
 #define getikkey(value) ((*(LispPTR *)NativeAligned4FromLAddr(value)) & POINTERMASK)
 
-LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
+static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   Ikhashtbl *ik_htable;
   LispPTR reprobe, bits, limits, index, base, value;
   ik_htable = (Ikhashtbl *)NativeAligned4FromLAddr(ik_hash_table);
