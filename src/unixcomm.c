@@ -462,7 +462,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             } else
               return (GetSmallp(1));
 
-          default: return (NIL);
+	  case UJSOCKET:
+	  case UJUNUSED:
+	    return (NIL);
         }
       break;
 
@@ -503,7 +505,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           DBPRINT(("Indicating EOF from PTY desc %d.\n", slot));
           return (NIL);
 
-        default: return (NIL);
+	case UJSOCKET:
+	case UJUNUSED:
+	    return (NIL);
       }
 
     case 3: /* Kill process */
@@ -547,7 +551,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           UJ[slot].pathname = NULL;
         }
         break;
-      default: break;
+      case UJSOSTREAM:
+      case UJUNUSED:
+	break;
       }
       UJ[slot].type = UJUNUSED;
       UJ[slot].PID = 0;
@@ -725,7 +731,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             DBPRINT(("Indicating EOF from PTY desc %d.\n", slot));
             return (NIL);
 
-          default: return (NIL);
+          case UJSOCKET:
+          case UJUNUSED:
+            return (NIL);
         }
       }
 
