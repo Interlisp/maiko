@@ -39,7 +39,7 @@ error
 ******************************************************************/
 
 extern fd_set LispReadFds;
-extern int LispWindowFd, LispKbdFd;
+extern int LispKbdFd;
 extern struct screen LispScreen;
 extern int displaywidth, displayheight;
 extern DLword *DisplayRegion68k;

@@ -75,7 +75,6 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
 }
 
 extern struct cursor CurrentCursor;
-extern int LispWindowFd;
 
 /****************************************************
  *

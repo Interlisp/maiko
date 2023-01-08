@@ -54,7 +54,6 @@ extern DspInterface currentdsp;
 #endif
 
 
-int LispWindowFd = -1;
 int FrameBufferFd = -1;
 
 extern unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;

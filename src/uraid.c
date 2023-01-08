@@ -143,7 +143,7 @@ v filename              Save the virtual memory on the filename(Not Bootable)
 /************************************************************************/
 
 extern int DisplayRasterWidth;
-extern int LispWindowFd, LispKbdFd;
+extern int LispKbdFd;
 extern fd_set LispReadFds;
 extern struct cursor CurrentCursor, InvisibleCursor;
 extern struct screen LispScreen;
