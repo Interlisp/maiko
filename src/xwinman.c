@@ -24,6 +24,7 @@
 #include "xscrolldefs.h"   // for JumpScrollHor, JumpScrollVer, Scroll, Scro...
 #include "xwinmandefs.h"   // for Set_BitGravity, beep_Xkeyboard, dis...
 
+extern int Mouse_Included;
 int Mouse_Included = FALSE;
 
 extern Cursor WaitCursor, DefaultCursor, VertScrollCursor, VertThumbCursor, ScrollUpCursor,
