@@ -25,12 +25,13 @@
 #include "tty.h"
 #include "ttydefs.h"
 
-DLTTY_OUT_COMMAND *DLTTYPortCmd;
-DLTTY_IN_CSB *DLTTYIn;
-DLTTY_OUT_CSB *DLTTYOut;
+static DLTTY_OUT_COMMAND *DLTTYPortCmd;
+static DLTTY_IN_CSB *DLTTYIn;
+static DLTTY_OUT_CSB *DLTTYOut;
 
-char *TTY_Dev;
-int TTY_Fd = -1;
+static char *TTY_Dev;
+static int TTY_Fd = -1;
+
 extern fd_set LispReadFds;
 
 void tty_init(void)
