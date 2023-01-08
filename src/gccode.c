@@ -69,6 +69,7 @@ typedef struct implicit_key_hash_table {
 } Ikhashtbl;
 #endif
 
+extern unsigned int oplength[256];
 #ifdef BIGVM
 /* Table of opcode lengths for 4-byte atom opcode cases */
 #define LONGEST_OPCODE 5
