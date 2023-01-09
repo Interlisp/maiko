@@ -47,15 +47,15 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
   float arg1;
   float arg2;
   float result;
-  DLword *wordp;
+  float *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 + arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
-  wordp = createcell68k(TYPE_FLOATP);
-  *((float *)wordp) = result;
+  wordp = (float *)createcell68k(TYPE_FLOATP);
+  *wordp = result;
   return (LAddrFromNative(wordp));
 } /* end N_OP_fplus2()  */
 
@@ -70,15 +70,15 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
 LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
   float arg1, arg2;
   float result;
-  DLword *wordp;
+  float *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 - arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
-  wordp = createcell68k(TYPE_FLOATP);
-  *((float *)wordp) = result;
+  wordp = (float *)createcell68k(TYPE_FLOATP);
+  *wordp = result;
   return (LAddrFromNative(wordp));
 } /* end N_OP_fdifference()  */
 
@@ -93,15 +93,15 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
 LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
   float arg1, arg2;
   float result;
-  DLword *wordp;
+  float *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 * arg2;
   if (FPTEST(result)) ERROR_EXIT(parg2);
-  wordp = createcell68k(TYPE_FLOATP);
-  *((float *)wordp) = result;
+  wordp = (float *)createcell68k(TYPE_FLOATP);
+  *wordp = result;
   return (LAddrFromNative(wordp));
 } /* end N_OP_ftimes2()  */
 
@@ -116,7 +116,7 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
 LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   float arg1, arg2;
   float result;
-  DLword *wordp;
+  float *wordp;
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
@@ -124,8 +124,8 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   result = arg1 / arg2;
 
   if (FPTEST(result)) ERROR_EXIT(parg2);
-  wordp = createcell68k(TYPE_FLOATP);
-  *((float *)wordp) = result;
+  wordp = (float *)createcell68k(TYPE_FLOATP);
+  *wordp = result;
   return (LAddrFromNative(wordp));
 } /* end N_OP_fquotient()  */
 
