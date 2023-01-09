@@ -101,9 +101,8 @@ void prindatum(LispPTR x) {
       newstring = (NEWSTRINGP *)NativeAligned4FromLAddr(x);
       if (newstring->stringp) {
         print_NEWstring(x);
-        break;
       }
-
+      break;
     default: dtd_base = (struct dtd *)GetDTD(typen); printf("{");
 #ifdef BIGVM
       if ((typename = dtd_base->dtd_name) != 0)
