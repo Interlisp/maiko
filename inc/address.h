@@ -35,7 +35,7 @@
 #define HILOC(ptr)			(LRSH(((unsigned int)(ptr) & SEGMASK),16))
 #define LOLOC(ptr)			((unsigned int)(ptr) & 0x0ffff)
 
-#define VAG2(hi,lo)			(LLSH((hi),16) | (lo))
+#define VAG2(hi,lo)			(LispPTR)(LLSH((hi),16) | (lo))
 
 
 /* NOTE: argument off must be WORD offset */
