@@ -283,7 +283,7 @@ checkfloats:
   N_MakeFloat(arg1, f1, arg2);
   N_MakeFloat(arg2, f2, arg2);
   if (f1 == f2) return (ATOM_T);
-  if ((f1 == -0.0) && (f2 == 0.0)) return (ATOM_T);
-  if ((f1 == 0.0) && (f2 == -0.0)) return (ATOM_T);
+  if ((f1 == -0.0f) && (f2 == 0.0f)) return (ATOM_T);
+  if ((f1 == 0.0f) && (f2 == -0.0f)) return (ATOM_T);
   return (NIL);
 } /* end N_OP_eqq() */
