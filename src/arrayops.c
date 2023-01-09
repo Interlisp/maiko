@@ -45,7 +45,7 @@ LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha) {
   N_GetPos(typenumber, type, inx);
 
   /*  dispatch on type  */
-  return (aref_switch(type, inx, baseL, index));
+  return (aref_switch((unsigned)type, inx, baseL, index));
 } /*  end N_OP_misc3()  */
 
 /************************************************************************/
@@ -58,9 +58,7 @@ LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha) {
 
 LispPTR N_OP_misc4(LispPTR data, LispPTR base, LispPTR typenumber,
                    LispPTR inx, int alpha) {
-  int new;
-  int index;
-  int type;
+  int index, type;
 
   if (alpha != 7) ERROR_EXIT(inx);
 
@@ -110,10 +108,9 @@ LispPTR N_OP_aref1(LispPTR arrayarg, LispPTR inx) {
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_aset1(LispPTR data, LispPTR arrayarg, int inx) {
+LispPTR N_OP_aset1(LispPTR data, LispPTR arrayarg, LispPTR inx) {
   OneDArray *arrayblk;
   LispPTR base;
-  int new;
   int index;
 
   /*  verify array  */
@@ -172,7 +169,6 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 LispPTR N_OP_aset2(LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   LispArray *arrayblk;
   LispPTR base;
-  int new;
   int index, temp;
   int j;
 
