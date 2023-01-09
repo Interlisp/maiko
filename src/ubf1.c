@@ -27,21 +27,21 @@
 355/4	UFIX
 ***********************************************************/
 
-LispPTR N_OP_ubfloat1(int arg, int alpha) {
+LispPTR N_OP_ubfloat1(LispPTR arg, int alpha) {
   switch (alpha) {
     case 0: /* box */
     {
-      DLword *wordp;
+      LispPTR *wordp;
       wordp = createcell68k(TYPE_FLOATP);
-      *((int *)wordp) = arg;
+      *wordp = arg;
       return (LAddrFromNative(wordp));
     }
     case 1: /* unbox */
     {
       float dest;
-      int ret;
+      LispPTR ret;
       N_MakeFloat(arg, dest, arg);
-      ret = *(int *)&dest;
+      ret = *(LispPTR *)&dest;
       return (ret);
     }
     case 2: /* abs */ return (0x7FFFFFFF & arg);
