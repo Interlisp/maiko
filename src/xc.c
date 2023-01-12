@@ -134,6 +134,11 @@ LispPTR tscache asm("bx");
 #define IVAR ((LispPTR *)IVar)
 #define BCE_CURRENTFX ((struct frameex2 *)((DLword *)PVAR - FRAMESIZE))
 
+/* Define alternative macros for CSTKPTR, PVAR, and IVAR that can be used
+ * in an lvalue context, since CSTKPTR = ...; would generate
+ * error: assignment to cast is illegal, lvalue casts are not supported
+ */
+
 #define CSTKPTRL (cspcache)
 #define PVARL PVar
 #define IVARL IVar
