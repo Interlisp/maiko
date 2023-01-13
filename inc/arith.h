@@ -101,8 +101,8 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
         int *fixpp;                                           \
         /* arg is FIXP, call createcell */                                 \
         fixpp = (int *)createcell68k(TYPE_FIXP);                       \
-        *((int *)fixpp) = (int)(arg);                                      \
-        (result) = (LAddrFromNative(fixpp));                                \
+        *fixpp = (int)(arg);                                      \
+        (result) = LAddrFromNative(fixpp);                                \
         break;                                                             \
       }                                                                    \
     }                                                                      \
@@ -117,7 +117,7 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
         int *fixpp;                             \
         /* arg is FIXP, call createcell */                   \
         fixpp = (int *)createcell68k(TYPE_FIXP);         \
-        *fixpp = arg;                                       \
+        *fixpp = (int)(arg);				      \
         return (LAddrFromNative(fixpp));                      \
       }                                                      \
     }                                                        \
