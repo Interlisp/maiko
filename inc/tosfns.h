@@ -366,7 +366,7 @@
       }                                                                                        \
       LOCFNCELL = (struct fnhead *)NativeAligned4FromLAddr(defcell->defpointer);                    \
       BCE_CURRENTFX->pc = ((UNSIGNED)PCMAC - (UNSIGNED)FuncObj) + fn_opcode_size;              \
-      FNTPRINT(("Saving PC = 0%o (%p).\n", BCE_CURRENTFX->pc, (void *)PCMAC + fn_opcode_size)); \
+      FNTPRINT(("Saving PC = 0%o (%p).\n", BCE_CURRENTFX->pc, (char *)PCMAC + fn_opcode_size)); \
       FN_STACK_CHECK;                                                                          \
       APPLY_POP_PUSH_TEST;                                                                     \
       {                                                                                        \
