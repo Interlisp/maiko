@@ -48,7 +48,7 @@ int OP_miscn(int misc_index, int arg_count) {
   /* Put the Args into a Vector */
 
   args[0] = NIL_PTR;
-  stk = ((LispPTR *)CurrentStackPTR) + 1;
+  stk = ((LispPTR *)(void *)CurrentStackPTR) + 1;
 
   {
     int arg_num = arg_count;
@@ -62,7 +62,7 @@ int OP_miscn(int misc_index, int arg_count) {
 
   switch (misc_index) {
     case miscn_USER_SUBR: {
-      LispPTR user_subr;
+      int user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
       if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) goto do_ufn;
     } break;
