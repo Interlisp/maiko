@@ -1235,7 +1235,6 @@ void dtd_chain(DLword type) {
 void check_dtd_chain(DLword type)
 {
   LispPTR next, onext;
-  LispPTR before;
 
   onext = 0;
   next = ((struct dtd *)GetDTD(type))->dtd_free;
