@@ -356,23 +356,33 @@ GetLongWord:
 *****************************************************/
 #define GetLongWord(address) (*((LispPTR *)(address)))
 
+/* The stack is maintained as a DLword* pointer, carefully incremented
+ * and decremented by 2 (= 4 bytes), and mostly accessed as a LispPTR*
+ * to fetch 4-byte cells. There are a few places where items are
+ * accessed as 2 separate DLwords, so don't be tempted to blindly replace
+ * the DLword* declaration by a LispPTR*.  The (void *) cast discourages
+ * the compiler from complaining about a required upgrade in the
+ * alignment when we know(!) that it will always point to an
+ * appropriate boundary.
+ */
+
 /****************************************************
 PopCStack:
 #define PopCStack	{TopOfStack = *((LispPTR *)(--CurrentStackPTR)); --CurrentStackPTR;}
 *****************************************************/
 #define PopCStack                                 \
   do {                                            \
-    TopOfStack = *((LispPTR *)(CurrentStackPTR)); \
+    TopOfStack = *((LispPTR *)(void *)(CurrentStackPTR));	\
     CurrentStackPTR -= 2;                         \
   } while (0)
 
 /****************************************************
 PopStackTo:  CSTK -> Place
-#define PopStackTo(Place)	{Place= *((LispPTR *)(--CurrentStackPTR)); CurrentStackPTR--; }
+#define PopStackTo(Place)	{Place= *((LispPTR *)(void *)(--CurrentStackPTR)); CurrentStackPTR--; }
 *****************************************************/
 #define PopStackTo(Place)                      \
   do {                                         \
-    (Place) = *((LispPTR *)(CurrentStackPTR)); \
+    (Place) = *((LispPTR *)(void *)(CurrentStackPTR));	\
     CurrentStackPTR -= 2;                      \
   } while (0)
 
@@ -383,7 +393,7 @@ PushCStack:
 #define PushCStack                                \
   do {                                            \
     CurrentStackPTR += 2;                         \
-    *((LispPTR *)(CurrentStackPTR)) = TopOfStack; \
+    *((LispPTR *)(void *)(CurrentStackPTR)) = TopOfStack;	\
   } while (0)
 
 /****************************************************
@@ -393,14 +403,14 @@ PushStack:
 #define PushStack(x)                     \
   do {                                   \
     CurrentStackPTR += 2;                \
-    *((LispPTR *)(CurrentStackPTR)) = x; \
+    *((LispPTR *)(void *)(CurrentStackPTR)) = x;	\
   } while (0)
 
 /****************************************************
 SmashStack:
 #define SmashStack(x)	(*((LispPTR *)(CurrentStackPTR-1))=x)
 *****************************************************/
-#define SmashStack(x) (*((LispPTR *)(CurrentStackPTR)) = (x))
+#define SmashStack(x) (*((LispPTR *)(void *)(CurrentStackPTR)) = (x))
 
 /*********************************************************
 Get_BYTE(byteptr)	byteptr: pointer to  8 bit data
