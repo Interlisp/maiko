@@ -1742,7 +1742,7 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
  * Caller have to free the area after sorting done.
  */
 
-static FINFO **prepare_sort_buf(FINFO *fp, int n)
+static FINFO **prepare_sort_buf(FINFO *fp, size_t n)
 {
   FINFO **bp;
   FINFO **bufp;
@@ -1777,8 +1777,8 @@ static FINFO **prepare_sort_buf(FINFO *fp, int n)
 
 static int dsk_filecmp(const void *p1, const void *p2)
 {
-  FINFO **fp1 = (FINFO **)p1;
-  FINFO **fp2 = (FINFO **)p2;
+  FINFO * const *fp1 = p1; /* declare fp1 as pointer to constant pointer to structure finfo */
+  FINFO * const *fp2 = p2;
   int res;
   unsigned v1, v2;
 
@@ -1811,7 +1811,7 @@ static int dsk_filecmp(const void *p1, const void *p2)
 
 static int unix_filecmp(const void *f1, const void *f2)
 {
-  return (strcmp((*(FINFO **)f1)->lname, (*(FINFO **)f2)->lname));
+  return (strcmp((*(FINFO * const *)f1)->lname, (*(FINFO * const *)f2)->lname));
 }
 
 /*
@@ -1833,7 +1833,7 @@ static int unix_filecmp(const void *f1, const void *f2)
  * used for {DSK} and {UNIX} device respectively as a sort function.
  */
 
-static int file_sort(FINFO **fpp, int n, int (*sortfn)(const void *, const void *))
+static int file_sort(FINFO **fpp, size_t n, int (*sortfn)(const void *, const void *))
 {
   FINFO **fp;
   FINFO **sort_bufp;
@@ -1979,7 +1979,7 @@ LispPTR COM_gen_files(LispPTR *args)
   char *cp;
   FINFO *fp;
 
-  ERRSETJMP(GetSmallp(-1));
+  ERRSETJMP(SMALLP_MINUSONE);
 
   Lisp_errno = (int *)(NativeAligned4FromLAddr(args[3]));
 
@@ -1992,7 +1992,7 @@ LispPTR COM_gen_files(LispPTR *args)
    */
   count = dskp ? count + 4 + 1 : count + 2 + 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (count > MAXPATHLEN + 5) FileNameTooLong((GetSmallp(-1)));
+  if (count > MAXPATHLEN + 5) FileNameTooLong((SMALLP_MINUSONE));
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
@@ -2039,17 +2039,17 @@ LispPTR COM_gen_files(LispPTR *args)
   if (!unixpathname(fbuf, pattern, 1, 1)) {
 #endif /* DOS */
     /* Yes, always dskp is on */
-    return (GetSmallp(-1));
+    return (SMALLP_MINUSONE);
   }
 
-  if (!unpack_filename(pattern, dir, name, ver, 0)) return (GetSmallp(-1));
+  if (!unpack_filename(pattern, dir, name, ver, 0)) return (SMALLP_MINUSONE);
 
   if (dskp) {
     /*
      * On {DSK}, we have to make sure dir is case insensitively existing
      * directory.
      */
-    if (true_name(dir) != -1) return (GetSmallp(-1));
+    if (true_name(dir) != -1) return (SMALLP_MINUSONE);
 
     if (*ver != '\0') {
       highestp = 0;
@@ -2086,12 +2086,12 @@ LispPTR COM_gen_files(LispPTR *args)
   }
 
   switch (count) {
-    case -1: return (GetSmallp(-1));
+    case -1: return (SMALLP_MINUSONE);
 
-    case 0: return (GetSmallp(0));
+    case 0: return (SMALLP_ZERO);
 
     default:
-      if (!file_sort(&fp, count, dskp ? dsk_filecmp : unix_filecmp)) return (GetSmallp(-1));
+      if (!file_sort(&fp, (size_t)count, dskp ? dsk_filecmp : unix_filecmp)) return (SMALLP_MINUSONE);
       if (dskp) {
         if (highestp)
           count = trim_finfo_highest(&fp, highestp);
@@ -2101,7 +2101,7 @@ LispPTR COM_gen_files(LispPTR *args)
           count = trim_finfo(&fp);
       }
 
-      if ((fid = get_finfo_id()) < 0) return (GetSmallp(-1));
+      if ((fid = get_finfo_id()) < 0) return (SMALLP_MINUSONE);
       *(int *)(NativeAligned4FromLAddr(args[2])) = fid;
       FinfoArray[fid].head = fp;
       FinfoArray[fid].next = fp;
@@ -2138,19 +2138,19 @@ LispPTR COM_next_file(LispPTR *args)
   int finfoid;
   unsigned propp;
 
-  ERRSETJMP(-1);
+  ERRSETJMP(SMALLP_MINUSONE);
   Lisp_errno = &Dummy_errno;
 
   gfsp = (UFSGFS *)(NativeAligned4FromLAddr(args[0]));
 
   finfoid = (int)gfsp->finfoid;
 
-  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (GetSmallp(-1));
+  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (SMALLP_MINUSONE);
 
   propp = gfsp->propp;
 
   dfp = &FinfoArray[finfoid];
-  if (dfp->head == (FINFO *)0 || (fp = dfp->next) == (FINFO *)0) return (GetSmallp(-1));
+  if (dfp->head == (FINFO *)0 || (fp = dfp->next) == (FINFO *)0) return (SMALLP_MINUSONE);
   dfp->next = fp->next;
 
   laddr = gfsp->name;
@@ -2161,7 +2161,7 @@ LispPTR COM_next_file(LispPTR *args)
   StrNCpyFromCToLisp(base, fp->lname, fp->lname_len);
 #endif /* BYTESWAP	 */
 
-  if (!propp) return (GetSmallp(fp->lname_len));
+  if (!propp) return (GetPosSmallp(fp->lname_len));
 
   pp = fp->prop;
   gfsp->length = pp->length;
@@ -2179,7 +2179,7 @@ LispPTR COM_next_file(LispPTR *args)
 
   gfsp->aulen = pp->au_len;
 
-  return (GetSmallp(fp->lname_len));
+  return (GetPosSmallp(fp->lname_len));
 }
 
 /*
