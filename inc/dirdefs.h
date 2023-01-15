@@ -29,30 +29,26 @@ typedef struct fprop {
   unsigned wdate;    /* Written (Creation) date in Lisp sense. */
   unsigned rdate;    /* Read date in Lisp sense. */
   unsigned protect;  /* Protect mode of this file. */
+  size_t au_len;     /* Byte length of author. */
   char author[256];  /* Author in Lisp sense. */
-  u_short au_len;    /* Byte length of author. */
-  unsigned long nil; /* padding to 8-byte multiple */
 } FPROP;
 
 /* This structure has a pointer at each end to force alignment to
    be correct when a pointer is 8 bytes long. */
 typedef struct finfo {
   FPROP *prop;           /* File properties Lisp needs. */
-  char lname[MAXNAMLEN]; /* Name in Lisp Format. */
-  u_short lname_len;     /* Byte length of lname. */
-  char no_ver_name[MAXNAMLEN];
+  char lname[MAXNAMLEN + 1]; /* Name in Lisp Format. */
+  char no_ver_name[MAXNAMLEN + 1]; 
   /*
    * Name in UNIX Format.  Does not
    * include Version field.
    * All lower case.
    */
-  ino_t ino;          /* I-node number of this file. */
+  size_t lname_len;     /* Byte length of lname. */
+  unsigned dirp;       /* If 1, this file is a directory. */
   unsigned version;   /* Version in Lisp sense. */
-  u_short dirp;       /* If 1, this file is a directory. */
-  struct finfo *next; /*
-                       * Link to a next entry.  Last entry is
-                       * indicated by NULL pointer.
-                       */
+  ino_t ino;          /* I-node number of this file. */
+  struct finfo *next; /* Last entry is indicated by NULL pointer. */
 } FINFO;
 
 typedef struct dfinfo {
