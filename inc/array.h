@@ -24,8 +24,8 @@ typedef struct sequencedescriptor {
 	unsigned 	nil2		:1;
 	unsigned	base		:28;
 	unsigned	typ		:4;
-	unsigned		length: 28;
-	LispPTR		offst;
+	unsigned	length		:28;
+	int32_t		offst;
 } Arrayp;
 
 struct arrayheader {
@@ -41,8 +41,8 @@ struct arrayheader {
 	unsigned        extendablep     :1;
 	unsigned        typenumber      :8;
 	DLword          offset;
-	LispPTR          fillpointer;
-	LispPTR          totalsize;
+	int32_t         fillpointer;
+	int32_t         totalsize;
       };
 #else
 typedef struct sequencedescriptor {
@@ -100,9 +100,9 @@ typedef struct sequencedescriptor {
 	unsigned	readonly	:1;
 	unsigned	nil		:1;
 	unsigned	orig		:1;
-	unsigned		length: 28;
+	unsigned	length		:28;
 	unsigned	typ		:4;
-	LispPTR		offst;
+	int32_t		offst;
 } Arrayp;
 
 struct arrayheader {
@@ -118,8 +118,8 @@ struct arrayheader {
 	unsigned        bitp            :1;
 	unsigned        indirectp       :1;
 	unsigned        readonlyp       :1;
-	LispPTR          totalsize;
-	LispPTR          fillpointer;
+	int32_t         totalsize;
+	int32_t         fillpointer;
       };
 #else
 typedef struct sequencedescriptor {
@@ -215,14 +215,6 @@ struct abdum
 #define CODEARRAYFLAGWORD	((ARRAYBLOCKPASSWORD << ABPASSWORDSHIFT) | ((CODEBLOCK_GCT << 1) | 1))
 #define FIRSTARRAYSEGMENT	19
 #define MAXCELLSPERHUNK		64
-
-/****************** The following are for codereclaimer *********************/
-
-#define BITSPERBITE		8
-
-/********************* End of codereclaimer *********************************/
-
-
 
 /****************************************************************************/
 /*                                                                          */
