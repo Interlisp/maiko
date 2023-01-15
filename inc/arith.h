@@ -22,6 +22,8 @@
 #define MAX_FIXP 2147483647  /* == 0x7FFFFFFF  */
 #define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
+#define SMALLP_ZERO ((LispPTR)S_POSITIVE)
+#define SMALLP_MINUSONE ((LispPTR)(S_NEGATIVE | 0xFFFF))
 /**
  * extract an integer value from a smallp
  */
