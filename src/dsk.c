@@ -1700,7 +1700,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
          * unknown.  The returned value from Lisp GETFILEINFO
          * function would be "".
          */
-        return (GetSmallp(0));
+        return (SMALLP_ZERO);
       }
       STRING_BASE(args[2], base);
       len = strlen(pwd->pw_name);
@@ -1739,7 +1739,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
       *bufp = sbuf.st_mode;
 #ifndef DOS
       TIMEOUT0(pwd = getpwuid(sbuf.st_uid));
-      if (pwd == (struct passwd *)NULL) { return (GetSmallp(0)); }
+      if (pwd == (struct passwd *)NULL) { return (SMALLP_ZERO); }
       laddr = cdr(car(cdr(cdr(cdr(cdr(args[2]))))));
       STRING_BASE(laddr, base);
       len = strlen(pwd->pw_name);
