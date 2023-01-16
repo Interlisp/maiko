@@ -164,7 +164,7 @@ typedef struct stackp {
 /*************************************************************/
 /*  Pointer-dereferencing macros for one-word structure ptrs */
 /*************************************************************/
-#define BFRAMEPTR(ptr) ((Bframe *)(ptr))
+#define BFRAMEPTR(ptr) ((Bframe *)(void *)(ptr))
 #define STKWORDPTR(ptr) ((StackWord *)(ptr))
 
 #else
@@ -289,7 +289,7 @@ typedef struct stackp {
 /*************************************************************/
 /*  Pointer-dereferencing macros for one-word structure ptrs */
 /*************************************************************/
-#define BFRAMEPTR(ptr) ((Bframe *)(ptr))
+#define BFRAMEPTR(ptr) ((Bframe *)(void *)(ptr))
 #define STKWORDPTR(ptr) ((StackWord *)(2 ^ (UNSIGNED)(ptr)))
 
 #endif
@@ -297,12 +297,12 @@ typedef struct stackp {
 #define STKWORD(stkptr) ((StackWord *)WORDPTR(stkptr))
 
 #define FX_INVALIDP(fx68k) (((fx68k) == 0) || ((DLword *)(fx68k) == Stackspace))
-#define FX_size(fx68k) (((FX *)(fx68k))->nextblock - LOLOC(LAddrFromNative(fx68k)))
-#define FSBP(ptr68k) (((STKBLK *)(ptr68k))->flagword == STK_FSB_WORD)
-#define FSB_size(ptr68k) (((STKBLK *)(ptr68k))->size)
+#define FX_size(fx68k) (((FX *)(void *)(fx68k))->nextblock - LOLOC(LAddrFromNative(fx68k)))
+#define FSBP(ptr68k) (((STKBLK *)(void *)(ptr68k))->flagword == STK_FSB_WORD)
+#define FSB_size(ptr68k) (((STKBLK *)(void *)(ptr68k))->size)
 /** Following suff assumes fx is 68kptr and val is LISP_LO_OFFSET **/
 #define DUMMYBF(fx) (((DLword *)(fx)) - DLWORDSPER_CELL)
-#define SLOWP(fx) (((FXBLOCK *)(fx))->slowp)
+#define SLOWP(fx) (((FXBLOCK *)(void *)(fx))->slowp)
 #define FASTP(fx) (!SLOWP(fx))
 #define SET_FASTP_NIL(fx68k)                                       \
   do {                                                             \
@@ -365,14 +365,16 @@ typedef struct stackp {
 
 #define MAKEFREEBLOCK(ptr68k, size)                                   \
   do {                                                                \
-    if ((size) <= 0) error("creating 0 long FSP");                    \
-    *((LispPTR *)(ptr68k)) = (STK_FSB_WORD << 16) | ((DLword)(size)); \
+    if ((size) <= 0) error("creating 0 length free stack block");      \
+    if ((size) & 1) error("creating odd length free stack block");	\
+    *((LispPTR *)(void *)(ptr68k)) = (STK_FSB_WORD << 16) | ((DLword)(size)); \
   } while (0)
 
 #define SETUPGUARDBLOCK(ptr68k, size)                                     \
   do {                                                                    \
-    if ((size) <= 0) error("creating 0 long Guard block");                \
-    (*((LispPTR *)(ptr68k)) = (STK_GUARD_WORD << 16) | ((DLword)(size))); \
+    if ((size) <= 0) error("creating 0 length stack guard block");        \
+    if ((size) & 1) error("creating odd sized stack guard block");        \
+    (*((LispPTR *)(void *)(ptr68k)) = (STK_GUARD_WORD << 16) | ((DLword)(size))); \
   } while (0)
 
 /************************************************************************/
