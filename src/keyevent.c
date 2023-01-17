@@ -143,23 +143,6 @@ LispPTR *CURRENTCURSOR68k;
 extern DLword *EmCursorX68K;
 extern DLword *EmCursorY68K;
 
-#ifndef BYTESWAP
-typedef struct {
-  unsigned nil : 8;
-  unsigned type : 8;
-  unsigned num : 16;
-} SNum;
-#else
-typedef struct {
-  unsigned num : 16;
-  unsigned type : 8;
-  unsigned nil : 8;
-} SNum;
-
-#endif /* BYTESWAP */
-
-#define IDiff(x68k, y68k) (((SNum *)(x68k))->num - ((SNum *)(y68k))->num)
-
 /*  EmXXXX68K are already swapped, no need for GETWORD */
 
 
