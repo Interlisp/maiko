@@ -126,7 +126,6 @@ void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
 /****************************************************
  *
  *	KB_setmp() entry of SUBRCALL 81 1
- *			called from (\KB_setMP MPCODE)
  *
  ****************************************************/
 
