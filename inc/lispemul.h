@@ -318,7 +318,7 @@ typedef struct lbits {
 
 extern struct state MachineState;
 
-#define CURRENTFX ((struct frameex1 *)(((DLword *)PVar) - FRAMESIZE))
+#define CURRENTFX ((struct frameex1 *)(void *)(((DLword *)PVar) - FRAMESIZE))
 #define IVar (MachineState.ivar)
 #define PVar (MachineState.pvar)
 #define CurrentStackPTR (MachineState.csp)
