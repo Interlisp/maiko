@@ -79,7 +79,7 @@ extern struct cursor CurrentCursor;
 /****************************************************
  *
  *	DSP_Cursor() entry of SUBRCALL 64 2
- *			called from \HARDCURSORUP etc.
+ *			called from "\HARDCURSORUP" etc.
  *
  ****************************************************/
 void DSP_Cursor(LispPTR *args, int argnum)
@@ -101,7 +101,7 @@ void DSP_Cursor(LispPTR *args, int argnum)
 /****************************************************
  *
  *	DSP_SetMousePos() entry of SUBRCALL 65 2
- *			called from macro \SETMOUSEXY etc.
+ *			called from macro "\SETMOUSEXY" etc.
  *
  ****************************************************/
  /* args[0] :	X pos
@@ -119,7 +119,7 @@ void DSP_SetMousePos(LispPTR *args)
 /****************************************************
  *
  *	DSP_ScreenWidth() entry of SUBRCALL 67 0
- *			called from  \Katana.DisplayWidth.
+ *			called from  "\Katana.DisplayWidth".
  *
  ****************************************************/
 LispPTR DSP_ScreenWidth(LispPTR *args)
@@ -128,7 +128,7 @@ LispPTR DSP_ScreenWidth(LispPTR *args)
 /****************************************************
  *
  *	DSP_ScreenHight() entry of SUBRCALL 68 0
- *			called from  \Katana.DisplayHeight.
+ *			called from  "\Katana.DisplayHeight".
  *
  ****************************************************/
 LispPTR DSP_ScreenHight(LispPTR *args)
