@@ -894,13 +894,13 @@ LispPTR bitshade_bitmap(LispPTR *args) {
   LispPTR clipreg;
   int right, top, destbits, left, bottom;
   LispPTR operation, texture;
-  DLword *srcbase, *dstbase, *base;
+  DLword *srcbase = NULL, *dstbase = NULL, *base = NULL;
   int dty, slx, dstbpl, op, src_comp;
 #ifdef REALCURSOR
   int displayflg = 0;
 #endif
   int rasterwidth;
-  int num_gray, curr_gray_line;
+  int num_gray = 0, curr_gray_line = 0;
   DLword grayword[4] = {0, 0, 0, 0};
 
   texture = args[0];
