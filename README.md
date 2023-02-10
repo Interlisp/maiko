@@ -25,7 +25,7 @@ Building requires `clang`, `make`, X11 client libraries (`libx11-dev`). For exam
 
 ``` sh
 $ sudo apt update
-$ sudo apt install clang make x11dev
+$ sudo apt install clang make libx11-dev
 ```
 
 ```
