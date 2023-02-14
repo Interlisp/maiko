@@ -77,7 +77,7 @@ static inline DLword *NativeAligned2FromStackOffset(DLword StackOffset)
 static inline LispPTR *NativeAligned4FromStackOffset(DLword StackOffset)
 {
   if (StackOffset & 1) {
-    printf("Misaligned StackOffset in NativeAligned4FromStackOffset 0x%tx\n", StackOffset);
+    printf("Misaligned StackOffset in NativeAligned4FromStackOffset 0x%hx\n", StackOffset);
   }
   return (void *)(Stackspace + StackOffset);
 }
