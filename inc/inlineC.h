@@ -449,15 +449,15 @@
 
 #define GCSCAN1                                    \
   do {                                             \
-    TOPOFSTACK = gcscan1(TOPOFSTACK & 0xffff);     \
-    if (TOPOFSTACK) { TOPOFSTACK |= S_POSITIVE; }; \
+    int scan = gcscan1(TOPOFSTACK & 0xffff);     \
+    TOPOFSTACK = (scan == -1) ? NIL : (S_POSITIVE | scan); \
     nextop1;                                       \
   } while (0)
 
 #define GCSCAN2                                    \
   do {                                             \
-    TOPOFSTACK = gcscan2(TOPOFSTACK & 0xffff);     \
-    if (TOPOFSTACK) { TOPOFSTACK |= S_POSITIVE; }; \
+    int scan = gcscan2(TOPOFSTACK & 0xffff);     \
+    TOPOFSTACK = (scan == -1) ? NIL : (S_POSITIVE | scan); \
     nextop1;                                       \
   } while (0)
 
