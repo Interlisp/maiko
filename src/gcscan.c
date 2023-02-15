@@ -63,7 +63,7 @@
 #define GetStkCnt(entry1) (entry1 >> 9)
 #endif /* BIGVM */
 
-DLword gcscan1(int probe)
+int gcscan1(int probe)
 /* probe is offset */
 {
   struct htlinkptr *htlptr; /* overlay access method */
@@ -76,10 +76,10 @@ DLword gcscan1(int probe)
     if (contents && (((struct hashentry *)GCPTR(HTENDS))->collision || (GetStkCnt(contents) == 0)))
       return (probe);
   }
-  return (NIL);
+  return (-1);
 }
 
-DLword gcscan2(int probe)
+int gcscan2(int probe)
 /* probe is offset */
 {
   struct htlinkptr *htlptr; /* overlay access method */
@@ -90,5 +90,5 @@ DLword gcscan2(int probe)
     if (((HTSTKBIT | 1) & ((struct htlinkptr *)GCPTR(htlptr))->contents) != 0)
       return (probe); /* stackref or collision ON */
   }
-  return (NIL);
+  return (-1);
 }

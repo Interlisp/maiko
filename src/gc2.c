@@ -40,13 +40,17 @@
 /**********************************************************************/
 
 void OP_gcscan1(void) {
-
+  int scan;
 #ifdef TRACE
   printPC();
   printf("TRACE: OP_gcscan1()\n");
 #endif
-  if ((TopOfStack & SEGMASK) == S_POSITIVE) { TopOfStack = gcscan1(LOLOC(TopOfStack)); }
-  if (TopOfStack != NIL) TopOfStack |= S_POSITIVE;
+  if ((TopOfStack & SEGMASK) == S_POSITIVE) {
+    scan = gcscan1(LOLOC(TopOfStack));
+    TopOfStack = (scan == -1) ? NIL : scan | S_POSITIVE;
+  } else {
+    printf("OP_gcscan1: not a number\n");
+  }
   PC++;
 } /* OP_gcscan1 end */
 
@@ -57,12 +61,14 @@ void OP_gcscan1(void) {
 /**********************************************************************/
 
 void OP_gcscan2(void) {
-
+  int scan;
 #ifdef TRACE
   printPC();
   printf("TRACE: OP_gcscan2()\n");
 #endif
-  if ((TopOfStack & SEGMASK) == S_POSITIVE) { TopOfStack = gcscan2(LOLOC(TopOfStack)); }
-  if (TopOfStack != NIL) TopOfStack |= S_POSITIVE;
+  if ((TopOfStack & SEGMASK) == S_POSITIVE) {
+    scan = gcscan2(LOLOC(TopOfStack));
+    TopOfStack = (scan == -1) ? NIL : scan | S_POSITIVE;
+  }
   PC++;
 } /* OP_gcscan2 end */

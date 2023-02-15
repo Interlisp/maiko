@@ -89,14 +89,14 @@
 
 
 LispPTR gcmapscan(void) {
-  GCENTRY probe;
+  int probe;
   GCENTRY *entry;
   GCENTRY offset, dbgcontents;
   LispPTR ptr;
 
   probe = HTMAIN_ENTRY_COUNT;
 nextentry:
-  while ((probe = gcscan1(probe)) != NIL) {
+  while ((probe = gcscan1(probe)) != -1) {
     entry = (GCENTRY *)HTmain + probe;
   retry:
     if (HENTRY->collision) {
@@ -135,12 +135,12 @@ nextentry:
 }
 
 LispPTR gcmapunscan(void) {
-  GCENTRY probe;
+  int probe;
   GCENTRY *entry;
   GCENTRY offset;
 
   probe = HTMAIN_ENTRY_COUNT;
-  while ((probe = gcscan2(probe)) != NIL) {
+  while ((probe = gcscan2(probe)) != -1) {
     entry = (GCENTRY *)HTmain + probe;
   retry:
     if (HENTRY->collision) {
