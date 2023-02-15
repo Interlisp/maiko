@@ -13,7 +13,7 @@ jobs:
       matrix:
         os: [macos-11, macos-12, ubuntu-22.04, ubuntu-20.04]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Install X11 dependencies on MacOS
         if: ${{ runner.os == 'macOS'}}
         run: brew install --cask xquartz
@@ -28,7 +28,7 @@ jobs:
 #    runs-on: [self-hosted, linux, ARM]
 #    if: ${{ github.repository == 'Interlisp/maiko' }}
 #    steps:
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v3
 #      - name: Build
 #        working-directory: bin
 #        run: ./makeright x
@@ -41,7 +41,7 @@ jobs:
     env:
       BUILD_TYPE: Release
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install X11 dependencies on MacOS
       if: ${{ runner.os == 'macOS'}}
       run: brew install --cask xquartz
