@@ -54,9 +54,30 @@ if test $# -gt 0
 	shift
 fi
 
+target_arch="$1"
+
+if test $# -gt 0
+    then
+	shift
+fi
+
 architecture=`machinetype`
 osversion=`osversion`
+
+if test "$osversion" != "darwin"
+   then
+       echo "WARNING: target architecture applies only to the Darwin (MacOS) platform":
+       echo "Ignoring target architecture argument: $target"
+elif test "$target_arch" = "x86_64"
+   then
+       architecure=$target_arch
+elif test "$target_arch" = "aarch64"
+   then
+       architecure=$target_arch
+fi
+
 echo "making so far for ${osversion} on ${architecture}."
+
 case "$display" in
 	init)	display=single
 		releasename=init-${osversion}.${architecture}
