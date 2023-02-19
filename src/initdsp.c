@@ -57,7 +57,6 @@ extern DspInterface currentdsp;
 int FrameBufferFd = -1;
 
 extern int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
-int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
 extern unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
@@ -265,7 +264,6 @@ in_display_segment(baseaddr)
 /*									*/
 /************************************************************************/
 
-<<<<<<< HEAD
 void flush_display_buffer(void) {
 #ifdef SDL
   sdl_notify_damage(0, 0, sdl_displaywidth, sdl_displayheight);
