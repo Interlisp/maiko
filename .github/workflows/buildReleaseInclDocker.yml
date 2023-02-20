@@ -306,17 +306,17 @@ jobs:
       - name: Build
         working-directory: ./bin
         run: |
-          export LDEARCH=x86_64
+          export LDEARCH=x86_64-apple-darwin
           ./makeright x
           ./makeright init
-          export LDEARCH=aarch64
+          export LDEARCH=aarch64-apple-darwin
           ./makeright x   
           ./makeright init
           mkdir -p ../darwin.universal
           for exe in ldeinit lde ldex 
           do
             lipo -create \
-                 -arch arm64 ../darwin.aarch64/$exe}  \
+                 -arch arm64 ../darwin.aarch64/${exe}  \
                  -arch x86_64 ../darwin.x86_64/${exe} \
                  -output ../darwin.universal/${exe}
           done
