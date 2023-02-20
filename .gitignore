@@ -21,6 +21,7 @@ build/**
 *.aarch64-x/**
 *.aarch64/**
 init.386/**
+*.universal/**
 # core files
 core
 *.core

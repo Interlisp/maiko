@@ -1,6 +1,6 @@
 # Options for MacOS, x86 processor, X windows
 
-CC = clang -target x86_64-apple-darwin13 $(CLANG_CFLAGS)
+CC = clang -target x86_64-apple-darwin $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
