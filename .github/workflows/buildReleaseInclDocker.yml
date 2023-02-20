@@ -171,8 +171,8 @@ jobs:
           echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> ${GITHUB_ENV}
           DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
           DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
-          echo ::set-output name=build_time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=docker_tags::${DOCKER_TAGS}
+          echo "build_time=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+          echo "docker_tags=${DOCKER_TAGS}"  >> $GITHUB_OUTPUT
 
       # Setup the Docker Machine Emulation environment.  
       - name: Set up QEMU
@@ -187,7 +187,7 @@ jobs:
 
       # Login into DockerHub - required to store the created image
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -201,7 +201,7 @@ jobs:
       #
       - name: Build Docker Image for Push to Docker Hub
         if: ${{ true }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -217,7 +217,7 @@ jobs:
       # Redo the Docker Build (hopefully mostly using the cache from the previous build).
       # But save the results in a directory under /tmp to be used for creating release tars.
       - name: Rebuild Docker Image For Saving Locally
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -387,6 +387,6 @@ jobs:
       - name: Output
         id: output
         run: |
-          echo ::set-output name=build_successful::'true'
+          echo "build_successful=true"  >> $GITHUB_OUTPUT
           
 ######################################################################################
