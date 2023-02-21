@@ -292,7 +292,7 @@ static ConsCell *find_free_cons_cell(void) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_cons(int cons_car, int cons_cdr) {
+LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
   extern struct dtd *ListpDTD;
 
   struct conspage *new_conspage;
