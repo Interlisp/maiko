@@ -15,7 +15,7 @@ Bug reports, feature requests, fixes and improvements, support for additional pl
 
 ## Development Platforms
 
-We are developing on FreeBSD, Linux, MacOS, and Solaris currently
+We are developing on FreeBSD, Linux, macOS, and Solaris currently
 on arm7l, arm64, PowerPC, SPARC, i386, and x86_64 hardware.
 
 
@@ -33,14 +33,14 @@ $ cd maiko/bin
 $ ./makeright x
 ```
 
-* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../ostype.cputype` (with .o files in `..ostype.cputype-x`. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while MacOS 11 on a (new M1) Mac will use `darwin.aarch64`.
+* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../ostype.cputype` (with .o files in `..ostype.cputype-x`. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while macOS 11 on a (new M1) Mac will use `darwin.aarch64`.
 * If you prefer using `gcc` over `clang`, you will need to edit the makefile fragment for your configuration (`makefile-ostype.cputype-x`) and comment out the line (with a #) that defines `CC` for `clang` and uncomment the line (delete the #) for the line that defines `CC` for `gcc`.
 * There is a cmake configuration (TBD To Be Described here).
 
-### Building For MacOS
+### Building For macOS
 
-* Running on MacOS requires an X server, and building on a Mac requires X client libraries.
-An X-server for MacOS (and X11 client libraries) can be freely obtained at https://www.xquartz.org/releases
+* Running on macOS requires an X server, and building on a Mac requires X client libraries.
+An X-server for macOS (and X11 client libraries) can be freely obtained at https://www.xquartz.org/releases
 
 ### Building for Windows 10
 
