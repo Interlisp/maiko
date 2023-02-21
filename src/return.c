@@ -94,7 +94,7 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
   printf("contextsw : %d \n", fxnum);
 #endif
 
-  if (!(fxnum == SubovFXP)) {
+  if (fxnum != SubovFXP) {
     /* interrupt disable during executing [special] function
       invoked by contextsw(\KEYHANDLER,\RESETSTACK,FAULT)
      */
