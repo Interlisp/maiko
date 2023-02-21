@@ -49,8 +49,8 @@ extern volatile sig_atomic_t XNeedSignal;
     XLocked--;					\
   } while (0)
 #else
-#define XLOCK
-#define XUNLOCK(dsp)
+#define XLOCK do {} while (0)
+#define XUNLOCK(dsp) do {} while (0)
 #endif	/* LOCK_X_UPDATES */
 
 #endif /* XDEFS_H */
