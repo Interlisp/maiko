@@ -31,7 +31,7 @@
 #include "lspglob.h"
 #include "lsptypes.h"      // for GetDTD, GetTypeNumber, dtd, Listp, GETWORD
 #include "stack.h"         // for frameex1, fnhead, BF_MARK, FX_MARK, STK_SAFE
-#include "version.h"       // for UNSIGNED, BIGVM
+
 struct LCIVCacheEntry;
 struct LCInstance;
 
