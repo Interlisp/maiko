@@ -38,6 +38,12 @@
 #include "timerdefs.h"
 #include "lisp2cdefs.h"
 
+/* Needed for Alpine Linux */
+#include <sys/select.h>
+#include <sys/types.h>
+/* End Needed for Alpine Linux */
+
+
 /*
 **  --- ether implementation common data -------------------------------------------
 */

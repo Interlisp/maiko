@@ -1,6 +1,15 @@
 #ifndef DIRDEFS_H
 #define DIRDEFS_H 1
+
 #include <dirent.h>         // for MAXNAMLEN
+
+/* Needed for Alpine Linux */
+#ifndef MAXNAMLEN
+#include <limits.h>
+#define MAXNAMLEN NAME_MAX
+#endif
+/* End Needed for Alpine Linux */
+
 #include <sys/types.h>      // for u_short, ino_t
 #include "lispemul.h"       // for LispPTR
 /*
