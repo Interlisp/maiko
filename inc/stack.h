@@ -270,9 +270,9 @@ typedef struct basic_frame {
 } Bframe;
 
 typedef struct stkword {
-  USHORT usecount : 8;
-  USHORT nil : 5;
-  USHORT flags : 3;
+  unsigned usecount : 8;
+  unsigned nil : 5;
+  unsigned flags : 3;
 } StackWord;
 
 typedef struct stack_block {

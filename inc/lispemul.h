@@ -273,22 +273,22 @@ struct state {
 
 /* For bit test */
 typedef struct wbits {
-  USHORT LSB : 1;
-  USHORT B14 : 1;
-  USHORT B13 : 1;
-  USHORT B12 : 1;
-  USHORT B11 : 1;
-  USHORT B10 : 1;
-  USHORT B9 : 1;
-  USHORT B8 : 1;
-  USHORT B7 : 1;
-  USHORT B6 : 1;
-  USHORT B5 : 1;
-  USHORT B4 : 1;
-  USHORT B3 : 1;
-  USHORT B2 : 1;
-  USHORT B1 : 1;
-  USHORT xMSB : 1;
+  unsigned LSB : 1;
+  unsigned B14 : 1;
+  unsigned B13 : 1;
+  unsigned B12 : 1;
+  unsigned B11 : 1;
+  unsigned B10 : 1;
+  unsigned B9 : 1;
+  unsigned B8 : 1;
+  unsigned B7 : 1;
+  unsigned B6 : 1;
+  unsigned B5 : 1;
+  unsigned B4 : 1;
+  unsigned B3 : 1;
+  unsigned B2 : 1;
+  unsigned B1 : 1;
+  unsigned xMSB : 1;
 } WBITS;
 
 typedef struct lbits {
