@@ -142,12 +142,6 @@ typedef struct wbits {
   unsigned LSB : 1;
 } WBITS;
 
-typedef struct lbits {
-  unsigned xMSB : 1;
-  unsigned MIDDLE : 30;
-  unsigned LSB : 1;
-} LBITS;
-
 #define PUTBASEBIT68K(base68k, offset, bitvalue)               \
   do {                                                         \
     if (bitvalue)                                              \
@@ -290,12 +284,6 @@ typedef struct wbits {
   USHORT B1 : 1;
   USHORT xMSB : 1;
 } WBITS;
-
-typedef struct lbits {
-  unsigned LSB : 1;
-  unsigned MIDDLE : 30;
-  unsigned xMSB : 1; /* xMSB b/c HPUX defined MSB in a header */
-} LBITS;
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)                                             \
   do {                                                                                       \
