@@ -88,7 +88,7 @@ static int dlinfoack(int fd, char *bufp);
 static int dlbindack(int fd, char *bufp);
 static int expecting(int prim, union DL_primitives *dlp);
 static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller);
-static char *savestr(char *s)
+static char *savestr(char *s);
 
 static char *pname;
 
