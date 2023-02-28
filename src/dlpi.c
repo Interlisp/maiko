@@ -88,7 +88,7 @@ static int dlinfoack(int fd, char *bufp);
 static int dlbindack(int fd, char *bufp);
 static int expecting(int prim, union DL_primitives *dlp);
 static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller);
-static char *savestr(char *s)
+static char *savestr(char *s);
 
 static char *pname;
 
@@ -109,7 +109,7 @@ int setup_dlpi_dev(char *device)
   char devname[BUFSIZ];
   int n, s, fd, devppa;
   struct timeval timeout;
-  long buf[DLPI_MAXDLBUF];
+  char buf[DLPI_CHUNKSIZE];
 
   /*
    * If the interface device was not specified,
@@ -311,7 +311,7 @@ void flush_dlpi(int fd)
  */
 int dlpi_devtype(int fd)
 {
-  long buf[DLPI_MAXDLBUF];
+  char buf[DLPI_CHUNKSIZE];
   union DL_primitives *dlp;
 
   dlp = (union DL_primitives *)buf;
@@ -606,7 +606,7 @@ static char *savestr(char *s)
 
 int dlunitdatareq(int fd, u_char *addrp, int addrlen, u_long minpri, u_long maxpri, u_char *datap, int datalen)
 {
-  long buf[DLPI_MAXDLBUF];
+  char buf[DLPI_CHUNKSIZE];
   union DL_primitives *dlp;
   struct strbuf data, ctl;
 
