@@ -1,17 +1,9 @@
 #ifndef DIRDEFS_H
 #define DIRDEFS_H 1
 
-#include <dirent.h>         // for MAXNAMLEN
-
-/* Needed for Alpine Linux */
-#ifndef MAXNAMLEN
-#include <limits.h>
-#define MAXNAMLEN NAME_MAX
-#endif
-/* End Needed for Alpine Linux */
-
 #include <sys/types.h>      // for u_short, ino_t
 #include "lispemul.h"       // for LispPTR
+#include "locfile.h"        // for MAXNAMLEN
 /*
  * FINFO and FPROP are used to store the information of the enumerated files
  * and directories.  They are arranged in a form of linked list.  Each list is
