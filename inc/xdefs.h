@@ -19,7 +19,7 @@
 #define WIN_MIN_HEIGHT 100
 #define DEF_BDRWIDE      2
 #define SCROLL_WIDTH	18
-#define WINDOW_NAME    "Medley (C) Copyright 1980-2001 Venue"
+#define WINDOW_NAME    "Medley Interlisp"
 #define ICON_NAME      "Medley"
 
 
