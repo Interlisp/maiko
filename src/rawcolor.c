@@ -33,8 +33,13 @@
 #include "arith.h"
 #include "bitblt.h"
 #include "lldsp.h"
-
 #include "bbtsubdefs.h"
+
+#include "gcarraydefs.h"
+#include "testtooldefs.h"
+#include "lsthandldefs.h"
+#include "car-cdrdefs.h"
+#include "keyeventdefs.h"
 
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
 #define IMAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -94,9 +99,9 @@ LispPTR SLOWBLTCHAR_index;
 #define FReplaceSmallp(place, val, puntcase)                       \
   {                                                                \
     if ((0 <= (val)) && ((val) <= MAX_SMALL))                      \
-      (LispPTR)(place) = (LispPTR)(S_POSITIVE | (val));            \
+      (place) = (LispPTR)(S_POSITIVE | (val));            \
     else if (MIN_SMALL <= val)                                     \
-      (LispPTR)(place) = (LispPTR)(S_NEGATIVE | (0xffff & (val))); \
+      (place) = (LispPTR)(S_NEGATIVE | (0xffff & (val))); \
     else {                                                         \
       puntcase;                                                    \
     }                                                              \
@@ -125,7 +130,7 @@ LispPTR COLORSCREEN_index; /* if it's 0xffffffff, not yet initialized */
 /*									*/
 /************************************************************************/
 
-C_slowbltchar(LispPTR *args)
+void C_slowbltchar(LispPTR *args)
 {
   Stream *n_dstream;
   DISPLAYDATA *n_dd;
@@ -210,8 +215,8 @@ C_slowbltchar(LispPTR *args)
       w = *(DLword *)NativeAligned2FromLAddr(n_dd->ddcharimagewidths + Char8Code(charcode));
       h = src_h;
 
-      (short)dst_x = (short)curx;
-      (short)dst_y = (short)cury - (short)n_csinfo->CHARSETDESCENT;
+      dst_x = (short)curx;
+      dst_y = (short)cury - (short)n_csinfo->CHARSETDESCENT;
 
       { /* clipping */
         short left, right, bottom, top;
