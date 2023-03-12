@@ -17,6 +17,7 @@
 #include <string.h>       // for memset
 #include <sys/mman.h>     // for mmap
 #include <sys/stat.h>     // for stat, fstat
+#include <sys/types.h>    // for off_t
 #include <unistd.h>       // for lseek, read, close, getpagesize
 #include "adr68k.h"       // for NativeAligned2FromLAddr
 #ifdef BYTESWAP
@@ -74,6 +75,7 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
   struct stat stat_buf; /* file stat buf */
 
   char errmsg[255];
+  off_t cfp = -1;  /* tracks current file position in sysout, or -1 */
 
   /* Checks for specifying the process size (phase I) */
   /* If sys_size == 0 figure out the proper size later */
@@ -297,10 +299,14 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
     }
 #endif /* DOS */
     if (GETPAGEOK(fptovp, i) != 0177777) {
-      if (lseek(sysout, i * BYTESPER_PAGE, SEEK_SET) == -1) {
-        perror("sysout_loader: can't seek sysout file");
-        free(fptovp);
-        exit(-1);
+      /* only seek if not already at desired position */
+      if (i * BYTESPER_PAGE != cfp) {
+	if (lseek(sysout, i * BYTESPER_PAGE, SEEK_SET) == -1) {
+	  perror("sysout_loader: can't seek sysout file");
+	  free(fptovp);
+	  exit(-1);
+	}
+	cfp = i * BYTESPER_PAGE; /* now at known position */
       }
       lispworld_offset = GETFPTOVP(fptovp, i) * BYTESPER_PAGE;
       if (read(sysout, lispworld_scratch + lispworld_offset, BYTESPER_PAGE) == -1) {
@@ -314,6 +320,7 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
         free(fptovp);
         exit(-1);
       }
+      cfp += BYTESPER_PAGE; /* new known position */
 #ifdef BYTESWAP
       word_swap_page((DLword *)(lispworld_scratch + lispworld_offset), 128);
 #endif
