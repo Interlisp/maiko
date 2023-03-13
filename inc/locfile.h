@@ -10,6 +10,7 @@
 /************************************************************************/
 #include <errno.h>
 #include <limits.h>   /* for NAME_MAX */
+#include <dirent.h>   /* for MAXNAMLEN */
 #include "lispemul.h" /* for DLword */
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
