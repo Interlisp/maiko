@@ -1055,7 +1055,7 @@ $(OBJECTDIR)lpy.tab.o: $(SRCDIR)lpy.tab.c $(REQUIRED-INCS) $(INCDIR)lpdefs.h $(I
 #	.c.s. should always have -O
 ################################################################################
 
-cleanup:
+clean cleanup:
 	$(RM) -r $(OBJECTDIR) $(OSARCHDIR)
 
 .c.o:
