@@ -10,6 +10,7 @@ case "$os" in
         *-*-linux*)		echo linux ;;
         *-*-openbsd*)		echo openbsd ;;
         *-*-freebsd*)		echo freebsd ;;
+        *-*-netbsd*)            echo netbsd ;;
 	*-*-cygwin*)            echo cygwin ;;
 esac
 ### Don't leave the variable set.
