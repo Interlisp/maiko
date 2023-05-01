@@ -232,7 +232,7 @@ void VESA_enter(DspInterface dsp)
 
   TPRINT(("Enter VESA_enter\n"));
   VESA_setmode(dsp->graphicsmode, TRUE);
-  if (!((VESA_describemode(dsp->graphicsmode) == 0))) {
+  if (VESA_describemode(dsp->graphicsmode) != 0) {
     _setvideomode(_DEFAULTMODE);
     _clearscreen(_GCLEARSCREEN);
     fprintf(stderr, "Can't set VESA mode %o.\n", dsp->graphicsmode);

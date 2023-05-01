@@ -114,12 +114,10 @@ static void init_conspage(struct conspage *base, unsigned int link)
 /**********************************************************************/
 
 struct conspage *next_conspage(void) {
-  extern struct dtd *ListpDTD;
-
   struct conspage *page1; /* Allocated 1st MDS page */
   struct conspage *page2; /* Allocated 2nd MDS page */
   struct conspage *pg, *priorpg;
-  int next, prior;
+  LispPTR next, prior;
 
 #ifdef NEWCDRCODING
   /* Allocate 2 conspages and get 1st page base */
@@ -292,15 +290,13 @@ static ConsCell *find_free_cons_cell(void) {
 */
 /**********************************************************************/
 
-LispPTR N_OP_cons(int cons_car, int cons_cdr) {
-  extern struct dtd *ListpDTD;
-
+LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
   struct conspage *new_conspage;
   ConsCell *new_cell;
 #ifndef NEWCDRCODING
   ConsCell *temp_cell;
 #endif
-  int new_page; /* hold the return  val of nextconspage ,DL->int */
+  LispPTR new_page; /* hold the return  val of nextconspage */
 
   GCLOOKUP(cons_cdr &= POINTERMASK, ADDREF);
   GCLOOKUP(cons_car, ADDREF);
@@ -430,7 +426,7 @@ LispPTR N_OP_cons(int cons_car, int cons_cdr) {
 #ifdef NEWCDRCODING
   if (254 < ((new_page & 0xff) + ((new_cell->cdr_code & 7) << 1)))
     error("in CONS, cdr code too big.");
-#endif /* NEWCDROCDING */
+#endif /* NEWCDRCODING */
   return (new_page);
 
 } /* N_OP_cons() end */

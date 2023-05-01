@@ -9,7 +9,7 @@
 /*									*/
 /************************************************************************/
 
-#include "version.h"
+#include "version.h"        // for MAIKO_ENABLE_ETHERNET
 
 #include <X11/Xlib.h>       // for XPointer, True, XParseGeometry, XResource...
 #include <X11/Xresource.h>  // for XrmoptionSepArg, XrmGetResource, Xrmoptio...
@@ -20,7 +20,6 @@
 #include <string.h>         // for strncpy, strcat, strcpy, strcmp
 #include <sys/types.h>      // for u_char
 #include <unistd.h>         // for access, R_OK
-#include "version.h"        // for MAIKO_ENABLE_ETHERNET
 #include "xdefs.h"          // for WINDOW_NAME
 #include "xrdoptdefs.h"     // for print_Xusage, read_Xoption
 

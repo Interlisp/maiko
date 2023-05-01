@@ -13,7 +13,6 @@
 #include <X11/Xlib.h>  // for XFlush, XPutImage
 #include "devif.h"     // for (anonymous), MRegion, DspInterface
 #include "lispemul.h"  // for DLword
-#include "version.h"
 #include "xbbtdefs.h"  // for clipping_Xbitblt
 #include "xdefs.h"     // for XLOCK, XUNLOCK
 

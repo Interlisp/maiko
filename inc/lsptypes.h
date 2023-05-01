@@ -403,7 +403,7 @@ struct dtd {
 	LispPTR dtd_typespecs;
 	LispPTR dtd_ptrs ;
 	int  dtd_oldcnt;
-	int dtd_nextpage ;
+	LispPTR dtd_nextpage ;
 	DLword dtd_supertype ;
 	DLword dtd_typeentry ;
 };

@@ -41,12 +41,12 @@ extern volatile sig_atomic_t FP_error;
 
 #elif defined(DOS)
 #include <i32.h>
-#define FPCLEAR
+#define FPCLEAR do {} while (0)
 #define FPTEST(result) (_getrealerror() & ( I87_ZERO_DIVIDE | I87_OVERFLOW | I87_UNDERFLOW))
 
 #else
 #include <math.h>
-#define FPCLEAR
+#define FPCLEAR do {} while (0)
 #define FPTEST(result) (!isfinite(result))
 
 #endif /* FLTINT */

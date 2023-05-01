@@ -23,20 +23,7 @@
 #include "version.h"
 
 #include "lispemul.h"
-#include "lspglob.h"
-#include "lispmap.h"
-#include "lsptypes.h"
-#include "emlglob.h"
-#include "adr68k.h"
-#include "address.h"
-#include "arith.h"
-#include "stack.h"
-#include "cell.h"
-#include "gcdata.h"
-
 #include "bb.h"
-#include "bitblt.h"
-#include "pilotbbt.h"
 
 void bitblt(DLword *srcbase, DLword *dstbase, int sx, int dx, int w, int h, int srcbpl, int dstbpl,
             int backwardflg, int src_comp, int op, int gray, int num_gray, int curr_gray_line) {

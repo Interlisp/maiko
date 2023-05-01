@@ -76,6 +76,9 @@
 #include "lispemul.h"     // for LispPTR, ConsCell, NIL, POINTERMASK, DLword
 #include "lspglob.h"      // for ListpDTD
 #include "lsptypes.h"     // for dtd, GetDTD, GetTypeNumber, TYPE_ARRAYBLOCK
+#ifdef DTDDEBUG
+#include "testtooldefs.h"
+#endif
 
 #ifdef NEWCDRCODING
 #undef CONSPAGE_LAST

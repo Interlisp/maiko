@@ -129,10 +129,14 @@ LispPTR cdr(LispPTR datum)
                                         Edited by :	Naoyuki Mitani
 */
 /**********************************************************************/
-
+/**
+ * Replace car of x with y
+ *
+ * @param x [in,out] LispPTR to object in which car will be replaced.
+ * @param y [in] LispPTR to object that will become new car of x.
+ * @return x, modified, or NIL if x is not a list.
+ */
 LispPTR rplaca(LispPTR x, LispPTR y)
-/* car of x will be smashed */
-/* y is a newly car object */
 {
   ConsCell *x_68k;
   ConsCell *temp;
@@ -182,10 +186,15 @@ LispPTR rplaca(LispPTR x, LispPTR y)
 static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart); /* below... */
 static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell);
 #endif
+/**
+ * Replace cdr of x with y
+ *
+ * @param x [in,out] LispPTR to object in which cdr will be replaced.
+ * @param y [in] LispPTR to object that will become new cdr of x.
+ * @return x, modified, or errors if x is not a list.
+ */
 
 LispPTR rplacd(LispPTR x, LispPTR y)
-/* cdr of x will be smashed */
-/* y is a newly cdr object */
 {
   ConsCell *x_68k;
   ConsCell *temp68k;

@@ -62,7 +62,6 @@
 #include "unixcommdefs.h"  // for Unix_handlecomm
 #include "uraidextdefs.h"  // for Uraid_mess
 #include "uutilsdefs.h"    // for suspend_lisp, check_unix_password, unix_fu...
-#include "version.h"       // for UNSIGNED
 #include "vmemsavedefs.h"  // for lisp_finish, vmem_save0
 
 extern LispPTR *PENDINGINTERRUPT68k;

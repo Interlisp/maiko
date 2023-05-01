@@ -453,9 +453,7 @@ void keyboardtype(int fd)
       type = KB_SUN2;
     else if (strcmp("jle", key) == 0)
       type = KB_JLE;
-    else if (strcmp("X", key) == 0)
-      type = KB_X;
-    else if (strcmp("x", key) == 0)
+    else if (strcmp("X", key) == 0 || strcmp("x", key) == 0)
       type = KB_X;
     else
       type = KB_SUN3; /* default */

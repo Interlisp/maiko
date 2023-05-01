@@ -32,7 +32,6 @@
 #include "lspglob.h"
 #include "lsptypes.h"      // for Listp, GetTypeNumber, TYPE_LISTP
 #include "vars3defs.h"     // for cadr
-#include "version.h"
 #include "z2defs.h"        // for N_OP_classoc, N_OP_clfmemb, N_OP_restlist
 
 /*   N_OP_classoc()  OP 33Q  */
