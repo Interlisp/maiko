@@ -656,9 +656,11 @@ void process_SDLevents() {
         break;
       }
       case SDL_MOUSEWHEEL:
-        printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
+        /*
+         printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
                event.wheel.y,
                event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
+        */
         break;
         /* case SDL_KEYMAPCHANGED: */
         /*   printf("SDL_KEYMAPCHANGED\n"); break; */
