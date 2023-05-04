@@ -6,6 +6,8 @@
 .DS_Store
 # build directories
 build/**
+cmake-build-*/**
+.idea/
 *.m68k-x/**
 *.m68k/**
 *.386-x/**
