@@ -324,7 +324,7 @@ $(OBJECTDIR)blt.o: $(SRCDIR)blt.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)blt.c -o $(OBJECTDIR)blt.o
 
 $(OBJECTDIR)byteswap.o: $(SRCDIR)byteswap.c $(REQUIRED-INCS) \
-	$(INCDIR)hdw_conf.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)lsptypes.h $(INCDIR)stack.h \
 	$(INCDIR)byteswapdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)byteswap.c -o $(OBJECTDIR)byteswap.o
@@ -663,7 +663,7 @@ $(OBJECTDIR)initkbd.o: $(SRCDIR)initkbd.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)initkbd.c -o $(OBJECTDIR)initkbd.o
 
 $(OBJECTDIR)initsout.o: $(SRCDIR)initsout.c $(REQUIRED-INCS) \
-	$(INCDIR)hdw_conf.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispemul.h \
 	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
 	$(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)adr68k.h $(INCDIR)cell.h \
 	$(INCDIR)devconf.h $(INCDIR)dbprint.h $(INCDIR)lldsp.h $(INCDIR)gcdata.h \
@@ -789,7 +789,7 @@ $(OBJECTDIR)shift.o: $(SRCDIR)shift.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)shift.c -o $(OBJECTDIR)shift.o
 
 $(OBJECTDIR)storage.o: $(SRCDIR)storage.c $(REQUIRED-INCS) \
-	$(INCDIR)hdw_conf.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispemul.h \
 	$(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)lispmap.h $(INCDIR)stack.h \
 	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
 	$(INCDIR)cell.h $(INCDIR)lsptypes.h $(INCDIR)gcdata.h $(INCDIR)storagedefs.h \
@@ -906,7 +906,7 @@ $(OBJECTDIR)vars3.o: $(SRCDIR)vars3.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)vars3.c -o $(OBJECTDIR)vars3.o
 
 $(OBJECTDIR)vmemsave.o: $(SRCDIR)vmemsave.c $(REQUIRED-INCS) \
-	$(INCDIR)hdw_conf.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
 	$(INCDIR)miscstat.h $(INCDIR)vmemsave.h $(INCDIR)timeout.h $(INCDIR)adr68k.h \
 	$(INCDIR)lsptypes.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)dbprint.h \

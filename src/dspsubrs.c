@@ -119,7 +119,7 @@ void DSP_SetMousePos(LispPTR *args)
 /****************************************************
  *
  *	DSP_ScreenWidth() entry of SUBRCALL 67 0
- *			called from  "\Katana.DisplayWidth".
+ *		called from  UPDATESCREENDIMENSIONS
  *
  ****************************************************/
 LispPTR DSP_ScreenWidth(LispPTR *args)
@@ -128,7 +128,7 @@ LispPTR DSP_ScreenWidth(LispPTR *args)
 /****************************************************
  *
  *	DSP_ScreenHight() entry of SUBRCALL 68 0
- *			called from  "\Katana.DisplayHeight".
+ *		called from UPDATESCREENDIMENSIONS
  *
  ****************************************************/
 LispPTR DSP_ScreenHight(LispPTR *args)

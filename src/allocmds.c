@@ -107,7 +107,7 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
 /*
                 Func name :	alloc_mdspage
 
-                        This version works only for KATANA-SUN
+                        This version works only for Maiko
 
                         Date :		January 13, 1987
                         Edited by :	Takeshi Shimizu

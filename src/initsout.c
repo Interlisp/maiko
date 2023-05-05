@@ -34,8 +34,7 @@
 #include "etherdefs.h"     // for init_ifpage_ether
 #include "gcarraydefs.h"   // for get_package_atom
 #include "gcdata.h"        // for ADDREF, GCLOOKUP
-#include "hdw_conf.h"      // for KATANA
-#include "ifpage.h"        // for IFPAGE
+#include "ifpage.h"        // for IFPAGE, MACHINETYPE_MAIKO
 #include "initsoutdefs.h"  // for build_lisp_map, fixp_value, init_for_bitblt
 #include "iopage.h"        // for IOPAGE
 #include "lispemul.h"      // for LispPTR, DLword, NIL, BYTESPER_DLWORD
@@ -116,7 +115,7 @@ void init_ifpage(unsigned sysout_size) {
   /*
     Initialize IFPAGE
    */
-  InterfacePage->machinetype = KATANA; /* 3 is katana */
+  InterfacePage->machinetype = MACHINETYPE_MAIKO;
 #if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
   init_ifpage_ether(); /* store ethernet ID in IF page */
 #endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
