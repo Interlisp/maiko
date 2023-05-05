@@ -11,6 +11,7 @@
 #include "lispemul.h" /* for LispPTR, DLword */
 #include "version.h" /* for BIGVM */
 
+#define MACHINETYPE_MAIKO 3
 #define IFPAGE_KEYVAL 0x15e3
 #ifndef BYTESWAP
 #ifdef BIGVM

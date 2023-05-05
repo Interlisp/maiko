@@ -24,8 +24,7 @@
 #include "conspagedefs.h"  // for cons
 #include "gcdata.h"        // for ADDREF, GCLOOKUP
 #include "gcfinaldefs.h"   // for makefreearrayblock, mergebackward
-#include "hdw_conf.h"      // for KATANA
-#include "ifpage.h"        // for IFPAGE
+#include "ifpage.h"        // for IFPAGE, MACHINETYPE_MAIKO
 #include "lispemul.h"      // for LispPTR, NIL, GETFPTOVP, INTSTAT, ATOM_T
 #include "lispmap.h"       // for S_POSITIVE
 #include "lspglob.h"       // for InterfacePage, FPtoVP, SYSTEMCACHEVARS_word
@@ -216,7 +215,7 @@ static void advance_storagestate(DLword flg) {
 */
 /*****************************************************************/
 static void set_storage_state(void) {
-  if ((*MACHINETYPE_word & 0xffff) == KATANA) {
+  if ((*MACHINETYPE_word & 0xffff) == MACHINETYPE_MAIKO) {
     if (InterfacePage->dl24bitaddressable != 0)
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_SWITCHABLE;
     else
@@ -230,7 +229,7 @@ static void set_storage_state(void) {
     printf("SETSTATE: set to %d \n", (*STORAGEFULLSTATE_word) & 0xffff);
 #endif
   } else {
-    error("set_storage_state: Sorry! We can work on only KATANA");
+    error("set_storage_state: Sorry! We can work on only Maiko");
   }
 
 } /* set_storage_state() end */

@@ -38,7 +38,6 @@
 #endif /* DOS */
 
 
-#include "hdw_conf.h"
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"
@@ -49,6 +48,7 @@
 #include "locfile.h"
 #include "dbprint.h"
 #include "devif.h"
+#include "ifpage.h"       // for MACHINETYPE_MAIKO
 
 #include "vmemsavedefs.h"
 #include "byteswapdefs.h"
@@ -365,7 +365,7 @@ LispPTR vmem_save(char *sysout_file_name)
     return (FILECANNOTOPEN);
   }
 
-  InterfacePage->machinetype = KATANA;
+  InterfacePage->machinetype = MACHINETYPE_MAIKO;
 
   /* Restore storagefull state */
   if (((*STORAGEFULLSTATE_word) & 0xffff) == SFS_NOTSWITCHABLE) {

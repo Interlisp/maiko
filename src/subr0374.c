@@ -22,7 +22,7 @@
 /*
         subr_k_trace()
 
-                subr----0130 for katana trace
+                subr----0130 for maiko trace
                 first argument is base address of
                 error message in Lisp.
                 second argument is length of message.
