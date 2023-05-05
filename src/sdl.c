@@ -6,7 +6,6 @@
 #include "byteswapdefs.h"
 #include "lispemul.h"
 #include "lsptypes.h"
-#include "miscstat.h"
 #include "keyboard.h"
 #include "lspglob.h"  // for IOPage
 #include "display.h"  // for CURSORHEIGHT, DisplayRegion68k
@@ -272,7 +271,7 @@ static void replicate_bits(int bits, int reps, Uint8 *out) {
   }
 }
 
-static int cursor_equal_p(DLword *a, DLword *b) {
+static int cursor_equal_p(const DLword *a, const DLword *b) {
   for (int i = 0; i < CURSORHEIGHT; i++)
     if (a[i] != b[i]) return FALSE;
   return TRUE;
@@ -400,7 +399,6 @@ void sdl_bitblt_to_texture_exact(int _x, int _y, int _w, int _h) {
   int dy = 0;
   // for each line in the source image
   for (int sy = ystart; sy < ylimit; sy += sourcepitchwords, dy += dstpitchpixels) {
-    int dx = 0;
     int sx = xstart;
     int b = xstartb;
     int srcw = GETBASEWORD(src, sy + sx);
@@ -500,9 +498,8 @@ static void handle_keyup(SDL_Keycode k, unsigned short mod) {
   }
 }
 extern DLword *EmCursorX68K, *EmCursorY68K;
-extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
+extern DLword *EmMouseX68K, *EmMouseY68K;
 extern LispPTR *CLastUserActionCell68k;
-extern MISCSTATS *MiscStats;
 
 /* bits within the EmRealUtilin word */
 #define KEYSET_LEFT 8
