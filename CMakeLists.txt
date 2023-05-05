@@ -292,7 +292,6 @@ SET(MAIKO_HDRS
     inc/gcscandefs.h
     inc/gvar2defs.h
     inc/hardrtndefs.h
-    inc/hdw_conf.h
     inc/ifpage.h
     inc/inetdefs.h
     inc/initatms.h
