@@ -623,30 +623,20 @@ void process_SDLevents() {
         break;
       }
       case SDL_MOUSEBUTTONDOWN: {
-        int button = event.button.button;
-        switch (button) {
-          case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
-          case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
-          case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
-          case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, FALSE); break;
-          case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, FALSE); break;
-          case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, FALSE); break;
-          case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, FALSE); break;
+        switch (event.button.button) {
+          case SDL_BUTTON_LEFT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
+          case SDL_BUTTON_MIDDLE: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
+          case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
         }
         DoRing();
         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
         break;
       }
       case SDL_MOUSEBUTTONUP: {
-        int button = event.button.button;
-        switch (button) {
-          case 1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
-          case 2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
-          case 3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
-          case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, TRUE); break;
-          case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, TRUE); break;
-          case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, TRUE); break;
-          case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, TRUE); break;
+        switch (event.button.button) {
+          case SDL_BUTTON_LEFT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
+          case SDL_BUTTON_MIDDLE: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
+          case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
         }
         DoRing();
         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
@@ -657,6 +647,15 @@ void process_SDLevents() {
          printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
                event.wheel.y,
                event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
+
+          these are the 4 key bits for mouse wheel/trackpad scrolling - which unlike X11 are
+          *not* presented as mouse button down/up events for each scroll action
+
+          case 4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, FALSE); break;
+          case 5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, FALSE); break;
+          case 6: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, FALSE); break;
+          case 7: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, FALSE); break;
+
         */
         break;
         /* case SDL_KEYMAPCHANGED: */
