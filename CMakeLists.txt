@@ -42,6 +42,8 @@ SET(MAIKO_DEFINITIONS
 )
 
 OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." ON)
+OPTION(MAIKO_DISPLAY_SDL "Use SDL for display." OFF)
+
 IF(MAIKO_DISPLAY_X11)
   FIND_PACKAGE(X11 REQUIRED)
   SET(MAIKO_DISPLAY_X11_DEFINITIONS
@@ -75,6 +77,21 @@ IF(MAIKO_DISPLAY_X11)
   MESSAGE("-- Configured for X11 display")
 ENDIF()
 
+IF(MAIKO_DISPLAY_SDL)
+  FIND_PACKAGE(SDL2 REQUIRED)
+  SET(MAIKO_DISPLAY_SDL_DEFINITIONS
+          "-DSDL"
+          )
+  SET(MAIKO_DISPLAY_SDL_LIBRARIES ${SDL2_LIBRARIES})
+  SET(MAIKO_DISPLAY_SDL_SRCS
+          src/sdl.c
+          )
+  SET(MAIKO_DISPLAY_SDL_HDRS
+          inc/sdldefs.h
+          )
+  MESSAGE("-- Configured for SDL display")
+ENDIF()
+
 # according to: https://cmake.org/pipermail/cmake/2016-October/064342.html
 # the following 2 lines should produce a dropdown-box in the cmake-gui
 # but this will happen only after running the command line version of cmake,
@@ -96,21 +113,6 @@ ELSEIF(NOT MAIKO_NETWORK_TYPE STREQUAL "NONE")
   MESSAGE(WARNING "Invalid option given for MAIKO_NETWORK_TYPE, must be one of:\nNONE, SUN_DLPI, SUN_NIT, NETHUB")
 ENDIF()
 
-OPTION(MAIKO_DISPLAY_SDL "Use SDL for display." OFF)
-IF(MAIKO_DISPLAY_SDL)
-  FIND_PACKAGE(SDL2 REQUIRED)
-  SET(MAIKO_DISPLAY_SDL_DEFINITIONS
-    "-DSDL"
-  )
-  SET(MAIKO_DISPLAY_SDL_LIBRARIES ${SDL2_LIBRARIES})
-  SET(MAIKO_DISPLAY_SDL_SRCS
-    src/sdl.c
-  )
-  SET(MAIKO_DISPLAY_SDL_HDRS
-    inc/sdldefs.h
-  )
-  MESSAGE("-- Configured for SDL display")
-ENDIF()
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   LIST(APPEND MAIKO_DEFINITIONS
