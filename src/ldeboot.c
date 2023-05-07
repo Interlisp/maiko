@@ -12,6 +12,7 @@
 
 #include <ctype.h>
 #include <fcntl.h>
+#include <limits.h>      // for PATH_MAX
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -59,6 +60,8 @@
 int main(int argc, char *argv[]) {
   int i;
   char *filetorun = NULL;
+  char filetorunpath[PATH_MAX];
+  char *dirsepp = NULL;
   char *displayName = (char *)NULL;
   int doFork = 1;
 #ifdef USESUNSCREEN
@@ -187,7 +190,21 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "Unable to determine what display program to run.\n");
     exit(1);
   }
-  argv[0] = filetorun;
+
+  /* construct invocation path of display program parallel to this one,
+   * so that it will have higher probability of finding a corresponding
+   * display program if there are multiple versions findable via PATH
+   */
+  dirsepp = strrchr(argv[0], '/');
+  if (dirsepp == NULL) {
+    argv[0] = filetorun;
+  } else {
+    /* copy up to and including the final "/" in the path */
+    dirsepp = stpncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
+    /* dirsepp now points to the trailing null in the copy */
+    strncpy(dirsepp, filetorun, PATH_MAX - (dirsepp - filetorunpath));
+    argv[0] = filetorunpath;
+  }
   execvp(argv[0], argv);
   perror(argv[0]);
   exit(1);
