@@ -1,7 +1,8 @@
 # Options for Linux, Intel 386/486 and X-Window
 
-#CC = gcc -m32 $(GCC_CFLAGS)
-CC = clang -m32 $(CLANG_CFLAGS)
+CC = gcc -m32 $(GCC_CFLAGS)
+# CC = clang -m32 $(CLANG_CFLAGS)
+
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
 	$(OBJECTDIR)dspif.o \
@@ -11,7 +12,6 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xlspwin.o \
 	$(OBJECTDIR)xrdopt.o \
 	$(OBJECTDIR)xwinman.o
-
 
 XFLAGS = -DXWINDOW
 

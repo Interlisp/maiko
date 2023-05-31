@@ -283,6 +283,7 @@ void set_kbd_iopointers(void) {
 #define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
 #define KB_DOS (12 + MIN_KEYTYPE)
+#define KB_SDL (13 + MIN_KEYTYPE)
 
 /* KB_SUN4 not defined in older OS versions */
 #ifndef KB_SUN4
@@ -424,8 +425,10 @@ void keyboardtype(int fd)
   int i;
   char *key;
 
+#if defined(OS4)
   for (i = 0; i < 5000; i++) { /* IDLE LOOP */
   }                            /* because of a SunOS bug */
+#endif
 
   /* clear the keyboard field in devconfig */
   InterfacePage->devconfig &= 0xfff8;
@@ -442,6 +445,8 @@ void keyboardtype(int fd)
     type = KB_X;
 #elif DOS
     type = KB_DOS;
+#elif SDL
+    type = KB_SDL;
 #endif /* XWINDOW */
   } /* if end */
   else {
@@ -455,6 +460,8 @@ void keyboardtype(int fd)
       type = KB_JLE;
     else if (strcmp("X", key) == 0 || strcmp("x", key) == 0)
       type = KB_X;
+    else if (strcmp("sdl", key) == 0)
+      type = KB_SDL;
     else
       type = KB_SUN3; /* default */
   }
@@ -491,7 +498,11 @@ void keyboardtype(int fd)
       InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
       break;
 #endif /* XWINDOW */
-
+#ifdef SDL
+  case KB_SDL:
+    InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
+    break;
+#endif /* SDL */
 #ifdef DOS
     case KB_DOS:
       SUNLispKeyMap = DOSLispKeyMap_101;

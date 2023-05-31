@@ -238,7 +238,9 @@ int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will cal
 #include "devif.h"
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
-
+#ifdef SDL
+extern int init_SDL(char*, int, int, int);
+#endif
 extern const time_t MDate;
 extern int nokbdflag;
 extern int nomouseflag;
@@ -274,7 +276,18 @@ const char *helpstring =
  -bw <pixels>             The Medley screen borderwidth\n\
  -g[eometry] <geom>]      The Medley screen geometry\n\
  -sc[reen] <w>x<h>]       The Medley screen geometry\n";
-#else  /* not DOS, not XWINDOW */
+#elif SDL
+const char *helpstring =
+    "\n\
+ either setenv LDESRCESYSOUT or do:\n\
+ medley [<sysout-name>] [<options>]\n\
+ -info                    Print general info about the system\n\
+ -help                    Print this message\n\
+ -pixelscale <n>          The amount of pixels to show for one Medley screen pixel.\n\
+ -sc[reen] <w>x<h>]       The Medley screen geometry\n\
+ -t <title>               The window title\n\
+ -title <title>           The window title\n";
+#else  /* not DOS, not XWINDOW, not SDL */
 const char *helpstring =
     "\n\
  either setenv LDESRCESYSOUT or do:\n\
@@ -313,6 +326,10 @@ int main(int argc, char *argv[])
   extern int TIMER_INTERVAL;
   extern fd_set LispReadFds;
   long tmpint;
+  int width = 1024, height = 768;
+  int pixelscale = 1;
+  char *windowtitle = "Medley";
+
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
     perror("Name of executable not found.");
@@ -440,7 +457,40 @@ int main(int argc, char *argv[])
     }
 
 #endif /* DOS */
+#ifdef SDL
+    else if ((strcmp(argv[i], "-sc") == 0) || (strcmp(argv[i], "-SC") == 0)) {
+      if (argc > ++i) {
+        int read = sscanf(argv[i], "%dx%d", &width, &height);
+        if(read != 2) {
+          fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -sc\n");
+        exit(1);
+      }
+    } else if ((strcmp(argv[i], "-pixelscale") == 0) || (strcmp(argv[i], "-PIXELSCALE") == 0)) {
+      if (argc > ++i) {
+        int read = sscanf(argv[i], "%d", &pixelscale);
+        if(read != 1) {
+          fprintf(stderr, "Could not parse -pixelscale argument %s\n", argv[i]);
+          exit(1);
+        }
+      } else {
+        fprintf(stderr, "Missing argument after -pixelscale\n");
+        exit(1);
+      }
+    } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0)
+               || (strcmp(argv[i], "-title") == 0) || (strcmp(argv[i], "-TITLE") == 0)) {
+      if (argc > ++i) {
+        windowtitle = argv[i];
+      } else {
+        fprintf(stderr, "Missing argument after -title\n");
+        exit(1);
+      }
+    }
 
+#endif /* SDL */
     /* Can only do this under SUNOs, for now */
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
 #ifdef MAIKO_ENABLE_ETHERNET
@@ -598,7 +648,9 @@ int main(int argc, char *argv[])
 #if defined(DOS) || defined(XWINDOW)
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */
-
+#if defined(SDL)
+  init_SDL(windowtitle, width, height, pixelscale);
+#endif /* SDL */
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);
 

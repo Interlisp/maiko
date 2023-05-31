@@ -1,5 +1,5 @@
-PROJECT(maiko C)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
+PROJECT(maiko C)
 
 SET(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -23,10 +23,12 @@ find_program(
 )
 
 IF (CLANG_TIDY_EXE)
+   IF (NOT CMAKE_CROSSCOMPILING)
 # There are many many warnings for strcpy instances to deal with,
 # but suppress it for now so that other issues are more obvious
 #
-   SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+        SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+   ENDIF()
 ENDIF()
 
 INCLUDE(CheckLibraryExists)
@@ -40,6 +42,8 @@ SET(MAIKO_DEFINITIONS
 )
 
 OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." ON)
+OPTION(MAIKO_DISPLAY_SDL "Use SDL for display." OFF)
+
 IF(MAIKO_DISPLAY_X11)
   FIND_PACKAGE(X11 REQUIRED)
   SET(MAIKO_DISPLAY_X11_DEFINITIONS
@@ -70,6 +74,22 @@ IF(MAIKO_DISPLAY_X11)
     inc/xscroll.h
     inc/xwinmandefs.h
   )
+  MESSAGE("-- Configured for X11 display")
+ENDIF()
+
+IF(MAIKO_DISPLAY_SDL)
+  FIND_PACKAGE(SDL2 REQUIRED)
+  SET(MAIKO_DISPLAY_SDL_DEFINITIONS
+          "-DSDL"
+          )
+  SET(MAIKO_DISPLAY_SDL_LIBRARIES ${SDL2_LIBRARIES})
+  SET(MAIKO_DISPLAY_SDL_SRCS
+          src/sdl.c
+          )
+  SET(MAIKO_DISPLAY_SDL_HDRS
+          inc/sdldefs.h
+          )
+  MESSAGE("-- Configured for SDL display")
 ENDIF()
 
 # according to: https://cmake.org/pipermail/cmake/2016-October/064342.html
@@ -92,6 +112,7 @@ ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "SUN_NIT")
 ELSEIF(NOT MAIKO_NETWORK_TYPE STREQUAL "NONE")
   MESSAGE(WARNING "Invalid option given for MAIKO_NETWORK_TYPE, must be one of:\nNONE, SUN_DLPI, SUN_NIT, NETHUB")
 ENDIF()
+
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   LIST(APPEND MAIKO_DEFINITIONS
@@ -412,6 +433,11 @@ IF(MAIKO_DISPLAY_X11)
   TARGET_LINK_LIBRARIES(lde X11::X11)
 ENDIF()
 
+IF(MAIKO_DISPLAY_SDL)
+  # Tell it that the SDL launcher is available.
+  TARGET_COMPILE_DEFINITIONS(lde PUBLIC ${MAIKO_DISPLAY_SDL_DEFINITIONS})
+ENDIF()
+
 ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
 TARGET_COMPILE_DEFINITIONS(ldeether PUBLIC ${MAIKO_DEFINITIONS})
 TARGET_INCLUDE_DIRECTORIES(ldeether PUBLIC inc)
@@ -429,6 +455,25 @@ IF(MAIKO_DISPLAY_X11)
   TARGET_INCLUDE_DIRECTORIES(ldex PUBLIC inc)
   TARGET_LINK_LIBRARIES(ldex ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_X11_LIBRARIES})
 ENDIF()
+
+IF(MAIKO_DISPLAY_SDL)
+  ADD_EXECUTABLE(ldesdl
+    src/main.c
+    vdate.c
+    ${MAIKO_SRCS}
+    ${MAIKO_HDRS}
+    ${MAIKO_DISPLAY_SDL_SRCS}
+    ${MAIKO_DISPLAY_SDL_HDRS}
+  )
+  TARGET_COMPILE_DEFINITIONS(ldesdl PUBLIC ${MAIKO_DEFINITIONS} ${MAIKO_DISPLAY_SDL_DEFINITIONS})
+  TARGET_INCLUDE_DIRECTORIES(ldesdl PUBLIC inc)
+  TARGET_INCLUDE_DIRECTORIES(ldesdl PRIVATE ${SDL2_INCLUDE_DIRS})
+  TARGET_LINK_LIBRARIES(ldesdl ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_SDL_LIBRARIES})
+ENDIF()
+
+ADD_EXECUTABLE(mkvdate src/mkvdate.c)
+TARGET_COMPILE_DEFINITIONS(mkvdate PUBLIC ${MAIKO_DEFINITIONS})
+TARGET_INCLUDE_DIRECTORIES(mkvdate PUBLIC inc)
 
 ADD_EXECUTABLE(setsout src/setsout.c src/byteswap.c)
 TARGET_COMPILE_DEFINITIONS(setsout PUBLIC ${MAIKO_DEFINITIONS})

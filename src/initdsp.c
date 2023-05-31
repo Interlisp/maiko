@@ -56,6 +56,7 @@ extern DspInterface currentdsp;
 
 int FrameBufferFd = -1;
 
+extern int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
 extern unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 unsigned displaywidth, displayheight, DisplayRasterWidth, DisplayType, DisplayByteSize;
 DLword *DisplayRegion68k; /* 68k addr of #{}22,0 */
@@ -77,6 +78,10 @@ int DebugDSP = T;
 extern DLword *ColorDisplayRegion68k;
 extern int MonoOrColor;
 #endif /* COLOR */
+
+#ifdef SDL
+extern void sdl_notify_damage(int, int, int, int);
+#endif /* SDL */
 
 #ifdef XWINDOW
 DLword *DisplayRegion68k_end_addr;
@@ -169,7 +174,10 @@ void init_display2(DLword *display_addr, unsigned display_max)
   displaywidth = currentdsp->Display.width;
   displayheight = currentdsp->Display.height;
 #endif /* XWINDOW */
-
+#if (defined(SDL))
+  displaywidth = sdl_displaywidth;
+  displayheight = sdl_displayheight;
+#endif /* SDL */
   DisplayRasterWidth = displaywidth / BITSPER_DLWORD;
 
   if ((displaywidth * displayheight) > display_max) { displayheight = display_max / displaywidth; }
@@ -183,7 +191,9 @@ void init_display2(DLword *display_addr, unsigned display_max)
   DisplayType = SUN2BW;
   DisplayRegion68k_end_addr = DisplayRegion68k + DisplayRasterWidth * displayheight;
 #endif /* XWINDOW */
-
+#ifdef SDL
+  DisplayType = SUN2BW;
+#endif /* SDL */
   init_cursor();
   DisplayByteSize = ((displaywidth * displayheight / 8 + ((unsigned)getpagesize() - 1)) & (unsigned)-getpagesize());
 
@@ -255,7 +265,9 @@ in_display_segment(baseaddr)
 /************************************************************************/
 
 void flush_display_buffer(void) {
-
+#ifdef SDL
+  sdl_notify_damage(0, 0, sdl_displaywidth, sdl_displayheight);
+#endif
 #ifdef XWINDOW
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, currentdsp->Visible.x,
                                  currentdsp->Visible.y, currentdsp->Visible.width,
@@ -283,7 +295,10 @@ void flush_display_buffer(void) {
 /************************************************************************/
 void flush_display_region(int x, int y, int w, int h)
 {
-
+  //  printf("flush_display_region %d %d %d %d\n", x, y, w, h);
+#ifdef SDL
+  sdl_notify_damage(x, y, w, h);
+#endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_region x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);
@@ -326,7 +341,10 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h)
 {
   int y;
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
-
+  //  printf("flush_display_lineregion %d %d %d %d\n", x, y, w, h);
+#ifdef SDL
+  sdl_notify_damage(x, y, w, h);
+#endif
 #if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_lineregion x=%p, y=%d, w=%d, h=%d\n", (void *)x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);
@@ -357,7 +375,10 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h)
   baseoffset = (((DLword *)ybase) - DisplayRegion68k);
   y = baseoffset / DLWORD_PERLINE;
   x = bitoffset + (BITSPERWORD * (baseoffset - (DLWORD_PERLINE * y)));
-
+  //  printf("flush_display_ptrregion %d %d %d %d\n", x, y, w, h);
+#ifdef SDL
+  sdl_notify_damage(x, y, w, h);
+#endif
 #if   (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_ptrregion\n x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);

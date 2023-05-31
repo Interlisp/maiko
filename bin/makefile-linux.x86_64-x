@@ -1,7 +1,7 @@
 # Options for Linux, Intel x86_64 and X-Window
 
-#CC = gcc -m64 $(GCC_CFLAGS)
-CC = clang -m64 $(CLANG_CFLAGS) -DMAIKO_ENABLE_NETHUB
+CC = gcc -m64 $(GCC_CFLAGS)
+# CC = clang -m64 $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

@@ -71,6 +71,9 @@ case "$display" in
 	x)	releasename=${osversion}.${architecture}-${display}
 		ldename=ldex
 		;;
+	sdl)	releasename=${osversion}.${architecture}-${display}
+		ldename=ldesdl
+		;;
 	*)	echo "display-option: $display is not supported."
 		exit
 		;;
