@@ -352,7 +352,7 @@ do_ring:
     ((RING *)CTopKeyevent)->read = 0; /* reset queue */
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
     /*return(0);*/
-  } else if (((*EmKbdAd268K) & 2114) == 0) { /* Ctrl-Shift-DEL */
+  } else if (((*EmKbdAd268K) & 2114) == 0 || ((*EmKbdAd268K) & 18496) == 0) { /* Ctrl-Shift-DEL */
     *EmKbdAd268K = KB_ALLUP;                 /*reset*/
     URaid_req = T;
     ((RING *)CTopKeyevent)->read = 0; /* reset queue */
