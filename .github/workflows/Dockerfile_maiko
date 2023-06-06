@@ -1,0 +1,22 @@
+#*******************************************************************************
+#
+#  Dockerfile to build Maiko to be used by buildRelease github action
+#  The output of this is intended to be a directory in the github workspace
+#  file system it is not intended to be a useable Docker image.
+#
+#  Copyright 2023 by Interlisp.org
+#
+#  Frank Halasz 2023-02-21
+#
+# ******************************************************************************
+
+FROM ghcr.io/interlisp/maiko-builder
+ARG INSTALL_LOCATION=/usr/local/interlisp/maiko
+# Copy over / clean maiko repo
+COPY . ${INSTALL_LOCATION}
+# Build maiko
+RUN cd ${INSTALL_LOCATION}/bin \
+    && ./makeright x cleanup\
+    && ./makeright init cleanup \
+    && ./makeright x \
+    && ./makeright init

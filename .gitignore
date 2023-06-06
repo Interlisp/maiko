@@ -22,9 +22,12 @@ cmake-build-*/**
 *.armv7l-x/**
 *.armv7l/**
 *.aarch64-x/**
+*.aarch64-sdl/**
 *.aarch64/**
 init.386/**
 *.universal/**
 # core files
 core
 *.core
+*.swp
+

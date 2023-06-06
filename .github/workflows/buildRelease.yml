@@ -1,27 +1,24 @@
 #*******************************************************************************
-# buidReleaseInclDocker.yml
+# buidRelease.yml
 #
-# Workflow to build a Maiko release that is pushed to github as well as
-# Docker images incorporating the release, which are pushed to Docker Hub.
-# For linux:  release assets are built/pushed for X86_64, aarch64 and arm7vl and 
-#     a multiplatform Docker image is pushed.
-# For macOS:  release assets are built/pushed for X86_64. (No aarch64 as yet.)
+# Workflow to build a Maiko release that is pushed to github.
+# For linux:  release assets are built/pushed for X86_64, aarch64 and arm7vl.
+# For macOS:  release assets are built/pushed for X86_64 and aarch64 as well as
+#             a set of universal binaries.
 # For Windows:  not supported
 #
 # Note release pushed to github automatically includes source code assets
 # in tar and zip formats.
 #
 # 2022-01-16 by Frank Halasz based on earlier workflow called buildDocker.yml
+# Updated 2023-06-06: Remove docker image push; increase build efficeincy for linux
 #
-# Copyright 2022 by Interlisp.org
+# Copyright 2022-2023 by Interlisp.org
 #
 #
 # ******************************************************************************
 
-name: 'Build/Push Release & Docker Image'
-
-env:
-  workflow: 'buildReleaseInclDocker.yml'
+name: 'Build/Push Release
 
 # Run this workflow on ...
 on: 
@@ -68,8 +65,8 @@ defaults:
 
 #  2 separate jobs here that can run in parallel
 #
-#  1.  Linux: Build/push a multiplatform Linux Docker image and use results to
-#      build/push Linux release assets.
+#  1.  Linux: Build a multiplatform Linux Docker file system (not saved) and use
+#      results to build/push Linux release assets.
 #
 #  2.  MacOs:  Build maiko for MacOS (x86_64, aarch64, and universal)  then create
 #      and push release assets.
@@ -176,31 +173,25 @@ jobs:
 
       # Setup the Docker Machine Emulation environment.  
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@master
+        uses: docker/setup-qemu-action@v2
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
       # Setup the Docker Buildx funtion
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@master
-
-      # Login into DockerHub - required to store the created image
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+        uses: docker/setup-buildx-action@v2
 
       # Do the Docker Build using the Dockerfile in the repository we
-      # checked out.  Push the result to Docker Hub.
+      # checked out.  Save the results in a directory under /tmp to be used
+      # for creating release tars.  Does not creatre a docker image and does not
+      # push anything to Docker Hub.
       #
       # NOTE: THE ACTUAL MAIKO BUILD (FOR LINUX) HAPPENS HERE - I.E., IN THE
       #       DOCKER BUILD CALL.  BUILD COMMANDS ARE SPECIFIED IN THE
       #       Dockerfile, NOT HERE IN THE WORKFLOW.
       #
-      - name: Build Docker Image for Push to Docker Hub
-        if: ${{ true }}
+      - name: Build Docker Image and Save It Locally
         uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
@@ -208,23 +199,7 @@ jobs:
             BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
             RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
           context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          # Push the result to DockerHub
-          push: true
-          tags: ${{ steps.docker_env.outputs.docker_tags }}
-
-      # Redo the Docker Build (hopefully mostly using the cache from the previous build).
-      # But save the results in a directory under /tmp to be used for creating release tars.
-      - name: Rebuild Docker Image For Saving Locally
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          build-args: |
-            BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
-            RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
-          context: .
-          file: ./Dockerfile
+          file: ./.github/workflows/Dockerfile_maiko
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           # Put the results out to the local file system
           outputs: type=local,dest=/tmp/docker_images
