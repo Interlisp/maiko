@@ -309,7 +309,7 @@ jobs:
         run: |
           gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.dmg
           hdiutil attach SDL2-2.26.5.dmg
-          cp -r /Volumes/SDL2/SDL2.framework /Library/Frameworks
+          ditto /Volumes/SDL2/SDL2.framework /Library/Frameworks/SDL2.framework
           hdiutil detach /Volumes/SDL2/
 
       # Build maiko   
