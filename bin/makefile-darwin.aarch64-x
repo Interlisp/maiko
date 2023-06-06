@@ -1,6 +1,6 @@
-# Options for MacOS, arm64 (aka aarch64)  processor, X windows
+# Options for MacOS, arm64 (aka aarch64) processor, X windows
 
-CC = clang  -target aarch64-apple-darwin $(CLANG_CFLAGS)
+CC = clang -target aarch64-apple-darwin $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

@@ -139,9 +139,9 @@ jobs:
   linux:
   
     needs: [inputs, sentry]
-    if: |
-      needs.sentry.outputs.release_not_built == 'true'
-      || needs.inputs.outputs.force == 'true'
+    if: ${{ false }}
+#      needs.sentry.outputs.release_not_built == 'true'
+#      || needs.inputs.outputs.force == 'true'
     
     runs-on: ubuntu-latest
 
@@ -297,10 +297,11 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
 
-      # Install X11 dependencies
+      # Install X11 and SDL dependencies
       - name: Install X11 dependencies on MacOS
-        if: ${{ runner.os == 'macOS'}}
-        run: brew install --cask xquartz
+        run: |
+          brew install --cask xquartz
+          brew install SDL2
 
       # Build maiko   
       - name: Build
@@ -308,12 +309,14 @@ jobs:
         run: |
           export LDEARCH=x86_64-apple-darwin
           ./makeright x
+          ./makeright sdl
           ./makeright init
           export LDEARCH=aarch64-apple-darwin
-          ./makeright x   
+          ./makeright x
+          ./makeright sdl 
           ./makeright init
           mkdir -p ../darwin.universal
-          for exe in ldeinit lde ldex 
+          for exe in ldeinit lde ldex ldesdl 
           do
             lipo -create \
                  -arch arm64 ../darwin.aarch64/${exe}  \
