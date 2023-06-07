@@ -302,12 +302,16 @@ jobs:
         run: |
           echo "---------------------------------------------------------------------"
           ls -l /usr/local/lib/libX11*
+        continue-on-error: true
+      - run: |
+          echo "---------------------------------------------------------------------"
+          ls -l /private/var/select/X11
+        continue-on-error: true
+      - run: |
           echo "---------------------------------------------------------------------"
           ls -l /opt/X11
           echo "---------------------------------------------------------------------"
-          ls -l /private/var/select/X11
-          echo "---------------------------------------------------------------------"
-
+        continue-on-error: true
 
       - name: Install X11 dependencies on MacOS
         run: |
@@ -315,13 +319,19 @@ jobs:
 
       - name: List2
         run: |
+        run: |
           echo "---------------------------------------------------------------------"
           ls -l /usr/local/lib/libX11*
+        continue-on-error: true
+      - run: |
+          echo "---------------------------------------------------------------------"
+          ls -l /private/var/select/X11
+        continue-on-error: true
+      - run: |
           echo "---------------------------------------------------------------------"
           ls -l /opt/X11
           echo "---------------------------------------------------------------------"
-          ls -l /private/var/select/X11
-          echo "---------------------------------------------------------------------"
+        continue-on-error: true
 
       # Install SDL dependencies
       - name: Install SDL2 dependencies on MacOS
