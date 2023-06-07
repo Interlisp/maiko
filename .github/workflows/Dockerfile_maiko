@@ -17,6 +17,8 @@ COPY . ${INSTALL_LOCATION}
 # Build maiko
 RUN cd ${INSTALL_LOCATION}/bin \
     && ./makeright x cleanup\
-    && ./makeright init cleanup \
-    && ./makeright x \
-    && ./makeright init
+    && ./makeright x
+RUN cd ${INSTALL_LOCATION}/bin \
+    && if [[ "$(./osversion)" != "linux" || "$(./mchinetype)" = "x86_64" ]]; then \
+           ./makeright init; \
+       fi
