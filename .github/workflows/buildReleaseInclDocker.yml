@@ -319,7 +319,6 @@ jobs:
 
       - name: List2
         run: |
-        run: |
           echo "---------------------------------------------------------------------"
           ls -l /usr/local/lib/libX11*
         continue-on-error: true
