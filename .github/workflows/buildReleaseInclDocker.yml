@@ -298,9 +298,30 @@ jobs:
         uses: ./../actions/release-tag-action
 
       # Install X11 dependencies
+      - name: List
+        run: |
+          echo "---------------------------------------------------------------------"
+          ls -l /usr/local/lib/libX11*
+          echo "---------------------------------------------------------------------"
+          ls -l /opt/X11
+          echo "---------------------------------------------------------------------"
+          ls -l /private/var/select/X11
+          echo "---------------------------------------------------------------------"
+
+
       - name: Install X11 dependencies on MacOS
         run: |
           brew install --cask xquartz
+
+      - name: List2
+        run: |
+          echo "---------------------------------------------------------------------"
+          ls -l /usr/local/lib/libX11*
+          echo "---------------------------------------------------------------------"
+          ls -l /opt/X11
+          echo "---------------------------------------------------------------------"
+          ls -l /private/var/select/X11
+          echo "---------------------------------------------------------------------"
 
       # Install SDL dependencies
       - name: Install SDL2 dependencies on MacOS
