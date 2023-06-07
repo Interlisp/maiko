@@ -313,25 +313,41 @@ jobs:
           hdiutil detach /Volumes/SDL2/
 
       # Build maiko   
-      - name: Build
+      - name: Build ldeinit
         working-directory: ./bin
         run: |
           export LDEARCH=x86_64-apple-darwin
-          ./makeright x
-          ./makeright sdl
           ./makeright init
           export LDEARCH=aarch64-apple-darwin
-          ./makeright x
-          ./makeright sdl 
           ./makeright init
           mkdir -p ../darwin.universal
-          for exe in ldeinit lde ldex ldesdl 
+          exe=ldeinit 
+          lipo -create \
+               -arch arm64 ../darwin.aarch64/${exe}  \
+               -arch x86_64 ../darwin.x86_64/${exe} \
+               -output ../darwin.universal/${exe}
+      
+      - name: Build lde, ldex, & ldesdl
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
+                   -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+                   -DMAIKO_DISPLAY_SDL=ON \
+                   -DMAIKO_DISPLAY_X11=ON
+          make
+          for arch in x86_64 aarch64 universal
           do
-            lipo -create \
-                 -arch arm64 ../darwin.aarch64/${exe}  \
-                 -arch x86_64 ../darwin.x86_64/${exe} \
-                 -output ../darwin.universal/${exe}
-          done
+            for exe in lde ldex ldesdl
+            do
+              if [ "${arch}" != "universal" ]
+              then 
+                lipo ${exe} -output ../darwin.${arch}/${exe} -extract ${arch}
+              else
+                cp -p ${exe} ../darwin.${arch}/${exe}
+              fi
+            done
+          done  
 
       # Create release tar for github.
       - name: Make release tar(s)
