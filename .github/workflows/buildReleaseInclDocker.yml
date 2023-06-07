@@ -315,6 +315,7 @@ jobs:
 
       - name: Install X11 dependencies on MacOS
         run: |
+          brew uninstall libx11
           brew install --cask xquartz
 
       - name: List2
