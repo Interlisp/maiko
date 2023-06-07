@@ -18,10 +18,10 @@
 #
 # ******************************************************************************
 
-name: 'Build/Push Release
+name: 'Build/Push Release'
 
 # Run this workflow on ...
-on: 
+on:
     workflow_dispatch:
       inputs:
         draft:
@@ -97,8 +97,6 @@ jobs:
               echo "draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT;
               echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
           fi
-        
-
 
 ######################################################################################
 
@@ -111,7 +109,7 @@ jobs:
     outputs:
       release_not_built: ${{ steps.check.outputs.release_not_built }}
 
-    steps: 
+    steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v3
@@ -121,7 +119,7 @@ jobs:
       - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
       # Check if build already run for this commit
-      - name: Build already completed? 
+      - name: Build already completed?
         id: check
         continue-on-error: true
         uses: ./../actions/check-sentry-action
@@ -134,12 +132,12 @@ jobs:
   # Use docker images to create and push release assets to github
 
   linux:
-  
+
     needs: [inputs, sentry]
     if: |
       needs.sentry.outputs.release_not_built == 'true'
       || needs.inputs.outputs.force == 'true'
-    
+
     runs-on: ubuntu-latest
 
     steps:
@@ -151,7 +149,7 @@ jobs:
           path: ./Actions_${{ github.sha }}
       - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
-      # Checkout the branch  
+      # Checkout the branch
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -171,7 +169,7 @@ jobs:
           echo "build_time=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
           echo "docker_tags=${DOCKER_TAGS}"  >> $GITHUB_OUTPUT
 
-      # Setup the Docker Machine Emulation environment.  
+      # Setup the Docker Machine Emulation environment.
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
@@ -229,7 +227,7 @@ jobs:
       # Push Release to github
       - name: Push the release
         uses: ncipollo/release-action@v1
-        with: 
+        with:
           allowUpdates: true
           artifacts:
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.x86_64.tgz,
@@ -255,7 +253,7 @@ jobs:
 
     steps:
 
-      # Checkout the branch  
+      # Checkout the branch
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -380,7 +378,7 @@ jobs:
 
     needs: [inputs, sentry, linux, macos]
 
-    steps: 
+    steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v3
@@ -390,16 +388,15 @@ jobs:
       - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
       # Set sentry
-      - name: Is build for this commit already completed? 
+      - name: Is build for this commit already completed?
         id: set
         uses: ./../actions/set-sentry-action
         with:
           tag: "release_docker"
-     
+
       - name: Output
         id: output
         run: |
           echo "build_successful=true"  >> $GITHUB_OUTPUT
 
-          
 ######################################################################################
