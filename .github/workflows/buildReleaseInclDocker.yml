@@ -326,12 +326,12 @@ jobs:
                -arch arm64 ../darwin.aarch64/${exe}  \
                -arch x86_64 ../darwin.x86_64/${exe} \
                -output ../darwin.universal/${exe}
-      
+
       - name: Build lde, ldex, & ldesdl
         run: |
           mkdir build
           cd build
-# -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
+          # -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
           cmake .. \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DMAIKO_DISPLAY_SDL=ON \
