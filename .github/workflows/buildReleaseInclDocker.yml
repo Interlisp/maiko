@@ -331,11 +331,13 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12 \
-                   -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-                   -DMAIKO_DISPLAY_SDL=ON \
-                   -DMAIKO_DISPLAY_X11=ON
-          make
+# -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
+          cmake .. \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DMAIKO_DISPLAY_SDL=ON \
+            -DMAIKO_DISPLAY_X11=ON \ 
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
           for arch in x86_64 aarch64 universal
           do
             for exe in lde ldex ldesdl
