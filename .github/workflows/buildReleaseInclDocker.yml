@@ -313,9 +313,15 @@ jobs:
           echo "---------------------------------------------------------------------"
         continue-on-error: true
 
+      - name: Unistall X components already on the runner
+        run: |
+          brew uninstall --ignore-dependencies libxft
+          brew uninstall --ignore-dependencies libxrender
+          brew uninstall --ignore-dependencies libxext
+          brew uninstall --ignore-dependencies libx11
+
       - name: Install X11 dependencies on MacOS
         run: |
-          brew uninstall libx11
           brew install --cask xquartz
 
       - name: List2
