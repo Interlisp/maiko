@@ -312,12 +312,22 @@ jobs:
           brew uninstall --ignore-dependencies libxrender
           brew uninstall --ignore-dependencies libxext
           brew uninstall --ignore-dependencies libx11
+          brew uninstall --ignore-dependencies xorgproto
+          brew uninstall --ignore-dependencies libxdmcp
+          brew uninstall --ignore-dependencies libxau
 
       - name: List2
         run: |
           echo "---------------------------------------------------------------------"
           ls -l /usr/local/include
+          echo "---------------------------------------------------------------------"
           ls -l /usr/local/include/X11
+          echo "---------------------------------------------------------------------"
+          ls -l /usr/local/include/X11/dri
+          echo "---------------------------------------------------------------------"
+          ls -l /usr/local/include/X11/extensions
+          echo "--------------------------------------------------------------------"
+          ls -l /usr/local/include/X11/fonts
           echo "---------------------------------------------------------------------"
         continue-on-error: true
 
