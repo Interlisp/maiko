@@ -1,6 +1,6 @@
 # Options for MacOS, x86_64 processor, X windows, for INIT processing
 
-CC = clang -m64 $(CLANG_CFLAGS)
+CC = clang -m64 -target x86_64-apple-darwin $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \

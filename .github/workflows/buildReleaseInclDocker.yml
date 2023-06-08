@@ -27,6 +27,12 @@ env:
 on: 
     workflow_dispatch:
       inputs:
+        draft:
+          description: "Mark this as a draft release"
+          type: choice
+          options:
+          - 'false'
+          - 'true'
         force:
           description: "Force build even if build already successfully completed for this commit"
           type: choice
@@ -45,6 +51,11 @@ on:
           description: "'True' if maiko build completed successully"
           value: ${{ jobs.complete.outputs.build_successful }}
       inputs:
+        draft:
+          description: "Mark this as a draft release"
+          required: false
+          type: string
+          default: 'false'
         force:
           description: "Force build even if build already successfully completed for this commit"
           required: false
@@ -60,7 +71,8 @@ defaults:
 #  1.  Linux: Build/push a multiplatform Linux Docker image and use results to
 #      build/push Linux release assets.
 #
-#  2.  MacOs_x86_64:  Build maiko for MacOS on X86_64 then create and push release assets.
+#  2.  MacOs:  Build maiko for MacOS (x86_64, aarch64, and universal)  then create
+#      and push release assets.
 #
 
 jobs:
@@ -73,13 +85,20 @@ jobs:
   inputs:
     runs-on: ubuntu-latest
     outputs:
-      force: ${{ steps.force.outputs.force }}
+      draft: ${{ steps.one.outputs.draft }}
+      force: ${{ steps.one.outputs.force }}
     steps:
-      - id: force
+      - id: one
         run: >
           if [ '${{ toJSON(inputs) }}' = 'null'  ];
-          then echo ::set-output name=force::'${{ github.event.inputs.force }}'; echo "workflow_dispatch";
-          else echo ::set-output name=force::'${{ inputs.force }}'; echo "workflow_call";
+          then
+              echo "workflow_dispatch";
+              echo "draft=${{ github.event.inputs.draft }}" >> $GITHUB_OUTPUT;
+              echo "force=${{ github.event.inputs.force }}" >> $GITHUB_OUTPUT;
+          else
+              echo "workflow_call";
+              echo "draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT;
+              echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
           fi
         
 
@@ -152,8 +171,8 @@ jobs:
           echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> ${GITHUB_ENV}
           DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
           DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
-          echo ::set-output name=build_time::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          echo ::set-output name=docker_tags::${DOCKER_TAGS}
+          echo "build_time=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
+          echo "docker_tags=${DOCKER_TAGS}"  >> $GITHUB_OUTPUT
 
       # Setup the Docker Machine Emulation environment.  
       - name: Set up QEMU
@@ -168,7 +187,7 @@ jobs:
 
       # Login into DockerHub - required to store the created image
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
@@ -182,7 +201,7 @@ jobs:
       #
       - name: Build Docker Image for Push to Docker Hub
         if: ${{ true }}
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -198,7 +217,7 @@ jobs:
       # Redo the Docker Build (hopefully mostly using the cache from the previous build).
       # But save the results in a directory under /tmp to be used for creating release tars.
       - name: Rebuild Docker Image For Saving Locally
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -234,7 +253,7 @@ jobs:
 
       # Push Release to github
       - name: Push the release
-        uses: ncipollo/release-action@v1.8.10
+        uses: ncipollo/release-action@v1
         with: 
           allowUpdates: true
           artifacts:
@@ -242,22 +261,22 @@ jobs:
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.aarch64.tgz,
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.armv7l.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
-          draft: true
+          draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
 ######################################################################################
 
-  # MacOS: build for MacOS (X86_64) and use results to
+  # MacOS: build for MacOS (x86_64, aarch64, universal) and use results to
   # create and push release assets to github
-  macos_x86_64:
+  macos:
 
     needs: [inputs, sentry]
     if: |
       needs.sentry.outputs.release_not_built == 'true'
       || needs.inputs.outputs.force == 'true'
 
-    runs-on: macos-10.15
+    runs-on: macos-latest
 
     steps:
 
@@ -278,17 +297,66 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
 
-      # Install X11 dependencies
+      # Uninstall exisitng X11 stuff preconfigured on runner then install correct X11 dependencies
+      - name: Unistall X components already on the runner
+        run: |
+          brew uninstall --ignore-dependencies libxft
+          brew uninstall --ignore-dependencies libxrender
+          brew uninstall --ignore-dependencies libxext
+          brew uninstall --ignore-dependencies libx11
+          brew uninstall --ignore-dependencies xorgproto
+          brew uninstall --ignore-dependencies libxdmcp
+          brew uninstall --ignore-dependencies libxau
+
       - name: Install X11 dependencies on MacOS
-        if: ${{ runner.os == 'macOS'}}
-        run: brew install --cask xquartz
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download XQuartz-2.8.5 --repo XQuartz/XQuartz --pattern XQuartz-2.8.5.pkg
+          sudo installer -pkg ./XQuartz-2.8.5.pkg -target /
+
+      # Install SDL dependencies
+      - name: Install SDL2 dependencies on MacOS
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.dmg
+          hdiutil attach SDL2-2.26.5.dmg
+          sudo ditto /Volumes/SDL2/SDL2.framework /Library/Frameworks/SDL2.framework
+          hdiutil detach /Volumes/SDL2/
 
       # Build maiko   
-      - name: Build
+      - name: Build ldeinit
         working-directory: ./bin
         run: |
-          ./makeright x
+          export LDEARCH=x86_64-apple-darwin
           ./makeright init
+          export LDEARCH=aarch64-apple-darwin
+          ./makeright init
+          mkdir -p ../darwin.universal
+          exe=ldeinit 
+          lipo -create \
+               -arch arm64 ../darwin.aarch64/${exe}  \
+               -arch x86_64 ../darwin.x86_64/${exe} \
+               -output ../darwin.universal/${exe}
+
+      - name: Build lde, ldex, & ldesdl
+        run: |
+          mkdir build
+          cd build
+          # -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
+          cmake .. \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
+            -DMAIKO_DISPLAY_SDL=ON \
+            -DMAIKO_DISPLAY_X11=ON \
+            -DCMAKE_BUILD_TYPE=Release
+          cmake --build . --config Release
+          for exe in lde ldex ldesdl
+          do
+            lipo ${exe} -output ../darwin.x86_64/${exe} -extract x86_64
+            lipo ${exe} -output ../darwin.aarch64/${exe} -extract arm64
+            cp -p ${exe} ../darwin.universal/${exe}
+          done  
 
       # Create release tar for github.
       - name: Make release tar(s)
@@ -296,25 +364,29 @@ jobs:
           RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
         run: |
           mkdir -p /tmp/release_tars
-          pushd ${GITHUB_WORKSPACE}/../ >/dev/null
-          tar -c -z                                                       \
-            -f /tmp/release_tars/${RELEASE_TAG}-darwin.x86_64.tgz                  \
-            maiko/bin/osversion                                                    \
-            maiko/bin/machinetype                                                  \
-            maiko/bin/config.guess                                                 \
-            maiko/bin/config.sub                                                   \
-            maiko/darwin.x86_64/lde*
-          popd >/dev/null
+          cd ${GITHUB_WORKSPACE}/../
+          for arch in x86_64 aarch64 universal
+          do
+            tar -c -z                                                                \
+              -f /tmp/release_tars/${RELEASE_TAG}-darwin.${arch}.tgz                 \
+              maiko/bin/osversion                                                    \
+              maiko/bin/machinetype                                                  \
+              maiko/bin/config.guess                                                 \
+              maiko/bin/config.sub                                                   \
+              maiko/darwin.${arch}/lde*
+          done
 
       # Push Release
       - name: Push the release
-        uses: ncipollo/release-action@v1.8.10
+        uses: ncipollo/release-action@v1
         with: 
           allowUpdates: true
           artifacts:
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.x86_64.tgz
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.x86_64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.aarch64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.universal.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
-          draft: true
+          draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
 
@@ -331,7 +403,7 @@ jobs:
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
 
-    needs: [inputs, sentry, linux, macos_x86_64]
+    needs: [inputs, sentry, linux, macos]
 
     steps: 
       # Checkout the actions for this repo owner
@@ -352,6 +424,7 @@ jobs:
       - name: Output
         id: output
         run: |
-          echo ::set-output name=build_successful::'true'
+          echo "build_successful=true"  >> $GITHUB_OUTPUT
+
           
 ######################################################################################
