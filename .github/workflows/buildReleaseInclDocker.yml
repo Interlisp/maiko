@@ -139,9 +139,9 @@ jobs:
   linux:
   
     needs: [inputs, sentry]
-    if: ${{ false }}
-#      needs.sentry.outputs.release_not_built == 'true'
-#      || needs.inputs.outputs.force == 'true'
+    if: |
+      needs.sentry.outputs.release_not_built == 'true'
+      || needs.inputs.outputs.force == 'true'
     
     runs-on: ubuntu-latest
 
