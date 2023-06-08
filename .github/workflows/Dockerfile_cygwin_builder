@@ -1,0 +1,24 @@
+#*******************************************************************************
+#
+#  Dockerfile to build image with all the tools to build Maiko for cygwin,
+#  including cygwin itself plus a new build of SDL
+#
+#  Copyright 2023 by Interlisp.org
+#
+#  Frank Halasz 2023-06-08
+#
+# ******************************************************************************
+
+FROM mcr.microsoft.com/windows/nanoserver:ltsc2022
+SHELL ["powershell", "-command"]
+# Install cygwin
+RUN whoami
+RUN echo $Env:Username
+COPY setup-86_64.exe .
+RUN Start-Process .\setup-x86_64.exe -Wait \
+      -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano") 
+RUN .\cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo \"none / cygdrive binary,posix=0,user 0 0\" >>/etc/fstab'
+COPY sdl .\cygwin\sdl
+RUN .\cygwin\bin\bash -login -c 'cd sdl && ./configure && make && make install'
+RUN ls .cygwin\usr
+ENTRYPOINT powershell
