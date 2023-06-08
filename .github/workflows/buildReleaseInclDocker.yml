@@ -297,15 +297,7 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
 
-      - name: List
-        run: |
-          echo "---------------------------------------------------------------------"
-          ls -l /usr/local/include
-          ls -l /usr/local/include/X11
-          echo "---------------------------------------------------------------------"
-        continue-on-error: true
-
-      # Install X11 dependencies
+      # Uninstall exisitng X11 stuff preconfigured on runner then install correct X11 dependencies
       - name: Unistall X components already on the runner
         run: |
           brew uninstall --ignore-dependencies libxft
@@ -315,21 +307,6 @@ jobs:
           brew uninstall --ignore-dependencies xorgproto
           brew uninstall --ignore-dependencies libxdmcp
           brew uninstall --ignore-dependencies libxau
-
-      - name: List2
-        run: |
-          echo "---------------------------------------------------------------------"
-          ls -l /usr/local/include
-          echo "---------------------------------------------------------------------"
-          ls -l /usr/local/include/X11
-          echo "---------------------------------------------------------------------"
-          ls -l /usr/local/include/X11/dri
-          echo "---------------------------------------------------------------------"
-          ls -l /usr/local/include/X11/extensions
-          echo "--------------------------------------------------------------------"
-          ls -l /usr/local/include/X11/fonts
-          echo "---------------------------------------------------------------------"
-        continue-on-error: true
 
       - name: Install X11 dependencies on MacOS
         env:
@@ -374,17 +351,11 @@ jobs:
             -DMAIKO_DISPLAY_X11=ON \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
-          for arch in x86_64 aarch64 universal
+          for exe in lde ldex ldesdl
           do
-            for exe in lde ldex ldesdl
-            do
-              if [ "${arch}" != "universal" ]
-              then 
-                lipo ${exe} -output ../darwin.${arch}/${exe} -extract ${arch}
-              else
-                cp -p ${exe} ../darwin.${arch}/${exe}
-              fi
-            done
+            lipo ${exe} -output ../darwin.x86_64/${exe} -extract x86_64
+            lipo ${exe} -output ../darwin.aarch64/${exe} -extract arm64
+            cp -p ${exe} ../darwin.universal/${exe}
           done  
 
       # Create release tar for github.
