@@ -321,8 +321,11 @@ jobs:
           brew uninstall --ignore-dependencies libx11
 
       - name: Install X11 dependencies on MacOS
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          brew install --cask xquartz
+          gh release download XQuartz-2.8.5 --repo XQuartz/XQuartz --pattern XQuartz-2.8.5.pkg
+          installer -pkg ./XQuartz-2.8.5.pkg -target /
 
       - name: List2
         run: |
