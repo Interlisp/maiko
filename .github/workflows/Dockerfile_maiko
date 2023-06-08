@@ -12,13 +12,14 @@
 
 FROM ghcr.io/interlisp/maiko-builder
 ARG INSTALL_LOCATION=/usr/local/interlisp/maiko
+SHELL ["/bin/bash", "-c"]
 # Copy over / clean maiko repo
 COPY . ${INSTALL_LOCATION}
 # Build maiko
 RUN cd ${INSTALL_LOCATION}/bin \
-    && ./makeright x cleanup\
+    && ./makeright x cleanup \
     && ./makeright x
 RUN cd ${INSTALL_LOCATION}/bin \
-    && if [[ "$(./osversion)" != "linux" || "$(./mchinetype)" = "x86_64" ]]; then \
+    && if [ "$(./machinetype)" = "x86_64" ]; then \
            ./makeright init; \
        fi

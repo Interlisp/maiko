@@ -8,7 +8,7 @@
 #
 # ******************************************************************************
 
-FROM ubuntu:latet
+FROM ubuntu:latest
 SHELL ["/bin/bash", "-c"]
 USER root:root
 # Install build tools
