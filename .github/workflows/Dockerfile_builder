@@ -1,0 +1,18 @@
+#*******************************************************************************
+#
+#  Dockerfile to build image with all the tools to build  Maiko
+#
+#  Copyright 2023 by Interlisp.org
+#
+#  Frank Halasz 2023-02-21
+#
+# ******************************************************************************
+
+FROM ubuntu:latest
+SHELL ["/bin/bash", "-c"]
+USER root:root
+# Install build tools
+RUN apt-get update && apt-get install -y make clang libx11-dev gcc
+USER root
+WORKDIR /root
+ENTRYPOINT /bin/bash
