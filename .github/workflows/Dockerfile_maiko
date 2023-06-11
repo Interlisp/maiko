@@ -1,6 +1,6 @@
 #*******************************************************************************
 #
-#  Dockerfile to build Maiko to be used by buildRelease github action
+#  Dockerfile to build Maiko for Linux to be used by buildRelease github action
 #  The output of this is intended to be a directory in the github workspace
 #  file system it is not intended to be a useable Docker image.
 #

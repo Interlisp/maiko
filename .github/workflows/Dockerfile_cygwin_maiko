@@ -1,0 +1,20 @@
+#*******************************************************************************
+#
+#  Dockerfile to build Maiko on Cygwin to be used by buildRelease github action
+#  The output of this is intended to be a directory in the github workspace
+#  file system it is not intended to be a useable Docker image.
+#
+#  Copyright 2023 by Interlisp.org
+#
+#  Frank Halasz 2023-06-09
+#
+# ******************************************************************************
+
+FROM maiko-cygwin-builder:latest
+ARG INSTALL_LOCATION=/cygwin/maiko
+SHELL ["powershell", "-command"]
+# Copy over / clean maiko repo
+COPY . /cygwin/maiko
+# Build maiko
+RUN cygwin\bin\bash -login -c 'cd maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+
