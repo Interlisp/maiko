@@ -33,21 +33,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-<<<<<<< HEAD
       # Fetch cygwin and sdl from net
       - name: Fetch cygwin
         id: cygwin
         run: |
           wget https://cygwin.com/setup-x86_64.exe -OutFile .\.github\workflows\setup-x86_64.exe
 
-=======
-     # Fetch cygwin and sdl from net
-     - name: Fetch cygwin
-       id: cygwin
-       run: |
-         wget https://cygwin.com/setup-x86_64.exe -OutFile .\.github\workflows\setup-x86_64.exe
-     
->>>>>>> b9aaa74 (WIP Dockerfile_cygwin_builder)
       - name: Fetch SDL2
         id: SDL2
         env: 
