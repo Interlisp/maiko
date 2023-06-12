@@ -54,7 +54,7 @@ jobs:
           echo "COMBINED_RELEASE_TAG=$crt" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
           $DOCKER_REGISTRY="ghcr.io"
-          $DOCKER_NAMESPACE="$(${{ github.repository_owner }}.ToLower())"
+          $DOCKER_NAMESPACE="$('${{ github.repository_owner }}'.ToLower())"
           $DOCKER_REPO="${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/maiko-cygwin-builder"
           $DOCKER_TAG="${DOCKER_REPO}:latest"
           $bd=Get-Date -UFormat "%Y-%m-%d_%H:%M_%Z"
