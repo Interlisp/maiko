@@ -412,7 +412,9 @@ jobs:
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
-      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
+      - run: |
+          mv ./Actions_${{ github.sha }}/actions ../actions
+          rm -recurse -force ./Actions_${{ github.sha }}
 
       # Setup release tag
       - name: Setup Release Tag
