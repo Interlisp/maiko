@@ -104,7 +104,7 @@ jobs:
           # for debugging
           echo "linux=false" >> $GITHUB_OUTPUT
           echo "macos=false" >> $GITHUB_OUTPUT
-          echo "windows=false" >> $GITHUB_OUTPUT
+          echo "windows=true" >> $GITHUB_OUTPUT
           
 
 ######################################################################################
