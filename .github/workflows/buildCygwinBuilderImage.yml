@@ -44,7 +44,7 @@ jobs:
         env: 
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.tar.gz --output sdl2.tar.gz
+          gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.tar.gz --output .\.github\workflows\sdl2.tar.gz
 
       # Setup docker environment variables
       - name: Setup Docker Environment Variables
