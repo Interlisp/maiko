@@ -103,11 +103,10 @@ jobs:
               echo "workflow_call";
               echo "draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT;
               echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
-          fi
-          # for debugging
-          echo "linux=false" >> $GITHUB_OUTPUT
-          echo "macos=false" >> $GITHUB_OUTPUT
-          echo "windows=true" >> $GITHUB_OUTPUT
+          fi;
+          echo "linux=false" >> $GITHUB_OUTPUT;
+          echo "macos=false" >> $GITHUB_OUTPUT;
+          echo "windows=true" >> $GITHUB_OUTPUT;
           
 
 ######################################################################################
