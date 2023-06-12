@@ -261,7 +261,7 @@ jobs:
       needs.inputs.outputs.macos == 'true'
       && (
           needs.sentry.outputs.release_not_built == 'true'
-          || needs.inputs.outputs.force == 'true')
+          || needs.inputs.outputs.force == 'true'
       )
 
     runs-on: macos-latest
@@ -389,7 +389,7 @@ jobs:
       needs.inputs.outputs.windows == 'true'
       && (
           needs.sentry.outputs.release_not_built == 'true'
-          || needs.inputs.outputs.force == 'true')
+          || needs.inputs.outputs.force == 'true'
       )
 
     runs-on: windows-2022
