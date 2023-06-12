@@ -88,6 +88,9 @@ jobs:
     outputs:
       draft: ${{ steps.one.outputs.draft }}
       force: ${{ steps.one.outputs.force }}
+      linux: ${{ steps.one.outputs.linux }}
+      macos: ${{ steps.one.outputs.macos }}
+      windows: ${{ steps.one.outputs.windows }}
     steps:
       - id: one
         run: >
@@ -102,9 +105,9 @@ jobs:
               echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
           fi
           # for debugging
-          echo "linux='false'" >> $GITHUB_OUTPUT
-          echo "macos='false'" >> $GITHUB_OUTPUT
-          echo "windows='true'" >> $GITHUB_OUTPUT
+          echo "linux=false" >> $GITHUB_OUTPUT
+          echo "macos=false" >> $GITHUB_OUTPUT
+          echo "windows=true" >> $GITHUB_OUTPUT
           
 
 ######################################################################################
