@@ -68,10 +68,7 @@ jobs:
       - name: Build Docker Image
         id: build
         run: |
-          docker build \
-                 -f ./.github/workflows/Dockerfile_cygwin_builder \
-                 -t ${{ env.DOCKER_TAG }} \
-                 ./.github/workflows
+          docker build -f .\.github\workflows\Dockerfile_cygwin_builder -t ${{ env.DOCKER_TAG }} .\.github\workflows
 
       # --build-arg BUILD_DATE=${{ env.BUILD_DATE }} \
 
