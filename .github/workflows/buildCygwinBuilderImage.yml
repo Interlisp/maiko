@@ -68,11 +68,13 @@ jobs:
       - name: Build Docker Image
         id: build
         run: |
-          docker build \ 
+          docker build \
                  -f ./.github/workflows/Dockerfile_cygwin_builder \
                  -t ${{ env.DOCKER_TAG }} \
-                 --build-arg BUILD_DATE=${{ env.BUILD_DATE }} \
                  ./.github/workflows
+
+      # --build-arg BUILD_DATE=${{ env.BUILD_DATE }} \
+
                        
       # Login to ghcr.io
       - name: Login to GitHub Container Registry
