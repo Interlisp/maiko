@@ -427,9 +427,9 @@ jobs:
         run: |
           $DOCKER_NAMESPACE="$('${{ github.repository_owner }}'.ToLower())"
           echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
+          $DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
           $rt = ${RELEASE_TAG}.replace("maiko-","")
-          DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:$rt"
+          $DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:$rt"
           $bd=Get-Date -UFormat "%Y-%m-%d_%H:%M_%Z"
           echo "build_time=$bd" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           echo "docker_tags=${DOCKER_TAGS}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
