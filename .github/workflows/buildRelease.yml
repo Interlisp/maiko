@@ -414,6 +414,8 @@ jobs:
       # Retrieve SDL2 and install in cygwin
       - name: Install SDL2
         id: sdl2
+        env: 
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
           cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
