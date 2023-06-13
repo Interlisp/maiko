@@ -408,7 +408,7 @@ jobs:
         run: |
           wget https://cygwin.com/setup-x86_64.exe -OutFile setup-x86_64.exe
           Unblock-File setup-x86_64.exe
-          Start-Process ..\setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
+          Start-Process setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
           cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo "none / cygdrive binary,posix=0,user 0 0" >>/etc/fstab'
 
       # Retrieve SDL2 and install in cygwin
