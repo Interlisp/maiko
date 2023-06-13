@@ -402,9 +402,27 @@ jobs:
 
     steps:
 
+      # Retrieve Cygwin setup and install cygwin
+      - name: Install cygwin
+        id: cygwin
+        run: |
+          wget https://cygwin.com/setup-x86_64.exe -OutFile setup-x86_64.exe
+          Unblock-File setup-x86_64.exe
+          Start-Process ..\setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
+          cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo "none / cygdrive binary,posix=0,user 0 0" >>/etc/fstab'
+
+      # Retrieve SDL2 and install in cygwin
+      - name: Install SDL2
+        id: sdl2
+        run: |
+          gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
+          cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
+
       # Checkout the branch
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: cygwin\maiko
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
@@ -421,54 +439,22 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
 
-      # Setup docker environment variables
-      - name: Setup Docker Environment Variables
-        id: docker_env
+      # Build maiko
+      - name: Build Cygwin-SDL Maiko
         run: |
-          $DOCKER_NAMESPACE="$('${{ github.repository_owner }}'.ToLower())"
-          echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          $DOCKER_IMAGE="${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}"
-          $rt = "${{ steps.tag.outputs.release_tag }}".replace("maiko-","")
-          $DOCKER_TAGS="maiko-build:latest"
-          $bd=Get-Date -UFormat "%Y-%m-%d_%H:%M_%Z"
-          echo "build_time=$bd" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
-          echo "docker_tags=${DOCKER_TAGS}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
-
-      # Do the Docker Build using the Dockerfile in the repository we
-      # checked out.  Save the results in a directory under /tmp to be used
-      # for creating release tars.  Does not creatre a docker image and does not
-      # push anything to Docker Hub.
-      #
-      # NOTE: THE ACTUAL MAIKO BUILD HAPPENS HERE - I.E., IN THE
-      #       DOCKER BUILD CALL.  BUILD COMMANDS ARE SPECIFIED IN THE
-      #       Dockerfile, NOT HERE IN THE WORKFLOW.
-      #
-      - name: Build Docker Image
-        run: |
-          docker build -f .\.github\workflows\Dockerfile_cygwin_maiko -t ${{ steps.docker_env.outputs.docker_tags }} --build-arg "BUILD_DATE=${{ steps.docker_env.outputs.build_time }}" --build-arg "RELEASE_TAG=${{ steps.tag.outputs.release_tag }}" .
-
-      # Use docker results to create releases for github.
-      # Docker results are in /tmp/docker_images. One subdir for each platform.
-      - name: Make release tars for each platform
-        env:
-          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
-        run: |
-          mkdir \tmp\maiko
-          mkdir \tmp\maiko\bin
-          mkdir \tmp\maiko\cygwin.x86_64
-          docker run --name maiko-container maiko-build:latest
-          docker cp maiko-container:\cygwin\maiko\bin\osversion \tmp\maiko\bin
-          docker cp maiko-container:\cygwin\maiko\bin\machinetype \tmp\maiko\bin
-          docker cp maiko-container:\cygwin\maiko\bin\config.guess \tmp\maiko\bin
-          docker cp maiko-container:\cygwin\maiko\bin\config.sub \tmp\maiko\bin
-          docker cp maiko-container:\cygwin\maiko\cygwin.x86_64\. \tmp\maiko\cygwin.x86_64
-          docker cp maiko-container:\cygwin\usr\local\bin\SDL2.DLL \tmp\maiko\cygwin.x86_64
+          cygwin\bin\bash -login -c 'cd maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+          cp cygwin\maiko\bin\osversion \tmp\maiko\bin
+          cp cygwin\maiko\bin\machinetype \tmp\maiko\bin
+          cp cygwin\maiko\bin\config.guess \tmp\maiko\bin
+          cp cygwin\maiko\bin\config.sub \tmp\maiko\bin
+          cp cygwin\maiko\cygwin.x86_64\. \tmp\maiko\cygwin.x86_64
+          cp cygwin\usr\local\bin\SDL2.DLL \tmp\maiko\cygwin.x86_64
           echo "lde" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\lde.exe.local -Encoding utf8
           echo "ldesdl" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\ldesdl.exe.local -Encoding utf8
           mkdir -p \tmp\release_tars
-          tar -c -z -C \tmp -f \tmp\release_tars\${RELEASE_TAG}-cygwin.x86_64.tgz maiko
+          tar -c -z -C \tmp -f \tmp\release_tars\${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
 
-      # Push Release to github
+     # Push Release to github
       - name: Push the release
         uses: ncipollo/release-action@v1
         with:
