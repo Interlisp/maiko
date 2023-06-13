@@ -402,6 +402,10 @@ jobs:
 
     steps:
 
+      # setup git to not mess up line endings
+      - name: git config
+        run: git config --global core.autocrlf input
+
       # Retrieve Cygwin setup and install cygwin
       - name: Install cygwin
         id: cygwin
