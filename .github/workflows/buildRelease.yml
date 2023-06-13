@@ -429,16 +429,10 @@ jobs:
           echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           $DOCKER_IMAGE="${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}"
           $rt = "${{ steps.tag.outputs.release_tag }}".replace("maiko-","")
-          $DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:$rt"
+          $DOCKER_TAGS="maiko-build:latest"
           $bd=Get-Date -UFormat "%Y-%m-%d_%H:%M_%Z"
-          echo "build_time=$bd" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          echo "docker_tags=${DOCKER_TAGS}" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-
-      # Setup the Docker Buildx funtion
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
+          echo "build_time=$bd" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
+          echo "docker_tags=${DOCKER_TAGS}" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       # Do the Docker Build using the Dockerfile in the repository we
       # checked out.  Save the results in a directory under /tmp to be used
@@ -449,18 +443,12 @@ jobs:
       #       DOCKER BUILD CALL.  BUILD COMMANDS ARE SPECIFIED IN THE
       #       Dockerfile, NOT HERE IN THE WORKFLOW.
       #
-      - name: Build Docker Image and Save It Locally
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          build-args: |
-            BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
-            RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
-          context: .
-          file: ./.github/workflows/Dockerfile_cygwin_maiko
-          # Put the results out to the local file system
-          outputs: type=local,dest=/tmp/docker_images
-          tags: ${{ steps.docker_env.outputs.docker_tags }}
+      - name: Build Docker Image
+        run: >
+          docker build -f .\.github\workflows\Dockerfile_cygwin_maiko 
+                       -t ${{ steps.docker_env.outputs.docker_tags }} 
+                       --build-arg "BUILD_DATE=${{ steps.docker_env.outputs.build_time }}"
+                       --build-arg "RELEASE_TAG=${{ steps.tag.outputs.release_tag }}"
 
       # Use docker results to create releases for github.
       # Docker results are in /tmp/docker_images. One subdir for each platform.
@@ -468,16 +456,20 @@ jobs:
         env:
           RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
         run: |
-          mkdir -p /tmp/release_tars
-          pushd /tmp/docker_images/ >/dev/null ;  \
-              /usr/bin/tar -c -z                                                       \
-                -f /tmp/release_tars/${RELEASE_TAG}-cygwin.x86_64.tgz                  \
-                maiko/bin/osversion                                                    \
-                maiko/bin/machinetype                                                  \
-                maiko/bin/config.guess                                                 \
-                maiko/bin/config.sub                                                   \
-                maiko/cygwin.x86_64/lde*                                               \
-              ;                                                                        \
+          mkdir \tmp\maiko
+          mkdir \tmp\maiko\bin
+          mkdir \tmp\maiko\cygwin.x86_64
+          docker run --name maiko-container maiko-build:latest
+          docker cp maiko-container:\cygwin\maiko\bin\osversion \tmp\maiko\bin
+          docker cp maiko-container:\cygwin\maiko\bin\machinetype \tmp\maiko\bin
+          docker cp maiko-container:\cygwin\maiko\bin\config.guess \tmp\maiko\bin
+          docker cp maiko-container:\cygwin\maiko\bin\config.sub \tmp\maiko\bin
+          docker cp maiko-container:\cygwin\maiko\cygwin.x86_64\. \tmp\maiko\cygwin.x86_64
+          docker cp maiko-container:\cygwin\usr\local\bin\SDL2.DLL \tmp\maiko\cygwin.x86_64
+          echo "lde" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\lde.exe.local -Encoding utf8
+          echo "ldesdl" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\ldesdl.exe.local -Encoding utf8
+          mkdir -p \tmp\release_tars
+          tar -c -z -C \tmp -f \tmp\release_tars\${RELEASE_TAG}-cygwin.x86_64.tgz maiko
 
       # Push Release to github
       - name: Push the release
