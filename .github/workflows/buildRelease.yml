@@ -439,8 +439,9 @@ jobs:
       # Setup release tag
       - name: Setup Release Tag
         id: tag
-        working-directory: cygwin\maiko
         uses: ./../actions/release-tag-action
+        with:
+          path: cygwin\maiko
 
       # Build maiko
       - name: Build Cygwin-SDL Maiko
