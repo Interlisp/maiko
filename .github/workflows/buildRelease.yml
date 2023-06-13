@@ -446,7 +446,10 @@ jobs:
       # Build maiko
       - name: Build Cygwin-SDL Maiko
         run: |
-          cygwin\bin\bash -login -c 'cd maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+          mkdir \tmp\maiko
+          mkdir \tmp\maiko\bin
+          mkdir \tmp\maiko\cygwin.x86_64
           cp cygwin\maiko\bin\osversion \tmp\maiko\bin
           cp cygwin\maiko\bin\machinetype \tmp\maiko\bin
           cp cygwin\maiko\bin\config.guess \tmp\maiko\bin
