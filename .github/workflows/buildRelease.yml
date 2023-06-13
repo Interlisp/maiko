@@ -458,7 +458,7 @@ jobs:
           cp cygwin\maiko\bin\machinetype \tmp\maiko\bin
           cp cygwin\maiko\bin\config.guess \tmp\maiko\bin
           cp cygwin\maiko\bin\config.sub \tmp\maiko\bin
-          cp cygwin\maiko\cygwin.x86_64\. \tmp\maiko\cygwin.x86_64
+          cp cygwin\maiko\cygwin.x86_64\* \tmp\maiko\cygwin.x86_64
           cp cygwin\usr\local\bin\SDL2.DLL \tmp\maiko\cygwin.x86_64
           echo "lde" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\lde.exe.local -Encoding utf8
           echo "ldesdl" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\ldesdl.exe.local -Encoding utf8
