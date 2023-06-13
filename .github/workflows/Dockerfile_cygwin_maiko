@@ -14,7 +14,7 @@ FROM ghcr.io/interlisp/maiko-cygwin-builder:latest
 ARG INSTALL_LOCATION=/cygwin/maiko
 SHELL ["powershell", "-command"]
 # Copy over / clean maiko repo
-COPY . /cygwin/maiko
+COPY . C:/cygwin/maiko
 # Build maiko
 RUN cygwin\bin\bash -login -c 'cd maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
 
