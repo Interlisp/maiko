@@ -444,11 +444,8 @@ jobs:
       #       Dockerfile, NOT HERE IN THE WORKFLOW.
       #
       - name: Build Docker Image
-        run: >
-          docker build -f .\.github\workflows\Dockerfile_cygwin_maiko 
-                       -t ${{ steps.docker_env.outputs.docker_tags }} 
-                       --build-arg "BUILD_DATE=${{ steps.docker_env.outputs.build_time }}"
-                       --build-arg "RELEASE_TAG=${{ steps.tag.outputs.release_tag }}"
+        run: |
+          docker build -f .\.github\workflows\Dockerfile_cygwin_maiko -t ${{ steps.docker_env.outputs.docker_tags }} --build-arg "BUILD_DATE=${{ steps.docker_env.outputs.build_time }}" --build-arg "RELEASE_TAG=${{ steps.tag.outputs.release_tag }}"
 
       # Use docker results to create releases for github.
       # Docker results are in /tmp/docker_images. One subdir for each platform.
