@@ -441,7 +441,7 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
         with:
-          path: cygwin\maiko
+          path: cygwin/maiko
 
       # Build maiko
       - name: Build Cygwin-SDL Maiko
