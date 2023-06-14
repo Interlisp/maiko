@@ -449,7 +449,7 @@ jobs:
 
       # Build maiko
       - name: Build Cygwin-SDL Maiko
-        shell: cygwin\bin\bash -login {0}
+        shell: ${{ github.workspace }}\cygwin\bin\bash -login {0}
         run: |
           cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl
           mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
