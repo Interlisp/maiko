@@ -451,7 +451,7 @@ jobs:
       - name: update path to pickup cygwin bash
         run: |
           $PATH = [Environment]::GetEnvironmentVariable("PATH")
-          $add_path = "${{{ github.workspace }}\cygwin\bin"
+          $add_path = "${{ github.workspace }}\cygwin\bin"
           [Environment]::SetEnvironmentVariable("PATH", "$add_path;$PATH")
 
       # Build maiko
