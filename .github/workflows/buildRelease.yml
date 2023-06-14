@@ -466,7 +466,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts:
-            cygwin\tmp\release_tars\${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
+            cygwin/tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
           draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
