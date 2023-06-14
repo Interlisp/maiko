@@ -104,8 +104,8 @@ jobs:
               echo "draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT;
               echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
           fi;
-          echo "linux=false" >> $GITHUB_OUTPUT;
-          echo "macos=false" >> $GITHUB_OUTPUT;
+          echo "linux=true" >> $GITHUB_OUTPUT;
+          echo "macos=true" >> $GITHUB_OUTPUT;
           echo "windows=true" >> $GITHUB_OUTPUT;
           
 
