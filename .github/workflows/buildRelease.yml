@@ -447,30 +447,18 @@ jobs:
         with:
           path: cygwin/maiko
 
-      # Add cygwin/bin to PATH
-      - name: update path to pickup cygwin bash
-        run: |
-          $PATH = [Environment]::GetEnvironmentVariable("PATH")
-          $add_path = "${{ github.workspace }}\cygwin\bin"
-          [Environment]::SetEnvironmentVariable("PATH", "$add_path;$PATH")
-
-      # Build maiko
+      # Build maiko TODO-cleanup
       - name: Build Cygwin-SDL Maiko
-        shell: bash -login {0}
         run: |
-          cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl
-          mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
-          cp /maiko/bin/osversion /tmp/maiko/bin
-          cp /maiko/bin/machinetype /tmp/maiko/bin
-          cp /maiko/bin/config.guess /tmp/maiko/bin
-          cp /maiko/bin/config.sub /tmp/maiko/bin
-          cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64
-          cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64
-          chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*
-          echo "lde" > /tmp/maiko/cygwin.x86_64/lde.exe.local
-          echo "ldesdl" > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local
-          mkdir -p /tmp/release_tars
-          tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
+          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+          cygwin\bin\bash -login -c 'mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64'
+          cygwin\bin\bash -login -c 'cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin'
+          cygwin\bin\bash -login -c 'cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin'
+          cygwin\bin\bash -login -c 'cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64; cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64'
+          cygwin\bin\bash -login -c 'chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*'
+          cygwin\bin\bash -login -c 'echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldesdl > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local'
+          cygwin\bin\bash -login -c 'mkdir -p /tmp/release_tars'
+          cygwin\bin\bash -login -c 'tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko'
 
      # Push Release to github
       - name: Push the release
