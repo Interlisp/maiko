@@ -447,9 +447,16 @@ jobs:
         with:
           path: cygwin/maiko
 
+      # Add cygwin/bin to PATH
+      - name: update path to pickup cygwin bash
+        run: |
+          $PATH = [Environment]::GetEnvironmentVariable("PATH")
+          $add_path = "${{{ github.workspace }}\cygwin\bin"
+          [Environment]::SetEnvironmentVariable("PATH", "$add_path;$PATH")
+
       # Build maiko
       - name: Build Cygwin-SDL Maiko
-        shell: ${{ github.workspace }}\cygwin\bin\bash -login {0}
+        shell: bash -login {0}
         run: |
           cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl
           mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
