@@ -449,21 +449,21 @@ jobs:
 
       # Build maiko
       - name: Build Cygwin-SDL Maiko
+        shell: cygwin\bin\bash -login {0}
         run: |
-          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
-          mkdir \tmp\maiko
-          mkdir \tmp\maiko\bin
-          mkdir \tmp\maiko\cygwin.x86_64
-          cp cygwin\maiko\bin\osversion \tmp\maiko\bin
-          cp cygwin\maiko\bin\machinetype \tmp\maiko\bin
-          cp cygwin\maiko\bin\config.guess \tmp\maiko\bin
-          cp cygwin\maiko\bin\config.sub \tmp\maiko\bin
-          cp cygwin\maiko\cygwin.x86_64\* \tmp\maiko\cygwin.x86_64
-          cp cygwin\usr\local\bin\SDL2.DLL \tmp\maiko\cygwin.x86_64
-          echo "lde" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\lde.exe.local -Encoding utf8
-          echo "ldesdl" | Out-File -FilePath \tmp\maiko\cygwin.x86_64\ldesdl.exe.local -Encoding utf8
-          mkdir -p \tmp\release_tars
-          tar -c -z -C \tmp -f \tmp\release_tars\${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
+          cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl
+          mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
+          cp /maiko/bin/osversion /tmp/maiko/bin
+          cp /maiko/bin/machinetype /tmp/maiko/bin
+          cp /maiko/bin/config.guess /tmp/maiko/bin
+          cp /maiko/bin/config.sub /tmp/maiko/bin
+          cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64
+          cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64
+          chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*
+          echo "lde" > /tmp/maiko/cygwin.x86_64/lde.exe.local
+          echo "ldesdl" > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local
+          mkdir -p /tmp/release_tars
+          tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
 
      # Push Release to github
       - name: Push the release
@@ -471,7 +471,7 @@ jobs:
         with:
           allowUpdates: true
           artifacts:
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
+            cygwin\tmp\release_tars\${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
           draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
