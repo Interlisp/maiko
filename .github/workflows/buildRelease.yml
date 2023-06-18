@@ -63,13 +63,17 @@ defaults:
   run:
     shell: bash
 
-#  2 separate jobs here that can run in parallel
+#  3 separate jobs here that can run in parallel
 #
 #  1.  Linux: Build a multiplatform Linux Docker file system (not saved) and use
 #      results to build/push Linux release assets.
 #
-#  2.  MacOs:  Build maiko for MacOS (x86_64, aarch64, and universal)  then create
+#  2.  MacOs:  Build maiko for MacOS (x86_64, aarch64, and universal) then create
 #      and push release assets.
+#
+#  3. Windows: Build maiko for cygwin and SDL (x86_64).  Build is done within the
+#     cygwin-maiko-builder Docker image by building a new docker files system (and
+#     not a docker container) which is used to build/push Windows(cygwin) assets.
 #
 
 jobs:
@@ -84,6 +88,9 @@ jobs:
     outputs:
       draft: ${{ steps.one.outputs.draft }}
       force: ${{ steps.one.outputs.force }}
+      linux: ${{ steps.one.outputs.linux }}
+      macos: ${{ steps.one.outputs.macos }}
+      windows: ${{ steps.one.outputs.windows }}
     steps:
       - id: one
         run: >
@@ -96,7 +103,11 @@ jobs:
               echo "workflow_call";
               echo "draft=${{ inputs.draft }}" >> $GITHUB_OUTPUT;
               echo "force=${{ inputs.force }}" >> $GITHUB_OUTPUT;
-          fi
+          fi;
+          echo "linux=true" >> $GITHUB_OUTPUT;
+          echo "macos=true" >> $GITHUB_OUTPUT;
+          echo "windows=true" >> $GITHUB_OUTPUT;
+          
 
 ######################################################################################
 
@@ -135,8 +146,11 @@ jobs:
 
     needs: [inputs, sentry]
     if: |
-      needs.sentry.outputs.release_not_built == 'true'
-      || needs.inputs.outputs.force == 'true'
+      needs.inputs.outputs.linux == 'true'
+      && (
+         needs.sentry.outputs.release_not_built == 'true'
+         || needs.inputs.outputs.force == 'true'
+      )
 
     runs-on: ubuntu-latest
 
@@ -246,8 +260,11 @@ jobs:
 
     needs: [inputs, sentry]
     if: |
-      needs.sentry.outputs.release_not_built == 'true'
-      || needs.inputs.outputs.force == 'true'
+      needs.inputs.outputs.macos == 'true'
+      && (
+          needs.sentry.outputs.release_not_built == 'true'
+          || needs.inputs.outputs.force == 'true'
+      )
 
     runs-on: macos-latest
 
@@ -362,6 +379,98 @@ jobs:
           draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
+######################################################################################
+
+  # Windows: build for Windows-Cygwin via Docker build and use results to
+  # create and push release assets to github
+  
+  windows:
+
+    needs: [inputs, sentry]
+    if: |
+      needs.inputs.outputs.windows == 'true'
+      && (
+          needs.sentry.outputs.release_not_built == 'true'
+          || needs.inputs.outputs.force == 'true'
+      )
+
+    runs-on: windows-2022
+
+    defaults:
+      run:
+        shell: powershell
+
+    steps:
+
+      # setup git to not mess up line endings
+      - name: git config
+        run: git config --global core.autocrlf input
+
+      # Retrieve Cygwin setup and install cygwin
+      - name: Install cygwin
+        id: cygwin
+        run: |
+          wget https://cygwin.com/setup-x86_64.exe -OutFile setup-x86_64.exe
+          Unblock-File setup-x86_64.exe
+          Start-Process setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
+          cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo "none / cygdrive binary,posix=0,user 0 0" >>/etc/fstab'
+
+      # Retrieve SDL2 and install in cygwin
+      - name: Install SDL2
+        id: sdl2
+        env: 
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
+          cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
+
+      # Checkout the branch
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          path: cygwin\maiko
+
+      # Checkout the actions for this repo owner
+      - name: Checkout Actions
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: |
+          mv ./Actions_${{ github.sha }}/actions ../actions
+          rm -recurse -force ./Actions_${{ github.sha }}
+
+      # Setup release tag
+      - name: Setup Release Tag
+        id: tag
+        uses: ./../actions/release-tag-action
+        with:
+          path: cygwin/maiko
+
+      # Build maiko TODO-cleanup
+      - name: Build Cygwin-SDL Maiko
+        run: |
+          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
+          cygwin\bin\bash -login -c 'mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64'
+          cygwin\bin\bash -login -c 'cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin'
+          cygwin\bin\bash -login -c 'cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin'
+          cygwin\bin\bash -login -c 'cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64; cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64'
+          cygwin\bin\bash -login -c 'chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*'
+          cygwin\bin\bash -login -c 'echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldesdl > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local'
+          cygwin\bin\bash -login -c 'mkdir -p /tmp/release_tars'
+          cygwin\bin\bash -login -c 'tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko'
+
+     # Push Release to github
+      - name: Push the release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts:
+            cygwin/tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
+          tag: ${{ steps.tag.outputs.release_tag }}
+          draft: ${{ needs.inputs.outputs.draft }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
 
 
 ######################################################################################
@@ -376,7 +485,7 @@ jobs:
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
 
-    needs: [inputs, sentry, linux, macos]
+    needs: [inputs, sentry, linux, macos, windows]
 
     steps:
       # Checkout the actions for this repo owner
