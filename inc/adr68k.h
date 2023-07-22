@@ -28,10 +28,18 @@
 */
 /**********************************************************************/
 
+#include <execinfo.h>
 #include <stddef.h>
 #include <stdio.h>
 #include "lispemul.h"
 #include "lspglob.h"
+
+static inline void dobacktrace()
+{
+  void* callstack[128];
+  int i, frames = backtrace(callstack, 128);
+  backtrace_symbols_fd(callstack, frames, 2);
+}
 
 static inline LispPTR LAddrFromNative(void *NAddr)
 {
@@ -48,8 +56,9 @@ static inline DLword *NativeAligned2FromLAddr(LispPTR LAddr)
 
 static inline LispPTR *NativeAligned4FromLAddr(LispPTR LAddr)
 {
-  if (LAddr & 1) {
-    printf("Misaligned pointer in NativeAligned4FromLAddr 0x%x\n", LAddr);
+  if (LAddr & 1 || LAddr > 0x0FFFFFFF) {
+    printf("Misaligned/bad pointer in NativeAligned4FromLAddr 0x%x\n", LAddr);
+    dobacktrace();
   }
   return (void *)(Lisp_world + LAddr);
 }
