@@ -156,8 +156,10 @@ LispPTR findptrsbuffer(LispPTR ptr) {
   while (LAddrFromNative(bptr) != NIL) {
     if (ptr == bptr->vmempage)
       return (LAddrFromNative(bptr));
-    else
+    else {
+      if (bptr->sysnext & 0x0F000000) printf("findptrsbuffer: would have failed %p\n", bptr);
       bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
+    }
   }
   return (NIL);
 }
@@ -205,8 +207,6 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   {
     bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
     btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
-    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
     if (bbase->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
@@ -228,7 +228,10 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
     } else if (!onfreelist || (bbase->arlen < MINARRAYBLOCKSIZE))
       /* Remaining tests only for free list. */
       return (NIL);
-    else if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
+
+    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
+    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
+    if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
     } else {
       fbl = FreeBlockChainN(bbase->arlen);
