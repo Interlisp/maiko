@@ -157,7 +157,7 @@ LispPTR findptrsbuffer(LispPTR ptr) {
     if (ptr == bptr->vmempage)
       return (LAddrFromNative(bptr));
     else {
-      if (bptr->sysnext & 0xF0000000) printf("findptrsbuffer: would have failed %p\n", bptr);
+      if (bptr->sysnext & 0xF0000000) printf("findptrsbuffer: would have failed %p 0x%X\n", bptr, bptr->sysnext);
       bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
     }
   }
