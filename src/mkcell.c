@@ -72,7 +72,7 @@ retry:
     if (917505 == *(LispPTR *)ptr) error("N_OP_createcell E0001 error");
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
-    if (dtd68k->dtd_free & 0x8000001) error("bad entry on free chain.");
+    if (dtd68k->dtd_free & 0x8000001) error("bad entry on free chain(1).");
 
     dtd68k->dtd_oldcnt++;
 
@@ -84,7 +84,7 @@ retry:
     return (tos);
   } else {
     dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain.");
+    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain(2).");
     goto retry;
   }
 
@@ -119,7 +119,7 @@ retry:
 
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
-    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain.");
+    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain(3).");
 
 #ifdef DTDDEBUG
     if ((dtd68k->dtd_free != 0) && (type != GetTypeNumber(dtd68k->dtd_free)))
@@ -144,7 +144,7 @@ retry:
 
   } else {
     dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain.");
+    if (dtd68k->dtd_free & 0x8000000) error("bad entry on free chain(4).");
 
 #ifdef DTDDEBUG
     check_dtd_chain(type);
