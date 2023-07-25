@@ -17,7 +17,7 @@
 	/*  Normal byte-order version   */
 	/********************************/
 #ifdef BIGVM
-typedef struct sequencedescriptor {
+typedef struct sequencedescriptor {	/* big-endian, bigvm */
 	unsigned	orig		:1;
 	unsigned	nil		:1;
 	unsigned	readonly	:1;
@@ -28,7 +28,7 @@ typedef struct sequencedescriptor {
 	int32_t		offst;
 } Arrayp;
 
-struct arrayheader {
+struct arrayheader {                    /* big-endian, bigvm */
         unsigned        nil             :4;
 	unsigned        base            :28;
 	unsigned        readonlyp       :1;
@@ -45,7 +45,7 @@ struct arrayheader {
 	int32_t         totalsize;
       };
 #else
-typedef struct sequencedescriptor {
+typedef struct sequencedescriptor {     /* big-endian, no bigvm */
 	unsigned	orig		:1;
 	unsigned	nil		:1;
 	unsigned	readonly	:1;
@@ -56,7 +56,7 @@ typedef struct sequencedescriptor {
 	DLword		offst;
 } Arrayp;
 
-struct arrayheader {
+struct arrayheader {                    /* big-endian, no bigvm */
         unsigned        nil             :8;
 	unsigned        base            :24;
 	unsigned        readonlyp       :1;
@@ -74,7 +74,7 @@ struct arrayheader {
       };
 #endif /* BIGVM */
 
-struct arrayblock {
+struct arrayblock {                     /* big-endian, any vm */
 	unsigned	password	:13;
 	unsigned	gctype		:2;
 	unsigned	inuse		:1;
@@ -94,7 +94,7 @@ struct abdum {
 	/*  e.g., 80386's		*/
 	/********************************/
 #ifdef BIGVM
-typedef struct sequencedescriptor {
+typedef struct sequencedescriptor {     /* little-endian bigvm */
 	unsigned	base		:28;
 	unsigned 	nil2		:1;
 	unsigned	readonly	:1;
@@ -105,7 +105,7 @@ typedef struct sequencedescriptor {
 	int32_t		offst;
 } Arrayp;
 
-struct arrayheader {
+struct arrayheader {                    /* little-endian bigvm */
 	unsigned        base            :28;
         unsigned        nil             :4;
 	DLword          offset;
@@ -122,7 +122,7 @@ struct arrayheader {
 	int32_t         fillpointer;
       };
 #else
-typedef struct sequencedescriptor {
+typedef struct sequencedescriptor {     /* little-endian no bigvm */
 	unsigned	base		:24;
 	unsigned	typ		:4;
 	unsigned 	nil2		:1;
@@ -133,7 +133,7 @@ typedef struct sequencedescriptor {
 	DLword		length;
 } Arrayp;
 
-struct arrayheader {
+struct arrayheader {                    /* little-endian no bigvm */
 	unsigned        base            :24;
         unsigned        nil             :8;
 	DLword          offset;
@@ -150,7 +150,7 @@ struct arrayheader {
 	DLword          fillpointer;
       };
 #endif /* BIGVM */
-struct arrayblock {
+struct arrayblock {                     /* little-endian any vm */
 	DLword		arlen;
 	unsigned	inuse		:1;
 	unsigned	gctype		:2;
