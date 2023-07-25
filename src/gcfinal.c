@@ -97,6 +97,18 @@ struct buf {
 };
 #endif /* BIGVM */
 #else
+#ifdef BIGVM
+struct buf {
+  LispPTR filepage;
+  LispPTR vmempage;
+  LispPTR buffernext;
+  unsigned sysnext : 28;
+  unsigned unused : 1;
+  unsigned iodirty : 1;
+  unsigned usermapped : 1;
+  unsigned noreference : 1;
+};
+#else
 struct buf {
   LispPTR filepage;
   LispPTR vmempage;
@@ -107,6 +119,7 @@ struct buf {
   unsigned usermapped : 1;
   unsigned noreference : 1;
 };
+#endif /* BIGVM */
 #endif /* BYTESWAP */
 
 /************* The following procedure is common !! **************************/
