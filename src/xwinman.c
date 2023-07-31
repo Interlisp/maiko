@@ -189,11 +189,13 @@ void process_Xevents(DspInterface dsp)
     if (report.xany.window == dsp->DisplayWindow) /* Try the most important window first. */
       switch (report.type) {
         case MotionNotify:
+#ifndef INIT
           *CLastUserActionCell68k = MiscStats->secondstmp;
           *EmCursorX68K = (*((DLword *)EmMouseX68K)) =
               (short)((report.xmotion.x + dsp->Visible.x) & 0xFFFF) - Current_Hot_X;
           *EmCursorY68K = (*((DLword *)EmMouseY68K)) =
               (short)((report.xmotion.y + dsp->Visible.y) & 0xFFFF) - Current_Hot_Y;
+#endif
           break;
         case KeyPress:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
