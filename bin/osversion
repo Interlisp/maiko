@@ -1,5 +1,6 @@
 #!/bin/sh
-os=${LDEARCH:-`./config.guess`}
+SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+os=${LDEARCH:-`$SCRIPTPATH/config.guess`}
 case "$os" in
         m68k-*-amigaos)		echo amigaos ;;
         sparc-sun-sunos*)	echo sunos4 ;;
