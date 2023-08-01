@@ -531,5 +531,5 @@ void lisp_finish(void) {
 #ifdef DOS
   exit_host_filesystem();
 #endif /* DOS */
-  exit(1);
+  exit(0);
 }
