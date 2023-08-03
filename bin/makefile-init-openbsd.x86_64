@@ -1,0 +1,27 @@
+# Options for OpenBSD, Intel x86_64 and X-Window
+
+CC = clang -m64 $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+
+XFLAGS = -I/usr/X11R6/include -DXWINDOW
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g3
+DFLAGS = $(XFLAGS) -DRELEASE=351 -DNOVERSION -DINIT
+
+LDFLAGS = -L/usr/X11R6/lib -lX11 -lc -lm
+LDELDFLAGS =  -L/usr/X11R6/lib -lX11 -lc -lm
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/ldeinit
