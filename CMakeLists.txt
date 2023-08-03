@@ -18,7 +18,7 @@ ENDIF()
 
 find_program(
     CLANG_TIDY_EXE
-    NAMES "clang-tidy" "clang-tidy13" "clang-tidy12" "clang-tidy11" "clang-tidy10"
+    NAMES "clang-tidy" "clang-tidy16" "clang-tidy15" "clang-tidy14" "clang-tidy13" "clang-tidy12" "clang-tidy11" "clang-tidy10"
     DOC "Path to clang-tidy executable"
 )
 
@@ -39,6 +39,10 @@ ENDIF()
 
 SET(MAIKO_DEFINITIONS
     "-DRELEASE=351"
+)
+
+SET(MAIKO_INIT_DEFINITIONS
+    "-DRELEASE=351" "-DINIT" "-DNOVERSION"
 )
 
 OPTION(MAIKO_DISPLAY_X11 "Use X11 for display." ON)
@@ -454,6 +458,18 @@ IF(MAIKO_DISPLAY_X11)
   TARGET_COMPILE_DEFINITIONS(ldex PUBLIC ${MAIKO_DEFINITIONS} ${MAIKO_DISPLAY_X11_DEFINITIONS})
   TARGET_INCLUDE_DIRECTORIES(ldex PUBLIC inc)
   TARGET_LINK_LIBRARIES(ldex ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_X11_LIBRARIES})
+
+  ADD_EXECUTABLE(ldeinit
+    src/main.c
+    vdate.c
+    ${MAIKO_SRCS}
+    ${MAIKO_HDRS}
+    ${MAIKO_DISPLAY_X11_SRCS}
+    ${MAIKO_DISPLAY_X11_HDRS}
+  )
+  TARGET_COMPILE_DEFINITIONS(ldeinit PUBLIC ${MAIKO_INIT_DEFINITIONS} ${MAIKO_DISPLAY_X11_DEFINITIONS})
+  TARGET_INCLUDE_DIRECTORIES(ldeinit PUBLIC inc)
+  TARGET_LINK_LIBRARIES(ldeinit ${MAIKO_LIBRARIES} ${MAIKO_DISPLAY_X11_LIBRARIES})
 ENDIF()
 
 IF(MAIKO_DISPLAY_SDL)
