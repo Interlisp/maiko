@@ -188,14 +188,13 @@ void process_Xevents(DspInterface dsp)
     XNextEvent(dsp->display_id, &report);
     if (report.xany.window == dsp->DisplayWindow) /* Try the most important window first. */
       switch (report.type) {
-        case MotionNotify:
 #ifndef INIT
+        case MotionNotify:
           *CLastUserActionCell68k = MiscStats->secondstmp;
           *EmCursorX68K = (*((DLword *)EmMouseX68K)) =
               (short)((report.xmotion.x + dsp->Visible.x) & 0xFFFF) - Current_Hot_X;
           *EmCursorY68K = (*((DLword *)EmMouseY68K)) =
               (short)((report.xmotion.y + dsp->Visible.y) & 0xFFFF) - Current_Hot_Y;
-#endif
           break;
         case KeyPress:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
@@ -237,6 +236,7 @@ void process_Xevents(DspInterface dsp)
           break;
         case EnterNotify: Mouse_Included = TRUE; break;
         case LeaveNotify: Mouse_Included = FALSE; break;
+#endif
         case Expose:
           (dsp->bitblt_to_screen)(dsp, 0, report.xexpose.x + dsp->Visible.x,
                                   report.xexpose.y + dsp->Visible.y, report.xexpose.width,
