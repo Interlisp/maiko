@@ -205,8 +205,6 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   {
     bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
     btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
-    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
     if (bbase->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
@@ -226,9 +224,11 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
     } else if (!onfreelist || (bbase->arlen < MINARRAYBLOCKSIZE))
-      /* Remaining tests only for free list. */
       return (NIL);
-    else if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
+    /* Remaining tests only for free list. */
+    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
+    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
+    if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
     } else {
       fbl = FreeBlockChainN(bbase->arlen);
@@ -350,7 +350,6 @@ LispPTR makefreearrayblock(LispPTR block, DLword length) {
 /*									*/
 /*									*/
 /************************************************************************/
-
 LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
   DLword arlens, narlens, secondbite, minblocksize, shaveback;
   struct arrayblock *bbase, *bnbase;
@@ -359,12 +358,23 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
   arlens = bbase->arlen;
   narlens = bnbase->arlen;
   secondbite = MAXARRAYBLOCKSIZE - arlens;
-  if (narlens > secondbite) {
+  /* There are three cases for merging the blocks
+   * (1) the total size of the two blocks is less than max:
+   *     merge into a single block
+   * (2) creating a max size block leaves a viable leftover block:
+   *     move the boundary to make a max block and a leftover block
+   * (3) creating a max size block leaves a non-viable leftover block
+   *     move the boundary to make a big block and a minimum size leftover block
+   */
+  if (base + (2 * arlens) != nbase) {
+    error("Attempt to merge non-adjacent blocks in array space\n")
+  }
+  if (narlens > secondbite) { /* (2) or (3) */
     arlens = MAXARRAYBLOCKSIZE;
     narlens = narlens - secondbite;
     minblocksize =
         ((*Hunk_word == ATOM_T) ? (ARRAYBLOCKOVERHEADCELLS + MAXCELLSPERHUNK) : MINARRAYBLOCKSIZE);
-    if (narlens < minblocksize) {
+    if (narlens < minblocksize) { /* (3) */
       shaveback = narlens - minblocksize;
       narlens = minblocksize;
       arlens += shaveback;
@@ -388,10 +398,10 @@ LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
   struct arrayblock *ptrailer;
 
-  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
   if (base == NIL)
     return (NIL);
-  else if ((*ArrayMerging_word == NIL) ||
+  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  if ((*ArrayMerging_word == NIL) ||
            ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer->inuse == T))))
     return (linkblock(base));
   pbase = base - 2 * ptrailer->arlen;
@@ -411,16 +421,18 @@ LispPTR mergebackward(LispPTR base) {
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
   struct arrayblock *bbase, *bnbase;
+  if (*ArrayMerging_word == NIL) return NIL;
+  if (base == NIL) return NIL;
+  if (checkarrayblock(base, T, T)) return NIL;
+
   bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
   nbase = base + 2 * (bbase->arlen);
+  if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) return NIL;
+
   bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
-  if ((*ArrayMerging_word == NIL) ||
-      ((base == NIL) ||
-       (checkarrayblock(base, T, T) ||
-        ((nbase == *ArrayFrLst_word) ||
-         ((nbase == *ArrayFrLst2_word) ||
-          (checkarrayblock(nbase, (!(nbinuse = bnbase->inuse)), NIL) || nbinuse))))))
-    return (NIL);
+  nbinuse = bnbase->inuse;
+  if (checkarrayblock(nbase, !nbinuse, NIL)) return NIL;
+  if (nbinuse) return (NIL);
   deleteblock(nbase);
   deleteblock(base);
   return (arrayblockmerger(base, nbase));
