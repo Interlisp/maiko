@@ -367,7 +367,7 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
    *     move the boundary to make a big block and a minimum size leftover block
    */
   if (base + (2 * arlens) != nbase) {
-    error("Attempt to merge non-adjacent blocks in array space\n")
+    error("Attempt to merge non-adjacent blocks in array space\n");
   }
   if (narlens > secondbite) { /* (2) or (3) */
     arlens = MAXARRAYBLOCKSIZE;
