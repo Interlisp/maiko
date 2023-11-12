@@ -1,4 +1,4 @@
-# Options for Linux, ARMv7 and X-Window
+# Options for Linux, aarch64 and X-Window
 
 CC = gcc $(GCC_CFLAGS)
 #CC = clang $(CLANG_CFLAGS)
