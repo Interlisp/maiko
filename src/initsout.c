@@ -37,7 +37,7 @@
 #include "ifpage.h"        // for IFPAGE, MACHINETYPE_MAIKO
 #include "initsoutdefs.h"  // for build_lisp_map, fixp_value, init_for_bitblt
 #include "iopage.h"        // for IOPAGE
-#include "lispemul.h"      // for LispPTR, DLword, NIL, BYTESPER_DLWORD
+#include "lispemul.h"      // for LispPTR, DLword, NIL, BYTESPER_DLWORD, POINTERMASK
 #include "lispmap.h"       // for ATMHT_OFFSET, ATOMS_OFFSET, DEFS_OFFSET
 #include "lspglob.h"       // for InterfacePage, IOPage, AtomHT, Closure_Cac...
 #include "lsptypes.h"      // for GetDTD, TYPE_FIXP, TYPE_LISTP
@@ -405,7 +405,9 @@ void init_for_keyhandle(void) {
   MOUSECHORDTICKS68k = MakeAtom68k("\\MOUSECHORDTICKS");
   LASTUSERACTION68k = MakeAtom68k("\\LASTUSERACTION");
 
-  CLastUserActionCell68k = (LispPTR *)NativeAligned4FromLAddr(*LASTUSERACTION68k & 0xffffff);
+#ifndef INIT
+  CLastUserActionCell68k = (LispPTR *)NativeAligned4FromLAddr(*LASTUSERACTION68k & POINTERMASK);
+#endif
 
   DOBUFFEREDTRANSITION_index = MAKEATOM("\\DOBUFFEREDTRANSITIONS");
   INTERRUPTFRAME_index = MAKEATOM("\\INTERRUPTFRAME");
