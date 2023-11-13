@@ -45,6 +45,11 @@
 int flushing = 0;
 #endif
 
+#ifdef MAIKO_OS_EMSCRIPTEN
+/* We don't have any shell */
+#define getusershell() NULL
+#endif
+
 /* Used to communicate between Unix subprocesses and LISP */
 
 static long StartTime;  /* Time, for creating pipe filenames */

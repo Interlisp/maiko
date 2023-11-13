@@ -19,6 +19,8 @@ cmake-build-*/**
 *.x86_64-x/**
 *.x86_64-sdl/**
 *.x86_64/**
+*.wasm/**
+*.wasm-wasm/**
 *.armv7l-x/**
 *.armv7l/**
 *.aarch64-x/**
