@@ -2150,7 +2150,8 @@ LispPTR COM_next_file(LispPTR *args)
   propp = gfsp->propp;
 
   dfp = &FinfoArray[finfoid];
-  if (dfp->head == (FINFO *)0 || (fp = dfp->next) == (FINFO *)0) return (SMALLP_MINUSONE);
+  fp = dfp->next;
+  if (dfp->head == NULL || fp == NULL) return (SMALLP_MINUSONE);
   dfp->next = fp->next;
 
   laddr = gfsp->name;
