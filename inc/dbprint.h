@@ -40,7 +40,7 @@ extern int flushing;
 #endif
 
 #ifdef DEBUG
-#define DBPRINT(X) do {printf X ; if (flushing) fflush(stdout); } while(0)
+#define DBPRINT(X) do { printf("%s:%d ", __FILE__, __LINE__); printf X ; if (flushing) fflush(stdout); } while(0)
 #define DEBUGGER(X) X
 #else
 #define DBPRINT(X) if (0) do {printf X ; } while(0)
@@ -51,7 +51,7 @@ extern int flushing;
 	/* For trace print statements */
 
 #ifdef TRACE
-#define TPRINT(X) do {  printf X; if (flushing) fflush(stdout); } while (0)
+#define TPRINT(X) do { printf("%s:%d ", __FILE__, __LINE__); printf X; if (flushing) fflush(stdout); } while (0)
 #define TRACER(X) X
 #else /* TRACE */
 
@@ -64,7 +64,7 @@ extern int flushing;
 	/* For tracing individual opcode executions */
 
 #ifdef OPTRACE
-#define OPTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
+#define OPTPRINT(X) do { printf("%s:%d ", __FILE__, __LINE__); printf X; if (flushing) fflush(stdout); } while (0)
 #define OPTRACER(X) X
 #else
 #define OPTPRINT(X) if (0) do {  printf X; } while (0)
@@ -75,7 +75,7 @@ extern int flushing;
 	/* For tracing function calls */
 
 #ifdef FNTRACE
-#define FNTPRINT(X) do { printf X; if (flushing) fflush(stdout); } while (0)
+#define FNTPRINT(X) do { printf("%s:%d ", __FILE__, __LINE__); printf X; if (flushing) fflush(stdout); } while (0)
 #define FNTRACER(X)  X
 #else
 #define FNTPRINT(X) if (0) do {  printf X; } while (0)
@@ -86,7 +86,7 @@ extern int flushing;
 	/* For function-call & return stack checking */
 
 #ifdef FNSTKCHECK
-#define FNCHKPRINT(X) do { printf X ; if (flushing) fflush(stdout); } while (0)
+#define FNCHKPRINT(X) do { printf("%s:%d ", __FILE__, __LINE__); printf X ; if (flushing) fflush(stdout); } while (0)
 #define FNCHECKER(X) X
 #else
 #define FNCHKPRINT(X) if (0) do {  printf X; } while (0)
