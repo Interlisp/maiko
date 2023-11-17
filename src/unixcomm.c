@@ -518,6 +518,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Terminating process in slot %d.\n", slot));
       if (!valid_slot(slot)) return (ATOM_T);
       /* in all cases we need to close() the file descriptor */
+      if (slot == 0) DBPRINT(("ZERO SLOT\n"));
       close(slot);
       switch (UJ[slot].type) {
       case UJSHELL:
@@ -699,7 +700,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         if (!valid_slot(slot)) return (NIL); /* No fd open; punt the read */
 
         bufp = (NativeAligned2FromLAddr(args[2])); /* User buffer */
-        DBPRINT(("Read buffer slot %d, type is %d\n", slot, UJ[slot].type));
+        DBPRINT(("Read buffer slot %d, type is %d buffer LAddr 0x%x (native %p)\n", slot, UJ[slot].type, args[2], bufp));
 
         switch (UJ[slot].type) {
           case UJSHELL:
