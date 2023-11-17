@@ -194,8 +194,9 @@ do  {				\
 #endif /* min */
 
 #define	LispNumToCInt(Lisp)					\
-	( (((Lisp) & SEGMASK) == S_POSITIVE) ?                  \
-          ((Lisp) & 0xFFFF) : (*((int *)(NativeAligned4FromLAddr(Lisp)))) )
+       ( (((Lisp) & SEGMASK) == S_POSITIVE) ? ((Lisp) & 0xFFFF) : \
+          (((Lisp) & SEGMASK) == S_NEGATIVE) ? ((Lisp) | 0xFFFF0000) : \
+          (*((int *)(NativeAligned4FromLAddr(Lisp)))) )
 
 #define	UPLOWDIFF	0x20
 
