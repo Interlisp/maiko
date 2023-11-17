@@ -1799,7 +1799,7 @@ void tedit_bltchar(LispPTR *args)
 
 } /* end tedit_bltchar */
 
-#if defined(REALCURSOR) || defined(SUNDISPLAY)
+#if defined(REALCURSOR)
 #ifndef COLOR
 /* Lisp addr hi-word, lo-word, ... */
 static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y, int backward)
@@ -1866,4 +1866,4 @@ static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y
   } /* COLOR case end */
 }
 #endif /* COLOR */
-#endif /* defined(REALCURSOR) || defined(SUNDISPLAY) */
+#endif /* defined(REALCURSOR) */
