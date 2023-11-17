@@ -98,7 +98,7 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
   if (SlaveFD == -1) {
     perror("Slave Open");
     perror(PtySlave);
-    exit(0);
+    exit(1);
   }
 
 #ifdef OS5
@@ -132,7 +132,7 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
   for (userShell = getusershell(); userShell != NULL && strcmp(shell, userShell) != 0; userShell = getusershell());
   if (userShell == NULL) {
     perror("$(SHELL) not found in /etc/shells");
-    exit(0);
+    exit(1);
   }
 
   /* argvec entries initialized to NULL */
@@ -146,7 +146,7 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
 
   /* Should never get here */
   perror("execv");
-  exit(0);
+  exit(1);
 }
 
 /* fork_Unix is the secondary process spawned right after LISP is
@@ -264,12 +264,14 @@ int fork_Unix(void) {
   while (1) {
     ssize_t len;
     len = SAFEREAD(LispPipeIn, IOBuf, 6);
+    if (len == 0)
+      exit(0);
     if (len < 0) {
       perror("Error reading packet by slave");
-      exit(0);
+      exit(1);
     } else if (len != 6) {
       DBPRINT(("Input packet wrong length: %zd", len));
-      exit(0);
+      exit(1);
     }
     slot = IOBuf[3];
     IOBuf[3] = 1; /* Start by signalling success in return-code */
@@ -345,7 +347,7 @@ int fork_Unix(void) {
             sock = socket(AF_UNIX, SOCK_STREAM, 0);
             if (sock < 0) {
               perror("slave socket");
-              exit(0);
+              exit(1);
             }
             sprintf(PipeName, "/tmp/LPU%ld-%d", StartTime, slot);
             memset(&addr, 0, sizeof(struct sockaddr_un));
@@ -357,7 +359,7 @@ int fork_Unix(void) {
               perror("slave connect");
               printf("Name = %s.\n", PipeName);
               fflush(stdout);
-              exit(0);
+              exit(1);
             } else {
               DBPRINT(("Slave connected on %s.\n", PipeName));
             }
