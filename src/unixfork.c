@@ -219,7 +219,9 @@ int fork_Unix(void) {
   /* interrupts need to be blocked here so subprocess won't see them */
   sigemptyset(&signals);
   sigaddset(&signals, SIGVTALRM);
+#ifndef MAIKO_OS_HAIKU
   sigaddset(&signals, SIGIO);
+#endif
   sigaddset(&signals, SIGALRM);
   sigaddset(&signals, SIGXFSZ);
   sigaddset(&signals, SIGFPE);

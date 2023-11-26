@@ -107,8 +107,14 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       addr_class = LispNumToCInt(nameConn);
       protocol = LispNumToCInt(proto);
       result = socket(addr_class, protocol, 0);
+#ifndef MAIKO_OS_HAIKU
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
+#else
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
+#endif
 
       return (GetSmallp(result));
     case TCPconnect: /* args: hostname or (fixp)address, socket# */
@@ -131,7 +137,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
+#endif
 
       return (GetSmallp(result));
 
@@ -197,13 +205,20 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         sigset_t signals;
 
         sigemptyset(&signals);
+#ifndef MAIKO_OS_HAIKU
         sigaddset(&signals, SIGIO);
-
+#endif
         sigprocmask(SIG_BLOCK, &signals, NULL);
 
+#ifndef MAIKO_OS_HAIKU
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
-        fcntl(result, F_SETOWN, getpid());
+#else
+        fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
 
+#ifdef F_SETOWN
+	fcntl(result, F_SETOWN, getpid());
+#endif
         if (listen(result, 5) == -1) {
           perror("TCP Listen");
           close(result);
@@ -225,8 +240,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
-
+#endif
       return (GetSmallp(result));
 
     case INETpeername: /* socket#, buffer for name string */
@@ -259,9 +275,14 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         close(result);
         return (NIL);
       }
+#ifndef MAIKO_OS_HAIKU
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
+#else
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
-
+#endif
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
