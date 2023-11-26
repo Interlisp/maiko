@@ -200,7 +200,12 @@ int main(int argc, char *argv[]) {
     argv[0] = filetorun;
   } else {
     /* copy up to and including the final "/" in the path */
+#ifndef MAIKO_OS_HAIKU 
     dirsepp = stpncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
+#else
+    dirsepp = strncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
+#endif
+
     /* dirsepp now points to the trailing null in the copy */
     strncpy(dirsepp, filetorun, PATH_MAX - (dirsepp - filetorunpath));
     argv[0] = filetorunpath;
