@@ -20,7 +20,7 @@
 # Nov 20 2001 JDS:  Convert to use BASH, not CSH, for open-source...
 #
 # usage:  makeright [display-option] [other-option]
-# 
+#
 # example: makeright single	;  make lde for mmaped displayFB
 #	   makeright multi	;  make lde for cg3,cg6
 #	   makeright x		;  make lde for X-windows
@@ -33,25 +33,39 @@
 #
 # makeright init  requires directory "maiko/init.${architecture}
 #
-# Note: X11R4 environment link shared libraries. 
-#	lde need X library. If lde links shared libraries, 
+# Note: X11R4 environment link shared libraries.
+#	lde need X library. If lde links shared libraries,
 #	X shared libraries are needed at run time.
 #
 # Hide X shared libraries from link libraries search path.
-LD_LIBRARY_PATH=/usr/local/lib 
+LD_LIBRARY_PATH=/usr/local/lib
 
 export PATH=".:$PATH"
 
+noshift="false"
 if test "$1" = ""
    then
 	display="single"
+        noshift="true"
+elif test "$1" = "nethub"
+    then
+        display="single"
+        noshift="true"
 else
     display="$1"
+    noshift="false"
 fi
 
-if test $# -gt 0
+if test "$noshift" = "false"
     then
 	shift
+fi
+
+nethub="false"
+if test "$1" = "nethub"
+    then
+        nethub="true"
+        shift
 fi
 
 architecture=`machinetype`
@@ -101,7 +115,12 @@ echo start making lde for ${releasename}.
 # then finally do the make, including the right stuff
 # With makefile-tail merged, this should only take ONE make command....
 
+cp -p makefile-${releasename} /tmp/makefile-${releasename}-$$
+if test "$nethub" = "true"
+    then
+        sed -e "/^DFLAGS = /s/$/ -DMAIKO_ENABLE_NETHUB/" -i /tmp/makefile-${releasename}-$$
+fi
 make RELEASENAME=${releasename} LDENAME=${ldename} \
 			OSARCHNAME=${osversion}.${architecture} \
-			-f makefile-header -f makefile-${releasename} \
+			-f makefile-header -f /tmp/makefile-${releasename}-$$ \
 			-f makefile-tail $*

@@ -18,7 +18,7 @@ COPY . ${INSTALL_LOCATION}
 # Build maiko
 RUN cd ${INSTALL_LOCATION}/bin \
     && ./makeright x cleanup \
-    && ./makeright x
+    && ./makeright x nethub
 RUN cd ${INSTALL_LOCATION}/bin \
     && if [ "$(./machinetype)" = "x86_64" ]; then \
            ./makeright init; \
