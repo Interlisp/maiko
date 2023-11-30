@@ -201,16 +201,6 @@ int main(int argc, char *argv[]) {
   } else {
     /* copy up to and including the final "/" in the path */
 
-#ifdef MAIKO_OS_HAIKU
-    /* Copied from libiberty stpncpy.c */
-    char * stpncpy (char *dst, const char *src, size_t len) {
-      size_t n = strlen (src);
-      if (n > len)
-        n = len;
-      return strncpy (dst, src, len) + n;
-    }
-#endif
-
     dirsepp = stpncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
 
     /* dirsepp now points to the trailing null in the copy */
