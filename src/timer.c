@@ -275,7 +275,6 @@ static int gettime(int casep)
 #ifdef MAIKO_OS_HAIKU
 int settimeofday(struct timeval *tv, struct timezone *tz)
 {
-  set_real_time_clock(tv->tv_sec);
   return(0);
 }
 #endif
