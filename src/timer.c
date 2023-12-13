@@ -275,8 +275,7 @@ static int gettime(int casep)
 #ifdef MAIKO_OS_HAIKU
 int settimeofday(struct timeval *tv, struct timezone *tz)
 {
-  errno = EOPNOTSUPP;
-  return(-1);
+  return(0);
 }
 #endif
 
