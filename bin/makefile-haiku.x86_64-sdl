@@ -1,4 +1,4 @@
-# Options for Linux, Intel x86_64 and SDL
+# Options for Haiku, Intel x86_64 and SDL
 
 CC = gcc -m64 $(GCC_CFLAGS)
 # CC = clang -m64 $(CLANG_CFLAGS)
