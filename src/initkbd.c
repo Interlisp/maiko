@@ -375,8 +375,6 @@ static u_char *make_X_keymap(void) {
     table[xcode - 7] = code;
   }
 
-  XFree(mapping); /* No locking required? */
-
 #ifdef DEBUG
   printf("\n\n\tXGetKeyboardMapping table\n\n");
   for (i = 0; i < codecount * symspercode; i += symspercode) {
@@ -393,6 +391,8 @@ static u_char *make_X_keymap(void) {
            table[i + 5], table[i + 6], table[i + 7]);
   }
 #endif /* DEBUG */
+
+  XFree(mapping); /* No locking required? */
 
   return (table);
 }
