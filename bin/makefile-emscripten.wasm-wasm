@@ -1,6 +1,6 @@
 # Options for Emscripten, WASM and SDL
 
-CC = emcc -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH $(CLANG_CFLAGS)
+CC = emcc $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 
@@ -11,9 +11,9 @@ OPTFLAGS =  -O2 -g3
 DFLAGS = $(XFLAGS) -DRELEASE=351
 
 LD = emcc
-LDFLAGS = -sUSE_SDL=2 --preload-file $(SYSOUT)@full.sysout
+LDFLAGS = -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH --preload-file $(SYSOUT)@full.sysout
 LDELDFLAGS =
 
 OBJECTDIR = ../$(RELEASENAME)/
 
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl.js
+default	: ../$(OSARCHNAME)/ldesdl.js
