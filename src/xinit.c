@@ -16,6 +16,7 @@
 #include <signal.h>       // for sig_atomic_t
 #include <stdbool.h>      // for false, bool, true
 #include <stdio.h>        // for NULL
+#include <stdlib.h>       // for exit
 #include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "dbprint.h"      // for TPRINT
 #include "devif.h"        // for (anonymous), MRegion, DspInterface, OUTER_S...
@@ -200,6 +201,27 @@ void Open_Display(DspInterface dsp)
   init_Xevent(dsp); /* Turn on the event reporting */
 } /* end OpenDisplay */
 
+int X_FatalErrorHandler(Display *display)
+{
+  /* when the fatal error handler gets called it can do cleanup
+   * and either exit, or return.  If it returns, the
+   * FatalErrorExitHandler will be called
+   */
+  /* If we could do a SAVEVM in the interrupt context we would mark it
+   * as needed here.  Returning will cause the FatalErrorExitHandler
+   * hook to be called.
+   */
+  return 0;
+}
+
+void X_FatalErrorExitHandler(Display *display, void *userdata)
+{
+  /* If we were invoking a SAVEVM/LOGOUT in the interrupt context we
+   * would not exit here, as the Lisp VM needs to continue to run
+   */
+  exit(1);
+}
+
 /*********************************************************************/
 /*                                                                   */
 /*			  X _ i n i t                                */
@@ -236,6 +258,10 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
   /* Try to open the X display. If this isn't possible, we just */
   /* return FALSE. */
   if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) return (NULL);
+
+  XSetIOErrorHandler(X_FatalErrorHandler);
+  XSetIOErrorExitHandler(dsp->display_id, X_FatalErrorExitHandler, NULL);
+
   /* Load the dsp structure */
 
   Xscreen = ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id));
