@@ -20,6 +20,9 @@
 /*									*/
 /************************************************************************/
 
+#ifdef MAIKO_OS_EMSCRIPTEN
+#include <emscripten.h>
+#endif
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -32,10 +35,6 @@
 #else            /* DOS */
 #include <sys/time.h>
 #endif /* DOS */
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>         /* Defines emscripten_sleep */
-#endif /* __EMSCRIPTEN__ */
 
 #include "lispemul.h"
 #include "emlglob.h"
@@ -187,9 +186,6 @@ static int pseudoTimerAsyncCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDO
 
 void dispatch(void) {
   InstPtr pccache;
-#ifdef __EMSCRIPTEN__
-  int cycles = 0;
-#endif
 
 #if defined(OPDISP)
   static const void* optable[256] = {
@@ -268,9 +264,6 @@ op_ufn : {
 /* DISPATCH "LOOP" */
 
 nextopcode:
-#ifdef __EMSCRIPTEN__
-  if (++cycles % 1000000 == 0) emscripten_sleep(1);
-#endif
 #ifdef MYOPTRACE
   if ((struct fnhead *)NativeAligned4FromLAddr(0x2ed600) == FuncObj) {
     quick_stack_check();
@@ -296,6 +289,9 @@ nextopcode:
 	  Irq_Stk_End = 0;
 #if defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 	  IO_Signalled = TRUE;
+#endif
+#ifdef MAIKO_OS_EMSCRIPTEN
+	  emscripten_sleep(1);
 #endif
 	  pseudoTimerAsyncCountdown = insnsCountdownForTimerAsyncEmulation;
   }
