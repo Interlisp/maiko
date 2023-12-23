@@ -1,0 +1,19 @@
+# Options for Emscripten, WASM and SDL
+
+CC = emcc -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)sdl.o
+
+XFLAGS = -DSDL
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g3
+DFLAGS = $(XFLAGS) -DRELEASE=351
+
+LD = emcc
+LDFLAGS = -sUSE_SDL=2 --preload-file $(SYSOUT)@full.sysout
+LDELDFLAGS =
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl.js

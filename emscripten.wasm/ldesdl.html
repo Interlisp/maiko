@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- Based on https://github.com/timhutton/sdl-canvas-wasm/blob/main/index.html -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  </head>
+  <body>
+    <div style="text-align: center;">
+      <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    </div>
+    <script type="text/javascript">
+      var Module = {
+          arguments: ["full.sysout"],
+          canvas: (function() { return document.getElementById('canvas'); })()
+      };
+    </script>
+    <script src="ldesdl.js"></script>
+  </body>
+</html>
