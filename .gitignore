@@ -20,7 +20,6 @@ cmake-build-*/**
 *.x86_64-sdl/**
 *.x86_64/**
 *.wasm/**
-!emscripten.wasm/ldesdl.html
 *.wasm-wasm/**
 *.armv7l-x/**
 *.armv7l/**
