@@ -73,11 +73,6 @@ extern int ether_fd;
 extern DspInterface currentdsp;
 #endif /* XWINDOW */
 
-#ifdef MAIKO_OS_EMSCRIPTEN
-/* We can't touch the system clock */
-#define settimeofday(tv, tz)
-#endif
-
 #define LISP_UNIX_TIME_DIFF 29969152
 #define LISP_ALTO_TIME_MASK 0x80000000
 #define UNIX_ALTO_TIME_DIFF 2177452800U
@@ -293,6 +288,8 @@ void subr_settime(LispPTR args[])
   dosday.year = uxtime.tm_year;
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  (void)args[0];
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;
