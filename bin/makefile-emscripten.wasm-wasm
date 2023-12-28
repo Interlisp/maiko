@@ -4,14 +4,20 @@ CC = emcc $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 
-XFLAGS = -DSDL
+XFLAGS = -DSDL -sUSE_SDL=2
 
 # OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
+OPTFLAGS = -O2
 DFLAGS = $(XFLAGS) -DRELEASE=351
 
+MEDLEY?=../../medley
+SYSOUT?=$(MEDLEY)/loadups/full.sysout
+
 LD = emcc
-LDFLAGS = -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH --preload-file $(SYSOUT)@full.sysout
+LDFLAGS = -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH \
+	--preload-file $(SYSOUT)@medley/loadups/full.sysout \
+	--preload-file $(MEDLEY)/greetfiles/EMSCRIPTEN-INIT.LCOM@usr/local/lde/site-init.lisp \
+	--preload-file $(MEDLEY)/lispusers/BACKGROUND-YIELD.LCOM@medley/lispusers/BACKGROUND-YIELD.LCOM
 LDELDFLAGS =
 
 OBJECTDIR = ../$(RELEASENAME)/
