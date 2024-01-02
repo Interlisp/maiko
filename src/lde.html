@@ -1,5 +1,6 @@
 <!doctype html>
 <!-- Based on https://github.com/timhutton/sdl-canvas-wasm/blob/main/index.html -->
+<!-- html to set up WebAssembly module for Medley running in a browser -->
 <html>
   <head>
     <meta charset="utf-8">
@@ -10,8 +11,11 @@
       <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
     </div>
     <script type="text/javascript">
+      var width = 32*Math.trunc(Math.min(Math.max(window.innerWidth, 512), 1664)/32);
+      var height = Math.min(Math.max(window.innerHeight, 512), 1260);
       var Module = {
-          arguments: ["medley/loadups/full.sysout"],
+          preRun: [ function() {ENV.MEDLEYDIR = "{DSK}<medley>";} ],
+          arguments: ["medley/loadups/full.sysout","-sc", width+"x"+height, "-nh-host", "127.0.0.1"],
           canvas: (function() { return document.getElementById('canvas'); })()
       };
     </script>
