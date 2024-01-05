@@ -272,12 +272,6 @@ static int gettime(int casep)
 /*	Implements the SETTIME subr call, sub-dispatched from subr.c	*/
 /*									*/
 /************************************************************************/
-#ifdef MAIKO_OS_HAIKU
-int settimeofday(struct timeval *tv, struct timezone *tz)
-{
-  return(0);
-}
-#endif
 
 void subr_settime(LispPTR args[])
 {
@@ -298,6 +292,9 @@ void subr_settime(LispPTR args[])
   dosday.year = uxtime.tm_year;
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
+#elif defined(MAIKO_OS_HAIKU)
+ (void)args[0]; /* suppress warning: unused parameter 'args' */
+ return;
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;
