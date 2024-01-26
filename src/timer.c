@@ -288,6 +288,8 @@ void subr_settime(LispPTR args[])
   dosday.year = uxtime.tm_year;
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  (void)args[0];
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;
