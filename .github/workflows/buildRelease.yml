@@ -177,7 +177,7 @@ jobs:
           cd emsdk
           ./emsdk install latest
           ./emsdk activate latest
-          echo "source \"${GITHUB_WORKSPACE}/emsdk/emsdk_env.sh\" >> ~/.bash_profile
+          echo "source \"${GITHUB_WORKSPACE}/emsdk/emsdk_env.sh\"" >> ~/.bash_profile
           echo "export PATH=${GITHUB_WORKSPACE}/emsdk/upstream/emscripten/tools:\${PATH}" >> ~/.bash_profile
 
 
