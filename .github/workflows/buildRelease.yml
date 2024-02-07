@@ -166,7 +166,9 @@ jobs:
 
       # Install SDL2
       - name: Install SDL2
-        run: DEBIAN_FRONTEND=noninteractive apt-get install -y libsdl2-dev libsdl2-2.0-0
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo -E apt-get install -y libsdl2-dev libsdl2-2.0-0
 
       # Install Emscripten SDK
       - name: Install Empscripten
