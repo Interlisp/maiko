@@ -107,7 +107,7 @@ jobs:
           echo "linux=true" >> $GITHUB_OUTPUT;
           echo "macos=true" >> $GITHUB_OUTPUT;
           echo "windows=true" >> $GITHUB_OUTPUT;
-          
+
 
 ######################################################################################
 
@@ -137,12 +137,12 @@ jobs:
         with:
           tag: "release_docker"
 
+
 ######################################################################################
 
-  # Linux: build and push multi-platform docker image for Linux
-  # Use docker images to create and push release assets to github
+  # Emscripten: build and push Maiko compiled for Emscripten (to run Maiko in browser)
 
-  linux:
+  emscripten:
 
     needs: [inputs, sentry]
     if: |
@@ -155,6 +155,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       # Checkout the actions for this repo owner
       - name: Checkout Actions
         uses: actions/checkout@v3
@@ -163,7 +164,22 @@ jobs:
           path: ./Actions_${{ github.sha }}
       - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
 
-      # Checkout the branch
+      # Install SDL2
+      - name: Install SDL2
+        run: DEBIAN_FRONTEND=noninteractive apt-get install -y libsdl2-dev libsdl2-2.0-0
+
+      # Install Emscripten SDK
+      - name: Install Empscripten
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install latest
+          ./emsdk activate latest
+          echo "source \"${GITHUB_WORKSPACE}/emsdk/emsdk_env.sh\" >> ~/.bash_profile
+          echo "export PATH=${GITHUB_WORKSPACE}/emsdk/upstream/emscripten/tools:\${PATH}" >> ~/.bash_profile
+
+
+      # Checkout the maiko branch
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -172,306 +188,22 @@ jobs:
         id: tag
         uses: ./../actions/release-tag-action
 
-      # Setup docker environment variables
-      - name: Setup Docker Environment Variables
-        id: docker_env
+      # Compile maiko using Emscripten (no load build)
+      - name: Compile Maiko using Emscripten
+        working-directory: ./bin
         run: |
-          DOCKER_NAMESPACE=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "DOCKER_NAMESPACE=${DOCKER_NAMESPACE}" >> ${GITHUB_ENV}
-          DOCKER_IMAGE=${DOCKER_NAMESPACE}/${{ steps.tag.outputs.repo_name }}
-          DOCKER_TAGS="${DOCKER_IMAGE}:latest,${DOCKER_IMAGE}:${RELEASE_TAG#*-}"
-          echo "build_time=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
-          echo "docker_tags=${DOCKER_TAGS}"  >> $GITHUB_OUTPUT
-
-      # Setup the Docker Machine Emulation environment.
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-
-      # Setup the Docker Buildx funtion
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      # Do the Docker Build using the Dockerfile in the repository we
-      # checked out.  Save the results in a directory under /tmp to be used
-      # for creating release tars.  Does not creatre a docker image and does not
-      # push anything to Docker Hub.
-      #
-      # NOTE: THE ACTUAL MAIKO BUILD (FOR LINUX) HAPPENS HERE - I.E., IN THE
-      #       DOCKER BUILD CALL.  BUILD COMMANDS ARE SPECIFIED IN THE
-      #       Dockerfile, NOT HERE IN THE WORKFLOW.
-      #
-      - name: Build Docker Image and Save It Locally
-        uses: docker/build-push-action@v4
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          build-args: |
-            BUILD_DATE=${{ steps.docker_env.outputs.build_time }}
-            RELEASE_TAG=${{ steps.tag.outputs.release_tag }}
-          context: .
-          file: ./.github/workflows/Dockerfile_maiko
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
-          # Put the results out to the local file system
-          outputs: type=local,dest=/tmp/docker_images
-          tags: ${{ steps.docker_env.outputs.docker_tags }}
-
-      # Use docker results to create releases for github.
-      # Docker results are in /tmp/docker_images. One subdir for each platform.
-      - name: Make release tars for each platform
-        env:
-          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
-        run: |
-          mkdir -p /tmp/release_tars
-          for OSARCH in "linux.x86_64:linux_amd64" "linux.aarch64:linux_arm64" "linux.armv7l:linux_arm_v7" ;    \
-            do                                                                         \
-              pushd /tmp/docker_images/${OSARCH##*:}/usr/local/interlisp >/dev/null ;  \
-              /usr/bin/tar -c -z                                                       \
-                -f /tmp/release_tars/${RELEASE_TAG}-${OSARCH%%:*}.tgz                  \
-                maiko/bin/osversion                                                    \
-                maiko/bin/machinetype                                                  \
-                maiko/bin/config.guess                                                 \
-                maiko/bin/config.sub                                                   \
-                maiko/${OSARCH%%:*}/lde*                                               \
-              ;                                                                        \
-              popd >/dev/null ;                                                        \
-            done
+          ./makeright wasm_nl
+          tar -c -z -C ../emscripten.wasm_nl -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
 
       # Push Release to github
       - name: Push the release
         uses: ncipollo/release-action@v1
         with:
           allowUpdates: true
-          artifacts:
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.x86_64.tgz,
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.aarch64.tgz,
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.armv7l.tgz
+          artifacts: ${{ steps.tag.outputs.release_tag }}-emscripten.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
           draft: ${{ needs.inputs.outputs.draft }}
           token: ${{ secrets.GITHUB_TOKEN }}
-
-
-######################################################################################
-
-  # MacOS: build for MacOS (x86_64, aarch64, universal) and use results to
-  # create and push release assets to github
-  macos:
-
-    needs: [inputs, sentry]
-    if: |
-      needs.inputs.outputs.macos == 'true'
-      && (
-          needs.sentry.outputs.release_not_built == 'true'
-          || needs.inputs.outputs.force == 'true'
-      )
-
-    runs-on: macos-latest
-
-    steps:
-
-      # Checkout the branch
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      # Checkout the actions for this repo owner
-      - name: Checkout Actions
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository_owner }}/.github
-          path: ./Actions_${{ github.sha }}
-      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
-
-      # Setup release tag
-      - name: Setup Release Tag
-        id: tag
-        uses: ./../actions/release-tag-action
-
-      # Uninstall exisitng X11 stuff preconfigured on runner then install correct X11 dependencies
-      - name: Unistall X components already on the runner
-        run: |
-          brew uninstall --ignore-dependencies libxft
-          brew uninstall --ignore-dependencies libxrender
-          brew uninstall --ignore-dependencies libxext
-          brew uninstall --ignore-dependencies libx11
-          brew uninstall --ignore-dependencies xorgproto
-          brew uninstall --ignore-dependencies libxdmcp
-          brew uninstall --ignore-dependencies libxau
-
-      - name: Install X11 dependencies on MacOS
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download XQuartz-2.8.5 --repo XQuartz/XQuartz --pattern XQuartz-2.8.5.pkg
-          sudo installer -pkg ./XQuartz-2.8.5.pkg -target /
-
-      # Install SDL dependencies
-      - name: Install SDL2 dependencies on MacOS
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.dmg
-          hdiutil attach SDL2-2.26.5.dmg
-          sudo ditto /Volumes/SDL2/SDL2.framework /Library/Frameworks/SDL2.framework
-          hdiutil detach /Volumes/SDL2/
-
-      # Build maiko
-      - name: Build ldeinit
-        working-directory: ./bin
-        run: |
-          export LDEARCH=x86_64-apple-darwin
-          ./makeright init
-          export LDEARCH=aarch64-apple-darwin
-          ./makeright init
-          mkdir -p ../darwin.universal
-          exe=ldeinit 
-          lipo -create \
-               -arch arm64 ../darwin.aarch64/${exe}  \
-               -arch x86_64 ../darwin.x86_64/${exe} \
-               -output ../darwin.universal/${exe}
-
-      - name: Build lde, ldex, & ldesdl
-        run: |
-          mkdir build
-          cd build
-          # -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
-          cmake .. \
-            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-            -DMAIKO_DISPLAY_SDL=ON \
-            -DMAIKO_DISPLAY_X11=ON \
-            -DCMAKE_BUILD_TYPE=Release
-          cmake --build . --config Release
-          for exe in lde ldex ldesdl
-          do
-            lipo ${exe} -output ../darwin.x86_64/${exe} -extract x86_64
-            lipo ${exe} -output ../darwin.aarch64/${exe} -extract arm64
-            cp -p ${exe} ../darwin.universal/${exe}
-          done  
-
-      # Create release tar for github.
-      - name: Make release tar(s)
-        env:
-          RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
-        run: |
-          mkdir -p /tmp/release_tars
-          cd ${GITHUB_WORKSPACE}/../
-          for arch in x86_64 aarch64 universal
-          do
-            tar -c -z                                                                \
-              -f /tmp/release_tars/${RELEASE_TAG}-darwin.${arch}.tgz                 \
-              maiko/bin/osversion                                                    \
-              maiko/bin/machinetype                                                  \
-              maiko/bin/config.guess                                                 \
-              maiko/bin/config.sub                                                   \
-              maiko/darwin.${arch}/lde*
-          done
-
-      # Push Release
-      - name: Push the release
-        uses: ncipollo/release-action@v1
-        with: 
-          allowUpdates: true
-          artifacts:
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.x86_64.tgz,
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.aarch64.tgz,
-            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.universal.tgz
-          tag: ${{ steps.tag.outputs.release_tag }}
-          draft: ${{ needs.inputs.outputs.draft }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-######################################################################################
-
-  # Windows: build for Windows-Cygwin via Docker build and use results to
-  # create and push release assets to github
-  
-  windows:
-
-    needs: [inputs, sentry]
-    if: |
-      needs.inputs.outputs.windows == 'true'
-      && (
-          needs.sentry.outputs.release_not_built == 'true'
-          || needs.inputs.outputs.force == 'true'
-      )
-
-    runs-on: windows-2022
-
-    defaults:
-      run:
-        shell: powershell
-
-    steps:
-
-      # setup git to not mess up line endings
-      - name: git config
-        run: git config --global core.autocrlf input
-
-      # Retrieve Cygwin setup and install cygwin
-      - name: Install cygwin
-        id: cygwin
-        run: |
-          wget https://cygwin.com/setup-x86_64.exe -OutFile setup-x86_64.exe
-          Unblock-File setup-x86_64.exe
-          Start-Process setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "http://www.gtlib.gatech.edu/pub/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
-          cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo "none / cygdrive binary,posix=0,user 0 0" >>/etc/fstab'
-
-      # Retrieve SDL2 and install in cygwin
-      - name: Install SDL2
-        id: sdl2
-        env: 
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
-          cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
-
-      # Checkout the branch
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          path: cygwin\maiko
-
-      # Checkout the actions for this repo owner
-      - name: Checkout Actions
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ github.repository_owner }}/.github
-          path: ./Actions_${{ github.sha }}
-      - run: |
-          mv ./Actions_${{ github.sha }}/actions ../actions
-          rm -recurse -force ./Actions_${{ github.sha }}
-
-      # Setup release tag
-      - name: Setup Release Tag
-        id: tag
-        uses: ./../actions/release-tag-action
-        with:
-          path: cygwin/maiko
-
-      # Build maiko TODO-cleanup
-      - name: Build Cygwin-SDL Maiko
-        run: |
-          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
-          cygwin\bin\bash -login -c 'mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64'
-          cygwin\bin\bash -login -c 'cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin'
-          cygwin\bin\bash -login -c 'cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin'
-          cygwin\bin\bash -login -c 'cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64; cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64'
-          cygwin\bin\bash -login -c 'chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*'
-          cygwin\bin\bash -login -c 'echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldesdl > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local'
-          cygwin\bin\bash -login -c 'mkdir -p /tmp/release_tars'
-          cygwin\bin\bash -login -c 'tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko'
-
-     # Push Release to github
-      - name: Push the release
-        uses: ncipollo/release-action@v1
-        with:
-          allowUpdates: true
-          artifacts:
-            cygwin/tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz
-          tag: ${{ steps.tag.outputs.release_tag }}
-          draft: ${{ needs.inputs.outputs.draft }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-
 
 ######################################################################################
 
@@ -485,7 +217,7 @@ jobs:
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
 
-    needs: [inputs, sentry, linux, macos, windows]
+    needs: [inputs, sentry, emscripten]
 
     steps:
       # Checkout the actions for this repo owner
