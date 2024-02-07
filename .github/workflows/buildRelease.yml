@@ -194,6 +194,8 @@ jobs:
       - name: Compile Maiko using Emscripten
         working-directory: ./bin
         run: |
+          echo $(pwd)
+          ls ../src
           ./makeright wasm_nl
           tar -c -z -C ../emscripten.wasm_nl -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
 
