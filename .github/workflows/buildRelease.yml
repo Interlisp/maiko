@@ -173,8 +173,10 @@ jobs:
       # Install Emscripten SDK
       - name: Install Empscripten
         run: |
+          echo "$(pwd)"
           git clone https://github.com/emscripten-core/emsdk.git
           cd emsdk
+          ls
           ./emsdk install latest
           ./emsdk activate latest
 
