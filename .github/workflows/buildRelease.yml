@@ -198,7 +198,8 @@ jobs:
         working-directory: ./bin
         run: |
           ./makeright wasm_nl
-          tar -c -z -C ../emscripten.wasm_nl -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz .
+          cd ../emscripten.wasm_nl
+          tar -c -z -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
 
       # Push Release to github
       - name: Push the release
