@@ -177,9 +177,6 @@ jobs:
           cd emsdk
           ./emsdk install latest
           ./emsdk activate latest
-          echo "source \"${GITHUB_WORKSPACE}/emsdk/emsdk_env.sh\"" >> ~/.bashrc
-          echo "export PATH=${GITHUB_WORKSPACE}/emsdk/upstream/emscripten/tools:\${PATH}" >> ~/.bashrc
-
 
       # Checkout the maiko branch
       - name: Checkout
@@ -194,8 +191,10 @@ jobs:
       - name: Compile Maiko using Emscripten
         working-directory: ./bin
         run: |
-          echo $(pwd)
-          ls ../src
+          echo "${GITHUB_WORKSPACE}"
+          ls "${GITHUB_WORKSPACE}"
+          source "${GITHUB_WORKSPACE}/emsdk/emsdk_env.sh"
+          export PATH="${GITHUB_WORKSPACE}/emsdk/upstream/emscripten/tools:${PATH}"
           ./makeright wasm_nl
           tar -c -z -C ../emscripten.wasm_nl -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
 
