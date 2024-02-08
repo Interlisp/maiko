@@ -179,8 +179,9 @@ jobs:
           ./emsdk install latest
           ./emsdk activate latest
           CWD="$(pwd)"
-          echo "source \"${CWD}/emsdk_env.sh\"" >> $HOME/.bashrc
-          echo "export PATH=\"${CWD}/upstream/emscripten/tools:\${PATH}\"" >> $HOME/.bashrc
+          source "${CWD}/emsdk_env.sh"
+          export PATH="${CWD}/upstream/emscripten/tools:\${PATH}"
+          echo "PATH=${PATH}" >> ${GITHUB_ENV}
 
       # Checkout the maiko branch
       - name: Checkout
