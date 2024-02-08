@@ -123,7 +123,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -158,7 +158,7 @@ jobs:
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -186,7 +186,7 @@ jobs:
 
       # Checkout the maiko branch
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Setup release tag
       - name: Setup Release Tag
@@ -228,7 +228,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
