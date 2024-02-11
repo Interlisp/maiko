@@ -79,6 +79,11 @@ case "$display" in
 		releasename=${osversion}.${architecture}-${display}
 		ldename=ldesdl.js
 		;;
+	wasm_nl) osversion=emscripten
+		architecture=wasm_nl
+		releasename=${osversion}.${architecture}-${display}
+		ldename=ldesdl.js
+		;;
 	*)	echo "display-option: $display is not supported."
 		exit
 		;;
