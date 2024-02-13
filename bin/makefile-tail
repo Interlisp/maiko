@@ -149,7 +149,7 @@ $(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
 
 $(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
 	$(CC) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
-	@ echo ""
+	@ echo "HELLO HELLO HELLO HELLO"
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
 
 $(OSARCHDIR)ldeether: $(OBJECTDIR)ldeether.o $(DLPIFILES)
