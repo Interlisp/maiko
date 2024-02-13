@@ -35,6 +35,7 @@
 
 REQUIRED-INCS = $(INCDIR)version.h $(INCDIR)maiko/platform.h
 
+LD ?= $(CC)
 CFLAGS = $(OPTFLAGS) $(DFLAGS)
 RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
@@ -145,21 +146,21 @@ EXTFILES = $(OBJECTDIR)usrsubr.o
 ################################################################################
 
 $(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
-	$(CC) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o $(LDELDFLAGS) -o $(OSARCHDIR)lde
+	$(LD) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o $(LDELDFLAGS) -o $(OSARCHDIR)lde
 
 $(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
-	$(CC) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
-	@ echo "HELLO HELLO HELLO HELLO"
+	$(LD) $(UPFRONT_LDFLAGS) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
+	@ echo ""
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
 
 $(OSARCHDIR)ldeether: $(OBJECTDIR)ldeether.o $(DLPIFILES)
-	$(CC) $(OBJECTDIR)ldeether.o $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
+	$(LD) $(OBJECTDIR)ldeether.o $(DLPIFILES) $(LDEETHERLDFLAGS) -o $(OSARCHDIR)ldeether
 
 $(OSARCHDIR)tstsout: $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(REQUIRED-INCS)
-	$(CC) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)tstsout
+	$(LD) $(OBJECTDIR)tstsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)tstsout
 
 $(OSARCHDIR)setsout: $(OBJECTDIR)setsout.o $(REQUIRED-INCS)
-	$(CC) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)setsout
+	$(LD) $(OBJECTDIR)setsout.o $(BYTESWAPFILES) $(LDFLAGS) -lc -lm -o $(OSARCHDIR)setsout
 
 #### Component files ######################################################
 
