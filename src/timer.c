@@ -118,6 +118,19 @@ void update_miscstats(void) {
   MiscStats->diskiotime = 0; /* ?? not available ?? */
   MiscStats->diskops = 0;
   MiscStats->secondstmp = MiscStats->secondsclock = (time(0) + UNIX_ALTO_TIME_DIFF);
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  /* Emscripten does not provide getrusage() functionality */
+  struct timeval timev;
+
+  MiscStats->totaltime = gettime(0) - MiscStats->starttime;
+  MiscStats->swapwaittime = 0;
+  MiscStats->pagefaults = 0;
+  MiscStats->swapwrites = 0;
+  MiscStats->diskiotime = 0;
+  MiscStats->diskops = 0;
+
+  gettimeofday(&timev, NULL);
+  MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
 #else
   struct timeval timev;
   struct rusage ru;
