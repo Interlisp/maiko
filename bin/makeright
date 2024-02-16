@@ -20,7 +20,7 @@
 # Nov 20 2001 JDS:  Convert to use BASH, not CSH, for open-source...
 #
 # usage:  makeright [display-option] [other-option]
-# 
+#
 # example: makeright single	;  make lde for mmaped displayFB
 #	   makeright multi	;  make lde for cg3,cg6
 #	   makeright x		;  make lde for X-windows
@@ -76,11 +76,6 @@ case "$display" in
 		;;
 	wasm)	osversion=emscripten
 		architecture=wasm
-		releasename=${osversion}.${architecture}-${display}
-		ldename=ldesdl.js
-		;;
-	wasm_nl) osversion=emscripten
-		architecture=wasm_nl
 		releasename=${osversion}.${architecture}-${display}
 		ldename=ldesdl.js
 		;;

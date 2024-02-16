@@ -10,22 +10,8 @@ XFLAGS = -DSDL -sUSE_SDL=2
 OPTFLAGS = -O2
 DFLAGS = $(XFLAGS) -DRELEASE=351 -DMAIKO_ENABLE_NETHUB
 
-MEDLEY?=../../medley
-SYSOUT?=$(MEDLEY)/loadups/full.sysout
-
 LD = emcc
-LDFLAGS = -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME=1 \
-	--preload-file $(SYSOUT)@medley/loadups/full.sysout \
-	--preload-file $(MEDLEY)/loadups/whereis.hash@medley/loadups/whereis.hash \
-	--preload-file $(MEDLEY)/greetfiles/MEDLEYDIR-INIT.LCOM@usr/local/lde/site-init.lisp \
-	--preload-file $(MEDLEY)/docs/@medley/docs \
-	--preload-file $(MEDLEY)/doctools/@medley/doctools \
-	--preload-file $(MEDLEY)/greetfiles/@medley/greetfiles \
-	--preload-file $(MEDLEY)/internal/@medley/internal \
-	--preload-file $(MEDLEY)/sources/@medley/sources \
-	--preload-file $(MEDLEY)/library/@medley/library \
-	--preload-file $(MEDLEY)/lispusers/@medley/lispusers \
-	--preload-file $(MEDLEY)/fonts/@medley/fonts
+LDFLAGS = -lidbfs.js -sUSE_SDL=2 -sASYNCIFY -sALLOW_MEMORY_GROWTH -sEXIT_RUNTIME=1 -sFORCE_FILESYSTEM -sLZ4
 
 LDELDFLAGS =
 

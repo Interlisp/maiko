@@ -185,14 +185,14 @@ jobs:
 
       # Setup the Docker Machine Emulation environment.
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
       # Setup the Docker Buildx funtion
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       # Do the Docker Build using the Dockerfile in the repository we
       # checked out.  Save the results in a directory under /tmp to be used
@@ -204,7 +204,7 @@ jobs:
       #       Dockerfile, NOT HERE IN THE WORKFLOW.
       #
       - name: Build Docker Image and Save It Locally
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -532,8 +532,8 @@ jobs:
       - name: Compile Maiko using Emscripten
         working-directory: ./bin
         run: |
-          ./makeright wasm_nl
-          cd ../emscripten.wasm_nl
+          ./makeright wasm
+          cd ../emscripten.wasm
           tar -c -z -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
 
       # Push Release to github
