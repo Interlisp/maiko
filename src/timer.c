@@ -122,6 +122,19 @@ void update_miscstats(void) {
   MiscStats->diskiotime = 0; /* ?? not available ?? */
   MiscStats->diskops = 0;
   MiscStats->secondstmp = MiscStats->secondsclock = (time(0) + UNIX_ALTO_TIME_DIFF);
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  /* Emscripten does not provide getrusage() functionality */
+  struct timeval timev;
+
+  MiscStats->totaltime = gettime(0) - MiscStats->starttime;
+  MiscStats->swapwaittime = 0;
+  MiscStats->pagefaults = 0;
+  MiscStats->swapwrites = 0;
+  MiscStats->diskiotime = 0;
+  MiscStats->diskops = 0;
+
+  gettimeofday(&timev, NULL);
+  MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
 #else
   struct timeval timev;
   struct rusage ru;
@@ -293,8 +306,9 @@ void subr_settime(LispPTR args[])
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
 #elif defined(MAIKO_OS_HAIKU)
- (void)args[0]; /* suppress warning: unused parameter 'args' */
- return;
+  (void)args[0];
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  (void)args[0];
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;

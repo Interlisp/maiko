@@ -20,6 +20,9 @@
 /*									*/
 /************************************************************************/
 
+#ifdef MAIKO_OS_EMSCRIPTEN
+#include <emscripten.h>
+#endif
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -286,6 +289,9 @@ nextopcode:
 	  Irq_Stk_End = 0;
 #if defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 	  IO_Signalled = TRUE;
+#endif
+#ifdef MAIKO_OS_EMSCRIPTEN
+	  emscripten_sleep(1);
 #endif
 	  pseudoTimerAsyncCountdown = insnsCountdownForTimerAsyncEmulation;
   }

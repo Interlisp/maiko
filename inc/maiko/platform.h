@@ -83,6 +83,19 @@
 #  define MAIKO_OS_DETECTED 1
 #endif
 
+#ifdef __EMSCRIPTEN__
+#  define MAIKO_OS_LINUX 1
+#  define MAIKO_OS_EMSCRIPTEN 1
+#  define MAIKO_OS_NAME "Emscripten"
+#  define MAIKO_EMULATE_TIMER_INTERRUPTS 1
+#  define MAIKO_EMULATE_ASYNC_INTERRUPTS 1
+#  define MAIKO_OS_UNIX_LIKE 1
+#  define MAIKO_OS_DETECTED
+#  define MAIKO_ARCH_NAME "WebAssembly"
+#  define MAIKO_ARCH_WORD_BITS 32
+#  define MAIKO_ARCH_DETECTED 1
+#endif
+
 /* __x86_64__: GNU C, __x86_64: Sun Studio, _M_AMD64: Visual Studio */
 #if defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64)
 #  define MAIKO_ARCH_X86_64 1
