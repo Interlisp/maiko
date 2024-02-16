@@ -354,7 +354,7 @@ LispPTR vmem_save(char *sysout_file_name)
   TIMEOUT(sysout = open(sysout_file_name, O_WRONLY, 0666));
   if (sysout == -1) {
     /* No file error skip return. */
-    if (errno != 2) return (FILECANNOTOPEN); /* No such file error.*/
+    if (errno != ENOENT) return (FILECANNOTOPEN); /* No such file error.*/
   } else
     TIMEOUT(rval = close(sysout));
 
@@ -481,7 +481,7 @@ LispPTR vmem_save(char *sysout_file_name)
   TIMEOUT(rval = unlink(sysout_file_name));
   if (rval == -1) {
     /* No file error skip return. */
-    if (errno != 2) /* No such file error.*/
+    if (errno != ENOENT) /* No such file error.*/
       return (FILECANNOTOPEN);
   }
 
