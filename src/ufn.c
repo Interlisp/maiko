@@ -107,7 +107,7 @@ void ufn(DLword bytecode)
       (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (entry68k->arg_num << 1) + 2 /** +1 **/;
 
   /* Setup IVar */
-  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
 #ifdef LISPTRACE
   print(entry68k->atom_name);
