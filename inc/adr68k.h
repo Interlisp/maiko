@@ -63,8 +63,8 @@ static inline DLword StackOffsetFromNative(void *SAddr)
 {
   /* Stack offsets are expressed as an offset in DLwords from the stack base */
   ptrdiff_t hoffset = (DLword *)SAddr - Stackspace;
-  if (hoffset > 0xffff) {
-    printf("Stack offset is too large: 0x%tx\n", hoffset);
+  if (hoffset > 0xffff || hoffset < 0) {
+    printf("Stack offset is out of range: 0x%tx\n", hoffset);
   }
   return (DLword)hoffset;
 }
