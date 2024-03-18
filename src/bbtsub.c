@@ -1664,7 +1664,7 @@ void ccfuncall(unsigned int atom_index, int argnum, int bytenum)
   CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
 
   /* Setup IVar */ /* XXX: is it really only 2-byte aligned? */
-  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
   /* Set PC to the Next Instruction and save into FX */
   CURRENTFX->pc = ((UNSIGNED)PC - (UNSIGNED)FuncObj) + bytenum;

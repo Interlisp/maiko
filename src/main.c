@@ -727,9 +727,9 @@ void start_lisp(void) {
   TopOfStack = 0;
   Error_Exit = 0;
 
-  PVar = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
+  PVar = NativeAligned2FromStackOffset(InterfacePage->currentfxp) + FRAMESIZE;
 
-  freeptr = next68k = NativeAligned2FromLAddr(STK_OFFSET | CURRENTFX->nextblock);
+  freeptr = next68k = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
   if (GETWORD(next68k) != STK_FSB_WORD) error("Starting Lisp: Next stack block isn't free!");
 

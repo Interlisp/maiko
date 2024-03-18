@@ -45,7 +45,7 @@ LispPTR N_OP_findkey(LispPTR tos, int byte) {
 #endif
 
   if (CURRENTFX->alink & 1) { /* slow case */
-    find_end = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | (CURRENTFX->blink - 4));
+    find_end = NativeAligned2FromStackOffset(CURRENTFX->blink - 4);
   } else { /*  Fast cae */
     find_end = ((DLword *)CURRENTFX) - 2 - 4;
   }

@@ -37,7 +37,7 @@
 #define FastRetCALL							\
   do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
-    IVar = NativeAligned2FromLAddr(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
+    IVar = NativeAligned2FromStackOffset(GETWORD((DLword *)CURRENTFX - 1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
     FuncObj = (struct fnhead *)NativeAligned4FromLAddr(FX_FNHEADER);	        \
     /* Get PC from Returnee's pc slot in FX */ 				\
@@ -47,7 +47,7 @@
 #define FastRetCALL							\
   do {									\
     /* Get IVar from Returnee's IVAR offset slot(BF) */ 			\
-    IVar = NativeAligned2FromLAddr(STK_OFFSET | GETWORD((DLword *)CURRENTFX -1)); \
+    IVar = NativeAligned2FromStackOffset(GETWORD((DLword *)CURRENTFX - 1)); \
     /* Get FuncObj from Returnee's FNHEAD slot in FX */ 			\
     FuncObj = (struct fnhead *)NativeAligned4FromLAddr(FX_FNHEADER);	        \
     /* Get PC from Returnee's pc slot in FX */ 				\
