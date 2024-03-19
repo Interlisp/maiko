@@ -37,9 +37,11 @@
 
 #include "gcarraydefs.h"
 #include "testtooldefs.h"
+#include "lineblt8defs.h"
 #include "lsthandldefs.h"
 #include "car-cdrdefs.h"
 #include "keyeventdefs.h"
+#include "rawcolordefs.h"
 
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
 #define IMAX(x, y) (((x) > (y)) ? (x) : (y))
@@ -71,6 +73,15 @@ LispPTR SLOWBLTCHAR_index;
     ccfuncall(SLOWBLTCHAR_index, SLOWBLTCHAR_argnum, 3);                                   \
     return;                                                                                \
   }
+
+static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset,
+                          BITMAP *dBM, DLword dXOffset, DLword dYOffset,
+                          DLword width, DLword height, u_char col0, u_char col1,
+                          LispPTR sourcetype, LispPTR operation);
+static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset,
+                                BIGBM *dBM, DLword dXOffset, DLword dYOffset,
+                                DLword width, DLword height, u_char col0, u_char col1,
+                                LispPTR sourcetype, LispPTR operation);
 
 /***********************************************************/
 /*
@@ -302,7 +313,7 @@ void C_slowbltchar(LispPTR *args)
 
 u_int ColorizedFont8CACHE[MAXFONTHEIGHT / BITSPERNIBBLE * MAXFONTWIDTH / BITSPERNIBBLE];
 
-void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
+static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
               LispPTR sourcetype, LispPTR operation)
 {
   DLword *nbase;
@@ -312,10 +323,10 @@ void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, D
   sYOffset = sBM->bmheight - (sYOffset + height);
   dYOffset = dBM->bmheight - (dYOffset + height);
 
-  nbase = (DLword *)NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
-  (DLword *)dbase = (DLword *)NativeAligned2FromLAddr(dBM->bmbase) + (dBM->bmrasterwidth * dYOffset);
+  nbase = NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
+  dbase = (u_char *)NativeAligned2FromLAddr(dBM->bmbase) + (dBM->bmrasterwidth * dYOffset);
   for (i = 0, dbase += dXOffset; /* 8bpp */
-       i < height; i++, nbase += sBM->bmrasterwidth, ((DLword *)dbase) += dBM->bmrasterwidth) {
+       i < height; i++, nbase += sBM->bmrasterwidth, dbase += dBM->bmrasterwidth * BYTESPER_DLWORD) {
     lineBlt8(nbase, (int)sXOffset, dbase, (int)width, col0, col1, sourcetype, operation);
   } /* for end */
 
@@ -332,7 +343,7 @@ void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, D
 /*									*/
 /************************************************************************/
 
-void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
+static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
               LispPTR sourcetype, LispPTR operation)
 {
   DLword *nbase;
@@ -375,14 +386,13 @@ loop:
     dest_h = dest_fragbottom - (dest_fragtop + dest_yoffset);
   } /* end if */
 
-  dbase =
-      (DLword *)NativeAligned2FromLAddr(dest_frag->bmbase) + (dest_frag->bmrasterwidth * dest_yoffset);
-  nbase = (DLword *)NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
+  dbase = (u_char *)NativeAligned2FromLAddr(dest_frag->bmbase) + (dest_frag->bmrasterwidth * dest_yoffset);
+  nbase = NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
 
   sYOffset += (DLword)dest_h; /* next src yoffset */
 
   for (i = 0, dbase += dXOffset; i < dest_h;
-       i++, nbase += sBM->bmrasterwidth, ((DLword *)dbase) += dest_frag->bmrasterwidth) {
+       i++, nbase += sBM->bmrasterwidth, dbase += dest_frag->bmrasterwidth * BYTESPER_DLWORD) {
     lineBlt8(nbase, (int)sXOffset, dbase, (int)width, col0, col1, sourcetype, operation);
   }
 
@@ -415,8 +425,8 @@ void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR
   u_char *dbase;
   int i;
 
-  nbase = (DLword *)NativeAligned2FromLAddr((pbt->pbtsourcehi << 16) | (pbt->pbtsourcelo));
-  (DLword *)dbase = (DLword *)NativeAligned2FromLAddr((pbt->pbtdesthi << 16) | (pbt->pbtdestlo));
+  nbase = NativeAligned2FromLAddr((pbt->pbtsourcehi << 16) | (pbt->pbtsourcelo));
+  dbase = (u_char *)NativeAligned2FromLAddr((pbt->pbtdesthi << 16) | (pbt->pbtdestlo));
   dbase += pbt->pbtdestbit;
   for (i = 0; i < pbt->pbtheight;
        i++, nbase += pbt->pbtsourcebpl / 16, dbase += pbt->pbtdestbpl / 8) {
@@ -494,7 +504,7 @@ void Uncolorize_Bitmap(LispPTR args[])
 
     if ((x & 0xF) != 0) *(d_base++) = word;
 
-    if (y != (s_height - 1)) { (DLword *)s_base += s_rasterwidth; } /* end if( y ) */
+    if (y != (s_height - 1)) { s_base += s_rasterwidth * BYTESPER_DLWORD; } /* end if( y ) */
 
   } /* end for( y ) */
 
@@ -532,11 +542,11 @@ LispPTR Colorize_Bitmap(LispPTR args[])
 
   s_base = (DLword *)NativeAligned2FromLAddr(s_bitmap->bmbase) +
            s_bitmap->bmrasterwidth * (s_bitmap->bmheight - (s_bottom + height));
-  (DLword *)d_base = (DLword *)NativeAligned2FromLAddr(d_bitmap->bmbase) +
+  d_base = (u_char *)NativeAligned2FromLAddr(d_bitmap->bmbase) +
                      d_bitmap->bmrasterwidth * (d_bitmap->bmheight - (d_bottom + height));
 
   for (i = 0, d_base += d_left; i < height;
-       i++, s_base += s_bitmap->bmrasterwidth, (DLword *)d_base += d_bitmap->bmrasterwidth) {
+       i++, s_base += s_bitmap->bmrasterwidth, d_base += d_bitmap->bmrasterwidth * BYTESPER_DLWORD) {
     lineBlt8(s_base, s_left, d_base, width, (u_char)color0, (u_char)color1, INPUT_atom,
              REPLACE_atom);
 
