@@ -204,18 +204,10 @@ LispPTR unix_getparm(LispPTR *args) {
 #else
     envvalue = "mc68020";
 #endif
-
+  } else if (strcmp(envname, "OSNAME") == 0) {
+    envvalue = MAIKO_OS_NAME;
   } else if (strcmp(envname, "ARCH") == 0) {
-#if defined(sparc)
-    envvalue = "sun4";
-#elif defined(DOS)
-    envvalue = "dos";
-#elif defined(MAIKO_OS_MACOS)
-    envvalue = "i386";
-#else
-    envvalue = "sun3";
-#endif
-
+    envvalue = MAIKO_ARCH_NAME;
   } else if (strcmp(envname, "DISPLAY") == 0) {
 #if defined(XWINDOW)
     envvalue = "X";
