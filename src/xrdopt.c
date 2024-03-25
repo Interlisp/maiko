@@ -133,7 +133,7 @@ void print_Xusage(const char *prog)
  -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\n");
 #endif
   fprintf(stderr, "Please refer to the manual for further information.\n\n");
-  exit(0);
+  exit(EXIT_FAILURE);
 } /* end print_Xusage() */
 
 /************************************************************************/
