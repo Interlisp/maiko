@@ -231,10 +231,13 @@ LispPTR unix_getparm(LispPTR *args) {
     struct passwd *pwd;
     if ((pwd = getpwuid(getuid())) == NULL) return NIL;
     envvalue = pwd->pw_gecos;
-  } else if (strcmp(envname, "HOSTID") == 0) {
+  } 
+#ifndef MAIKO_OS_HAIKU
+  else if (strcmp(envname, "HOSTID") == 0) {
     snprintf(result, sizeof(result), "%lx", gethostid());
     envvalue = result;
   }
+#endif /* MAIKO_OS_HAIKU */
 #endif /* DOS */
   else
     return NIL;
