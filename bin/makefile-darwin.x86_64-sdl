@@ -2,9 +2,15 @@
 
 CC = clang -m64 -target x86_64-apple-darwin $(CLANG_CFLAGS)
 
+#
+#  For SDL version 2
+#      -DSDL=2 in SDLFLAGS and -framework SDL2 in LDFLAGS
+#  For SDL version 3
+#      -DSDL=3 in SDLFLAGS and -framework SDL3 in LDFLAGS
+#
 XFILES = $(OBJECTDIR)sdl.o
 
-SDLFLAGS = -DSDL -F /Library/Frameworks
+SDLFLAGS = -DSDL=2 -F /Library/Frameworks
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g

@@ -1,7 +1,8 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_keycode.h>
+#include "version.h"
 #include <assert.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include "sdldefs.h"
 #include "byteswapdefs.h"
 #include "lispemul.h"
@@ -10,8 +11,20 @@
 #include "lspglob.h"  // for IOPage
 #include "display.h"  // for CURSORHEIGHT, DisplayRegion68k
 
+#if SDL == 2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_keycode.h>
+#elif SDL == 3
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_keycode.h>
+#else
+#error Unrecognized SDL version number, neither 2 nor 3
+#endif
+
 /* if SDLRENDERING is defined, render to a texture rather than
  * using the window surface
+ *
+ * XXX: With SDL3, using the window surface results in a black screen
  */
 
 #define  SDLRENDERING 1
@@ -532,7 +545,11 @@ static void sdl_update_viewport(int width, int height) {
   r.w = w;
   r.h = h;
 #if defined(SDLRENDERING)
+#if SDL_MAJOR_VERSION == 2
   SDL_RenderSetViewport(sdl_renderer, &r);
+#else
+  SDL_SetRenderViewport(sdl_renderer, &r);
+#endif
 #endif
   printf("new viewport: %d / %d\n", w, h);
 }
@@ -553,7 +570,11 @@ void sdl_setMousePosition(int x, int y) {
 #if defined(SDLRENDERING)
 void sdl_update_display() {
   sdl_bitblt_to_texture(min_x, min_y, max_x - min_x, max_y - min_y);
+#if SDL_MAJOR_VERSION == 2
   SDL_RenderCopy(sdl_renderer, sdl_texture, NULL, NULL);
+#else
+  SDL_RenderTexture(sdl_renderer, sdl_texture, NULL, NULL);
+#endif
   SDL_RenderPresent(sdl_renderer);
 }
 #else
@@ -573,7 +594,11 @@ void sdl_update_display() {
     s.w = r.w * sdl_pixelscale;
     s.h = r.h * sdl_pixelscale;
     sdl_bitblt_to_buffer(r.x, r.y, r.w, r.h);
+#if SDL_MAJOR_VERSION == 2
     SDL_LowerBlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
+#else
+    SDL_BlitSurfaceUncheckedScaled(sdl_buffersurface, &r, sdl_windowsurface, &s, SDL_SCALEMODE_NEAREST);
+#endif
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
 }
@@ -583,10 +608,15 @@ void process_SDLevents() {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {
+#if SDL_MAJOR_VERSION == 2
       case SDL_QUIT:
+#else
+      case SDL_EVENT_QUIT:
+#endif
         printf("quitting\n");
         exit(0);
         break;
+#if SDL_MAJOR_VERSION == 2
       case SDL_WINDOWEVENT:
         switch (event.window.event) {
           case SDL_WINDOWEVENT_RESIZED:
@@ -597,7 +627,19 @@ void process_SDLevents() {
             break;
         }
         break;
+#else
+      case SDL_EVENT_WINDOW_RESIZED:
+        /* XXX: what about integer multiple of 32 requirements here? */
+        sdl_windowwidth = event.window.data1;
+        sdl_windowheight = event.window.data2;
+        sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
+        break;
+#endif
+#if SDL_MAJOR_VERSION == 2
       case SDL_KEYDOWN:
+#else
+      case SDL_EVENT_KEY_DOWN:
+#endif
 #if 0
         printf("dn ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
                event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
@@ -610,7 +652,11 @@ void process_SDLevents() {
         }
         handle_keydown(event.key.keysym.sym, event.key.keysym.mod);
         break;
+#if SDL_MAJOR_VERSION == 2
       case SDL_KEYUP:
+#else
+      case SDL_EVENT_KEY_UP:
+#endif
 #if 0
         printf("up ts: %x, type: %x, state: %x, repeat: %x, scancode: %x, sym: %x <%s>, mod: %x\n",
                event.key.timestamp, event.key.type, event.key.state, event.key.repeat,
@@ -619,19 +665,36 @@ void process_SDLevents() {
 #endif
         handle_keyup(event.key.keysym.sym, event.key.keysym.mod);
         break;
+#if SDL_MAJOR_VERSION == 2
       case SDL_MOUSEMOTION: {
         int x, y;
+#else
+      case SDL_EVENT_MOUSE_MOTION: {
+        int ix, iy;
+        float x, y;
+#endif
         SDL_GetMouseState(&x, &y);
         x /= sdl_pixelscale;
         y /= sdl_pixelscale;
         *CLastUserActionCell68k = MiscStats->secondstmp;
+#if SDL_MAJOR_VERSION == 2
         *EmCursorX68K = (*((DLword *)EmMouseX68K)) = (short)(x & 0xFFFF);
         *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(y & 0xFFFF);
+#else
+        ix = x;
+        iy = y;
+        *EmCursorX68K = (*((DLword *)EmMouseX68K)) = (short)(ix & 0xFFFF);
+        *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(iy & 0xFFFF);
+#endif
         DoRing();
         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
         break;
       }
+#if SDL_MAJOR_VERSION == 2
       case SDL_MOUSEBUTTONDOWN: {
+#else
+      case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+#endif
         switch (event.button.button) {
           case SDL_BUTTON_LEFT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
           case SDL_BUTTON_MIDDLE: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
@@ -641,7 +704,11 @@ void process_SDLevents() {
         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
         break;
       }
+#if SDL_MAJOR_VERSION == 2
       case SDL_MOUSEBUTTONUP: {
+#else
+      case SDL_EVENT_MOUSE_BUTTON_UP: {
+#endif
         switch (event.button.button) {
           case SDL_BUTTON_LEFT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
           case SDL_BUTTON_MIDDLE: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
@@ -651,7 +718,11 @@ void process_SDLevents() {
         if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
         break;
       }
+#if SDL_MAJOR_VERSION == 2
       case SDL_MOUSEWHEEL:
+#else
+      case SDL_EVENT_MOUSE_WHEEL:
+#endif
         /*
          printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
                event.wheel.y,
@@ -698,8 +769,12 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
     return 1;
   }
   printf("initialised\n");
+#if SDL_MAJOR_VERSION == 2
   sdl_window = SDL_CreateWindow(windowtitle, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
                                 sdl_windowwidth, sdl_windowheight, 0);
+#else
+  sdl_window = SDL_CreateWindow(windowtitle, sdl_windowwidth, sdl_windowheight, 0);
+#endif
   printf("Window created\n");
   if (sdl_window == NULL) {
     printf("Window could not be created. SDL_Error: %s\n", SDL_GetError());
@@ -707,7 +782,11 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   }
 #if defined(SDLRENDERING)
   printf("Creating renderer...\n");
+#if SDL_MAJOR_VERSION == 2
   sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+#else
+  sdl_renderer = SDL_CreateRenderer(sdl_window, NULL, SDL_RENDERER_ACCELERATED);
+#endif
   if (NULL == sdl_renderer) {
     printf("SDL Error: %s\n", SDL_GetError());
     return 3;
@@ -716,16 +795,25 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   SDL_SetRenderDrawColor(sdl_renderer, 127, 127, 127, 255);
   SDL_RenderClear(sdl_renderer);
   SDL_RenderPresent(sdl_renderer);
+#if SDL_MAJOR_VERSION == 2
   SDL_RenderSetScale(sdl_renderer, 1.0, 1.0);
-  printf("Creating texture...\n");
   sdl_pixelformat = SDL_AllocFormat(sdl_rendererinfo.texture_formats[0]);
+#else
+  SDL_SetRenderScale(sdl_renderer, 1.0, 1.0);
+  sdl_pixelformat = SDL_CreatePixelFormat(sdl_rendererinfo.texture_formats[0]);
+#endif
+  printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format,
                                   SDL_TEXTUREACCESS_STREAMING, width, height);
   sdl_black = SDL_MapRGB(sdl_pixelformat, 0, 0, 0);
   sdl_white = SDL_MapRGB(sdl_pixelformat, 255, 255, 255);
   sdl_foreground = sdl_black;
   sdl_background = sdl_white;
+#if SDL_MAJOR_VERSION == 2
   sdl_bytesperpixel = sdl_pixelformat->BytesPerPixel;
+#else
+  sdl_bytesperpixel = sdl_pixelformat->bytes_per_pixel;
+#endif
 #else
   printf("Creating window surface and buffer surface\n");
   sdl_windowsurface = SDL_GetWindowSurface(sdl_window);
@@ -734,12 +822,22 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_white = SDL_MapRGB(sdl_pixelformat, 255, 255, 255);
   sdl_foreground = sdl_black;
   sdl_background = sdl_white;
+#if SDL_MAJOR_VERSION == 2
   sdl_bytesperpixel = sdl_pixelformat->BytesPerPixel;
+#else
+  sdl_bytesperpixel = sdl_pixelformat->bytes_per_pixel;
+#endif
   buffer_size = width * height * sdl_bytesperpixel;
   buffer = malloc(buffer_size);
+#if SDL_MAJOR_VERSION == 2
   sdl_buffersurface = SDL_CreateRGBSurfaceWithFormatFrom(
       buffer, sdl_displaywidth, sdl_displayheight, sdl_bytesperpixel * 8,
       sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
+#else
+  sdl_buffersurface = SDL_CreateSurfaceFrom(
+      buffer, sdl_displaywidth, sdl_displayheight,
+      sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
+#endif
 #endif
   printf("SDL initialised\n");
   return 0;

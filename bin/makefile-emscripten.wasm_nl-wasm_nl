@@ -4,7 +4,13 @@ CC = emcc $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 
-XFLAGS = -DSDL -sUSE_SDL=2
+#
+#  For SDL version 2
+#      -DSDL=2 and -sUSE_SDL=2 in XFLAGS and -sUSE_SDL=2 in LDFLAGS
+#  For SDL version 3
+#      -DSDL=3 and -sUSE_SDL=3 in XFLAGS and -sUSE_SDL=3 in LDFLAGS
+#
+XFLAGS = -DSDL=2 -sUSE_SDL=2
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS = -O2
