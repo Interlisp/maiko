@@ -5,7 +5,13 @@ CC = gcc $(GCC_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 
-SDLFLAGS = -DSDL
+#
+#  For SDL version 2
+#      -DSDL=2 in SDLFLAGS and -lSDL2 in LDFLAGS
+#  For SDL version 3
+#      -DSDL=3 in SDLFLAGS and -lSDL3 in LDFLAGS
+#
+SDLFLAGS = -DSDL=2
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
