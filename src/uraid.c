@@ -864,7 +864,9 @@ int device_before_raid(void) {
 #ifdef XWINDOW
   /* So X events still get recognized. */
   sigemptyset(&signals);
+#ifndef MAIKO_OS_HAIKU
   sigaddset(&signals, SIGIO);
+#endif
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
 #endif
 
