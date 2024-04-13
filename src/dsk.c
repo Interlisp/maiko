@@ -3082,8 +3082,11 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
    * If the cached version array is still valid, we can return immediately.
    */
 
+#if 0
+  /* there is a (different?) problem (#1661) with the caching - disable until it's solved */
   if ((sbuf.st_mtime == cache->mtime) && strcmp(dir, cache->path) == 0
       && strcmp(lcased_file, cache->file) == 0) return(1);
+#endif
 
   errno = 0;
   TIMEOUT0(dirp = opendir(dir));
