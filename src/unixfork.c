@@ -236,19 +236,23 @@ int fork_Unix(void) {
     /* JRB - fork_Unix is now called in ldeboot; leave UnixPipe{In,Out} open
        and put their numbers in the environment so parent can find them */
     /* JDS - NB that sprintf doesn't always return a string! */
-
+    /* NHB - if the return value of snprintf() is greater than or equal to the
+     * size argument, the string was too short and some of the printed
+     * characters were discarded. However we're printing numbers, so we know
+     * that the buffer is big enough
+     */
     char tempstring[30];
 
-    snprintf(tempstring, sizeof(tempstring), "%d", UnixToLisp[0]);
+    (void)snprintf(tempstring, sizeof(tempstring), "%d", UnixToLisp[0]);
     setenv("LDEPIPEIN", tempstring, 1);
 
-    snprintf(tempstring, sizeof(tempstring), "%d", LispToUnix[1]);
+    (void)snprintf(tempstring, sizeof(tempstring), "%d", LispToUnix[1]);
     setenv("LDEPIPEOUT", tempstring, 1);
 
-    snprintf(tempstring, sizeof(tempstring), "%ld", StartTime);
+    (void)snprintf(tempstring, sizeof(tempstring), "%ld", StartTime);
     setenv("LDESTARTTIME", tempstring, 1);
 
-    snprintf(tempstring, sizeof(tempstring), "%d", UnixPID);
+    (void)snprintf(tempstring, sizeof(tempstring), "%d", UnixPID);
     setenv("LDEUNIXPID", tempstring, 1);
 
     close(LispToUnix[0]);
@@ -275,7 +279,7 @@ int fork_Unix(void) {
       DBPRINT(("Input packet wrong length: %zd", len));
       exit(1);
     }
-    slot = IOBuf[3];
+    slot = (int)IOBuf[3];
     IOBuf[3] = 1; /* Start by signalling success in return-code */
 
     switch (IOBuf[0]) {
@@ -351,7 +355,7 @@ int fork_Unix(void) {
               perror("slave socket");
               exit(1);
             }
-            sprintf(PipeName, "/tmp/LPU%ld-%d", StartTime, slot);
+            (void)snprintf(PipeName, sizeof(PipeName), "/tmp/LPU%ld-%d", StartTime, slot);
             memset(&addr, 0, sizeof(struct sockaddr_un));
             addr.sun_family = AF_UNIX;
             strcpy(addr.sun_path, PipeName);
