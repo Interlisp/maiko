@@ -25,8 +25,8 @@
 /************************************************************************/
 
 void perrorn(char *s, int n) {
-  if (s != NULL && *s != '\0') { fprintf(stderr, "%s: ", s); }
-  fprintf(stderr, "%s\n", strerror(n));
+  if (s != NULL && *s != '\0') { (void)fprintf(stderr, "%s: ", s); }
+  (void)fprintf(stderr, "%s\n", strerror(n));
 }
 
 /************************************************************************/
@@ -42,7 +42,7 @@ void err_mess(char *from, int no) {
   int save_errno = errno; /* Save errno around OSMESSAGE_PRINT */
 
   OSMESSAGE_PRINT({
-    fprintf(stderr, "System call error: %s errno=%d ", from, no);
+    (void)fprintf(stderr, "System call error: %s errno=%d ", from, no);
     perror("");
   });
 
