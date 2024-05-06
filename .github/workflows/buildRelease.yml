@@ -290,13 +290,13 @@ jobs:
       # Uninstall exisitng X11 stuff preconfigured on runner then install correct X11 dependencies
       - name: Unistall X components already on the runner
         run: |
-          brew uninstall --ignore-dependencies libxft
-          brew uninstall --ignore-dependencies libxrender
-          brew uninstall --ignore-dependencies libxext
-          brew uninstall --ignore-dependencies libx11
-          brew uninstall --ignore-dependencies xorgproto
-          brew uninstall --ignore-dependencies libxdmcp
-          brew uninstall --ignore-dependencies libxau
+          brew uninstall --ignore-dependencies --force libxft
+          brew uninstall --ignore-dependencies --force libxrender
+          brew uninstall --ignore-dependencies --force libxext
+          brew uninstall --ignore-dependencies --force libx11
+          brew uninstall --ignore-dependencies --force xorgproto
+          brew uninstall --ignore-dependencies --force libxdmcp
+          brew uninstall --ignore-dependencies --force libxau
 
       - name: Install X11 dependencies on MacOS
         env:
