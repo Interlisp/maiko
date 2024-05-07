@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+/* if using inet_ntop you must #include <arpa/inet.h> */
 #endif /* DOS */
 
 #if (defined(OS5) || defined(__CYGWIN__)) && !defined(O_ASYNC)
@@ -93,7 +94,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
       if (!host) return (NIL);
-      N_ARITH_SWITCH(ntohl(*(long *)host->h_addr));
+      res = ntohl(*(in_addr_t *)host->h_addr);
+      N_ARITH_SWITCH(res);
       break;
 
     case TCPservicelookup:
@@ -120,7 +122,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     case TCPconnect: /* args: hostname or (fixp)address, socket# */
       memset(&farend, 0, sizeof farend);
       N_GETNUMBER(nameConn, res, string_host);
-      farend.sin_addr.s_addr = htons(res);
+      farend.sin_addr.s_addr = htonl(res);
       goto host_ok;
     string_host:
       LispStringToCString(nameConn, namestring, 100);
