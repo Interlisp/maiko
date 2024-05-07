@@ -124,7 +124,7 @@ void init_ifpage(unsigned sysout_size) {
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;
 
   if ((!Storage_expanded) && (InterfacePage->dllastvmempage != new_lastvmem)) {
-    fprintf(stderr, "You can't expand VMEM\n");
+    (void)fprintf(stderr, "You can't expand VMEM\n");
     exit(-1);
   } else { /* Set value which will be set to \\LASTVMEMFILEPAGE in LISP */
     InterfacePage->dllastvmempage = new_lastvmem;

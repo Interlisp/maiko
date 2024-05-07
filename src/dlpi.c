@@ -188,7 +188,7 @@ int setup_dlpi_dev(char *device)
   dlbindreq(fd, 0x0600, 0, DL_CLDLS, 0, 0);
 
   if (dlbindack(fd, buf) < 0) {
-    fprintf(stderr, "%s: dlbindack failed.\n", pname);
+    (void)fprintf(stderr, "%s: dlbindack failed.\n", pname);
     return (-1);
   }
 
@@ -202,14 +202,14 @@ int setup_dlpi_dev(char *device)
   dlpromisconreq(fd, DL_PROMISC_SAP);
 
   if (dlokack(fd, buf) < 0) {
-    fprintf(stderr, "%s: DL_PROMISC_SAP failed.\n", pname);
+    (void)fprintf(stderr, "%s: DL_PROMISC_SAP failed.\n", pname);
     return (-1);
   }
 
   dlpromisconreq(fd, DL_PROMISC_MULTI);
 
   if (dlokack(fd, buf) < 0) {
-    fprintf(stderr, "%s: DL_PROMISC_MULTI failed.\n", pname);
+    (void)fprintf(stderr, "%s: DL_PROMISC_MULTI failed.\n", pname);
     return (-1);
   }
 
@@ -329,8 +329,8 @@ int dlpi_devtype(int fd)
     case DL_FDDI: return (DLT_FDDI);
 #endif
     default:
-      fprintf(stderr, "%s: DLPI MACtype %ld unknown, ", pname, (long)dlp->info_ack.dl_mac_type);
-      fprintf(stderr, "assuming ethernet.\n");
+      (void)fprintf(stderr, "%s: DLPI MACtype %ld unknown, ", pname, (long)dlp->info_ack.dl_mac_type);
+      (void)fprintf(stderr, "assuming ethernet.\n");
       return (DLT_EN10MB);
   }
 }
@@ -585,7 +585,7 @@ static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *fla
 /*
  * sigalrm - handle alarms.
  */
-static void sigalrm(int sig) { (void)fprintf(stderr, "dlpi: timeout\n"); }
+static void sigalrm(int sig) { (void)(void)fprintf(stderr, "dlpi: timeout\n"); }
 
 /*
  * savestr - save string in dynamic memory.
@@ -595,7 +595,7 @@ static char *savestr(char *s)
   char *t;
 
   if ((t = malloc(strlen(s) + 1)) == NULL) {
-    (void)fprintf(stderr, "%s: out of memory.\n", pname);
+    (void)(void)fprintf(stderr, "%s: out of memory.\n", pname);
     (void)exit(1);
   }
 

@@ -73,7 +73,7 @@ void check_sysout(char *sysout_file_name, int verbose) {
 }
 
 void usage(char *prog) {
-    fprintf(stderr, "Usage: %s [-v] sysout-filename\n", prog);
+    (void)fprintf(stderr, "Usage: %s [-v] sysout-filename\n", prog);
     exit(-1);
 }
 

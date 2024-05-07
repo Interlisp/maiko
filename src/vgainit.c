@@ -34,7 +34,7 @@ void VGA_setmax(DspInterface dsp)
   struct videoconfig vc;
 
   if (!_setvideomode(_MAXRESMODE)) {
-    fprintf(stderr, "Can't set graphics mode.\n");
+    (void)fprintf(stderr, "Can't set graphics mode.\n");
     exit(1);
   }
   _getvideoconfig(&vc);

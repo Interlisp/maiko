@@ -121,14 +121,14 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
 */
 #ifndef NOVERSION
   if (ifpage.lversion < LVERSION) {
-    fprintf(stderr, "Lisp VM is too old for this emulator.\n");
-    fprintf(stderr, "(version is %d, must be at least %d.)\n", ifpage.lversion, LVERSION);
+    (void)fprintf(stderr, "Lisp VM is too old for this emulator.\n");
+    (void)fprintf(stderr, "(version is %d, must be at least %d.)\n", ifpage.lversion, LVERSION);
     exit(-1);
   }
 
   if (ifpage.minbversion > MINBVERSION) {
-    fprintf(stderr, "Emulator is too old for this Lisp VM.\n");
-    fprintf(stderr, "(version is %d, must be at least %d.)\n", MINBVERSION, ifpage.minbversion);
+    (void)fprintf(stderr, "Emulator is too old for this Lisp VM.\n");
+    (void)fprintf(stderr, "(version is %d, must be at least %d.)\n", MINBVERSION, ifpage.minbversion);
     exit(-1);
   }
 #endif /* NOVERSION */
@@ -157,9 +157,9 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
       /* Hence we have to observe the display protocol. */
       VESA_errorexit(tmp);
 #else
-      fprintf(stderr, "sysout_loader: You can't specify the process size.\n");
-      fprintf(stderr, "Because, secondary space is already used.\n");
-      fprintf(stderr, "(size is %d, you specified %d.)\n", ifpage.process_size, sys_size);
+      (void)fprintf(stderr, "sysout_loader: You can't specify the process size.\n");
+      (void)fprintf(stderr, "Because, secondary space is already used.\n");
+      (void)fprintf(stderr, "(size is %d, you specified %d.)\n", ifpage.process_size, sys_size);
       exit(-1);
 #endif /* DOS */
     }
@@ -176,7 +176,7 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
 
   lispworld_scratch = mmap(0, sys_size * MBYTE, PROT_READ|PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
   if (lispworld_scratch == MAP_FAILED) {
-    fprintf(stderr, "sysout_loader: can't allocate Lisp %dMBytes VM \n", sys_size);
+    (void)fprintf(stderr, "sysout_loader: can't allocate Lisp %dMBytes VM \n", sys_size);
     exit(-1);
   }
 
