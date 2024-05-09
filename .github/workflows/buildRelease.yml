@@ -339,7 +339,7 @@ jobs:
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
             -DMAIKO_DISPLAY_SDL=ON \
             -DMAIKO_DISPLAY_X11=ON \
-            -DMAIKO_ENABLE_NETHUB \
+            -DMAIKO_ENABLE_NETHUB=true \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
           for exe in lde ldex ldesdl
