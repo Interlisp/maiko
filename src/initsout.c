@@ -124,7 +124,7 @@ void init_ifpage(unsigned sysout_size) {
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;
 
   if ((!Storage_expanded) && (InterfacePage->dllastvmempage != new_lastvmem)) {
-    fprintf(stderr, "You can't expand VMEM\n");
+    (void)fprintf(stderr, "You can't expand VMEM\n");
     exit(-1);
   } else { /* Set value which will be set to \\LASTVMEMFILEPAGE in LISP */
     InterfacePage->dllastvmempage = new_lastvmem;
@@ -140,9 +140,9 @@ void init_ifpage(unsigned sysout_size) {
 #endif /* BIGVM */
 
   /* unfortunately, Lisp only looks at a 16 bit serial number */
-#ifndef DOS
+#if !defined(DOS) && !defined(MAIKO_OS_HAIKU)
   InterfacePage->serialnumber = 0xffff & gethostid();
-#endif /* DOS */
+#endif /* DOS MAIKO_OS_HAIKU */
 
 /* get user name and stuff into vmem; this is the VMEM buffer;
 This is a BCPL string -- it starts with a length count. C strings

@@ -364,7 +364,7 @@ int main(int argc, char *argv[])
   }
 
   if (argv[i] && ((strcmp(argv[i], "-help") == 0) || (strcmp(argv[i], "-HELP") == 0))) {
-    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
+    (void)fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(0);
   }
 
@@ -387,7 +387,7 @@ int main(int argc, char *argv[])
   }
   if (access(sysout_name, R_OK)) {
     perror("Couldn't find a sysout to run");
-    fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
+    (void)fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(1);
   }
   /* OK, sysout name is now in sysout_name, and i is moved past a supplied name */
@@ -403,11 +403,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint > 0) {
           TIMER_INTERVAL = tmpint;
         } else {
-          fprintf(stderr, "Bad value for -t (integer > 0)\n");
+          (void)fprintf(stderr, "Bad value for -t (integer > 0)\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -t\n");
+        (void)fprintf(stderr, "Missing argument after -t\n");
         exit(1);
       }
     }
@@ -419,11 +419,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint > 0) {
           sysout_size = (unsigned)tmpint;
         } else {
-          fprintf(stderr, "Bad value for -m (integer > 0)\n");
+          (void)fprintf(stderr, "Bad value for -m (integer > 0)\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -m\n");
+        (void)fprintf(stderr, "Missing argument after -m\n");
         exit(1);
       }
     }
@@ -462,22 +462,22 @@ int main(int argc, char *argv[])
       if (argc > ++i) {
         int read = sscanf(argv[i], "%dx%d", &width, &height);
         if(read != 2) {
-          fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
+          (void)fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -sc\n");
+        (void)fprintf(stderr, "Missing argument after -sc\n");
         exit(1);
       }
     } else if ((strcmp(argv[i], "-pixelscale") == 0) || (strcmp(argv[i], "-PIXELSCALE") == 0)) {
       if (argc > ++i) {
         int read = sscanf(argv[i], "%d", &pixelscale);
         if(read != 1) {
-          fprintf(stderr, "Could not parse -pixelscale argument %s\n", argv[i]);
+          (void)fprintf(stderr, "Could not parse -pixelscale argument %s\n", argv[i]);
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -pixelscale\n");
+        (void)fprintf(stderr, "Missing argument after -pixelscale\n");
         exit(1);
       }
     } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0)
@@ -485,7 +485,7 @@ int main(int argc, char *argv[])
       if (argc > ++i) {
         windowtitle = argv[i];
       } else {
-        fprintf(stderr, "Missing argument after -title\n");
+        (void)fprintf(stderr, "Missing argument after -title\n");
         exit(1);
       }
     }
@@ -511,7 +511,7 @@ int main(int argc, char *argv[])
         ether_host[4] = b4;
         ether_host[5] = b5;
       } else {
-        fprintf(stderr, "Missing or bogus -E argument\n");
+        (void)fprintf(stderr, "Missing or bogus -E argument\n");
         ether_fd = -1;
         exit(1);
       }
@@ -524,7 +524,7 @@ int main(int argc, char *argv[])
       if (argc > ++i) {
         setNethubHost(argv[i]);
       } else {
-        fprintf(stderr, "Missing argument after -nh-host\n");
+        (void)fprintf(stderr, "Missing argument after -nh-host\n");
         exit(1);
       }
     }
@@ -535,11 +535,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint > 0) {
           setNethubPort(tmpint);
         } else {
-          fprintf(stderr, "Bad value for -nh-port\n");
+          (void)fprintf(stderr, "Bad value for -nh-port\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -nh-port\n");
+        (void)fprintf(stderr, "Missing argument after -nh-port\n");
         exit(1);
       }
     }
@@ -549,11 +549,11 @@ int main(int argc, char *argv[])
         if (sscanf(argv[i], "%x-%x-%x-%x-%x-%x",  &b0, &b1, &b2, &b3, &b4, &b5) == 6) {
           setNethubMac(b0, b1, b2, b3, b4, b5);
         } else {
-          fprintf(stderr, "Invalid argument for -nh-mac\n");
+          (void)fprintf(stderr, "Invalid argument for -nh-mac\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -nh-mac\n");
+        (void)fprintf(stderr, "Missing argument after -nh-mac\n");
         exit(1);
       }
     }
@@ -564,11 +564,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint >= 0) {
           setNethubLogLevel(tmpint);
         } else {
-          fprintf(stderr, "Bad value for -nh-loglevel\n");
+          (void)fprintf(stderr, "Bad value for -nh-loglevel\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -nh-loglevel\n");
+        (void)fprintf(stderr, "Missing argument after -nh-loglevel\n");
         exit(1);
       }
     }
@@ -582,11 +582,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint > 1000) {
           insnsCountdownForTimerAsyncEmulation = tmpint;
         } else {
-          fprintf(stderr, "Bad value for -intr-emu-insns (integer > 1000)\n");
+          (void)fprintf(stderr, "Bad value for -intr-emu-insns (integer > 1000)\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -intr-emu-insns\n");
+        (void)fprintf(stderr, "Missing argument after -intr-emu-insns\n");
         exit(1);
       }
     }
@@ -600,11 +600,11 @@ int main(int argc, char *argv[])
         if (errno == 0 && tmpint > 0) {
           maxpages = (unsigned)tmpint;
         } else {
-          fprintf(stderr, "Bad value for -xpages (integer > 0)\n");
+          (void)fprintf(stderr, "Bad value for -xpages (integer > 0)\n");
           exit(1);
         }
       } else {
-        fprintf(stderr, "Missing argument after -xpages\n");
+        (void)fprintf(stderr, "Missing argument after -xpages\n");
         exit(1);
       }
     }
@@ -615,9 +615,9 @@ int main(int argc, char *argv[])
   probemouse(); /* See if the mouse is connected. */
 #else
   if (getuid() != geteuid()) {
-    fprintf(stderr, "Effective user is not real user.  Resetting uid\n");
+    (void)fprintf(stderr, "Effective user is not real user.  Resetting uid\n");
     if (setuid(getuid()) == -1) {
-      fprintf(stderr, "Unable to reset user id to real user id\n");
+      (void)fprintf(stderr, "Unable to reset user id to real user id\n");
       exit(1);
     }
   }
@@ -641,7 +641,7 @@ int main(int argc, char *argv[])
 
   if (FindUnixPipes()) /* must call the routine to allocate storage, */
   {                    /* in case we're re-starting a savevm w/open ptys */
-    if (please_fork) fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
+    if (please_fork) (void)fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
   }
 #endif /* DOS */
 
@@ -665,7 +665,7 @@ int main(int argc, char *argv[])
 
   /* file system directory enumeration stuff */
   if (!init_finfo()) {
-    fprintf(stderr, "Cannot allocate internal data.\n");
+    (void)fprintf(stderr, "Cannot allocate internal data.\n");
     exit(1);
   }
 #ifdef RS232
@@ -727,9 +727,9 @@ void start_lisp(void) {
   TopOfStack = 0;
   Error_Exit = 0;
 
-  PVar = (DLword *)NativeAligned2FromLAddr(STK_OFFSET | InterfacePage->currentfxp) + FRAMESIZE;
+  PVar = NativeAligned2FromStackOffset(InterfacePage->currentfxp) + FRAMESIZE;
 
-  freeptr = next68k = NativeAligned2FromLAddr(STK_OFFSET | CURRENTFX->nextblock);
+  freeptr = next68k = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
   if (GETWORD(next68k) != STK_FSB_WORD) error("Starting Lisp: Next stack block isn't free!");
 

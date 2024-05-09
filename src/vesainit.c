@@ -235,7 +235,7 @@ void VESA_enter(DspInterface dsp)
   if (VESA_describemode(dsp->graphicsmode) != 0) {
     _setvideomode(_DEFAULTMODE);
     _clearscreen(_GCLEARSCREEN);
-    fprintf(stderr, "Can't set VESA mode %o.\n", dsp->graphicsmode);
+    (void)fprintf(stderr, "Can't set VESA mode %o.\n", dsp->graphicsmode);
     exit(0);
   }
   /* Get the segaddr. An addr. is a seg shifted 4 bits! */
@@ -326,7 +326,7 @@ VESA_errorexit(char *s, int errno)
 {
   _setvideomode(_DEFAULTMODE);
   _clearscreen(_GCLEARSCREEN);
-  fprintf(stderr, s);
+  (void)fprintf(stderr, s);
   fflush(stderr);
   exit(errno);
 }

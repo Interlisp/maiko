@@ -204,18 +204,10 @@ LispPTR unix_getparm(LispPTR *args) {
 #else
     envvalue = "mc68020";
 #endif
-
+  } else if (strcmp(envname, "OSNAME") == 0) {
+    envvalue = MAIKO_OS_NAME;
   } else if (strcmp(envname, "ARCH") == 0) {
-#if defined(sparc)
-    envvalue = "sun4";
-#elif defined(DOS)
-    envvalue = "dos";
-#elif defined(MAIKO_OS_MACOS)
-    envvalue = "i386";
-#else
-    envvalue = "sun3";
-#endif
-
+    envvalue = MAIKO_ARCH_NAME;
   } else if (strcmp(envname, "DISPLAY") == 0) {
 #if defined(XWINDOW)
     envvalue = "X";
@@ -239,10 +231,13 @@ LispPTR unix_getparm(LispPTR *args) {
     struct passwd *pwd;
     if ((pwd = getpwuid(getuid())) == NULL) return NIL;
     envvalue = pwd->pw_gecos;
-  } else if (strcmp(envname, "HOSTID") == 0) {
+  } 
+#ifndef MAIKO_OS_HAIKU
+  else if (strcmp(envname, "HOSTID") == 0) {
     snprintf(result, sizeof(result), "%lx", gethostid());
     envvalue = result;
   }
+#endif /* MAIKO_OS_HAIKU */
 #endif /* DOS */
   else
     return NIL;

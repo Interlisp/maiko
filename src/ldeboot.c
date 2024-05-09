@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
   for (i = 1; i < argc; i++) {
     if ((strcmp(argv[i], "-d") == 0) || (strcmp(argv[i], "-display") == 0)) {
       if (i == argc - 1) {
-        fprintf(stderr, "Missing argument to -display option.\n");
+        (void)fprintf(stderr, "Missing argument to -display option.\n");
         exit(1);
       }
       displayName = argv[++i];
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]) {
       filetorun = LDEX;
       goto run;
     } else {
-      fprintf(stderr, "Unable to open X11 display %s\n",
+      (void)fprintf(stderr, "Unable to open X11 display %s\n",
               displayName ? displayName : "from DISPLAY");
       exit(1);
     }
@@ -147,7 +147,7 @@ int main(int argc, char *argv[]) {
 
 #ifdef USESUNSCREEN
   if ((FrameBufferFd = open("/dev/fb", O_RDWR)) < 0) {
-    fprintf(stderr, "lde: can't open FrameBuffer\n");
+    (void)fprintf(stderr, "lde: can't open FrameBuffer\n");
     exit(1);
   }
   if (ioctl(FrameBufferFd, FBIOGTYPE, &my_screen) < 0) {
@@ -187,7 +187,7 @@ int main(int argc, char *argv[]) {
 
   run:
   if (filetorun == NULL) {
-    fprintf(stderr, "Unable to determine what display program to run.\n");
+    (void)fprintf(stderr, "Unable to determine what display program to run.\n");
     exit(1);
   }
 
@@ -201,6 +201,7 @@ int main(int argc, char *argv[]) {
   } else {
     /* copy up to and including the final "/" in the path */
     dirsepp = stpncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
+
     /* dirsepp now points to the trailing null in the copy */
     strncpy(dirsepp, filetorun, PATH_MAX - (dirsepp - filetorunpath));
     argv[0] = filetorunpath;

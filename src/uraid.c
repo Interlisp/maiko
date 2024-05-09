@@ -776,7 +776,7 @@ LispPTR uraid_commands(void) {
       break;
     case 's': /* SHELL */
       switch (vfork()) {
-        case -1: (void)fprintf(stderr, "uraid: Fork failed.\n"); exit(1);
+        case -1: (void)(void)fprintf(stderr, "uraid: Fork failed.\n"); exit(1);
 
         case 0: (void)execl("/bin/sh", "sh", "-i", NULL); exit(1);
 
@@ -864,7 +864,9 @@ int device_before_raid(void) {
 #ifdef XWINDOW
   /* So X events still get recognized. */
   sigemptyset(&signals);
+#ifndef MAIKO_OS_HAIKU
   sigaddset(&signals, SIGIO);
+#endif
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
 #endif
 
@@ -901,7 +903,7 @@ char *alloc_hideDISP(int size)
   {
         case SFS_NOTSWITCHABLE :
                 if((retaddr =malloc(size)) ==0){
-                        fprintf(stderr,"can't alloc hide space\n");
+                        (void)fprintf(stderr,"can't alloc hide space\n");
                  }
                 break;
         case 0 :
@@ -925,7 +927,7 @@ char *alloc_hideDISP(int size)
                         printf("Hidespace inside Lisp(4)\n");
                  }
                 else if((retaddr=malloc(size)) ==0){
-                        fprintf(stderr,"can't alloc hide disp\n");
+                        (void)fprintf(stderr,"can't alloc hide disp\n");
                          }
                         printf("Hidespace new\n");
                 break;

@@ -59,8 +59,8 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
       } else if (VGA_p()) {
         VGA_init(dsp, 0, 0, 0, depth_hint);
       } else { /* Can't set *ANY* video mode! */
-        (void)fprintf(stderr, "No portable graphics mode supported by this host.\n");
-        (void)fprintf(stderr, "\n-Expected VESA or VGA.\n");
+        (void)(void)fprintf(stderr, "No portable graphics mode supported by this host.\n");
+        (void)(void)fprintf(stderr, "\n-Expected VESA or VGA.\n");
         exit(1);
       }
       break;
@@ -69,7 +69,7 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
 #elif XWINDOW
   /* lispbitmap is 0 when we call X_init the first time. */
   if (X_init(dsp, 0, LispDisplayRequestedWidth, LispDisplayRequestedHeight, depth_hint) == NULL) {
-    fprintf(stderr, "Can't open display.");
+    (void)fprintf(stderr, "Can't open display.");
     exit(-1);
   }
 #endif /* DOS | XWINDOW */
@@ -87,7 +87,7 @@ void GenericReturnVoid(void *d) {(void)d; return; }
 void GenericPanic(void *d) {
   (void)d;
   TPRINT(("Enter GenericPanic\n"));
-  fprintf(stderr, "Panic! Call to uninitialized display slot!");
+  (void)fprintf(stderr, "Panic! Call to uninitialized display slot!");
   exit(0);
 }
 

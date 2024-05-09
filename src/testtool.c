@@ -57,7 +57,7 @@
 #include "gcarraydefs.h"   // for aref1
 #include "kprintdefs.h"    // for print, prindatum
 #include "lispemul.h"      // for DLword, LispPTR, DLbyte, state, T, ConsCell
-#include "lispmap.h"       // for STK_OFFSET, ATOMS_HI
+#include "lispmap.h"       // for ATOMS_HI
 #include "lspglob.h"       // for Package_from_Index_word, Stackspace
 #include "lsptypes.h"      // for GETWORD, dtd, GETBYTE, NEWSTRINGP, GetType...
 #include "mkatomdefs.h"    // for compare_chars, make_atom
@@ -852,7 +852,7 @@ void dump_bf(Bframe *bf) {
 
   if (BFRAMEPTR(bf)->residual) { goto printflags; }
 
-  ptr = NativeAligned2FromLAddr(STK_OFFSET + bf->ivar);
+  ptr = NativeAligned2FromStackOffset(bf->ivar);
   if ((((DLword *)bf - ptr) > 512) || (((UNSIGNED)ptr & 1) != 0)) {
     printf("\nInvalid basic frame");
     return;
@@ -910,7 +910,7 @@ void dump_fx(struct frameex1 *fx_addr68k) {
 
   /* should pay attention to the name table like RAID does */
 
-  next68k = (DLword *)NativeAligned2FromLAddr((fx_addr68k->nextblock + STK_OFFSET));
+  next68k = NativeAligned2FromStackOffset(fx_addr68k->nextblock);
   if (fx_addr68k == CURRENTFX) { next68k = CurrentStackPTR + 2; }
 
   if ((next68k < ptr) || (((UNSIGNED)next68k & 1) != 0)) {
@@ -937,7 +937,7 @@ void dump_stackframe(struct frameex1 *fx_addr68k) {
   if ((fx_addr68k->alink & 1) == 0) { /* FAST */
     bf = (Bframe *)(((DLword *)fx_addr68k) - 2);
   } else { /* SLOW */
-    bf = (Bframe *)NativeAligned4FromLAddr((fx_addr68k->blink + STK_OFFSET));
+    bf = (Bframe *)NativeAligned4FromStackOffset(fx_addr68k->blink);
   }
   dump_bf(bf);
   dump_fx((struct frameex1 *)fx_addr68k);
@@ -1104,12 +1104,12 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
   if (start == 0)
     start68k = Stackspace + InterfacePage->stackbase;
   else
-    start68k = NativeAligned2FromLAddr(STK_OFFSET | start);
+    start68k = NativeAligned2FromStackOffset(start);
 
   if (end == 0)
     end68k = Stackspace + InterfacePage->endofstack;
   else
-    end68k = NativeAligned2FromLAddr(STK_OFFSET | end);
+    end68k = NativeAligned2FromStackOffset(end);
 
   stkptr = (STKH *)start68k;
 
@@ -1156,7 +1156,7 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           printf(" <-***current***");
           size = EndSTKP - (DLword *)stkptr;
         } else {
-          size = NativeAligned2FromLAddr(STK_OFFSET | ((FX *)stkptr)->nextblock) - (DLword *)stkptr;
+          size = NativeAligned2FromStackOffset(((FX *)stkptr)->nextblock) - (DLword *)stkptr;
         }
         goto checksize;
       default:

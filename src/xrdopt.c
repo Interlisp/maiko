@@ -110,30 +110,30 @@ extern struct sockaddr_nit snit;
 
 void print_Xusage(const char *prog)
 {
-  fprintf(stderr, " %s options:\n", prog);
-  fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
-  fprintf(stderr, " -h[elp]                              -prints this text\n");
-  fprintf(stderr, " -info                                -prints configuration info\n");
-  fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
-  fprintf(stderr,
+  (void)fprintf(stderr, " %s options:\n", prog);
+  (void)fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
+  (void)fprintf(stderr, " -h[elp]                              -prints this text\n");
+  (void)fprintf(stderr, " -info                                -prints configuration info\n");
+  (void)fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
+  (void)fprintf(stderr,
           " -g[eometry] <geom>                   -size & placement for the medley window on your X "
           "screen\n");
-  fprintf(stderr,
+  (void)fprintf(stderr,
           " -sc[reen] <geom>                     -size & placement for the medley display\n");
-  fprintf(stderr, " -t[itle] <string>                    -titlebar text for the window manager\n");
-  fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
-  fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
-  fprintf(stderr,
+  (void)fprintf(stderr, " -t[itle] <string>                    -titlebar text for the window manager\n");
+  (void)fprintf(stderr, " -icontitle <string> | -it <string>   -text for the medley icon\n");
+  (void)fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
+  (void)fprintf(stderr,
           " -xsync                               -turn  XSynchronize on. (default is off)\n\n");
 #if defined(MAIKO_ENABLE_NETHUB)
-  fprintf(stderr,"\
+  (void)fprintf(stderr,"\
  -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
  -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
  -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
  -nh-loglevel level        Loglevel for Dodo networking (0..2, optional, default: 0)\n\n");
 #endif
-  fprintf(stderr, "Please refer to the manual for further information.\n\n");
-  exit(0);
+  (void)fprintf(stderr, "Please refer to the manual for further information.\n\n");
+  exit(EXIT_FAILURE);
 } /* end print_Xusage() */
 
 /************************************************************************/
@@ -206,9 +206,9 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(commandlineDB, "ldex.display", "Ldex.Display", str_type, &value) == True) {
     (void)strncpy(Display_Name, value.addr, value.size);
   } else if (getenv("DISPLAY") == (char *)NULL) {
-    fprintf(stderr, "Can't find a display. Either set the shell\n");
-    fprintf(stderr, "variable DISPLAY to an appropriate display\n");
-    fprintf(stderr, "or provide a -display argument.\n");
+    (void)fprintf(stderr, "Can't find a display. Either set the shell\n");
+    (void)fprintf(stderr, "variable DISPLAY to an appropriate display\n");
+    (void)fprintf(stderr, "or provide a -display argument.\n");
     print_Xusage(argv[0]);
   } else {
     envname = getenv("DISPLAY");
@@ -228,7 +228,7 @@ void read_Xoption(int *argc, char *argv[])
     }
     XCloseDisplay(xdisplay);
   } else {
-    fprintf(stderr, "Open_Display: cannot connect to display %s.", XDisplayName(Display_Name));
+    (void)fprintf(stderr, "Open_Display: cannot connect to display %s.", XDisplayName(Display_Name));
     exit(-1);
   }
 
@@ -248,7 +248,7 @@ void read_Xoption(int *argc, char *argv[])
     (void)strncpy(sysout_name, value.addr, value.size);
   }
   if (sysout_name[0] == '\0') {
-    fprintf(stderr, "Couldn't find a sysout to run;\n");
+    (void)fprintf(stderr, "Couldn't find a sysout to run;\n");
     print_Xusage(argv[0]);
   }
 
@@ -329,7 +329,7 @@ void read_Xoption(int *argc, char *argv[])
       ether_host[4] = b4;
       ether_host[5] = b5;
     } else {
-      fprintf(stderr, "Missing or bogus -E argument\n");
+      (void)fprintf(stderr, "Missing or bogus -E argument\n");
       ether_fd = -1;
       exit(1);
     }

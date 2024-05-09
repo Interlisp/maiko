@@ -26,6 +26,7 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+/* if using inet_ntop you must #include <arpa/inet.h> */
 #endif /* DOS */
 
 #if (defined(OS5) || defined(__CYGWIN__)) && !defined(O_ASYNC)
@@ -93,7 +94,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
       if (!host) return (NIL);
-      N_ARITH_SWITCH(ntohl(*(long *)host->h_addr));
+      res = ntohl(*(in_addr_t *)host->h_addr);
+      N_ARITH_SWITCH(res);
       break;
 
     case TCPservicelookup:
@@ -107,14 +109,20 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       addr_class = LispNumToCInt(nameConn);
       protocol = LispNumToCInt(proto);
       result = socket(addr_class, protocol, 0);
+#ifndef MAIKO_OS_HAIKU
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
+#else
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
+#endif
 
       return (GetSmallp(result));
     case TCPconnect: /* args: hostname or (fixp)address, socket# */
       memset(&farend, 0, sizeof farend);
       N_GETNUMBER(nameConn, res, string_host);
-      farend.sin_addr.s_addr = htons(res);
+      farend.sin_addr.s_addr = htonl(res);
       goto host_ok;
     string_host:
       LispStringToCString(nameConn, namestring, 100);
@@ -131,7 +139,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
+#endif
 
       return (GetSmallp(result));
 
@@ -197,13 +207,20 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         sigset_t signals;
 
         sigemptyset(&signals);
+#ifndef MAIKO_OS_HAIKU
         sigaddset(&signals, SIGIO);
-
+#endif
         sigprocmask(SIG_BLOCK, &signals, NULL);
 
+#ifndef MAIKO_OS_HAIKU
         fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
-        fcntl(result, F_SETOWN, getpid());
+#else
+        fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
 
+#ifdef F_SETOWN
+	fcntl(result, F_SETOWN, getpid());
+#endif
         if (listen(result, 5) == -1) {
           perror("TCP Listen");
           close(result);
@@ -225,8 +242,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
-
+#endif
       return (GetSmallp(result));
 
     case INETpeername: /* socket#, buffer for name string */
@@ -259,9 +277,14 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         close(result);
         return (NIL);
       }
+#ifndef MAIKO_OS_HAIKU
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
+#else
+      fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
+#endif
+#ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
-
+#endif
       FD_SET(result, &LispIOFds);  /* so we get interrupts */
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));

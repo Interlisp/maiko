@@ -3053,10 +3053,8 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   FileName *svarray;
   DIR *dirp;
   struct dirent *dp;
-  /* Used in commented out code below:
   int rval;
   struct stat sbuf;
-  */
 
   /*
    * First of all, prepare a lower cased file name for the case insensitive
@@ -3066,20 +3064,14 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   separate_version(lcased_file, ver, 1);
   DOWNCASE(lcased_file);
 
-  /*
-          TIMEOUT(rval = stat(dir, &sbuf));
-          if (rval == -1) {
-                  *Lisp_errno = errno;
-                  return(0);
-          }
-  */
+  TIMEOUT(rval = stat(dir, &sbuf));
+  if (rval == -1) {
+    *Lisp_errno = errno;
+    return(0);
+  }
 
   /*
-   * If the cached version array is still valid, we can return immediately.
-   */
-
-  /*
-   * Cache mechanism is not used now, because of the bug of Sun OS.
+   * Cache mechanism was not used because of a bug in Sun OS.
    * Sometimes just after unlinking a file on a directory, the st_mtime
    * of the directory does not change.  This will make Maiko believe
    * cached version array is still valid, although it is already invalid.
@@ -3087,9 +3079,15 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
    */
 
   /*
-          if ((sbuf.st_mtime == cache->mtime) && strcmp(dir, cache->path) == 0
-              && strcmp(lcased_file, cache->file) == 0) return(1);
-  */
+   * If the cached version array is still valid, we can return immediately.
+   */
+
+#if 0
+  /* there is a (different?) problem (#1661) with the caching - disable until it's solved */
+  if ((sbuf.st_mtime == cache->mtime) && strcmp(dir, cache->path) == 0
+      && strcmp(lcased_file, cache->file) == 0) return(1);
+#endif
+
   errno = 0;
   TIMEOUT0(dirp = opendir(dir));
   if (dirp == NULL) {
@@ -3140,11 +3138,9 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   /*
    * Update cache information.
    */
-  /*
-          strcpy(cache->path, dir);
-          strcpy(cache->file, lcased_file);
-          cache->mtime = sbuf.st_mtime;
-  */
+  strcpy(cache->path, dir);
+  strcpy(cache->file, lcased_file);
+  cache->mtime = sbuf.st_mtime;
   TIMEOUT(closedir(dirp));
   return (1);
 #endif /* DOS */

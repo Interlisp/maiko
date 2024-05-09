@@ -107,7 +107,7 @@ jobs:
           echo "linux=true" >> $GITHUB_OUTPUT;
           echo "macos=true" >> $GITHUB_OUTPUT;
           echo "windows=true" >> $GITHUB_OUTPUT;
-          
+
 
 ######################################################################################
 
@@ -123,7 +123,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -157,7 +157,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -165,7 +165,7 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Setup release tag
       - name: Setup Release Tag
@@ -272,11 +272,11 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -290,13 +290,13 @@ jobs:
       # Uninstall exisitng X11 stuff preconfigured on runner then install correct X11 dependencies
       - name: Unistall X components already on the runner
         run: |
-          brew uninstall --ignore-dependencies libxft
-          brew uninstall --ignore-dependencies libxrender
-          brew uninstall --ignore-dependencies libxext
-          brew uninstall --ignore-dependencies libx11
-          brew uninstall --ignore-dependencies xorgproto
-          brew uninstall --ignore-dependencies libxdmcp
-          brew uninstall --ignore-dependencies libxau
+          brew uninstall --ignore-dependencies --force libxft
+          brew uninstall --ignore-dependencies --force libxrender
+          brew uninstall --ignore-dependencies --force libxext
+          brew uninstall --ignore-dependencies --force libx11
+          brew uninstall --ignore-dependencies --force xorgproto
+          brew uninstall --ignore-dependencies --force libxdmcp
+          brew uninstall --ignore-dependencies --force libxau
 
       - name: Install X11 dependencies on MacOS
         env:
@@ -324,7 +324,7 @@ jobs:
           export LDEARCH=aarch64-apple-darwin
           ./makeright init
           mkdir -p ../darwin.universal
-          exe=ldeinit 
+          exe=ldeinit
           lipo -create \
                -arch arm64 ../darwin.aarch64/${exe}  \
                -arch x86_64 ../darwin.x86_64/${exe} \
@@ -346,7 +346,7 @@ jobs:
             lipo ${exe} -output ../darwin.x86_64/${exe} -extract x86_64
             lipo ${exe} -output ../darwin.aarch64/${exe} -extract arm64
             cp -p ${exe} ../darwin.universal/${exe}
-          done  
+          done
 
       # Create release tar for github.
       - name: Make release tar(s)
@@ -369,7 +369,7 @@ jobs:
       # Push Release
       - name: Push the release
         uses: ncipollo/release-action@v1
-        with: 
+        with:
           allowUpdates: true
           artifacts:
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-darwin.x86_64.tgz,
@@ -383,7 +383,7 @@ jobs:
 
   # Windows: build for Windows-Cygwin via Docker build and use results to
   # create and push release assets to github
-  
+
   windows:
 
     needs: [inputs, sentry]
@@ -418,7 +418,7 @@ jobs:
       # Retrieve SDL2 and install in cygwin
       - name: Install SDL2
         id: sdl2
-        env: 
+        env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
@@ -426,13 +426,13 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: cygwin\maiko
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -475,6 +475,80 @@ jobs:
 
 ######################################################################################
 
+  # Emscripten: build and push Maiko compiled for Emscripten (to run Maiko in browser)
+
+  emscripten:
+
+    needs: [inputs, sentry]
+    if: |
+      needs.inputs.outputs.linux == 'true'
+      && (
+         needs.sentry.outputs.release_not_built == 'true'
+         || needs.inputs.outputs.force == 'true'
+      )
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout the actions for this repo owner
+      - name: Checkout Actions
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          path: ./Actions_${{ github.sha }}
+      - run: mv ./Actions_${{ github.sha }}/actions ../actions && rm -rf ./Actions_${{ github.sha }}
+
+      # Install SDL2
+      - name: Install SDL2
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          sudo -E apt-get install -y libsdl2-dev libsdl2-2.0-0
+
+      # Install Emscripten SDK
+      - name: Install Empscripten
+        working-directory: ../
+        run: |
+          git clone https://github.com/emscripten-core/emsdk.git
+          cd emsdk
+          ./emsdk install latest
+          ./emsdk activate latest
+          CWD="$(pwd)"
+          echo "${CWD}"  >> ${GITHUB_PATH}
+          echo "${CWD}/upstream/emscripten" >> ${GITHUB_PATH}
+          echo "${CWD}/upstream/emscripten/tools" >> ${GITHUB_PATH}
+          echo "${CWD}/node/$(ls -d node/*64bit | tail -1)/bin" >> ${GITHUB_PATH}
+
+      # Checkout the maiko branch
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Setup release tag
+      - name: Setup Release Tag
+        id: tag
+        uses: ./../actions/release-tag-action
+
+      # Compile maiko using Emscripten (no load build)
+      - name: Compile Maiko using Emscripten
+        working-directory: ./bin
+        run: |
+          ./makeright wasm_nl
+          cd ../emscripten.wasm_nl
+          tar -c -z -f ../${{ steps.tag.outputs.release_tag }}-emscripten.tgz *
+
+      # Push Release to github
+      - name: Push the release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          artifacts: ${{ steps.tag.outputs.release_tag }}-emscripten.tgz
+          tag: ${{ steps.tag.outputs.release_tag }}
+          draft: ${{ needs.inputs.outputs.draft }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+######################################################################################
+
   # Use set-sentry-action to determine set the sentry that says this release has
   # been successfully built
 
@@ -485,12 +559,12 @@ jobs:
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
 
-    needs: [inputs, sentry, linux, macos, windows]
+    needs: [inputs, sentry, linux, macos, windows, emscripten]
 
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}

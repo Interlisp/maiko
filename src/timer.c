@@ -47,6 +47,10 @@ unsigned long tick_count = 0; /* approx 18 ticks per sec            */
 #include <sys/time.h>
 #endif /* DOS */
 
+#ifdef MAIKO_OS_HAIKU
+#include <OS.h>
+#endif
+
 #if defined(USE_DLPI)
 #include <stropts.h>
 extern int ether_fd;
@@ -118,6 +122,19 @@ void update_miscstats(void) {
   MiscStats->diskiotime = 0; /* ?? not available ?? */
   MiscStats->diskops = 0;
   MiscStats->secondstmp = MiscStats->secondsclock = (time(0) + UNIX_ALTO_TIME_DIFF);
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  /* Emscripten does not provide getrusage() functionality */
+  struct timeval timev;
+
+  MiscStats->totaltime = gettime(0) - MiscStats->starttime;
+  MiscStats->swapwaittime = 0;
+  MiscStats->pagefaults = 0;
+  MiscStats->swapwrites = 0;
+  MiscStats->diskiotime = 0;
+  MiscStats->diskops = 0;
+
+  gettimeofday(&timev, NULL);
+  MiscStats->secondstmp = MiscStats->secondsclock = (timev.tv_sec + UNIX_ALTO_TIME_DIFF);
 #else
   struct timeval timev;
   struct rusage ru;
@@ -288,6 +305,10 @@ void subr_settime(LispPTR args[])
   dosday.year = uxtime.tm_year;
   dosday.dayofweek = uxtime.tm_wday;
   _dos_setdate(&dosday);
+#elif defined(MAIKO_OS_HAIKU)
+  (void)args[0];
+#elif defined(MAIKO_OS_EMSCRIPTEN)
+  (void)args[0];
 #else
   struct timeval timev;
   timev.tv_sec = *((int *)NativeAligned4FromLAddr(args[0])) - UNIX_ALTO_TIME_DIFF;
@@ -541,17 +562,19 @@ static void int_io_service(int sig)
 /************************************************************************/
 
 static void int_io_init(void) {
-#ifndef DOS
+#if !defined(DOS) || !defined(MAIKO_OS_HAIKU)
   struct sigaction io_action;
   io_action.sa_handler = int_io_service;
   sigemptyset(&io_action.sa_mask);
   io_action.sa_flags = 0;
 
+#ifndef MAIKO_OS_HAIKU
   if (sigaction(SIGIO, &io_action, NULL) == -1) {
     perror("sigaction: SIGIO");
   } else {
     DBPRINT(("I/O interrupts enabled\n"));
   }
+#endif
 
 #if defined(USE_DLPI)
   DBPRINT(("INIT ETHER:  Doing I_SETSIG.\n"));
@@ -563,7 +586,7 @@ static void int_io_init(void) {
       return;
     }
 #endif /* USE_DLPI */
-#endif /* DOS */
+#endif /* DOS MAIKO_OS_HAIKU */
 }
 
 /************************************************************************/
@@ -585,7 +608,9 @@ void int_block(void) {
   sigset_t signals;
   sigemptyset(&signals);
   sigaddset(&signals, SIGVTALRM);
+#ifndef MAIKO_OS_HAIKU
   sigaddset(&signals, SIGIO);
+#endif
   sigaddset(&signals, SIGALRM);
   sigaddset(&signals, SIGXFSZ);
 #ifdef FLTINT
@@ -613,7 +638,9 @@ void int_unblock(void) {
   sigset_t signals;
   sigemptyset(&signals);
   sigaddset(&signals, SIGVTALRM);
+#ifndef MAIKO_OS_HAIKU
   sigaddset(&signals, SIGIO);
+#endif
   sigaddset(&signals, SIGALRM);
   sigaddset(&signals, SIGXFSZ);
 #ifdef FLTINT

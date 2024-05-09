@@ -303,14 +303,14 @@ int sf(struct frameex1 *fx_addr68k) {
   if (((fx_addr68k)->alink & 1) == 0) { /* FAST */
     bf = (Bframe *)(((DLword *)fx_addr68k) - 2);
   } else { /* SLOW */
-    bf = (Bframe *)NativeAligned4FromLAddr(((fx_addr68k)->blink + STK_OFFSET));
+    bf = (Bframe *)NativeAligned4FromStackOffset((fx_addr68k)->blink);
   }
 
   /* Print IVARs */
   printf("IVAR -------\n");
   BT_morep;
 
-  ptr = NativeAligned2FromLAddr(STK_OFFSET + bf->ivar);
+  ptr = NativeAligned2FromStackOffset(bf->ivar);
   i = 0;
   while (ptr != (DLword *)bf) {
     ptrlo = ptr + 1;
@@ -475,7 +475,7 @@ int sf(struct frameex1 *fx_addr68k) {
       i++;
     }
     if (fx_addr68k->alink == 11) /* for contextsw */
-      next68k = (DLword *)NativeAligned2FromLAddr((fx_addr68k->nextblock + STK_OFFSET));
+      next68k = NativeAligned2FromStackOffset(fx_addr68k->nextblock);
 
     else
       next68k = CurrentStackPTR;
@@ -493,7 +493,7 @@ int sf(struct frameex1 *fx_addr68k) {
     return (-1);
   }
 
-  next68k = (DLword *)NativeAligned2FromLAddr((fx_addr68k->nextblock + STK_OFFSET));
+  next68k = NativeAligned2FromStackOffset(fx_addr68k->nextblock);
   ptr = (DLword *)(fx_addr68k + 1);
 
   i = 0;

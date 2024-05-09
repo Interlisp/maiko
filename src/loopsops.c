@@ -26,7 +26,7 @@
 #include "gcarraydefs.h"   // for get_package_atom
 #include "gcdata.h"        // for FRPLPTR
 #include "lispemul.h"      // for LispPTR, state, CurrentStackPTR, NIL_PTR, NIL
-#include "lispmap.h"       // for S_POSITIVE, STK_OFFSET
+#include "lispmap.h"       // for S_POSITIVE
 #include "loopsopsdefs.h"  // for lcfuncall, LCFetchMethod, LCFetchMethodOrHelp
 #include "lspglob.h"
 #include "lsptypes.h"      // for GetDTD, GetTypeNumber, dtd, Listp, GETWORD
@@ -358,7 +358,7 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;
 
   /* Setup IVar */
-  IVar = NativeAligned2FromLAddr((((LispPTR)(CURRENTFX->nextblock)) | STK_OFFSET));
+  IVar = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
   /* Set PC to the Next Instruction and save into FX */
   CURRENTFX->pc = ((UNSIGNED)PC - (UNSIGNED)FuncObj) + bytenum;

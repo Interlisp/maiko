@@ -64,14 +64,14 @@ LispPTR Uraid_mess = NIL;
 int error(const char *cp) {
   char *ptr;
   if (device_before_raid() < 0) {
-    fprintf(stderr, "Can't Enter URAID.\n");
+    (void)fprintf(stderr, "Can't Enter URAID.\n");
     exit(-1);
   }
   /* comm read */
   URaid_errmess = cp;
-  fprintf(stderr, "\n*Error* %s\n", cp);
+  (void)fprintf(stderr, "\n*Error* %s\n", cp);
   fflush(stdin);
-  fprintf(stderr, "Enter the URaid\n");
+  (void)fprintf(stderr, "Enter the URaid\n");
   print(Uraid_mess);
   putchar('\n');
   /* XXX: make sure output is flushed so we can see where we are */
