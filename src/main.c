@@ -229,7 +229,11 @@ int display_max = 65536 * 16 * 2;
 /* diagnostic flag for sysout dumping */
 extern unsigned maxpages;
 
-char sysout_name[MAXPATHLEN]; /* Set by read_Xoption, in the X version. */
+char sysout_name_cl[MAXPATHLEN] = "\0"; /* sysout name as per -sysout command line arg ; Set by read_Xoption, in the X version. */
+char sysout_name_xrm[MAXPATHLEN] = "\0"; /* sysout name as per X resource manager, if any */
+char sysout_name_first_arg[MAXPATHLEN] = "\0"; /* sysout name as per 1st command line arg, if any */
+char sysout_name[MAXPATHLEN] = "\0"; /* "final" sysout name chosen from above */
+
 unsigned sysout_size = 0;    /* ditto */
 
 int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
@@ -338,6 +342,7 @@ int main(int argc, char *argv[])
   }
 #endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
 
+
 #ifdef XWINDOW
   read_Xoption(&argc, argv);
 #endif /* XWINDOW */
@@ -348,13 +353,6 @@ int main(int argc, char *argv[])
 #ifdef PROFILE
   moncontrol(0); /* initially stop sampling */
 #endif           /* PROFILE */
-
-/* Sysout is found as follows:
-        If the first argument doesn't begin with '-', assume it's the sysout
-        Look at the environment variable LDESRCESYSOUT if that fails
-        Look for ~/lisp.virtualmem if that fails
-        Barf and print the command line if tha fails
-*/
 
   i = 1;
 
@@ -369,34 +367,23 @@ int main(int argc, char *argv[])
   }
 
   if (argc > 1 && argv[1][0] != '-') {
-    strncpy(sysout_name, argv[1], MAXPATHLEN);
+    strncpy(sysout_name_first_arg, argv[1], MAXPATHLEN);
     i++;
-  } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
-    strncpy(sysout_name, envname, MAXPATHLEN);
-  } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
-    strncpy(sysout_name, envname, MAXPATHLEN);
-  else {
-#ifdef DOS
-    strncpy(sysout_name, "lisp.vm", MAXPATHLEN);
-#else
-    if ((envname = getenv("HOME")) != NULL) {
-      strncpy(sysout_name, envname, MAXPATHLEN);
-      strncat(sysout_name, "/lisp.virtualmem", MAXPATHLEN - 17);
-    }
-#endif /* DOS */
   }
-  if (access(sysout_name, R_OK)) {
-    perror("Couldn't find a sysout to run");
-    (void)fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
-    exit(1);
-  }
-  /* OK, sysout name is now in sysout_name, and i is moved past a supplied name */
+
 
   for (; i < argc; i += 1) { /* step by 1 in case of typo */
 
+   /* Check for -sysout arg */
+    if (!strcmp(argv[i], "-sysout")) {
+      if (argc > ++i) {
+        strncpy(sysout_name_cl, argv[i], MAXPATHLEN);
+      }
+    }
+
     /* -t and -m are undocumented and somewhat dangerous... */
 
-    if (!strcmp(argv[i], "-t")) { /**** timer interval	****/
+    else if (!strcmp(argv[i], "-t")) { /**** timer interval	****/
       if (argc > ++i) {
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
@@ -609,6 +596,40 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+  //
+  //  OK, now we can process the sysout_name
+  //  Order of priority:
+  //    1. Value of -sysout command line arg
+  //    2. Value of the first command line arg
+  //    3. Value of LDESRCESYSOUT env variable
+  //    4. Value of LDESOURCESYSOUT env variable
+  //    5. Value as determined by X resource manager, if any
+  //    6. Value of $HOME/lisp.virtualmem (or lisp.vm for DOS)
+  //
+  if (sysout_name_cl[0] != '\0') { strncpy(sysout_name, sysout_name_cl, MAXPATHLEN); }
+  else if (sysout_name_first_arg[0] != '\0') { strncpy(sysout_name, sysout_name_first_arg, MAXPATHLEN); }
+  else if ((envname = getenv("LDESRCESYSOUT")) != NULL) { strncpy(sysout_name, envname, MAXPATHLEN); }
+  else if ((envname = getenv("LDESOURCESYSOUT")) != NULL) { strncpy(sysout_name, envname, MAXPATHLEN); }
+  else if (sysout_name_xrm[0] != '\0') { strncpy(sysout_name, sysout_name_xrm, MAXPATHLEN); }
+  else {
+#ifdef DOS
+    strncpy(sysout_name, "lisp.vm", MAXPATHLEN);
+#else
+    if ((envname = getenv("HOME")) != NULL) {
+      strncpy(sysout_name, envname, MAXPATHLEN);
+      strncat(sysout_name, "/lisp.virtualmem", MAXPATHLEN - 17);
+    }
+#endif /* DOS */
+  }
+  if ((sysout_name[0] == '\0') || (access(sysout_name, R_OK))) {
+    perror("Couldn't find a sysout to run");
+    fprintf(stderr, "Looking for: %s\n", sysout_name);
+    (void)fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
+    exit(1);
+  }
+  /* OK, sysout name is now in sysout_name */
+
 
 /* Sanity checks. */
 #ifdef DOS

@@ -85,7 +85,8 @@ char Window_Title[255];
 extern char Icon_Title[255];
 char Icon_Title[255];
 
-extern char sysout_name[];
+extern char sysout_name_cl[];
+extern char sysout_name_xrm[];
 extern unsigned sysout_size;
 extern int for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
@@ -181,20 +182,9 @@ void read_Xoption(int *argc, char *argv[])
     print_Xusage(argv[0]);
   }
 
-  sysout_name[0] = '\0';
-  if (*argc == 2) { /* There was probably a sysoutarg */
-    (void)strncpy(sysout_name, argv[1], PATH_MAX - 1);
-  } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
-    strncpy(sysout_name, envname, PATH_MAX - 1);
-  } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL)
-    strncpy(sysout_name, envname, PATH_MAX - 1);
-  else {
-    envname = getenv("HOME");
-    (void)strcat(sysout_name, envname);
-    (void)strcat(sysout_name, "/lisp.virtualmem");
-  }
-  if (access(sysout_name, R_OK) != 0) {
-    sysout_name[0] = '\0';
+  if (XrmGetResource(commandlineDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
+    /* Get Sysout from command line only */
+    (void)strncpy(sysout_name_cl, value.addr, value.size);
   }
 
   /* In order to access other DB's we have to open the main display now */
@@ -244,12 +234,8 @@ void read_Xoption(int *argc, char *argv[])
   (void)XrmMergeDatabases(commandlineDB, &rDB);
 
   if (XrmGetResource(rDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
-    /* Get Sysout */
-    (void)strncpy(sysout_name, value.addr, value.size);
-  }
-  if (sysout_name[0] == '\0') {
-    (void)fprintf(stderr, "Couldn't find a sysout to run;\n");
-    print_Xusage(argv[0]);
+    /* Get Sysout from x resource manager */
+    (void)strncpy(sysout_name_xrm, value.addr, value.size);
   }
 
   if (XrmGetResource(rDB, "ldex.title", "Ldex.Title", str_type, &value) == True) {
