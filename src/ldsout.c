@@ -15,7 +15,10 @@
 #include <stdio.h>        // for perror, fprintf, printf, stderr, sprintf
 #include <stdlib.h>       // for exit, free, malloc
 #include <string.h>       // for memset
-#include <sys/mman.h>     // for mmap
+#include <sys/mman.h>     // for mmap, MAP_FAILED
+#ifndef MAP_FAILED
+#define MAP_FAILED	((void *)-1)
+#endif
 #include <sys/stat.h>     // for stat, fstat
 #include <sys/types.h>    // for off_t
 #include <unistd.h>       // for lseek, read, close, getpagesize
