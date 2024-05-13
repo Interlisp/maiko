@@ -342,6 +342,24 @@ int main(int argc, char *argv[])
   }
 #endif /* MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE */
 
+#ifdef PROFILE
+  moncontrol(0); /* initially stop sampling */
+#endif           /* PROFILE */
+
+  //
+  //
+  //  Process Command Line Arguments
+  //
+  //
+
+  // First check if the first argument is a sysout name
+  // and save it away if it is in case the X windows
+  // arg processing changes argc/argv
+  if (argc > 1 && argv[1][0] != '-') {
+    strncpy(sysout_name_first_arg, argv[1], MAXPATHLEN);
+    i++;
+  }
+
 
 #ifdef XWINDOW
   read_Xoption(&argc, argv);
@@ -349,10 +367,6 @@ int main(int argc, char *argv[])
 
   save_argc = argc;
   save_argv = argv;
-
-#ifdef PROFILE
-  moncontrol(0); /* initially stop sampling */
-#endif           /* PROFILE */
 
   i = 1;
 
@@ -366,13 +380,12 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-  if (argc > 1 && argv[1][0] != '-') {
-    strncpy(sysout_name_first_arg, argv[1], MAXPATHLEN);
-    i++;
-  }
-
 
   for (; i < argc; i += 1) { /* step by 1 in case of typo */
+
+   // NOTE:  in the case of X Windows, some of the args being checked for in this loop
+   // have already been processed (and removed from argv) by the call to read_Xoption()
+   // above.  (See readXoption() in xrdopt.c)
 
    /* Check for -sysout arg */
     if (!strcmp(argv[i], "-sysout")) {
@@ -629,6 +642,13 @@ int main(int argc, char *argv[])
     exit(1);
   }
   /* OK, sysout name is now in sysout_name */
+
+
+  //
+  //
+  // End of command line arg processing
+  //
+  //
 
 
 /* Sanity checks. */
