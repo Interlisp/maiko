@@ -49,34 +49,33 @@
 #define vfork fork
 #endif
 
-#include "lispemul.h"
-#include "lispmap.h"
-#include "adr68k.h"
-#include "lsptypes.h"
-#include "lspglob.h"
-#include "emlglob.h"
-#include "cell.h"
-#include "ifpage.h"
-#include "debug.h"
-#include "devconf.h"
-#include "stack.h"
+#include "version.h"             // for BIGVM
 
-#include "display.h"
-#include "bitblt.h"
+#include "adr68k.h"              // for NativeAligned4FromStackOffset, LAddr...
+#include "cell.h"                // for DefCell, GetDEFCELL68k, GetVALCELL68k
+#include "dbgtooldefs.h"         // for bt1, bt, sf
+#include "devif.h"               // for DspInterfaceRec, DevRec, DspInterface
+#include "display.h"             // for DISPLAYBUFFER
+#include "gcarraydefs.h"         // for get_package_atom
+#include "gcfinaldefs.h"         // for printarrayblock
+#include "ifpage.h"              // for IFPAGE
+#include "initdspdefs.h"         // for clear_display, flush_display_buffer
+#include "initkbddefs.h"         // for init_keyboard
+#include "kprintdefs.h"          // for print
+#include "lispemul.h"            // for T, DLword, LispPTR, POINTERMASK, NIL
+#include "lispmap.h"             // for DISPLAY_HI, ATOM_HI, DEFS_HI, DISPLA...
+#include "llstkdefs.h"           // for stack_check
+#include "lspglob.h"             // for InterfacePage, Plistspace
+#include "lsptypes.h"            // for GETWORD, GetDTD, GetTypeNumber, dtd
+#include "mkatomdefs.h"          // for make_atom
+#include "returndefs.h"          // for contextsw
+#include "stack.h"               // for FX, ResetFXP
+#include "testtooldefs.h"        // for all_stack_dump, doko, printPC, print...
+#include "timerdefs.h"           // for int_block, int_init, int_unblock
+#include "uraiddefs.h"           // for copy_region, device_after_raid, devi...
+#include "uraidextdefs.h"        // for URMAXCOMM, URMAXFXNUM, URSCAN_ALINK
+#include "vmemsavedefs.h"        // for vmem_save
 
-#include "uraiddefs.h"
-#include "uraidextdefs.h"
-#include "dbgtooldefs.h"
-#include "gcarraydefs.h"
-#include "initdspdefs.h"
-#include "initkbddefs.h"
-#include "kprintdefs.h"
-#include "llstkdefs.h"
-#include "mkatomdefs.h"
-#include "returndefs.h"
-#include "testtooldefs.h"
-#include "timerdefs.h"
-#include "vmemsavedefs.h"
 #ifdef MAIKO_ENABLE_ETHERNET
 #include "etherdefs.h"
 #endif
@@ -452,6 +451,22 @@ LispPTR uraid_commands(void) {
       }
       print(*((LispPTR *)GetVALCELL68k(index)));
       break;
+    case 'B': { /* print array block */
+      LispPTR objaddr;
+      if (URaid_argnum == 1) {
+        printf("PRINT-ARRAY-BLOCK: B HEX-LispAddress\n");
+        return (T);
+      }
+      errno = 0;
+      objaddr = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
+      if (errno != 0 || *endpointer != '\0') {
+        printf("Arg not HEX number\n");
+        return (T);
+      }
+      printarrayblock(objaddr);
+    }
+    break;
+
     case 'd': /* DEFCELL */
       if (URaid_argnum != 2) {
         printf("GETD: d litatom\n");
