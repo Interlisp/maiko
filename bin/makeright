@@ -71,7 +71,7 @@ case "$display" in
 	x)	releasename=${osversion}.${architecture}-${display}
 		ldename=ldex
 		;;
-	sdl)	releasename=${osversion}.${architecture}-${display}
+	sdl*)	releasename=${osversion}.${architecture}-${display}
 		ldename=ldesdl
 		;;
 	wasm)	osversion=emscripten
