@@ -53,6 +53,7 @@ static XrmOptionDescRec opTable[] = {
     {"-fg", "*foreground", XrmoptionSepArg, (XPointer)NULL},
     {"-background", "*background", XrmoptionSepArg, (XPointer)NULL},
     {"-bg", "*background", XrmoptionSepArg, (XPointer)NULL},
+    {"-cursorColor", "*cursorColor", XrmoptionSepArg, (XPointer)NULL},
     {"-title", "*title", XrmoptionSepArg, (XPointer)NULL},
     {"-t", "*title", XrmoptionSepArg, (XPointer)NULL},
     {"-icontitle", "*icontitle", XrmoptionSepArg, (XPointer)NULL},
@@ -84,6 +85,8 @@ extern char Window_Title[255];
 char Window_Title[255];
 extern char Icon_Title[255];
 char Icon_Title[255];
+extern char cursorColor[255];
+char cursorColor[255] = {0};
 
 extern char sysout_name_cl[];
 extern char sysout_name_xrm[];
@@ -115,6 +118,7 @@ void print_Xusage(const char *prog)
   (void)fprintf(stderr, " [-sysout] [<sysout>]                 -path to the Medley image\n");
   (void)fprintf(stderr, " -h[elp]                              -prints this text\n");
   (void)fprintf(stderr, " -info                                -prints configuration info\n");
+  (void)fprintf(stderr, " -cursorColor X11-color-spec	       -sets foreground cursor color\n");
   (void)fprintf(stderr, " -d[isplay] <host>:<display>.<screen>\n");
   (void)fprintf(stderr,
           " -g[eometry] <geom>                   -size & placement for the medley window on your X "
@@ -268,6 +272,10 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   (void)strcpy(tmp, ""); /* Clear the string */
+
+  if (XrmGetResource(rDB, "ldex.cursorColor", "Ldex.cursorColor", str_type, &value) == True) {
+    (void)strncpy(cursorColor, value.addr, sizeof(cursorColor) - 1);
+  }
 
   if (XrmGetResource(rDB, "ldex.NoFork", "Ldex.NoFork", str_type, &value) == True) {
     please_fork = 0;

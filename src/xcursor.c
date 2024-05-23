@@ -26,6 +26,7 @@
 
 static XColor cursor_fore_xcsd, cursor_back_xcsd, xced;
 extern Colormap Colors;
+extern char cursorColor[255];
 
 extern DspInterface currentdsp;
 /* a simple linked list to remember X cursors */
@@ -143,7 +144,7 @@ void init_Xcursor(DspInterface dsp)
 
   XLOCK; /* Take no X signals during this activity (ISC 386) */
 
-  XAllocNamedColor(dsp->display_id, Colors, "black", &cursor_fore_xcsd, &xced);
+  XAllocNamedColor(dsp->display_id, Colors, cursorColor, &cursor_fore_xcsd, &xced);
   XAllocNamedColor(dsp->display_id, Colors, "white", &cursor_back_xcsd, &xced);
 
   XUNLOCK(dsp); /* OK to take signals again */
