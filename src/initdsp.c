@@ -137,7 +137,7 @@ void clear_display(void) {
 #else /* COLOR */
 
 void clear_display(void) {
-  short *word;
+  DLword *word;
   int w, h;
   if (MonoOrColor == MONO_SCREEN) {
 #ifndef DISPLAYBUFFER
@@ -150,7 +150,7 @@ void clear_display(void) {
            0);
 #endif /* DISPLAYBUFFER */
   } else { /* MonoOrColo is COLOR_SCREEN */
-    word = (short *)ColorDisplayRegion68k;
+    word = ColorDisplayRegion68k;
     for (h = displayheight; (h--);) {
       for (w = DisplayRasterWidth * 8; (w--);) { *word++ = 0; }
     } /* end for(h) */
