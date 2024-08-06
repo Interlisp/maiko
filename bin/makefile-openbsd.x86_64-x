@@ -17,7 +17,7 @@ XFLAGS = -I/usr/X11R6/include -DXWINDOW
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=351
+DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
 
 LDFLAGS = -L/usr/X11R6/lib -lX11 -lc -lm
 LDELDFLAGS =  -L/usr/X11R6/lib -lX11 -lc -lm

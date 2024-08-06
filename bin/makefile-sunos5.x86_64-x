@@ -37,7 +37,7 @@ DFLAGS = $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	-DOS5 \
 	-DUSE_DLPI \
-	-DRELEASE=351
+	-DRELEASE=$(RELEASE)
 
 LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lsocket -lnsl
 LDELDFLAGS = -L/usr/X11/lib -lX11  -lc -lm -lsocket -lnsl

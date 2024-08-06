@@ -54,9 +54,10 @@ if test $# -gt 0
 	shift
 fi
 
+: ${RELEASE=351}
 architecture=`machinetype`
 osversion=`osversion`
-echo "making so far for ${osversion} on ${architecture}."
+echo "making release ${RELEASE} for ${osversion} on ${architecture}."
 case "$display" in
 	init)	display=single
 		releasename=init-${osversion}.${architecture}
@@ -106,12 +107,12 @@ if [ ! -d ../${releasename} ]; then
     mkdir ../${releasename}
 fi
 
-echo start making lde for ${releasename}.
+echo start making lde for ${releasename}
 
 # then finally do the make, including the right stuff
 # With makefile-tail merged, this should only take ONE make command....
 
-make RELEASENAME=${releasename} LDENAME=${ldename} \
+make RELEASENAME=${releasename} RELEASE=${RELEASE} LDENAME=${ldename} \
 			OSARCHNAME=${osversion}.${architecture} \
 			-f makefile-header -f makefile-${releasename} \
 			-f makefile-tail $*

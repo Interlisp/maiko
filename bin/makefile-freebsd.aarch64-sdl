@@ -14,7 +14,7 @@ SDLFLAGS = -DSDL=2 -I/usr/local/include
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS = -O2 -g
-DFLAGS = $(SDLFLAGS) -DRELEASE=351
+DFLAGS = $(SDLFLAGS) -DRELEASE=$(RELEASE)
 
 LDFLAGS = -L/usr/local/lib -lSDL2 -lm
 LDELDFLAGS =

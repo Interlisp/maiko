@@ -16,7 +16,7 @@ SDLFLAGS = -DSDL=2 -F /Library/Frameworks
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g
 DEBUGFLAGS = # -DDEBUG -DOPTRACE
-DFLAGS = $(DEBUGFLAGS) $(SDLFLAGS) -DRELEASE=351
+DFLAGS = $(DEBUGFLAGS) $(SDLFLAGS) -DRELEASE=$(RELEASE)
 
 LDFLAGS = -rpath /Library/Frameworks -F /Library/Frameworks -framework SDL2
 LDELDFLAGS =
