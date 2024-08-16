@@ -46,7 +46,7 @@ static Uint32 sdl_foreground;
 static Uint32 sdl_background;
 static int sdl_bytesperpixel;
 static SDL_PixelFormat *sdl_pixelformat;
-
+static int sdl_window_focusp = 0;
 extern void kb_trans(u_short keycode, u_short upflg);
 extern int error(const char *s);
 
@@ -625,6 +625,22 @@ void process_SDLevents() {
             sdl_windowheight = event.window.data2;
             sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
             break;
+          case SDL_WINDOWEVENT_ENTER:
+            break;
+          case SDL_WINDOWEVENT_LEAVE:
+            break;
+          case SDL_WINDOWEVENT_SHOWN:
+            break;
+          case SDL_WINDOWEVENT_HIDDEN:
+            break;
+          case SDL_WINDOWEVENT_EXPOSED:
+            break;
+          case SDL_WINDOWEVENT_FOCUS_GAINED:
+            sdl_window_focusp = 1;
+            break;
+          case SDL_WINDOWEVENT_FOCUS_LOST:
+            sdl_window_focusp = 0;
+            break;
         }
         break;
 #else
@@ -673,6 +689,7 @@ void process_SDLevents() {
         int ix, iy;
         float x, y;
 #endif
+        if (!sdl_window_focusp) break;
         SDL_GetMouseState(&x, &y);
         x /= sdl_pixelscale;
         y /= sdl_pixelscale;
@@ -727,6 +744,8 @@ void process_SDLevents() {
          printf("mousewheel mouse %d x %d y %d direction %s\n", event.wheel.which, event.wheel.x,
                event.wheel.y,
                event.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? "normal" : "flipped");
+        */
+               /*
 
           these are the 4 key bits for mouse wheel/trackpad scrolling - which unlike X11 are
           *not* presented as mouse button down/up events for each scroll action
