@@ -46,7 +46,7 @@ static Uint32 sdl_foreground;
 static Uint32 sdl_background;
 static int sdl_bytesperpixel;
 static SDL_PixelFormat *sdl_pixelformat;
-
+static int sdl_window_focusp = 0;
 extern void kb_trans(u_short keycode, u_short upflg);
 extern int error(const char *s);
 
@@ -625,6 +625,14 @@ void process_SDLevents() {
             sdl_windowheight = event.window.data2;
             sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
             break;
+          case SDL_WINDOWEVENT_FOCUS_GAINED:
+            sdl_window_focusp = 1;
+            break;
+          case SDL_WINDOWEVENT_FOCUS_LOST:
+            sdl_window_focusp = 0;
+            break;
+        default:
+          break;
         }
         break;
 #else
@@ -633,6 +641,12 @@ void process_SDLevents() {
         sdl_windowwidth = event.window.data1;
         sdl_windowheight = event.window.data2;
         sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
+        break;
+      case SDL_EVENT_WINDOW_FOCUS_GAINED:
+        sdl_window_focusp = 1;
+        break;
+      case SDL_EVENT_WINDOW_FOCUS_LOST:
+        sdl_window_focusp = 0;
         break;
 #endif
 #if SDL_MAJOR_VERSION == 2
@@ -673,6 +687,7 @@ void process_SDLevents() {
         int ix, iy;
         float x, y;
 #endif
+        if (!sdl_window_focusp) break;
         SDL_GetMouseState(&x, &y);
         x /= sdl_pixelscale;
         y /= sdl_pixelscale;
