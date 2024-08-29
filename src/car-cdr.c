@@ -38,6 +38,7 @@
 #include "conspagedefs.h"  // for next_conspage
 #include "emlglob.h"
 #include "gcdata.h"        // for GCLOOKUP, ADDREF, DELREF
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "lispemul.h"      // for ConsCell, LispPTR, DLword, NIL_PTR, state
 #include "lspglob.h"       // for ListpDTD
 #include "lsptypes.h"      // for Listp, dtd

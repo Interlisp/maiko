@@ -71,6 +71,7 @@
 #include "commondefs.h"   // for error
 #include "gccodedefs.h"   // for reclaimcodeblock
 #include "gcdata.h"       // for DELREF, REC_GCLOOKUPV, ADDREF, REC_GCLOOKUP
+#include "gchtfinddefs.h" // for htfind, rec_htfind
 #include "gcfinaldefs.h"  // for reclaimarrayblock, reclaimstackp, releasing...
 #include "gcrcelldefs.h"  // for freelistcell, gcreccell
 #include "lispemul.h"     // for LispPTR, ConsCell, NIL, POINTERMASK, DLword

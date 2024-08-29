@@ -32,6 +32,7 @@
 #include "commondefs.h"    // for error
 #include "emlglob.h"
 #include "gcdata.h"        // for DELREF, GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "lispemul.h"      // for LispPTR, DLword, NIL, POINTERMASK, state
 #include "lispmap.h"       // for S_POSITIVE
 #include "lspglob.h"

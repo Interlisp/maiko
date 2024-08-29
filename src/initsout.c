@@ -34,6 +34,7 @@
 #include "etherdefs.h"     // for init_ifpage_ether
 #include "gcarraydefs.h"   // for get_package_atom
 #include "gcdata.h"        // for ADDREF, GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "ifpage.h"        // for IFPAGE, MACHINETYPE_MAIKO
 #include "initsoutdefs.h"  // for build_lisp_map, fixp_value, init_for_bitblt
 #include "iopage.h"        // for IOPAGE

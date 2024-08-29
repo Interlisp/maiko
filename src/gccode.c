@@ -35,6 +35,7 @@
 #include "commondefs.h"  // for error
 #include "gccodedefs.h"  // for code_block_size, reclaimcodeblock
 #include "gcdata.h"      // for REC_GCLOOKUP, DELREF, ADDREF
+#include "gchtfinddefs.h" // for htfind, rec_htfind
 #include "lspglob.h"     // for Deleted_Implicit_Hash_Slot_word, UFNTable
 #include "lsptypes.h"    // for LispPTR, NIL, UFN, Get_code_BYTE, POINTERMASK
 #include "stack.h"       // for fnhead

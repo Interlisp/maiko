@@ -23,6 +23,7 @@
 #include "commondefs.h"    // for error
 #include "conspagedefs.h"  // for N_OP_cons, cons, next_conspage
 #include "gcdata.h"        // for GCLOOKUP, ADDREF, DELREF
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "lispemul.h"      // for ConsCell, DLword, LispPTR, NIL_PTR, DLWORD...
 #include "lspglob.h"
 #include "lsptypes.h"      // for dtd, Listp, TYPE_LISTP

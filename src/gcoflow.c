@@ -31,6 +31,7 @@
 
 #include "arith.h"        // for GetSmalldata
 #include "gcdata.h"       // for htoverflow, REC_GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "gcoflowdefs.h"  // for gc_handleoverflow, gcmaptable
 #include "gcrdefs.h"      // for doreclaim
 #include "lispemul.h"     // for NIL, DLword, LispPTR

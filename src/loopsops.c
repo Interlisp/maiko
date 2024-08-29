@@ -25,6 +25,7 @@
 #include "commondefs.h"    // for error
 #include "gcarraydefs.h"   // for get_package_atom
 #include "gcdata.h"        // for FRPLPTR
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "lispemul.h"      // for LispPTR, state, CurrentStackPTR, NIL_PTR, NIL
 #include "lispmap.h"       // for S_POSITIVE
 #include "loopsopsdefs.h"  // for lcfuncall, LCFetchMethod, LCFetchMethodOrHelp
