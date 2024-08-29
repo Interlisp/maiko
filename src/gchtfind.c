@@ -253,7 +253,7 @@ void enter_big_reference_count(LispPTR ptr) {
 /*									*/
 /************************************************************************/
 
-void modify_big_reference_count(LispPTR *entry, DLword casep, LispPTR ptr) {
+void modify_big_reference_count(GCENTRY *entry, DLword casep, LispPTR ptr) {
   struct gc_ovfl *oventry;
   LispPTR tmp;
 
