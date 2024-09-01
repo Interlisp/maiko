@@ -49,6 +49,7 @@
 #include "commondefs.h"   // for error
 #include "gccodedefs.h"   // for reclaimcodeblock
 #include "gcdata.h"       // for DELREF, REC_GCLOOKUP
+#include "gchtfinddefs.h" // for htfind, rec_htfind
 #include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock, deleteblock
 #include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
 #include "llstkdefs.h"    // for decusecount68k

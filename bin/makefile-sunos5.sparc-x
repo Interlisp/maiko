@@ -45,7 +45,7 @@ MACHINEFLAGS = -DOS5 -DUSE_DLPI
 DFLAGS = $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	 $(MACHINEFLAGS) \
-	 -DRELEASE=351
+	 -DRELEASE=$(RELEASE)
 
 LDFLAGS = -lX11 -lc -lm -lsocket -lnsl
 LDELDFLAGS = -lX11  -lc -lm -lsocket -lnsl

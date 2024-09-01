@@ -35,6 +35,7 @@
 #ifdef BIGVM
 #define SWA_FNHEAD
 #else
+#include "byteswapdefs.h" // for swapx
 #define SWA_FNHEAD swapx
 #endif /* BIGVM */
 

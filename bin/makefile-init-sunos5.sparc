@@ -50,7 +50,7 @@ DFLAGS = -DINIT \
 	 $(XFLAGS) \
 	 $(DEBUGFLAGS) \
 	 $(MACHINEFLAGS) \
-	 -DNOVERSION -DRELEASE=351 
+	 -DNOVERSION -DRELEASE=$(RELEASE) 
 
 
 LDFLAGS = -lX11 -lc -lm -lsocket -lnsl

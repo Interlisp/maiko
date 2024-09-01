@@ -49,7 +49,6 @@
 #include "stack.h"
 #include "return.h"
 #include "cell.h"
-#include "gcdata.h"
 
 #include "bbtsubdefs.h"
 #include "car-cdrdefs.h"

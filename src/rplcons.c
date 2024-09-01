@@ -29,6 +29,11 @@
 #include "lspglob.h"
 #include "lsptypes.h"      // for Listp
 #include "rplconsdefs.h"   // for N_OP_rplcons
+#ifndef NEWCDRCODING
+#include "gcdata.h"
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
+#include "address.h"
+#endif
 
 /***************************************************/
 

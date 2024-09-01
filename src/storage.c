@@ -23,6 +23,7 @@
 #include "commondefs.h"    // for error
 #include "conspagedefs.h"  // for cons
 #include "gcdata.h"        // for ADDREF, GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "gcfinaldefs.h"   // for makefreearrayblock, mergebackward
 #include "ifpage.h"        // for IFPAGE, MACHINETYPE_MAIKO
 #include "lispemul.h"      // for LispPTR, NIL, GETFPTOVP, INTSTAT, ATOM_T

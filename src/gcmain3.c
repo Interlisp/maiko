@@ -39,6 +39,7 @@
 #include "commondefs.h"   // for error
 #include "emlglob.h"
 #include "gcdata.h"       // for GCENTRY, REC_GCLOOKUP, STKREF, hashentry
+#include "gchtfinddefs.h" // for htfind, rec_htfind
 #include "gcmain3defs.h"  // for gcmapscan, gcmapunscan, gcscanstack
 #include "gcrcelldefs.h"  // for gcreccell
 #include "gcscandefs.h"   // for gcscan1, gcscan2

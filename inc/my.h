@@ -20,6 +20,7 @@
 #include "version.h"     // for BIGVM
 #include "adr68k.h"      // for NativeAligned2FromLAddr, NativeAligned4FromLAddr, LAddrFromNative
 #include "arith.h"       // for N_ARITH_SWITCH, N_GETNUMBER
+#include "gchtfinddefs.h"// for htfind, rec_htfind, from gcdata.h macros
 #include "gcdata.h"	 // for ADDREF, DELREF
 #include "lispemul.h"    // for ERROR_EXIT, LispPTR, DLword, SEGMASK, state
 #include "lispmap.h"     // for S_POSITIVE, S_CHARACTER, S_NEGATIVE
