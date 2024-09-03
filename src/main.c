@@ -316,6 +316,12 @@ const char *nethubHelpstring = "";
 extern int insnsCountdownForTimerAsyncEmulation;
 #endif
 
+#if defined(XWINDOW)
+char foregroundColorName[64] = {0};
+extern char foregroundColorName[64];
+char backgroundColorName[64] = {0};
+extern char backgroundColorName[64];
+#endif
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
