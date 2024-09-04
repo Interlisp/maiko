@@ -288,6 +288,8 @@ const char *helpstring =
  -info                    Print general info about the system\n\
  -help                    Print this message\n\
  -pixelscale <n>          The amount of pixels to show for one Medley screen pixel.\n\
+ -fg/-foreground <color>  Screen foreground color, default Black.  X color name or #RRBBGG hex\n\
+ -bg/-background <color>  Screen background color, default White.  X color name or #RRBBGG hex\n\
  -sc[reen] <w>x<h>]       The Medley screen geometry\n\
  -t <title>               The window title\n\
  -title <title>           The window title\n";
@@ -316,7 +318,7 @@ const char *nethubHelpstring = "";
 extern int insnsCountdownForTimerAsyncEmulation;
 #endif
 
-#if defined(XWINDOW)
+#if defined(XWINDOW) || defined(SDL)
 char foregroundColorName[64] = {0};
 extern char foregroundColorName[64];
 char backgroundColorName[64] = {0};
@@ -494,8 +496,21 @@ int main(int argc, char *argv[])
         (void)fprintf(stderr, "Missing argument after -title\n");
         exit(1);
       }
+    } else if (strcmp(argv[i], "-fg") == 0 || strcmp(argv[i], "-foreground") == 0) {
+      if (argc > ++i) {
+        strncpy(foregroundColorName, argv[i], sizeof(foregroundColorName) - 1);
+      } else {
+        (void)fprintf(stderr, "Missing argument after -fg/-foreground\n");
+        exit(1);
+      }
+    } else if (strcmp(argv[i], "-bg") == 0 || strcmp(argv[i], "-background") == 0) {
+      if (argc > ++i) {
+        strncpy(backgroundColorName, argv[i], sizeof(backgroundColorName) - 1);
+      } else {
+        (void)fprintf(stderr, "Missing argument after -bg/-background\n");
+        exit(1);
+      }
     }
-
 #endif /* SDL */
     /* Can only do this under SUNOs, for now */
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
