@@ -27,7 +27,7 @@
  * XXX: With SDL3, using the window surface results in a black screen
  */
 
-// #define  SDLRENDERING 1
+#define  SDLRENDERING 1
 
 static SDL_Window *sdl_window = NULL;
 #if defined(SDLRENDERING)
