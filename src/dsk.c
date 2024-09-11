@@ -75,7 +75,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache);
+static int get_version_array(char *dir, char *file, FileName varray[], CurrentVArray *cache);
 
 #ifdef DOS
 static void separate_drive(char *lfname, char *drive)
@@ -2938,7 +2938,7 @@ static int make_directory(char *dir)
 /*									*/
 /************************************************************************/
 
-static int get_version_array(char *dir, char *file, FileName *varray, CurrentVArray *cache)
+static int get_version_array(char *dir, char *file, FileName varray[], CurrentVArray *cache)
 {
 #ifdef DOS
 
@@ -2946,7 +2946,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   char old_file[MAXPATHLEN];
   char name[MAXNAMLEN];
   char ver[VERSIONLEN];
-  FileName *svarray;
+  int varray_index = 0;
   struct find_t dirp;
   struct direct *dp;
   int rval, drive = 0, isslash = 0;
@@ -2987,14 +2987,12 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
 
   make_old_version(old_file, lcased_file);
 
-  svarray = varray;
-
   TIMEOUT(res = _dos_findfirst(old_file, _A_NORMAL | _A_SUBDIR, &dirp));
   if (res == 0) {
     strcpy(name, dirp.name);
-    strcpy(svarray->name, name);
-    svarray->version_no = 0;
-    svarray++;
+    strcpy(varray[varray_index].name, name);
+    varray[varray_index].version_no = 0;
+    varray_index++;
   }
 
   /*******************************/
@@ -3013,25 +3011,29 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
     separate_version(name, ver, 1);
     DOWNCASE(name);
 
-    strcpy(svarray->name, dirp.name);
+    strcpy(varray[varray_index].name, dirp.name);
     if (*ver == '\0') {
       /* Versionless file */
-      svarray->version_no = 1;
+      varray[varray_index].version_no = 1;
     } else {
       /*
        * separator_version guarantees ver is a numeric
        * string.
        */
-      svarray->version_no = strtoul(ver, (char **)NULL, 10);
+      varray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
     }
-    svarray++;
+    varray_index++;
+    if (varray_index >= VERSIONARRAYLENGTH) {
+      /* how does the specific error get signalled in the DOS case? */
+      return (0);
+     }
   }
 
   /*
    * The last entry of varray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  svarray->version_no = LASTVERSIONARRAY;
+  varray[varray_index].version_no = LASTVERSIONARRAY;
 
   /*
    * If more than one files have been stored in varray, we store the name
@@ -3040,7 +3042,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   if (!NoFileP(varray)) {
     strcpy(name, varray->name);
     separate_version(name, ver, 1);
-    strcpy(svarray->name, name);
+    strcpy(varray[varray_index].name, name);
   }
 
   return (1);
@@ -3050,7 +3052,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   char lcased_file[MAXNAMLEN];
   char name[MAXNAMLEN];
   char ver[VERSIONLEN];
-  FileName *svarray;
+  int varray_index = 0;
   DIR *dirp;
   struct dirent *dp;
   int rval;
@@ -3095,7 +3097,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
     return (0);
   }
 
-  for (S_TOUT(dp = readdir(dirp)), svarray = varray; dp != NULL || errno == EINTR;
+  for (S_TOUT(dp = readdir(dirp)); dp != NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)))
     if (dp) {
       strcpy(name, dp->d_name);
@@ -3105,25 +3107,29 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
         /*
          * This file can be regarded as a same file in Lisp sense.
          */
-        strcpy(svarray->name, dp->d_name);
+        strcpy(varray[varray_index].name, dp->d_name);
         if (*ver == '\0') {
           /* Versionless file */
-          svarray->version_no = 0;
+          varray[varray_index].version_no = 0;
         } else {
           /*
            * separator_version guarantees ver is a numeric
            * string.
            */
-          svarray->version_no = strtoul(ver, (char **)NULL, 10);
+          varray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
         }
-        svarray++;
+        varray_index++;
+        if (varray_index >= VERSIONARRAYLENGTH) {
+          *Lisp_errno = EIO;
+          return (0);
+        }
       }
     }
   /*
    * The last entry of varray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  svarray->version_no = LASTVERSIONARRAY;
+  varray[varray_index].version_no = LASTVERSIONARRAY;
 
   /*
    * If more than one files have been stored in varray, we store the name
@@ -3132,7 +3138,7 @@ static int get_version_array(char *dir, char *file, FileName *varray, CurrentVAr
   if (!NoFileP(varray)) {
     strcpy(name, varray->name);
     separate_version(name, ver, 1);
-    strcpy(svarray->name, name);
+    strcpy(varray[varray_index].name, name);
   }
 
   /*
