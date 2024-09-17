@@ -68,7 +68,7 @@ static CurrentVArray VArrayInfo;
 
 static int locate_file(char *dir, char *name);
 static int make_directory(char *dir);
-static int maintain_version(char *file, FileName *varray, int forcep);
+static int maintain_version(char *file, int forcep);
 static int get_versionless(FileName *varray, char *file, char *dir);
 static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p);
 static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
@@ -439,7 +439,7 @@ LispPTR COM_openfile(LispPTR *args)
          * Actually we are creating a new file.  We have to
          * maintain a version status.
          */
-        if (maintain_version(file, (FileName *)NULL, 1) == 0) {
+        if (maintain_version(file, 1) == 0) {
           TIMEOUT(rval = close(fd));
           *Lisp_errno = errno;
           return (NIL);
@@ -485,7 +485,7 @@ LispPTR COM_openfile(LispPTR *args)
      * the entirely newly created file, versionless file, should not
      * be linked to any file.
      */
-    if (maintain_version(file, (FileName *)NULL, 0) == 0) {
+    if (maintain_version(file, 0) == 0) {
       TIMEOUT(close(fd));
       *Lisp_errno = errno;
       return (NIL);
@@ -1220,7 +1220,7 @@ LispPTR DSK_deletefile(LispPTR *args)
       /*
        * Finally, we have to maintain the version status.
        */
-      if (maintain_version(vless, (FileName *)NULL, 0) == 0) return (NIL);
+      if (maintain_version(vless, 0) == 0) return (NIL);
       return (ATOM_T);
     } else {
       /*
@@ -1331,7 +1331,7 @@ LispPTR DSK_renamefile(LispPTR *args)
    * We maintain the destination to handle the link damaged case correctly.
    */
   ConcDirAndName(dir, fbuf, dst);
-  if (maintain_version(dst, (FileName *)NULL, 0) == 0) return (NIL);
+  if (maintain_version(dst, 0) == 0) return (NIL);
 
   if (get_version_array(dir, fbuf, VersionArray, &VArrayInfo) == 0) return (NIL);
   varray = VersionArray;
@@ -1458,9 +1458,9 @@ LispPTR DSK_renamefile(LispPTR *args)
    * is on.
    */
 
-  if (maintain_version(dst, (FileName *)NULL, 0) == 0) return (NIL);
+  if (maintain_version(dst, 0) == 0) return (NIL);
   if (need_maintain_flg) {
-    if (maintain_version(src, (FileName *)NULL, 0) == 0) return (NIL);
+    if (maintain_version(src, 0) == 0) return (NIL);
   }
 
   return (ATOM_T);
@@ -3178,7 +3178,7 @@ static int get_version_array(char *dir, char *file, FileName varray[], CurrentVA
  * to maintain the directory on which a file is being created.
  */
 
-static int maintain_version(char *file, FileName *varray, int forcep)
+static int maintain_version(char *file, int forcep)
 {
   char dir[MAXPATHLEN], fname[MAXNAMLEN], ver[VERSIONLEN];
   char old_file[MAXPATHLEN], vless[MAXPATHLEN];
@@ -3186,17 +3186,14 @@ static int maintain_version(char *file, FileName *varray, int forcep)
   int rval, max_no;
   FileName *entry;
 
-  if (varray == (FileName *)NULL) {
-    if (unpack_filename(file, dir, fname, ver, 1) == 0) return (0);
-    /*
-     * We have to make sure that dir is the existing directory.
-     */
-    if (true_name(dir) != -1) return (0);
-    if (get_version_array(dir, fname, VersionArray, &VArrayInfo) == 0) return (0);
-    varray = VersionArray;
-  }
+  if (unpack_filename(file, dir, fname, ver, 1) == 0) return (0);
+  /*
+   * We have to make sure that dir is the existing directory.
+   */
+  if (true_name(dir) != -1) return (0);
+  if (get_version_array(dir, fname, VersionArray, &VArrayInfo) == 0) return (0);
 
-  if (NoFileP(varray)) {
+  if (NoFileP(VersionArray)) {
     /*
      * We don't need to care about such case that there is no such file
      * or an only versionless file exists.
@@ -3204,14 +3201,14 @@ static int maintain_version(char *file, FileName *varray, int forcep)
     return (1);
   }
 
-  if (OnlyVersionlessP(varray)) {
+  if (OnlyVersionlessP(VersionArray)) {
     if (forcep) {
 /*
  * If forcep, we link the versionless file to the version
  * 1 file.
  */
 #ifndef DOS
-      get_versionless(varray, vless, dir);
+      get_versionless(VersionArray, vless, dir);
       ConcNameAndVersion(vless, "1", fname);
       TIMEOUT(rval = link(vless, fname));
       if (rval == -1) {
@@ -3228,13 +3225,13 @@ static int maintain_version(char *file, FileName *varray, int forcep)
    * exists.  Thus, FindHighestVersion works fine from now on.
    */
 
-  if (get_versionless(varray, vless, dir) == 0) {
+  if (get_versionless(VersionArray, vless, dir) == 0) {
     /*
      * There is not a versionless file, but at least one versioned file.
      * Thus, the thing we have to do is to link a versionless file
      * to the existing highest versioned file.
      */
-    FindHighestVersion(varray, entry, max_no);
+    FindHighestVersion(VersionArray, entry, max_no);
     ConcDirAndName(dir, entry->name, old_file);
 /*
  * The versionless file should have the same case name as the old
@@ -3253,15 +3250,15 @@ static int maintain_version(char *file, FileName *varray, int forcep)
     return (1);
   }
 
-  if (check_vless_link(vless, varray, old_file, &highest_p) == 0) return (0);
+  if (check_vless_link(vless, VersionArray, old_file, &highest_p) == 0) return (0);
 
   if (*old_file == '\0') {
     /*
-     * The versionless file is not linked to any file in varray.
+     * The versionless file is not linked to any file in VersionArray.
      * Thus, we have to link the versionless file to the file which
      * is versioned one higher than the existing highest version.
      */
-    FindHighestVersion(varray, entry, max_no);
+    FindHighestVersion(VersionArray, entry, max_no);
     sprintf(ver, "%u", max_no + 1);
 /*
  * The old file should have the same case name as the versionless
@@ -3286,7 +3283,7 @@ static int maintain_version(char *file, FileName *varray, int forcep)
     return (1);
   } else {
     /*
-     * Although the  versionless file is linked to a file in varray,
+     * Although the  versionless file is linked to a file in VersionArray,
      * the file is not the highest versioned file.  We have to unlink
      * the wrongly linked versionless file, and link the highest versioned
      * file to a versionless file.
@@ -3296,7 +3293,7 @@ static int maintain_version(char *file, FileName *varray, int forcep)
       *Lisp_errno = errno;
       return (0);
     }
-    FindHighestVersion(varray, entry, max_no);
+    FindHighestVersion(VersionArray, entry, max_no);
     ConcDirAndName(dir, entry->name, old_file);
 /*
  * The versionless file should have the same case name as the old
