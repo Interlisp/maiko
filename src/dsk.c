@@ -2941,7 +2941,7 @@ static int make_directory(char *dir)
 static int get_version_array(char *dir, char *file, FileName varray[], CurrentVArray *cache)
 {
 #ifdef DOS
-
+  /* DOS version-array builder */
   char lcased_file[MAXPATHLEN];
   char old_file[MAXPATHLEN];
   char name[MAXNAMLEN];
