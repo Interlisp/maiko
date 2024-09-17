@@ -64,7 +64,6 @@ typedef struct current_varray {
 } CurrentVArray;
 
 static FileName VersionArray[VERSIONARRAYLENGTH];
-static CurrentVArray VArrayInfo;
 
 static int locate_file(char *dir, char *name);
 static int make_directory(char *dir);
@@ -75,7 +74,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_version_array(char *dir, char *file, FileName varray[], CurrentVArray *cache);
+static int get_version_array(char *dir, char *file, FileName varray[]);
 
 #ifdef DOS
 static void separate_drive(char *lfname, char *drive)
@@ -367,7 +366,7 @@ LispPTR COM_openfile(LispPTR *args)
   if (dskp) {
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
-    if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+    if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
     ConcNameAndVersion(name, ver, file);
 
     switch (args[1]) {
@@ -918,7 +917,7 @@ LispPTR DSK_getfilename(LispPTR *args)
          * Recognizing a file on DSK device needs the version information.
          * We gather version information in a version array first.
          */
-        if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+        if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
         if (get_old(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -958,7 +957,7 @@ LispPTR DSK_getfilename(LispPTR *args)
         strcpy(vname, dir);
         dirp = 1;
       } else {
-        if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+        if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
         if (get_oldest(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -1007,7 +1006,7 @@ LispPTR DSK_getfilename(LispPTR *args)
            * Here, dir is an existing directory.  We have to perform
            * "new" recognition with the version information.
            */
-          if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+          if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
           if (get_new(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -1033,7 +1032,7 @@ LispPTR DSK_getfilename(LispPTR *args)
           strcpy(vname, aname);
           dirp = 1;
         } else {
-          if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+          if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
           if (get_old_new(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -1160,7 +1159,7 @@ LispPTR DSK_deletefile(LispPTR *args)
 #endif
 
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
-  if (get_version_array(dir, fbuf, VersionArray, &VArrayInfo) == 0) return (NIL);
+  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
   varray = VersionArray;
 
   if (NoFileP(varray))
@@ -1333,7 +1332,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   ConcDirAndName(dir, fbuf, dst);
   if (maintain_version(dst, 0) == 0) return (NIL);
 
-  if (get_version_array(dir, fbuf, VersionArray, &VArrayInfo) == 0) return (NIL);
+  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
   varray = VersionArray;
 
   /*
@@ -1382,7 +1381,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   }
 
   if (unpack_filename(src, dir, fbuf, ver, 1) == 0) return (NIL);
-  if (get_version_array(dir, fbuf, varray, &VArrayInfo) == 0) return (NIL);
+  if (get_version_array(dir, fbuf, varray) == 0) return (NIL);
 
   if (NoFileP(varray))
     return (NIL); /*
@@ -1658,7 +1657,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
        */
       strcpy(file, dir);
     } else {
-      if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+      if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
       ConcNameAndVersion(name, ver, file);
       if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
     }
@@ -1847,7 +1846,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
   if (dskp) {
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
-    if (get_version_array(dir, name, VersionArray, &VArrayInfo) == 0) return (NIL);
+    if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
     ConcNameAndVersion(name, ver, file);
     if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
   }
@@ -2928,7 +2927,6 @@ static int make_directory(char *dir)
 /*		guarantee that the directory exists.			*/
 /*	file	File name, optionally including a (unix) version	*/
 /*	varray	Place to put the version array entries.			*/
-/*	cache	Place to hold info about the new version array		*/
 /*									*/
 /*	Read thru DIR and gather all files that match FILE into		*/
 /*	VARRAY.  DIR's case must match existing directory's, but	*/
@@ -2938,7 +2936,7 @@ static int make_directory(char *dir)
 /*									*/
 /************************************************************************/
 
-static int get_version_array(char *dir, char *file, FileName varray[], CurrentVArray *cache)
+static int get_version_array(char *dir, char *file, FileName varray[])
 {
 #ifdef DOS
   /* DOS version-array builder */
@@ -3072,23 +3070,13 @@ static int get_version_array(char *dir, char *file, FileName varray[], CurrentVA
     return(0);
   }
 
-  /*
-   * Cache mechanism was not used because of a bug in Sun OS.
-   * Sometimes just after unlinking a file on a directory, the st_mtime
-   * of the directory does not change.  This will make Maiko believe
-   * cached version array is still valid, although it is already invalid.
-   * sync(2) has no effect on such case.
+  /* Cache for VersionArray removed. The modification times for the
+   * directory is maintained in seconds, which is far too coarse to
+   * meaningfully detect modifications.  Some systems now have a
+   * nanosecond timestamp, but there is no agreement on the field
+   * name.  Enumerating the files in a directory is not so slow on
+   * modern systems that it will cause a noticeable performance hit.
    */
-
-  /*
-   * If the cached version array is still valid, we can return immediately.
-   */
-
-#if 0
-  /* there is a (different?) problem (#1661) with the caching - disable until it's solved */
-  if ((sbuf.st_mtime == cache->mtime) && strcmp(dir, cache->path) == 0
-      && strcmp(lcased_file, cache->file) == 0) return(1);
-#endif
 
   errno = 0;
   TIMEOUT0(dirp = opendir(dir));
@@ -3141,12 +3129,6 @@ static int get_version_array(char *dir, char *file, FileName varray[], CurrentVA
     strcpy(varray[varray_index].name, name);
   }
 
-  /*
-   * Update cache information.
-   */
-  strcpy(cache->path, dir);
-  strcpy(cache->file, lcased_file);
-  cache->mtime = sbuf.st_mtime;
   TIMEOUT(closedir(dirp));
   return (1);
 #endif /* DOS */
@@ -3191,7 +3173,7 @@ static int maintain_version(char *file, int forcep)
    * We have to make sure that dir is the existing directory.
    */
   if (true_name(dir) != -1) return (0);
-  if (get_version_array(dir, fname, VersionArray, &VArrayInfo) == 0) return (0);
+  if (get_version_array(dir, fname, VersionArray) == 0) return (0);
 
   if (NoFileP(VersionArray)) {
     /*
