@@ -2994,7 +2994,7 @@ static int get_version_array(char *dir, char *file, FileName varray[])
    * without version in the last marker entry.
    */
   if (!NoFileP(varray)) {
-    strcpy(name, varray->name);
+    strcpy(name, varray[0].name);
     separate_version(name, ver, 1);
     strcpy(varray[varray_index].name, name);
   }
@@ -3080,7 +3080,7 @@ static int get_version_array(char *dir, char *file, FileName varray[])
    * without version in the last marker entry.
    */
   if (!NoFileP(varray)) {
-    strcpy(name, varray->name);
+    strcpy(name, varray[0].name);
     separate_version(name, ver, 1);
     strcpy(varray[varray_index].name, name);
   }
