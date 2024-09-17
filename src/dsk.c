@@ -38,7 +38,7 @@
 #include <pwd.h>            // for getpwuid, passwd
 #include <sys/param.h>      // for MAXPATHLEN
 #include <sys/statvfs.h>    // for statvfs
-#include <sys/time.h>       // for timeval, utimes
+#include <sys/time.h>       // for timeval, futimes
 #else
 #include <direct.h>
 #include <dos.h>
@@ -669,7 +669,7 @@ LispPTR COM_closefile(LispPTR *args)
     *Lisp_errno = errno;
     return (NIL);
   }
-#ifndef DOS
+#ifndef DOS /* effectively NEVER, since we're in an ifdef DOS */
   TIMEOUT(rval = utimes(file, time));
   if (rval != 0) {
     *Lisp_errno = errno;
@@ -680,13 +680,9 @@ LispPTR COM_closefile(LispPTR *args)
   int fd, fatp, dskp, rval;
   time_t cdate;
   char lfname[MAXPATHLEN + 5], host[MAXNAMLEN];
-  char file[MAXPATHLEN], dir[MAXPATHLEN], name[MAXNAMLEN + 1];
-  char ver[VERSIONLEN];
-  DIR *dirp;
-  struct dirent *dp;
+  char file[MAXPATHLEN];
   struct stat sbuf;
   struct timeval time[2];
-  ino_t ino;
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
@@ -751,60 +747,24 @@ LispPTR COM_closefile(LispPTR *args)
     }
   }
 
-  if (!unpack_filename(file, dir, name, ver, 1)) return (NIL);
-
-  if (dskp) {
-    /*
-     * On {DSK}, we have to make sure dir is case sensitively existing
-     * directory.
-     */
-    if (true_name(dir) != -1) return (NIL);
-
-    /*
-     * There is a very troublesome problem here.  The file name Lisp
-     * recognizes is not always the same as the name which COM_openfile
-     * used to open the file.  Sometimes COM_openfile uses the versionless
-     * file name to open a file, although Lisp always recognizes with
-     * *versioned* file name.
-     * Thus, we compare i-node number of the requested file with ones of all
-     * of files on the directory.   This is time spending implementation.
-     * More clean up work is needed.
-     */
-    TIMEOUT(rval = fstat(fd, &sbuf));
-    if (rval != 0) {
-      *Lisp_errno = errno;
-      return (NIL);
-    }
-    ino = sbuf.st_ino;
-
-    errno = 0;
-    TIMEOUT0(dirp = opendir(dir));
-    if (dirp == (DIR *)NULL) {
-      *Lisp_errno = errno;
-      return (NIL);
-    }
-
-    for (S_TOUT(dp = readdir(dirp)); dp != (struct dirent *)NULL || errno == EINTR;
-         errno = 0, S_TOUT(dp = readdir(dirp)))
-      if (dp) {
-        if (ino == (ino_t)dp->d_ino) sprintf(file, "%s/%s", dir, dp->d_name);
-      }
-    TIMEOUT(closedir(dirp));
-  }
+  /* introduction of futimes() allows us to set the times on an open
+   * file descriptor so a lot of directory manipulation to find the
+   * appropriate name associated with the inode is no longer required
+   */
 
   time[0].tv_sec = (long)sbuf.st_atime;
   time[0].tv_usec = 0L;
   time[1].tv_sec = (long)ToUnixTime(cdate);
   time[1].tv_usec = 0L;
 
-  TIMEOUT(rval = close(fd));
-  if (rval == -1) {
+  TIMEOUT(rval = futimes(fd, time));
+  if (rval != 0) {
     *Lisp_errno = errno;
     return (NIL);
   }
 
-  TIMEOUT(rval = utimes(file, time));
-  if (rval != 0) {
+  TIMEOUT(rval = close(fd));
+  if (rval == -1) {
     *Lisp_errno = errno;
     return (NIL);
   }
