@@ -1091,7 +1091,6 @@ LispPTR DSK_deletefile(LispPTR *args)
   char file[MAXPATHLEN], fbuf[MAXPATHLEN], vless[MAXPATHLEN];
   char dir[MAXPATHLEN], ver[VERSIONLEN];
   int rval, fatp;
-  FileName *varray;
 #ifdef DOS
   char drive[1], rawname[MAXNAMLEN];
   int extlen; /* len of extension, for making backup filename */
@@ -1120,9 +1119,8 @@ LispPTR DSK_deletefile(LispPTR *args)
 
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
   if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
-  varray = VersionArray;
 
-  if (NoFileP(varray))
+  if (NoFileP(VersionArray))
     return (NIL); /*
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
@@ -1137,9 +1135,9 @@ LispPTR DSK_deletefile(LispPTR *args)
    */
 
   ConcNameAndVersion(fbuf, ver, file);
-  if (get_oldest(dir, varray, file, fbuf) == 0) return (NIL);
+  if (get_oldest(dir, VersionArray, file, fbuf) == 0) return (NIL);
 
-  if (get_versionless(varray, vless, dir) == 0) {
+  if (get_versionless(VersionArray, vless, dir) == 0) {
     /*
      * There is no versionless file.  All we have to do is to simply
      * try to unlink the specified file.
@@ -1158,7 +1156,7 @@ LispPTR DSK_deletefile(LispPTR *args)
    * file is linked will destroy the consistency of the version status.
    */
 
-  if (check_vless_link(vless, varray, fbuf, &rval) == 0) return (NIL);
+  if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) return (NIL);
 
   if (strcmp(file, vless) == 0 || strcmp(file, fbuf) == 0) {
     if (*fbuf != '\0') {
@@ -1184,7 +1182,7 @@ LispPTR DSK_deletefile(LispPTR *args)
     } else {
       /*
        * Although the versionfile is specified, it is not linked
-       * to any file in varray.  We should not maintain the version
+       * to any file in VersionArray.  We should not maintain the version
        * status after deleting the versionless file, because
        * we cannot say whether the versionless file is actually under
        * control of the Medley DSK file system or not.
@@ -1239,7 +1237,6 @@ LispPTR DSK_renamefile(LispPTR *args)
   char dir[MAXPATHLEN], ver[VERSIONLEN];
   int rval, fatp;
   int need_maintain_flg;
-  FileName *varray;
 #ifdef DOS
   char drive1[1], drive2[1];
   int extlen1, extlen2; /* len of extension */
@@ -1293,7 +1290,6 @@ LispPTR DSK_renamefile(LispPTR *args)
   if (maintain_version(dst, 0) == 0) return (NIL);
 
   if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
-  varray = VersionArray;
 
   /*
    * Although the file should have been recognized with "new" mode in Lisp
@@ -1302,7 +1298,7 @@ LispPTR DSK_renamefile(LispPTR *args)
    */
 
   ConcNameAndVersion(fbuf, ver, dst);
-  if (get_new(dir, varray, dst, fbuf) == 0) return (NIL);
+  if (get_new(dir, VersionArray, dst, fbuf) == 0) return (NIL);
 
   /*
    * At this point, there are three cases for the destination.  If there is
@@ -1312,9 +1308,9 @@ LispPTR DSK_renamefile(LispPTR *args)
    * "real" destination file is the file to which the versionless file is linked,
    * we have to unlink the versionless file.
    */
-  if (!NoFileP(varray)) {
-    if (OnlyVersionlessP(varray)) {
-      get_versionless(varray, vless, dir);
+  if (!NoFileP(VersionArray)) {
+    if (OnlyVersionlessP(VersionArray)) {
+      get_versionless(VersionArray, vless, dir);
       if (strcmp(dst, vless) != 0) {
         ConcNameAndVersion(vless, "1", fbuf);
         TIMEOUT(rval = rename(vless, fbuf));
@@ -1328,8 +1324,8 @@ LispPTR DSK_renamefile(LispPTR *args)
        * We are sure that the versionless file is linked to one of
        * the higher versioned file here.
        */
-      get_versionless(varray, vless, dir);
-      if (check_vless_link(vless, varray, fbuf, &rval) == 0) { return (NIL); }
+      get_versionless(VersionArray, vless, dir);
+      if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) { return (NIL); }
       if (strcmp(dst, fbuf) == 0) {
         TIMEOUT(rval = unlink(vless));
         if (rval == -1) {
@@ -1341,9 +1337,9 @@ LispPTR DSK_renamefile(LispPTR *args)
   }
 
   if (unpack_filename(src, dir, fbuf, ver, 1) == 0) return (NIL);
-  if (get_version_array(dir, fbuf, varray) == 0) return (NIL);
+  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
 
-  if (NoFileP(varray))
+  if (NoFileP(VersionArray))
     return (NIL); /*
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
@@ -1357,9 +1353,9 @@ LispPTR DSK_renamefile(LispPTR *args)
    * of it.
    */
   ConcNameAndVersion(fbuf, ver, src);
-  if (get_old(dir, varray, src, fbuf) == 0) return (NIL);
+  if (get_old(dir, VersionArray, src, fbuf) == 0) return (NIL);
 
-  if (get_versionless(varray, vless, dir) == 0) {
+  if (get_versionless(VersionArray, vless, dir) == 0) {
     /*
      * There is no versionless file.  All we have to do is to simply
      * try to rename the specified file.
@@ -1372,7 +1368,7 @@ LispPTR DSK_renamefile(LispPTR *args)
      * versionless file is linked will destroy the consistency of the
      * version status.
      */
-    if (check_vless_link(vless, varray, fbuf, &rval) == 0) return (NIL);
+    if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) return (NIL);
 
     if (strcmp(src, vless) == 0 && *fbuf != '\0') {
       /*
