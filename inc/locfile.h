@@ -499,7 +499,8 @@ do  {				\
 #define	MAXVERSION		999999999
 
 #define	LASTVERSIONARRAY	((unsigned) -1)
-#define	VERSIONARRAYLENGTH	200
+#define	VERSIONARRAYCHUNKLENGTH	200
+#define	VERSIONARRAYMAXLENGTH   2000
 
 #define NoFileP(varray)						\
         (((varray)->version_no == LASTVERSIONARRAY)? 1 : 0)

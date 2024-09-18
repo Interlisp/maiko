@@ -13,7 +13,7 @@
 #include <fcntl.h>          // for O_RDWR, O_CREAT, open, O_RDONLY, O_TRUNC
 #include <stdio.h>          // for NULL, sprintf, size_t, rename, SEEK_SET
 #include <stddef.h>         // for ptrdiff_t
-#include <stdlib.h>         // for strtoul
+#include <stdlib.h>         // for strtoul, qsort
 #include <string.h>         // for strcpy, strcmp, strlen, strncpy, strchr
 #include <sys/stat.h>       // for stat, fstat, mkdir, S_ISREG, st_atime, chmod
 #include <sys/types.h>      // for ino_t, time_t, off_t
@@ -44,6 +44,7 @@
 #include <dos.h>
 #include <time.h>
 #include <io.h>
+#include <search.h>         // for qsort(?)
 #define MAXPATHLEN _MAX_PATH
 #define MAXNAMLEM _MAX_PATH
 #define alarm(x) 0
@@ -57,24 +58,21 @@ typedef struct filename_entry {
   unsigned version_no;
 } FileName;
 
-typedef struct current_varray {
-  char path[MAXPATHLEN]; /* pathname of directory */
-  char file[MAXPATHLEN]; /* file name  (down cased name) */
-  time_t mtime;
-} CurrentVArray;
-
-static FileName VersionArray[VERSIONARRAYLENGTH];
+static FileName *VersionArray = NULL;
+static int VersionArrayAllocated = 0;
+static int VersionArrayLast = -1;
 
 static int locate_file(char *dir, char *name);
 static int make_directory(char *dir);
 static int maintain_version(char *file, int forcep);
+static int compare_file_versions(const void *a, const void *b);
 static int get_versionless(FileName *varray, char *file, char *dir);
 static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p);
 static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
 static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_version_array(char *dir, char *file, FileName varray[]);
+static int get_version_array(char *dir, char *file);
 
 #ifdef DOS
 static void separate_drive(char *lfname, char *drive)
@@ -366,7 +364,7 @@ LispPTR COM_openfile(LispPTR *args)
   if (dskp) {
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
-    if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+    if (get_version_array(dir, name) == 0) return (NIL);
     ConcNameAndVersion(name, ver, file);
 
     switch (args[1]) {
@@ -877,7 +875,7 @@ LispPTR DSK_getfilename(LispPTR *args)
          * Recognizing a file on DSK device needs the version information.
          * We gather version information in a version array first.
          */
-        if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+        if (get_version_array(dir, name) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
         if (get_old(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -917,7 +915,7 @@ LispPTR DSK_getfilename(LispPTR *args)
         strcpy(vname, dir);
         dirp = 1;
       } else {
-        if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+        if (get_version_array(dir, name) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
         if (get_oldest(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -966,7 +964,7 @@ LispPTR DSK_getfilename(LispPTR *args)
            * Here, dir is an existing directory.  We have to perform
            * "new" recognition with the version information.
            */
-          if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+          if (get_version_array(dir, name) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
           if (get_new(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -992,7 +990,7 @@ LispPTR DSK_getfilename(LispPTR *args)
           strcpy(vname, aname);
           dirp = 1;
         } else {
-          if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+          if (get_version_array(dir, name) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
           if (get_old_new(dir, VersionArray, aname, vname) == 0) return (NIL);
@@ -1118,7 +1116,7 @@ LispPTR DSK_deletefile(LispPTR *args)
 #endif
 
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
-  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
+  if (get_version_array(dir, fbuf) == 0) return (NIL);
 
   if (NoFileP(VersionArray))
     return (NIL); /*
@@ -1289,7 +1287,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   ConcDirAndName(dir, fbuf, dst);
   if (maintain_version(dst, 0) == 0) return (NIL);
 
-  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
+  if (get_version_array(dir, fbuf) == 0) return (NIL);
 
   /*
    * Although the file should have been recognized with "new" mode in Lisp
@@ -1337,7 +1335,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   }
 
   if (unpack_filename(src, dir, fbuf, ver, 1) == 0) return (NIL);
-  if (get_version_array(dir, fbuf, VersionArray) == 0) return (NIL);
+  if (get_version_array(dir, fbuf) == 0) return (NIL);
 
   if (NoFileP(VersionArray))
     return (NIL); /*
@@ -1613,7 +1611,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
        */
       strcpy(file, dir);
     } else {
-      if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+      if (get_version_array(dir, name) == 0) return (NIL);
       ConcNameAndVersion(name, ver, file);
       if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
     }
@@ -1802,7 +1800,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
   if (dskp) {
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
-    if (get_version_array(dir, name, VersionArray) == 0) return (NIL);
+    if (get_version_array(dir, name) == 0) return (NIL);
     ConcNameAndVersion(name, ver, file);
     if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
   }
@@ -2872,6 +2870,19 @@ static int make_directory(char *dir)
       }                                                                     \
   } while (0)
 
+/*
+ * comparison function for qsort to sort file versions in descending order
+ */
+static int compare_file_versions(const void *a, const void *b)
+{
+  unsigned a_ver = ((FileName *)a)->version_no;
+  unsigned b_ver = ((FileName *)b)->version_no;
+
+  if (a_ver > b_ver) return (-1);
+  if (a_ver < b_ver) return (1);
+  return (0);
+}
+
 /************************************************************************/
 /*									*/
 /*		    g e t _ v e r s i o n _ a r r a y			*/
@@ -2892,7 +2903,7 @@ static int make_directory(char *dir)
 /*									*/
 /************************************************************************/
 
-static int get_version_array(char *dir, char *file, FileName varray[])
+static int get_version_array(char *dir, char *file)
 {
 #ifdef DOS
   /* DOS version-array builder */
@@ -2944,8 +2955,8 @@ static int get_version_array(char *dir, char *file, FileName varray[])
   TIMEOUT(res = _dos_findfirst(old_file, _A_NORMAL | _A_SUBDIR, &dirp));
   if (res == 0) {
     strcpy(name, dirp.name);
-    strcpy(varray[varray_index].name, name);
-    varray[varray_index].version_no = 0;
+    strcpy(VersionArray[varray_index].name, name);
+    VersionArray[varray_index].version_no = 0;
     varray_index++;
   }
 
@@ -2965,38 +2976,48 @@ static int get_version_array(char *dir, char *file, FileName varray[])
     separate_version(name, ver, 1);
     DOWNCASE(name);
 
-    strcpy(varray[varray_index].name, dirp.name);
+    strcpy(VersionArray[varray_index].name, dirp.name);
     if (*ver == '\0') {
       /* Versionless file */
-      varray[varray_index].version_no = 1;
+      VersionArray[varray_index].version_no = 1;
     } else {
       /*
-       * separator_version guarantees ver is a numeric
-       * string.
+       * separate_version guarantees ver is a numeric string.
        */
-      varray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
+      VersionArray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
     }
     varray_index++;
-    if (varray_index >= VERSIONARRAYLENGTH) {
-      /* how does the specific error get signalled in the DOS case? */
+    if (varray_index >= VERSIONARRAYMAXLENGTH) {
+      *Lisp_errno = EIO;
       return (0);
-     }
+    } else if (varray_index >= VersionArrayAllocated) {
+      VersionArrayAllocated += VERSIONARRAYCHUNKLENGTH;
+      VersionArray = realloc(VersionArray,
+                             sizeof(*VersionArray) * VersionArrayAllocated);
+    }
   }
 
   /*
-   * The last entry of varray is indicated by setting LASTVERSIONARRAY into
+   * The last entry of VersionArray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  varray[varray_index].version_no = LASTVERSIONARRAY;
+  VersionArray[varray_index].version_no = LASTVERSIONARRAY;
+  VersionArrayLast = varray_index;
 
   /*
-   * If more than one files have been stored in varray, we store the name
+   * If any files have been stored in VersionArray, we store the name
    * without version in the last marker entry.
+   *
+   * NOTE: sorting "varray_index" entries will leave the LASTVERSIONARRAY item
+   * untouched by the sort, which is intentional.
    */
-  if (!NoFileP(varray)) {
-    strcpy(name, varray[0].name);
+  if (!NoFileP(VersionArray)) {
+    strcpy(name, VersionArray[0].name);
     separate_version(name, ver, 1);
-    strcpy(varray[varray_index].name, name);
+    strcpy(VersionArray[varray_index].name, name);
+    if (varray_index > 1) {
+      qsort(VersionArray, varray_index, sizeof(*VersionArray), compare_file_versions);
+    }
   }
 
   return (1);
@@ -3041,6 +3062,12 @@ static int get_version_array(char *dir, char *file, FileName varray[])
     return (0);
   }
 
+  /* There is no initialization call for the local file system, so we
+   * must ensure there is initial storage allocated for the version array */
+  if (VersionArray == NULL) {
+    VersionArray = calloc(VERSIONARRAYCHUNKLENGTH, sizeof(*VersionArray));
+    VersionArrayAllocated = VERSIONARRAYCHUNKLENGTH;
+  }
   for (S_TOUT(dp = readdir(dirp)); dp != NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)))
     if (dp) {
@@ -3051,21 +3078,24 @@ static int get_version_array(char *dir, char *file, FileName varray[])
         /*
          * This file can be regarded as a same file in Lisp sense.
          */
-        strcpy(varray[varray_index].name, dp->d_name);
+        strcpy(VersionArray[varray_index].name, dp->d_name);
         if (*ver == '\0') {
           /* Versionless file */
-          varray[varray_index].version_no = 0;
+          VersionArray[varray_index].version_no = 0;
         } else {
           /*
-           * separator_version guarantees ver is a numeric
-           * string.
+           * separate_version guarantees ver is a numeric string.
            */
-          varray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
+          VersionArray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
         }
         varray_index++;
-        if (varray_index >= VERSIONARRAYLENGTH) {
+        if (varray_index >= VERSIONARRAYMAXLENGTH) {
           *Lisp_errno = EIO;
           return (0);
+        } else if (varray_index >= VersionArrayAllocated) {
+          VersionArrayAllocated += VERSIONARRAYCHUNKLENGTH;
+          VersionArray = realloc(VersionArray,
+                                 sizeof(*VersionArray) * VersionArrayAllocated);
         }
       }
     }
@@ -3073,16 +3103,23 @@ static int get_version_array(char *dir, char *file, FileName varray[])
    * The last entry of varray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  varray[varray_index].version_no = LASTVERSIONARRAY;
+  VersionArray[varray_index].version_no = LASTVERSIONARRAY;
+  VersionArrayLast = varray_index;
 
   /*
-   * If more than one files have been stored in varray, we store the name
+   * If any files have been stored in VersionArray, we store the name
    * without version in the last marker entry.
+   *
+   * NOTE: sorting "varray_index" entries will leave the LASTVERSIONARRAY item
+   * untouched by the sort, which is intentional.
    */
-  if (!NoFileP(varray)) {
-    strcpy(name, varray[0].name);
+  if (!NoFileP(VersionArray)) {
+    strcpy(name, VersionArray[0].name);
     separate_version(name, ver, 1);
-    strcpy(varray[varray_index].name, name);
+    strcpy(VersionArray[varray_index].name, name);
+    if (varray_index > 1) {
+      qsort(VersionArray, varray_index, sizeof(*VersionArray), compare_file_versions);
+    }
   }
 
   TIMEOUT(closedir(dirp));
@@ -3129,7 +3166,7 @@ static int maintain_version(char *file, int forcep)
    * We have to make sure that dir is the existing directory.
    */
   if (true_name(dir) != -1) return (0);
-  if (get_version_array(dir, fname, VersionArray) == 0) return (0);
+  if (get_version_array(dir, fname) == 0) return (0);
 
   if (NoFileP(VersionArray)) {
     /*
