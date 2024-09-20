@@ -38,7 +38,7 @@
 #include <pwd.h>            // for getpwuid, passwd
 #include <sys/param.h>      // for MAXPATHLEN
 #include <sys/statvfs.h>    // for statvfs
-#include <sys/time.h>       // for timeval, futimes
+#include <sys/time.h>       // for timeval, utimes, futimens
 #else
 #include <direct.h>
 #include <dos.h>
@@ -680,7 +680,7 @@ LispPTR COM_closefile(LispPTR *args)
   char lfname[MAXPATHLEN + 5], host[MAXNAMLEN];
   char file[MAXPATHLEN];
   struct stat sbuf;
-  struct timeval time[2];
+  struct timespec timesp[2];
 
   ERRSETJMP(NIL);
   Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
@@ -745,17 +745,17 @@ LispPTR COM_closefile(LispPTR *args)
     }
   }
 
-  /* introduction of futimes() allows us to set the times on an open
+  /* introduction of futimens() allows us to set the times on an open
    * file descriptor so a lot of directory manipulation to find the
    * appropriate name associated with the inode is no longer required
    */
 
-  time[0].tv_sec = (long)sbuf.st_atime;
-  time[0].tv_usec = 0L;
-  time[1].tv_sec = (long)ToUnixTime(cdate);
-  time[1].tv_usec = 0L;
+  timesp[0].tv_sec = (long)sbuf.st_atime;
+  timesp[0].tv_nsec = 0L;
+  timesp[1].tv_sec = (long)ToUnixTime(cdate);
+  timesp[1].tv_nsec = 0L;
 
-  TIMEOUT(rval = futimes(fd, time));
+  TIMEOUT(rval = futimens(fd, timesp));
   if (rval != 0) {
     *Lisp_errno = errno;
     return (NIL);
