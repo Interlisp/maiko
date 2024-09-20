@@ -58,9 +58,19 @@ typedef struct filename_entry {
   unsigned version_no;
 } FileName;
 
-static FileName *VersionArray = NULL;
-static int VersionArrayAllocated = 0;
-static int VersionArrayLast = -1;
+/*
+ * VA, a structure representing the file names and version numbers
+ *  that were present in a directory at a particular moment in time.
+ *  The {DSK} device presents a case-insensitive (to Medley) but
+ *  case-preserving (to the host) file system. The VA (Version Array)
+ */
+static struct {
+  char name[MAXPATHLEN];     /* lowercase unversioned file name */
+  struct timespec lastMTime; /* modification time of the directory */
+  int allocated;             /* number of entries in the files array */
+  int lastUsed;              /* index of the last entry in use in files array */
+  FileName *files;           /* array of files */
+} VA = {0};
 
 static int locate_file(char *dir, char *name);
 static int make_directory(char *dir);
@@ -369,19 +379,19 @@ LispPTR COM_openfile(LispPTR *args)
 
     switch (args[1]) {
       case RECOG_OLD:
-        if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
+        if (get_old(dir, VA.files, file, name) == 0) return (NIL);
         break;
 
       case RECOG_OLDEST:
-        if (get_oldest(dir, VersionArray, file, name) == 0) return (NIL);
+        if (get_oldest(dir, VA.files, file, name) == 0) return (NIL);
         break;
 
       case RECOG_NEW:
-        if (get_new(dir, VersionArray, file, name) == 0) return (NIL);
+        if (get_new(dir, VA.files, file, name) == 0) return (NIL);
         break;
 
       case RECOG_OLD_NEW:
-        if (get_old_new(dir, VersionArray, file, name) == 0) return (NIL);
+        if (get_old_new(dir, VA.files, file, name) == 0) return (NIL);
         break;
 
       default: return (NIL);
@@ -878,7 +888,7 @@ LispPTR DSK_getfilename(LispPTR *args)
         if (get_version_array(dir, name) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
-        if (get_old(dir, VersionArray, aname, vname) == 0) return (NIL);
+        if (get_old(dir, VA.files, aname, vname) == 0) return (NIL);
 
         if ((rval = true_name(aname)) == 0) return (NIL);
         if (rval == -1) {
@@ -918,7 +928,7 @@ LispPTR DSK_getfilename(LispPTR *args)
         if (get_version_array(dir, name) == 0) return (NIL);
 
         ConcNameAndVersion(name, ver, aname);
-        if (get_oldest(dir, VersionArray, aname, vname) == 0) return (NIL);
+        if (get_oldest(dir, VA.files, aname, vname) == 0) return (NIL);
 
         if ((rval = true_name(aname)) == 0) return (NIL);
         if (rval == -1) {
@@ -967,7 +977,7 @@ LispPTR DSK_getfilename(LispPTR *args)
           if (get_version_array(dir, name) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
-          if (get_new(dir, VersionArray, aname, vname) == 0) return (NIL);
+          if (get_new(dir, VA.files, aname, vname) == 0) return (NIL);
           dirp = 0;
         }
       }
@@ -993,7 +1003,7 @@ LispPTR DSK_getfilename(LispPTR *args)
           if (get_version_array(dir, name) == 0) return (NIL);
 
           ConcNameAndVersion(name, ver, aname);
-          if (get_old_new(dir, VersionArray, aname, vname) == 0) return (NIL);
+          if (get_old_new(dir, VA.files, aname, vname) == 0) return (NIL);
           dirp = 0;
         }
       }
@@ -1118,7 +1128,7 @@ LispPTR DSK_deletefile(LispPTR *args)
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
   if (get_version_array(dir, fbuf) == 0) return (NIL);
 
-  if (NoFileP(VersionArray))
+  if (NoFileP(VA.files))
     return (NIL); /*
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
@@ -1133,9 +1143,9 @@ LispPTR DSK_deletefile(LispPTR *args)
    */
 
   ConcNameAndVersion(fbuf, ver, file);
-  if (get_oldest(dir, VersionArray, file, fbuf) == 0) return (NIL);
+  if (get_oldest(dir, VA.files, file, fbuf) == 0) return (NIL);
 
-  if (get_versionless(VersionArray, vless, dir) == 0) {
+  if (get_versionless(VA.files, vless, dir) == 0) {
     /*
      * There is no versionless file.  All we have to do is to simply
      * try to unlink the specified file.
@@ -1154,7 +1164,7 @@ LispPTR DSK_deletefile(LispPTR *args)
    * file is linked will destroy the consistency of the version status.
    */
 
-  if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) return (NIL);
+  if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) return (NIL);
 
   if (strcmp(file, vless) == 0 || strcmp(file, fbuf) == 0) {
     if (*fbuf != '\0') {
@@ -1180,7 +1190,7 @@ LispPTR DSK_deletefile(LispPTR *args)
     } else {
       /*
        * Although the versionfile is specified, it is not linked
-       * to any file in VersionArray.  We should not maintain the version
+       * to any file in VA.files.  We should not maintain the version
        * status after deleting the versionless file, because
        * we cannot say whether the versionless file is actually under
        * control of the Medley DSK file system or not.
@@ -1296,7 +1306,7 @@ LispPTR DSK_renamefile(LispPTR *args)
    */
 
   ConcNameAndVersion(fbuf, ver, dst);
-  if (get_new(dir, VersionArray, dst, fbuf) == 0) return (NIL);
+  if (get_new(dir, VA.files, dst, fbuf) == 0) return (NIL);
 
   /*
    * At this point, there are three cases for the destination.  If there is
@@ -1306,9 +1316,9 @@ LispPTR DSK_renamefile(LispPTR *args)
    * "real" destination file is the file to which the versionless file is linked,
    * we have to unlink the versionless file.
    */
-  if (!NoFileP(VersionArray)) {
-    if (OnlyVersionlessP(VersionArray)) {
-      get_versionless(VersionArray, vless, dir);
+  if (!NoFileP(VA.files)) {
+    if (OnlyVersionlessP(VA.files)) {
+      get_versionless(VA.files, vless, dir);
       if (strcmp(dst, vless) != 0) {
         ConcNameAndVersion(vless, "1", fbuf);
         TIMEOUT(rval = rename(vless, fbuf));
@@ -1322,8 +1332,8 @@ LispPTR DSK_renamefile(LispPTR *args)
        * We are sure that the versionless file is linked to one of
        * the higher versioned file here.
        */
-      get_versionless(VersionArray, vless, dir);
-      if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) { return (NIL); }
+      get_versionless(VA.files, vless, dir);
+      if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) { return (NIL); }
       if (strcmp(dst, fbuf) == 0) {
         TIMEOUT(rval = unlink(vless));
         if (rval == -1) {
@@ -1337,7 +1347,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   if (unpack_filename(src, dir, fbuf, ver, 1) == 0) return (NIL);
   if (get_version_array(dir, fbuf) == 0) return (NIL);
 
-  if (NoFileP(VersionArray))
+  if (NoFileP(VA.files))
     return (NIL); /*
                    * If the specified file is deleted from
                    * outside of Lisp during the last time
@@ -1351,9 +1361,9 @@ LispPTR DSK_renamefile(LispPTR *args)
    * of it.
    */
   ConcNameAndVersion(fbuf, ver, src);
-  if (get_old(dir, VersionArray, src, fbuf) == 0) return (NIL);
+  if (get_old(dir, VA.files, src, fbuf) == 0) return (NIL);
 
-  if (get_versionless(VersionArray, vless, dir) == 0) {
+  if (get_versionless(VA.files, vless, dir) == 0) {
     /*
      * There is no versionless file.  All we have to do is to simply
      * try to rename the specified file.
@@ -1366,7 +1376,7 @@ LispPTR DSK_renamefile(LispPTR *args)
      * versionless file is linked will destroy the consistency of the
      * version status.
      */
-    if (check_vless_link(vless, VersionArray, fbuf, &rval) == 0) return (NIL);
+    if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) return (NIL);
 
     if (strcmp(src, vless) == 0 && *fbuf != '\0') {
       /*
@@ -1613,7 +1623,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
     } else {
       if (get_version_array(dir, name) == 0) return (NIL);
       ConcNameAndVersion(name, ver, file);
-      if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
+      if (get_old(dir, VA.files, file, name) == 0) return (NIL);
     }
   }
 
@@ -1802,7 +1812,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
     if (true_name(dir) != -1) return (0);
     if (get_version_array(dir, name) == 0) return (NIL);
     ConcNameAndVersion(name, ver, file);
-    if (get_old(dir, VersionArray, file, name) == 0) return (NIL);
+    if (get_old(dir, VA.files, file, name) == 0) return (NIL);
   }
 
   switch (args[1]) {
@@ -2955,8 +2965,8 @@ static int get_version_array(char *dir, char *file)
   TIMEOUT(res = _dos_findfirst(old_file, _A_NORMAL | _A_SUBDIR, &dirp));
   if (res == 0) {
     strcpy(name, dirp.name);
-    strcpy(VersionArray[varray_index].name, name);
-    VersionArray[varray_index].version_no = 0;
+    strcpy(VA.files[varray_index].name, name);
+    VA.files[varray_index].version_no = 0;
     varray_index++;
   }
 
@@ -2976,47 +2986,47 @@ static int get_version_array(char *dir, char *file)
     separate_version(name, ver, 1);
     DOWNCASE(name);
 
-    strcpy(VersionArray[varray_index].name, dirp.name);
+    strcpy(VA.files[varray_index].name, dirp.name);
     if (*ver == '\0') {
       /* Versionless file */
-      VersionArray[varray_index].version_no = 1;
+      VA.files[varray_index].version_no = 1;
     } else {
       /*
        * separate_version guarantees ver is a numeric string.
        */
-      VersionArray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
+      VA.files[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
     }
     varray_index++;
     if (varray_index >= VERSIONARRAYMAXLENGTH) {
       *Lisp_errno = EIO;
       return (0);
-    } else if (varray_index >= VersionArrayAllocated) {
-      VersionArrayAllocated += VERSIONARRAYCHUNKLENGTH;
-      VersionArray = realloc(VersionArray,
-                             sizeof(*VersionArray) * VersionArrayAllocated);
+    } else if (varray_index >= VA.allocated) {
+      VA.allocated += VERSIONARRAYCHUNKLENGTH;
+      VA.files = realloc(VA.files,
+                             sizeof(*VA.files) * VA.allocated);
     }
   }
 
   /*
-   * The last entry of VersionArray is indicated by setting LASTVERSIONARRAY into
+   * The last entry of VA.files is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  VersionArray[varray_index].version_no = LASTVERSIONARRAY;
-  VersionArrayLast = varray_index;
+  VA.files[varray_index].version_no = LASTVERSIONARRAY;
+  VA.lastUsed = varray_index;
 
   /*
-   * If any files have been stored in VersionArray, we store the name
+   * If any files have been stored in VA.files, we store the name
    * without version in the last marker entry.
    *
    * NOTE: sorting "varray_index" entries will leave the LASTVERSIONARRAY item
    * untouched by the sort, which is intentional.
    */
-  if (!NoFileP(VersionArray)) {
-    strcpy(name, VersionArray[0].name);
+  if (!NoFileP(VA.files)) {
+    strcpy(name, VA.files[0].name);
     separate_version(name, ver, 1);
-    strcpy(VersionArray[varray_index].name, name);
+    strcpy(VA.files[varray_index].name, name);
     if (varray_index > 1) {
-      qsort(VersionArray, varray_index, sizeof(*VersionArray), compare_file_versions);
+      qsort(VA.files, varray_index, sizeof(*VA.files), compare_file_versions);
     }
   }
 
@@ -3041,19 +3051,26 @@ static int get_version_array(char *dir, char *file)
   separate_version(lcased_file, ver, 1);
   DOWNCASE(lcased_file);
 
+  /* Cache for VA.files reinstated using nanosecond timestamps which many
+   * systems provide for directory modification times.
+   * POSIX defines the struct stat field containing the nanosecond resolution
+   * modification time as "st_mtim".  See "version.h" for accomodations
+   * for systems that call it something else (e.g., macOS st_mtimespec).
+   */
+
   TIMEOUT(rval = stat(dir, &sbuf));
   if (rval == -1) {
     *Lisp_errno = errno;
     return(0);
   }
-
-  /* Cache for VersionArray removed. The modification times for the
-   * directory is maintained in seconds, which is far too coarse to
-   * meaningfully detect modifications.  Some systems now have a
-   * nanosecond timestamp, but there is no agreement on the field
-   * name.  Enumerating the files in a directory is not so slow on
-   * modern systems that it will cause a noticeable performance hit.
-   */
+  if (0 == strcmp(lcased_file, VA.name) &&
+      sbuf.st_mtim.tv_sec == VA.lastMTime.tv_sec &&
+      sbuf.st_mtim.tv_nsec == VA.lastMTime.tv_nsec) {
+    return (1);
+  } else {
+    VA.lastMTime = sbuf.st_mtim;
+    strcpy(VA.name, lcased_file);
+  }
 
   errno = 0;
   TIMEOUT0(dirp = opendir(dir));
@@ -3064,9 +3081,9 @@ static int get_version_array(char *dir, char *file)
 
   /* There is no initialization call for the local file system, so we
    * must ensure there is initial storage allocated for the version array */
-  if (VersionArray == NULL) {
-    VersionArray = calloc(VERSIONARRAYCHUNKLENGTH, sizeof(*VersionArray));
-    VersionArrayAllocated = VERSIONARRAYCHUNKLENGTH;
+  if (VA.files == NULL) {
+    VA.files = calloc(VERSIONARRAYCHUNKLENGTH, sizeof(*VA.files));
+    VA.allocated = VERSIONARRAYCHUNKLENGTH;
   }
   for (S_TOUT(dp = readdir(dirp)); dp != NULL || errno == EINTR;
        errno = 0, S_TOUT(dp = readdir(dirp)))
@@ -3078,24 +3095,24 @@ static int get_version_array(char *dir, char *file)
         /*
          * This file can be regarded as a same file in Lisp sense.
          */
-        strcpy(VersionArray[varray_index].name, dp->d_name);
+        strcpy(VA.files[varray_index].name, dp->d_name);
         if (*ver == '\0') {
           /* Versionless file */
-          VersionArray[varray_index].version_no = 0;
+          VA.files[varray_index].version_no = 0;
         } else {
           /*
            * separate_version guarantees ver is a numeric string.
            */
-          VersionArray[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
+          VA.files[varray_index].version_no = strtoul(ver, (char **)NULL, 10);
         }
         varray_index++;
         if (varray_index >= VERSIONARRAYMAXLENGTH) {
           *Lisp_errno = EIO;
           return (0);
-        } else if (varray_index >= VersionArrayAllocated) {
-          VersionArrayAllocated += VERSIONARRAYCHUNKLENGTH;
-          VersionArray = realloc(VersionArray,
-                                 sizeof(*VersionArray) * VersionArrayAllocated);
+        } else if (varray_index >= VA.allocated) {
+          VA.allocated += VERSIONARRAYCHUNKLENGTH;
+          VA.files = realloc(VA.files,
+                                 sizeof(*VA.files) * VA.allocated);
         }
       }
     }
@@ -3103,22 +3120,22 @@ static int get_version_array(char *dir, char *file)
    * The last entry of varray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
    */
-  VersionArray[varray_index].version_no = LASTVERSIONARRAY;
-  VersionArrayLast = varray_index;
+  VA.files[varray_index].version_no = LASTVERSIONARRAY;
+  VA.lastUsed = varray_index;
 
   /*
-   * If any files have been stored in VersionArray, we store the name
+   * If any files have been stored in VA.files, we store the name
    * without version in the last marker entry.
    *
    * NOTE: sorting "varray_index" entries will leave the LASTVERSIONARRAY item
    * untouched by the sort, which is intentional.
    */
-  if (!NoFileP(VersionArray)) {
-    strcpy(name, VersionArray[0].name);
+  if (!NoFileP(VA.files)) {
+    strcpy(name, VA.files[0].name);
     separate_version(name, ver, 1);
-    strcpy(VersionArray[varray_index].name, name);
+    strcpy(VA.files[varray_index].name, name);
     if (varray_index > 1) {
-      qsort(VersionArray, varray_index, sizeof(*VersionArray), compare_file_versions);
+      qsort(VA.files, varray_index, sizeof(*VA.files), compare_file_versions);
     }
   }
 
@@ -3168,7 +3185,7 @@ static int maintain_version(char *file, int forcep)
   if (true_name(dir) != -1) return (0);
   if (get_version_array(dir, fname) == 0) return (0);
 
-  if (NoFileP(VersionArray)) {
+  if (NoFileP(VA.files)) {
     /*
      * We don't need to care about such case that there is no such file
      * or an only versionless file exists.
@@ -3176,14 +3193,14 @@ static int maintain_version(char *file, int forcep)
     return (1);
   }
 
-  if (OnlyVersionlessP(VersionArray)) {
+  if (OnlyVersionlessP(VA.files)) {
     if (forcep) {
 /*
  * If forcep, we link the versionless file to the version
  * 1 file.
  */
 #ifndef DOS
-      get_versionless(VersionArray, vless, dir);
+      get_versionless(VA.files, vless, dir);
       ConcNameAndVersion(vless, "1", fname);
       TIMEOUT(rval = link(vless, fname));
       if (rval == -1) {
@@ -3200,13 +3217,13 @@ static int maintain_version(char *file, int forcep)
    * exists.  Thus, FindHighestVersion works fine from now on.
    */
 
-  if (get_versionless(VersionArray, vless, dir) == 0) {
+  if (get_versionless(VA.files, vless, dir) == 0) {
     /*
      * There is not a versionless file, but at least one versioned file.
      * Thus, the thing we have to do is to link a versionless file
      * to the existing highest versioned file.
      */
-    FindHighestVersion(VersionArray, entry, max_no);
+    FindHighestVersion(VA.files, entry, max_no);
     ConcDirAndName(dir, entry->name, old_file);
 /*
  * The versionless file should have the same case name as the old
@@ -3225,15 +3242,15 @@ static int maintain_version(char *file, int forcep)
     return (1);
   }
 
-  if (check_vless_link(vless, VersionArray, old_file, &highest_p) == 0) return (0);
+  if (check_vless_link(vless, VA.files, old_file, &highest_p) == 0) return (0);
 
   if (*old_file == '\0') {
     /*
-     * The versionless file is not linked to any file in VersionArray.
+     * The versionless file is not linked to any file in VA.files.
      * Thus, we have to link the versionless file to the file which
      * is versioned one higher than the existing highest version.
      */
-    FindHighestVersion(VersionArray, entry, max_no);
+    FindHighestVersion(VA.files, entry, max_no);
     sprintf(ver, "%u", max_no + 1);
 /*
  * The old file should have the same case name as the versionless
@@ -3258,7 +3275,7 @@ static int maintain_version(char *file, int forcep)
     return (1);
   } else {
     /*
-     * Although the  versionless file is linked to a file in VersionArray,
+     * Although the  versionless file is linked to a file in VA.files,
      * the file is not the highest versioned file.  We have to unlink
      * the wrongly linked versionless file, and link the highest versioned
      * file to a versionless file.
@@ -3268,7 +3285,7 @@ static int maintain_version(char *file, int forcep)
       *Lisp_errno = errno;
       return (0);
     }
-    FindHighestVersion(VersionArray, entry, max_no);
+    FindHighestVersion(VA.files, entry, max_no);
     ConcDirAndName(dir, entry->name, old_file);
 /*
  * The versionless file should have the same case name as the old
