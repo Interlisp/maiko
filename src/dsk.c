@@ -2766,34 +2766,26 @@ static int make_directory(char *dir)
  *		and highest version number respectively.
  *
  * Description:
+ * Finds the highest versioned entry in varray.
  *
- * Find the highest versioned entry in varray.  Varray has to include at least
- * one versioned file, that is varray has to satisfy (!NoFileP(varray) &&
- * !OnlyVersionlessP(varray)).
- *
+ * Preconditions:
+ *     Varray must include at least one versioned file, satisfying the condition:
+ *       (!NoFileP(varray) && !OnlyVersionlessP(varray))
+ *     Varray must be sorted from highest to lowest version
  */
+
 #ifdef DOS
 #define FindHighestVersion(varray, mentry, max_no)                                         \
-  do {                                                                                        \
-    FileName *centry;                                                             \
-    for (centry = varray, max_no = -1; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no > max_no) {                                                   \
-        max_no = centry->version_no;                                                       \
-        mentry = centry;                                                                   \
-      }                                                                                    \
-    }                                                                                      \
-    } while (0)
+  do {                                    \
+    (max_no) = varray[0].version_no;      \
+    (mentry) = &varray[0];                \
+  } while (0)
 #else
 #define FindHighestVersion(varray, mentry, max_no)                                        \
-  do {                                                                                       \
-    FileName *centry;                                                            \
-    for (centry = (varray), (max_no) = 0; centry->version_no != LASTVERSIONARRAY; centry++) { \
-      if (centry->version_no > (max_no)) {                                                  \
-        (max_no) = centry->version_no;                                                      \
-        (mentry) = centry;                                                                  \
-      }                                                                                   \
-    }                                                                                     \
-    } while (0)
+  do {                                    \
+    (max_no) = varray[0].version_no;      \
+    (mentry) = &varray[0];                \
+  } while (0)
 #endif /* DOS */
 
 /*
