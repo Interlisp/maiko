@@ -131,10 +131,10 @@
 #ifdef BIGVM  
 struct   hashentry
   { /* GC hashtable entry */
-    unsigned short count        :15;
-    unsigned short stackref     :1;
-    unsigned short segnum       :15;
-    unsigned short collision    :1;
+    DLword count        :15;
+    DLword stackref     :1;
+    DLword segnum       :15;
+    DLword collision    :1;
   };
 
 struct  htlinkptr
