@@ -18,7 +18,7 @@
 */
 /**********************************************************************/
 #include "lispemul.h" /* for LispPTR, DLword */
-#include "version.h" /* for USHORT */
+#include "version.h" /* for BIGVM */
 
 #define ADDREF  0       /* for gclookup routine. */
 #define DELREF  1       /* for gclookup routine. */
@@ -162,10 +162,10 @@ struct  htoverflow
 #else
 struct   hashentry
   { /* GC hashtable entry */
-    USHORT count        :6;
-    USHORT stackref     :1;
-    USHORT segnum       :8;
-    USHORT collision    :1;
+    DLword count        :6;
+    DLword stackref     :1;
+    DLword segnum       :8;
+    DLword collision    :1;
   };
 
 struct  htlinkptr
@@ -200,10 +200,10 @@ struct  htoverflow
 #ifdef BIGVM
 struct   hashentry
   { /* GC hashtable entry */
-    USHORT collision    :1;
-    USHORT segnum       :15;
-    USHORT stackref     :1;
-    USHORT count        :15;
+    DLword collision    :1;
+    DLword segnum       :15;
+    DLword stackref     :1;
+    DLword count        :15;
   };
 
 struct  htlinkptr
@@ -231,10 +231,10 @@ struct  htoverflow
 #else
 struct   hashentry
   { /* GC hashtable entry */
-    USHORT collision    :1;
-    USHORT segnum       :8;
-    USHORT stackref     :1;
-    USHORT count        :6;
+    DLword collision    :1;
+    DLword segnum       :8;
+    DLword stackref     :1;
+    DLword count        :6;
   };
 
 struct  htlinkptr

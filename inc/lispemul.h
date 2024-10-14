@@ -267,22 +267,22 @@ struct state {
 
 /* For bit test */
 typedef struct wbits {
-  USHORT LSB : 1;
-  USHORT B14 : 1;
-  USHORT B13 : 1;
-  USHORT B12 : 1;
-  USHORT B11 : 1;
-  USHORT B10 : 1;
-  USHORT B9 : 1;
-  USHORT B8 : 1;
-  USHORT B7 : 1;
-  USHORT B6 : 1;
-  USHORT B5 : 1;
-  USHORT B4 : 1;
-  USHORT B3 : 1;
-  USHORT B2 : 1;
-  USHORT B1 : 1;
-  USHORT xMSB : 1;
+  DLword LSB : 1;
+  DLword B14 : 1;
+  DLword B13 : 1;
+  DLword B12 : 1;
+  DLword B11 : 1;
+  DLword B10 : 1;
+  DLword B9 : 1;
+  DLword B8 : 1;
+  DLword B7 : 1;
+  DLword B6 : 1;
+  DLword B5 : 1;
+  DLword B4 : 1;
+  DLword B3 : 1;
+  DLword B2 : 1;
+  DLword B1 : 1;
+  DLword xMSB : 1;
 } WBITS;
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)                                             \
