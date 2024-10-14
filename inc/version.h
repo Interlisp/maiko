@@ -237,6 +237,14 @@ typedef unsigned short USHORT;
 	/* 	    --Start of system-specific flags		 	*/
 	/*								*/
 	/****************************************************************/
+#ifdef MAIKO_OS_MACOS
+/* macOS does not follow the POSIX standard for the names of the stat
+   fields that allow access to the nanosecond resolution times
+*/
+#define st_atim st_atimespec
+#define st_mtim st_mtimespec
+#define st_ctim st_ctimespec
+#endif
 
 	/****************************************************************/
 	/* 	    End of system-specific flag settings		*/
