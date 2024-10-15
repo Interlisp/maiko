@@ -52,6 +52,7 @@ extern int error(const char *s);
 
 extern int KBDEventFlg;
 /* clang-format off */
+#if SDL_MAJOR_VERSION == 2
 int keymap[] = {
   0, SDLK_5,                                     /* (5 %% FIVE) */
   1, SDLK_4,                                     /* (4 $ FOUR) */
@@ -167,6 +168,123 @@ int keymap[] = {
   // 111,                                        /* (K5F SUN-OPEN) */
   -1, -1
 };
+#elif SDL_MAJOR_VERSION == 3
+int keymap[] = {
+  0, SDLK_5,                                     /* (5 %% FIVE) */
+  1, SDLK_4,                                     /* (4 $ FOUR) */
+  2, SDLK_6,                                     /* (6 ~ SIX) */
+  3, SDLK_E,                                     /* (e E) */
+  4, SDLK_7,                                     /* (7 & SEVEN) */
+  5, SDLK_D,                                     /* (d D) */
+  6, SDLK_U,                                     /* (u U) */
+  7, SDLK_V,                                     /* (v V) */
+  8, SDLK_RIGHTPAREN, 8, SDLK_0,                 /* (0 %) ZERO) */
+  9, SDLK_K,                                     /* (k K) */
+  10, SDLK_MINUS,                                /* (- %^X) */
+  11, SDLK_P,                                    /* (p P) */
+  12, SDLK_SLASH,                                /* (/ ?) */
+  13, SDLK_KP_PERIOD,                            /* (\ %| FONT LOOKS) */
+  14, SDLK_SCROLLLOCK,                           /* (LF SAME) */
+  15, SDLK_BACKSPACE,                            /* (BS <-) */
+  16, SDLK_3,                                    /* (3 %# THREE) */
+  17, SDLK_2,                                    /* (2 @ TWO) */
+  18, SDLK_W,                                    /* (w W) */
+  19, SDLK_Q,                                    /* (q Q) */
+  20, SDLK_S,                                    /* (s S) */
+  21, SDLK_A,                                    /* (a A) */
+  22, SDLK_LEFTPAREN,  22, SDLK_9,               /* (9 %( NINE) */
+  23, SDLK_I,                                    /* (i I) */
+  24, SDLK_X,                                    /* (x X) */
+  25, SDLK_O,                                    /* (o O) */
+  26, SDLK_L,                                    /* (l L) */
+  27, SDLK_COMMA,                                /* (%, <) */
+  28, SDLK_APOSTROPHE,                           /* (%' %") */
+  29, SDLK_RIGHTBRACKET,                         /* (%] }) */
+  // 30,                                         /* (BLANK-MIDDLE OPEN DBK-HELP) */
+  31, SDLK_LALT, /* Meta, Sun-4 usual key */     /* (BLANK-TOP KEYBOARD DBK-META) */
+  32, SDLK_1,                                    /* (1 ! ONE) */
+  33, SDLK_ESCAPE,                               /* (ESC ESCAPE ->) */
+  34, SDLK_TAB,                                  /* (TAB =>) */
+  35, SDLK_F,                                    /* (f F) */
+  36, SDLK_LCTRL,                                /* (CTRL PROP'S EDIT) */
+  37, SDLK_C,                                    /* (c C) */
+  38, SDLK_J,                                    /* (j J) */
+  39, SDLK_B,                                    /* (b B) */
+  40, SDLK_Z,                                    /* (z Z) */
+  41, SDLK_LSHIFT,                               /* (LSHIFT) */
+  42, SDLK_PERIOD,                               /* (%. >) */
+  43, SDLK_SEMICOLON,  43, SDLK_COLON,           /* (; %:) */
+  44, SDLK_RETURN,                               /* (CR <-%|) */
+  45, SDLK_GRAVE,                                /* (_ ^) */
+  // 46,                                         /* (DEL DELETE) */
+  47, SDLK_RCTRL,                                /* (SKIP NEXT) */
+  48, SDLK_R,                                    /* (r R) */
+  49, SDLK_T,                                    /* (t T) */
+  50, SDLK_G,                                    /* (g G) */
+  51, SDLK_Y,                                    /* (y Y) */
+  52, SDLK_H,                                    /* (h H) */
+  53, SDLK_8,                                    /* (8 * EIGHT) */
+  54, SDLK_N,                                    /* (n N) */
+  55, SDLK_M,                                    /* (m M) */
+  56, SDLK_CAPSLOCK,                             /* (LOCK) */
+  57, SDLK_SPACE,                                /* (SPACE) */
+  58, SDLK_LEFTBRACKET,                          /* (%[ {) */
+  59, SDLK_EQUALS,                               /* (= +) */
+  60, SDLK_RSHIFT,                               /* (RSHIFT) */
+  61, SDLK_F11,  61, SDLK_PAUSE,                 /* (BLANK-BOTTOM STOP) */
+  62, SDLK_HOME,                                 /* (MOVE) */
+  63, SDLK_PAGEUP,                               /* (UNDO) */
+  64, SDLK_KP_EQUALS,                            /* (UTIL0 SUN-KEYPAD=) */
+  65, SDLK_KP_DIVIDE,                            /* (UTIL1 SUN-KEYPAD/) */
+  66, SDLK_F7,                                   /* (UTIL2 SUPER/SUB) */
+  67, SDLK_F4,                                   /* (UTIL3 CASE) */
+  68, SDLK_F5,                                   /* (UTIL4 STRIKEOUT) */
+  69, SDLK_KP_2,                                 /* (UTIL5 KEYPAD2) */
+  70, SDLK_KP_3,                                 /* (UTIL6 KEYPAD3 PGDN) */
+  // 71, XK_Linefeed,                            /* (UTIL7 SUN-LF) */
+  // 72,                                         /* (PAD1 LEFTKEY CAPSLOCK KEYPAD+) */
+  // 73, XK_Numlock,                             /* (PAD2 LEFTMIDDLEKEY NUMLOCK KEYPAD-) */
+  // 74,                                         /* (PAD3 MIDDLEKEY SCROLLLOCK KEYPAD*) */
+  // 75,                                         /* (PAD4 RIGHTMIDDLEKEY BREAK KEYPAD/ SUN-PAUSE) */
+  76, SDLK_KP_ENTER,                             /* (PAD5 RIGHTKEY DOIT PRTSC) */
+  // 77,                                         /* (LEFT RED MOUSERED) */
+  // 78,                                         /* (RIGHT BLUE MOUSEBLUE) */
+  // 79,                                         /* (MIDDLE YELLOW MOUSEYELLOW) */
+  80, SDLK_F9,                                   /* (MARGINS) */
+  81, SDLK_KP_7,                                 /* (K41 KEYPAD7 HOME) */
+  82, SDLK_KP_8,                                 /* (K42 KEYPAD8) */
+  83, SDLK_KP_9,                                 /* (K43 KEYPAD9 PGUP) */
+  84, SDLK_KP_4,                                 /* (K44 KEYPAD4) */
+  85, SDLK_KP_5,                                 /* (K45 KEYPAD5) */
+  86, SDLK_LALT, /* (sun left-diamond key) */    /* (K46 SUN-LEFT-SPACE) */
+  87, SDLK_KP_6,                                 /* (K47 KEYPAD6) */
+  // 88,                                         /* (K48 RIGHT-COMMAND SUN-RIGHT-SPACE) */
+  89, SDLK_INSERT,                               /* (COPY) */
+  90, SDLK_END,                                  /* (FIND) */
+  91, SDLK_F12,                                  /* (AGAIN) */
+  92, SDLK_PRINTSCREEN, // is this XK_Print??    /* (HELP) */
+  93, SDLK_MODE, // is this XK_Mode_switch       /* (DEF'N EXPAND) */
+  94, SDLK_KP_1,                                 /* (K4E KEYPAD1 END) */
+  95, SDLK_KP_MULTIPLY,                          /* (ALWAYS-ON-1) */
+  96, SDLK_KP_MINUS,                             /* (ALWAYS-ON-2) */
+  97, SDLK_HELP,                                 /* (CENTER) */
+  98, SDLK_KP_0,                                 /* (K52 KEYPAD0 INS) */
+  99, SDLK_F2,                                   /* (BOLD) */
+  100, SDLK_F3,                                  /* (ITALICS) */
+  101, SDLK_F6,                                  /* (UNDERLINE) */
+  102, SDLK_KP_PLUS,                             /* (SUPERSCRIPT) */
+  //  103,                                       /* (SUBSCRIPT) */
+  104, SDLK_F8,                                  /* (LARGER SMALLER) */
+  105, SDLK_BACKSLASH,                           /* (K59 KEYPAD%| KEYPAD.) */
+  106, SDLK_F10,                                 /* (K5A KEYPAD\ KEYPAD, SUN-F10) */
+  107, SDLK_F11,                                 /* (K5B SUN-F11) */
+  108, SDLK_F12,                                 /* (K5C SUN-F12) */
+  // 109,                                        /* (DEFAULTS SUN-PROP) */
+  // 110,                                        /* (K5E SUN-PRTSC) */
+  // 111,                                        /* (K5F SUN-OPEN) */
+  -1, -1
+};
+#endif
 
 const struct ColorNameToRGB {
   char * name; uint8_t red; uint8_t green; uint8_t blue;
