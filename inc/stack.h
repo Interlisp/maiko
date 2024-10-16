@@ -79,22 +79,22 @@ typedef struct fnhead {
 } FNHEAD;
 
 typedef struct frameex1 {
-  unsigned short flags : 3;
-  unsigned short fast : 1;
-  unsigned short nil2 : 1; /* not used, prev: This frame treats N-func */
-  unsigned short incall : 1;
-  unsigned short validnametable : 1;
+  DLword flags : 3;
+  DLword fast : 1;
+  DLword nil2 : 1; /* not used, prev: This frame treats N-func */
+  DLword incall : 1;
+  DLword validnametable : 1;
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
-  unsigned short nopush : 1;
-  unsigned short usecount : 8;
+  DLword nopush : 1;
+  DLword usecount : 8;
   DLword alink; /* alink pointer (Low addr) */
 #ifdef BIGVM
   LispPTR fnheader; /* pointer to FunctionHeader (Hi2 addr) */
 #else
   DLword lofnheader;        /* pointer to FunctionHeader (Low addr) */
-  unsigned short hi1fnheader : 8; /* pointer to FunctionHeader (Hi1 addr) */
-  unsigned short hi2fnheader : 8; /* pointer to FunctionHeader (Hi2 addr) */
+  DLword hi1fnheader : 8; /* pointer to FunctionHeader (Hi1 addr) */
+  DLword hi2fnheader : 8; /* pointer to FunctionHeader (Hi2 addr) */
 #endif /* BIGVM */
   DLword nextblock; /* pointer to FreeStackBlock */
   DLword pc;        /* Program counter */
@@ -102,23 +102,23 @@ typedef struct frameex1 {
   LispPTR nametable; /* ptr to NameTable of this FrameEx (Hi2 addr) */
 #else
   DLword lonametable;        /* ptr to NameTable of this FrameEx (Low addr) */
-  unsigned short hi1nametable : 8; /* ptr to NameTable of this FrameEx (Hi1 addr) */
-  unsigned short hi2nametable : 8; /* ptr to NameTable of this FrameEx (Hi2 addr) */
+  DLword hi1nametable : 8; /* ptr to NameTable of this FrameEx (Hi1 addr) */
+  DLword hi2nametable : 8; /* ptr to NameTable of this FrameEx (Hi2 addr) */
 #endif /* BIGVM */
   DLword blink; /* blink pointer (Low addr) */
   DLword clink; /* clink pointer (Low addr) */
 } FX;
 
 typedef struct frameex2 {
-  unsigned short flags : 3;
-  unsigned short fast : 1;
-  unsigned short nil2 : 1; /* not used, prev: This frame treats N-func */
-  unsigned short incall : 1;
-  unsigned short validnametable : 1;
+  DLword flags : 3;
+  DLword fast : 1;
+  DLword nil2 : 1; /* not used, prev: This frame treats N-func */
+  DLword incall : 1;
+  DLword validnametable : 1;
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
-  unsigned short nopush : 1;
-  unsigned short usecount : 8;
+  DLword nopush : 1;
+  DLword usecount : 8;
   DLword alink;      /* alink pointer (Low addr) */
   LispPTR fnheader;  /* pointer to FunctionHeader */
   DLword nextblock;  /* pointer to FreeStackBlock */
@@ -135,19 +135,19 @@ typedef struct fxblock {
 } FXBLOCK;
 
 typedef struct basic_frame {
-  unsigned short flags : 3;
-  unsigned short nil : 3;
-  unsigned short residual : 1;
-  unsigned short padding : 1;
-  unsigned short usecnt : 8;
+  DLword flags : 3;
+  DLword nil : 3;
+  DLword residual : 1;
+  DLword padding : 1;
+  DLword usecnt : 8;
   DLword ivar; /* stk offset of IVARs for this frame ?? */
 
 } Bframe;
 
 typedef struct stkword {
-  unsigned short flags : 3;
-  unsigned short nil : 5;
-  unsigned short usecount : 8;
+  DLword flags : 3;
+  DLword nil : 5;
+  DLword usecount : 8;
 } StackWord;
 
 typedef struct stack_block {
@@ -185,33 +185,33 @@ typedef struct fnhead {
   unsigned nil3 : 2;       /* not used */
   unsigned nil2 : 2;       /* not used */
 #endif /* BIGVM */
-  unsigned short argtype : 2;     /* ?? */
-  unsigned short byteswapped : 1; /* code was reswapped.	*/
-  unsigned short nil4 : 1;        /* not used, prev: native translated? */
-  unsigned short fvaroffset : 8;
+  DLword argtype : 2;     /* ?? */
+  DLword byteswapped : 1; /* code was reswapped.	*/
+  DLword nil4 : 1;        /* not used, prev: native translated? */
+  DLword fvaroffset : 8;
   /* DLword offset from head of NameTable */
-  unsigned short nlocals : 8; /* ?? */
+  DLword nlocals : 8; /* ?? */
   DLword ntsize;        /* size of NameTable */
                         /* NameTable of variable length is following with this structure. */
 } FNHEAD;
 
 typedef struct frameex1 {
   DLword alink; /* alink pointer (Low addr) */
-  unsigned short usecount : 8;
-  unsigned short nopush : 1;
-  unsigned short validnametable : 1;
+  DLword usecount : 8;
+  DLword nopush : 1;
+  DLword validnametable : 1;
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
-  unsigned short incall : 1;
-  unsigned short nil2 : 1; /* not used, prev: This frame treats N-func */
-  unsigned short fast : 1;
-  unsigned short flags : 3; /* hi word */
+  DLword incall : 1;
+  DLword nil2 : 1; /* not used, prev: This frame treats N-func */
+  DLword fast : 1;
+  DLword flags : 3; /* hi word */
 
 #ifdef BIGVM
   LispPTR fnheader; /* pointer to FunctionHeader (Hi2 addr) */
 #else
-  unsigned short hi2fnheader : 8; /* pointer to FunctionHeader (Hi2 addr) */
-  unsigned short hi1fnheader : 8; /* pointer to FunctionHeader (Hi1 addr) */
+  DLword hi2fnheader : 8; /* pointer to FunctionHeader (Hi2 addr) */
+  DLword hi1fnheader : 8; /* pointer to FunctionHeader (Hi1 addr) */
   DLword lofnheader;        /* pointer to FunctionHeader (Low addr) */
 #endif /* BIGVM */
 
@@ -221,8 +221,8 @@ typedef struct frameex1 {
 #ifdef BIGVM
   LispPTR nametable; /* pointer to NameTable of this FX (Hi2 addr) */
 #else
-  unsigned short hi2nametable : 8; /* pointer to NameTable of this FX (Hi2 addr) */
-  unsigned short hi1nametable : 8; /* pointer to NameTable of this FX (Hi1 addr) */
+  DLword hi2nametable : 8; /* pointer to NameTable of this FX (Hi2 addr) */
+  DLword hi1nametable : 8; /* pointer to NameTable of this FX (Hi1 addr) */
   DLword lonametable;        /* pointer to NameTable of this FX (Low addr) */
 #endif /* BIGVM */
 
@@ -232,15 +232,15 @@ typedef struct frameex1 {
 
 typedef struct frameex2 {
   DLword alink; /* alink pointer (Low addr) */
-  unsigned short usecount : 8;
-  unsigned short nopush : 1;
-  unsigned short validnametable : 1;
+  DLword usecount : 8;
+  DLword nopush : 1;
+  DLword validnametable : 1;
   /* 0: look for FunctionHeader
      1: look for NameTable on this FrameEx */
-  unsigned short incall : 1;
-  unsigned short nil2 : 1; /* not used, prev: This frame treats N-func */
-  unsigned short fast : 1;
-  unsigned short flags : 3;
+  DLword incall : 1;
+  DLword nil2 : 1; /* not used, prev: This frame treats N-func */
+  DLword fast : 1;
+  DLword flags : 3;
 
   LispPTR fnheader; /* pointer to FunctionHeader (swapped) */
 
@@ -261,18 +261,18 @@ typedef struct fxblock {
 
 typedef struct basic_frame {
   DLword ivar;
-  unsigned short usecnt : 8;
-  unsigned short padding : 1;
-  unsigned short residual : 1;
-  unsigned short nil : 3;
-  unsigned short flags : 3;
+  DLword usecnt : 8;
+  DLword padding : 1;
+  DLword residual : 1;
+  DLword nil : 3;
+  DLword flags : 3;
 
 } Bframe;
 
 typedef struct stkword {
-  USHORT usecount : 8;
-  USHORT nil : 5;
-  USHORT flags : 3;
+  DLword usecount : 8;
+  DLword nil : 5;
+  DLword flags : 3;
 } StackWord;
 
 typedef struct stack_block {

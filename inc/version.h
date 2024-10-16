@@ -227,9 +227,6 @@ typedef unsigned char u_char;
 typedef unsigned long u_int;
 typedef unsigned short u_short;
 #undef UNALIGNED_FETCH_OK
-typedef unsigned USHORT;
-#else
-typedef unsigned short USHORT;
 #endif /* DOS */
 
 	/****************************************************************/
