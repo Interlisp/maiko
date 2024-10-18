@@ -39,8 +39,8 @@ extern DLword *DisplayRegion68k;
 
 extern int Current_Hot_X, Current_Hot_Y; /* X Cursor hotspots */
 
-extern char Window_Title[255];
-extern char Icon_Title[255];
+extern char windowTitle[255];
+extern char iconTitle[255];
 
 extern int save_argc;
 extern char **save_argv;
@@ -91,8 +91,8 @@ void Create_LispWindow(DspInterface dsp)
   unsigned int GravSize;
   char *WT, *IT;
 
-  WT = Window_Title;
-  IT = Icon_Title;
+  WT = windowTitle;
+  IT = iconTitle;
 
   GravSize = (dsp->ScrollBarWidth / 2) - dsp->InternalBorderWidth;
   Col2 = dsp->Visible.width;

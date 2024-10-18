@@ -81,14 +81,14 @@ extern char Display_Name[128];
 char Display_Name[128];
 extern char iconpixmapfile[1024];
 char iconpixmapfile[1024];
-extern char Window_Title[255];
-char Window_Title[255];
-extern char Icon_Title[255];
-char Icon_Title[255];
+extern char iconTitle[255];
+char iconTitle[255];
 extern char cursorColor[255];
 char cursorColor[255] = {0};
 extern char foregroundColorName[64];
 extern char backgroundColorName[64];
+extern char windowTitle[255];
+
 
 extern char sysout_name_cl[];
 extern char sysout_name_xrm[];
@@ -247,14 +247,14 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   if (XrmGetResource(rDB, "ldex.title", "Ldex.Title", str_type, &value) == True) {
-    (void)strncpy(Window_Title, value.addr, value.size);
+    (void)strncpy(windowTitle, value.addr, sizeof(windowTitle) - 1);
   } else {
-    (void)strcpy(Window_Title, WINDOW_NAME);
+    (void)strncpy(windowTitle, WINDOW_NAME, sizeof(windowTitle) - 1);
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
-    (void)strncpy(Icon_Title, value.addr, value.size);
+    (void)strncpy(iconTitle, value.addr, value.size);
   } else {
-    (void)strcpy(Icon_Title, "Medley");
+    (void)strcpy(iconTitle, "Medley");
   }
 
   if (XrmGetResource(rDB, "ldex.iconbitmap", "Ldex.Iconbitmap", str_type, &value) == True) {
