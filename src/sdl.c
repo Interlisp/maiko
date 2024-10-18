@@ -1565,9 +1565,7 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   sdl_displayheight = h;
   sdl_windowwidth = w * s;
   sdl_windowheight = h * s;
-  int width = sdl_displaywidth;
-  int height = sdl_displayheight;
-  printf("requested width: %d, height: %d\n", width, height);
+  printf("requested width: %d, height: %d\n", sdl_displaywidth, sdl_displayheight);
   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     printf("SDL could not be initialized. SDL_Error: %s\n", SDL_GetError());
     return 1;
@@ -1608,7 +1606,8 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
 #endif
   printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format,
-                                  SDL_TEXTUREACCESS_STREAMING, width, height);
+                                  SDL_TEXTUREACCESS_STREAMING,
+                                  sdl_displaywidth, sdl_displayheight);
   sdl_foreground_color = sdl_MapColorName(sdl_pixelformat,
                                           foregroundColorName[0] ? foregroundColorName : "black");
   sdl_background_color = sdl_MapColorName(sdl_pixelformat,

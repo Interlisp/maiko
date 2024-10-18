@@ -243,7 +243,7 @@ int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will cal
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 #ifdef SDL
-extern int init_SDL(char*, int, int, int);
+#include "sdldefs.h"	/* for init_SDL */
 #endif
 extern const time_t MDate;
 extern int nokbdflag;
@@ -324,6 +324,15 @@ extern char foregroundColorName[64];
 char backgroundColorName[64] = {0};
 extern char backgroundColorName[64];
 #endif
+char windowTitle[255] = "Medley";
+extern char windowTitle[255];
+int lispDisplayRequestedWidth = 1024;
+extern int lispDisplayRequestedWidth;
+int lispDisplayRequestedHeight = 768;
+extern int lispDisplayRequestedHeight;
+int pixelScale = 1;
+extern int pixelScale;
+
 /************************************************************************/
 /*									*/
 /*		     M A I N   E N T R Y   P O I N T			*/
@@ -338,9 +347,6 @@ int main(int argc, char *argv[])
   extern int TIMER_INTERVAL;
   extern fd_set LispReadFds;
   long tmpint;
-  int width = 1024, height = 768;
-  int pixelscale = 1;
-  char *windowtitle = "Medley";
 
 #ifdef MAIKO_ENABLE_FOREIGN_FUNCTION_INTERFACE
   if (dld_find_executable(argv[0]) == 0) {
@@ -365,7 +371,6 @@ int main(int argc, char *argv[])
   // arg processing changes argc/argv
   if (argc > 1 && argv[1][0] != '-') {
     strncpy(sysout_name_first_arg, argv[1], MAXPATHLEN);
-    i++;
   }
 
 
@@ -468,7 +473,7 @@ int main(int argc, char *argv[])
 #ifdef SDL
     else if ((strcmp(argv[i], "-sc") == 0) || (strcmp(argv[i], "-SC") == 0)) {
       if (argc > ++i) {
-        int read = sscanf(argv[i], "%dx%d", &width, &height);
+        int read = sscanf(argv[i], "%dx%d", &lispDisplayRequestedWidth, &lispDisplayRequestedHeight);
         if(read != 2) {
           (void)fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
           exit(1);
@@ -479,7 +484,7 @@ int main(int argc, char *argv[])
       }
     } else if ((strcmp(argv[i], "-pixelscale") == 0) || (strcmp(argv[i], "-PIXELSCALE") == 0)) {
       if (argc > ++i) {
-        int read = sscanf(argv[i], "%d", &pixelscale);
+        int read = sscanf(argv[i], "%d", &pixelScale);
         if(read != 1) {
           (void)fprintf(stderr, "Could not parse -pixelscale argument %s\n", argv[i]);
           exit(1);
@@ -491,7 +496,7 @@ int main(int argc, char *argv[])
     } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0)
                || (strcmp(argv[i], "-title") == 0) || (strcmp(argv[i], "-TITLE") == 0)) {
       if (argc > ++i) {
-        windowtitle = argv[i];
+        strncpy(windowTitle, argv[i], sizeof(windowTitle) - 1);
       } else {
         (void)fprintf(stderr, "Missing argument after -title\n");
         exit(1);
@@ -711,13 +716,12 @@ int main(int argc, char *argv[])
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */
 #if defined(SDL)
-  init_SDL(windowtitle, width, height, pixelscale);
+  init_SDL(windowTitle, lispDisplayRequestedWidth, lispDisplayRequestedHeight, pixelScale);
 #endif /* SDL */
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);
 
-  build_lisp_map(); /* built up map */
-
+  build_lisp_map(); /* build up map */
   init_ifpage(sysout_size); /* init interface page */
   init_iopage();
   init_miscstats();
