@@ -64,6 +64,11 @@
 #include "uutilsdefs.h"    // for suspend_lisp, check_unix_password, unix_fu...
 #include "vmemsavedefs.h"  // for lisp_finish, vmem_save0
 
+#ifdef COLOR
+#include "rawcolordefs.h"
+#include "llcolordefs.h"
+#endif
+
 extern LispPTR *PENDINGINTERRUPT68k;
 
 /***********************************************************/

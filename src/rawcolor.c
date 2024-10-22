@@ -419,7 +419,7 @@ loop:
 /*									*/
 /************************************************************************/
 
-void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype, LispPTR ope)
+static void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype, LispPTR ope)
 {
   DLword *nbase;
   u_char *dbase;
