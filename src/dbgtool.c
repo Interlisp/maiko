@@ -589,8 +589,8 @@ void bt1(FX *startFX) {
   BT_morep;
   while ((fnobj->framename != ATOM_T) && (fx->alink != 11)) {
     if (fnum > URMAXFXNUM - 1) {
-      /* Internal buf overflow,more than 100 stacks */
-      printf("***There are more than 100 stack frames.\n");
+      /* Internal buf overflow, too many stack frames */
+      printf("***There are more than %d stack frames.\n", URMAXFXNUM);
       printf(
           "If you want to continue, Uraid will smash its internal table for FX pointer. Do you "
           "accept?(Y or N)\n");
