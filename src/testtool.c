@@ -683,9 +683,10 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
   extern unsigned int oplength[256];
   int len = oplength[op] + 1;
 
-  printf(" 0%o (0x%x)	", pc, pc);
-  for (i = 0; i < len; i++) printf("%o ", 0xFF & GETBYTE(addr + i));
-  printf("	%s", opcode_table[op]);
+  printf(" 0%04o (0x%04x)    ", pc, pc);
+  for (i = 0; i < len; i++) printf("%4o", 0xFF & GETBYTE(addr + i));
+  for (; i < 9; i++) printf("    ");
+  printf("%s", opcode_table[op]);
 
   switch (op) {
     case 0:
