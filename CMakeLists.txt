@@ -394,7 +394,7 @@ SET(MAIKO_HDRS
     inc/opcodes.h
     inc/os.h
     inc/osmsgdefs.h
-    inc/osmsg.h
+    inc/osmsgprint.h
     inc/perrnodefs.h
     inc/picture.h
     inc/pilotbbt.h

@@ -13,7 +13,7 @@
 #include <errno.h>       // for errno
 #include <stdio.h>       // for fprintf, perror, stderr, NULL
 #include <string.h>      // for strerror
-#include "osmsg.h"       // for OSMESSAGE_PRINT
+#include "osmsgprint.h"  // for OSMESSAGE_PRINT
 #include "perrnodefs.h"  // for err_mess, perrorn
 
 /************************************************************************/

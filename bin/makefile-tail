@@ -340,7 +340,7 @@ $(OBJECTDIR)car-cdr.o: $(SRCDIR)car-cdr.c $(REQUIRED-INCS) \
 $(OBJECTDIR)chardev.o: $(SRCDIR)chardev.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)arith.h $(INCDIR)timeout.h \
-	$(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h $(INCDIR)dbprint.h \
+	$(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)dbprint.h \
 	$(INCDIR)chardevdefs.h $(INCDIR)byteswapdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)perrnodefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)chardev.c -o $(OBJECTDIR)chardev.o
@@ -450,7 +450,7 @@ $(OBJECTDIR)ubf3.o: $(SRCDIR)ubf3.c $(REQUIRED-INCS) \
 $(OBJECTDIR)uutils.o: $(SRCDIR)uutils.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)adr68k.h \
 	$(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
-	$(INCDIR)miscstat.h $(INCDIR)osmsg.h $(INCDIR)keyboard.h $(INCDIR)uutilsdefs.h \
+	$(INCDIR)miscstat.h $(INCDIR)osmsgprint.h $(INCDIR)keyboard.h $(INCDIR)uutilsdefs.h \
 	$(INCDIR)osmsgdefs.h $(INCDIR)uraiddefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)uutils.c -o $(OBJECTDIR)uutils.o
 
@@ -505,7 +505,7 @@ $(OBJECTDIR)dsk.o: $(SRCDIR)dsk.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)arith.h $(INCDIR)stream.h \
-	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h \
+	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h \
 	$(INCDIR)dbprint.h $(INCDIR)dskdefs.h $(INCDIR)byteswapdefs.h \
 	$(INCDIR)car-cdrdefs.h $(INCDIR)cell.h $(INCDIR)commondefs.h \
 	$(INCDIR)ufsdefs.h
@@ -758,7 +758,7 @@ $(OBJECTDIR)osmsg.o: $(SRCDIR)osmsg.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
-	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h \
+	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsgprint.h \
 	$(INCDIR)dbprint.h $(INCDIR)commondefs.h $(INCDIR)osmsgdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)osmsg.c -o $(OBJECTDIR)osmsg.o
 
@@ -828,7 +828,7 @@ $(OBJECTDIR)subr0374.o: $(SRCDIR)subr0374.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)subr0374.c -o $(OBJECTDIR)subr0374.o
 
 $(OBJECTDIR)perrno.o: $(SRCDIR)perrno.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)osmsg.h \
+	$(INCDIR)lispemul.h $(INCDIR)osmsgprint.h \
 	$(INCDIR)perrnodefs.h $(INCDIR)osmsgdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)perrno.c -o $(OBJECTDIR)perrno.o
 
