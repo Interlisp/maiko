@@ -420,7 +420,6 @@ SET(MAIKO_HDRS
     inc/tos1defs.h
     inc/tosfns.h
     inc/tosret.h
-    inc/tty.h
     inc/typeofdefs.h
     inc/ubf1defs.h
     inc/ubf2defs.h

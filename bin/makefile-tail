@@ -843,7 +843,7 @@ $(OBJECTDIR)timer.o: $(SRCDIR)timer.c $(REQUIRED-INCS) \
 $(OBJECTDIR)tty.o: $(SRCDIR)tty.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
-	$(INCDIR)commondefs.h $(INCDIR)tty.h $(INCDIR)ttydefs.h
+	$(INCDIR)commondefs.h $(INCDIR)ttydefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)tty.c -o $(OBJECTDIR)tty.o
 
 $(OBJECTDIR)typeof.o: $(SRCDIR)typeof.c $(REQUIRED-INCS) \
