@@ -41,7 +41,6 @@
 #include "emlglob.h"
 #include "lspglob.h"
 #include "adr68k.h"
-#include "ether.h"
 #include "dbprint.h"
 #include "locfile.h"
 

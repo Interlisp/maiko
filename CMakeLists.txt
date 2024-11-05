@@ -316,7 +316,6 @@ SET(MAIKO_HDRS
     inc/emlglob.h
     inc/eqfdefs.h
     inc/etherdefs.h
-    inc/ether.h
     inc/fast_dsp.h
     inc/findkeydefs.h
     inc/foreigndefs.h
