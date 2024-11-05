@@ -436,7 +436,6 @@ SET(MAIKO_HDRS
     inc/vars3defs.h
     inc/version.h
     inc/vmemsavedefs.h
-    inc/vmemsave.h
     inc/xcdefs.h
     inc/z2defs.h
 )

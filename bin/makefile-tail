@@ -908,7 +908,7 @@ $(OBJECTDIR)vars3.o: $(SRCDIR)vars3.c $(REQUIRED-INCS) \
 $(OBJECTDIR)vmemsave.o: $(SRCDIR)vmemsave.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
-	$(INCDIR)miscstat.h $(INCDIR)vmemsave.h $(INCDIR)timeout.h $(INCDIR)adr68k.h \
+	$(INCDIR)miscstat.h $(INCDIR)timeout.h $(INCDIR)adr68k.h \
 	$(INCDIR)lsptypes.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)dbprint.h \
 	$(INCDIR)devif.h $(INCDIR)vmemsavedefs.h $(INCDIR)byteswapdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)dskdefs.h $(INCDIR)initkbddefs.h $(INCDIR)perrnodefs.h \
