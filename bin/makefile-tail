@@ -992,7 +992,7 @@ $(OBJECTDIR)xcursor.o: $(SRCDIR)xcursor.c $(REQUIRED-INCS) \
 
 $(OBJECTDIR)xwinman.o: $(SRCDIR)xwinman.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)miscstat.h $(INCDIR)devif.h $(INCDIR)xdefs.h \
-	$(INCDIR)xscroll.h $(INCDIR)xwinmandefs.h $(INCDIR)keyeventdefs.h \
+	$(INCDIR)xwinmandefs.h $(INCDIR)keyeventdefs.h \
 	$(INCDIR)xlspwindefs.h $(INCDIR)xscrolldefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman.o
 

@@ -80,7 +80,6 @@ IF(MAIKO_DISPLAY_X11)
     inc/xmkicondefs.h
     inc/xrdoptdefs.h
     inc/xscrolldefs.h
-    inc/xscroll.h
     inc/xwinmandefs.h
   )
   MESSAGE("-- Configured for X11 display")
