@@ -40,7 +40,7 @@
 #include "emlglob.h"
 #include "adr68k.h"
 #include "stack.h"
-#include "return.h"
+#include "retmacro.h"
 
 #include "lispemul.h"
 #include "lspglob.h"

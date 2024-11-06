@@ -1,12 +1,12 @@
-#ifndef RETURN_H
-#define RETURN_H 1
+#ifndef RETMACRO_H
+#define RETMACRO_H 1
 /* $Id: return.h,v 1.2 1999/01/03 02:06:22 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 
 
 /**************************************************************/
 /*
 
-	File Name : 	return.h
+	File Name : 	retmacro.h (was return.h)
 	Desc. :		Macros for return,contextsw
 
 	Written by :	Takeshi Shimizu
@@ -111,4 +111,4 @@
     S_CHECK( EndSTKP > CurrentStackPTR, 				\
 		"End of stack isn't beyond current stk pointer."); 	\
   } while (0)
-#endif /* RETURN_H */
+#endif /* RETMACRO_H */

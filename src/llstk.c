@@ -33,7 +33,7 @@
 #include "llstkdefs.h"    // for blt, check_BF, check_FX, check_stack_rooms
 #include "lspglob.h"      // for InterfacePage, Stackspace, STACKOVERFLOW_word
 #include "lsptypes.h"     // for GETWORD
-#include "return.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW
+#include "retmacro.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW
 #include "stack.h"        // for StackWord, Bframe, FX, frameex1, STKWORD
 #include "storagedefs.h"  // for newpage
 // #include "testtooldefs.h" // for print_atomname

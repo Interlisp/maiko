@@ -400,8 +400,8 @@ SET(MAIKO_HDRS
     inc/pilotbbt.h
     inc/print.h
     inc/rawrs232c.h
+    inc/retmacro.h
     inc/returndefs.h
-    inc/return.h
     inc/rpcdefs.h
     inc/rplconsdefs.h
     inc/rs232c.h

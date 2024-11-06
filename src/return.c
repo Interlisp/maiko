@@ -38,7 +38,7 @@
 #include "lspglob.h"
 #include "initatms.h"
 #include "cell.h"
-#include "return.h"
+#include "retmacro.h"
 #include "testtooldefs.h"
 #include "returndefs.h"
 #include "commondefs.h"
