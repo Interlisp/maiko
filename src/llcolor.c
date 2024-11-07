@@ -28,7 +28,7 @@
 #include "devconf.h"
 
 #include "bb.h"
-#include "bitblt.h"
+#include "bbtmacro.h"
 #include "pilotbbt.h"
 #include "dbprint.h"
 

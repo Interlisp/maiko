@@ -31,7 +31,7 @@
 #include "pilotbbt.h"
 #include "debug.h"
 #include "arith.h"
-#include "bitblt.h"
+#include "bbtmacro.h"
 #include "lldsp.h"
 #include "bbtsubdefs.h"
 

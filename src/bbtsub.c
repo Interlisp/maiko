@@ -60,7 +60,7 @@
 #include "returndefs.h"
 
 #include "bb.h"
-#include "bitblt.h"
+#include "bbtmacro.h"
 #include "pilotbbt.h"
 #include "dspdata.h"
 #include "display.h"

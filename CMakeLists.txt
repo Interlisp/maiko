@@ -291,7 +291,7 @@ SET(MAIKO_HDRS
     inc/bindefs.h
     inc/bindsdefs.h
     inc/bitbltdefs.h
-    inc/bitblt.h
+    inc/bbtmacro.h
     inc/bltdefs.h
     inc/byteswapdefs.h
     inc/car-cdrdefs.h

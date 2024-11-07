@@ -51,7 +51,7 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "lsptypes.h"
 
 #include "bb.h"
-#include "bitblt.h"
+#include "bbtmacro.h"
 #include "pilotbbt.h"
 
 #include "keyeventdefs.h"

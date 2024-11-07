@@ -20,7 +20,7 @@
 #include <stddef.h>       // for ptrdiff_t
 #include <stdlib.h>       // for abs
 #include "adr68k.h"       // for NativeAligned2FromLAddr
-#include "bitblt.h"       // for MOUSEXR, MOUSEYH
+#include "bbtmacro.h"       // for MOUSEXR, MOUSEYH
 #include "display.h"      // for DISPLAYBUFFER, DisplayRegion68k, in_display...
 #include "drawdefs.h"     // for N_OP_drawline
 #include "emlglob.h"

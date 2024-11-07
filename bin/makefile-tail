@@ -292,7 +292,7 @@ $(OBJECTDIR)bitblt.o: $(SRCDIR)bitblt.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)address.h $(INCDIR)pilotbbt.h $(INCDIR)display.h \
-	$(INCDIR)bitblt.h $(INCDIR)bb.h $(INCDIR)bitbltdefs.h $(INCDIR)initdspdefs.h
+	$(INCDIR)bbtmacro.h $(INCDIR)bb.h $(INCDIR)bitbltdefs.h $(INCDIR)initdspdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)bitblt.c -o $(OBJECTDIR)bitblt.o
 
 $(OBJECTDIR)bbt68k.o: $(OBJECTDIR)bbt68k.i $(SRCDIR)bbt68k.s
@@ -311,7 +311,7 @@ $(OBJECTDIR)bbtsub.o: $(SRCDIR)bbtsub.c $(REQUIRED-INCS) \
 	$(INCDIR)stack.h $(INCDIR)retmacro.h $(INCDIR)cell.h $(INCDIR)gcdata.h \
 	$(INCDIR)bbtsubdefs.h $(INCDIR)car-cdrdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)gcarraydefs.h $(INCDIR)initdspdefs.h $(INCDIR)kprintdefs.h \
-	$(INCDIR)llstkdefs.h $(INCDIR)returndefs.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)llstkdefs.h $(INCDIR)returndefs.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dspdata.h $(INCDIR)display.h $(INCDIR)dbprint.h \
 	$(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)bbtsub.c -o $(OBJECTDIR)bbtsub.o
@@ -348,7 +348,7 @@ $(OBJECTDIR)chardev.o: $(SRCDIR)chardev.c $(REQUIRED-INCS) \
 $(OBJECTDIR)rawcolor.o: $(SRCDIR)rawcolor.c $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	$(INCDIR)lspglob.h $(INCDIR)lispmap.h $(INCDIR)lsptypes.h \
 	$(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)address.h \
-	$(INCDIR)pilotbbt.h $(INCDIR)display.h $(INCDIR)bitblt.h \
+	$(INCDIR)pilotbbt.h $(INCDIR)display.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)arith.h $(INCDIR)cell.h $(INCDIR)dspdata.h $(INCDIR)debug.h \
 	$(INCDIR)stream.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)rawcolor.c -o $(OBJECTDIR)rawcolor.o
@@ -357,7 +357,7 @@ $(OBJECTDIR)llcolor.o: $(SRCDIR)llcolor.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h \
-	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dbprint.h $(INCDIR)llcolordefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)llcolor.c -o $(OBJECTDIR)llcolor.o
 
@@ -391,7 +391,7 @@ $(OBJECTDIR)mkcell.o: $(SRCDIR)mkcell.c $(REQUIRED-INCS) \
 $(OBJECTDIR)draw.o: $(SRCDIR)draw.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h \
-	$(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)bitblt.h \
+	$(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)display.h $(INCDIR)drawdefs.h $(INCDIR)bbtsubdefs.h \
 	$(INCDIR)initdspdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)draw.c -o $(OBJECTDIR)draw.o
@@ -649,7 +649,7 @@ $(OBJECTDIR)initdsp.o: $(SRCDIR)initdsp.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h \
-	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dbprint.h $(INCDIR)initdspdefs.h \
 	$(INCDIR)byteswapdefs.h $(INCDIR)xcursordefs.h $(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)initdsp.c -o $(OBJECTDIR)initdsp.o
@@ -682,7 +682,7 @@ $(OBJECTDIR)keyevent.o: $(SRCDIR)keyevent.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
 	$(INCDIR)address.h $(INCDIR)stack.h $(INCDIR)keyboard.h $(INCDIR)display.h \
-	$(INCDIR)lsptypes.h $(INCDIR)bb.h $(INCDIR)bitblt.h $(INCDIR)pilotbbt.h \
+	$(INCDIR)lsptypes.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h $(INCDIR)pilotbbt.h \
 	$(INCDIR)keyeventdefs.h $(INCDIR)osmsgdefs.h $(INCDIR)xwinmandefs.h \
 	$(INCDIR)devif.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)keyevent.c -o $(OBJECTDIR)keyevent.o
@@ -876,7 +876,7 @@ $(OBJECTDIR)uraid.o: $(SRCDIR)uraid.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h $(INCDIR)cell.h \
-	$(INCDIR)debug.h $(INCDIR)devconf.h $(INCDIR)display.h $(INCDIR)bitblt.h \
+	$(INCDIR)debug.h $(INCDIR)devconf.h $(INCDIR)display.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)uraiddefs.h $(INCDIR)dbgtooldefs.h $(INCDIR)stack.h \
 	$(INCDIR)gcarraydefs.h $(INCDIR)initdspdefs.h $(INCDIR)initkbddefs.h \
 	$(INCDIR)kprintdefs.h $(INCDIR)llstkdefs.h $(INCDIR)mkatomdefs.h \

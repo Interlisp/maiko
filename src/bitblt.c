@@ -25,7 +25,7 @@
 
 #include "pilotbbt.h"
 #include "display.h"
-#include "bitblt.h"
+#include "bbtmacro.h"
 #include "bb.h"
 
 #include "bitbltdefs.h"
