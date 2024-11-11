@@ -80,7 +80,6 @@ IF(MAIKO_DISPLAY_X11)
     inc/xmkicondefs.h
     inc/xrdoptdefs.h
     inc/xscrolldefs.h
-    inc/xscroll.h
     inc/xwinmandefs.h
   )
   MESSAGE("-- Configured for X11 display")
@@ -292,7 +291,7 @@ SET(MAIKO_HDRS
     inc/bindefs.h
     inc/bindsdefs.h
     inc/bitbltdefs.h
-    inc/bitblt.h
+    inc/bbtmacro.h
     inc/bltdefs.h
     inc/byteswapdefs.h
     inc/car-cdrdefs.h
@@ -317,7 +316,6 @@ SET(MAIKO_HDRS
     inc/emlglob.h
     inc/eqfdefs.h
     inc/etherdefs.h
-    inc/ether.h
     inc/fast_dsp.h
     inc/findkeydefs.h
     inc/foreigndefs.h
@@ -396,14 +394,14 @@ SET(MAIKO_HDRS
     inc/opcodes.h
     inc/os.h
     inc/osmsgdefs.h
-    inc/osmsg.h
+    inc/osmsgprint.h
     inc/perrnodefs.h
     inc/picture.h
     inc/pilotbbt.h
     inc/print.h
     inc/rawrs232c.h
+    inc/retmacro.h
     inc/returndefs.h
-    inc/return.h
     inc/rpcdefs.h
     inc/rplconsdefs.h
     inc/rs232c.h
@@ -421,7 +419,6 @@ SET(MAIKO_HDRS
     inc/tos1defs.h
     inc/tosfns.h
     inc/tosret.h
-    inc/tty.h
     inc/typeofdefs.h
     inc/ubf1defs.h
     inc/ubf2defs.h
@@ -437,7 +434,6 @@ SET(MAIKO_HDRS
     inc/vars3defs.h
     inc/version.h
     inc/vmemsavedefs.h
-    inc/vmemsave.h
     inc/xcdefs.h
     inc/z2defs.h
 )

@@ -41,7 +41,7 @@
 #include "address.h"
 #include "adr68k.h"
 #include "stack.h"
-#include "return.h"
+#include "retmacro.h"
 #include "dbprint.h"
 
 #include "lspglob.h"

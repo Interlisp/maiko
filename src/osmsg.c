@@ -44,7 +44,7 @@
 #include "lspglob.h"
 #include "timeout.h"
 #include "locfile.h"
-#include "osmsg.h"
+#include "osmsgprint.h"
 #include "dbprint.h"
 
 #include "commondefs.h"

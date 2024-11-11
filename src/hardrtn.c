@@ -32,7 +32,7 @@
 #include "llstkdefs.h"    // for decusecount68k, freestackblock, blt, stack_...
 #include "lspglob.h"
 #include "lsptypes.h"     // for GETWORD
-#include "return.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
+#include "retmacro.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
 #include "stack.h"        // for FX, frameex1, Bframe, CHECK_FX, StackWord
 
 #define MAKE_FXCOPY(fx68k)                                                                   \

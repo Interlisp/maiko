@@ -41,7 +41,6 @@
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"
-#include "vmemsave.h"
 #include "timeout.h"
 #include "adr68k.h"
 #include "lsptypes.h"
@@ -58,6 +57,12 @@
 #include "perrnodefs.h"
 #include "ufsdefs.h"
 
+/* Definitions incorporated from vmemsave.h (removed) */
+#define	FP_IFPAGE  512			/* IFPAGE address in sysoutfile by Byte */
+#define	DOMINOPAGES  301		/* skip dominopages  in  fptovp */
+#define	SKIPPAGES  301			/* save first filepage  */
+#define	SKIP_DOMINOPAGES  153600	/* Byte size in sysoutfile for dominocode */
+#define	SAVE_IFPAGE	223		/* Virtual address for IFPAGES's buffer page. This value is \EMUSWAPBUFFERS in lisp. */
 
 /* Error return values from VMEMSAVE */
 #define COMPLETESYSOUT NIL

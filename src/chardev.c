@@ -43,7 +43,6 @@
 #include "arith.h"
 #include "timeout.h"
 #include "locfile.h"
-#include "osmsg.h"
 #include "dbprint.h"
 
 #include "chardevdefs.h"

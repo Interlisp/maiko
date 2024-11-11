@@ -192,7 +192,7 @@ $(OBJECTDIR)ldeether.o: $(SRCDIR)ldeether.c $(REQUIRED-INCS)
 $(OBJECTDIR)main.o: $(SRCDIR)main.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)dbprint.h \
 	$(INCDIR)emlglob.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)stack.h \
-	$(INCDIR)return.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
+	$(INCDIR)retmacro.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
 	$(INCDIR)miscstat.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)debug.h \
 	$(INCDIR)timeout.h $(INCDIR)maindefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)dirdefs.h $(INCDIR)dspifdefs.h $(INCDIR)devif.h \
@@ -292,7 +292,7 @@ $(OBJECTDIR)bitblt.o: $(SRCDIR)bitblt.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)address.h $(INCDIR)pilotbbt.h $(INCDIR)display.h \
-	$(INCDIR)bitblt.h $(INCDIR)bb.h $(INCDIR)bitbltdefs.h $(INCDIR)initdspdefs.h
+	$(INCDIR)bbtmacro.h $(INCDIR)bb.h $(INCDIR)bitbltdefs.h $(INCDIR)initdspdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)bitblt.c -o $(OBJECTDIR)bitblt.o
 
 $(OBJECTDIR)bbt68k.o: $(OBJECTDIR)bbt68k.i $(SRCDIR)bbt68k.s
@@ -308,10 +308,10 @@ $(OBJECTDIR)bbtsub.o: $(SRCDIR)bbtsub.c $(REQUIRED-INCS) \
 	$(INCDIR)xdefs.h $(INCDIR)lispemul.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h $(INCDIR)lsptypes.h \
 	$(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)address.h $(INCDIR)arith.h \
-	$(INCDIR)stack.h $(INCDIR)return.h $(INCDIR)cell.h $(INCDIR)gcdata.h \
+	$(INCDIR)stack.h $(INCDIR)retmacro.h $(INCDIR)cell.h $(INCDIR)gcdata.h \
 	$(INCDIR)bbtsubdefs.h $(INCDIR)car-cdrdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)gcarraydefs.h $(INCDIR)initdspdefs.h $(INCDIR)kprintdefs.h \
-	$(INCDIR)llstkdefs.h $(INCDIR)returndefs.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)llstkdefs.h $(INCDIR)returndefs.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dspdata.h $(INCDIR)display.h $(INCDIR)dbprint.h \
 	$(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)bbtsub.c -o $(OBJECTDIR)bbtsub.o
@@ -340,7 +340,7 @@ $(OBJECTDIR)car-cdr.o: $(SRCDIR)car-cdr.c $(REQUIRED-INCS) \
 $(OBJECTDIR)chardev.o: $(SRCDIR)chardev.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)arith.h $(INCDIR)timeout.h \
-	$(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h $(INCDIR)dbprint.h \
+	$(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)dbprint.h \
 	$(INCDIR)chardevdefs.h $(INCDIR)byteswapdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)perrnodefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)chardev.c -o $(OBJECTDIR)chardev.o
@@ -348,7 +348,7 @@ $(OBJECTDIR)chardev.o: $(SRCDIR)chardev.c $(REQUIRED-INCS) \
 $(OBJECTDIR)rawcolor.o: $(SRCDIR)rawcolor.c $(REQUIRED-INCS) $(INCDIR)lispemul.h \
 	$(INCDIR)lspglob.h $(INCDIR)lispmap.h $(INCDIR)lsptypes.h \
 	$(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)address.h \
-	$(INCDIR)pilotbbt.h $(INCDIR)display.h $(INCDIR)bitblt.h \
+	$(INCDIR)pilotbbt.h $(INCDIR)display.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)arith.h $(INCDIR)cell.h $(INCDIR)dspdata.h $(INCDIR)debug.h \
 	$(INCDIR)stream.h $(INCDIR)bbtsubdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)rawcolor.c -o $(OBJECTDIR)rawcolor.o
@@ -357,7 +357,7 @@ $(OBJECTDIR)llcolor.o: $(SRCDIR)llcolor.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h \
-	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dbprint.h $(INCDIR)llcolordefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)llcolor.c -o $(OBJECTDIR)llcolor.o
 
@@ -391,7 +391,7 @@ $(OBJECTDIR)mkcell.o: $(SRCDIR)mkcell.c $(REQUIRED-INCS) \
 $(OBJECTDIR)draw.o: $(SRCDIR)draw.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)lispmap.h \
-	$(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)bitblt.h \
+	$(INCDIR)lsptypes.h $(INCDIR)emlglob.h $(INCDIR)adr68k.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)display.h $(INCDIR)drawdefs.h $(INCDIR)bbtsubdefs.h \
 	$(INCDIR)initdspdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)draw.c -o $(OBJECTDIR)draw.o
@@ -423,7 +423,7 @@ $(OBJECTDIR)fp.o: $(SRCDIR)fp.c $(REQUIRED-INCS) \
 $(OBJECTDIR)intcall.o: $(SRCDIR)intcall.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)address.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)stack.h \
-	$(INCDIR)return.h $(INCDIR)emlglob.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
+	$(INCDIR)retmacro.h $(INCDIR)emlglob.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)initatms.h $(INCDIR)cell.h \
 	$(INCDIR)tosfns.h $(INCDIR)intcalldefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)llstkdefs.h $(INCDIR)returndefs.h
@@ -450,7 +450,7 @@ $(OBJECTDIR)ubf3.o: $(SRCDIR)ubf3.c $(REQUIRED-INCS) \
 $(OBJECTDIR)uutils.o: $(SRCDIR)uutils.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)adr68k.h \
 	$(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
-	$(INCDIR)miscstat.h $(INCDIR)osmsg.h $(INCDIR)keyboard.h $(INCDIR)uutilsdefs.h \
+	$(INCDIR)miscstat.h $(INCDIR)osmsgprint.h $(INCDIR)keyboard.h $(INCDIR)uutilsdefs.h \
 	$(INCDIR)osmsgdefs.h $(INCDIR)uraiddefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)uutils.c -o $(OBJECTDIR)uutils.o
 
@@ -478,21 +478,21 @@ $(OBJECTDIR)ether_common.o: $(SRCDIR)ether_common.c $(REQUIRED-INCS) \
 	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether_common.c -o $(OBJECTDIR)ether_common.o
 
 $(OBJECTDIR)ether_sunos.o: $(SRCDIR)ether_sunos.c $(REQUIRED-INCS) \
 	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether_sunos.c -o $(OBJECTDIR)ether_sunos.o
 
 $(OBJECTDIR)ether_nethub.o: $(SRCDIR)ether_nethub.c $(REQUIRED-INCS) \
 	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether_nethub.c -o $(OBJECTDIR)ether_nethub.o
 
 $(OBJECTDIR)findkey.o: $(SRCDIR)findkey.c $(REQUIRED-INCS) \
@@ -505,7 +505,7 @@ $(OBJECTDIR)dsk.o: $(SRCDIR)dsk.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)arith.h $(INCDIR)stream.h \
-	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h \
+	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h \
 	$(INCDIR)dbprint.h $(INCDIR)dskdefs.h $(INCDIR)byteswapdefs.h \
 	$(INCDIR)car-cdrdefs.h $(INCDIR)cell.h $(INCDIR)commondefs.h \
 	$(INCDIR)ufsdefs.h
@@ -632,7 +632,7 @@ $(OBJECTDIR)hardrtn.o: $(SRCDIR)hardrtn.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)adr68k.h $(INCDIR)address.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h \
-	$(INCDIR)cell.h $(INCDIR)stack.h $(INCDIR)return.h $(INCDIR)hardrtndefs.h \
+	$(INCDIR)cell.h $(INCDIR)stack.h $(INCDIR)retmacro.h $(INCDIR)hardrtndefs.h \
 	$(INCDIR)commondefs.h $(INCDIR)llstkdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)hardrtn.c -o $(OBJECTDIR)hardrtn.o
 
@@ -640,7 +640,7 @@ $(OBJECTDIR)inet.o: $(SRCDIR)inet.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)arith.h $(INCDIR)emlglob.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
-	$(INCDIR)ether.h $(INCDIR)dbprint.h $(INCDIR)locfile.h $(INCDIR)lispver2.h \
+	$(INCDIR)dbprint.h $(INCDIR)locfile.h $(INCDIR)lispver2.h \
 	$(INCDIR)inetdefs.h $(INCDIR)byteswapdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)mkcelldefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)inet.c -o $(OBJECTDIR)inet.o
@@ -649,7 +649,7 @@ $(OBJECTDIR)initdsp.o: $(SRCDIR)initdsp.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)lsptypes.h $(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h \
-	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bitblt.h \
+	$(INCDIR)display.h $(INCDIR)devconf.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)pilotbbt.h $(INCDIR)dbprint.h $(INCDIR)initdspdefs.h \
 	$(INCDIR)byteswapdefs.h $(INCDIR)xcursordefs.h $(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)initdsp.c -o $(OBJECTDIR)initdsp.o
@@ -682,7 +682,7 @@ $(OBJECTDIR)keyevent.o: $(SRCDIR)keyevent.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lspglob.h \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
 	$(INCDIR)address.h $(INCDIR)stack.h $(INCDIR)keyboard.h $(INCDIR)display.h \
-	$(INCDIR)lsptypes.h $(INCDIR)bb.h $(INCDIR)bitblt.h $(INCDIR)pilotbbt.h \
+	$(INCDIR)lsptypes.h $(INCDIR)bb.h $(INCDIR)bbtmacro.h $(INCDIR)pilotbbt.h \
 	$(INCDIR)keyeventdefs.h $(INCDIR)osmsgdefs.h $(INCDIR)xwinmandefs.h \
 	$(INCDIR)devif.h $(INCDIR)dbprint.h
 	$(CC) $(RFLAGS) $(SRCDIR)keyevent.c -o $(OBJECTDIR)keyevent.o
@@ -698,7 +698,7 @@ $(OBJECTDIR)llstk.o: $(SRCDIR)llstk.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)address.h $(INCDIR)lsptypes.h $(INCDIR)initatms.h \
 	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
-	$(INCDIR)emlglob.h $(INCDIR)cell.h $(INCDIR)stack.h $(INCDIR)return.h \
+	$(INCDIR)emlglob.h $(INCDIR)cell.h $(INCDIR)stack.h $(INCDIR)retmacro.h \
 	$(INCDIR)llstkdefs.h $(INCDIR)commondefs.h $(INCDIR)dbgtooldefs.h \
 	$(INCDIR)testtooldefs.h $(INCDIR)kprintdefs.h $(INCDIR)storagedefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)llstk.c -o $(OBJECTDIR)llstk.o
@@ -758,7 +758,7 @@ $(OBJECTDIR)osmsg.o: $(SRCDIR)osmsg.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)arith.h $(INCDIR)stream.h \
 	$(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h \
-	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsg.h \
+	$(INCDIR)timeout.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)osmsgprint.h \
 	$(INCDIR)dbprint.h $(INCDIR)commondefs.h $(INCDIR)osmsgdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)osmsg.c -o $(OBJECTDIR)osmsg.o
 
@@ -766,7 +766,7 @@ $(OBJECTDIR)return.o: $(SRCDIR)return.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)address.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)stack.h \
 	$(INCDIR)emlglob.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
-	$(INCDIR)miscstat.h $(INCDIR)initatms.h $(INCDIR)cell.h $(INCDIR)return.h \
+	$(INCDIR)miscstat.h $(INCDIR)initatms.h $(INCDIR)cell.h $(INCDIR)retmacro.h \
 	$(INCDIR)returndefs.h $(INCDIR)commondefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)return.c -o $(OBJECTDIR)return.o
 
@@ -828,7 +828,7 @@ $(OBJECTDIR)subr0374.o: $(SRCDIR)subr0374.c $(REQUIRED-INCS) \
 	$(CC) $(RFLAGS) $(SRCDIR)subr0374.c -o $(OBJECTDIR)subr0374.o
 
 $(OBJECTDIR)perrno.o: $(SRCDIR)perrno.c $(REQUIRED-INCS) \
-	$(INCDIR)lispemul.h $(INCDIR)osmsg.h \
+	$(INCDIR)lispemul.h $(INCDIR)osmsgprint.h \
 	$(INCDIR)perrnodefs.h $(INCDIR)osmsgdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)perrno.c -o $(OBJECTDIR)perrno.o
 
@@ -843,7 +843,7 @@ $(OBJECTDIR)timer.o: $(SRCDIR)timer.c $(REQUIRED-INCS) \
 $(OBJECTDIR)tty.o: $(SRCDIR)tty.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
-	$(INCDIR)commondefs.h $(INCDIR)tty.h $(INCDIR)ttydefs.h
+	$(INCDIR)commondefs.h $(INCDIR)ttydefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)tty.c -o $(OBJECTDIR)tty.o
 
 $(OBJECTDIR)typeof.o: $(SRCDIR)typeof.c $(REQUIRED-INCS) \
@@ -876,7 +876,7 @@ $(OBJECTDIR)uraid.o: $(SRCDIR)uraid.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
 	$(INCDIR)adr68k.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h \
 	$(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)emlglob.h $(INCDIR)cell.h \
-	$(INCDIR)debug.h $(INCDIR)devconf.h $(INCDIR)display.h $(INCDIR)bitblt.h \
+	$(INCDIR)debug.h $(INCDIR)devconf.h $(INCDIR)display.h $(INCDIR)bbtmacro.h \
 	$(INCDIR)uraiddefs.h $(INCDIR)dbgtooldefs.h $(INCDIR)stack.h \
 	$(INCDIR)gcarraydefs.h $(INCDIR)initdspdefs.h $(INCDIR)initkbddefs.h \
 	$(INCDIR)kprintdefs.h $(INCDIR)llstkdefs.h $(INCDIR)mkatomdefs.h \
@@ -908,7 +908,7 @@ $(OBJECTDIR)vars3.o: $(SRCDIR)vars3.c $(REQUIRED-INCS) \
 $(OBJECTDIR)vmemsave.o: $(SRCDIR)vmemsave.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h \
 	$(INCDIR)lispmap.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
-	$(INCDIR)miscstat.h $(INCDIR)vmemsave.h $(INCDIR)timeout.h $(INCDIR)adr68k.h \
+	$(INCDIR)miscstat.h $(INCDIR)timeout.h $(INCDIR)adr68k.h \
 	$(INCDIR)lsptypes.h $(INCDIR)locfile.h $(INCDIR)lispver2.h $(INCDIR)dbprint.h \
 	$(INCDIR)devif.h $(INCDIR)vmemsavedefs.h $(INCDIR)byteswapdefs.h $(INCDIR)commondefs.h \
 	$(INCDIR)dskdefs.h $(INCDIR)initkbddefs.h $(INCDIR)perrnodefs.h \
@@ -929,7 +929,7 @@ $(OBJECTDIR)usrsubr.o: $(SRCDIR)usrsubr.c $(REQUIRED-INCS) \
 
 $(OBJECTDIR)xc.o: $(SRCDIR)xc.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)emlglob.h \
-	$(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)stack.h $(INCDIR)return.h \
+	$(INCDIR)address.h $(INCDIR)adr68k.h $(INCDIR)stack.h $(INCDIR)retmacro.h \
 	$(INCDIR)dbprint.h $(INCDIR)lspglob.h $(INCDIR)ifpage.h $(INCDIR)iopage.h \
 	$(INCDIR)miscstat.h $(INCDIR)lsptypes.h $(INCDIR)lispmap.h $(INCDIR)cell.h \
 	$(INCDIR)initatms.h $(INCDIR)gcdata.h $(INCDIR)arith.h $(INCDIR)stream.h \
@@ -992,7 +992,7 @@ $(OBJECTDIR)xcursor.o: $(SRCDIR)xcursor.c $(REQUIRED-INCS) \
 
 $(OBJECTDIR)xwinman.o: $(SRCDIR)xwinman.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)miscstat.h $(INCDIR)devif.h $(INCDIR)xdefs.h \
-	$(INCDIR)xscroll.h $(INCDIR)xwinmandefs.h $(INCDIR)keyeventdefs.h \
+	$(INCDIR)xwinmandefs.h $(INCDIR)keyeventdefs.h \
 	$(INCDIR)xlspwindefs.h $(INCDIR)xscrolldefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)xwinman.c -o $(OBJECTDIR)xwinman.o
 

@@ -1,10 +1,10 @@
-#ifndef BITBLT_H
-#define BITBLT_H 1
+#ifndef BBTMACRO_H
+#define BBTMACRO_H 1
 /* $Id: bitblt.h,v 1.2 1999/01/03 02:05:54 sybalsky Exp $ (C) Copyright Venue, All Rights Reserved  */
 /*
  *	Copyright (C) 1988 by Fuji Xerox Co., Ltd. All rights reserved.
  *
- *	File :  bitblt.h
+ *	File :  bbtmacro.h (was bitblt.h)
  *
  *	Author :  Osamu Nakamura
  *
@@ -85,4 +85,4 @@ extern DLword *EmCursorX68K,*EmCursorY68K;
 #define UNLOCKSCREEN ScreenLocked = NIL
 
 #endif /* DOS */
-#endif /* BITBLT_H */
+#endif /* BBTMACRO_H */

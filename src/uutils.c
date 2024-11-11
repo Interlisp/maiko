@@ -32,7 +32,7 @@
 #include "lispemul.h"    // for LispPTR, DLword, NIL, ATOM_T
 #include "lspglob.h"
 #include "lsptypes.h"    // for GETWORD, OneDArray, GetTypeNumber, THIN_CHAR...
-#include "osmsg.h"       // for OSMESSAGE_PRINT
+#include "osmsgprint.h"  // for OSMESSAGE_PRINT
 #include "uraiddefs.h"   // for device_after_raid, device_before_raid
 #include "uutilsdefs.h"  // for c_string_to_lisp_string, check_unix_password
 
