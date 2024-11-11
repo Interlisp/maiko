@@ -84,7 +84,7 @@ jobs:
   # the result of a workflow_dispatch or a workflow_call
 
   inputs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       draft: ${{ steps.one.outputs.draft }}
       force: ${{ steps.one.outputs.force }}
@@ -116,7 +116,7 @@ jobs:
 
   sentry:
     needs: inputs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       release_not_built: ${{ steps.check.outputs.release_not_built }}
 
@@ -152,7 +152,7 @@ jobs:
          || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       # Checkout the actions for this repo owner
@@ -266,7 +266,7 @@ jobs:
           || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
 
@@ -487,7 +487,7 @@ jobs:
          || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
 
@@ -554,7 +554,7 @@ jobs:
 
   complete:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     outputs:
       build_successful: ${{ steps.output.outputs.build_successful }}
