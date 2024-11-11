@@ -266,7 +266,7 @@ jobs:
           || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: macos-14
+    runs-on: macos-12
 
     steps:
 
