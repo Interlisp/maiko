@@ -1,6 +1,22 @@
 #!/bin/sh
+if command -v "git" >/dev/null 2>&1; then
+    MAIKO_REV="$(git status --porcelain)"
+    if [ $? == 0 ]; then
+	if [ ! -z "$(git status --porcelain)" ]; then
+            MAIKO_REV="$(git rev-parse --short HEAD)-dirty"
+	else
+	    MAIKO_REV="$(git rev-parse --short HEAD)"
+	fi
+    else
+	MAIKO_REV="none"
+    fi
+else
+    MAIKO_REV = "none"
+fi
 cat <<EOF
 #include <time.h>
 extern const time_t MDate;
 const time_t MDate = $(date +%s);
+extern const char *MaikoGitVersion;
+const char *MaikoGitVersion = "maiko git version: $MAIKO_REV";
 EOF
