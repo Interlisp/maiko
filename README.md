@@ -1,8 +1,9 @@
 # Maiko
 
-Maiko is the implementation of the Medley Interlisp virtual machine, for a
-byte-coded Lisp instruction set and some low-level functions for
-connecting with Lisp for access to display (via X11) and disk etc.
+Maiko is the implementation of the Medley Interlisp virtual machine for a
+byte-coded Lisp instruction set, and some low-level functions for
+connecting Lisp to a display (via X11 or SDL), the local filesystem,
+and a network subsystem.
 
 For an overview, see [Medley Interlisp Introduction](https://interlisp.org/medley/using/docs/medley/).
 
@@ -15,13 +16,14 @@ Bug reports, feature requests, fixes and improvements, support for additional pl
 
 ## Development Platforms
 
-We are developing on FreeBSD, Linux, macOS, and Solaris currently
-on arm7l, arm64, PowerPC, SPARC, i386, and x86_64 hardware.
+Development has been primarily on macOS, FreeBSD, and Linux, with testing on Solaris and Windows.
+Processor architectures i386, x86\_64, arm64, arm7l, and SPARC.
 
 
 ## Building Maiko
 
-Building requires `clang`, `make`, X11 client libraries (`libx11-dev`). For example, 
+### Building with make
+Building requires a C compiler (`clang` preferred), either `make` or `CMake`, and X11 client libraries (`libx11-dev`), or SDL2. For example, using `make` and X11:
 
 ``` sh
 $ sudo apt update
@@ -33,17 +35,21 @@ $ cd maiko/bin
 $ ./makeright x
 ```
 
-* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../ostype.cputype` (with .o files in `..ostype.cputype-x`. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while macOS 11 on a (new M1) Mac will use `darwin.aarch64`.
-* If you prefer using `gcc` over `clang`, you will need to edit the makefile fragment for your configuration (`makefile-ostype.cputype-x`) and comment out the line (with a #) that defines `CC` for `clang` and uncomment the line (delete the #) for the line that defines `CC` for `gcc`.
-* There is a cmake configuration (TBD To Be Described here).
+* The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../`_`ostype.cputype`_ (with .o files in `../`_`ostype.cputype-x`_. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while macOS 11 on a (new M1) Mac will use `darwin.aarch64`.
+* If you prefer `gcc` over `clang`, you will need to edit the makefile fragment for your configuration (`makefile-ostype.cputype-x`) and comment out the line (with a #) that defines `CC` as `clang` and uncomment the line (delete the #) for the line that defines `CC` as `gcc`.
+
+### Building with CMake
+We provide a `CMakeLists.txt` which provides mostly matching build capabilities to the `make` setup.
+CMake options are provided to control the configuration of the Maiko executables:
+* MAIKO\_DISPLAY\_SDL: [OFF], 2, 3 - selects display subsystem SDL of version specified
+* MAIKO\_DISPLAY\_X11: [ON], OFF - selects X11 display subsystem
+* MAIKO\_NETWORK\_TYPE: [NONE], SUN\_DLPI, SUN\_NIT, NETHUB - network subsystem access
+* MAIKO_RELEASE: [351], various - see `maiko/inc/version.h`
+
+While SDL3 is selectable, the Maiko code has not yet been updated to work with the SDL3 API.
 
 ### Building For macOS
 
-* Running on macOS requires an X server, and building on a Mac requires X client libraries.
+* Building/running on macOS requires either an X server and X client libraries or the SDL2 library.
 An X-server for macOS (and X11 client libraries) can be freely obtained at https://www.xquartz.org/releases
-
-### Building for Windows 10
-
-Windows 10 currently requires "Docker for Desktop" or WSL2 and a (Windows X-server).
-See [Medley's README](https://github.com/Interlisp/medley/blob/master/README.md) for more.
-
+The SDL library is freely available from https://libsdl.org
