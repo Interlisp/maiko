@@ -98,6 +98,11 @@ extern int *Xdisplay; /* DAANGER -jarl nilsson 27-apr-92 */
 /************************************************************************/
 
 void init_cursor(void) {
+  /* init_cursor sets up any OS/hardware that is necessary
+   * for the rest of the display system to get a cursor displayed.
+   * For display subsystems like X11 or SDL there's nothing to do
+   * Originally this did work for memory mapped Sun display boards
+   */
 }
 
 /************************************************************************/
