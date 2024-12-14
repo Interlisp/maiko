@@ -126,7 +126,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   if (displayflg) (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
 #endif /* SUNDISPLAY / DOS */
 
-#ifdef XWINDOW
+#if defined(XWINDOW) || defined(SDL)
   flush_display_lineregion(dx, dstbase, w, h);
 #endif /* XWINDOW */
 
