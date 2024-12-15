@@ -43,7 +43,9 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   int offset;
   DLword bmdata;
   DLword bmmask;
+#ifdef REALCURSOR
   int displayflg;
+#endif
 
   DBPRINT(("MISC7 op with alpha byte %d.\n", alpha));
 
@@ -58,7 +60,11 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 
   DBPRINT(("MISC7 args OK.\n"));
 
+#ifdef REALCURSOR
   displayflg = n_new_cursorin(base, x, (heightminus1 - y), 1, 1);
+  if (displayflg)
+    HideCursor();
+#endif
 
 /* Bitmaps use a positive integer coordinate system with the lower left
    corner pixel at coordinate (0, 0). Storage is allocated in 16-bit words
@@ -79,12 +85,12 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   }
 
 
-#ifdef XWINDOW
+#if defined(XWINDOW) || defined(SDL)
   if (in_display_segment(base)) {
     /* NB: base + offset doesn't need WORDPTR() wrapper */
     flush_display_ptrregion(base + offset, 0, 16, 1);
   }
-#endif /* XWINDOW */
+#endif /* XWINDOW || SDL */
 
   ScreenLocked = NIL;
   DBPRINT(("FBITMAPBIT old bit = 0x%x.\n", oldbit));
