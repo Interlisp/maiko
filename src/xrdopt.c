@@ -36,6 +36,7 @@ extern int LispDisplayRequestedX, LispDisplayRequestedY;
 extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 extern int xsync;
+extern int TIMER_INTERVAL;
 
 static XrmOptionDescRec opTable[] = {
     {"-help", "*help", XrmoptionIsArg, (XPointer)NULL},
@@ -295,6 +296,14 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.noscroll", "Ldex.noscroll", str_type, &value) == True) {
     noscroll = 1;
+  }
+
+  if (XrmGetResource(rDB, "ldex.timer", "Ldex.timer", str_type, &value) == True) {
+    (void)strncpy(tmp, value.addr, value.size);
+    errno = 0;
+    i = (int)strtol(tmp, (char **)NULL, 10);
+    if (errno == 0 && i > 0)
+      TIMER_INTERVAL = i;
   }
 
   /*    if (XrmGetResource(rDB,
