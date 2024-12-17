@@ -246,6 +246,7 @@ extern DspInterface currentdsp;
 #include "sdldefs.h"	/* for init_SDL */
 #endif
 extern const time_t MDate;
+extern const char *MaikoGitVersion;
 extern int nokbdflag;
 extern int nomouseflag;
 #ifdef DOS
@@ -831,6 +832,7 @@ void print_info_lines(void) {
 #endif /* RELEASE */
   printf("Compiled for %s (%s) (%d bit).\n", MAIKO_OS_NAME, MAIKO_ARCH_NAME, MAIKO_ARCH_WORD_BITS);
   printf("Creation date: %s", ctime(&MDate));
+  printf("%s\n", MaikoGitVersion);
 #ifdef LPSOLVE
   printf("Contains lp_solve LP solver.\n");
 #endif /* LPSOLVE */
