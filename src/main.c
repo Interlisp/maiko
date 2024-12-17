@@ -407,20 +407,20 @@ int main(int argc, char *argv[])
       }
     }
 
-    /* -t and -m are undocumented and somewhat dangerous... */
+    /* -timer and -m are undocumented and somewhat dangerous... */
 
-    else if (!strcmp(argv[i], "-t")) { /**** timer interval	****/
+    else if (!strcmp(argv[i], "-timer")) { /**** timer interval	****/
       if (argc > ++i) {
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
         if (errno == 0 && tmpint > 0) {
           TIMER_INTERVAL = tmpint;
         } else {
-          (void)fprintf(stderr, "Bad value for -t (integer > 0)\n");
+          (void)fprintf(stderr, "Bad value for -timer (integer > 0)\n");
           exit(1);
         }
       } else {
-        (void)fprintf(stderr, "Missing argument after -t\n");
+        (void)fprintf(stderr, "Missing argument after -timer\n");
         exit(1);
       }
     }
