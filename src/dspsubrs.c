@@ -40,7 +40,12 @@ extern int Mouse_Included;
  ****************************************************/
 
 void DSP_dspbout(LispPTR *args) /* args[0] :	charcode	*/
-{ putc((args[0] & 0xFFFF) & 0x7f, BCPLDISPLAY); }
+{
+  int charcode = (args[0] & 0x7F);
+  /* Interlisp-D uses CR as EOL which isn't useful here */
+  putc((charcode == '\r') ? '\n' : charcode, BCPLDISPLAY);
+  fflush(BCPLDISPLAY);
+}
 
 /****************************************************
  *
@@ -52,7 +57,16 @@ void DSP_dspbout(LispPTR *args) /* args[0] :	charcode	*/
 extern int DisplayInitialized;
 
 void DSP_showdisplay(LispPTR *args)
-{ DisplayInitialized = 1; }
+{
+  LispPTR base = args[0];   /* pointer to the display bitmap */
+  LispPTR rasterwidth = args[1];  /* should be a smallp */
+
+  if (base == NIL) {
+    DisplayInitialized = 0;
+  } else {
+    DisplayInitialized = 1;
+  }
+}
 
 /****************************************************
  *
