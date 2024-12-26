@@ -8,8 +8,11 @@
 /*	Manufactured in the United States of America.			*/
 /*									*/
 /************************************************************************/
+#include <ctype.h>     /* for isdigit */
 #include <errno.h>
 #include <limits.h>   /* for NAME_MAX */
+#include <string.h>   /* for strlen */
+#include <sys/param.h> /* for MAXPATHLEN */
 #include <dirent.h>   /* for MAXNAMLEN */
 #include "lispemul.h" /* for DLword */
 
@@ -331,13 +334,9 @@ do  {				\
 /*		
  * Name:	UnixVersionToLispVersion
  *
- * Argument:	char	*pathname
- *				UNIX syntax pathname.
- *		int	vlessp
- *				If 0, versionless file is converted to version 1.
+ * Argument:	char *pathname  UNIX syntax pathname.
+ *		int vlessp      If 0, versionless file is converted to version 1.
  *				Otherwise, remains as versionless.
- *
- * Value:	If succeed, returns 1, otherwise 0.
  *
  * Side Effect:	The version part of pathname is destructively modified.
  *
@@ -353,62 +352,20 @@ do  {				\
  * dealt with as version 1. 
  */
 
-#define UnixVersionToLispVersion(pathname, vlessp) do {				\
-										\
-	char	*start;							\
-	char	*end;							\
-	char	*lf_cp;							\
-	int	ver_no;								\
-	size_t	len;								\
-	char		ver_buf[VERSIONLEN];					\
-										\
-	if ((start = strchr(pathname, '~')) != NULL) {				\
-		/* First of all, find the version field in pathname. */		\
-		end = start;							\
-		lf_cp = start + 1;							\
-		while (*lf_cp) {							\
-			if (*lf_cp == '~') {					\
-				start = end;					\
-				end = lf_cp;					\
-				lf_cp++;						\
-			} else {						\
-				lf_cp++;						\
-			}							\
-		}								\
-										\
-		if (start != end && *(start - 1) == '.' && end == (lf_cp - 1)) {	\
-			/*							\
-			 * pathname ends in the form ".~###~".  But we		\
-			 * check ### is a valid number or not.			\
-			 */							\
-			len = (end - start) - 1;			\
-			strncpy(ver_buf, start + 1, len);			\
-			ver_buf[len] = '\0';					\
-			NumericStringP(ver_buf, YES, NO);			\
-		      YES:							\
-			*(start - 1) = ';';					\
-			*start = '\0';						\
-			*end = '\0';						\
-			/* call strtoul() to eliminate leading 0s. */		\
-			ver_no = strtoul(start + 1, (char **)NULL, 10);		\
-			sprintf(ver_buf, "%u", ver_no);				\
-			strcat(pathname, ver_buf);				\
-			goto CONT;						\
-										\
-		      NO:							\
-			/* Dealt with as version 1 unless vlessp */		\
-			if (!(vlessp)) strcat(pathname, ";1");                  \
-		      CONT:							\
-			lf_cp--;	/* Just for label */			\
-		} else {							\
-			/* Dealt with as version 1 unless vlessp. */		\
-                        if (!(vlessp)) strcat(pathname, ";1");                  \
-		}								\
-	} else {								\
-		/* Dealt with as version 1 unless vlessp. */			\
-                if (!(vlessp)) strcat(pathname, ";1");                          \
-	}									\
-  } while (0)
+#define UnixVersionToLispVersion(pathname, vlessp)                      \
+  do {                                                                  \
+    char *n_end;                                                        \
+    char *v_start;                                                      \
+    int	v_len;                                                          \
+                                                                        \
+    if (!parse_file_version(pathname, 1, &n_end, &v_start, &v_len)) {   \
+      if (!vlessp) strcat(pathname, ";1");                              \
+    } else {                                                            \
+      *n_end++ = ';';                                                   \
+      while (v_len-- > 0) *n_end++ = *v_start++;                        \
+      *n_end = '\0';                                                    \
+    }                                                                   \
+  }  while (0)
 
 /*		
  * Name:	ConcDirAndName
@@ -481,9 +438,12 @@ do  {				\
  *
  * Concatenate the root file name and its version in UNIX format.
  *
+ * XXX: this code is unsafe and could result in memory smashes if the
+ * sizes of the arguments are not correctly specified
+ *
  */
 
-#define ConcNameAndVersion(name, ver, rname) do {				\
+#define ConcNameAndVersion(name, ver, rname) do {			\
 	if (*(ver) != '\0') {						\
 		strcpy(rname, name);					\
 		strcat(rname, ".~");					\
@@ -494,7 +454,7 @@ do  {				\
 	}								\
 } while (0)
 
-#define	 VERSIONLEN		16
+#define	 VERSIONLEN		10
 
 #define	MAXVERSION		999999999
 
@@ -576,9 +536,9 @@ do  {				\
 		TIMEOUT(lf_rval=rename(x, y));		\
 		if(lf_rval == -1){				\
 			switch(errno){			\
-			case 2:				\
+			case ENOENT:				\
 				return(1);		\
-			case 18:			\
+			case EXDEV:			\
 				*Lisp_errno = errno;	\
 				return(0);		\
 			default:			\
@@ -601,20 +561,78 @@ do  {				\
 /*
  * For file name length check
  */
-#define FNAMETOOLONG	200
 
-#define FileNameTooLong(val) do {				\
-	*Lisp_errno = FNAMETOOLONG;			\
+#define FileNameTooLong(val) do {			\
+	*Lisp_errno = ENAMETOOLONG;                     \
 	return((val));					\
   } while (0)
 
+static inline int parse_file_version(char *name, int digitsonly, char **n_end,
+                                      char **v_start, int *v_length)
+{
+  char *sp, *ep;
+  size_t name_len;
 
+  name_len = strlen(name);
+  ep = &name[name_len - 1];
 
+  /* handle special case of Alto/IFS names with !nnn version.
+     To be considered for this case the name MUST end with ![0-9]+, however
+     version 0 is not valid.
+   */
+  sp = strrchr(name, '!');
+  if (sp != NULL) {
+    sp++;         /* "!nnn" => "nnn" or "!" => ""  */
+    if (*sp != '\0' && sp[strspn(sp, "0123456789")] == '\0') {
+      /* it was all digits after the '!', so go with it */
+      *n_end = sp - 1; /* name ends at '!'  */
+      while (*sp == '0' && sp < ep) sp++; /* skip leading zeroes */
+      if (*sp == '0') return (0); /* version 0 is not valid */
+      *v_start = sp;   /* version start after '!' */
+      *v_length = (ep - sp) + 1;
+      return ((*v_length >= VERSIONLEN) ? 0 : 1); /* fail on version too long */
+    }
+  }
 
+  /* if the name is too short to have a name and a version number
+     ".~#~" or doesn't end with "~" then there is no version number
+  */
+  if (name_len < 4 || *ep != '~')
+    return (0);
 
+  /* The name ends with a "~" so scan back in the filename looking for
+     another "~" terminating early if we need only digits and find
+     something else
+  */
+  sp = ep - 1;
+  while (sp > name && *sp != '~') {
+    if (digitsonly && !isdigit(*sp)) return (0);
+    --sp;
+  }
 
+  /* test for no initial "~" or no "." before "~", or
+   * version number length not at least 1
+   */
+  if (sp == name || *(sp - 1) != '.' || (ep - sp) - 1 < 1)
+    return (0);
 
+  /* After this point we have a version number in the form .~#~ with sp
+     pointing at the starting "~", ep pointing at the last "~",
+     and there must be at least one digit. Scan past any leading
+     zeros in the version, taking care not to remove the last digit.
+  */
 
+  *n_end = sp - 1;    /* save location of "." */
+
+  sp++;                  /* skip over the "." */
+  while (*sp == '0' && sp < (ep - 1)) {
+    sp++;
+  }
+  if (*sp == '0') return (0);  /* version 0 is not valid */
+  *v_start = sp;           /* save location of first significant digit in version */
+  *v_length = (ep - sp);   /* save length of version */
+  return ((*v_length >= VERSIONLEN) ? 0 : 1); /* fail on version too long */
+}
 
 /********************************************************/
 /*  file-system-specific defns                */
