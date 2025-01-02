@@ -296,7 +296,7 @@ do  {				\
 	goto truetag;	/* NOLINT(bugprone-macro-parentheses) */	\
   } while (0)
 
-/*		
+/*
  * Name:	LispVersionToUnixVersion
  *
  * Argument:	char	*pathname
@@ -331,7 +331,7 @@ do  {				\
 #endif /* DOS */
 
 
-/*		
+/*
  * Name:	UnixVersionToLispVersion
  *
  * Argument:	char *pathname  UNIX syntax pathname.
@@ -349,7 +349,7 @@ do  {				\
  * version field will append a semicolon and it might make the routine be
  * confused.
  * The file which has not a valid version field, that is ".~##~" form, is
- * dealt with as version 1. 
+ * dealt with as version 1.
  */
 
 #define UnixVersionToLispVersion(pathname, vlessp)                      \
@@ -367,7 +367,7 @@ do  {				\
     }                                                                   \
   }  while (0)
 
-/*		
+/*
  * Name:	ConcDirAndName
  *
  * Argument:	char	*dir	The name of the directory.
@@ -385,45 +385,45 @@ do  {				\
  *
  */
 
-#define ConcDirAndName(dir, name, fname) do {					\
-									\
-	char	*lf_cp1, *lf_cp2;					\
-									\
-	lf_cp1 = dir;							\
-	lf_cp2 = dir;							\
-									\
-	while (*lf_cp2 != '\0') {						\
-		switch (*lf_cp2) {						\
-									\
-		      case '/':						\
-			lf_cp1 = lf_cp2;					\
-			lf_cp2++;						\
-			break;						\
-									\
-		      default:						\
-			lf_cp2++;						\
-			break;						\
-		}							\
-	}								\
-	if (lf_cp1 == (lf_cp2 - 1)) {						\
-                if (lf_cp1 == (dir)) {					\
-			/* dir is a root directory. */			\
-			strcpy(fname, "/");				\
-			strcat(fname, name);				\
-		} else {						\
-			/* The trail directory is included. */		\
-			strcpy(fname, dir);				\
-			strcat(fname, name);				\
-		}							\
-	} else {							\
-		/* The trail directory is not included */		\
-		strcpy(fname, dir);					\
-		strcat(fname, "/");					\
-		strcat(fname, name);					\
-	}								\
-  } while (0)
+static inline void ConcDirAndName(char *dir, char *name, char *fname)
+{
+  char	*lf_cp1, *lf_cp2;
 
-/*		
+  lf_cp1 = dir;
+  lf_cp2 = dir;
+
+  while (*lf_cp2 != '\0') {
+    switch (*lf_cp2) {
+
+    case '/':
+      lf_cp1 = lf_cp2;
+      lf_cp2++;
+      break;
+
+    default:
+      lf_cp2++;
+      break;
+    }
+  }
+  if (lf_cp1 == (lf_cp2 - 1)) {
+    if (lf_cp1 == (dir)) {
+      /* dir is a root directory. */
+      strcpy(fname, "/");
+      strcat(fname, name);
+    } else {
+      /* The trail directory is included. */
+      strcpy(fname, dir);
+      strcat(fname, name);
+    }
+  } else {
+    /* The trail directory is not included */
+    strcpy(fname, dir);
+    strcat(fname, "/");
+    strcat(fname, name);
+  }
+}
+
+/*
  * Name:	ConcNameAndVersion
  *
  * Argument:	char	*name	The root file name.
@@ -443,16 +443,17 @@ do  {				\
  *
  */
 
-#define ConcNameAndVersion(name, ver, rname) do {			\
-	if (*(ver) != '\0') {						\
-		strcpy(rname, name);					\
-		strcat(rname, ".~");					\
-		strcat(rname, ver);					\
-		strcat(rname, "~");					\
-	} else {							\
-		strcpy(rname, name);					\
-	}								\
-} while (0)
+static inline void ConcNameAndVersion(char *name, char *ver, char *rname)
+{
+	if (*ver != '\0') {
+		strcpy(rname, name);
+		strcat(rname, ".~");
+		strcat(rname, ver);
+		strcat(rname, "~");
+	} else {
+		strcpy(rname, name);
+	}
+}
 
 #define	 VERSIONLEN		10
 
@@ -502,7 +503,7 @@ do  {				\
 			*(lf_cp-1) = '\0';					\
 		}							\
   } while (0)
-		
+
 #define	ChangeToVersionless(pathname) do {			\
 		char	*lf_cp;			\
 		if( (lf_cp=strrchr(pathname, ';')) != 0)	\
