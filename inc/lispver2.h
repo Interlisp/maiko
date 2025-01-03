@@ -9,7 +9,7 @@
 	char	*lv_cp;						\
 	char	*lv_vp;						\
 	unsigned lv_ver;					\
-	char		lv_ver_buf[VERSIONLEN];				\
+	char		lv_ver_buf[VERSIONLEN + 3];			\
 									\
 	lv_cp = pathname;						\
 	lv_vp = NULL;							\
