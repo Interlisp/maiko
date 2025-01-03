@@ -15,6 +15,7 @@
 #include <sys/param.h> /* for MAXPATHLEN */
 #include <dirent.h>   /* for MAXNAMLEN */
 #include "lispemul.h" /* for DLword */
+#include "commondefs.h" /* for error */
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
 
@@ -66,6 +67,9 @@
         else if(((ptr) & SEGMASK)== S_NEGATIVE) {(place) = (int)((ptr)| 0xffff0000);}\
         else {return(NIL);}} while (0)
 
+#ifndef min
+#define min(a, b) (((a) <= (b))?(a):(b))
+#endif /* min */
 
 /************************************************************************/
 /*									*/
@@ -82,65 +86,65 @@
 /*									*/
 /************************************************************************/
 #ifndef BYTESWAP
-#define	LispStringToCString(Lisp, C, MaxLen)				\
-  do {									\
-    OneDArray	*lf_arrayp;						\
-    char	*lf_base, *lf_dp;						\
-    short	*lf_sbase;							\
-    size_t		 lf_length;						\
-    lf_arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);		\
-    lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
-    switch(lf_arrayp->typenumber)						\
-      {									\
-	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
-		       + ((int)(lf_arrayp->offset));			\
-		strncpy(C, lf_base, lf_length);				\
-		(C)[lf_length] = '\0';					\
-		break;							\
-									\
-	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
-		       + ((int)(lf_arrayp->offset));			\
-                lf_dp = C;						\
-		for(size_t lf_i=0;lf_i<(lf_length);lf_i++)		\
-		  *lf_dp++ = (char)(*lf_sbase++);			\
-		*lf_dp = '\0';						\
-		break;							\
-	default:							\
-		error("LispStringToCString: Not a character array.\n");	\
-      }									\
- } while (0)
+static inline void LispStringToCString(LispPTR Lisp, char *C, size_t MaxLen)
+{
+    OneDArray	*lf_arrayp;
+    char	*lf_base, *lf_dp;
+    short	*lf_sbase;
+    size_t		 lf_length;
+    lf_arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
+    lf_length = min(MaxLen, lf_arrayp->fillpointer);
+    switch(lf_arrayp->typenumber)
+      {
+	case THIN_CHAR_TYPENUMBER:
+		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))
+		       + ((int)(lf_arrayp->offset));
+		strncpy(C, lf_base, lf_length);
+		(C)[lf_length] = '\0';
+		break;
+
+	case FAT_CHAR_TYPENUMBER:
+		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))
+		       + ((int)(lf_arrayp->offset));
+                lf_dp = C;
+		for(size_t lf_i=0;lf_i<(lf_length);lf_i++)
+		  *lf_dp++ = (char)(*lf_sbase++);
+		*lf_dp = '\0';
+		break;
+	default:
+		error("LispStringToCString: Not a character array.\n");
+      }
+}
 #else  /* BYTESWAP == T CHANGED-BY-TAKE */
-#define	LispStringToCString(Lisp, C, MaxLen)				\
-  do {									\
-    OneDArray	*lf_arrayp;						\
-    char	*lf_base, *lf_dp;						\
-    short	*lf_sbase;							\
-    size_t 	lf_length;						\
-    lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(Lisp));			\
-    lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
-    switch(lf_arrayp->typenumber)						\
-      {									\
-	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
-		       + ((int)(lf_arrayp->offset));			\
-		StrNCpyFromLispToC(C , lf_base , lf_length );		\
-		(C)[lf_length] = '\0';					\
-		break;							\
-									\
-	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
-		       + ((int)(lf_arrayp->offset));			\
-                lf_dp = C;						\
-		for(size_t lf_ii=0;lf_ii<(lf_length);lf_ii++,lf_sbase++)  \
-                    *lf_dp++ = (char)(GETWORD(lf_sbase));               \
-		*lf_dp = '\0';						\
-		break;							\
-	default:							\
-		error("LispStringToCString: Not a character array.\n");	\
-      }									\
-  } while (0)
+static inline void LispStringToCString(LispPTR Lisp, char *C, size_t MaxLen)
+{
+    OneDArray	*lf_arrayp;
+    char	*lf_base, *lf_dp;
+    short	*lf_sbase;
+    size_t 	lf_length;
+    lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(Lisp));
+    lf_length = min(MaxLen, lf_arrayp->fillpointer);
+    switch(lf_arrayp->typenumber)
+      {
+	case THIN_CHAR_TYPENUMBER:
+		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))
+		       + ((int)(lf_arrayp->offset));
+		StrNCpyFromLispToC(C , lf_base , lf_length );
+		(C)[lf_length] = '\0';
+		break;
+
+	case FAT_CHAR_TYPENUMBER:
+		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))
+		       + ((int)(lf_arrayp->offset));
+                lf_dp = C;
+		for(size_t lf_ii=0;lf_ii<(lf_length);lf_ii++,lf_sbase++)
+                    *lf_dp++ = (char)(GETWORD(lf_sbase));
+		*lf_dp = '\0';
+		break;
+	default:
+		error("LispStringToCString: Not a character array.\n");
+      }
+}
 
 #endif /* BYTESWAP */
 
@@ -191,10 +195,6 @@ do  {				\
 	lf_naddress = (LispPTR *)(NativeAligned4FromLAddr(lstringp));		  \
 	(cstringp) = (char *)(NativeAligned2FromLAddr(((OneDArray *)lf_naddress)->base)); \
  } while (0)
-
-#ifndef min
-#define min(a, b) (((a) <= (b))?(a):(b))
-#endif /* min */
 
 #define	LispNumToCInt(Lisp)					\
        ( (((Lisp) & SEGMASK) == S_POSITIVE) ? ((Lisp) & 0xFFFF) : \
