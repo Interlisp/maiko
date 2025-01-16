@@ -29,6 +29,7 @@
 /***********************************************************/
 
 #include <stdio.h>         // for printf, sprintf, NULL
+#include <stdlib.h>        // for EXIT_FAILURE, EXIT_SUCCESS
 #include <time.h>          // for nanosleep, timespec
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "arith.h"         // for N_GETNUMBER, ARITH_SWITCH
@@ -412,16 +413,17 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
 
     case sb_LISPFINISH:
-    case sb_LISP_FINISH:
+    case sb_LISP_FINISH: {
+      int status;
       POP_SUBR_ARGS;
-      if ((argnum > 0) && (args[0] == S_POSITIVE))
-      /* 8/03/88 This branch impossible to take, subr has no args */
-      {
-        TopOfStack = suspend_lisp(args);
-      } else
-        lisp_finish();
+      if (argnum == 0 || args[0] == NIL || args[0] == ATOM_T)
+        lisp_finish(EXIT_SUCCESS);
+      N_GETNUMBER(args[0], status, exit_fail);
+      lisp_finish(status);
+      exit_fail:
+      lisp_finish(EXIT_FAILURE);
       break;
-
+    }
     case sb_NEWPAGE:
       POP_SUBR_ARGS;
       TopOfStack = newpage(args[0]);
@@ -589,7 +591,7 @@ void OP_subrcall(int subr_no, int argnum) {
     case sb_SUSPEND_LISP:
       POP_SUBR_ARGS;
       /* Suspend Maiko */
-      TopOfStack = suspend_lisp(args);
+      TopOfStack = suspend_lisp();
       break;
 
     case sb_MONITOR_CONTROL:

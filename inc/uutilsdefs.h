@@ -6,5 +6,5 @@ LispPTR unix_username(LispPTR *args);
 LispPTR unix_getparm(LispPTR *args);
 LispPTR unix_getenv(LispPTR *args);
 LispPTR unix_fullname(LispPTR *args);
-LispPTR suspend_lisp(LispPTR *args);
+LispPTR suspend_lisp(void);
 #endif
