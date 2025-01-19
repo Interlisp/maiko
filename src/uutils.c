@@ -292,7 +292,7 @@ LispPTR unix_fullname(LispPTR *args) {
 extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K, *EmUtilin68K;
 extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
 
-LispPTR suspend_lisp(LispPTR *args) {
+LispPTR suspend_lisp(void) {
 #ifndef DOS
   extern DLword *CTopKeyevent;
   extern LispPTR *KEYBUFFERING68k;

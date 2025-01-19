@@ -518,7 +518,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
 /* Make sure that we kill off any Unix subprocesses before we go away */
 
-void lisp_finish(void) {
+void lisp_finish(int exit_status) {
   char d[4];
 
   DBPRINT(("finish lisp_finish\n"));
@@ -536,5 +536,5 @@ void lisp_finish(void) {
 #ifdef DOS
   exit_host_filesystem();
 #endif /* DOS */
-  exit(0);
+  exit(exit_status);
 }
