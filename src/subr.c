@@ -416,11 +416,11 @@ void OP_subrcall(int subr_no, int argnum) {
     case sb_LISP_FINISH: {
       int status;
       POP_SUBR_ARGS;
-      if (argnum == 0 || args[0] == NIL || args[0] == ATOM_T)
-        lisp_finish(EXIT_SUCCESS);
-      N_GETNUMBER(args[0], status, exit_fail);
+      if (argnum == 0 || argnum == 1 || (argnum == 2 && args[1] == NIL)) lisp_finish(EXIT_SUCCESS);
+      if (argnum > 2) lisp_finish(EXIT_FAILURE);
+      N_GETNUMBER(args[1], status, exit_fail);
       lisp_finish(status);
-      exit_fail:
+    exit_fail:
       lisp_finish(EXIT_FAILURE);
       break;
     }
