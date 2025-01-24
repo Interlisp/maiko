@@ -11,6 +11,7 @@ case "$os" in
         *-*-linux*)		echo linux ;;
         *-*-openbsd*)		echo openbsd ;;
         *-*-freebsd*)		echo freebsd ;;
+        *-*-netbsd*)            echo netbsd ;;
 	*-*-cygwin*)            echo cygwin ;;
 	*-*-haiku*)             echo haiku ;;
 esac
