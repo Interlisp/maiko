@@ -66,6 +66,7 @@ typedef struct filename_entry {
  */
 static struct {
   char name[MAXPATHLEN];     /* lowercase unversioned file name */
+  ino_t dir_ino;             /* inode of the directory */
   struct timespec lastMTime; /* modification time of the directory */
   int allocated;             /* number of entries in the files array */
   int lastUsed;              /* index of the last entry in use in files array */
@@ -3055,11 +3056,13 @@ static int get_version_array(char *dir, char *file)
     *Lisp_errno = errno;
     return(0);
   }
-  if (0 == strcmp(lcased_file, VA.name) &&
+  if (sbuf.st_ino == VA.dir_ino &&
+      0 == strcmp(lcased_file, VA.name) &&
       sbuf.st_mtim.tv_sec == VA.lastMTime.tv_sec &&
       sbuf.st_mtim.tv_nsec == VA.lastMTime.tv_nsec) {
     return (1);
   } else {
+    VA.dir_ino = sbuf.st_ino;
     VA.lastMTime = sbuf.st_mtim;
     strcpy(VA.name, lcased_file);
   }
