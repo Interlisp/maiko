@@ -310,8 +310,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release download release-2.26.5 --repo libsdl-org/SDL --pattern SDL2-2.26.5.dmg
-          hdiutil attach SDL2-2.26.5.dmg
+          gh release download release-2.30.11 --repo libsdl-org/SDL --pattern SDL2-2.30.11.dmg
+          hdiutil attach SDL2-2.30.11.dmg
           sudo ditto /Volumes/SDL2/SDL2.framework /Library/Frameworks/SDL2.framework
           hdiutil detach /Volumes/SDL2/
 
@@ -337,7 +337,7 @@ jobs:
           # -DCMAKE_OSX_DEPLOYMENT_TARGET=10.12
           cmake .. \
             -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" \
-            -DMAIKO_DISPLAY_SDL=ON \
+            -DMAIKO_DISPLAY_SDL=2 \
             -DMAIKO_DISPLAY_X11=ON \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build . --config Release
