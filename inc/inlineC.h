@@ -217,7 +217,7 @@
 
 #define FJUMPMACRO(x)                         \
   do {                                        \
-    if (TOPOFSTACK != 0) { goto PopNextop1; } \
+    if (TOPOFSTACK != 0) { POP; nextop1; }    \
     {                                         \
       CHECK_INTERRUPT;                        \
       POP;                                    \
@@ -227,7 +227,7 @@
   } while (0)
 #define TJUMPMACRO(x)                         \
   do {                                        \
-    if (TOPOFSTACK == 0) { goto PopNextop1; } \
+    if (TOPOFSTACK == 0) { POP; nextop1; }    \
     {                                         \
       CHECK_INTERRUPT;                        \
       POP;                                    \

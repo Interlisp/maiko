@@ -814,7 +814,7 @@ nextopcode:
     /******* FJumpx *******/
     case 0262:
     case262 : {
-      if (TOPOFSTACK != 0) { goto PopNextop2; }
+      if (TOPOFSTACK != 0) { POP; nextop2; }
       CHECK_INTERRUPT;
       POP;
       PCMACL += Get_SBYTE_PCMAC1;
@@ -825,7 +825,7 @@ nextopcode:
 
     case 0263:
     case263 : {
-      if (TOPOFSTACK == 0) { goto PopNextop2; }
+      if (TOPOFSTACK == 0) { POP; nextop2; }
       CHECK_INTERRUPT;
       POP;
       PCMACL += Get_SBYTE_PCMAC1;
@@ -836,7 +836,7 @@ nextopcode:
 
     case 0264:
     case264 : {
-      if (TOPOFSTACK != 0) { goto PopNextop2; }
+      if (TOPOFSTACK != 0) { POP; nextop2; }
       CHECK_INTERRUPT;
       PCMACL += Get_SBYTE_PCMAC1;
       nextop0;
@@ -846,7 +846,7 @@ nextopcode:
 
     case 0265:
     case265 : {
-      if (TOPOFSTACK == 0) { goto PopNextop2; }
+      if (TOPOFSTACK == 0) { POP; nextop2; }
       CHECK_INTERRUPT;
       PCMACL += Get_SBYTE_PCMAC1;
       nextop0;
@@ -1261,19 +1261,7 @@ check_interrupt:
       }
     }
   }
-
   nextop0;
-
-/************************************************************************/
-/* Common Jump Tails (they have to jump anyway, so use common Tail) */
-/************************************************************************/
-PopNextop1:
-  POP;
-  nextop1;
-
-PopNextop2:
-  POP;
-  nextop2;
 }
 
 void do_brk(void) {}
