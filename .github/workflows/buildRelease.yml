@@ -152,7 +152,7 @@ jobs:
          || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       # Checkout the actions for this repo owner
@@ -503,6 +503,7 @@ jobs:
       - name: Install SDL2
         run: |
           export DEBIAN_FRONTEND=noninteractive
+          sudo -E apt-get update
           sudo -E apt-get install -y libsdl2-dev libsdl2-2.0-0
 
       # Install Emscripten SDK
