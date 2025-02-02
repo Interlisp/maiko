@@ -152,7 +152,7 @@ jobs:
          || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       # Checkout the actions for this repo owner
