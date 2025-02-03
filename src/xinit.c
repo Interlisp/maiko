@@ -50,8 +50,6 @@ unsigned LispWindowRequestedHeight = DEF_WIN_HEIGHT;
 
 extern int LispDisplayRequestedX, LispDisplayRequestedY;
 extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
-int LispDisplayRequestedX, LispDisplayRequestedY;
-unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
 
 extern Colormap Colors;
 Colormap Colors;

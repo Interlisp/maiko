@@ -327,10 +327,10 @@ extern char backgroundColorName[64];
 #endif
 char windowTitle[255] = "Medley";
 extern char windowTitle[255];
-int lispDisplayRequestedWidth = 1024;
-extern int lispDisplayRequestedWidth;
-int lispDisplayRequestedHeight = 768;
-extern int lispDisplayRequestedHeight;
+unsigned LispDisplayRequestedWidth = 1024, LispDisplayRequestedHeight = 768;
+extern unsigned LispDisplayRequestedWidth, LispDisplayRequestedHeight;
+int LispDisplayRequestedX = 0, LispDisplayRequestedY = 0;
+extern int LispDisplayRequestedX, LispDisplayRequestedY;
 int pixelScale = 1;
 extern int pixelScale;
 
@@ -474,7 +474,7 @@ int main(int argc, char *argv[])
 #ifdef SDL
     else if ((strcmp(argv[i], "-sc") == 0) || (strcmp(argv[i], "-SC") == 0)) {
       if (argc > ++i) {
-        int read = sscanf(argv[i], "%dx%d", &lispDisplayRequestedWidth, &lispDisplayRequestedHeight);
+        int read = sscanf(argv[i], "%dx%d", &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
         if(read != 2) {
           (void)fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
           exit(1);
@@ -717,7 +717,7 @@ int main(int argc, char *argv[])
   make_dsp_instance(currentdsp, 0, 0, 0, 1); /* All defaults the first time */
 #endif                                       /* DOS || XWINDOW */
 #if defined(SDL)
-  init_SDL(windowTitle, lispDisplayRequestedWidth, lispDisplayRequestedHeight, pixelScale);
+  init_SDL(windowTitle, LispDisplayRequestedWidth, LispDisplayRequestedHeight, pixelScale);
 #endif /* SDL */
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);
