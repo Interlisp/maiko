@@ -829,7 +829,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
     else
       *ver2 = '\0';
 #endif /* DOS */
-    ConcNameAndVersion(fbuf2, ver2, dst);
+    conc_name_and_version(fbuf2, ver2, dst);
   }
   return (1);
 }
@@ -1087,7 +1087,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     *cp = '\0';
   }
   if (versionp && *ver != '\0') {
-    ConcNameAndVersion(fbuf, ver, namebuf);
+    conc_name_and_version(fbuf, ver, namebuf);
   } else {
     strcpy(namebuf, fbuf);
   }
@@ -1186,7 +1186,7 @@ int quote_fname(char *file)
     *cp = '\0';
   }
   if (*ver != '\0') {
-    ConcNameAndVersion(fbuf, ver, namebuf);
+    conc_name_and_version(fbuf, ver, namebuf);
   } else {
     strcpy(namebuf, fbuf);
   }
