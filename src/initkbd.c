@@ -71,6 +71,8 @@ extern DspInterface currentdsp;
 extern int LispKbdFd;
 int LispKbdFd = -1;
 
+extern int runtime_debug_level;
+
 extern fd_set LispReadFds;
 
 extern DLword *EmMouseX68K;
@@ -375,6 +377,20 @@ static u_char *make_X_keymap(void) {
     table[xcode - 7] = code;
   }
 
+  if (runtime_debug_level > 0) {
+    printf("*********************************************************************\n");
+    printf("(DEFINE-FILE-INFO \036PACKAGE \"INTERLISP\" \036READTABLE \"XCL\" \036 BASE 10)\n");
+    printf("(SETQ XGetKeyboardMappingTable '(\n");
+    for (i = 0; i < codecount * symspercode; i += symspercode) {
+      printf("(%d (", minkey + (i / symspercode));
+      for (int j = 0; j < symspercode; j++) {
+        printf("    #X%lx", (unsigned long)mapping[i+j]);
+      }
+      printf(" ))\n");
+    }
+    printf("\n))\nSTOP\n");
+    printf("*********************************************************************\n");
+  }
 #ifdef DEBUG
   printf("\n\n\tXGetKeyboardMapping table\n\n");
   for (i = 0; i < codecount * symspercode; i += symspercode) {

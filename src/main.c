@@ -226,6 +226,8 @@ int save_argc;
 char **save_argv;
 int display_max = 65536 * 16 * 2;
 
+long runtime_debug_level = 0;
+
 /* diagnostic flag for sysout dumping */
 extern unsigned maxpages;
 
@@ -345,6 +347,7 @@ int main(int argc, char *argv[])
 {
   int i;
   char *envname;
+  char *rtdebug;
   extern int TIMER_INTERVAL;
   extern fd_set LispReadFds;
   long tmpint;
@@ -677,6 +680,14 @@ int main(int argc, char *argv[])
   //
   //
 
+  if ((rtdebug = getenv("LDERUNTIMEDEBUG")) != NULL) {
+      errno = 0;
+      runtime_debug_level = strtol(rtdebug, (char **)NULL, 10);
+      if (errno != 0) {
+        runtime_debug_level = 0; // default to OFF if erroneous value
+    }
+  }
+  
 
 /* Sanity checks. */
 #ifdef DOS
