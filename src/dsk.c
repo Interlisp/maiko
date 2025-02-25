@@ -2565,17 +2565,17 @@ void conc_dir_and_name(char *dir, char *name, char *fname, size_t fname_size)
     if (lf_cp1 == (dir)) {
       /* dir is a root directory. */
       strlcpy(fname, "/", fname_size);
-      strcat(fname, name);
+      strlcat(fname, name, fname_size);
     } else {
       /* The trail directory is included. */
       strlcpy(fname, dir, fname_size);
-      strcat(fname, name);
+      strlcat(fname, name, fname_size);
     }
   } else {
     /* The trail directory is not included */
     strlcpy(fname, dir, fname_size);
-    strcat(fname, "/");
-    strcat(fname, name);
+    strlcat(fname, "/", fname_size);
+    strlcat(fname, name, fname_size);
   }
 }
 
@@ -3027,8 +3027,8 @@ static int get_version_array(char *dir, char *file)
     *lcased_file = '\0';
 
   /*  strlcpy(lcased_file, dir, sizeof(lcased_file));   removed when above code added 3/4/93 */
-  strcat(lcased_file, DIRSEPSTR);
-  strcat(lcased_file, file);
+  strlcat(lcased_file, DIRSEPSTR, sizeof(lcased_file));
+  strlcat(lcased_file, file, sizeof(lcased_file));
   separate_version(lcased_file, ver, 1);
   DOWNCASE(lcased_file);
 
