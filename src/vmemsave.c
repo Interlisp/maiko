@@ -351,7 +351,7 @@ LispPTR vmem_save(char *sysout_file_name)
   /* Bloddy 8 char filenames in dos ... /jarl */
   make_old_version(tempname, sysout_file_name);
 #else  /* DOS */
-  sprintf(tempname, "%s-temp", sysout_file_name);
+  snprintf(tempname, sizeof(tempname), "%s-temp", sysout_file_name);
 #endif /* DOS */
 
   /* Confirm protection of specified file by open/close */

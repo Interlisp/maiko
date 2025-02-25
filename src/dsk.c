@@ -11,7 +11,7 @@
 
 #include <errno.h>          // for errno, EINTR, ENOENT, ENFILE, EPERM
 #include <fcntl.h>          // for O_RDWR, O_CREAT, open, O_RDONLY, O_TRUNC
-#include <stdio.h>          // for NULL, sprintf, size_t, rename, SEEK_SET
+#include <stdio.h>          // for NULL, snprintf, size_t, rename, SEEK_SET
 #include <stddef.h>         // for ptrdiff_t
 #include <stdlib.h>         // for strtoul, qsort
 #include <string.h>         // for strlcpy, strcmp, strlen, strncpy, strchr
@@ -662,7 +662,7 @@ LispPTR COM_closefile(LispPTR *args)
     }
 
     for (; rval == 0; S_TOUT(rval = _dos_findnext(&dirp))) {
-      sprintf(file, "%s\\%s", dir, dirp.name);
+      snprintf(file, sizeof(file), "%s\\%s", dir, dirp.name);
     }
   }
 #ifndef DOS /* effectively NEVER, since we're in an ifdef DOS */
@@ -2358,7 +2358,7 @@ void separate_version(char *name, char *ver, int checkp)
          * Use strtoul() to eliminate leading 0s.
          */
         ver_no = strtoul(start + 1, (char **)NULL, 10);
-        sprintf(ver_buf, "%u", ver_no);
+        snprintf(ver_buf, sizeof(ver_buf), "%u", ver_no);
         strlcpy(ver, ver_buf, sizeof(ver));
         return;
       } else {
@@ -2638,7 +2638,7 @@ static int locate_file(char *dir, char *name)
   struct direct *dp;
 
   /* First of all, recognize as if. */
-  sprintf(path, "%s\\%s", dir, name);
+  snprintf(path, sizeof(path), "%s\\%s", dir, name);
   DIR_OR_FILE_P(path, type);
   if (type != 0) {
     strlcpy(dir, path, sizeof(dir));
@@ -2657,7 +2657,7 @@ static int locate_file(char *dir, char *name)
   struct dirent *dp;
 
   /* First of all, recognize as if. */
-  sprintf(path, "%s/%s", dir, name);
+  snprintf(path, sizeof(path), "%s/%s", dir, name);
   DIR_OR_FILE_P(path, type);
   if (type != 0) {
     strlcpy(dir, path, sizeof(dir));
@@ -2667,7 +2667,7 @@ static int locate_file(char *dir, char *name)
   /* Next try with all lower case name. */
   strlcpy(nb1, name, sizeof(nb1));
   DOWNCASE(nb1);
-  sprintf(path, "%s/%s", dir, nb1);
+  snprintf(path, sizeof(path), "%s/%s", dir, nb1);
   DIR_OR_FILE_P(path, type);
   if (type != 0) {
     strlcpy(dir, path, sizeof(dir));
@@ -2676,7 +2676,7 @@ static int locate_file(char *dir, char *name)
 
   /* Next try with all upper case name. */
   UPCASE(nb1);
-  sprintf(path, "%s/%s", dir, nb1);
+  snprintf(path, sizeof(path), "%s/%s", dir, nb1);
   DIR_OR_FILE_P(path, type);
   if (type != 0) {
     strlcpy(dir, path, sizeof(dir));
@@ -2698,7 +2698,7 @@ static int locate_file(char *dir, char *name)
         strlcpy(nb2, dp->d_name, sizeof(nb2));
         UPCASE(nb2);
         if (strcmp(nb1, nb2) == 0) {
-          sprintf(path, "%s/%s", dir, dp->d_name);
+          snprintf(path, sizeof(path), "%s/%s", dir, dp->d_name);
           DIR_OR_FILE_P(path, type);
           if (type != 0) {
             strlcpy(dir, path, sizeof(dir));
@@ -3329,7 +3329,7 @@ static int maintain_version(char *file, int forcep)
      * is versioned one higher than the existing highest version.
      */
     FindHighestVersion(VA.files, entry, max_no);
-    sprintf(ver, "%u", max_no + 1);
+    snprintf(ver, sizeof(ver), "%u", max_no + 1);
 /*
  * The old file should have the same case name as the versionless
  * file.
@@ -3653,7 +3653,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
          * link missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
-        sprintf(vbuf, "%u", max_no + 1);
+        snprintf(vbuf, sizeof(vbuf), "%u", max_no + 1);
         conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strlcpy(afile, vless, sizeof(afile));
         return (1);
@@ -3668,7 +3668,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
            * is dealt with as a version of the link
            * missing versionless file.
            */
-          sprintf(vbuf, "%u", ver_no);
+          snprintf(vbuf, sizeof(vbuf), "%u", ver_no);
           conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strlcpy(afile, vless, sizeof(afile));
           return (1);
@@ -3864,7 +3864,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
            * is dealt with as a version of the link
            * missing versionless file.
            */
-          sprintf(vbuf, "%u", ver_no);
+          snprintf(vbuf, sizeof(vbuf), "%u", ver_no);
           conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strlcpy(afile, vless, sizeof(afile));
           return (1);
@@ -4009,7 +4009,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * the existing highest version.
        */
       FindHighestVersion(varray, entry, max_no);
-      sprintf(vbuf, "%u", max_no + 1);
+      snprintf(vbuf, sizeof(vbuf), "%u", max_no + 1);
       /*
        * We will use the file name of the existing highest
        * versioned file as the name of the new file, so that
@@ -4101,7 +4101,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          * missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
-        sprintf(vbuf, "%u", max_no + 2);
+        snprintf(vbuf, sizeof(vbuf), "%u", max_no + 2);
         conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strlcpy(afile, vfile, sizeof(afile));
         return (1);
@@ -4116,7 +4116,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
            * is dealt with as a version of the link
            * missing versionless file.
            */
-          sprintf(vbuf, "%u", ver_no);
+          snprintf(vbuf, sizeof(vbuf), "%u", ver_no);
           conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strlcpy(afile, vless, sizeof(afile));
           return (1);
@@ -4164,7 +4164,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          * new file.
          */
         FindHighestVersion(varray, entry, max_no);
-        sprintf(vbuf, "%u", max_no + 1);
+        snprintf(vbuf, sizeof(vbuf), "%u", max_no + 1);
         /*
          * We will use the name of the highest versioned file
          * as the name of the new file.
@@ -4380,7 +4380,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
          * link missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
-        sprintf(vbuf, "%u", max_no + 1);
+        snprintf(vbuf, sizeof(vbuf), "%u", max_no + 1);
         conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strlcpy(afile, vless, sizeof(afile));
         return (1);
@@ -4395,7 +4395,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
            * is dealt with as a version of the link
            * missing versionless file.
            */
-          sprintf(vbuf, "%u", ver_no);
+          snprintf(vbuf, sizeof(vbuf), "%u", ver_no);
           conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strlcpy(afile, vless, sizeof(afile));
           return (1);

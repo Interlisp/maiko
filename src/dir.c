@@ -20,7 +20,7 @@
 #define alarm(x) 1
 #endif /* DOS */
 #include <errno.h>          // for errno, EINTR, ENOENT
-#include <stdio.h>          // for NULL, sprintf, size_t
+#include <stdio.h>          // for NULL, snprintf, size_t
 #include <stdlib.h>         // for calloc, free, strtoul, malloc, qsort
 #include <string.h>         // for strcpy, strcmp, strlen, strrchr, strcat
 #include <sys/stat.h>       // for stat, S_ISDIR, st_atime, st_mtime
@@ -441,11 +441,11 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     nextp->next = prevp;
     if (isslash) {
       if (drive)
-        sprintf(namebuf, "%c:\\%s", drive, dirp.name);
+        snprintf(namebuf, sizeof(namebuf), "%c:\\%s", drive, dirp.name);
       else
-        sprintf(namebuf, "\\%s", dirp.name);
+        snprintf(namebuf, sizeof(namebuf), "\\%s", dirp.name);
     } else
-      sprintf(namebuf, "%s\\%s", dir, dirp.name);
+      snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
 
     TIMEOUT(rval = stat(namebuf, &sbuf));
     if (rval == -1 && errno != ENOENT) {
@@ -511,11 +511,11 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
     if (isslash) {
       if (drive)
-        sprintf(namebuf, "%c:\\%s", drive, old);
+        snprintf(namebuf, sizeof(namebuf), "%c:\\%s", drive, old);
       else
-        sprintf(namebuf, "\\%s", old);
+        snprintf(namebuf, sizeof(namebuf), "\\%s", old);
     } else
-      sprintf(namebuf, "%s\\%s", dir, old);
+      snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, old);
     TIMEOUT(rval = stat(namebuf, &sbuf));
 
     if (rval == -1) continue;
@@ -524,7 +524,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     newp->next = prevp;
     /* All other types than directory. */
     newp->dirp = 0;
-    sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
+    snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
     quote_fname(namebuf);
     len = strlen(namebuf);
     strcpy(newp->lname, namebuf);
@@ -582,7 +582,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
       nextp->next = prevp;
-      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
       TIMEOUT(rval = stat(namebuf, &sbuf));
       if (rval == -1 && errno != ENOENT) {
         /*
@@ -720,11 +720,11 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     nextp->next = prevp;
     if (isslash) {
       if (drive)
-        sprintf(namebuf, "%c:\\%s", drive, dirp.name);
+        snprintf(namebuf, sizeof(namebuf), "%c:\\%s", drive, dirp.name);
       else
-        sprintf(namebuf, "\\%s", dirp.name);
+        snprintf(namebuf, sizeof(namebuf), "\\%s", dirp.name);
     } else
-      sprintf(namebuf, "%s\\%s", dir, dirp.name);
+      snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
     TIMEOUT(rval = stat(namebuf, &sbuf));
     if (rval == -1 && errno != ENOENT) {
       /*
@@ -776,11 +776,11 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
     if (isslash) {
       if (drive)
-        sprintf(namebuf, "%c:\\%s", drive, old);
+        snprintf(namebuf, sizeof(namebuf), "%c:\\%s", drive, old);
       else
-        sprintf(namebuf, "\\%s", old);
+        snprintf(namebuf, sizeof(namebuf), "\\%s", old);
     } else
-      sprintf(namebuf, "%s\\%s", dir, old);
+      snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, old);
     TIMEOUT(rval = stat(namebuf, &sbuf));
 
     if (rval == -1) continue;
@@ -789,7 +789,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     newp->next = prevp;
     /* All other types than directory. */
     newp->dirp = 0;
-    sprintf(namebuf, "%s.~00~", nextp->no_ver_name);
+    snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
     quote_fname(namebuf);
     len = strlen(namebuf);
     strcpy(newp->lname, namebuf);
@@ -845,7 +845,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
       nextp->next = prevp;
-      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
       TIMEOUT(rval = stat(namebuf, &sbuf));
       if (rval == -1 && errno != ENOENT) {
         /*
@@ -949,7 +949,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
     nextp->next = prevp;
-    sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
     TIMEOUT(rval = stat(namebuf, &sbuf));
     if (rval == -1 && errno != ENOENT) {
       /*
@@ -1040,7 +1040,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
       nextp->next = prevp;
-      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
       TIMEOUT(rval = stat(namebuf, &sbuf));
       if (rval == -1 && errno != ENOENT) {
         /*
@@ -1148,7 +1148,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
     nextp->next = prevp;
-    sprintf(namebuf, "%s\\%s", dir, dirp.name);
+    snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
     TIMEOUT(rval = stat(namebuf, &sbuf));
     if (rval == -1 && errno != ENOENT) {
       /*
@@ -1223,7 +1223,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
       nextp->next = prevp;
-      sprintf(namebuf, "%s/%s", dir, dp->d_name);
+      snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
       TIMEOUT(rval = stat(namebuf, &sbuf));
       if (rval == -1 && errno != ENOENT) {
         /*
@@ -1336,7 +1336,7 @@ static int trim_finfo(FINFO **fp)
            * Versionless is not linked to any versioned
            * file.
            */
-          sprintf(ver, ";%u", mp->version + 1);
+          snprintf(ver, sizeof(ver), ";%u", mp->version + 1);
           strcat(sp->lname, ver);
           sp->lname_len = strlen(sp->lname);
           pnum = ++num;
@@ -1464,7 +1464,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
            * Versionless is not linked to any versioned
            * file.
            */
-          sprintf(ver, ";%u", mp->version + 1);
+          snprintf(ver, sizeof(ver), ";%u", mp->version + 1);
           strcat(sp->lname, ver);
           sp->lname_len = strlen(sp->lname);
           /*
@@ -1646,7 +1646,7 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
            * file.
            */
           if (mp->version + 1 == rver) {
-            sprintf(ver, ";%u", rver);
+            snprintf(ver, sizeof(ver), ";%u", rver);
             strcat(sp->lname, ver);
             sp->lname_len = strlen(sp->lname);
             /*
