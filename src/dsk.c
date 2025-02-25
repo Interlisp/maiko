@@ -375,7 +375,7 @@ LispPTR COM_openfile(LispPTR *args)
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
     if (get_version_array(dir, name) == 0) return (NIL);
-    conc_name_and_version(name, ver, file);
+    conc_name_and_version(name, ver, file, sizeof(file));
 
     switch (args[1]) {
       case RECOG_OLD:
@@ -887,7 +887,7 @@ LispPTR DSK_getfilename(LispPTR *args)
          */
         if (get_version_array(dir, name) == 0) return (NIL);
 
-        conc_name_and_version(name, ver, aname);
+        conc_name_and_version(name, ver, aname, sizeof(aname));
         if (get_old(dir, VA.files, aname, vname) == 0) return (NIL);
 
         if ((rval = true_name(aname)) == 0) return (NIL);
@@ -927,7 +927,7 @@ LispPTR DSK_getfilename(LispPTR *args)
       } else {
         if (get_version_array(dir, name) == 0) return (NIL);
 
-        conc_name_and_version(name, ver, aname);
+        conc_name_and_version(name, ver, aname, sizeof(aname));
         if (get_oldest(dir, VA.files, aname, vname) == 0) return (NIL);
 
         if ((rval = true_name(aname)) == 0) return (NIL);
@@ -965,7 +965,7 @@ LispPTR DSK_getfilename(LispPTR *args)
         strcpy(vname, dir);
         dirp = 1;
       } else {
-        conc_dir_and_name(dir, name, aname);
+        conc_dir_and_name(dir, name, aname, sizeof(aname));
         if ((rval = true_name(aname)) == -1) {
           strcpy(vname, aname);
           dirp = 1;
@@ -976,7 +976,7 @@ LispPTR DSK_getfilename(LispPTR *args)
            */
           if (get_version_array(dir, name) == 0) return (NIL);
 
-          conc_name_and_version(name, ver, aname);
+          conc_name_and_version(name, ver, aname, sizeof(aname));
           if (get_new(dir, VA.files, aname, vname) == 0) return (NIL);
           dirp = 0;
         }
@@ -995,14 +995,14 @@ LispPTR DSK_getfilename(LispPTR *args)
         strcpy(vname, file);
         dirp = 0;
       } else {
-        conc_dir_and_name(dir, name, aname);
+        conc_dir_and_name(dir, name, aname, sizeof(aname));
         if ((rval = true_name(aname)) == -1) {
           strcpy(vname, aname);
           dirp = 1;
         } else {
           if (get_version_array(dir, name) == 0) return (NIL);
 
-          conc_name_and_version(name, ver, aname);
+          conc_name_and_version(name, ver, aname, sizeof(aname));
           if (get_old_new(dir, VA.files, aname, vname) == 0) return (NIL);
           dirp = 0;
         }
@@ -1018,7 +1018,7 @@ LispPTR DSK_getfilename(LispPTR *args)
        * directories.  The file name itself is recognized as if.
        */
       if (true_name(dir) != -1) return (NIL);
-      conc_dir_and_name(dir, name, vname);
+      conc_dir_and_name(dir, name, vname, sizeof(vname));
       strcpy(aname, vname);
       if (true_name(aname) == -1) {
         strcpy(vname, aname);
@@ -1056,8 +1056,8 @@ LispPTR DSK_getfilename(LispPTR *args)
   {
     char dver[VERSIONLEN];
     separate_version(vname, dver, 0);
-    conc_dir_and_name(dir, name, aname);
-    conc_name_and_version(aname, dver, vname);
+    conc_dir_and_name(dir, name, aname, sizeof(aname));
+    conc_name_and_version(aname, dver, vname, sizeof(vname));
   }
 #endif /* DOS */
 
@@ -1142,7 +1142,7 @@ LispPTR DSK_deletefile(LispPTR *args)
    * of it.
    */
 
-  conc_name_and_version(fbuf, ver, file);
+  conc_name_and_version(fbuf, ver, file, sizeof(file));
   if (get_oldest(dir, VA.files, file, fbuf) == 0) return (NIL);
 
   if (get_versionless(VA.files, vless, dir) == 0) {
@@ -1294,7 +1294,7 @@ LispPTR DSK_renamefile(LispPTR *args)
   /*
    * We maintain the destination to handle the link damaged case correctly.
    */
-  conc_dir_and_name(dir, fbuf, dst);
+  conc_dir_and_name(dir, fbuf, dst, sizeof(dst));
   if (maintain_version(dst, 0) == 0) return (NIL);
 
   if (get_version_array(dir, fbuf) == 0) return (NIL);
@@ -1305,7 +1305,7 @@ LispPTR DSK_renamefile(LispPTR *args)
    * of it.
    */
 
-  conc_name_and_version(fbuf, ver, dst);
+  conc_name_and_version(fbuf, ver, dst, sizeof(dst));
   if (get_new(dir, VA.files, dst, fbuf) == 0) return (NIL);
 
   /*
@@ -1320,7 +1320,7 @@ LispPTR DSK_renamefile(LispPTR *args)
     if (OnlyVersionlessP(VA.files)) {
       get_versionless(VA.files, vless, dir);
       if (strcmp(dst, vless) != 0) {
-        conc_name_and_version(vless, "1", fbuf);
+        conc_name_and_version(vless, "1", fbuf, sizeof(fbuf));
         TIMEOUT(rval = rename(vless, fbuf));
         if (rval == -1) {
           *Lisp_errno = errno;
@@ -1360,7 +1360,7 @@ LispPTR DSK_renamefile(LispPTR *args)
    * code, we have to recognize it again to know the "real" accessible name
    * of it.
    */
-  conc_name_and_version(fbuf, ver, src);
+  conc_name_and_version(fbuf, ver, src, sizeof(src));
   if (get_old(dir, VA.files, src, fbuf) == 0) return (NIL);
 
   if (get_versionless(VA.files, vless, dir) == 0) {
@@ -1622,7 +1622,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
       strcpy(file, dir);
     } else {
       if (get_version_array(dir, name) == 0) return (NIL);
-      conc_name_and_version(name, ver, file);
+      conc_name_and_version(name, ver, file, sizeof(file));
       if (get_old(dir, VA.files, file, name) == 0) return (NIL);
     }
   }
@@ -1811,7 +1811,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
     if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
     if (true_name(dir) != -1) return (0);
     if (get_version_array(dir, name) == 0) return (NIL);
-    conc_name_and_version(name, ver, file);
+    conc_name_and_version(name, ver, file, sizeof(file));
     if (get_old(dir, VA.files, file, name) == 0) return (NIL);
   }
 
@@ -2541,7 +2541,7 @@ int true_name(char *path)
  *
  */
 
-void conc_dir_and_name(char *dir, char *name, char *fname)
+void conc_dir_and_name(char *dir, char *name, char *fname, size_t fname_size)
 {
   char	*lf_cp1, *lf_cp2;
 
@@ -2586,6 +2586,7 @@ void conc_dir_and_name(char *dir, char *name, char *fname)
  *		char	*ver	The file version.
  *		char	*rname 	The place where the concatenated file name will be
  *				stored.
+ *              size_t  rname_size The size of the storage allocated for rname
  * Value:	N/A
  *
  * Side Effect:	rname is replaced with the concatenated file name.
@@ -2599,15 +2600,15 @@ void conc_dir_and_name(char *dir, char *name, char *fname)
  *
  */
 
-void conc_name_and_version(char *name, char *ver, char *rname)
+void conc_name_and_version(char *name, char *ver, char *rname, size_t rname_size)
 {
 	if (*ver != '\0') {
-		strcpy(rname, name);
-		strcat(rname, ".~");
-		strcat(rname, ver);
-		strcat(rname, "~");
+          strlcpy(rname, name, rname_size);
+          strlcat(rname, ".~", rname_size);
+          strlcat(rname, ver, rname_size);
+          strlcat(rname, "~", rname_size);
 	} else {
-		strcpy(rname, name);
+          strlcpy(rname, name, rname_size);
 	}
 }
 
@@ -3283,7 +3284,7 @@ static int maintain_version(char *file, int forcep)
  */
 #ifndef DOS
       get_versionless(VA.files, vless, dir);
-      conc_name_and_version(vless, "1", fname);
+      conc_name_and_version(vless, "1", fname, sizeof(fname));
       TIMEOUT(rval = link(vless, fname));
       if (rval == -1) {
         *Lisp_errno = errno;
@@ -3306,7 +3307,7 @@ static int maintain_version(char *file, int forcep)
      * to the existing highest versioned file.
      */
     FindHighestVersion(VA.files, entry, max_no);
-    conc_dir_and_name(dir, entry->name, old_file);
+    conc_dir_and_name(dir, entry->name, old_file, sizeof(old_file));
 /*
  * The versionless file should have the same case name as the old
  * file.
@@ -3314,7 +3315,7 @@ static int maintain_version(char *file, int forcep)
 #ifndef DOS
     strcpy(fname, entry->name);
     separate_version(fname, ver, 1);
-    conc_dir_and_name(dir, fname, vless);
+    conc_dir_and_name(dir, fname, vless, sizeof(vless));
     TIMEOUT(rval = link(old_file, vless));
     if (rval == -1) {
       *Lisp_errno = errno;
@@ -3339,7 +3340,7 @@ static int maintain_version(char *file, int forcep)
  * file.
  */
 #ifndef DOS
-    conc_name_and_version(vless, ver, old_file);
+    conc_name_and_version(vless, ver, old_file, sizeof(old_file));
     TIMEOUT(rval = link(vless, old_file));
     if (rval == -1) {
       *Lisp_errno = errno;
@@ -3368,7 +3369,7 @@ static int maintain_version(char *file, int forcep)
       return (0);
     }
     FindHighestVersion(VA.files, entry, max_no);
-    conc_dir_and_name(dir, entry->name, old_file);
+    conc_dir_and_name(dir, entry->name, old_file, sizeof(old_file));
 /*
  * The versionless file should have the same case name as the old
  * file.
@@ -3376,7 +3377,7 @@ static int maintain_version(char *file, int forcep)
 #ifndef DOS
     strcpy(fname, entry->name);
     separate_version(fname, ver, 1);
-    conc_dir_and_name(dir, fname, vless);
+    conc_dir_and_name(dir, fname, vless, sizeof(vless));
     TIMEOUT(rval = link(old_file, vless));
     if (rval == -1) {
       *Lisp_errno = errno;
@@ -3419,7 +3420,7 @@ static int get_versionless(FileName *varray, char *file, char *dir)
 
   while (varray->version_no != LASTVERSIONARRAY) {
     if (varray->version_no == 0) {
-      conc_dir_and_name(dir, varray->name, file);
+      conc_dir_and_name(dir, varray->name, file, sizeof(file));
       return (1);
     } else
       varray++;
@@ -3498,7 +3499,7 @@ static int check_vless_link(char *vless, FileName *varray, char *to_file, int *h
       max_entry = varray;
     }
     if (!found && varray->version_no != 0) {
-      conc_dir_and_name(dir, varray->name, name);
+      conc_dir_and_name(dir, varray->name, name, sizeof(name));
       TIMEOUT(rval = stat(name, &sbuf));
       if (rval != 0) {
         *Lisp_errno = errno;
@@ -3590,7 +3591,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
        * is an old file.
        */
       FindHighestVersion(varray, entry, max_no);
-      conc_dir_and_name(dir, entry->name, afile);
+      conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
       strcpy(vfile, afile);
       return (1);
     } else {
@@ -3602,7 +3603,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
       ver_no = strtoul(ver, (char **)NULL, 10);
       FindSpecifiedVersion(varray, entry, ver_no);
       if (entry != NULL) {
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else
@@ -3619,7 +3620,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
        * No version is specified.  The versionless file is dealt
        * with as version 1.
        */
-      conc_name_and_version(vless, "1", vfile);
+      conc_name_and_version(vless, "1", vfile, sizeof(vfile));
       strcpy(afile, vless);
       return (1);
     } else {
@@ -3629,8 +3630,8 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
          * Version 1 is specified.  The versionless file is
          * dealt with as a version 1 file.
          */
-        conc_name_and_version(name, "1", afile);
-        conc_dir_and_name(dir, afile, vfile);
+        conc_name_and_version(name, "1", afile, sizeof(afile));
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
@@ -3658,7 +3659,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
          */
         FindHighestVersion(varray, entry, max_no);
         sprintf(vbuf, "%u", max_no + 1);
-        conc_name_and_version(vless, vbuf, vfile);
+        conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
@@ -3673,7 +3674,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
            * missing versionless file.
            */
           sprintf(vbuf, "%u", ver_no);
-          conc_name_and_version(vless, vbuf, vfile);
+          conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strcpy(afile, vless);
           return (1);
         } else {
@@ -3683,7 +3684,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
            */
           FindSpecifiedVersion(varray, entry, ver_no);
           if (entry != NULL) {
-            conc_dir_and_name(dir, entry->name, afile);
+            conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
             strcpy(vfile, afile);
             return (1);
           } else
@@ -3702,7 +3703,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
          * in varray is an old file.
          */
         FindHighestVersion(varray, entry, max_no);
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else {
@@ -3714,7 +3715,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
         ver_no = strtoul(ver, (char **)NULL, 10);
         FindSpecifiedVersion(varray, entry, ver_no);
         if (entry != NULL) {
-          conc_dir_and_name(dir, entry->name, afile);
+          conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
           strcpy(vfile, afile);
           return (1);
         } else
@@ -3789,7 +3790,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
        * is an oldest file.
        */
       FindLowestVersion(varray, entry, min_no);
-      conc_dir_and_name(dir, entry->name, afile);
+      conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
       strcpy(vfile, afile);
       return (1);
     } else {
@@ -3801,7 +3802,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
       ver_no = strtoul(ver, (char **)NULL, 10);
       FindSpecifiedVersion(varray, entry, ver_no);
       if (entry != NULL) {
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else
@@ -3818,7 +3819,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
        * No version is specified.  The versionless file is dealt
        * with as version 1.
        */
-      conc_name_and_version(vless, "1", vfile);
+      conc_name_and_version(vless, "1", vfile, sizeof(vfile));
       strcpy(afile, vless);
       return (1);
     } else {
@@ -3828,8 +3829,8 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
          * Version 1 is specified.  The versionless file is
          * dealt with as a version 1 file.
          */
-        conc_name_and_version(name, "1", afile);
-        conc_dir_and_name(dir, afile, vfile);
+        conc_name_and_version(name, "1", afile, sizeof(afile));
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
@@ -3854,7 +3855,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
          * dealt with as the oldest version.
          */
         FindLowestVersion(varray, entry, min_no);
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else {
@@ -3869,7 +3870,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
            * missing versionless file.
            */
           sprintf(vbuf, "%u", ver_no);
-          conc_name_and_version(vless, vbuf, vfile);
+          conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strcpy(afile, vless);
           return (1);
         } else {
@@ -3879,7 +3880,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
            */
           FindSpecifiedVersion(varray, entry, ver_no);
           if (entry != NULL) {
-            conc_dir_and_name(dir, entry->name, afile);
+            conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
             strcpy(vfile, afile);
             return (1);
           } else
@@ -3898,7 +3899,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
          * in varray is an old file.
          */
         FindLowestVersion(varray, entry, min_no);
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else {
@@ -3910,7 +3911,7 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
         ver_no = strtoul(ver, (char **)NULL, 10);
         FindSpecifiedVersion(varray, entry, ver_no);
         if (entry != NULL) {
-          conc_dir_and_name(dir, entry->name, afile);
+          conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
           strcpy(vfile, afile);
           return (1);
         } else
@@ -3985,9 +3986,9 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * If version is not specified or 1 is specified,
        * we can return versionless file as afile.
        */
-      conc_name_and_version(name, "1", afile);
-      conc_dir_and_name(dir, afile, vfile);
-      conc_dir_and_name(dir, name, afile);
+      conc_name_and_version(name, "1", afile, sizeof(afile));
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
+      conc_dir_and_name(dir, name, afile, sizeof(afile));
       return (1);
     }
 #ifndef DOS
@@ -3996,7 +3997,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * A version other than 1 is specified.  "New" file
        * is recognized as if.
        */
-      conc_dir_and_name(dir, afile, vfile);
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     }
@@ -4021,8 +4022,8 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        */
       strcpy(name, entry->name);
       separate_version(name, ver, 1);
-      conc_dir_and_name(dir, name, afile);
-      conc_name_and_version(afile, vbuf, vfile);
+      conc_dir_and_name(dir, name, afile, sizeof(afile));
+      conc_name_and_version(afile, vbuf, vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     } else {
@@ -4034,7 +4035,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
       ver_no = strtoul(ver, (char **)NULL, 10);
       FindSpecifiedVersion(varray, entry, ver_no);
       if (entry != NULL) {
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       }
@@ -4049,8 +4050,8 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * files has the name in same case.
        */
       while (varray->version_no != LASTVERSIONARRAY) varray++;
-      conc_name_and_version(varray->name, ver, afile);
-      conc_dir_and_name(dir, afile, vfile);
+      conc_name_and_version(varray->name, ver, afile, sizeof(afile));
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     }
@@ -4065,7 +4066,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * No version is specified.  The versionless file is dealt
        * with as version 1.  Thus new version is 2.
        */
-      conc_name_and_version(vless, "2", vfile);
+      conc_name_and_version(vless, "2", vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     } else {
@@ -4075,15 +4076,15 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          * Version 1 is specified.  The versionless file is
          * dealt with as a version 1 file.
          */
-        conc_name_and_version(name, "1", afile);
-        conc_dir_and_name(dir, afile, vfile);
+        conc_name_and_version(name, "1", afile, sizeof(afile));
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
         /*
          * Other versions than 1 are recognized as if.
          */
-        conc_dir_and_name(dir, afile, vfile);
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       }
@@ -4106,7 +4107,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          */
         FindHighestVersion(varray, entry, max_no);
         sprintf(vbuf, "%u", max_no + 2);
-        conc_name_and_version(vless, vbuf, vfile);
+        conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       } else {
@@ -4121,7 +4122,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
            * missing versionless file.
            */
           sprintf(vbuf, "%u", ver_no);
-          conc_name_and_version(vless, vbuf, vfile);
+          conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strcpy(afile, vless);
           return (1);
         } else {
@@ -4131,7 +4132,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
            */
           FindSpecifiedVersion(varray, entry, ver_no);
           if (entry != NULL) {
-            conc_dir_and_name(dir, entry->name, afile);
+            conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
             strcpy(vfile, afile);
             return (1);
           }
@@ -4149,8 +4150,8 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
            * case.
            */
           while (varray->version_no != LASTVERSIONARRAY) varray++;
-          conc_name_and_version(varray->name, ver, afile);
-          conc_dir_and_name(dir, afile, vfile);
+          conc_name_and_version(varray->name, ver, afile, sizeof(afile));
+          conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
           strcpy(afile, vfile);
           return (1);
         }
@@ -4175,8 +4176,8 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          */
         strcpy(vless, entry->name);
         separate_version(vless, ver, 1);
-        conc_dir_and_name(dir, vless, afile);
-        conc_name_and_version(afile, vbuf, vfile);
+        conc_dir_and_name(dir, vless, afile, sizeof(afile));
+        conc_name_and_version(afile, vbuf, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       } else {
@@ -4188,7 +4189,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
         ver_no = strtoul(ver, (char **)NULL, 10);
         FindSpecifiedVersion(varray, entry, ver_no);
         if (entry != NULL) {
-          conc_dir_and_name(dir, entry->name, afile);
+          conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
           strcpy(vfile, afile);
           return (1);
         }
@@ -4204,8 +4205,8 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
         FindHighestVersion(varray, entry, max_no);
         strcpy(vless, entry->name);
         separate_version(vless, vbuf, 1);
-        conc_dir_and_name(dir, vless, afile);
-        conc_name_and_version(afile, ver, vfile);
+        conc_dir_and_name(dir, vless, afile, sizeof(afile));
+        conc_name_and_version(afile, ver, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       }
@@ -4276,16 +4277,16 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
        * If version is not specified or 1 is specified,
        * we can return versionless file as afile.
        */
-      conc_name_and_version(name, "1", afile);
-      conc_dir_and_name(dir, afile, vfile);
-      conc_dir_and_name(dir, name, afile);
+      conc_name_and_version(name, "1", afile, sizeof(afile));
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
+      conc_dir_and_name(dir, name, afile, sizeof(afile));
       return (1);
     } else {
       /*
        * A version other than 1 is specified.  "New" file
        * is recognized as if.
        */
-      conc_dir_and_name(dir, afile, vfile);
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     }
@@ -4302,7 +4303,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
        * is an old file.
        */
       FindHighestVersion(varray, entry, max_no);
-      conc_dir_and_name(dir, entry->name, afile);
+      conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
       strcpy(vfile, afile);
       return (1);
     } else {
@@ -4314,7 +4315,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
       ver_no = strtoul(ver, (char **)NULL, 10);
       FindSpecifiedVersion(varray, entry, ver_no);
       if (entry != NULL) {
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       }
@@ -4329,8 +4330,8 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
        * files has the name in same case.
        */
       while (varray->version_no != LASTVERSIONARRAY) varray++;
-      conc_name_and_version(varray->name, ver, afile);
-      conc_dir_and_name(dir, afile, vfile);
+      conc_name_and_version(varray->name, ver, afile, sizeof(afile));
+      conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
       strcpy(afile, vfile);
       return (1);
     }
@@ -4345,7 +4346,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
        * No version is specified.  The versionless file is dealt
        * with as version 1.
        */
-      conc_name_and_version(vless, "1", vfile);
+      conc_name_and_version(vless, "1", vfile, sizeof(vfile));
       strcpy(afile, vless);
       return (1);
     } else {
@@ -4355,15 +4356,15 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
          * Version 1 is specified.  The versionless file is
          * dealt with as a version 1 file.
          */
-        conc_name_and_version(name, "1", afile);
-        conc_dir_and_name(dir, afile, vfile);
+        conc_name_and_version(name, "1", afile, sizeof(afile));
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
         /*
          * Other versions than 1 are recognized as if.
          */
-        conc_dir_and_name(dir, afile, vfile);
+        conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       }
@@ -4385,7 +4386,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
          */
         FindHighestVersion(varray, entry, max_no);
         sprintf(vbuf, "%u", max_no + 1);
-        conc_name_and_version(vless, vbuf, vfile);
+        conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
         strcpy(afile, vless);
         return (1);
       } else {
@@ -4400,7 +4401,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
            * missing versionless file.
            */
           sprintf(vbuf, "%u", ver_no);
-          conc_name_and_version(vless, vbuf, vfile);
+          conc_name_and_version(vless, vbuf, vfile, sizeof(vfile));
           strcpy(afile, vless);
           return (1);
         } else {
@@ -4410,7 +4411,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
            */
           FindSpecifiedVersion(varray, entry, ver_no);
           if (entry != NULL) {
-            conc_dir_and_name(dir, entry->name, afile);
+            conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
             strcpy(vfile, afile);
             return (1);
           }
@@ -4428,8 +4429,8 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
            * case.
            */
           while (varray->version_no != LASTVERSIONARRAY) varray++;
-          conc_name_and_version(varray->name, ver, afile);
-          conc_dir_and_name(dir, afile, vfile);
+          conc_name_and_version(varray->name, ver, afile, sizeof(afile));
+          conc_dir_and_name(dir, afile, vfile, sizeof(vfile));
           strcpy(afile, vfile);
           return (1);
         }
@@ -4446,7 +4447,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
          * in varray is an old file.
          */
         FindHighestVersion(varray, entry, max_no);
-        conc_dir_and_name(dir, entry->name, afile);
+        conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
         strcpy(vfile, afile);
         return (1);
       } else {
@@ -4458,7 +4459,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
         ver_no = strtoul(ver, (char **)NULL, 10);
         FindSpecifiedVersion(varray, entry, ver_no);
         if (entry != NULL) {
-          conc_dir_and_name(dir, entry->name, afile);
+          conc_dir_and_name(dir, entry->name, afile, sizeof(afile));
           strcpy(vfile, afile);
           return (1);
         }
@@ -4474,8 +4475,8 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
         FindHighestVersion(varray, entry, max_no);
         strcpy(vless, entry->name);
         separate_version(vless, vbuf, 1);
-        conc_dir_and_name(dir, vless, afile);
-        conc_name_and_version(afile, ver, vfile);
+        conc_dir_and_name(dir, vless, afile, sizeof(afile));
+        conc_name_and_version(afile, ver, vfile, sizeof(vfile));
         strcpy(afile, vfile);
         return (1);
       }
