@@ -2034,9 +2034,9 @@ LispPTR COM_gen_files(LispPTR *args)
  */
 
 #ifdef DOS
-  if (!unixpathname(fbuf, pattern, 1, 1, drive, 0, 0)) {
+  if (!unixpathname(fbuf, pattern, sizeof(pattern), 1, 1, drive, 0, 0)) {
 #else
-  if (!unixpathname(fbuf, pattern, 1, 1)) {
+  if (!unixpathname(fbuf, pattern, sizeof(pattern), 1, 1)) {
 #endif /* DOS */
     /* Yes, always dskp is on */
     return (SMALLP_MINUSONE);

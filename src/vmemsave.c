@@ -156,9 +156,9 @@ LispPTR vmem_save0(LispPTR *args)
     LispStringToCString(args[0], pathname, MAXPATHLEN);
     separate_host(pathname, host);
 #ifdef DOS
-    if (!unixpathname(pathname, sysout, 0, 0, drive, 0, 0)) return (BADFILENAME);
+    if (!unixpathname(pathname, sysout, sizeof(sysout), 0, 0, drive, 0, 0)) return (BADFILENAME);
 #else
-    if (!unixpathname(pathname, sysout, 0, 0)) return (BADFILENAME);
+    if (!unixpathname(pathname, sysout, sizeof(sysout), 0, 0)) return (BADFILENAME);
 #endif /* DOS */
     return (vmem_save(sysout));
   } else {

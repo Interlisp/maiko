@@ -14,7 +14,7 @@
 #include <stdio.h>          // for NULL, sprintf, size_t, rename, SEEK_SET
 #include <stddef.h>         // for ptrdiff_t
 #include <stdlib.h>         // for strtoul, qsort
-#include <string.h>         // for strcpy, strcmp, strlen, strncpy, strchr
+#include <string.h>         // for strlcpy, strcmp, strlen, strncpy, strchr
 #include <sys/stat.h>       // for stat, fstat, mkdir, S_ISREG, st_atime, chmod
 #include <sys/types.h>      // for ino_t, time_t, off_t
 #include <unistd.h>         // for unlink, close, link, lseek, access, chdir
@@ -264,9 +264,9 @@ LispPTR COM_openfile(LispPTR *args)
  * convert a version field.
  */
 #ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
+  unixpathname(lfname, file, sizeof(file), dskp, 0, drive, &extlen, rawname);
 #else
-  unixpathname(lfname, file, dskp, 0);
+  unixpathname(lfname, file, sizeof(file), dskp, 0);
 #endif
 
   /*
@@ -598,8 +598,7 @@ LispPTR COM_closefile(LispPTR *args)
    * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
    * convert a version field.
    */
-  dskp ? unixpathname(lfname, file, 1, 0, drive, &extlen, rawname)
-       : unixpathname(lfname, file, 0, 0, drive, &extlen, rawname);
+  unixpathname(lfname, file, sizeof(file), dskp, drive, &extlen, rawname);
   fd = LispNumToCInt(args[1]);
   cdate = (time_t)LispNumToCInt(args[2]);
   if (!dskp) {
@@ -721,8 +720,7 @@ LispPTR COM_closefile(LispPTR *args)
    * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
    * convert a version field.
    */
-  dskp ? unixpathname(lfname, file, 1, 0) : unixpathname(lfname, file, 0, 0);
-
+  unixpathname(lfname, file, sizeof(file), dskp, 0);
   fd = LispNumToCInt(args[1]);
   cdate = (time_t)LispNumToCInt(args[2]);
 
@@ -849,9 +847,9 @@ LispPTR DSK_getfilename(LispPTR *args)
  * unixpathname specifies it.
  */
 #ifdef DOS
-  if (unixpathname(lfname, file, 1, 0, drive, &extlen, rawname) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 1, 0, drive, &extlen, rawname) == 0) return (NIL);
 #else
-  if (unixpathname(lfname, file, 1, 0) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 1, 0) == 0) return (NIL);
 #endif
 
   if (unpack_filename(file, dir, name, ver, 1) == 0) return (NIL);
@@ -1120,9 +1118,9 @@ LispPTR DSK_deletefile(LispPTR *args)
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
   separate_drive(fbuf, drive);
-  unixpathname(fbuf, file, 1, 0, drive, &extlen, rawname);
+  unixpathname(fbuf, file, sizeof(file), 1, 0, drive, &extlen, rawname);
 #else
-  unixpathname(fbuf, file, 1, 0);
+  unixpathname(fbuf, file, sizeof(file), 1, 0);
 #endif
 
   if (unpack_filename(file, dir, fbuf, ver, 1) == 0) return (NIL);
@@ -1271,17 +1269,17 @@ LispPTR DSK_renamefile(LispPTR *args)
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
   separate_drive(fbuf, drive1);
-  unixpathname(fbuf, src, 1, 0, drive1, &extlen1, rawname1);
+  unixpathname(fbuf, src, sizeof(src), 1, 0, drive1, &extlen1, rawname1);
 #else  /* DOS */
-  unixpathname(fbuf, src, 1, 0);
+  unixpathname(fbuf, src, sizeof(src), 1, 0);
 #endif /* DOS */
 
   LispStringToCString(args[1], fbuf, MAXPATHLEN);
 #ifdef DOS
   separate_drive(fbuf, drive2);
-  unixpathname(fbuf, dst, 1, 0, drive2, &extlen2, rawname2);
+  unixpathname(fbuf, dst, sizeof(dst), 1, 0, drive2, &extlen2, rawname2);
 #else  /* DOS */
-  unixpathname(fbuf, dst, 1, 0);
+  unixpathname(fbuf, dst, sizeof(dst), 1, 0);
 #endif /* DOS */
 
   if (unpack_filename(dst, dir, fbuf, ver, 1) == 0) return (NIL);
@@ -1492,9 +1490,9 @@ LispPTR DSK_directorynamep(LispPTR *args)
 /* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
   separate_drive(dirname, drive);
-  if (unixpathname(dirname, fullname, 1, 0, drive, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0, drive, 0, 0) == 0) return (NIL);
 #else  /* DOS*/
-  if (unixpathname(dirname, fullname, 1, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0) == 0) return (NIL);
 #endif /* DOS */
 
   if (true_name(fullname) != -1) return (NIL);
@@ -1599,9 +1597,9 @@ LispPTR COM_getfileinfo(LispPTR *args)
  * convert a version field.
  */
 #ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
+  unixpathname(lfname, file, sizeof(file), dskp, 0, drive, &extlen, rawname);
 #else  /* DOS */
-  unixpathname(lfname, file, dskp, 0);
+  unixpathname(lfname, file, sizeof(file), dskp, 0);
 #endif /* DOS */
 
   /*
@@ -1794,9 +1792,9 @@ LispPTR COM_setfileinfo(LispPTR *args)
  * convert a version field.
  */
 #ifdef DOS
-  unixpathname(lfname, file, dskp, 0, drive, &extlen, rawname);
+  unixpathname(lfname, file, sizeof(file), dskp, 0, drive, &extlen, rawname);
 #else  /* DOS */
-  unixpathname(lfname, file, dskp, 0);
+  unixpathname(lfname, file, sizeof(file), dskp, 0);
 #endif /* DOS */
 
   /*
@@ -2141,9 +2139,9 @@ LispPTR COM_changedir(LispPTR *args)
     return (NIL);
 
 #ifdef DOS
-  if (!unixpathname(lfname, dir, 0, 0, drive, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0, drive, 0, 0)) return (NIL);
 #else  /* DOS */
-  if (!unixpathname(lfname, dir, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0)) return (NIL);
 #endif /* DOS */
 
   if (dskp) {
@@ -2241,9 +2239,9 @@ LispPTR COM_getfreeblock(LispPTR *args)
     return (NIL);
 
 #ifdef DOS
-  if (!unixpathname(lfname, file, 0, 0, drive, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, file, sizeof(file), 0, 0, drive, 0, 0)) return (NIL);
 #else  /* DOS */
-  if (!unixpathname(lfname, file, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, file, sizeof(file), 0, 0)) return (NIL);
 #endif /* DOS */
 
   if (!unpack_filename(file, dir, name, ver, 0)) return (NIL);

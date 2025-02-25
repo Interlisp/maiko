@@ -176,9 +176,9 @@ LispPTR UFS_getfilename(LispPTR *args)
  * unixpathname specifies it.
  */
 #ifdef DOS
-  if (unixpathname(lfname, file, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(lfname, file, 0, 0) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   switch (args[1]) {
@@ -259,9 +259,9 @@ LispPTR UFS_deletefile(LispPTR *args)
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 
 #ifdef DOS
-  if (unixpathname(fbuf, file, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, file, sizeof(file), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, file, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, file, sizeof(file), 0, 0) == 0) return (NIL);
 #endif /* DOS */
   /* check if we're operating on directory or file */
   TIMEOUT(rval = stat(file, &sbuf));
@@ -327,15 +327,15 @@ LispPTR UFS_renamefile(LispPTR *args)
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
-  if (unixpathname(fbuf, src, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, src, sizeof(src), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, src, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, src, sizeof(src), 0, 0) == 0) return (NIL);
 #endif /* DOS */
   LispStringToCString(args[1], fbuf, MAXPATHLEN);
 #ifdef DOS
-  if (unixpathname(fbuf, dst, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, dst, sizeof(dst), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, dst, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, dst, sizeof(dst), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   TIMEOUT(rval = rename(src, dst));
@@ -400,9 +400,9 @@ LispPTR UFS_directorynamep(LispPTR *args)
 
 /* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
-  if (unixpathname(dirname, fullname, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(dirname, fullname, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   TIMEOUT(rval = stat(fullname, &sbuf));
@@ -437,6 +437,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
  *				if the pathname is passed as a directory, the
  *				tail delimiter may be included.
  *		char	*dst	The buffer to which the converted pathname is stored.
+ *              int     dstlen  The size of the dst buffer
  *		int	versionp
  *				If 1, version field in src is converted to UNIX
  *				version form.  {DSK} device invokes unixpathname
@@ -463,9 +464,9 @@ LispPTR UFS_directorynamep(LispPTR *args)
  *
  */
 #ifdef DOS
-int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
+int unixpathname(char *src, char *dst, int dstlen, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
 #else
-int unixpathname(char *src, char *dst, int versionp, int genp)
+int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
 #endif /* DOS */
 {
   char *cp, *dp, *np;
@@ -495,12 +496,12 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
    * file system code.
    */
   if (strcmp(src, "<") == 0) {
-    strcpy(dst, DIRSEPSTR);
+    strlcpy(dst, DIRSEPSTR, dstlen);
     return (1);
   }
 
   /* Copy src to protect it from destructive modification. */
-  strcpy(lfname, src);
+  strlcpy(lfname, src, sizeof(lfname));
 
 /*
  * If versionp is specified, we have to deal with the version field first,
@@ -582,7 +583,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
         TIMEOUT0(pwd = getpwuid(getuid()));
         if (pwd == NULL) return (0);
 
-        strcpy(dst, pwd->pw_dir);
+        strlcpy(dst, pwd->pw_dir, dstlen);
         while (*dp != '\0') dp++;
         if (*(dp - 1) != DIRSEP) {
           /*
@@ -606,7 +607,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
         TIMEOUT0(pwd = getpwnam(name));
         if (pwd == NULL) return (0);
 
-        strcpy(dst, pwd->pw_dir);
+        strlcpy(dst, pwd->pw_dir, dstlen);
         while (*dp != '\0') dp++;
         if (*(dp - 1) != DIRSEP) {
           /*
@@ -807,8 +808,8 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
      * for the convenience of the pattern matching routines, we don't
      * care about the last period character.
      */
-    strcpy(fbuf1, lfname);
-    strcpy(fbuf2, dst);
+    strlcpy(fbuf1, lfname, sizeof(fbuf1));
+    strlcpy(fbuf2, dst, sizeof(fbuf2));
     separate_version(fbuf1, ver1, 1);
     separate_version(fbuf2, ver2, 1);
     for (cp = fbuf1; *cp; cp++) {}
