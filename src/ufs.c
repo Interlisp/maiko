@@ -826,7 +826,7 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
     }
 #ifdef DOS
     if (version >= 0)
-      sprintf(ver2, "%d", version);
+      snprintf(ver2, sizeof(ver2), "%d", version);
     else
       *ver2 = '\0';
 #endif /* DOS */
