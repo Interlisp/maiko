@@ -1024,7 +1024,7 @@ LispPTR DSK_getfilename(LispPTR *args)
       } else {
         dirp = 0;
       }
-      if (lisppathname(vname, lfname, dirp, 0) == 0) return (NIL);
+      if (lisppathname(vname, lfname, sizeof(lfname), dirp, 0) == 0) return (NIL);
       STRING_BASE(args[2], base);
       len = strlen(lfname);
 
@@ -1046,7 +1046,7 @@ LispPTR DSK_getfilename(LispPTR *args)
 /*
  * Now, vname holds the "versioned" full name of the recognized file in UNIX
  * format.  We have to convert it back to Lisp format.  The version field
- * have to be converted.  The fourth argument for lisppathname specifies it.
+ * have to be converted.  The fifth argument for lisppathname specifies it.
  */
 #ifdef DOS
   /* For DOS, have to assure we use the name asked for, not the */
@@ -1059,7 +1059,7 @@ LispPTR DSK_getfilename(LispPTR *args)
   }
 #endif /* DOS */
 
-  if (lisppathname(vname, lfname, dirp, (dirp ? 0 : 1)) == 0) return (NIL);
+  if (lisppathname(vname, lfname, sizeof(lfname), dirp, (dirp ? 0 : 1)) == 0) return (NIL);
 
   STRING_BASE(args[2], base);
   len = strlen(lfname);
@@ -1498,7 +1498,7 @@ LispPTR DSK_directorynamep(LispPTR *args)
   if (true_name(fullname) != -1) return (NIL);
 
   /* Convert Unix file naming convention to Xerox Lisp one. */
-  if (lisppathname(fullname, dirname, 1, 0) == 0) return (NIL);
+  if (lisppathname(fullname, dirname, sizeof(dirname), 1, 0) == 0) return (NIL);
 
   len = strlen(dirname);
   STRING_BASE(args[1], base);

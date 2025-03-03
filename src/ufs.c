@@ -210,7 +210,7 @@ LispPTR UFS_getfilename(LispPTR *args)
    * Now, we convert a file name back to Lisp format.  The version field have not
    * to be converted.  The fourth argument for lisppathname specifies it.
    */
-  if (lisppathname(file, lfname, 0, 0) == 0) return (NIL);
+  if (lisppathname(file, lfname, sizeof(lfname), 0, 0) == 0) return (NIL);
 
   STRING_BASE(args[2], base);
   len = strlen(lfname);
@@ -414,7 +414,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
   if (!S_ISDIR(sbuf.st_mode)) return (NIL);
 
   /* Convert Unix file naming convention to Xerox Lisp one. */
-  if (lisppathname(fullname, dirname, 1, 0) == 0) return (NIL);
+  if (lisppathname(fullname, dirname, sizeof(dirname), 1, 0) == 0) return (NIL);
 
   len = strlen(dirname);
   STRING_BASE(args[1], base);
@@ -846,6 +846,7 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
  *					The lispname is used to determine which
  *					character should be quoted in the result
  *					Xerox Lisp pathname representation.
+ *		size_t	lispnamesize	size of storage available for lispname
  *		int	dirp		If 1, fullname is a directory.  If 0,
  *					fullname is a file.
  *		int	versionp	If 1, version field is also converted
@@ -872,7 +873,7 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
  *
  */
 
-int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
+int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, int versionp)
 {
   char *cp, *dp, *lnamep, *cnamep;
   char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN];
@@ -983,7 +984,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   if (dirp) {
     if (*(dp - 1) != '>' || *(dp - 2) == '\'') *dp++ = '>';
     *dp = '\0';
-    strcpy(lispname, namebuf);
+    strlcpy(lispname, namebuf, lispnamesize);
     return (1);
   }
 
@@ -1047,7 +1048,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
    * or not.  If extension field is not included, we have to add a period
    * to specify empty extension field.
    */
-  strcpy(fbuf, namebuf);
+  strlcpy(fbuf, namebuf, sizeof(fbuf));
   dp = cp = fbuf;
   while (*cp) {
     switch (*cp) {
@@ -1090,7 +1091,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   if (versionp && *ver != '\0') {
     conc_name_and_version(fbuf, ver, namebuf, MAXPATHLEN);
   } else {
-    strcpy(namebuf, fbuf);
+    strlcpy(namebuf, fbuf, sizeof(namebuf));
   }
 
   /*
@@ -1098,7 +1099,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
    */
   if (!dirp && versionp) UnixVersionToLispVersion(namebuf, 0);
 
-  strcpy(lispname, namebuf);
+  strlcpy(lispname, namebuf, lispnamesize);
   return (1);
 }
 
@@ -1189,10 +1190,10 @@ int quote_fname(char *file)
   if (*ver != '\0') {
     conc_name_and_version(fbuf, ver, namebuf, sizeof(namebuf));
   } else {
-    strcpy(namebuf, fbuf);
+    strlcpy(namebuf, fbuf, sizeof(namebuf));
   }
   UnixVersionToLispVersion(namebuf, 1);
-  strcpy(file, namebuf);
+  strlcpy(file, namebuf, sizeof(file));
   return (1);
 }
 

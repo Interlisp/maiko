@@ -10,7 +10,7 @@ int unixpathname(char *src, char *dst, int dstlen, int versionp, int genp, char 
 #else
 int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp);
 #endif
-int lisppathname(char *fullname, char *lispname, int dirp, int versionp);
+int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, int versionp);
 int quote_fname(char *file);
 int quote_fname_ufs(char *file);
 int quote_dname(char *dir);
