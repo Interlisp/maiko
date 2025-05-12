@@ -34,8 +34,7 @@
 #include "lspglob.h"
 #include "lsptypes.h"
 #include "timeout.h"        // for S_TOUT, TIMEOUT0, TIMEOUT, ERRSETJMP
-#include "ufsdefs.h"        // for quote_dname, quote_fname, quote_fname_ufs
-
+#include "ufsdefs.h"        // for unixpathname
 extern int *Lisp_errno;
 extern int Dummy_errno;
 
@@ -215,6 +214,232 @@ int make_old_version(char *old, char *file)
 /************************************************************************/
 /******** E N D   O F   P A T T E R N - M A T C H I N G   C O D E *******/
 /************************************************************************/
+
+/************************************************************************/
+/************** B E G I N  O F   Q U O T I N G   C O D E ****************/
+/************************************************************************/
+
+/*
+ * Name:	quote_fname
+ *
+ * Argument:	char	*file		The root file name in UNIX format.  "Root"
+ *					file name contains the name, extension and
+ *					version fields.  A valid version field is in a
+ *					form as ".~##~".
+ *		size_t  filesize        size of storage allocated for (name of) file
+ *
+ * Value:	If succeed, returns 1, otherwise 0.
+ *
+ * Side Effect:	If succeed, file is replaced with the file name in Xerox Lisp format
+ *		in which special characters are quoted.
+ *
+ * Description:
+ *
+ * Converts a UNIX root file name to Xerox Lisp one.  This routine only quotes special
+ * characters in Xerox file naming convention, does not care about the "true" name
+ * which might be specified directly by the user as like lisppathname.   Thus, this
+ * routine can be invoked when you don't know how to escape the period character.  This
+ * is the case when you convert a file name in the course of the directory enumeration.
+ *
+ * This routine is used when file is a "FILE" name and being converted to {DSK} name.
+ *
+ * The special characters which is quoted include "<", ">", ";", and "'" itself.  Notice
+ * again that "." is not quoted, because we don't know it is a extension separator in
+ * Lisp sense or not.
+ */
+
+static int quote_fname(char *file, size_t filesize)
+{
+  char *cp, *dp;
+  int extensionp;
+  char fbuf[MAXNAMLEN + 1], namebuf[MAXNAMLEN + 1], ver[VERSIONLEN];
+
+  cp = file;
+  dp = fbuf;
+
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
+
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
+
+  /*
+   * extensionp indicates whether extension field is included in a file
+   * name or not.  If extension field is not included, we have to add a
+   * period to specify empty extension field.
+   */
+  separate_version(fbuf, ver, 1);
+  cp = fbuf;
+  extensionp = 0;
+  while (*cp && !extensionp) {
+    switch (*cp) {
+      case '.':
+        if (*(cp + 1)) extensionp = 1;
+        cp++;
+        break;
+
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
+
+      default: cp++; break;
+    }
+  }
+  if (!extensionp) {
+    if (*(cp - 1) == '.') {
+      *(cp - 1) = '\'';
+      *cp++ = '.';
+    }
+    *cp++ = '.';
+    *cp = '\0';
+  }
+  if (*ver != '\0') {
+    conc_name_and_version(fbuf, ver, namebuf, sizeof(namebuf));
+  } else {
+    strlcpy(namebuf, fbuf, sizeof(namebuf));
+  }
+  UnixVersionToLispVersion(namebuf, 1);
+  strlcpy(file, namebuf, filesize);
+  return (1);
+}
+
+/*
+ * Name:	quote_fname_ufs
+ *
+ * Argument:	char	*file		The root file name in UNIX format.  "Root"
+ *					file name contains the name, extension and
+ *					version fields.  A valid version field is in a
+ *					form as ".~##~".
+ *
+ * Value:	If succeed, returns 1, otherwise 0.
+ *
+ * Side Effect:	If succeed, file is replaced with the file name in Xerox Lisp format
+ *		in which special characters are quoted.
+ *
+ * Description:
+ *
+ * Similar to quote_fname, but this routine is only used when file is a "FILE" name
+ * and being converted to {UNIX} name.
+ */
+
+static int quote_fname_ufs(char *file, size_t filesize)
+{
+  char *cp, *dp;
+  int extensionp;
+  char fbuf[MAXNAMLEN + 1];
+
+  cp = file;
+  dp = fbuf;
+
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
+
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
+
+  /*
+   * extensionp indicates whether extension field is included in a file
+   * name or not.  If extension field is not included, we have to add a
+   * period to specify empty extension field.
+   */
+  cp = fbuf;
+  extensionp = 0;
+  while (*cp && !extensionp) {
+    switch (*cp) {
+      case '.':
+        if (*(cp + 1)) extensionp = 1;
+        cp++;
+        break;
+
+      case '\'':
+        if (*(cp + 1) != '\0')
+          cp += 2;
+        else
+          cp++;
+        break;
+
+      default: cp++; break;
+    }
+  }
+  if (!extensionp) {
+    if (*(cp - 1) == '.') {
+      *(cp - 1) = '\'';
+      *cp++ = '.';
+    }
+    *cp++ = '.';
+    *cp = '\0';
+  }
+  strlcpy(file, fbuf, filesize);
+  return (1);
+}
+
+/*
+ * Name:	quote_dname
+ *
+ * Argument:	char	*dir		The directory name in UNIX format.  Does not
+ *					include its parent name.
+ *
+ * Value:	If succeed, returns 1, otherwise 0.
+ *
+ * Side Effect:	If succeed, dir is replaced with the directory name in Xerox Lisp
+ * 		format in which special characters are quoted.
+ *
+ * Description:
+ *
+ * Similar to quote_fname, but this routine is only used when dir is a "DIRECTORY"
+ * name.  Both {DSK} and {UNIX} uses this routine.
+ */
+
+static int quote_dname(char *dir, size_t dirsize)
+{
+  char *cp, *dp;
+  char fbuf[MAXNAMLEN + 1];
+
+  cp = dir;
+  dp = fbuf;
+
+  while (*cp) {
+    switch (*cp) {
+      case '>':
+      case ';':
+      case '\'':
+        *dp++ = '\'';
+        *dp++ = *cp++;
+        break;
+
+      default: *dp++ = *cp++; break;
+    }
+  }
+  *dp = '\0';
+
+  if (*(dp - 1) == '.') {
+    /* Trail period should be quoted. */
+    *(dp - 1) = '\'';
+    *dp++ = '.';
+  }
+
+  strlcpy(dir, fbuf, dirsize);
+  return (1);
+}
 
 /************************************************************************/
 /************ B E G I N  O F   F I L E - I N F O   C O D E **************/
@@ -461,7 +686,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     strcpy(namebuf, dirp.name);
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
-      quote_dname(namebuf);
+      quote_dname(namebuf, sizeof(namebuf));
       strcpy(nextp->lname, namebuf);
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
@@ -471,7 +696,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       /* All other types than directory. */
       nextp->dirp = 0;
       strcat(namebuf, ".~1~");
-      quote_fname(namebuf);
+      quote_fname(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
       strcpy(nextp->lname, namebuf);
       *(nextp->lname + len) = '\0';
@@ -525,7 +750,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     /* All other types than directory. */
     newp->dirp = 0;
     snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
-    quote_fname(namebuf);
+    quote_fname(namebuf, sizeof(namebuf));
     len = strlen(namebuf);
     strcpy(newp->lname, namebuf);
     *(newp->lname + len) = '\0';
@@ -598,7 +823,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       strcpy(namebuf, dp->d_name);
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf);
+        quote_dname(namebuf, sizeof(namebuf));
         strcpy(nextp->lname, namebuf);
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
@@ -607,7 +832,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname(namebuf);
+        quote_fname(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
         strcpy(nextp->lname, namebuf);
         *(nextp->lname + len) = '\0';
@@ -739,7 +964,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     strcpy(namebuf, dirp.name); /* moved from below 2/26/93 */
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
-      quote_dname(namebuf);
+      quote_dname(namebuf, sizeof(namebuf));
       strcpy(nextp->lname, namebuf);
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
@@ -749,7 +974,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       /* All other types than directory. */
       nextp->dirp = 0;
       strcat(namebuf, ".~1~");
-      quote_fname(namebuf);
+      quote_fname(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
       strcpy(nextp->lname, namebuf);
       *(nextp->lname + len) = '\0';
@@ -790,7 +1015,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     /* All other types than directory. */
     newp->dirp = 0;
     snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
-    quote_fname(namebuf);
+    quote_fname(namebuf, sizeof(namebuf));
     len = strlen(namebuf);
     strcpy(newp->lname, namebuf);
     *(newp->lname + len) = '\0';
@@ -861,7 +1086,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       strcpy(namebuf, dp->d_name);
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf);
+        quote_dname(namebuf, sizeof(namebuf));
         strcpy(nextp->lname, namebuf);
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
@@ -870,7 +1095,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname(namebuf);
+        quote_fname(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
         strcpy(nextp->lname, namebuf);
         *(nextp->lname + len) = '\0';
@@ -964,7 +1189,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     strcpy(namebuf, dirp.name);
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
-      quote_dname(namebuf);
+      quote_dname(namebuf, sizeof(namebuf));
       strcpy(nextp->lname, namebuf);
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
@@ -973,7 +1198,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      quote_fname_ufs(namebuf);
+      quote_fname_ufs(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
       strcpy(nextp->lname, namebuf);
       *(nextp->lname + len) = '\0';
@@ -1056,7 +1281,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       strcpy(namebuf, dp->d_name);
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf);
+        quote_dname(namebuf, sizeof(namebuf));
         strcpy(nextp->lname, namebuf);
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
@@ -1065,7 +1290,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname_ufs(namebuf);
+        quote_fname_ufs(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
         strcpy(nextp->lname, namebuf);
         *(nextp->lname + len) = '\0';
@@ -1163,7 +1388,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
     strcpy(namebuf, dirp.name);
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
-      quote_dname(namebuf);
+      quote_dname(namebuf, sizeof(namebuf));
       strcpy(nextp->lname, namebuf);
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
@@ -1172,7 +1397,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      quote_fname_ufs(namebuf);
+      quote_fname_ufs(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
       strcpy(nextp->lname, namebuf);
       *(nextp->lname + len) = '\0';
@@ -1239,7 +1464,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       strcpy(namebuf, dp->d_name);
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf);
+        quote_dname(namebuf, sizeof(namebuf));
         strcpy(nextp->lname, namebuf);
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
@@ -1248,7 +1473,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname_ufs(namebuf);
+        quote_fname_ufs(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
         strcpy(nextp->lname, namebuf);
         *(nextp->lname + len) = '\0';
