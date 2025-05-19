@@ -17,7 +17,7 @@
 #include <limits.h>         // for PATH_MAX
 #include <stdio.h>          // for fprintf, NULL, stderr, sscanf
 #include <stdlib.h>         // for getenv, exit, strtol
-#include <string.h>         // for strncpy, strcat, strcpy, strcmp
+#include <string.h>         // for strncpy, strlcat, strlcpy, strcmp
 #include <sys/types.h>      // for u_char
 #include <unistd.h>         // for access, R_OK
 #include "xdefs.h"          // for WINDOW_NAME
@@ -211,13 +211,13 @@ void read_Xoption(int *argc, char *argv[])
     print_Xusage(argv[0]);
   } else {
     envname = getenv("DISPLAY");
-    (void)strcpy(Display_Name, envname);
+    (void)strlcpy(Display_Name, envname, sizeof(Display_Name));
   }
   if ((xdisplay = XOpenDisplay(Display_Name)) != NULL) {
     /* read the other databases */
     /* Start with app-defaults/medley */
-    (void)strcpy(tmp, "/usr/lib/X11/app-defaults/");
-    (void)strcat(tmp, "medley");
+    (void)strlcpy(tmp, "/usr/lib/X11/app-defaults/", sizeof(tmp));
+    (void)strlcat(tmp, "medley", sizeof(tmp));
     applicationDB = XrmGetFileDatabase(tmp);
     if (applicationDB != NULL) { (void)XrmMergeDatabases(applicationDB, &rDB); }
     /* Then try the displays defaults */
@@ -232,8 +232,8 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   envname = getenv("HOME");
-  (void)strcat(tmp, envname);
-  (void)strcat(tmp, "/.Xdefaults");
+  (void)strlcpy(tmp, envname, sizeof(tmp));
+  (void)strlcat(tmp, "/.Xdefaults", sizeof(tmp));
   if (access(tmp, R_OK) != 0) {
     serverDB = XrmGetFileDatabase(tmp);
     if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
@@ -255,7 +255,7 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
     (void)strncpy(iconTitle, value.addr, value.size);
   } else {
-    (void)strcpy(iconTitle, "Medley");
+    (void)strlcpy(iconTitle, "Medley", sizeof(iconTitle));
   }
 
   if (XrmGetResource(rDB, "ldex.iconbitmap", "Ldex.Iconbitmap", str_type, &value) == True) {
@@ -275,8 +275,6 @@ void read_Xoption(int *argc, char *argv[])
     bitmask = XParseGeometry(tmp, &LispDisplayRequestedX, &LispDisplayRequestedY,
                              &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
   }
-
-  (void)strcpy(tmp, ""); /* Clear the string */
 
   if (XrmGetResource(rDB, "ldex.cursorColor", "Ldex.cursorColor", str_type, &value) == True) {
     (void)strncpy(cursorColor, value.addr, sizeof(cursorColor) - 1);
