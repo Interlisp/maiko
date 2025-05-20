@@ -22,7 +22,7 @@
 #include <errno.h>          // for errno, EINTR, ENOENT
 #include <stdio.h>          // for NULL, snprintf, size_t
 #include <stdlib.h>         // for calloc, free, strtoul, malloc, qsort
-#include <string.h>         // for strcpy, strcmp, strlen, strrchr, strcat
+#include <string.h>         // for strlcpy, strcmp, strlen, strrchr, strlcat
 #include <sys/stat.h>       // for stat, S_ISDIR, st_atime, st_mtime
 #include <sys/time.h>       // for timespec_t
 #include "adr68k.h"         // for NativeAligned4FromLAddr
@@ -71,20 +71,20 @@ extern int Dummy_errno;
   do {                                                  \
     char *pp;                               \
                                                      \
-    separate_version(tname, tver, 0);                \
+    separate_version(tname, sizeof(tname), tver, sizeof(tver), 0);                \
                                                      \
     if ((pp = (char *)strrchr(tname, '.')) == NULL) { \
       *(text) = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \
-      strcpy(text, pp + 1);                          \
+      strlcpy(text, pp + 1, sizeof(text));           \
     }                                                \
                                                      \
     if ((pp = (char *)strrchr(pname, '.')) == NULL) { \
       *(pext) = '\0';                                  \
     } else {                                         \
       *pp = '\0';                                    \
-      strcpy(pext, pp + 1);                          \
+      strlcpy(pext, pp + 1, sizeof(pext));           \
     }                                                \
   } while (0)
 
@@ -93,9 +93,9 @@ extern int Dummy_errno;
     char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
     char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
                                                                                               \
-    strcpy(tname, target);                                                                    \
+    strlcpy(tname, target, sizeof(tname));                                                    \
     DOWNCASE(tname);                                                                          \
-    strcpy(pname, name);                                                                      \
+    strlcpy(pname, name, sizeof(pname));                                                      \
     DOWNCASE(pname);                                                                          \
                                                                                               \
     SetupMatch(tname, pname, text, pext, tver);                                               \
@@ -111,8 +111,8 @@ extern int Dummy_errno;
     char tname[MAXNAMLEN], text[MAXNAMLEN], tver[VERSIONLEN];                                 \
     char pname[MAXNAMLEN], pext[MAXNAMLEN];                                                   \
                                                                                               \
-    strcpy(tname, target);                                                                    \
-    strcpy(pname, name);                                                                      \
+    strlcpy(tname, target, sizeof(tname));                                                     \
+    strlcpy(pname, name, sizeof(pname));                                                       \
                                                                                               \
     SetupMatch(tname, pname, text, pext, tver);                                               \
                                                                                               \
@@ -190,23 +190,23 @@ static int match_pattern(char *tp, char *pp)
 
 #ifdef DOS
 
-int make_old_version(char *old, char *file)
+int make_old_version(char *old, size_t oldsize, char *file)
 {
   int len = (int)strlen(file) - 1;
   if (file[len] == DIRCHAR) return 0;
   /* look up old versions of files for version # 0's */
-  strcpy(old, file);
+  strlcpy(old, file, oldsize);
 
   if (old[len] == '.')
-    strcat(old, "%");
+    strlcat(old, "%", oldsize);
   else if ((len > 0) && old[len - 1] == '.')
-    strcat(old, "%");
+    strlcat(old, "%", oldsize);
   else if ((len > 1) && old[len - 2] == '.')
-    strcat(old, "%");
+    strlcat(old, "%", oldsize);
   else if ((len > 2) && old[len - 3] == '.')
     old[len] = '%';
   else
-    strcat(old, ".%");
+    strlcat(old, ".%", oldsize);
   return 1;
 }
 #endif /* DOS */
@@ -276,7 +276,7 @@ static int quote_fname(char *file, size_t filesize)
    * name or not.  If extension field is not included, we have to add a
    * period to specify empty extension field.
    */
-  separate_version(fbuf, ver, 1);
+  separate_version(fbuf, sizeof(fbuf), ver, sizeof(ver), 1);
   cp = fbuf;
   extensionp = 0;
   while (*cp && !extensionp) {
@@ -633,7 +633,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     isslash = 1;
 
   if (!isslash)
-    strcpy(namebuf, dir); /* Only add the dir if it's real */
+    strlcpy(namebuf, dir, sizeof(namebuf)); /* Only add the dir if it's real */
   else if (drive) {
     namebuf[0] = drive;
     namebuf[1] = DRIVESEP;
@@ -641,8 +641,8 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   } else
     *namebuf = '\0';
 
-  strcat(namebuf, DIRSEPSTR);
-  strcat(namebuf, name);
+  strlcat(namebuf, DIRSEPSTR, sizeof(namebuf));
+  strlcat(namebuf, name, sizeof(namebuf));
 
   TIMEOUT(res = _dos_findfirst(namebuf, _A_NORMAL | _A_SUBDIR, &dirp));
   if (res < 0) {
@@ -683,11 +683,11 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
       *(nextp->lname + len + 1) = '\0';
@@ -695,18 +695,18 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      strcat(namebuf, ".~1~");
+      strlcat(namebuf, ".~1~", sizeof(namebuf));
       quote_fname(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       *(nextp->lname + len) = '\0';
       nextp->lname_len = len;
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     len = strlen(namebuf);
     DOWNCASE(namebuf);
-    strcpy(nextp->no_ver_name, namebuf);
+    strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
     nextp->version = 1;
     nextp->ino = sbuf.st_ino;
     nextp->prop->length = (unsigned)sbuf.st_size;
@@ -718,7 +718,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
                     nextp->prop->au_len = 0;
             } else {
                     len = strlen(pwd->pw_name);
-                    strcpy(nextp->prop->author, pwd->pw_name);
+                    strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
                     *(nextp->prop->author + len) = '\0';
                     nextp->prop->au_len = len;
             } */
@@ -732,7 +732,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   for (nextp = prevp; nextp; nextp = nextp->next) {
     FINFO *newp;
 
-    if (!make_old_version(old, nextp->no_ver_name)) continue;
+    if (!make_old_version(old, sizeof(old), nextp->no_ver_name)) continue;
 
     if (isslash) {
       if (drive)
@@ -752,11 +752,10 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
     quote_fname(namebuf, sizeof(namebuf));
     len = strlen(namebuf);
-    strcpy(newp->lname, namebuf);
-    *(newp->lname + len) = '\0';
+    strlcpy(newp->lname, namebuf, sizeof(newp->lname));
     newp->lname_len = len;
 
-    strcpy(newp->no_ver_name, old);
+    strlcpy(newp->no_ver_name, old, sizeof(newp->no_ver_name));
     newp->version = 0;
     newp->ino = sbuf.st_ino;
     newp->prop->length = (unsigned)sbuf.st_size;
@@ -820,11 +819,11 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf, sizeof(namebuf));
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
         *(nextp->lname + len + 1) = '\0';
@@ -834,16 +833,16 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         nextp->dirp = 0;
         quote_fname(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         *(nextp->lname + len) = '\0';
         nextp->lname_len = len;
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       len = strlen(namebuf);
-      separate_version(namebuf, fver, 1);
+      separate_version(namebuf, sizeof(namebuf), fver, sizeof(fver), 1);
       DOWNCASE(namebuf);
-      strcpy(nextp->no_ver_name, namebuf);
+      strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
       if (*fver == '\0')
         nextp->version = 0;
       else
@@ -858,7 +857,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         nextp->prop->au_len = 0;
       } else {
         len = strlen(pwd->pw_name);
-        strcpy(nextp->prop->author, pwd->pw_name);
+        strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
         *(nextp->prop->author + len) = '\0';
         nextp->prop->au_len = len;
       }
@@ -912,7 +911,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     isslash = 1;
 
   if (!isslash)
-    strcpy(namebuf, dir); /* Only add the dir if it's real */
+    strlcpy(namebuf, dir, sizeof(namebuf)); /* Only add the dir if it's real */
   else if (drive) {
     namebuf[0] = drive;
     namebuf[1] = DRIVESEP;
@@ -920,8 +919,8 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
   } else
     *namebuf = '\0';
 
-  strcat(namebuf, DIRSEPSTR);
-  strcat(namebuf, name);
+  strlcat(namebuf, DIRSEPSTR, sizeof(namebuf));
+  strlcat(namebuf, name, sizeof(namebuf));
 
   TIMEOUT(rval = _dos_findfirst(namebuf, _A_NORMAL | _A_SUBDIR, &dirp));
   if (rval != 0) {
@@ -961,11 +960,11 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
-    strcpy(namebuf, dirp.name); /* moved from below 2/26/93 */
+    strlcpy(namebuf, dirp.name, sizeof(namebuf)); /* moved from below 2/26/93 */
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
       *(nextp->lname + len + 1) = '\0';
@@ -973,18 +972,18 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      strcat(namebuf, ".~1~");
+      strlcat(namebuf, ".~1~", sizeof(namebuf));
       quote_fname(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       *(nextp->lname + len) = '\0';
       nextp->lname_len = len;
     }
 
-    strcpy(namebuf, dirp.name); /* to get real versionless name */
+    strlcpy(namebuf, dirp.name, sizeof(namebuf)); /* to get real versionless name */
     len = strlen(namebuf);
     DOWNCASE(namebuf);
-    strcpy(nextp->no_ver_name, namebuf);
+    strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
     nextp->version = 1;
     nextp->ino = sbuf.st_ino;
     n++;
@@ -997,7 +996,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
   for (nextp = prevp; nextp; nextp = nextp->next) {
     FINFO *newp;
 
-    if (!make_old_version(old, nextp->no_ver_name)) continue;
+    if (!make_old_version(old, sizeof(old), nextp->no_ver_name)) continue;
 
     if (isslash) {
       if (drive)
@@ -1017,11 +1016,11 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
     quote_fname(namebuf, sizeof(namebuf));
     len = strlen(namebuf);
-    strcpy(newp->lname, namebuf);
+    strlcpy(newp->lname, namebuf, sizeof(newp->lname));
     *(newp->lname + len) = '\0';
     newp->lname_len = len;
 
-    strcpy(newp->no_ver_name, old);
+    strlcpy(newp->no_ver_name, old, sizeof(newp->no_ver_name));
     newp->version = 0;
     newp->ino = sbuf.st_ino;
     n++;
@@ -1083,11 +1082,11 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf, sizeof(namebuf));
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
         *(nextp->lname + len + 1) = '\0';
@@ -1097,16 +1096,16 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
         nextp->dirp = 0;
         quote_fname(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         *(nextp->lname + len) = '\0';
         nextp->lname_len = len;
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       len = strlen(namebuf);
-      separate_version(namebuf, fver, 1);
+      separate_version(namebuf, sizeof(namebuf), fver, sizeof(fver), 1);
       DOWNCASE(namebuf);
-      strcpy(nextp->no_ver_name, namebuf);
+      strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
       if (*fver == '\0')
         nextp->version = 0;
       else
@@ -1186,11 +1185,11 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
       *(nextp->lname + len + 1) = '\0';
@@ -1200,12 +1199,12 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       nextp->dirp = 0;
       quote_fname_ufs(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       *(nextp->lname + len) = '\0';
       nextp->lname_len = len;
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     len = strlen(namebuf);
     nextp->ino = sbuf.st_ino;
     nextp->prop->length = (unsigned)sbuf.st_size;
@@ -1218,7 +1217,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
                             nextp->prop->au_len = 0;
                     } else {
                             len = strlen(pwd->pw_name);
-                            strcpy(nextp->prop->author, pwd->pw_name);
+                            strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
                             *(nextp->prop->author + len) = '\0';
                             nextp->prop->au_len = len;
                     }
@@ -1278,11 +1277,11 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf, sizeof(namebuf));
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
         *(nextp->lname + len + 1) = '\0';
@@ -1292,12 +1291,12 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         nextp->dirp = 0;
         quote_fname_ufs(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         *(nextp->lname + len) = '\0';
         nextp->lname_len = len;
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       len = strlen(namebuf);
       nextp->ino = sbuf.st_ino;
       nextp->prop->length = (unsigned)sbuf.st_size;
@@ -1310,7 +1309,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
                               nextp->prop->au_len = 0;
                       } else {
                               len = strlen(pwd->pw_name);
-                              strcpy(nextp->prop->author, pwd->pw_name);
+                              strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
                               *(nextp->prop->author + len) = '\0';
                               nextp->prop->au_len = len;
                       }
@@ -1385,11 +1384,11 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       len = strlen(namebuf);
       *(nextp->lname + len) = DIRCHAR;
       *(nextp->lname + len + 1) = '\0';
@@ -1399,12 +1398,12 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       nextp->dirp = 0;
       quote_fname_ufs(namebuf, sizeof(namebuf));
       len = strlen(namebuf);
-      strcpy(nextp->lname, namebuf);
+      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       *(nextp->lname + len) = '\0';
       nextp->lname_len = len;
     }
 
-    strcpy(namebuf, dirp.name);
+    strlcpy(namebuf, dirp.name, sizeof(namebuf));
     len = strlen(namebuf);
     nextp->ino = sbuf.st_ino;
     n++;
@@ -1461,11 +1460,11 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
         return (-1);
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
         quote_dname(namebuf, sizeof(namebuf));
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         len = strlen(namebuf);
         *(nextp->lname + len) = DIRCHAR;
         *(nextp->lname + len + 1) = '\0';
@@ -1475,12 +1474,12 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
         nextp->dirp = 0;
         quote_fname_ufs(namebuf, sizeof(namebuf));
         len = strlen(namebuf);
-        strcpy(nextp->lname, namebuf);
+        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
         *(nextp->lname + len) = '\0';
         nextp->lname_len = len;
       }
 
-      strcpy(namebuf, dp->d_name);
+      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
       len = strlen(namebuf);
       nextp->ino = sbuf.st_ino;
       n++;
@@ -1562,7 +1561,7 @@ static int trim_finfo(FINFO **fp)
            * file.
            */
           snprintf(ver, sizeof(ver), ";%u", mp->version + 1);
-          strcat(sp->lname, ver);
+          strlcat(sp->lname, ver, sizeof(sp->lname));
           sp->lname_len = strlen(sp->lname);
           pnum = ++num;
           pp = cp;
@@ -1587,7 +1586,7 @@ static int trim_finfo(FINFO **fp)
          * Only versionless file exists. It is regarded as
          * version 1.
          */
-        strcat(cp->lname, ";1");
+        strlcat(cp->lname, ";1", sizeof(cp->lname));
         cp->lname_len += 2;
         pp = cp;
         sp = cp = cp->next;
@@ -1690,7 +1689,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
            * file.
            */
           snprintf(ver, sizeof(ver), ";%u", mp->version + 1);
-          strcat(sp->lname, ver);
+          strlcat(sp->lname, ver, sizeof(sp->lname));
           sp->lname_len = strlen(sp->lname);
           /*
            * Lower versioned files, mp to cp
@@ -1729,7 +1728,7 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
          * Only versionless file exists. It is regarded as
          * version 1.
          */
-        strcat(cp->lname, ";1");
+        strlcat(cp->lname, ";1", sizeof(cp->lname));
         cp->lname_len += 2;
         pp = cp;
         sp = cp = cp->next;
@@ -1872,7 +1871,7 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
            */
           if (mp->version + 1 == rver) {
             snprintf(ver, sizeof(ver), ";%u", rver);
-            strcat(sp->lname, ver);
+            strlcat(sp->lname, ver, sizeof(sp->lname));
             sp->lname_len = strlen(sp->lname);
             /*
              * Lower versioned files, mp to cp
@@ -1928,7 +1927,7 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
           FreeFinfo(sp);
           sp = cp;
         } else {
-          strcat(cp->lname, ";1");
+          strlcat(cp->lname, ";1", sizeof(cp->lname));
           cp->lname_len += 2;
           pp = cp;
           sp = cp = cp->next;
@@ -2274,12 +2273,12 @@ LispPTR COM_gen_files(LispPTR *args)
      * On {DSK}, we have to make sure dir is case insensitively existing
      * directory.
      */
-    if (true_name(dir) != -1) return (SMALLP_MINUSONE);
+    if (true_name(dir, sizeof(dir)) != -1) return (SMALLP_MINUSONE);
 
     if (*ver != '\0') {
       highestp = 0;
       version = strtoul(ver, (char **)NULL, 10);
-      if (version > 0) strcpy(ver, "*");
+      if (version > 0) strlcpy(ver, "*", sizeof(ver));
     } else {
       version = 0;
       for (cp = fbuf; *cp; cp++) {}
@@ -2290,7 +2289,7 @@ LispPTR COM_gen_files(LispPTR *args)
          * all version.  trim_finfo_highest will get rid of
          * lower versions.
          */
-        strcpy(ver, "*");
+        strlcpy(ver, "*", sizeof(ver));
         highestp = 1;
       } else {
         highestp = 0;
@@ -2302,7 +2301,7 @@ LispPTR COM_gen_files(LispPTR *args)
       count = enum_dsk(dir, name, ver, &fp);
   } else {
     /* Makes UNIX device matches any version. */
-    strcpy(ver, "*");
+    strlcpy(ver, "*", sizeof(ver));
 
     if (propp)
       count = enum_ufs_prop(dir, name, ver, &fp);

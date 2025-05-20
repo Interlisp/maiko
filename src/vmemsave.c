@@ -165,27 +165,27 @@ LispPTR vmem_save0(LispPTR *args)
     if ((def = getenv("LDEDESTSYSOUT")) == 0) {
 #ifdef DOS
       if (getcwd(pwd, MAXNAMLEN) == NULL) return (FILETIMEOUT);
-      strcpy(sysout, pwd);
-      strcat(sysout, "/lisp.vm");
+      strlcpy(sysout, pwd, sizeof(sysout));
+      strlcat(sysout, "/lisp.vm", sizeof(sysout));
 #else
       pwd = getpwuid(getuid()); /* NEED TIMEOUT */
       if (pwd == (struct passwd *)NULL) return (FILETIMEOUT);
-      strcpy(sysout, pwd->pw_dir);
-      strcat(sysout, "/lisp.virtualmem");
+      strlcpy(sysout, pwd->pw_dir, sizeof(sysout));
+      strlcat(sysout, "/lisp.virtualmem", sizeof(sysout));
 #endif /* DOS */
     } else {
       if (*def == '~' && (*(def + 1) == '/' || *(def + 1) == '\0')) {
 #ifdef DOS
         if (getcwd(pwd, MAXNAMLEN) == NULL) return (FILETIMEOUT);
-        strcpy(sysout, pwd);
+        strlcpy(sysout, pwd, sizeof(sysout));
 #else
         pwd = getpwuid(getuid()); /* NEED TIMEOUT */
         if (pwd == (struct passwd *)NULL) return (FILETIMEOUT);
-        strcpy(sysout, pwd->pw_dir);
+        strlcpy(sysout, pwd->pw_dir, sizeof(sysout));
 #endif /* DOS */
-        strcat(sysout, def + 1);
+        strlcat(sysout, def + 1, sizeof(sysout));
       } else {
-        strcpy(sysout, def);
+        strlcpy(sysout, def, sizeof(sysout));
       }
     }
     return (vmem_save(sysout));
@@ -349,7 +349,7 @@ LispPTR vmem_save(char *sysout_file_name)
   SETJMP(FILETIMEOUT);
 #ifdef DOS
   /* Bloddy 8 char filenames in dos ... /jarl */
-  make_old_version(tempname, sysout_file_name);
+  make_old_version(tempname, sizeof(tempname), sysout_file_name);
 #else  /* DOS */
   snprintf(tempname, sizeof(tempname), "%s-temp", sysout_file_name);
 #endif /* DOS */

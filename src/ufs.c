@@ -810,8 +810,8 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
      */
     strlcpy(fbuf1, lfname, sizeof(fbuf1));
     strlcpy(fbuf2, dst, sizeof(fbuf2));
-    separate_version(fbuf1, ver1, 1);
-    separate_version(fbuf2, ver2, 1);
+    separate_version(fbuf1, sizeof(fbuf1), ver1, sizeof(ver1), 1);
+    separate_version(fbuf2, sizeof(fbuf2), ver2, sizeof(ver2), 1);
     for (cp = fbuf1; *cp; cp++) {}
     for (dp = fbuf2; *dp; dp++) {}
     if (*(cp - 1) == '.') {
@@ -880,7 +880,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
   int i, mask, extensionp;
 
   if (strcmp(fullname, DIRSEPSTR) == 0) {
-    strcpy(lispname, "<");
+    strlcpy(lispname, "<", lispnamesize);
     return (1);
   }
 
@@ -1068,7 +1068,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
     }
   }
   cp = dp + 1;
-  if (versionp) separate_version(fbuf, ver, 1);
+  if (versionp) separate_version(fbuf, sizeof(fbuf), ver, sizeof(ver), 1);
   extensionp = 0;
   while (*cp && !extensionp) {
     switch (*cp) {
