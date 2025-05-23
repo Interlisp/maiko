@@ -671,7 +671,7 @@ LispPTR COM_closefile(LispPTR *args)
   time[1].tv_sec = (long)ToUnixTime(cdate);
   time[1].tv_usec = 0L;
 #endif /* DOS */
-  TIMEOUT(rval = close(fd));
+  TIMEOUT(rval = close(fd)); // cancels alarm from S_TOUT
   if (rval == -1) {
     *Lisp_errno = errno;
     return (NIL);
@@ -1486,7 +1486,6 @@ LispPTR DSK_directorynamep(LispPTR *args)
   if (len > MAXPATHLEN - 2) FileNameTooLong(NIL);
 
   LispStringToCString(args[0], dirname, MAXPATHLEN);
-
 /* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
   separate_drive(dirname, drive);
@@ -2708,13 +2707,13 @@ static int locate_file(char *dir, size_t dirsize, char *name)
           DIR_OR_FILE_P(path, type);
           if (type != 0) {
             strlcpy(dir, path, dirsize);
-            TIMEOUT(closedir(dirp));
+            TIMEOUT(closedir(dirp));  // cancels alarm from S_TOUT
             return (type);
           }
         }
       }
     }
-  TIMEOUT(closedir(dirp));
+  TIMEOUT(closedir(dirp));  // cancels alarm from S_TOUT
   return (0);
 #endif /* DOS */
 }
@@ -3081,6 +3080,7 @@ static int get_version_array(char *dir, char *file)
     varray_index++;
     if (varray_index >= VERSIONARRAYMAXLENGTH) {
       *Lisp_errno = EIO;
+      alarm(0); // cancel alarm from S_TOUT
       return (0);
     } else if (varray_index >= VA.allocated) {
       VA.allocated += VERSIONARRAYCHUNKLENGTH;
@@ -3088,7 +3088,7 @@ static int get_version_array(char *dir, char *file)
                              sizeof(*VA.files) * VA.allocated);
     }
   }
-
+  alarm(0); // cancel alarm from S_TOUT
   /*
    * The last entry of VA.files is indicated by setting LASTVERSIONARRAY into
    * version_no field.
@@ -3192,6 +3192,7 @@ static int get_version_array(char *dir, char *file)
         varray_index++;
         if (varray_index >= VERSIONARRAYMAXLENGTH) {
           *Lisp_errno = EIO;
+          TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
           return (0);
         } else if (varray_index >= VA.allocated) {
           VA.allocated += VERSIONARRAYCHUNKLENGTH;
@@ -3200,6 +3201,8 @@ static int get_version_array(char *dir, char *file)
         }
       }
     }
+  TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
+
   /*
    * The last entry of varray is indicated by setting LASTVERSIONARRAY into
    * version_no field.
@@ -3223,7 +3226,6 @@ static int get_version_array(char *dir, char *file)
     }
   }
 
-  TIMEOUT(closedir(dirp));
   return (1);
 #endif /* DOS */
 }

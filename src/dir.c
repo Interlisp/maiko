@@ -38,7 +38,8 @@
 extern int *Lisp_errno;
 extern int Dummy_errno;
 
-#define DIRCHAR '>'
+#define LISPDIRCHAR '>'
+#define LISPDIRSTR ">"
 
 /************************************************************************
         SUBROUTINES
@@ -193,7 +194,7 @@ static int match_pattern(char *tp, char *pp)
 int make_old_version(char *old, size_t oldsize, char *file)
 {
   int len = (int)strlen(file) - 1;
-  if (file[len] == DIRCHAR) return 0;
+  if (file[len] == LISPDIRCHAR) return 0;
   /* look up old versions of files for version # 0's */
   strlcpy(old, file, oldsize);
 
@@ -661,6 +662,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
+      TIMEOUT(closedir(dirp));
       return (-1);
     }
     nextp->next = prevp;
@@ -688,25 +690,19 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
       strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      len = strlen(namebuf);
-      *(nextp->lname + len) = DIRCHAR;
-      *(nextp->lname + len + 1) = '\0';
-      nextp->lname_len = len + 1;
+      strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
+      nextp->lname_len = strlen(nextp->lname);
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
       strlcat(namebuf, ".~1~", sizeof(namebuf));
       quote_fname(namebuf, sizeof(namebuf));
-      len = strlen(namebuf);
       strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      *(nextp->lname + len) = '\0';
-      nextp->lname_len = len;
+      nextp->lname_len = strlen(nextp->lname);
     }
 
-    strlcpy(namebuf, dirp.name, sizeof(namebuf));
-    len = strlen(namebuf);
-    DOWNCASE(namebuf);
-    strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
+    strlcpy(nextp->no_ver_name, dirp.name, sizeof(nextp->no_ver_name));
+    DOWNCASE(nextp->no_ver_name);
     nextp->version = 1;
     nextp->ino = sbuf.st_ino;
     nextp->prop->length = (unsigned)sbuf.st_size;
@@ -717,14 +713,13 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
             if (pwd == (struct passwd *)NULL) {
                     nextp->prop->au_len = 0;
             } else {
-                    len = strlen(pwd->pw_name);
                     strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
-                    *(nextp->prop->author + len) = '\0';
-                    nextp->prop->au_len = len;
+                    nextp->prop->au_len = strlen(nextp->prop->author);
             } */
     n++;
   }
-
+  alarm(0); // cancel alarm from S_TOUT
+  
   /***********************/
   /* Now go looking for version-0 entries */
   /***********************/
@@ -751,9 +746,8 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     newp->dirp = 0;
     snprintf(namebuf, sizeof(namebuf), "%s.~00~", nextp->no_ver_name);
     quote_fname(namebuf, sizeof(namebuf));
-    len = strlen(namebuf);
     strlcpy(newp->lname, namebuf, sizeof(newp->lname));
-    newp->lname_len = len;
+    newp->lname_len = strlen(newp->lname);
 
     strlcpy(newp->no_ver_name, old, sizeof(newp->no_ver_name));
     newp->version = 0;
@@ -801,8 +795,8 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       AllocFinfo(nextp);
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
         return (-1);
       }
       nextp->next = prevp;
@@ -814,35 +808,26 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
          * link. We should ignore such error here.
          */
         FreeFinfo(nextp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
         return (-1);
       }
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
+      strlcpy(nextp->lname, dp->d_name, sizeof(nextp->lname));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf, sizeof(namebuf));
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        len = strlen(namebuf);
-        *(nextp->lname + len) = DIRCHAR;
-        *(nextp->lname + len + 1) = '\0';
-        nextp->lname_len = len + 1;
+        quote_dname(nextp->lname, sizeof(nextp->lname));
+        strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname(namebuf, sizeof(namebuf));
-        len = strlen(namebuf);
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        *(nextp->lname + len) = '\0';
-        nextp->lname_len = len;
+        quote_fname(nextp->lname, sizeof(nextp->lname));
       }
+      nextp->lname_len = strlen(nextp->lname);
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
-      len = strlen(namebuf);
-      separate_version(namebuf, sizeof(namebuf), fver, sizeof(fver), 1);
-      DOWNCASE(namebuf);
-      strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
+      strlcpy(nextp->no_ver_name, dp->d_name, sizeof(nextp->no_ver_name));
+      separate_version(nextp->no_ver_name, sizeof(nextp->no_ver_name), fver, sizeof(fver), 1);
+      DOWNCASE(nextp->no_ver_name);
       if (*fver == '\0')
         nextp->version = 0;
       else
@@ -856,14 +841,12 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       if (pwd == (struct passwd *)NULL) {
         nextp->prop->au_len = 0;
       } else {
-        len = strlen(pwd->pw_name);
         strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
-        *(nextp->prop->author + len) = '\0';
-        nextp->prop->au_len = len;
+        nextp->prop->au_len = strlen(nextp->prop->author);
       }
       n++;
     }
-  closedir(dirp);
+  TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
   if (n > 0) *finfo_buf = prevp;
   return (n);
 }
@@ -939,6 +922,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
+      alarm(0); // cancel alarm from S_TOUT
       return (-1);
     }
     nextp->next = prevp;
@@ -949,7 +933,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
         snprintf(namebuf, sizeof(namebuf), "\\%s", dirp.name);
     } else
       snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
-    TIMEOUT(rval = stat(namebuf, &sbuf));
+    TIMEOUT(rval = stat(namebuf, &sbuf));  // will cancel S_TOUT alarm
     if (rval == -1 && errno != ENOENT) {
       /*
        * ENOENT error might be caused by missing symbolic
@@ -960,35 +944,32 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
+
     strlcpy(namebuf, dirp.name, sizeof(namebuf)); /* moved from below 2/26/93 */
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
       quote_dname(namebuf, sizeof(namebuf));
       strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      len = strlen(namebuf);
-      *(nextp->lname + len) = DIRCHAR;
-      *(nextp->lname + len + 1) = '\0';
-      nextp->lname_len = len + 1;
+      strlcat(nextp->lname, LISPDIRCHAR, sizeof(nextp->lname));
+      nextp->lname_len = strlen(nextp->lname);
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
       strlcat(namebuf, ".~1~", sizeof(namebuf));
       quote_fname(namebuf, sizeof(namebuf));
-      len = strlen(namebuf);
       strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      *(nextp->lname + len) = '\0';
-      nextp->lname_len = len;
+      nextp->lname_len = strlen(nextp->lname);
     }
 
     strlcpy(namebuf, dirp.name, sizeof(namebuf)); /* to get real versionless name */
-    len = strlen(namebuf);
     DOWNCASE(namebuf);
     strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
     nextp->version = 1;
     nextp->ino = sbuf.st_ino;
     n++;
   }
-
+  alarm(0); // ensure alarm from S_TOUT is cancelled
+  
   /***********************/
   /* Now go looking for version-0 entries */
   /***********************/
@@ -1064,8 +1045,8 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       AllocFinfo(nextp);
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
         return (-1);
       }
       nextp->next = prevp;
@@ -1077,35 +1058,26 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
          * link. We should ignore such error here.
          */
         FreeFinfo(nextp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp));
         return (-1);
       }
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
+      strlcpy(nextp->lname, dp->d_name, sizeof(nextp->lname));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf, sizeof(namebuf));
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        len = strlen(namebuf);
-        *(nextp->lname + len) = DIRCHAR;
-        *(nextp->lname + len + 1) = '\0';
-        nextp->lname_len = len + 1;
+        quote_dname(nextp->lname, sizeof(nextp->lname));
+        strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
         /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname(namebuf, sizeof(namebuf));
-        len = strlen(namebuf);
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        *(nextp->lname + len) = '\0';
-        nextp->lname_len = len;
+        quote_fname(nextp->lname, sizeof(nextp->lname));
       }
+      nextp->lname_len = strlen(nextp->lname);
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
-      len = strlen(namebuf);
-      separate_version(namebuf, sizeof(namebuf), fver, sizeof(fver), 1);
-      DOWNCASE(namebuf);
-      strlcpy(nextp->no_ver_name, namebuf, sizeof(nextp->no_ver_name));
+      strlcpy(nextp->no_ver_name, dp->d_name, sizeof(nextp->no_ver_name));
+      separate_version(nextp->no_ver_name, sizeof(nextp->no_ver_name), fver, sizeof(fver), 1);
+      DOWNCASE(nextp->no_ver_name);
       if (*fver == '\0')
         nextp->version = 0;
       else
@@ -1113,7 +1085,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
       nextp->ino = sbuf.st_ino;
       n++;
     }
-  closedir(dirp);
+  TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
   if (n > 0) *finfo_buf = prevp;
   return (n);
 }
@@ -1170,11 +1142,12 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
+      alarm(0); // cancel alarm from S_TOUT
       return (-1);
     }
     nextp->next = prevp;
     snprintf(namebuf, sizeof(namebuf), "%s\\%s", dir, dirp.name);
-    TIMEOUT(rval = stat(namebuf, &sbuf));
+    TIMEOUT(rval = stat(namebuf, &sbuf)); // cancels alarm set by S_TOUT
     if (rval == -1 && errno != ENOENT) {
       /*
        * ENOENT error might be caused by missing symbolic
@@ -1185,45 +1158,26 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       return (-1);
     }
 
-    strlcpy(namebuf, dirp.name, sizeof(namebuf));
+    strlcpy(nextp->lname, dp->d_name, sizeof(nextp->lname));
     if (S_ISDIR(sbuf.st_mode)) {
       nextp->dirp = 1;
-      quote_dname(namebuf, sizeof(namebuf));
-      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      len = strlen(namebuf);
-      *(nextp->lname + len) = DIRCHAR;
-      *(nextp->lname + len + 1) = '\0';
-      nextp->lname_len = len + 1;
+      quote_dname(nextp->lname, sizeof(nextp->lname));
+      strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      quote_fname_ufs(namebuf, sizeof(namebuf));
-      len = strlen(namebuf);
-      strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-      *(nextp->lname + len) = '\0';
-      nextp->lname_len = len;
+      quote_fname(nextp->lname, sizeof(nextp->lname));
     }
+    nextp->lname_len = strlen(nextp->lname);
 
-    strlcpy(namebuf, dirp.name, sizeof(namebuf));
-    len = strlen(namebuf);
     nextp->ino = sbuf.st_ino;
     nextp->prop->length = (unsigned)sbuf.st_size;
     nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
     nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
     nextp->prop->protect = (unsigned)sbuf.st_mode;
-    /*
-                    TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-                    if (pwd == (struct passwd *)NULL) {
-                            nextp->prop->au_len = 0;
-                    } else {
-                            len = strlen(pwd->pw_name);
-                            strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
-                            *(nextp->prop->author + len) = '\0';
-                            nextp->prop->au_len = len;
-                    }
-    */
     n++;
   }
+  alarm(0); // ensure alarm set by S_TOUT is cancelled
   if (n > 0) *finfo_buf = prevp;
   return (n);
 }
@@ -1259,64 +1213,43 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
       AllocFinfo(nextp);
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
         return (-1);
       }
       nextp->next = prevp;
       snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
-      TIMEOUT(rval = stat(namebuf, &sbuf));
+      TIMEOUT(rval = stat(namebuf, &sbuf)); // cancels alarm set by S_TOUT
       if (rval == -1 && errno != ENOENT) {
         /*
          * ENOENT error might be caused by missing symbolic
          * link. We should ignore such error here.
          */
         FreeFinfo(nextp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp));
         return (-1);
       }
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
+      strlcpy(nextp->lname, dp->d_name, sizeof(nextp->lname));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf, sizeof(namebuf));
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        len = strlen(namebuf);
-        *(nextp->lname + len) = DIRCHAR;
-        *(nextp->lname + len + 1) = '\0';
-        nextp->lname_len = len + 1;
+        quote_dname(nextp->lname, sizeof(nextp->lname));
+        strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
-        /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname_ufs(namebuf, sizeof(namebuf));
-        len = strlen(namebuf);
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        *(nextp->lname + len) = '\0';
-        nextp->lname_len = len;
+        quote_fname(nextp->lname, sizeof(nextp->lname));
       }
+      nextp->lname_len = strlen(nextp->lname);
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
-      len = strlen(namebuf);
       nextp->ino = sbuf.st_ino;
       nextp->prop->length = (unsigned)sbuf.st_size;
       nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
       nextp->prop->rdate = (unsigned)ToLispTime(sbuf.st_atime);
       nextp->prop->protect = (unsigned)sbuf.st_mode;
-      /*
-                      TIMEOUT(pwd = getpwuid(sbuf.st_uid));
-                      if (pwd == (struct passwd *)NULL) {
-                              nextp->prop->au_len = 0;
-                      } else {
-                              len = strlen(pwd->pw_name);
-                              strlcpy(nextp->prop->author, pwd->pw_name, sizeof(nextp->prop->author));
-                              *(nextp->prop->author + len) = '\0';
-                              nextp->prop->au_len = len;
-                      }
-      */
       n++;
     }
-  closedir(dirp);
+  TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
   if (n > 0) *finfo_buf = prevp;
   return (n);
 }
@@ -1369,6 +1302,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
+      alarm(0); // cancel alarm from S_TOUT
       return (-1);
     }
     nextp->next = prevp;
@@ -1390,7 +1324,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       quote_dname(namebuf, sizeof(namebuf));
       strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
       len = strlen(namebuf);
-      *(nextp->lname + len) = DIRCHAR;
+      *(nextp->lname + len) = LISPDIRCHAR;
       *(nextp->lname + len + 1) = '\0';
       nextp->lname_len = len + 1;
     } else {
@@ -1442,49 +1376,38 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
       AllocFinfo(nextp);
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
         return (-1);
       }
       nextp->next = prevp;
       snprintf(namebuf, sizeof(namebuf), "%s/%s", dir, dp->d_name);
-      TIMEOUT(rval = stat(namebuf, &sbuf));
+      TIMEOUT(rval = stat(namebuf, &sbuf)); // cancels alarm from S_TOUT
       if (rval == -1 && errno != ENOENT) {
         /*
          * ENOENT error might be caused by missing symbolic
          * link. We should ignore such error here.
          */
         FreeFinfo(nextp);
-        closedir(dirp);
         *Lisp_errno = errno;
+        TIMEOUT(closedir(dirp));
         return (-1);
       }
 
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
+      strlcpy(nextp->lname, dp->d_name, sizeof(nextp->lname));
       if (S_ISDIR(sbuf.st_mode)) {
         nextp->dirp = 1;
-        quote_dname(namebuf, sizeof(namebuf));
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        len = strlen(namebuf);
-        *(nextp->lname + len) = DIRCHAR;
-        *(nextp->lname + len + 1) = '\0';
-        nextp->lname_len = len + 1;
+        quote_dname(nextp->lname, sizeof(nextp->lname));
+        strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
-        /* All other types than directory. */
         nextp->dirp = 0;
-        quote_fname_ufs(namebuf, sizeof(namebuf));
-        len = strlen(namebuf);
-        strlcpy(nextp->lname, namebuf, sizeof(nextp->lname));
-        *(nextp->lname + len) = '\0';
-        nextp->lname_len = len;
+        quote_fname(nextp->lname, sizeof(nextp->lname));
       }
-
-      strlcpy(namebuf, dp->d_name, sizeof(namebuf));
-      len = strlen(namebuf);
+      nextp->lname_len = strlen(nextp->lname);
       nextp->ino = sbuf.st_ino;
       n++;
     }
-  closedir(dirp);
+  TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
   if (n > 0) *finfo_buf = prevp;
   return (n);
 }
