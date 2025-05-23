@@ -770,6 +770,8 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
 #ifdef DOS
           if (NameValid) *dp++ = *(cp + 1);
           CountNameChars;
+#else
+          *dp++ = *(cp + 1);
 #endif /* DOS */
           cp += 2;
           break;
