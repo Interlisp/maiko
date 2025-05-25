@@ -303,7 +303,7 @@ int FindUnixPipes(void) {
 /*									*/
 /************************************************************************/
 
-static int FindAvailablePty(char *Slave) {
+static int FindAvailablePty(char *Slave, size_t SlaveLen) {
   int res;
 
   res = posix_openpt(O_RDWR);
@@ -313,7 +313,7 @@ static int FindAvailablePty(char *Slave) {
   }
   grantpt(res);
   unlockpt(res);
-  strcpy(Slave, ptsname(res));
+  strlcpy(Slave, ptsname(res), SlaveLen);
   DBPRINT(("slave pty name is %s.\n", Slave));
 
   if (res != -1) {
@@ -392,7 +392,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       PipeName = build_socket_pathname(sockFD);
       memset(&sock, 0, sizeof(sock));
       sock.sun_family = AF_UNIX;
-      strcpy(sock.sun_path, PipeName);
+      strlcpy(sock.sun_path, PipeName, sizeof(sock.sun_path));
       if (bind(sockFD, (struct sockaddr *)&sock, sizeof(struct sockaddr_un)) < 0) {
         close(sockFD);
         perror("binding sockets");
@@ -570,7 +570,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       int Master;
       unsigned short len;
 
-      Master = FindAvailablePty(SlavePTY);
+      Master = FindAvailablePty(SlavePTY, sizeof(SlavePTY));
       DBPRINT(("Fork Shell; Master PTY = %d. Slave=%c%c.\n", Master, SlavePTY[0], SlavePTY[1]));
       if (Master < 0) {
         printf("Open of lisp side of PTY failed.\n");
@@ -771,6 +771,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
     {
       int sockFD;
       struct sockaddr_un sock;
+      size_t pathsize;
 
       /* First open the socket */
       sockFD = socket(AF_UNIX, SOCK_STREAM, 0);
@@ -782,12 +783,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
          socket into it */
       /* need to type-check the string here */
       LispStringToCString(args[1], shcom, 2048);
-      UJ[sockFD].pathname = malloc(strlen(shcom) + 1);
-      strcpy(UJ[sockFD].pathname, shcom);
+      pathsize = strlen(shcom) + 1;
+      UJ[sockFD].pathname = malloc(pathsize);
+      strlcpy(UJ[sockFD].pathname, shcom, pathsize);
       /* Then bind it to the pathname, and get it	listening properly */
 
       sock.sun_family = AF_UNIX;
-      strcpy(sock.sun_path, shcom);
+      strlcpy(sock.sun_path, shcom, sizeof(sock.sun_path));
       if (bind(sockFD, (struct sockaddr *)&sock, sizeof(struct sockaddr_un)) < 0) {
         close(sockFD);
         free(UJ[sockFD].pathname);

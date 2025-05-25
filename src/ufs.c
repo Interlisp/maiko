@@ -176,9 +176,9 @@ LispPTR UFS_getfilename(LispPTR *args)
  * unixpathname specifies it.
  */
 #ifdef DOS
-  if (unixpathname(lfname, file, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(lfname, file, 0, 0) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   switch (args[1]) {
@@ -210,7 +210,7 @@ LispPTR UFS_getfilename(LispPTR *args)
    * Now, we convert a file name back to Lisp format.  The version field have not
    * to be converted.  The fourth argument for lisppathname specifies it.
    */
-  if (lisppathname(file, lfname, 0, 0) == 0) return (NIL);
+  if (lisppathname(file, lfname, sizeof(lfname), 0, 0) == 0) return (NIL);
 
   STRING_BASE(args[2], base);
   len = strlen(lfname);
@@ -259,9 +259,9 @@ LispPTR UFS_deletefile(LispPTR *args)
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 
 #ifdef DOS
-  if (unixpathname(fbuf, file, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, file, sizeof(file), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, file, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, file, sizeof(file), 0, 0) == 0) return (NIL);
 #endif /* DOS */
   /* check if we're operating on directory or file */
   TIMEOUT(rval = stat(file, &sbuf));
@@ -327,15 +327,15 @@ LispPTR UFS_renamefile(LispPTR *args)
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
-  if (unixpathname(fbuf, src, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, src, sizeof(src), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, src, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, src, sizeof(src), 0, 0) == 0) return (NIL);
 #endif /* DOS */
   LispStringToCString(args[1], fbuf, MAXPATHLEN);
 #ifdef DOS
-  if (unixpathname(fbuf, dst, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, dst, sizeof(dst), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, dst, 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, dst, sizeof(dst), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   TIMEOUT(rval = rename(src, dst));
@@ -400,9 +400,9 @@ LispPTR UFS_directorynamep(LispPTR *args)
 
 /* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
-  if (unixpathname(dirname, fullname, 0, 0, 0, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(dirname, fullname, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 0, 0) == 0) return (NIL);
 #endif /* DOS */
 
   TIMEOUT(rval = stat(fullname, &sbuf));
@@ -414,7 +414,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
   if (!S_ISDIR(sbuf.st_mode)) return (NIL);
 
   /* Convert Unix file naming convention to Xerox Lisp one. */
-  if (lisppathname(fullname, dirname, 1, 0) == 0) return (NIL);
+  if (lisppathname(fullname, dirname, sizeof(dirname), 1, 0) == 0) return (NIL);
 
   len = strlen(dirname);
   STRING_BASE(args[1], base);
@@ -437,6 +437,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
  *				if the pathname is passed as a directory, the
  *				tail delimiter may be included.
  *		char	*dst	The buffer to which the converted pathname is stored.
+ *              int     dstlen  The size of the dst buffer
  *		int	versionp
  *				If 1, version field in src is converted to UNIX
  *				version form.  {DSK} device invokes unixpathname
@@ -463,9 +464,9 @@ LispPTR UFS_directorynamep(LispPTR *args)
  *
  */
 #ifdef DOS
-int unixpathname(char *src, char *dst, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
+int unixpathname(char *src, char *dst, int dstlen, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
 #else
-int unixpathname(char *src, char *dst, int versionp, int genp)
+int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
 #endif /* DOS */
 {
   char *cp, *dp, *np;
@@ -495,12 +496,12 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
    * file system code.
    */
   if (strcmp(src, "<") == 0) {
-    strcpy(dst, DIRSEPSTR);
+    strlcpy(dst, DIRSEPSTR, dstlen);
     return (1);
   }
 
   /* Copy src to protect it from destructive modification. */
-  strcpy(lfname, src);
+  strlcpy(lfname, src, sizeof(lfname));
 
 /*
  * If versionp is specified, we have to deal with the version field first,
@@ -582,7 +583,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
         TIMEOUT0(pwd = getpwuid(getuid()));
         if (pwd == NULL) return (0);
 
-        strcpy(dst, pwd->pw_dir);
+        strlcpy(dst, pwd->pw_dir, dstlen);
         while (*dp != '\0') dp++;
         if (*(dp - 1) != DIRSEP) {
           /*
@@ -606,7 +607,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
         TIMEOUT0(pwd = getpwnam(name));
         if (pwd == NULL) return (0);
 
-        strcpy(dst, pwd->pw_dir);
+        strlcpy(dst, pwd->pw_dir, dstlen);
         while (*dp != '\0') dp++;
         if (*(dp - 1) != DIRSEP) {
           /*
@@ -769,6 +770,8 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
 #ifdef DOS
           if (NameValid) *dp++ = *(cp + 1);
           CountNameChars;
+#else
+          *dp++ = *(cp + 1);
 #endif /* DOS */
           cp += 2;
           break;
@@ -807,10 +810,10 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
      * for the convenience of the pattern matching routines, we don't
      * care about the last period character.
      */
-    strcpy(fbuf1, lfname);
-    strcpy(fbuf2, dst);
-    separate_version(fbuf1, ver1, 1);
-    separate_version(fbuf2, ver2, 1);
+    strlcpy(fbuf1, lfname, sizeof(fbuf1));
+    strlcpy(fbuf2, dst, sizeof(fbuf2));
+    separate_version(fbuf1, sizeof(fbuf1), ver1, sizeof(ver1), 1);
+    separate_version(fbuf2, sizeof(fbuf2), ver2, sizeof(ver2), 1);
     for (cp = fbuf1; *cp; cp++) {}
     for (dp = fbuf2; *dp; dp++) {}
     if (*(cp - 1) == '.') {
@@ -825,11 +828,11 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
     }
 #ifdef DOS
     if (version >= 0)
-      sprintf(ver2, "%d", version);
+      snprintf(ver2, sizeof(ver2), "%d", version);
     else
       *ver2 = '\0';
 #endif /* DOS */
-    ConcNameAndVersion(fbuf2, ver2, dst);
+    conc_name_and_version(fbuf2, ver2, dst, MAXPATHLEN);
   }
   return (1);
 }
@@ -845,6 +848,7 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  *					The lispname is used to determine which
  *					character should be quoted in the result
  *					Xerox Lisp pathname representation.
+ *		size_t	lispnamesize	size of storage available for lispname
  *		int	dirp		If 1, fullname is a directory.  If 0,
  *					fullname is a file.
  *		int	versionp	If 1, version field is also converted
@@ -871,14 +875,14 @@ int unixpathname(char *src, char *dst, int versionp, int genp)
  *
  */
 
-int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
+int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, int versionp)
 {
   char *cp, *dp, *lnamep, *cnamep;
   char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN];
   int i, mask, extensionp;
 
   if (strcmp(fullname, DIRSEPSTR) == 0) {
-    strcpy(lispname, "<");
+    strlcpy(lispname, "<", lispnamesize);
     return (1);
   }
 
@@ -982,7 +986,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
   if (dirp) {
     if (*(dp - 1) != '>' || *(dp - 2) == '\'') *dp++ = '>';
     *dp = '\0';
-    strcpy(lispname, namebuf);
+    strlcpy(lispname, namebuf, lispnamesize);
     return (1);
   }
 
@@ -1046,7 +1050,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
    * or not.  If extension field is not included, we have to add a period
    * to specify empty extension field.
    */
-  strcpy(fbuf, namebuf);
+  strlcpy(fbuf, namebuf, sizeof(fbuf));
   dp = cp = fbuf;
   while (*cp) {
     switch (*cp) {
@@ -1066,7 +1070,7 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     }
   }
   cp = dp + 1;
-  if (versionp) separate_version(fbuf, ver, 1);
+  if (versionp) separate_version(fbuf, sizeof(fbuf), ver, sizeof(ver), 1);
   extensionp = 0;
   while (*cp && !extensionp) {
     switch (*cp) {
@@ -1087,9 +1091,9 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
     *cp = '\0';
   }
   if (versionp && *ver != '\0') {
-    ConcNameAndVersion(fbuf, ver, namebuf);
+    conc_name_and_version(fbuf, ver, namebuf, MAXPATHLEN);
   } else {
-    strcpy(namebuf, fbuf);
+    strlcpy(namebuf, fbuf, sizeof(namebuf));
   }
 
   /*
@@ -1097,227 +1101,6 @@ int lisppathname(char *fullname, char *lispname, int dirp, int versionp)
    */
   if (!dirp && versionp) UnixVersionToLispVersion(namebuf, 0);
 
-  strcpy(lispname, namebuf);
-  return (1);
-}
-
-/*
- * Name:	quote_fname
- *
- * Argument:	char	*file		The root file name in UNIX format.  "Root"
- *					file name contains the name, extension and
- *					version fields.  A valid version field is in a
- *					form as ".~##~".
- *
- * Value:	If succeed, returns 1, otherwise 0.
- *
- * Side Effect:	If succeed, file is replaced with the file name in Xerox Lisp format
- *		in which special characters are quoted.
- *
- * Description:
- *
- * Converts a UNIX root file name to Xerox Lisp one.  This routine only quotes special
- * characters in Xerox file naming convention, does not care about the "true" name
- * which might be specified directly by the user as like lisppathname.   Thus, this
- * routine can be invoked when you don't know how to escape the period character.  This
- * is the case when you convert a file name in the course of the directory enumeration.
- *
- * This routine is used when file is a "FILE" name and being converted to {DSK} name.
- *
- * The special characters which is quoted include "<", ">", ";", and "'" itself.  Notice
- * again that "." is not quoted, because we don't know it is a extension separator in
- * Lisp sense or not.
- */
-
-int quote_fname(char *file)
-{
-  char *cp, *dp;
-  int extensionp;
-  char fbuf[MAXNAMLEN + 1], namebuf[MAXNAMLEN + 1], ver[VERSIONLEN];
-
-  cp = file;
-  dp = fbuf;
-
-  while (*cp) {
-    switch (*cp) {
-      case '>':
-      case ';':
-      case '\'':
-        *dp++ = '\'';
-        *dp++ = *cp++;
-        break;
-
-      default: *dp++ = *cp++; break;
-    }
-  }
-  *dp = '\0';
-
-  /*
-   * extensionp indicates whether extension field is included in a file
-   * name or not.  If extension field is not included, we have to add a
-   * period to specify empty extension field.
-   */
-  separate_version(fbuf, ver, 1);
-  cp = fbuf;
-  extensionp = 0;
-  while (*cp && !extensionp) {
-    switch (*cp) {
-      case '.':
-        if (*(cp + 1)) extensionp = 1;
-        cp++;
-        break;
-
-      case '\'':
-        if (*(cp + 1) != '\0')
-          cp += 2;
-        else
-          cp++;
-        break;
-
-      default: cp++; break;
-    }
-  }
-  if (!extensionp) {
-    if (*(cp - 1) == '.') {
-      *(cp - 1) = '\'';
-      *cp++ = '.';
-    }
-    *cp++ = '.';
-    *cp = '\0';
-  }
-  if (*ver != '\0') {
-    ConcNameAndVersion(fbuf, ver, namebuf);
-  } else {
-    strcpy(namebuf, fbuf);
-  }
-  UnixVersionToLispVersion(namebuf, 1);
-  strcpy(file, namebuf);
-  return (1);
-}
-
-/*
- * Name:	quote_fname_ufs
- *
- * Argument:	char	*file		The root file name in UNIX format.  "Root"
- *					file name contains the name, extension and
- *					version fields.  A valid version field is in a
- *					form as ".~##~".
- *
- * Value:	If succeed, returns 1, otherwise 0.
- *
- * Side Effect:	If succeed, file is replaced with the file name in Xerox Lisp format
- *		in which special characters are quoted.
- *
- * Description:
- *
- * Similar to quote_fname, but this routine is only used when file is a "FILE" name
- * and being converted to {UNIX} name.
- */
-
-int quote_fname_ufs(char *file)
-{
-  char *cp, *dp;
-  int extensionp;
-  char fbuf[MAXNAMLEN + 1];
-
-  cp = file;
-  dp = fbuf;
-
-  while (*cp) {
-    switch (*cp) {
-      case '>':
-      case ';':
-      case '\'':
-        *dp++ = '\'';
-        *dp++ = *cp++;
-        break;
-
-      default: *dp++ = *cp++; break;
-    }
-  }
-  *dp = '\0';
-
-  /*
-   * extensionp indicates whether extension field is included in a file
-   * name or not.  If extension field is not included, we have to add a
-   * period to specify empty extension field.
-   */
-  cp = fbuf;
-  extensionp = 0;
-  while (*cp && !extensionp) {
-    switch (*cp) {
-      case '.':
-        if (*(cp + 1)) extensionp = 1;
-        cp++;
-        break;
-
-      case '\'':
-        if (*(cp + 1) != '\0')
-          cp += 2;
-        else
-          cp++;
-        break;
-
-      default: cp++; break;
-    }
-  }
-  if (!extensionp) {
-    if (*(cp - 1) == '.') {
-      *(cp - 1) = '\'';
-      *cp++ = '.';
-    }
-    *cp++ = '.';
-    *cp = '\0';
-  }
-  strcpy(file, fbuf);
-  return (1);
-}
-
-/*
- * Name:	quote_dname
- *
- * Argument:	char	*dir		The directory name in UNIX format.  Does not
- *					include its parent name.
- *
- * Value:	If succeed, returns 1, otherwise 0.
- *
- * Side Effect:	If succeed, dir is replaced with the directory name in Xerox Lisp
- * 		format in which special characters are quoted.
- *
- * Description:
- *
- * Similar to quote_fname, but this routine is only used when dir is a "DIRECTORY"
- * name.  Both {DSK} and {UNIX} uses this routine.
- */
-
-int quote_dname(char *dir)
-{
-  char *cp, *dp;
-  char fbuf[MAXNAMLEN + 1];
-
-  cp = dir;
-  dp = fbuf;
-
-  while (*cp) {
-    switch (*cp) {
-      case '>':
-      case ';':
-      case '\'':
-        *dp++ = '\'';
-        *dp++ = *cp++;
-        break;
-
-      default: *dp++ = *cp++; break;
-    }
-  }
-  *dp = '\0';
-
-  if (*(dp - 1) == '.') {
-    /* Trail period should be quoted. */
-    *(dp - 1) = '\'';
-    *dp++ = '.';
-  }
-
-  strcpy(dir, fbuf);
+  strlcpy(lispname, namebuf, lispnamesize);
   return (1);
 }
