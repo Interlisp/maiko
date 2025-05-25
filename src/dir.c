@@ -1166,7 +1166,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     } else {
       /* All other types than directory. */
       nextp->dirp = 0;
-      quote_fname(nextp->lname, sizeof(nextp->lname));
+      quote_fname_ufs(nextp->lname, sizeof(nextp->lname));
     }
     nextp->lname_len = strlen(nextp->lname);
 
@@ -1238,7 +1238,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
         strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
         nextp->dirp = 0;
-        quote_fname(nextp->lname, sizeof(nextp->lname));
+        quote_fname_ufs(nextp->lname, sizeof(nextp->lname));
       }
       nextp->lname_len = strlen(nextp->lname);
 
@@ -1401,7 +1401,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
         strlcat(nextp->lname, LISPDIRSTR, sizeof(nextp->lname));
       } else {
         nextp->dirp = 0;
-        quote_fname(nextp->lname, sizeof(nextp->lname));
+        quote_fname_ufs(nextp->lname, sizeof(nextp->lname));
       }
       nextp->lname_len = strlen(nextp->lname);
       nextp->ino = sbuf.st_ino;
