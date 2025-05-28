@@ -454,6 +454,11 @@ static void int_timer_service(int sig)
 /*									*/
 /************************************************************************/
 
+#if MAIKO_OS_LINUX
+  // for WSL1, which doesn't support setitimer(ITIMER_VIRTUAL ...)
+  int linux_emulate_timer = 0;
+#endif /* MAIKO_OS_LINUX */
+
 static void int_timer_init(void)
 
 {
@@ -489,6 +494,11 @@ static void int_timer_init(void)
   /* then attach a timer to it and turn it loose */
   timert.it_interval.tv_sec = timert.it_value.tv_sec = 0;
   timert.it_interval.tv_usec = timert.it_value.tv_usec = TIMER_INTERVAL;
+
+#if MAIKO_OS_LINUX
+  // (For WSL1) Capture error output from setittimer to indicate need to emulate timer
+  linux_emulate_timer =
+#endif /* MAIKO_OS_LINUX */
   setitimer(ITIMER_VIRTUAL, &timert, NULL);
 
   DBPRINT(("Timer interval set to %ld usec\n", (long)timert.it_value.tv_usec));
@@ -499,7 +509,7 @@ static void int_timer_init(void)
 /*									*/
 /*									*/
 /*									*/
-/*									*/
+/*
 /*									*/
 /*									*/
 /*									*/
