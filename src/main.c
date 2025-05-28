@@ -315,7 +315,7 @@ const char *nethubHelpstring =
 const char *nethubHelpstring = "";
 #endif
 
-#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+#if MAIKO_OS_LINUX || defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 extern int insnsCountdownForTimerAsyncEmulation;
 #endif
 
@@ -601,7 +601,7 @@ int main(int argc, char *argv[])
     }
 #endif /* MAIKO_ENABLE_NETHUB */
 
-#if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
+#if MAIKO_OS_LINUX || defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
     else if (!strcmp(argv[i], "-intr-emu-insns")) {
       if (argc > ++i) {
         errno = 0;
