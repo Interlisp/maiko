@@ -1,7 +1,7 @@
-# Options for Linux, Intel x86_64 and X-Window
+# Options for Linux, Intel x86_64 and SDL
 
-CC = gcc -m64 $(GCC_CFLAGS) -I/usr/local/include
-#CC = clang -m64 $(CLANG_CFLAGS)
+CC = gcc -m64 $(GCC_CFLAGS)
+# CC = clang -m64 $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)sdl.o
 
@@ -15,10 +15,9 @@ XFLAGS = -DSDL=2
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) -D__wsl1__
+DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
 
-LDFLAGS = -lm -L/usr/local/lib -lSDL2
-#
+LDFLAGS = -lm -lSDL2
 LDELDFLAGS =
 
 OBJECTDIR = ../$(RELEASENAME)/

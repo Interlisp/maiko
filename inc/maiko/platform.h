@@ -38,10 +38,20 @@
 #  define MAIKO_OS_DETECTED 1
 #endif
 
-#ifdef __linux__
+#if defined(__linux__) && !defined(__wsl1__)
 #  define MAIKO_OS_LINUX 1
 #  define MAIKO_OS_NAME "Linux"
 #  define MAIKO_OS_UNIX_LIKE 1
+#  define MAIKO_OS_DETECTED 1
+#endif
+
+#if defined(__linux__) && defined(__wsl1__)
+#  define MAIKO_OS_LINUX 1
+#  define MAIKO_OS_WSL1 1
+#  define MAIKO_OS_NAME "Windows System for Linux v1"
+#  define MAIKO_OS_UNIX_LIKE 1
+#  define MAIKO_EMULATE_TIMER_INTERRUPTS 1
+#  define MAIKO_EMULATE_ASYNC_INTERRUPTS 1
 #  define MAIKO_OS_DETECTED 1
 #endif
 
