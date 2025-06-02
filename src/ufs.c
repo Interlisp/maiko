@@ -329,7 +329,7 @@ LispPTR UFS_getfilename(LispPTR *args)
     case RECOG_NON:
       /*
        * "New" file means the "not existing" file.  UNIX device always
-       * recognizes a not existing file as if, the subsequent OPENFILE will
+       * recognizes a not existing file as is, the subsequent OPENFILE will
        * find the truth.
        * "Non" recognition is used to recognize a sysout file.
        */
@@ -1073,7 +1073,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
    *	'		''
    *	.		'.   only if it is used as a part of the extension
    *			     field.
-   *	others		as if
+   *	others		as is
    */
 
   cp = fullname + 1;
