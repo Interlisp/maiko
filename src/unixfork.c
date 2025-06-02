@@ -358,7 +358,7 @@ int fork_Unix(void) {
             (void)snprintf(PipeName, sizeof(PipeName), "/tmp/LPU%ld-%d", StartTime, slot);
             memset(&addr, 0, sizeof(struct sockaddr_un));
             addr.sun_family = AF_UNIX;
-            strcpy(addr.sun_path, PipeName);
+            strlcpy(addr.sun_path, PipeName, sizeof(addr.sun_path));
             status =
                 connect(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_un));
             if (status < 0) {
