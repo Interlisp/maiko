@@ -310,7 +310,7 @@ static int quote_fname(char *file, size_t filesize)
   } else {
     strlcpy(namebuf, fbuf, sizeof(namebuf));
   }
-  UnixVersionToLispVersion(namebuf, 1);
+  UnixVersionToLispVersion(namebuf, sizeof(namebuf), 1);
   strlcpy(file, namebuf, filesize);
   return (1);
 }

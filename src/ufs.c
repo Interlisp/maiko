@@ -9,6 +9,7 @@
 
 #include "version.h"
 
+#include <ctype.h>      /* for isdigit */
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
@@ -129,6 +130,134 @@ exit_host_filesystem(void) {
 #endif /* DOS */
 
 /*
+ * Name:	LispVersionToUnixVersion
+ *
+ * Argument:	char	*pathname
+ *				Xerox Lisp syntax pathname.
+ *
+ * Value:	If succeed, returns 1, otherwise 0.
+ *
+ * Side Effect:	The version part of pathname is destructively modified.
+ *
+ * Description:
+ *
+ * Destructively modifies the version part of pathname which follows the
+ * Xerox Lisp file naming convention to the UNIX one.
+ *
+ * If the file name which is passed from Lisp has the version part, it must be
+ * a valid one (i.e. all numeric).  This is guaranteed by Lisp code.
+ *
+ * This function should be called at the top of the routines which accept the
+ * file name from Lisp before converting it into a UNIX file name, because
+ * quoted characters, which might be removed during the conversion, may be
+ * needed to identify the version part.
+ *
+ */
+
+/*
+ * Unix version destructively replaces the Lisp ";version" with ".~version~" while the
+ * DOS version truncates the Lisp version at the ";" and stores an integer.
+ * Why are they different?
+ */
+#ifdef DOS
+static void LispVersionToUnixVersion(char *pathname, int *ver)
+{
+  char version[VERSIONLEN + 4] = {0};
+  char *vp = NULL;
+  char *ep = &pathname[strlen(pathname) - 1];   /* from the end */
+  while (ep >= pathname) {                      /* until the beginning */
+    if (*ep == ';' &&                           /* found a semicolon */
+        (ep == pathname || *(ep - 1) != '\'')) {/* at the beginning or not quoted */
+      vp = ep;                                  /* version starts at unquoted semicolon */
+      break;                                    /* stop when found version */
+    }
+    ep--;                                       /* previous character */
+  }
+
+  *ver = -1;
+  if (vp == NULL) return;                       /* there was no version field */
+
+  *vp++ = '\0';                                 /* end name at the semicolon */
+  if (*vp == '\0') return;                      /* empty version field */
+
+  *ver = strtol(vp, NULL, 10);
+}
+#else
+static void LispVersionToUnixVersion(char *pathname, size_t pathsize)
+{
+  char version[VERSIONLEN + 4] = {0};
+  char *vp = NULL;
+  char *ep = &pathname[strlen(pathname) - 1];   /* from the end */
+  while (ep >= pathname) {                      /* until the beginning */
+    if (*ep == ';' &&                           /* found a semicolon */
+        (ep == pathname || *(ep - 1) != '\'')) {/* at the beginning or not quoted */
+      vp = ep;                                  /* version starts at unquoted semicolon */
+      break;                                    /* stop when found version */
+    }
+    ep--;                                       /* previous character */
+  }
+
+  if (vp == NULL) return;                       /* there was no version field */
+
+  *vp++ = '\0';                                 /* end name at the semicolon */
+  if (*vp == '\0') return;                      /* empty version field */
+
+  while (*vp == '0') vp++;                      /* skip leading zeros */
+  if (*vp == '\0') return;                      /* all zero version is no version */
+  version[0] = '.';                             /* leading version marker */
+  version[1] = '~';                             /* leading version marker */
+  strlcat(version, vp, VERSIONLEN);             /* the trimmed version from the source */
+  strlcat(version, "~", VERSIONLEN);            /* trailing version marker */
+  strlcat(pathname, version, pathsize);         /* concatenate version to pathname */
+}
+#endif
+
+/*
+ * Name:	UnixVersionToLispVersion
+ *
+ * Argument:	char	*pathname    UNIX syntax pathname.
+ *		size_t  pathsize     size of storage of pathname
+ *		int	vlessp	     If 0, versionless file is converted to version 1.
+ *				     Otherwise, remains as versionless.
+ *
+ * Side Effect:	The version part of pathname is destructively modified.
+ *
+ * Description:
+ *
+ * Destructively modify the version part of pathname which follows the
+ * UNIX file naming convention to the Xerox Lisp one.
+ * This procedure should be called, in the routines which convert the UNIX pathname
+ * to Lisp one, just before it returns the result to Lisp, because converting
+ * version field will append a semicolon and it might make the routine be
+ * confused.
+ *
+ * A name which does not have a valid version field, that is ".~##~" form, is
+ * dealt with as version 1.
+ *
+ * A Lisp version is guaranteed to take less storage than a Unix version, however
+ * an invalid/missing version field will increase the storage used.
+ */
+
+void  UnixVersionToLispVersion(char *pathname, size_t pathsize, int vlessp)
+{
+  char *uvp;
+  char *ep = &pathname[strlen(pathname) - 1];
+
+  if (*ep-- != '~') goto badversion;   /* well-formed name with version ending with "~" */
+  while (isdigit(*ep) && (ep > (pathname + 1))) ep--; /* walk back, not too far */
+  /* well-formed name with version starting ".~" */
+  if ((ep == pathname) || (*ep != '~') || (*(ep - 1) != '.')) goto badversion;
+  /* must end .~###~ and ep points at the initial tilde */
+  *(ep - 1) = ';';  /* smash . to ; */
+  for (uvp = ep + 1; *uvp == '0' && *(uvp + 1) != '~'; uvp++); /* after ~, skip zeros */
+  while (*uvp != '~') *ep++ = *uvp++; /* copy remaining digits, guaranteed shorter */
+  *ep = '\0'; /* and terminate string */
+  return;
+ badversion:
+  if (!vlessp) strlcat(pathname, ";1", pathsize);
+}
+
+/*
  * Name:	UFS_getfilename
  *
  * Argument:	LispPTR	*args	args[0]
@@ -172,7 +301,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 /*
  * Convert a Lisp file name to UNIX one.  This is a UNIX device method.
- * Thus we don't need to convert a version field.  Third argument for
+ * Thus we don't need to convert a version field.  Fourth argument for
  * unixpathname specifies it.
  */
 #ifdef DOS
@@ -208,7 +337,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   }
   /*
    * Now, we convert a file name back to Lisp format.  The version field have not
-   * to be converted.  The fourth argument for lisppathname specifies it.
+   * to be converted.  The fifth argument for lisppathname specifies it.
    */
   if (lisppathname(file, lfname, sizeof(lfname), 0, 0) == 0) return (NIL);
 
@@ -509,9 +638,9 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
  * in the course of the following conversion.
  */
 #ifdef DOS
-  if (versionp) LispVersionToUnixVersion(lfname, version); else version = -1;
+  if (versionp) LispVersionToUnixVersion(lfname, &version); else version = -1;
 #else
-  if (versionp) LispVersionToUnixVersion(lfname);
+  if (versionp) LispVersionToUnixVersion(lfname, sizeof(lfname));
 #endif /* DOS */
 
   cp = lfname;
@@ -893,7 +1022,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
     *lispname++ = *fullname++;
   }
 #endif
-  
+
   if (!dirp) {
     /*
      * The characters which are dealt with specially (i.e. are quoted)
@@ -1099,7 +1228,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
   /*
    * Now, it's time to convert the version field.
    */
-  if (!dirp && versionp) UnixVersionToLispVersion(namebuf, 0);
+  if (!dirp && versionp) UnixVersionToLispVersion(namebuf, sizeof(namebuf), 0);
 
   strlcpy(lispname, namebuf, lispnamesize);
   return (1);

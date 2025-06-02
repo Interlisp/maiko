@@ -9,6 +9,7 @@
 
 #include "version.h"
 
+#include <ctype.h>          // for isdigit
 #include <errno.h>          // for errno, EINTR, ENOENT, ENFILE, EPERM
 #include <fcntl.h>          // for O_RDWR, O_CREAT, open, O_RDONLY, O_TRUNC
 #include <stdio.h>          // for NULL, snprintf, size_t, rename, SEEK_SET
@@ -2288,7 +2289,6 @@ LispPTR COM_getfreeblock(LispPTR *args)
 /********************************************
         Subroutines
 ********************************************/
-
 /*
  * Name:	separate_version
  *
@@ -2320,61 +2320,29 @@ LispPTR COM_getfreeblock(LispPTR *args)
  * regarded valid.
  *
  */
-
-void separate_version(char *name, size_t namesize, char *ver, size_t versize, int checkp)
-{
-  char *start, *end, *cp;
-  unsigned ver_no;
+void separate_version(char *name, size_t namesize, char *ver, size_t versize, int checkp) {
+  char *ep = &name[strlen(name) - 1];   
+  char *lp = ep;
   size_t len;
-  char ver_buf[VERSIONLEN];
 
-  if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
-    start = end;
-    cp = end + 1;
-    while (*cp) {
-      if (*cp == '~') {
-        start = end;
-        end = cp;
-      }
-      cp++;
-    }
-
-    if (start != end && *(start - 1) == '.' && end == (cp - 1)) {
-      /*
-       * name ends in the form ".~###~". But we have to check
-       * ### are all numbers or not, if checkp is 1.
-       */
-      len = (end - start) - 1;
-      strncpy(ver_buf, start + 1, len);
-      ver_buf[len] = '\0';
-      if (checkp) {
-        NumericStringP(ver_buf, YES, NO);
-      YES:
-        /*
-         * name contains a valid version field.
-         */
-        *(start - 1) = '\0';
-        *end = '\0';
-        /*
-         * Use strtoul() to eliminate leading 0s.
-         */
-        ver_no = strtoul(start + 1, (char **)NULL, 10);
-        snprintf(ver_buf, sizeof(ver_buf), "%u", ver_no);
-        strlcpy(ver, ver_buf, versize);
-        return;
-      } else {
-        *(start - 1) = '\0';
-        strlcpy(ver, ver_buf, versize);
-        return;
-      }
-    }
-  } else if (strchr(name, '%')) {
-    strlcpy(ver, "0", versize);
+  *ver = '\0';                   /* set up in case of failure */
+  if (*ep == '%') {              /* original code did this, is it necessary? */
+    strlcpy(ver, "0", versize);  /* a backup file is version 0 - DOS? */
     return;
   }
-NO:
-  /* name does not contain a valid version field. */
-  *ver = '\0';
+  if (*ep-- != '~') return;      /* not a well-formed Unix-style version */
+  if (checkp) {                  /* all numeric version required */
+    while(isdigit(*ep) && (ep > (name + 1))) ep--;  /* walk back, but not too far */
+  } else {
+    while(*ep != '~' && (ep > (name + 1))) ep--;    /* walk back, but not too far */
+  }
+  /* is it a well-formed version, "name.~nnn~" */
+  if ((ep == name) || (*ep != '~') || (*(ep - 1) != '.')) return;
+  len = lp - (ep + 1);           /* how long is the found version */
+  if (len >= versize) return;    /* give up if it won't fit */
+  memcpy(ver, ep + 1, len);      /* copy it back */
+  ver[len] = '\0';               /* and terminate the string */
+  *(ep - 1) = '\0';              /* and truncate the original name at the "." */
 }
 
 /*
