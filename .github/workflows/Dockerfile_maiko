@@ -26,9 +26,12 @@ RUN cd ${INSTALL_LOCATION}/bin \
 RUN cd ${INSTALL_LOCATION}/bin \
     && arch="$(./machinetype)" \
     && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
-           echo "#!/bin/sh" > osversion \
+           mv osversion oserversion.hold \
+           && echo "#!/bin/sh" > osversion \
            && echo "echo wsl1" >> osversion \
            && ./makeright x cleanup \
            && ./makeright x \
-           && ./makeright init; \
+           && ./makeright init \
+           && mv osversion.hold osversion \
+           ; \
        fi
