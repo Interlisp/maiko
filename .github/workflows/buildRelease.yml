@@ -224,7 +224,13 @@ jobs:
           RELEASE_TAG: ${{ steps.tag.outputs.release_tag }}
         run: |
           mkdir -p /tmp/release_tars
-          for OSARCH in "linux.x86_64:linux_amd64" "linux.aarch64:linux_arm64" "linux.armv7l:linux_arm_v7" ;    \
+          for OSARCH in                                                                \
+                        "linux.x86_64:linux_amd64"                                     \
+                        "linux.aarch64:linux_arm64"                                    \
+                        "linux.armv7l:linux_arm_v7"                                    \
+                        "wsl1.x86_64:linux_amd64"                                      \
+                        "wsl1.aarch64:linux_arm64"                                     \
+                        ;                                                              \
             do                                                                         \
               pushd /tmp/docker_images/${OSARCH##*:}/usr/local/interlisp >/dev/null ;  \
               /usr/bin/tar -c -z                                                       \
@@ -246,6 +252,8 @@ jobs:
           artifacts:
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.x86_64.tgz,
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.aarch64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-wsl1.x86_64.tgz,
+            /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-wsl1.aarch64.tgz,
             /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-linux.armv7l.tgz
           tag: ${{ steps.tag.outputs.release_tag }}
           draft: ${{ needs.inputs.outputs.draft }}

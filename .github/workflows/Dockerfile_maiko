@@ -18,8 +18,22 @@ COPY . ${INSTALL_LOCATION}
 # Build maiko
 RUN cd ${INSTALL_LOCATION}/bin \
     && ./makeright x cleanup \
-    && ./makeright x
-RUN cd ${INSTALL_LOCATION}/bin \
+    && ./makeright x \
     && if [ "$(./machinetype)" = "x86_64" ]; then \
            ./makeright init; \
+       fi
+# Build specially for WSL1 by "fooling" a linux build
+RUN cd ${INSTALL_LOCATION}/bin \
+    && arch="$(./machinetype)" \
+    && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
+           mv osversion osversion.hold \
+           && echo "#!/bin/sh" > osversion \
+           && echo "echo wsl1" >> osversion \
+           && chmod ugo+x osversion \
+           && ./makeright x cleanup \
+           && ./makeright x \
+           && ./makeright init \
+           && mv osversion.hold osversion \
+           && chmod ugo+x osversion \
+           ; \
        fi
