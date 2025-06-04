@@ -23,10 +23,10 @@ RUN cd ${INSTALL_LOCATION}/bin \
            ./makeright init; \
        fi
 # Build specially for WSL1 by "fooling" a linux build
-RUN arch="$(./machinetype)" \
+RUN cd ${INSTALL_LOCATION}/bin \
+    && arch="$(./machinetype)" \
     && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
-           cd ${INSTALL_LOCATION}/bin \
-           && echo "echo #!/bin/sh" > osversion \
+           echo "echo #!/bin/sh" > osversion \
            && echo "echo wsl1" >> osversion \
            && ./makeright x cleanup \
            && ./makeright x \
