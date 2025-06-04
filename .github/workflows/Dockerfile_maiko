@@ -29,9 +29,11 @@ RUN cd ${INSTALL_LOCATION}/bin \
            mv osversion oserversion.hold \
            && echo "#!/bin/sh" > osversion \
            && echo "echo wsl1" >> osversion \
+           && chmod ugo+x osversion \
            && ./makeright x cleanup \
            && ./makeright x \
            && ./makeright init \
            && mv osversion.hold osversion \
+           && chmod ugo+x osversion \
            ; \
        fi
