@@ -1,7 +1,7 @@
-# Options for Windows System for Linux v1, Intel x86_64 and X-Window
+# Options for Windows System for Linux v1, aarch64 and X-Window
 
-CC = gcc -m64 $(GCC_CFLAGS)
-# CC = clang -m64 $(CLANG_CFLAGS)
+CC = gcc $(GCC_CFLAGS)
+#CC = clang $(CLANG_CFLAGS)
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
@@ -12,7 +12,6 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xlspwin.o \
 	$(OBJECTDIR)xrdopt.o \
 	$(OBJECTDIR)xwinman.o
-
 
 XFLAGS = -DXWINDOW
 

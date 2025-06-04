@@ -9,9 +9,6 @@ case "$os" in
         alpha-dec-osf1)		echo osf1 ;;
 	*-apple-darwin*)	echo darwin ;;
         *-*-linux*)
-           echo d"${WSL_DISTRO_NAME}"d
-           echo i"${WSL_INTEROP}"i
-
            if [ -n "${WSL_DISTRO_NAME}" ] && [ -z "${WSL_INTEROP}" ];
            then echo wsl1; else echo linux; fi ;;
         *-*-openbsd*)		echo openbsd ;;
