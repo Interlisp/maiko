@@ -1,4 +1,4 @@
-# Options for Linux, ARM64 and SDL
+# Options for Windows System for Linux v1, ARM64 and SDL
 
 CC = gcc $(GCC_CFLAGS)
 #CC = clang $(CLANG_CFLAGS)
@@ -15,7 +15,7 @@ SDLFLAGS = -DSDL=2
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
-DFLAGS = $(SDLFLAGS) -DRELEASE=$(RELEASE)
+DFLAGS = $(SDLFLAGS) -DRELEASE=$(RELEASE) -D__wsl1__
 
 LDFLAGS = -lSDL2 -lm
 LDELDFLAGS =

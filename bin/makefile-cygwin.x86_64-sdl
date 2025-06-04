@@ -15,7 +15,7 @@ XFLAGS = -DSDL=2
 
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) -D__wsl1__
+DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
 
 LDFLAGS = -lm -L/usr/local/lib -lSDL2
 #
