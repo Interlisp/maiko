@@ -15,6 +15,7 @@ case "$os" in
         *-*-freebsd*)		echo freebsd ;;
 	*-*-cygwin*)            echo cygwin ;;
 	*-*-haiku*)             echo haiku ;;
+        *-microsoft-wsl1)       echo wsl1 ;;
 esac
 ### Don't leave the variable set.
 unset os

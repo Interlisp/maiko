@@ -26,14 +26,10 @@ RUN cd ${INSTALL_LOCATION}/bin \
 RUN cd ${INSTALL_LOCATION}/bin \
     && arch="$(./machinetype)" \
     && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
-           mv osversion osversion.hold \
-           && echo "#!/bin/sh" > osversion \
-           && echo "echo wsl1" >> osversion \
-           && chmod ugo+x osversion \
+           && export LDEARCH="${arch}-microsoft-wsl1" \
            && ./makeright x cleanup \
            && ./makeright x \
+           && ./makeright init clean \
            && ./makeright init \
-           && mv osversion.hold osversion \
-           && chmod ugo+x osversion \
            ; \
        fi
