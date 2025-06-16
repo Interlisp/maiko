@@ -29,7 +29,6 @@ RUN cd ${INSTALL_LOCATION}/bin \
            export LDEARCH="${arch}-microsoft-wsl1" \
            && ./makeright x cleanup \
            && ./makeright x \
-           && ./makeright init clean \
            && ./makeright init \
            ; \
        fi
