@@ -18,8 +18,17 @@ COPY . ${INSTALL_LOCATION}
 # Build maiko
 RUN cd ${INSTALL_LOCATION}/bin \
     && ./makeright x cleanup \
-    && ./makeright x
-RUN cd ${INSTALL_LOCATION}/bin \
+    && ./makeright x \
     && if [ "$(./machinetype)" = "x86_64" ]; then \
            ./makeright init; \
+       fi
+# Build specially for WSL1 by "fooling" a linux build
+RUN cd ${INSTALL_LOCATION}/bin \
+    && arch="$(./machinetype)" \
+    && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
+           export LDEARCH="${arch}-microsoft-wsl1" \
+           && ./makeright x cleanup \
+           && ./makeright x \
+           && ./makeright init \
+           ; \
        fi

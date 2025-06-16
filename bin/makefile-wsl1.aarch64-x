@@ -1,0 +1,27 @@
+# Options for Windows System for Linux v1, aarch64 and X-Window
+
+CC = gcc $(GCC_CFLAGS)
+#CC = clang $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)xmkicon.o \
+	$(OBJECTDIR)xbbt.o \
+	$(OBJECTDIR)dspif.o \
+	$(OBJECTDIR)xinit.o \
+	$(OBJECTDIR)xscroll.o \
+	$(OBJECTDIR)xcursor.o \
+	$(OBJECTDIR)xlspwin.o \
+	$(OBJECTDIR)xrdopt.o \
+	$(OBJECTDIR)xwinman.o
+
+XFLAGS = -DXWINDOW
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g3
+DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) -D__wsl1__
+
+LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
