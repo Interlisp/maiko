@@ -37,7 +37,7 @@ $ ./makeright x
 
 * The build will (attempt to) detect the OS-type and cpu-type. It will build binaries `lde` and `ldex` in `../`_`ostype.cputype`_ (with .o files in `../`_`ostype.cputype-x`_. For example, Linux on a 64-bit x86 will use `linux.x86_64`, while macOS 11 on a (new M1) Mac will use `darwin.aarch64`.
 * If you prefer `gcc` over `clang`, you will need to edit the makefile fragment for your configuration (`makefile-ostype.cputype-x`) and comment out the line (with a #) that defines `CC` as `clang` and uncomment the line (delete the #) for the line that defines `CC` as `gcc`.
-* If you want to do your own loadups to construct sysout files (see [the Medley repository](https://github.com/Interlisp/medley) for details), you also need the `ldeinit` binary. However, the `ldeinit` you get from the above steps is *not* functional. You have to run `./makeright init clean` followed by `./makeright init` to get a correct `ldeinit` binary.
+* If you want to do your own loadups to construct sysout files (see [the Medley repository](https://github.com/Interlisp/medley) for details), you also need the `ldeinit` binary, which you can build using `./makeright init clean` followed by `./makeright init`.
 
 ### Building with CMake
 We provide a `CMakeLists.txt` which provides mostly matching build capabilities to the `make` setup.
