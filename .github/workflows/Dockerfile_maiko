@@ -26,7 +26,7 @@ RUN cd ${INSTALL_LOCATION}/bin \
 RUN cd ${INSTALL_LOCATION}/bin \
     && arch="$(./machinetype)" \
     && if [ "$arch" = "x86_64" ] || [ "$arch" = "aarch64" ]; then \
-           && export LDEARCH="${arch}-microsoft-wsl1" \
+           export LDEARCH="${arch}-microsoft-wsl1" \
            && ./makeright x cleanup \
            && ./makeright x \
            && ./makeright init clean \
