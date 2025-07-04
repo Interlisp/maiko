@@ -3246,6 +3246,7 @@ static int maintain_version(char *file, int forcep)
      * is versioned one higher than the existing highest version.
      */
     FindHighestVersion(VA.files, entry, max_no);
+    if (max_no >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
     sprintf(ver, "%u", max_no + 1);
 /*
  * The old file should have the same case name as the versionless
@@ -3570,6 +3571,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
          * link missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
+        if (max_no >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
         sprintf(vbuf, "%u", max_no + 1);
         ConcNameAndVersion(vless, vbuf, vfile);
         strcpy(afile, vless);
@@ -3578,6 +3580,7 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
         /* A version is specified. */
         ver_no = strtoul(ver, (char **)NULL, 10);
         FindHighestVersion(varray, entry, max_no);
+        if (max_no >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
         if (ver_no == max_no + 1) {
           /*
            * If the version is one higher than the
@@ -3926,6 +3929,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
        * the existing highest version.
        */
       FindHighestVersion(varray, entry, max_no);
+      if (max_no + 1 >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
       sprintf(vbuf, "%u", max_no + 1);
       /*
        * We will use the file name of the existing highest
@@ -4018,6 +4022,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          * missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
+        if (max_no + 1 >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
         sprintf(vbuf, "%u", max_no + 2);
         ConcNameAndVersion(vless, vbuf, vfile);
         strcpy(afile, vfile);
@@ -4081,6 +4086,7 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
          * new file.
          */
         FindHighestVersion(varray, entry, max_no);
+        if (max_no >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
         sprintf(vbuf, "%u", max_no + 1);
         /*
          * We will use the name of the highest versioned file
@@ -4297,6 +4303,7 @@ static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
          * link missing versionless file.
          */
         FindHighestVersion(varray, entry, max_no);
+        if (max_no >= MAXVERSION) {*Lisp_errno = EIO; return (0);}
         sprintf(vbuf, "%u", max_no + 1);
         ConcNameAndVersion(vless, vbuf, vfile);
         strcpy(afile, vless);
