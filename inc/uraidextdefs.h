@@ -4,7 +4,7 @@
 #include "stack.h" /* for FX */
 #include "lispemul.h" /* for LispPTR */
 
-#define URMAXFXNUM 2000
+#define URMAXFXNUM 4096
 #define URMAXCOMM 512
 #define URSCAN_ALINK 0
 #define URSCAN_CLINK 1
