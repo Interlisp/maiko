@@ -43,6 +43,7 @@
 /*************************************************************************/
 
 #include <stdio.h>        // for printf
+#include <strings.h>      // for fls
 #include "address.h"      // for HILOC
 #include "adr68k.h"       // for NativeAligned4FromLAddr, LAddrFromNative
 #include "array.h"        // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
@@ -123,23 +124,9 @@ struct buf {
 #endif /* BIGVM */
 #endif /* BYTESWAP */
 
-/************* The following procedure is common !! **************************/
-
-int integerlength(unsigned int n) {
-  int cnt;
-  if (n <= 2)
-    return (n);
-  else {
-    cnt = 1;
-    do {
-      cnt++;
-      n = (n >> 1);
-    } while (n != 1);
-    return (cnt);
-  }
+static int integerlength(unsigned int n) {
+  return (fls(n));
 }
-
-/************* The above procedure is common !! **************************/
 
 /************************************************************************/
 /*									*/
