@@ -51,7 +51,7 @@
 #include "gccodedefs.h"   // for reclaimcodeblock
 #include "gcdata.h"       // for DELREF, REC_GCLOOKUP
 #include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock, deleteblock
+#include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock
 #include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
 #include "llstkdefs.h"    // for decusecount68k
 #include "lspglob.h"      // for FreeBlockBuckets_word, ArrayMerging_word
@@ -243,32 +243,38 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
 /*									*/
 /*									*/
 /************************************************************************/
-
-LispPTR deleteblock(LispPTR base) {
-  struct arrayblock *bbase, *fbbase, *bbbase;
-  LispPTR fwd, bkwd, fbl, freeblocklsp;
-  LispPTR *freeblock;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  if ((bbase->arlen >= MINARRAYBLOCKSIZE) && (bbase->fwd != NIL)) {
-    fwd = bbase->fwd;
-    fbbase = (struct arrayblock *)NativeAligned4FromLAddr(fwd);
-    bkwd = bbase->bkwd;
-    bbbase = (struct arrayblock *)NativeAligned4FromLAddr(bkwd);
-    fbl = FreeBlockChainN(bbase->arlen);
-    freeblock = (LispPTR *)NativeAligned4FromLAddr(fbl);
-    freeblocklsp = POINTERMASK & *freeblock;
-    if (base == fwd) {
-      if (base == freeblocklsp)
-        *freeblock = NIL;
+/*
+ * Removes "base", a block from the free list and
+ * adjusts the forward and backward pointers of the blocks behind and
+ * ahead of the deleted block.
+ * The forward and backward pointers of this deleted block are left
+ * dangling - as in the Lisp implementation. Also does not affect the
+ * inuse bit in header and trailer.
+ */
+static void deleteblock(LispPTR base) {
+  struct arrayblock *base_np, *f_np, *b_np;
+  LispPTR f, b, fbl, freeblock;
+  LispPTR *fbl_np;
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  if ((base_np->arlen >= MINARRAYBLOCKSIZE) && (base_np->fwd != NIL)) {
+    f = base_np->fwd;
+    f_np = (struct arrayblock *)NativeAligned4FromLAddr(f);
+    b = base_np->bkwd;
+    b_np = (struct arrayblock *)NativeAligned4FromLAddr(b);
+    fbl = FreeBlockChainN(base_np->arlen);
+    fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+    freeblock = POINTERMASK & *fbl_np;
+    if (base == f) {
+      if (base == freeblock)
+        *fbl_np = NIL;
       else
         error("GC error:deleting last list # FREEBLOCKLIST\n");
-      return (NIL);
-    } else if (base == freeblocklsp)
-      *freeblock = fwd;
-    fbbase->bkwd = bkwd;
-    bbbase->fwd = fwd;
+      return;
+    } else if (base == freeblock)
+      *fbl_np = f;
+    f_np->bkwd = b;
+    b_np->fwd = f;
   }
-  return (NIL);
 }
 
 /************************************************************************/
