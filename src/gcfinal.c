@@ -138,14 +138,16 @@ static int integerlength(unsigned int n) {
 /*									*/
 /************************************************************************/
 
-LispPTR findptrsbuffer(LispPTR ptr) {
-  struct buf *bptr;
-  bptr = (struct buf *)NativeAligned4FromLAddr(*System_Buffer_List_word);
-  while (LAddrFromNative(bptr) != NIL) {
-    if (ptr == bptr->vmempage)
-      return (LAddrFromNative(bptr));
-    else
-      bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
+static LispPTR findptrsbuffer(LispPTR ptr) {
+  LispPTR buf;
+  struct buf *buf_np;
+  buf = *System_Buffer_List_word;
+  while (buf != NIL) {
+    buf_np = (struct buf *)NativeAligned4FromLAddr(buf);
+    if (ptr == buf_np->vmempage) {
+      return (buf);
+    }
+    buf = buf_np->sysnext;
   }
   return (NIL);
 }

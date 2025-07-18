@@ -2,7 +2,6 @@
 #define GCFINALDEFS_H 1
 #include "lispemul.h" /* for LispPTR, DLword */
 void printarrayblock(LispPTR base);
-LispPTR findptrsbuffer(LispPTR ptr);
 LispPTR releasingvmempage(LispPTR ptr);
 LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist);
 LispPTR deleteblock(LispPTR base);
