@@ -69,7 +69,7 @@
 #endif /* NEVER */
 
 #define min(a, b) (((a) > (b)) ? (b) : (a))
-#define Trailer(ldatum, datum68) ((ldatum) + 2 * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
+#define Trailer(ldatum, datum68) ((ldatum) + DLWORDSPER_CELL * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
 #define BucketIndex(n) min(integerlength(n), MAXBUCKETINDEX)
 #define FreeBlockChainN(n) ((POINTERMASK & *FreeBlockBuckets_word) + 2 * BucketIndex(n))
 
@@ -367,7 +367,7 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
    * (3) creating a max size block leaves a non-viable leftover block
    *     move the boundary to make a big block and a minimum size leftover block
    */
-  if (base + (2 * arlens) != nbase) {
+  if (base + (DLWORDSPER_CELL * arlens) != nbase) {
     error("Attempt to merge non-adjacent blocks in array space\n");
   }
   if (narlens > secondbite) { /* (2) or (3) */
@@ -381,7 +381,7 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
       arlens += shaveback;
       secondbite += shaveback;
     }
-    linkblock(makefreearrayblock(nbase + 2 * secondbite, narlens));
+    linkblock(makefreearrayblock(nbase + DLWORDSPER_CELL * secondbite, narlens));
     narlens = 0;
   }
   return (linkblock(makefreearrayblock(base, arlens + narlens)));
@@ -405,7 +405,7 @@ LispPTR mergebackward(LispPTR base) {
   if ((*ArrayMerging_word == NIL) ||
            ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer->inuse == T))))
     return (linkblock(base));
-  pbase = base - 2 * ptrailer->arlen;
+  pbase = base - DLWORDSPER_CELL * ptrailer->arlen;
   checkarrayblock(pbase, T, NIL);
   deleteblock(pbase);
   return (arrayblockmerger(pbase, base));
@@ -427,7 +427,7 @@ LispPTR mergeforward(LispPTR base) {
   if (checkarrayblock(base, T, T)) return NIL;
 
   bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  nbase = base + 2 * (bbase->arlen);
+  nbase = base + DLWORDSPER_CELL * (bbase->arlen);
   if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) return NIL;
 
   bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
@@ -487,7 +487,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
 
   switch (base->gctype) {
     case PTRBLOCK_GCT: {
-      btrailer = (ptr - 2) + 2 * (base->arlen - ARRAYBLOCKTRAILERCELLS);
+      btrailer = (ptr - 2) + DLWORDSPER_CELL * (base->arlen - ARRAYBLOCKTRAILERCELLS);
       tmpptr = ptr;
       do {
         tmpp = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
@@ -545,8 +545,8 @@ void printarrayblock(LispPTR base) {
   btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
   ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
 
-  nbase = base + 2 * bbase->arlen;
-  pbase = base - 2 * ptrailer->arlen;
+  nbase = base + DLWORDSPER_CELL * bbase->arlen;
+  pbase = base - DLWORDSPER_CELL * ptrailer->arlen;
 
   printf("This array block: 0x%x.  Previous: 0x%x.  Next: 0x%x.\n", base, pbase, nbase);
   printf("          Length: %d cells.\n\n", bbase->arlen);
