@@ -284,34 +284,53 @@ static void deleteblock(LispPTR base) {
 /*									*/
 /*									*/
 /************************************************************************/
+/*
+ * Links a block onto the free list for a particular size range.
+ * The free list is maintained as a doubly linked circular list accessed
+ * from the block pointed to by the free list bucket for the size.
+ * If there are no blocks in the free list bucket then the forward and
+ * backward pointers of the newly added block point to the block itself.
+ */
+static LispPTR linkblock(LispPTR base) {
+  struct arrayblock *base_np, *freeblock_np, *tail_np;
+  LispPTR fbl, freeblock;
+  LispPTR *fbl_np;
 
-LispPTR linkblock(LispPTR base) {
-  struct arrayblock *bbase, *fbbase, *tmpbase;
-  LispPTR fbl, freeblocklsp;
-  LispPTR *freeblock;
-  if (*FreeBlockBuckets_word != NIL) {
-    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-    if (bbase->arlen < MINARRAYBLOCKSIZE)
-      checkarrayblock(base, T, NIL);
-    else {
-      fbl = FreeBlockChainN(bbase->arlen);
-      freeblock = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
-      freeblocklsp = POINTERMASK & (*freeblock);
-      if (freeblocklsp == NIL) {
-        bbase->fwd = base;
-        bbase->bkwd = base;
-      } else {
-        fbbase = (struct arrayblock *)NativeAligned4FromLAddr(freeblocklsp);
-        bbase->fwd = freeblocklsp;
-        bbase->bkwd = fbbase->bkwd;
-        tmpbase = (struct arrayblock *)NativeAligned4FromLAddr(fbbase->bkwd);
-        tmpbase->fwd = base;
-        fbbase->bkwd = base;
-      }
-      *freeblock = base;
-      checkarrayblock(base, T, T);
-    }
+  if (*FreeBlockBuckets_word == NIL)
+    return (base);
+
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  if (base_np->arlen < MINARRAYBLOCKSIZE) {
+    checkarrayblock(base, T, NIL);
+    return (base);
   }
+
+  /* lisp pointer to bucket for size */
+  fbl = FreeBlockChainN(base_np->arlen);
+  /* native pointer to bucket */
+  fbl_np = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
+  /* lisp pointer to first free block on chain */
+  freeblock = POINTERMASK & (*fbl_np);
+  if (freeblock == NIL) { /* no blocks already in chain */
+    base_np->fwd = base;
+    base_np->bkwd = base;
+  } else {
+    /* set up new block to be first free block on the chain */
+    freeblock_np = (struct arrayblock *)NativeAligned4FromLAddr(freeblock);
+    /* link new block forward to free block */
+    base_np->fwd = freeblock;
+    /* new block's backward link becomes free block's backward link  */
+    base_np->bkwd = freeblock_np->bkwd;
+    /* get the tail location (backward pointer of freelist head) */
+    tail_np = (struct arrayblock *)NativeAligned4FromLAddr(freeblock_np->bkwd);
+    /* set its forward pointer to new block */
+    tail_np->fwd = base;
+    /* and the update the free block's backward link to new block */
+    freeblock_np->bkwd = base;
+  }
+  /* new block becomes the head of the free list */
+  *fbl_np = base;
+  checkarrayblock(base, T, T); /* free, and on free list */
   return (base);
 }
 
