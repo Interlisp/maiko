@@ -51,7 +51,7 @@
 #include "gccodedefs.h"   // for reclaimcodeblock
 #include "gcdata.h"       // for DELREF, REC_GCLOOKUP
 #include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock
+#include "gcfinaldefs.h"  // for checkarrayblock
 #include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
 #include "llstkdefs.h"    // for decusecount68k
 #include "lspglob.h"      // for FreeBlockBuckets_word, ArrayMerging_word
@@ -374,13 +374,13 @@ LispPTR makefreearrayblock(LispPTR block, DLword length) {
 /*									*/
 /*									*/
 /************************************************************************/
-LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
+static LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
   DLword arlens, narlens, secondbite, minblocksize, shaveback;
-  struct arrayblock *bbase, *bnbase;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
-  arlens = bbase->arlen;
-  narlens = bnbase->arlen;
+  struct arrayblock *base_np, *nbase_np;
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
+  arlens = base_np->arlen;
+  narlens = nbase_np->arlen;
   secondbite = MAXARRAYBLOCKSIZE - arlens;
   /* There are three cases for merging the blocks
    * (1) the total size of the two blocks is less than max:

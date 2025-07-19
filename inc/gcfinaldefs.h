@@ -5,7 +5,6 @@ void printarrayblock(LispPTR base);
 LispPTR releasingvmempage(LispPTR ptr);
 LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist);
 LispPTR makefreearrayblock(LispPTR block, DLword length);
-LispPTR arrayblockmerger(LispPTR base, LispPTR nbase);
 LispPTR mergebackward(LispPTR base);
 LispPTR mergeforward(LispPTR base);
 LispPTR reclaimarrayblock(LispPTR ptr);
