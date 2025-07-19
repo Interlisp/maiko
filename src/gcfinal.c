@@ -485,10 +485,13 @@ LispPTR mergeforward(LispPTR base) {
 /*	Reclaim a block of storage in the array-space heap.		*/
 /*									*/
 /************************************************************************/
-
+/*
+ * The pointer passed is to the data of the block, not the array block
+ * header.
+ */
 LispPTR reclaimarrayblock(LispPTR ptr) {
   LispPTR tmpptr, btrailer;
-  struct arrayblock *base;
+  struct arrayblock *base_np;
   LispPTR *tmpp;
   int reclaim_p;
 
@@ -497,7 +500,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
   checkarrayblock(ptr - ARRAYBLOCKHEADERWORDS, NIL, NIL);
 #endif /* ARRAYCHECK */
 
-  base = (struct arrayblock *)NativeAligned4FromLAddr(ptr - ARRAYBLOCKHEADERWORDS);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(ptr - ARRAYBLOCKHEADERWORDS);
 #ifdef ARRAYCHECK
   if (HILOC(ptr) < FIRSTARRAYSEGMENT) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
@@ -505,11 +508,11 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
         "Bad array block reclaimed [not in array space].\nContinue with 'q' but save state ASAP. "
         "\n");
     return (T);
-  } else if (ARRAYBLOCKPASSWORD != base->password) {
+  } else if (ARRAYBLOCKPASSWORD != base_np->password) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error("Bad array block reclaimed [password wrong].\nContinue with 'q' but save state ASAP. \n");
     return (T);
-  } else if (base->inuse == NIL) {
+  } else if (base_np->inuse == NIL) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error(
         "Bad array block reclaimed [block not in use].\nContinue with 'q' but save state ASAP. \n");
@@ -518,15 +521,15 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
 #else
   /* Normal case, just tell the guy something's wrong: */
   if ((HILOC(ptr) < FIRSTARRAYSEGMENT) ||
-      ((ARRAYBLOCKPASSWORD != base->password) || (base->inuse == NIL))) {
+      ((ARRAYBLOCKPASSWORD != base_np->password) || (base_np->inuse == NIL))) {
     error("Bad array block reclaimed--continue with 'q' but save state ASAP. \n");
     return (T);
   }
 #endif /* ARRAYCHECK */
 
-  switch (base->gctype) {
+  switch (base_np->gctype) {
     case PTRBLOCK_GCT: {
-      btrailer = (ptr - 2) + DLWORDSPER_CELL * (base->arlen - ARRAYBLOCKTRAILERCELLS);
+      btrailer = (ptr - 2) + DLWORDSPER_CELL * (base_np->arlen - ARRAYBLOCKTRAILERCELLS);
       tmpptr = ptr;
       do {
         tmpp = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
@@ -543,7 +546,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       /* default:   No Action */
   }
   if (reclaim_p == T)
-    mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base->arlen)));
+    mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base_np->arlen)));
   return (T);
 }
 
