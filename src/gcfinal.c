@@ -418,18 +418,34 @@ static LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
 /*									*/
 /************************************************************************/
 
+/*
+ * merges this block into the block behind it, unless there are
+ * disqualifying conditions:
+ *     merging is turned off or
+ *     this is the first block in array space or
+ *     this is the first block in the 2nd array space or
+ *     the block behind it is in use
+ * in which case it is linked onto the freelist (fwd and backward pointers)
+ * and added to the free block chain by size.
+ * If it can be merged, 
+ */
 LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
-  struct arrayblock *ptrailer;
+  struct arrayblock *ptrailer_np;
 
   if (base == NIL)
     return (NIL);
-  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  /* back up to get the trailer of the previous block */
+  ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  /* check that there are no disqualifying conditions for merging with previous block */
   if ((*ArrayMerging_word == NIL) ||
-           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer->inuse == T))))
+           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T))))
     return (linkblock(base));
-  pbase = base - DLWORDSPER_CELL * ptrailer->arlen;
+  /* back up to the header of the previous block */
+  pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
+  /* check that it is free, but skip free list checks */
   checkarrayblock(pbase, T, NIL);
+  /* remove it from the free list */
   deleteblock(pbase);
   return (arrayblockmerger(pbase, base));
 }
