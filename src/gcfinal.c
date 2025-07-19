@@ -460,17 +460,17 @@ LispPTR mergebackward(LispPTR base) {
 
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
-  struct arrayblock *bbase, *bnbase;
+  struct arrayblock *base_np, *nbase_np;
   if (*ArrayMerging_word == NIL) return NIL;
   if (base == NIL) return NIL;
   if (checkarrayblock(base, T, T)) return NIL;
 
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  nbase = base + DLWORDSPER_CELL * (bbase->arlen);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  nbase = base + DLWORDSPER_CELL * (base_np->arlen);
   if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) return NIL;
 
-  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
-  nbinuse = bnbase->inuse;
+  nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
+  nbinuse = nbase_np->inuse;
   if (checkarrayblock(nbase, !nbinuse, NIL)) return NIL;
   if (nbinuse) return (NIL);
   deleteblock(nbase);
