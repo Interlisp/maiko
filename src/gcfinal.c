@@ -344,17 +344,26 @@ static LispPTR linkblock(LispPTR base) {
 
 LispPTR makefreearrayblock(LispPTR block, DLword length) {
   LispPTR trailer;
-  struct arrayblock *bbase;
-  struct abdum *dbase;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(block);
-  dbase = (struct abdum *)WORDPTR(bbase);
-  dbase->abflags = FREEARRAYFLAGWORD;
-  bbase->arlen = length;
-  trailer = Trailer(block, bbase);
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(trailer);
-  dbase = (struct abdum *)WORDPTR(bbase);
-  dbase->abflags = FREEARRAYFLAGWORD;
-  bbase->arlen = length;
+  struct arrayblock *block_np, *trailer_np;
+  struct abdum *flags_np;
+  block_np = (struct arrayblock *)NativeAligned4FromLAddr(block);
+  /* this is an appropriate place to test whether the block that
+     is about to be freed contains words that look like valid
+     array header/trailer pairs as data.  This may result in
+     false positives, but could help if there's a real smash happening.
+  */
+  /* struct abdum's abflags is a DLword and does not account for
+     the BYTESWAP setup (as arrayblock does), so use WORDPTR to
+     pick the correct word of the cell
+  */
+  flags_np = (struct abdum *)WORDPTR(block_np);
+  flags_np->abflags = FREEARRAYFLAGWORD;
+  block_np->arlen = length;
+  trailer = Trailer(block, block_np);
+  trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(trailer);
+  flags_np = (struct abdum *)WORDPTR(trailer_np);
+  flags_np->abflags = FREEARRAYFLAGWORD;
+  trailer_np->arlen = length;
   return (block);
 }
 
