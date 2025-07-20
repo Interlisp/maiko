@@ -99,35 +99,35 @@ struct hashtable {
 LispPTR aref1(LispPTR array, int index) {
   LispPTR retval = 0;
   LispPTR base;
-  short typenumber;
-  struct arrayheader *actarray;
+  struct arrayheader *array_np;
 
-  actarray = (struct arrayheader *)NativeAligned4FromLAddr(array);
-  if (index >= actarray->totalsize) {
+  array_np = (struct arrayheader *)NativeAligned4FromLAddr(array);
+  if (index >= array_np->totalsize) {
     printf("Invalid index in GC's AREF1:  0x%x\n", index);
-    printf(" Array size limit:  0x%x\n", actarray->totalsize);
+    printf(" Array size limit:  0x%x\n", array_np->totalsize);
     printf(" Array ptr: 0x%x\n", array);
-    printf(" Array 68K ptr: %p\n", (void *)actarray);
-    printf("base:     0x%x\n", actarray->base);
-    printf("offset:   0x%x\n", actarray->offset);
-    printf("type #:   0x%x\n", actarray->typenumber);
-    printf("fill ptr: 0x%x\n", actarray->fillpointer);
+    printf(" Array native ptr: %p\n", (void *)array_np);
+    printf("base:     0x%x\n", array_np->base);
+    printf("offset:   0x%x\n", array_np->offset);
+    printf("type #:   0x%x\n", array_np->typenumber);
+    printf("fill ptr: 0x%x\n", array_np->fillpointer);
     error("index out of range in GC's AREF1.");
   }
-  index += actarray->offset;
-  typenumber = actarray->typenumber;
-  base = actarray->base;
-  switch (typenumber) {
-    case 3: /* unsigned 8bits */
-      retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
-      retval |= S_POSITIVE;
-      break;
-    case 4: /* unsigned 16bits */
-      retval = (GETWORD(((DLword *)NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
-      retval |= S_POSITIVE;
-      break;
-    case 38: retval = (*(((LispPTR *)NativeAligned4FromLAddr(base)) + index)); break;
-    default: error("Not Implemented in gc's aref1 (other types)");
+  index += array_np->offset;
+  base = array_np->base;
+  switch (array_np->typenumber) {
+  case 3: /* unsigned 8 bits */
+    retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
+    retval |= S_POSITIVE;
+    break;
+  case 4: /* unsigned 16 bits */
+    retval = (GETWORD(((DLword *)NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
+    retval |= S_POSITIVE;
+    break;
+  case 38: /* pointer 32 bits */
+    retval = (*(((LispPTR *)NativeAligned4FromLAddr(base)) + index));
+    break;
+  default: error("Not Implemented in gc's aref1 (other types)");
   }
   return (retval);
 }
