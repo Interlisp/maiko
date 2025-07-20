@@ -578,31 +578,35 @@ LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
 /************************************************************************/
 
 void printarrayblock(LispPTR base) {
-  struct arrayblock *bbase, *btrailer, *ptrailer;
+  struct arrayblock *base_np, *trailer_np, *ptrailer_np;
   LispPTR *addr;
-
   LispPTR pbase, nbase;
 
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, base_np));
+  ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
 
-  nbase = base + DLWORDSPER_CELL * bbase->arlen;
-  pbase = base - DLWORDSPER_CELL * ptrailer->arlen;
+  nbase = base + DLWORDSPER_CELL * base_np->arlen;
+  pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
 
   printf("This array block: 0x%x.  Previous: 0x%x.  Next: 0x%x.\n", base, pbase, nbase);
-  printf("          Length: %d cells.\n\n", bbase->arlen);
+  printf("        password: 0x%x     gctype: 0x%x   in use: %d\n", base_np->password,
+         base_np->gctype, base_np->inuse);
+  if (!base_np->inuse)
+    printf("      Free list: fwd 0x%x bkwd 0x%x\n", base_np->fwd, base_np->bkwd);
+  printf("  Header  Length: %d cells.\n\n", base_np->arlen);
+  printf(" Trailer  Length: %d cells.\n\n", trailer_np->arlen);
 
-  addr = ((LispPTR *)bbase) - 20;
-  for (; addr < (LispPTR *)bbase; addr++) printf("%16p %8x\n", (void *)addr, *addr);
-  printf("%16p %8x <- array header\n", (void *)addr, *addr);
+  addr = ((LispPTR *)base_np) - 20;
+  for (; addr < (LispPTR *)base_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  printf("%16p (0x%8x) %8x <- array header\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)bbase + 20; addr++) printf("%16p %8x\n", (void *)addr, *addr);
+  for (; addr < (LispPTR *)base_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
   printf(". . .\n");
 
-  addr = ((LispPTR *)btrailer) - 20;
-  for (; addr < (LispPTR *)btrailer; addr++) printf("%16p %8x\n", (void *)addr, *addr);
-  printf("%16p %8x <- array trailer\n", (void *)addr, *addr);
+  addr = ((LispPTR *)trailer_np) - 20;
+  for (; addr < (LispPTR *)trailer_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  printf("%16p (0x%8x) %8x <- array trailer\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)btrailer + 20; addr++) printf("%16p %8x\n", (void *)addr, *addr);
+  for (; addr < (LispPTR *)trailer_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
 }
