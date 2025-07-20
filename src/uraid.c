@@ -168,6 +168,7 @@ static const char *URaid_summary2 =
     "\n-- Memory display commands\n\
 a litatom\t\tDisplays the top-level value of the litatom\n\
 B Xaddress\t\tPrint the contents of the arrayblock at that address.\n\
+F [size]\t\tPrint the head of the array free list chain for given size, or all\n\
 d litatom\t\tDisplays the definition cell for the litatom\n\
 M\t\t\tDisplays TOS,CSP,PVAR,IVAR,PC\n\
 m func1 func2\t\tMOVD func1 to func2\n\
@@ -201,6 +202,7 @@ l [type]\t\tDisplays backtrace for specified type of stack. (k|m|r|g|p|u|<null>)
 \n-- Memory display commands\n\
 a litatom\t\tDisplays the top-level value of the litatom\n\
 B Xaddress\t\tDisplays the contents of the arrayblock at that address.\n\
+F [size]\t\tPrint the head of the array free list chain for given size, or all\n\
 d litatom\t\tDisplays the definition cell of the litatom\n\
 M\t\t\tDisplays TOS,CSP,PVAR,IVAR,PC\n\
 m func1 func2\t\tMoves definition of func1 to func2 (MOVD)\n\
@@ -464,6 +466,26 @@ LispPTR uraid_commands(void) {
         return (T);
       }
       printarrayblock(objaddr);
+    }
+    break;
+
+    case 'F': { /* print array block free list head(s) */
+      long size;
+      if (URaid_argnum != 1 && URaid_argnum != 2) {
+        printf("FREE-BLOCK-CHAIN: F [block-size (cells)]\n");
+        return (T);
+      }
+      if (URaid_argnum == 1) {
+        size = -1;
+      } else {
+        errno = 0;
+        size = (LispPTR)strtol(URaid_arg1, &endpointer, 0);
+        if (errno != 0 || *endpointer != '\0') {
+          printf("Arg not number\n");
+          return (T);
+        }
+      }
+      printfreeblockchainn(size);
     }
     break;
 

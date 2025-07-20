@@ -610,3 +610,30 @@ void printarrayblock(LispPTR base) {
   addr++;
   for (; addr < (LispPTR *)trailer_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
 }
+
+static void printfreeblockchainhead(int index)
+{
+  LispPTR fbl, freeblock;
+  LispPTR *fbl_np;
+
+  fbl = POINTERMASK & ((*FreeBlockBuckets_word) + (DLWORDSPER_CELL * index));
+  fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+  /* lisp pointer to free block on chain */
+  freeblock = POINTERMASK & (*fbl_np);
+  if (freeblock == NIL) { /* no blocks in chain */
+    printf("Free block chain (bucket %d): NIL\n", index);
+  } else {
+    printf("Free block chain(bucket %d): 0x%x\n", index, freeblock);
+  }
+}
+
+void printfreeblockchainn(int arlen)
+{
+  if (arlen >= 0) {
+    printfreeblockchainhead(BucketIndex(arlen));
+    return;
+  } else
+    for (int i = 0; i <= MAXBUCKETINDEX; i++) {
+      printfreeblockchainhead(i);
+    }
+}
