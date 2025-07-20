@@ -74,9 +74,12 @@
 #define BucketIndex(n) min(integerlength(n), MAXBUCKETINDEX)
 #define FreeBlockChainN(n) ((POINTERMASK & *FreeBlockBuckets_word) + 2 * BucketIndex(n))
 
+/*
+ * Declaration of buffer must be identical layout to Lisp BUFFER datatype in PMAP.
+ */
 #ifndef BYTESWAP
 #ifdef BIGVM
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -87,7 +90,7 @@ struct buf {
   unsigned sysnext : 28;
 };
 #else
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -100,7 +103,7 @@ struct buf {
 #endif /* BIGVM */
 #else
 #ifdef BIGVM
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -111,7 +114,7 @@ struct buf {
   unsigned noreference : 1;
 };
 #else
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -140,10 +143,10 @@ static int integerlength(unsigned int n) {
 
 static LispPTR findptrsbuffer(LispPTR ptr) {
   LispPTR buf;
-  struct buf *buf_np;
+  struct buffer *buf_np;
   buf = *System_Buffer_List_word;
   while (buf != NIL) {
-    buf_np = (struct buf *)NativeAligned4FromLAddr(buf);
+    buf_np = (struct buffer *)NativeAligned4FromLAddr(buf);
     if (ptr == buf_np->vmempage) {
       return (buf);
     }
@@ -165,11 +168,11 @@ static LispPTR findptrsbuffer(LispPTR ptr) {
 
 LispPTR releasingvmempage(LispPTR ptr) {
   LispPTR buffer = findptrsbuffer(ptr);
-  struct buf *buffer_np;
+  struct buffer *buffer_np;
 
   if (buffer == NIL) return (NIL); /* Not in use, OK to reclaim it */
 
-  buffer_np = (struct buf *)NativeAligned4FromLAddr(buffer);
+  buffer_np = (struct buffer *)NativeAligned4FromLAddr(buffer);
   buffer_np->noreference = T; /* Mark the buffer free to use ?? */
   return (ATOM_T);
 }
