@@ -181,10 +181,9 @@ LispPTR releasingvmempage(LispPTR ptr) {
 /*	Given an array block, do consistency checks on it.		*/
 /*									*/
 /************************************************************************/
-
 LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
-  struct arrayblock *bbase, *btrailer;
-  struct arrayblock *bfwd, *bbwd, *rbase;
+  struct arrayblock *base_np, *trailer_np;
+  struct arrayblock *fwd_np, *bkwd_np, *rbase;
   LispPTR fbl;
   LispPTR *rover, *tmprover;
 #ifdef ARRAYCHECK
@@ -193,38 +192,51 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   if (*Array_Block_Checking_word != NIL)
 #endif
   {
-    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-    btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-    if (bbase->password != ARRAYBLOCKPASSWORD) {
+    base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+    trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, base_np));
+#if 0
+    printf("cblock: 0x%x free: %x onfreelist: %x pw: %x arlen %d\n",
+           base, free, onfreelist, base_np->password, base_np->arlen);
+#endif
+    if (base_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
-    } else if (bbase->inuse == free) {
+      return(T);
+    } else if (base_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
-    } else if (btrailer->password != ARRAYBLOCKPASSWORD) {
+      return(T);
+    } else if (trailer_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK trailer password wrong\n");
-    } else if (bbase->arlen != btrailer->arlen) {
+      return(T);
+    } else if (base_np->arlen != trailer_np->arlen) {
       printarrayblock(base);
       error("ARRAYBLOCK Header and Trailer length don't match\n");
-    } else if (btrailer->inuse == free)
+      return(T);
+    } else if (trailer_np->inuse == free)
     /* This is not original source.(in original,
-       btrailer -> bbase) maybe, this is correction. */
+       trailer_np -> base_np) maybe, this is correction. */
     {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
-    } else if (!onfreelist || (bbase->arlen < MINARRAYBLOCKSIZE))
+      return(T);
+    } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE))
       return (NIL);
     /* Remaining tests only for free list. */
-    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
-    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
-    if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
+    fwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->fwd);
+    bkwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->bkwd);
+    if ((bkwd_np->fwd != base) || (fwd_np->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
+      return(T);
     } else {
-      fbl = FreeBlockChainN(bbase->arlen);
+      fbl = FreeBlockChainN(base_np->arlen);
       rover = tmprover = (LispPTR *)NativeAligned4FromLAddr(fbl);
       /* GETBASEPTR */
-      if ((*rover & POINTERMASK) == NIL) error("Free Block's bucket empty\n");
+      if ((*rover & POINTERMASK) == NIL) {
+        error("Free Block's bucket empty\n");
+        return(T);
+      }
       do {
         if ((*rover & POINTERMASK) == base) return (NIL);
         checkarrayblock((*rover & POINTERMASK), T, NIL);
