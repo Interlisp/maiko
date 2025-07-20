@@ -164,13 +164,13 @@ static LispPTR findptrsbuffer(LispPTR ptr) {
 /************************************************************************/
 
 LispPTR releasingvmempage(LispPTR ptr) {
-  struct buf *bptr;
-  LispPTR bufferptr = findptrsbuffer(ptr);
+  LispPTR buffer = findptrsbuffer(ptr);
+  struct buf *buffer_np;
 
-  if (bufferptr == NIL) return (NIL); /* Not in use, OK to reclaim it */
+  if (buffer == NIL) return (NIL); /* Not in use, OK to reclaim it */
 
-  bptr = (struct buf *)NativeAligned4FromLAddr(bufferptr);
-  bptr->noreference = T; /* Mark the buffer free to use ?? */
+  buffer_np = (struct buf *)NativeAligned4FromLAddr(buffer);
+  buffer_np->noreference = T; /* Mark the buffer free to use ?? */
   return (ATOM_T);
 }
 
