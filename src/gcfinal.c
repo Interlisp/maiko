@@ -43,7 +43,6 @@
 /*************************************************************************/
 
 #include <stdio.h>        // for printf
-#include <strings.h>      // for fls
 #include "address.h"      // for HILOC
 #include "adr68k.h"       // for NativeAligned4FromLAddr, LAddrFromNative
 #include "array.h"        // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
@@ -128,7 +127,29 @@ struct buffer {
 #endif /* BYTESWAP */
 
 static int integerlength(unsigned int n) {
-  return (fls(n));
+  int p = 0;
+
+  if (n <= 2) return (n); /* easy case */
+  if (n >= 65536) {
+    n >>= 16;
+    p += 16;
+  }
+  if (n >= 256) {
+    n >>= 8;
+    p += 8;
+  }
+  if (n >= 16) {
+    n >>= 4;
+    p += 4;
+  }
+  if (n >= 4) {
+    n >>= 2;
+    p += 2;
+  }
+  if (n >= 2) {
+    p += 1;
+  }
+  return (p + 1);
 }
 
 /************************************************************************/
