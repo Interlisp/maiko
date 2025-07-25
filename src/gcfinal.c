@@ -50,7 +50,7 @@
 #include "gccodedefs.h"   // for reclaimcodeblock
 #include "gcdata.h"       // for DELREF, REC_GCLOOKUP
 #include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcfinaldefs.h"  // for arrayblockmerger, checkarrayblock, deleteblock
+#include "gcfinaldefs.h"  // for checkarrayblock
 #include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
 #include "llstkdefs.h"    // for decusecount68k
 #include "lspglob.h"      // for FreeBlockBuckets_word, ArrayMerging_word
@@ -69,13 +69,16 @@
 #endif /* NEVER */
 
 #define min(a, b) (((a) > (b)) ? (b) : (a))
-#define Trailer(ldatum, datum68) ((ldatum) + 2 * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
+#define Trailer(ldatum, datum68) ((ldatum) + DLWORDSPER_CELL * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
 #define BucketIndex(n) min(integerlength(n), MAXBUCKETINDEX)
 #define FreeBlockChainN(n) ((POINTERMASK & *FreeBlockBuckets_word) + 2 * BucketIndex(n))
 
+/*
+ * Declaration of buffer must be identical layout to Lisp BUFFER datatype in PMAP.
+ */
 #ifndef BYTESWAP
 #ifdef BIGVM
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -86,7 +89,7 @@ struct buf {
   unsigned sysnext : 28;
 };
 #else
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -99,7 +102,7 @@ struct buf {
 #endif /* BIGVM */
 #else
 #ifdef BIGVM
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -110,7 +113,7 @@ struct buf {
   unsigned noreference : 1;
 };
 #else
-struct buf {
+struct buffer {
   LispPTR filepage;
   LispPTR vmempage;
   LispPTR buffernext;
@@ -123,23 +126,31 @@ struct buf {
 #endif /* BIGVM */
 #endif /* BYTESWAP */
 
-/************* The following procedure is common !! **************************/
+static int integerlength(unsigned int n) {
+  int p = 0;
 
-int integerlength(unsigned int n) {
-  int cnt;
-  if (n <= 2)
-    return (n);
-  else {
-    cnt = 1;
-    do {
-      cnt++;
-      n = (n >> 1);
-    } while (n != 1);
-    return (cnt);
+  if (n <= 2) return (n); /* easy case */
+  if (n >= 65536) {
+    n >>= 16;
+    p += 16;
   }
+  if (n >= 256) {
+    n >>= 8;
+    p += 8;
+  }
+  if (n >= 16) {
+    n >>= 4;
+    p += 4;
+  }
+  if (n >= 4) {
+    n >>= 2;
+    p += 2;
+  }
+  if (n >= 2) {
+    p += 1;
+  }
+  return (p + 1);
 }
-
-/************* The above procedure is common !! **************************/
 
 /************************************************************************/
 /*									*/
@@ -151,14 +162,16 @@ int integerlength(unsigned int n) {
 /*									*/
 /************************************************************************/
 
-LispPTR findptrsbuffer(LispPTR ptr) {
-  struct buf *bptr;
-  bptr = (struct buf *)NativeAligned4FromLAddr(*System_Buffer_List_word);
-  while (LAddrFromNative(bptr) != NIL) {
-    if (ptr == bptr->vmempage)
-      return (LAddrFromNative(bptr));
-    else
-      bptr = (struct buf *)NativeAligned4FromLAddr(bptr->sysnext);
+static LispPTR findptrsbuffer(LispPTR ptr) {
+  LispPTR buf;
+  struct buffer *buf_np;
+  buf = *System_Buffer_List_word;
+  while (buf != NIL) {
+    buf_np = (struct buffer *)NativeAligned4FromLAddr(buf);
+    if (ptr == buf_np->vmempage) {
+      return (buf);
+    }
+    buf = buf_np->sysnext;
   }
   return (NIL);
 }
@@ -175,13 +188,13 @@ LispPTR findptrsbuffer(LispPTR ptr) {
 /************************************************************************/
 
 LispPTR releasingvmempage(LispPTR ptr) {
-  struct buf *bptr;
-  LispPTR bufferptr = findptrsbuffer(ptr);
+  LispPTR buffer = findptrsbuffer(ptr);
+  struct buffer *buffer_np;
 
-  if (bufferptr == NIL) return (NIL); /* Not in use, OK to reclaim it */
+  if (buffer == NIL) return (NIL); /* Not in use, OK to reclaim it */
 
-  bptr = (struct buf *)NativeAligned4FromLAddr(bufferptr);
-  bptr->noreference = T; /* Mark the buffer free to use ?? */
+  buffer_np = (struct buffer *)NativeAligned4FromLAddr(buffer);
+  buffer_np->noreference = T; /* Mark the buffer free to use ?? */
   return (ATOM_T);
 }
 
@@ -192,10 +205,9 @@ LispPTR releasingvmempage(LispPTR ptr) {
 /*	Given an array block, do consistency checks on it.		*/
 /*									*/
 /************************************************************************/
-
 LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
-  struct arrayblock *bbase, *btrailer;
-  struct arrayblock *bfwd, *bbwd, *rbase;
+  struct arrayblock *base_np, *trailer_np;
+  struct arrayblock *fwd_np, *bkwd_np, *rbase;
   LispPTR fbl;
   LispPTR *rover, *tmprover;
 #ifdef ARRAYCHECK
@@ -204,38 +216,51 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   if (*Array_Block_Checking_word != NIL)
 #endif
   {
-    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-    btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-    if (bbase->password != ARRAYBLOCKPASSWORD) {
+    base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+    trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, base_np));
+#if 0
+    printf("cblock: 0x%x free: %x onfreelist: %x pw: %x arlen %d\n",
+           base, free, onfreelist, base_np->password, base_np->arlen);
+#endif
+    if (base_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
-    } else if (bbase->inuse == free) {
+      return(T);
+    } else if (base_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
-    } else if (btrailer->password != ARRAYBLOCKPASSWORD) {
+      return(T);
+    } else if (trailer_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK trailer password wrong\n");
-    } else if (bbase->arlen != btrailer->arlen) {
+      return(T);
+    } else if (base_np->arlen != trailer_np->arlen) {
       printarrayblock(base);
       error("ARRAYBLOCK Header and Trailer length don't match\n");
-    } else if (btrailer->inuse == free)
+      return(T);
+    } else if (trailer_np->inuse == free)
     /* This is not original source.(in original,
-       btrailer -> bbase) maybe, this is correction. */
+       trailer_np -> base_np) maybe, this is correction. */
     {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
-    } else if (!onfreelist || (bbase->arlen < MINARRAYBLOCKSIZE))
+      return(T);
+    } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE))
       return (NIL);
     /* Remaining tests only for free list. */
-    bfwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->fwd);
-    bbwd = (struct arrayblock *)NativeAligned4FromLAddr(bbase->bkwd);
-    if ((bbwd->fwd != base) || (bfwd->bkwd != base)) {
+    fwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->fwd);
+    bkwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->bkwd);
+    if ((bkwd_np->fwd != base) || (fwd_np->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
+      return(T);
     } else {
-      fbl = FreeBlockChainN(bbase->arlen);
+      fbl = FreeBlockChainN(base_np->arlen);
       rover = tmprover = (LispPTR *)NativeAligned4FromLAddr(fbl);
       /* GETBASEPTR */
-      if ((*rover & POINTERMASK) == NIL) error("Free Block's bucket empty\n");
+      if ((*rover & POINTERMASK) == NIL) {
+        error("Free Block's bucket empty\n");
+        return(T);
+      }
       do {
         if ((*rover & POINTERMASK) == base) return (NIL);
         checkarrayblock((*rover & POINTERMASK), T, NIL);
@@ -254,32 +279,38 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
 /*									*/
 /*									*/
 /************************************************************************/
-
-LispPTR deleteblock(LispPTR base) {
-  struct arrayblock *bbase, *fbbase, *bbbase;
-  LispPTR fwd, bkwd, fbl, freeblocklsp;
-  LispPTR *freeblock;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  if ((bbase->arlen >= MINARRAYBLOCKSIZE) && (bbase->fwd != NIL)) {
-    fwd = bbase->fwd;
-    fbbase = (struct arrayblock *)NativeAligned4FromLAddr(fwd);
-    bkwd = bbase->bkwd;
-    bbbase = (struct arrayblock *)NativeAligned4FromLAddr(bkwd);
-    fbl = FreeBlockChainN(bbase->arlen);
-    freeblock = (LispPTR *)NativeAligned4FromLAddr(fbl);
-    freeblocklsp = POINTERMASK & *freeblock;
-    if (base == fwd) {
-      if (base == freeblocklsp)
-        *freeblock = NIL;
+/*
+ * Removes "base", a block from the free list and
+ * adjusts the forward and backward pointers of the blocks behind and
+ * ahead of the deleted block.
+ * The forward and backward pointers of this deleted block are left
+ * dangling - as in the Lisp implementation. Also does not affect the
+ * inuse bit in header and trailer.
+ */
+static void deleteblock(LispPTR base) {
+  struct arrayblock *base_np, *f_np, *b_np;
+  LispPTR f, b, fbl, freeblock;
+  LispPTR *fbl_np;
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  if ((base_np->arlen >= MINARRAYBLOCKSIZE) && (base_np->fwd != NIL)) {
+    f = base_np->fwd;
+    f_np = (struct arrayblock *)NativeAligned4FromLAddr(f);
+    b = base_np->bkwd;
+    b_np = (struct arrayblock *)NativeAligned4FromLAddr(b);
+    fbl = FreeBlockChainN(base_np->arlen);
+    fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+    freeblock = POINTERMASK & *fbl_np;
+    if (base == f) {
+      if (base == freeblock)
+        *fbl_np = NIL;
       else
         error("GC error:deleting last list # FREEBLOCKLIST\n");
-      return (NIL);
-    } else if (base == freeblocklsp)
-      *freeblock = fwd;
-    fbbase->bkwd = bkwd;
-    bbbase->fwd = fwd;
+      return;
+    } else if (base == freeblock)
+      *fbl_np = f;
+    f_np->bkwd = b;
+    b_np->fwd = f;
   }
-  return (NIL);
 }
 
 /************************************************************************/
@@ -289,34 +320,53 @@ LispPTR deleteblock(LispPTR base) {
 /*									*/
 /*									*/
 /************************************************************************/
+/*
+ * Links a block onto the free list for a particular size range.
+ * The free list is maintained as a doubly linked circular list accessed
+ * from the block pointed to by the free list bucket for the size.
+ * If there are no blocks in the free list bucket then the forward and
+ * backward pointers of the newly added block point to the block itself.
+ */
+static LispPTR linkblock(LispPTR base) {
+  struct arrayblock *base_np, *freeblock_np, *tail_np;
+  LispPTR fbl, freeblock;
+  LispPTR *fbl_np;
 
-LispPTR linkblock(LispPTR base) {
-  struct arrayblock *bbase, *fbbase, *tmpbase;
-  LispPTR fbl, freeblocklsp;
-  LispPTR *freeblock;
-  if (*FreeBlockBuckets_word != NIL) {
-    bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-    if (bbase->arlen < MINARRAYBLOCKSIZE)
-      checkarrayblock(base, T, NIL);
-    else {
-      fbl = FreeBlockChainN(bbase->arlen);
-      freeblock = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
-      freeblocklsp = POINTERMASK & (*freeblock);
-      if (freeblocklsp == NIL) {
-        bbase->fwd = base;
-        bbase->bkwd = base;
-      } else {
-        fbbase = (struct arrayblock *)NativeAligned4FromLAddr(freeblocklsp);
-        bbase->fwd = freeblocklsp;
-        bbase->bkwd = fbbase->bkwd;
-        tmpbase = (struct arrayblock *)NativeAligned4FromLAddr(fbbase->bkwd);
-        tmpbase->fwd = base;
-        fbbase->bkwd = base;
-      }
-      *freeblock = base;
-      checkarrayblock(base, T, T);
-    }
+  if (*FreeBlockBuckets_word == NIL)
+    return (base);
+
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  if (base_np->arlen < MINARRAYBLOCKSIZE) {
+    checkarrayblock(base, T, NIL);
+    return (base);
   }
+
+  /* lisp pointer to bucket for size */
+  fbl = FreeBlockChainN(base_np->arlen);
+  /* native pointer to bucket */
+  fbl_np = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
+  /* lisp pointer to first free block on chain */
+  freeblock = POINTERMASK & (*fbl_np);
+  if (freeblock == NIL) { /* no blocks already in chain */
+    base_np->fwd = base;
+    base_np->bkwd = base;
+  } else {
+    /* set up new block to be first free block on the chain */
+    freeblock_np = (struct arrayblock *)NativeAligned4FromLAddr(freeblock);
+    /* link new block forward to free block */
+    base_np->fwd = freeblock;
+    /* new block's backward link becomes free block's backward link  */
+    base_np->bkwd = freeblock_np->bkwd;
+    /* get the tail location (backward pointer of freelist head) */
+    tail_np = (struct arrayblock *)NativeAligned4FromLAddr(freeblock_np->bkwd);
+    /* set its forward pointer to new block */
+    tail_np->fwd = base;
+    /* and the update the free block's backward link to new block */
+    freeblock_np->bkwd = base;
+  }
+  /* new block becomes the head of the free list */
+  *fbl_np = base;
+  checkarrayblock(base, T, T); /* free, and on free list */
   return (base);
 }
 
@@ -330,17 +380,26 @@ LispPTR linkblock(LispPTR base) {
 
 LispPTR makefreearrayblock(LispPTR block, DLword length) {
   LispPTR trailer;
-  struct arrayblock *bbase;
-  struct abdum *dbase;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(block);
-  dbase = (struct abdum *)WORDPTR(bbase);
-  dbase->abflags = FREEARRAYFLAGWORD;
-  bbase->arlen = length;
-  trailer = Trailer(block, bbase);
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(trailer);
-  dbase = (struct abdum *)WORDPTR(bbase);
-  dbase->abflags = FREEARRAYFLAGWORD;
-  bbase->arlen = length;
+  struct arrayblock *block_np, *trailer_np;
+  struct abdum *flags_np;
+  block_np = (struct arrayblock *)NativeAligned4FromLAddr(block);
+  /* this is an appropriate place to test whether the block that
+     is about to be freed contains words that look like valid
+     array header/trailer pairs as data.  This may result in
+     false positives, but could help if there's a real smash happening.
+  */
+  /* struct abdum's abflags is a DLword and does not account for
+     the BYTESWAP setup (as arrayblock does), so use WORDPTR to
+     pick the correct word of the cell
+  */
+  flags_np = (struct abdum *)WORDPTR(block_np);
+  flags_np->abflags = FREEARRAYFLAGWORD;
+  block_np->arlen = length;
+  trailer = Trailer(block, block_np);
+  trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(trailer);
+  flags_np = (struct abdum *)WORDPTR(trailer_np);
+  flags_np->abflags = FREEARRAYFLAGWORD;
+  trailer_np->arlen = length;
   return (block);
 }
 
@@ -351,13 +410,13 @@ LispPTR makefreearrayblock(LispPTR block, DLword length) {
 /*									*/
 /*									*/
 /************************************************************************/
-LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
+static LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
   DLword arlens, narlens, secondbite, minblocksize, shaveback;
-  struct arrayblock *bbase, *bnbase;
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
-  arlens = bbase->arlen;
-  narlens = bnbase->arlen;
+  struct arrayblock *base_np, *nbase_np;
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
+  arlens = base_np->arlen;
+  narlens = nbase_np->arlen;
   secondbite = MAXARRAYBLOCKSIZE - arlens;
   /* There are three cases for merging the blocks
    * (1) the total size of the two blocks is less than max:
@@ -367,7 +426,7 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
    * (3) creating a max size block leaves a non-viable leftover block
    *     move the boundary to make a big block and a minimum size leftover block
    */
-  if (base + (2 * arlens) != nbase) {
+  if (base + (DLWORDSPER_CELL * arlens) != nbase) {
     error("Attempt to merge non-adjacent blocks in array space\n");
   }
   if (narlens > secondbite) { /* (2) or (3) */
@@ -381,7 +440,7 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
       arlens += shaveback;
       secondbite += shaveback;
     }
-    linkblock(makefreearrayblock(nbase + 2 * secondbite, narlens));
+    linkblock(makefreearrayblock(nbase + DLWORDSPER_CELL * secondbite, narlens));
     narlens = 0;
   }
   return (linkblock(makefreearrayblock(base, arlens + narlens)));
@@ -395,18 +454,34 @@ LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
 /*									*/
 /************************************************************************/
 
+/*
+ * merges this block into the block behind it, unless there are
+ * disqualifying conditions:
+ *     merging is turned off or
+ *     this is the first block in array space or
+ *     this is the first block in the 2nd array space or
+ *     the block behind it is in use
+ * in which case it is linked onto the freelist (fwd and backward pointers)
+ * and added to the free block chain by size.
+ * If it can be merged, 
+ */
 LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
-  struct arrayblock *ptrailer;
+  struct arrayblock *ptrailer_np;
 
   if (base == NIL)
     return (NIL);
-  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  /* back up to get the trailer of the previous block */
+  ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  /* check that there are no disqualifying conditions for merging with previous block */
   if ((*ArrayMerging_word == NIL) ||
-           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer->inuse == T))))
+           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T))))
     return (linkblock(base));
-  pbase = base - 2 * ptrailer->arlen;
+  /* back up to the header of the previous block */
+  pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
+  /* check that it is free, but skip free list checks */
   checkarrayblock(pbase, T, NIL);
+  /* remove it from the free list */
   deleteblock(pbase);
   return (arrayblockmerger(pbase, base));
 }
@@ -421,17 +496,17 @@ LispPTR mergebackward(LispPTR base) {
 
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
-  struct arrayblock *bbase, *bnbase;
+  struct arrayblock *base_np, *nbase_np;
   if (*ArrayMerging_word == NIL) return NIL;
   if (base == NIL) return NIL;
   if (checkarrayblock(base, T, T)) return NIL;
 
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  nbase = base + 2 * (bbase->arlen);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  nbase = base + DLWORDSPER_CELL * (base_np->arlen);
   if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) return NIL;
 
-  bnbase = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
-  nbinuse = bnbase->inuse;
+  nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
+  nbinuse = nbase_np->inuse;
   if (checkarrayblock(nbase, !nbinuse, NIL)) return NIL;
   if (nbinuse) return (NIL);
   deleteblock(nbase);
@@ -446,10 +521,13 @@ LispPTR mergeforward(LispPTR base) {
 /*	Reclaim a block of storage in the array-space heap.		*/
 /*									*/
 /************************************************************************/
-
+/*
+ * The pointer passed is to the data of the block, not the array block
+ * header.
+ */
 LispPTR reclaimarrayblock(LispPTR ptr) {
   LispPTR tmpptr, btrailer;
-  struct arrayblock *base;
+  struct arrayblock *base_np;
   LispPTR *tmpp;
   int reclaim_p;
 
@@ -458,7 +536,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
   checkarrayblock(ptr - ARRAYBLOCKHEADERWORDS, NIL, NIL);
 #endif /* ARRAYCHECK */
 
-  base = (struct arrayblock *)NativeAligned4FromLAddr(ptr - ARRAYBLOCKHEADERWORDS);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(ptr - ARRAYBLOCKHEADERWORDS);
 #ifdef ARRAYCHECK
   if (HILOC(ptr) < FIRSTARRAYSEGMENT) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
@@ -466,11 +544,11 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
         "Bad array block reclaimed [not in array space].\nContinue with 'q' but save state ASAP. "
         "\n");
     return (T);
-  } else if (ARRAYBLOCKPASSWORD != base->password) {
+  } else if (ARRAYBLOCKPASSWORD != base_np->password) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error("Bad array block reclaimed [password wrong].\nContinue with 'q' but save state ASAP. \n");
     return (T);
-  } else if (base->inuse == NIL) {
+  } else if (base_np->inuse == NIL) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error(
         "Bad array block reclaimed [block not in use].\nContinue with 'q' but save state ASAP. \n");
@@ -479,15 +557,15 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
 #else
   /* Normal case, just tell the guy something's wrong: */
   if ((HILOC(ptr) < FIRSTARRAYSEGMENT) ||
-      ((ARRAYBLOCKPASSWORD != base->password) || (base->inuse == NIL))) {
+      ((ARRAYBLOCKPASSWORD != base_np->password) || (base_np->inuse == NIL))) {
     error("Bad array block reclaimed--continue with 'q' but save state ASAP. \n");
     return (T);
   }
 #endif /* ARRAYCHECK */
 
-  switch (base->gctype) {
+  switch (base_np->gctype) {
     case PTRBLOCK_GCT: {
-      btrailer = (ptr - 2) + 2 * (base->arlen - ARRAYBLOCKTRAILERCELLS);
+      btrailer = (ptr - 2) + DLWORDSPER_CELL * (base_np->arlen - ARRAYBLOCKTRAILERCELLS);
       tmpptr = ptr;
       do {
         tmpp = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
@@ -504,7 +582,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       /* default:   No Action */
   }
   if (reclaim_p == T)
-    mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base->arlen)));
+    mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base_np->arlen)));
   return (T);
 }
 
@@ -536,31 +614,62 @@ LispPTR reclaimstackp(LispPTR ptr) /* This is the entry function */
 /************************************************************************/
 
 void printarrayblock(LispPTR base) {
-  struct arrayblock *bbase, *btrailer, *ptrailer;
+  struct arrayblock *base_np, *trailer_np, *ptrailer_np;
   LispPTR *addr;
-
   LispPTR pbase, nbase;
 
-  bbase = (struct arrayblock *)NativeAligned4FromLAddr(base);
-  btrailer = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, bbase));
-  ptrailer = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
+  base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
+  trailer_np = (struct arrayblock *)NativeAligned4FromLAddr(Trailer(base, base_np));
+  ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
 
-  nbase = base + 2 * bbase->arlen;
-  pbase = base - 2 * ptrailer->arlen;
+  nbase = base + DLWORDSPER_CELL * base_np->arlen;
+  pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
 
   printf("This array block: 0x%x.  Previous: 0x%x.  Next: 0x%x.\n", base, pbase, nbase);
-  printf("          Length: %d cells.\n\n", bbase->arlen);
+  printf("        password: 0x%x     gctype: 0x%x   in use: %d\n", base_np->password,
+         base_np->gctype, base_np->inuse);
+  if (!base_np->inuse)
+    printf("      Free list: fwd 0x%x bkwd 0x%x\n", base_np->fwd, base_np->bkwd);
+  printf("  Header  Length: %d cells.\n\n", base_np->arlen);
+  printf(" Trailer  Length: %d cells.\n\n", trailer_np->arlen);
 
-  addr = ((LispPTR *)bbase) - 20;
-  for (; addr < (LispPTR *)bbase; addr++) printf("%16p %8x\n", (void *)addr, *addr);
-  printf("%16p %8x <- array header\n", (void *)addr, *addr);
+  addr = ((LispPTR *)base_np) - 20;
+  for (; addr < (LispPTR *)base_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  printf("%16p (0x%8x) %8x <- array header\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)bbase + 20; addr++) printf("%16p %8x\n", (void *)addr, *addr);
+  for (; addr < (LispPTR *)base_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
   printf(". . .\n");
 
-  addr = ((LispPTR *)btrailer) - 20;
-  for (; addr < (LispPTR *)btrailer; addr++) printf("%16p %8x\n", (void *)addr, *addr);
-  printf("%16p %8x <- array trailer\n", (void *)addr, *addr);
+  addr = ((LispPTR *)trailer_np) - 20;
+  for (; addr < (LispPTR *)trailer_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  printf("%16p (0x%8x) %8x <- array trailer\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)btrailer + 20; addr++) printf("%16p %8x\n", (void *)addr, *addr);
+  for (; addr < (LispPTR *)trailer_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+}
+
+static void printfreeblockchainhead(int index)
+{
+  LispPTR fbl, freeblock;
+  LispPTR *fbl_np;
+
+  fbl = POINTERMASK & ((*FreeBlockBuckets_word) + (DLWORDSPER_CELL * index));
+  fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+  /* lisp pointer to free block on chain */
+  freeblock = POINTERMASK & (*fbl_np);
+  if (freeblock == NIL) { /* no blocks in chain */
+    printf("Free block chain (bucket %d): NIL\n", index);
+  } else {
+    printf("Free block chain(bucket %d): 0x%x\n", index, freeblock);
+  }
+}
+
+void printfreeblockchainn(int arlen)
+{
+  if (arlen >= 0) {
+    printfreeblockchainhead(BucketIndex(arlen));
+    return;
+  } else
+    for (int i = 0; i <= MAXBUCKETINDEX; i++) {
+      printfreeblockchainhead(i);
+    }
 }
