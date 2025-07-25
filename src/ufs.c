@@ -218,7 +218,7 @@ LispPTR UFS_getfilename(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, lfname, len + 1);
 #else
-  StrNCpyFromCToLisp(base, lfname, len + 1);
+  MemCpyToLispFromNative(base, lfname, len + 1);
 #endif /* BYTESWAP */
 
   return (GetSmallp(len));
@@ -422,7 +422,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, dirname, len + 1);
 #else
-  StrNCpyFromCToLisp(base, dirname, len + 1);
+  MemCpyToLispFromNative(base, dirname, len + 1);
 #endif /* BYTESWAP */
 
   return (GetSmallp(len));

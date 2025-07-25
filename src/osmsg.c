@@ -283,7 +283,7 @@ LispPTR mess_read(LispPTR *args)
     if (temp_buf[i] == '\n') temp_buf[i] = '\000';
   }
   /* COPY actual Lisp Buffer(for BYTESWAP magic) */
-  StrNCpyFromCToLisp(base, temp_buf, size);
+  MemCpyToLispFromNative(base, temp_buf, size);
 
   return (GetSmallp(size));
 #else

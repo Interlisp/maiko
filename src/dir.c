@@ -2159,7 +2159,7 @@ LispPTR COM_next_file(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, fp->lname, fp->lname_len);
 #else
-  StrNCpyFromCToLisp(base, fp->lname, fp->lname_len);
+  MemCpyToLispFromNative(base, fp->lname, fp->lname_len);
 #endif /* BYTESWAP	 */
 
   if (!propp) return (GetPosSmallp(fp->lname_len));
@@ -2175,7 +2175,7 @@ LispPTR COM_next_file(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, pp->author, pp->au_len);
 #else
-  StrNCpyFromCToLisp(base, pp->author, pp->au_len);
+  MemCpyToLispFromNative(base, pp->author, pp->au_len);
 #endif /* BYTESWAP	 */
 
   gfsp->aulen = pp->au_len;

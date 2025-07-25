@@ -1034,7 +1034,7 @@ LispPTR DSK_getfilename(LispPTR *args)
 #ifndef BYTESWAP
       strncpy(base, lfname, len + 1);
 #else
-      StrNCpyFromCToLisp(base, lfname, len + 1);
+      MemCpyToLispFromNative(base, lfname, len + 1);
 #endif /* BYTESWAP */
 
       return (GetPosSmallp(len));
@@ -1070,7 +1070,7 @@ LispPTR DSK_getfilename(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, lfname, len + 1);
 #else
-  StrNCpyFromCToLisp(base, lfname, len + 1);
+  MemCpyToLispFromNative(base, lfname, len + 1);
 #endif /* BYTESWAP */
 
   return (GetPosSmallp(len));
@@ -1509,7 +1509,7 @@ LispPTR DSK_directorynamep(LispPTR *args)
 #ifndef BYTESWAP
   strncpy(base, dirname, len + 1);
 #else
-  StrNCpyFromCToLisp(base, dirname, len + 1);
+  MemCpyToLispFromNative(base, dirname, len + 1);
 #endif /* BYTESWAP */
 
   return (GetPosSmallp(len));
@@ -1671,7 +1671,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
 #ifndef BYTESWAP
       strncpy(base, pwd->pw_name, len);
 #else
-      StrNCpyFromCToLisp(base, pwd->pw_name, len);
+      MemCpyToLispFromNative(base, pwd->pw_name, len);
 #endif /* BYTESWAP */
 #endif /* DOS */
       return (GetPosSmallp(len));
@@ -1710,7 +1710,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
 #ifndef BYTESWAP
       strncpy(base, pwd->pw_name, len);
 #else
-      StrNCpyFromCToLisp(base, pwd->pw_name, len);
+      MemCpyToLispFromNative(base, pwd->pw_name, len);
 #endif /* BYTESWAP	 */
 #endif /* DOS */
       return (GetPosSmallp(len));

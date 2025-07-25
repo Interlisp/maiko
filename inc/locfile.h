@@ -44,18 +44,17 @@
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */
 
-#define StrNCpyFromCToLisp(lispbuf, cbuf ,len)	do {	\
-			char *lf_sptr = (cbuf);		\
-                        char *lf_dptr = (lispbuf);                      \
-			for(size_t lf_i=0;lf_i<(len);lf_i++)\
-				GETBYTE(lf_dptr++) = *lf_sptr++;		\
-  } while (0)
-
-#define StrNCpyFromLispToC(cbuf , lispbuf, len)	do {	\
-			char *lf_sptr = (lispbuf);                                          \
-			char *lf_dptr = (cbuf);                       \
-			for(size_t lf_i=0;lf_i<(len);lf_i++)\
-				*lf_dptr++ = GETBYTE(lf_sptr++);		\
+/*
+ *  Copy memory between native memory locations accounting for potential
+ *  byte-swapping necessary when then destination is within Lisp memory space
+ *  though the provided destination pointer is a native address within the
+ *  Lisp space.
+ */
+ #define MemCpyToLispFromNative(lispbuf, cbuf, len)                               \
+  do {                                                                            \
+    char *lf_sptr = (cbuf);                                                       \
+    char *lf_dptr = (lispbuf);                                                    \
+    for (size_t lf_i = 0; lf_i < (len); lf_i++) *BYTEPTR(lf_dptr++) = *lf_sptr++; \
   } while (0)
 
 #define FGetNum(ptr, place) do { \
@@ -122,8 +121,10 @@
 	case THIN_CHAR_TYPENUMBER:					\
 		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
 		       + ((int)(lf_arrayp->offset));			\
-		StrNCpyFromLispToC(C , lf_base , lf_length );		\
-		(C)[lf_length] = '\0';					\
+                lf_dp = C;                                              \
+                for (size_t lf_i = 0; lf_i < lf_length; lf_i++)         \
+                  *lf_dp++ = GETBYTE(lf_base++);                            \
+		*lf_dp = '\0';					\
 		break;							\
 									\
 	case FAT_CHAR_TYPENUMBER:					\
