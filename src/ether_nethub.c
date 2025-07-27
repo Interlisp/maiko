@@ -468,7 +468,7 @@ LispPTR ether_get(LispPTR args[])
   log_debug(("ether_get() - begin\n"));
 
   target = (u_char *)NativeAligned2FromLAddr(args[1]);
-  maxByteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
+  maxByteCount = BYTESPER_DLWORD * LispIntToCInt(args[0]); /* words to bytes */
   log_debug(("  target = %p maxBytecount: %d bytes\n", (void *)target, maxByteCount));
 
   ether_buf = target;
@@ -501,7 +501,7 @@ LispPTR ether_send(LispPTR args[])
   log_debug(("ether_send() - begin\n"));
 
   u_char *source = (u_char *)NativeAligned2FromLAddr(args[1]);
-  int byteCount = 2 * LispIntToCInt(args[0]); /* words to bytes */
+  int byteCount = BYTESPER_DLWORD * LispIntToCInt(args[0]); /* words to bytes */
 
   log_debug(("   source = %p , bytecount: %d bytes\n", (void *)source, byteCount));
 
