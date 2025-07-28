@@ -98,10 +98,12 @@ void prindatum(LispPTR x) {
       break;
     case TYPE_ONED_ARRAY:
     case TYPE_GENERAL_ARRAY:
+      /* this should probably use array.h's arrayheader */
       newstring = (NEWSTRINGP *)NativeAligned4FromLAddr(x);
       if (newstring->stringp) {
         print_NEWstring(x);
       }
+      /* it would be useful to print non-string arrays, too */
       break;
     default: dtd_base = (struct dtd *)GetDTD(typen); printf("{");
 #ifdef BIGVM
@@ -173,14 +175,20 @@ void print_string(LispPTR x) {
 void print_NEWstring(LispPTR x) {
   NEWSTRINGP *string_point;
   DLword st_length;
+  DLword st_offset;
   DLbyte *string_base;
 
   int i;
 
   string_point = (NEWSTRINGP *)NativeAligned4FromLAddr(x);
   st_length = string_point->fillpointer;
+  st_offset = string_point->offset;
+  if (string_point->indirectp) {
+    /* base points to another array header not the raw storage */
+    string_point = (NEWSTRINGP *)NativeAligned4FromLAddr(string_point->base);
+  }
   string_base = (DLbyte *)NativeAligned2FromLAddr(string_point->base);
-  string_base += string_point->offset;
+  string_base += st_offset;
 
   printf("%c", DOUBLEQUOTE); /* print %" */
 
