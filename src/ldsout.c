@@ -216,8 +216,8 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
   }
 
   if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
-    printf("CAUTION::not an integral number of pages.  sysout & 0x1ff = 0x%x\n",
-           (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
+    printf("CAUTION::not an integral number of pages.  sysout & 0x%x = 0x%x\n",
+           BYTESPER_PAGE - 1, (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
 
   if (ifpage.nactivepages != (sysout_size / 2)) {
     printf("sysout_loader:IFPAGE says sysout size is %d\n", ifpage.nactivepages);
