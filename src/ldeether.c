@@ -200,7 +200,7 @@ int main(int argc, char *argv[]) {
         goto I_Give_Up;
       }
       bcopy(if_data.ifc_req[0].ifr_addr.sa_data, ether_host, 6);
-      strcpy(Ename, if_data.ifc_req[0].ifr_name);
+      strlcpy(Ename, if_data.ifc_req[0].ifr_name, sizeof(Ename));
 
       fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
 

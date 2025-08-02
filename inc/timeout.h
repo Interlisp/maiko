@@ -38,9 +38,8 @@ extern	unsigned int TIMEOUT_TIME;
   } while (0)
 
 #define	S_TOUT(exp)	\
-  alarm(TIMEOUT_TIME),                  \
-    (exp),                              \
-    alarm(0)
+  alarm(TIMEOUT_TIME),  \
+    (exp)
 
 #define	ERRSETJMP(rval)					\
   do {							\

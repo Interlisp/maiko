@@ -58,7 +58,7 @@ typedef struct dfinfo {
 } DFINFO;
 
 #ifdef DOS
-int make_old_version(char *old, char *file);
+int make_old_version(char *old, size_t oldsize, char *file);
 #endif
 #ifdef FSDEBUG
 void print_finfo(FINFO *fp);
