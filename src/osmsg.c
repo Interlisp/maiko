@@ -233,15 +233,13 @@ LispPTR mess_read(LispPTR *args)
   struct stat sbuf;
   int size, save_size;
   char *base;
-  LispPTR *naddress;
   int i;
   static char temp_buf[MESSAGE_BUFFER_SIZE];
 
   SETJMP(NIL);
 
   /* Get buff address from LISP */
-  naddress = (LispPTR *)(NativeAligned4FromLAddr(args[0]));
-  base = (char *)(NativeAligned2FromLAddr(((OneDArray *)naddress)->base));
+  STRING_BASE(args[0], base);
 
   close(log_id);
   TIMEOUT(log_id = open(logfile, O_RDONLY));
@@ -283,7 +281,7 @@ LispPTR mess_read(LispPTR *args)
     if (temp_buf[i] == '\n') temp_buf[i] = '\000';
   }
   /* COPY actual Lisp Buffer(for BYTESWAP magic) */
-  StrNCpyFromCToLisp(base, temp_buf, size);
+  MemCpyToLispFromNative(base, temp_buf, size);
 
   return (GetSmallp(size));
 #else

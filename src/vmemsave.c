@@ -92,7 +92,7 @@ extern int please_fork;
 /*									*/
 /************************************************************************/
 
-int lispstringP(LispPTR Lisp)
+static int lispstringP(LispPTR Lisp)
 {
   switch (((OneDArray *)(NativeAligned4FromLAddr(Lisp)))->typenumber) {
     case THIN_CHAR_TYPENUMBER:

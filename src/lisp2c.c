@@ -38,6 +38,8 @@ int LispStringSimpleLength(LispPTR lispstring) {
   return (arrayp->fillpointer);
 }
 
+/* XXX: this string conversion is NOT useable on byte-swapped (little-endian) machines
+ */
 void LispStringToCStr(LispPTR lispstring, char *cstring) {
   OneDArray *arrayp;
   char *base;

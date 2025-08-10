@@ -674,7 +674,7 @@ $(OBJECTDIR)initsout.o: $(SRCDIR)initsout.c $(REQUIRED-INCS) \
 
 $(OBJECTDIR)kbdsubrs.o: $(SRCDIR)kbdsubrs.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)kbdsubrsdefs.h \
-	$(INCDIR)commondefs.h $(INCDIR)lisp2cdefs.h $(INCDIR)xwinmandefs.h \
+	$(INCDIR)commondefs.h $(INCDIR)xwinmandefs.h \
 	$(INCDIR)devif.h
 	$(CC) $(RFLAGS) $(SRCDIR)kbdsubrs.c -o $(OBJECTDIR)kbdsubrs.o
 

@@ -12,6 +12,7 @@
 #include <limits.h>   /* for NAME_MAX */
 #include <dirent.h>   /* for MAXNAMLEN */
 #include "lispemul.h" /* for DLword */
+#include "commondefs.h" /* for error */
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
 
@@ -44,18 +45,17 @@
 			/* For getfileinfo. For WDATE&RDATE */
 			/* 29969152 == (timer.c)LISP_UNIX_TIME_DIFF */
 
-#define StrNCpyFromCToLisp(lispbuf, cbuf ,len)	do {	\
-			char *lf_sptr = (cbuf);		\
-                        char *lf_dptr = (lispbuf);                      \
-			for(size_t lf_i=0;lf_i<(len);lf_i++)\
-				GETBYTE(lf_dptr++) = *lf_sptr++;		\
-  } while (0)
-
-#define StrNCpyFromLispToC(cbuf , lispbuf, len)	do {	\
-			char *lf_sptr = (lispbuf);                                          \
-			char *lf_dptr = (cbuf);                       \
-			for(size_t lf_i=0;lf_i<(len);lf_i++)\
-				*lf_dptr++ = GETBYTE(lf_sptr++);		\
+/*
+ *  Copy memory between native memory locations accounting for potential
+ *  byte-swapping necessary when then destination is within Lisp memory space
+ *  though the provided destination pointer is a native address within the
+ *  Lisp space.
+ */
+ #define MemCpyToLispFromNative(lispbuf, cbuf, len)                               \
+  do {                                                                            \
+    char *lf_sptr = (cbuf);                                                       \
+    char *lf_dptr = (lispbuf);                                                    \
+    for (size_t lf_i = 0; lf_i < (len); lf_i++) *BYTEPTR(lf_dptr++) = *lf_sptr++; \
   } while (0)
 
 #define FGetNum(ptr, place) do { \
@@ -63,6 +63,10 @@
         else if(((ptr) & SEGMASK)== S_NEGATIVE) {(place) = (int)((ptr)| 0xffff0000);}\
         else {return(NIL);}} while (0)
 
+
+#ifndef min
+#define min(a, b) (((a) <= (b))?(a):(b))
+#endif /* min */
 
 /************************************************************************/
 /*									*/
@@ -79,65 +83,52 @@
 /*									*/
 /************************************************************************/
 #ifndef BYTESWAP
-#define	LispStringToCString(Lisp, C, MaxLen)				\
-  do {									\
-    OneDArray	*lf_arrayp;						\
-    char	*lf_base, *lf_dp;						\
-    short	*lf_sbase;							\
-    size_t		 lf_length;						\
-    lf_arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);		\
-    lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
-    switch(lf_arrayp->typenumber)						\
-      {									\
-	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
-		       + ((int)(lf_arrayp->offset));			\
-		strncpy(C, lf_base, lf_length);				\
-		(C)[lf_length] = '\0';					\
-		break;							\
-									\
-	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
-		       + ((int)(lf_arrayp->offset));			\
-                lf_dp = C;						\
-		for(size_t lf_i=0;lf_i<(lf_length);lf_i++)		\
-		  *lf_dp++ = (char)(*lf_sbase++);			\
-		*lf_dp = '\0';						\
-		break;							\
-	default:							\
-		error("LispStringToCString: Not a character array.\n");	\
-      }									\
- } while (0)
+static void LispStringToCString(LispPTR Lisp, char *C, size_t MaxLen) {
+  OneDArray *lf_arrayp;
+  char *lf_base, *lf_dp;
+  short *lf_sbase;
+  size_t lf_length;
+  lf_arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
+  lf_length = min(MaxLen - 1, lf_arrayp->fillpointer);
+  lf_dp = (C);
+  switch (lf_arrayp->typenumber) {
+    case THIN_CHAR_TYPENUMBER:
+      lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base))) + ((int)(lf_arrayp->offset));
+      strncpy(lf_dp, lf_base, lf_length);
+      lf_dp[lf_length] = '\0';
+      break;
+
+    case FAT_CHAR_TYPENUMBER:
+      lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base))) + ((int)(lf_arrayp->offset));
+      for (size_t lf_i = 0; lf_i < (lf_length); lf_i++) *lf_dp++ = (char)(*lf_sbase++);
+      *lf_dp = '\0';
+      break;
+    default: error("LispStringToCString: Not a character array.\n");
+  }
+}
 #else  /* BYTESWAP == T CHANGED-BY-TAKE */
-#define	LispStringToCString(Lisp, C, MaxLen)				\
-  do {									\
-    OneDArray	*lf_arrayp;						\
-    char	*lf_base, *lf_dp;						\
-    short	*lf_sbase;							\
-    size_t 	lf_length;						\
-    lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(Lisp));			\
-    lf_length = min(MaxLen, lf_arrayp->fillpointer);			\
-    switch(lf_arrayp->typenumber)						\
-      {									\
-	case THIN_CHAR_TYPENUMBER:					\
-		lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base)))  	\
-		       + ((int)(lf_arrayp->offset));			\
-		StrNCpyFromLispToC(C , lf_base , lf_length );		\
-		(C)[lf_length] = '\0';					\
-		break;							\
-									\
-	case FAT_CHAR_TYPENUMBER:					\
-		lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base)))	\
-		       + ((int)(lf_arrayp->offset));			\
-                lf_dp = C;						\
-		for(size_t lf_ii=0;lf_ii<(lf_length);lf_ii++,lf_sbase++)  \
-                    *lf_dp++ = (char)(GETWORD(lf_sbase));               \
-		*lf_dp = '\0';						\
-		break;							\
-	default:							\
-		error("LispStringToCString: Not a character array.\n");	\
-      }									\
-  } while (0)
+static void LispStringToCString(LispPTR Lisp, char *C, size_t MaxLen) {
+  OneDArray *lf_arrayp;
+  char *lf_base, *lf_dp;
+  short *lf_sbase;
+  size_t lf_length;
+  lf_arrayp = (OneDArray *)(NativeAligned4FromLAddr(Lisp));
+  lf_length = min(MaxLen - 1, lf_arrayp->fillpointer);
+  lf_dp = (C);
+  switch (lf_arrayp->typenumber) {
+    case THIN_CHAR_TYPENUMBER:
+      lf_base = ((char *)(NativeAligned2FromLAddr(lf_arrayp->base))) + ((int)(lf_arrayp->offset));
+      for (size_t lf_i = 0; lf_i < lf_length; lf_i++) *lf_dp++ = GETBYTE(lf_base++);
+      break;
+
+    case FAT_CHAR_TYPENUMBER:
+      lf_sbase = ((short *)(NativeAligned2FromLAddr(lf_arrayp->base))) + ((int)(lf_arrayp->offset));
+      for (size_t lf_ii = 0; lf_ii < lf_length; lf_ii++) *lf_dp++ = (char)(GETWORD(lf_sbase++));
+      break;
+    default: error("LispStringToCString: Not a character array.\n");
+  }
+  *lf_dp = '\0';
+}
 
 #endif /* BYTESWAP */
 
@@ -188,10 +179,6 @@ do  {				\
 	lf_naddress = (LispPTR *)(NativeAligned4FromLAddr(lstringp));		  \
 	(cstringp) = (char *)(NativeAligned2FromLAddr(((OneDArray *)lf_naddress)->base)); \
  } while (0)
-
-#ifndef min
-#define min(a, b) (((a) <= (b))?(a):(b))
-#endif /* min */
 
 #define	LispNumToCInt(Lisp)					\
        ( (((Lisp) & SEGMASK) == S_POSITIVE) ? ((Lisp) & 0xFFFF) : \
@@ -299,7 +286,7 @@ do  {				\
  * Argument:	char	*pathname
  *				Xerox Lisp syntax pathname.
  *
- * Value:	If succeed, returns 1, otherwise 0.
+ * Value:	On success returns 1, otherwise 0.
  *
  * Side Effect:	The version part of pathname is destructively modified.
  *
@@ -312,7 +299,7 @@ do  {				\
  * code.
  * This macro should be called at the top of the routines which accept the
  * file name from lisp before converting it into UNIX file name, because
- * locating the version part, the informations about quoted characters are needed.
+ * locating the version part, the information about quoted characters are needed.
  * They might be lost in the course of the conversion.
  *
  */
@@ -337,19 +324,18 @@ do  {				\
  *				If 0, versionless file is converted to version 1.
  *				Otherwise, remains as versionless.
  *
- * Value:	If succeed, returns 1, otherwise 0.
+ * Value:	On success returns 1, otherwise 0.
  *
  * Side Effect:	The version part of pathname is destructively modified.
  *
  * Description:
  *
- * Destructively modify the version part of pathname which is following the
+ * Destructively modifies the version part of pathname which is following the
  * UNIX file naming convention to Xerox Lisp one.
  * This macro should be called, in the routines which convert the UNIX pathname
  * to Lisp one, just before it returns the result to Lisp, because converting
- * version field will append a semicolon and it might make the routine be
- * confused.
- * The file which has not a valid version field, that is ".~##~" form, is
+ * version field will append a semicolon which may confuse the routine
+ * The file which does not have a valid version field, that is ".~##~" form, is
  * dealt with as version 1. 
  */
 

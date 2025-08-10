@@ -366,7 +366,7 @@ LispPTR ether_get(LispPTR args[])
   LispPTR MaxByteCount;
   sigset_t signals;
 
-  MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
+  MaxByteCount = BYTERSPER_DLWORD * (0xFFFF & args[0]); /* words to bytes */
 
   DBPRINT(("Ether Get.  "));
 
@@ -408,7 +408,7 @@ LispPTR ether_send(LispPTR args[])
   LispPTR MaxByteCount;
   u_char *BufferAddr; /* buffer address pointer(in native address) */
 
-  MaxByteCount = 2 * (0xFFFF & args[0]); /* words to bytes */
+  MaxByteCount = BYTESPER_DLWORD * (0xFFFF & args[0]); /* words to bytes */
   BufferAddr = (u_char *)NativeAligned2FromLAddr(args[1]);
 
   if (ether_fd > 0) {
