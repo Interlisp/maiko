@@ -477,7 +477,7 @@ int *ether_debug(void) {
   estat[0] = 0;
   if (ether_fd < 0) return (NIL);
   printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
-         IOPage->dlethernet[3], ether_in, ether_out);
+         ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
 #endif /* MAIKO_ENABLE_ETHERNET */
 
   return (estat);
@@ -542,7 +542,7 @@ LispPTR check_ether(void) {
                 memcpy(&ether_buf[0], &nit_buf[nitpos], fromlen);
                 ether_bsize = 0; /* deactivate receiver */
                 ether_in++;
-                IOPage->dlethernet[3] = fromlen;
+                ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = fromlen;
                 DBPRINT(
                     ("Found packet len %d, at pos %d in buflen %d.\n", fromlen, nitpos, nitlen));
                 nitpos += fromlen;
@@ -586,7 +586,7 @@ LispPTR check_ether(void) {
         memcpy(&ether_buf[0], nit_buf, data.len);
         ether_bsize = 0;
         ether_in++;
-        IOPage->dlethernet[3] = data.len;
+        ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = data.len;
         ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
         ETHEREventCount++;
         Irq_Stk_Check = Irq_Stk_End = 0;
@@ -649,7 +649,7 @@ LispPTR get_packet(void) {
             memcpy(&ether_buf[0], &nit_buf[nitpos], fromlen);
             ether_bsize = 0; /* deactivate receiver */
             ether_in++;
-            IOPage->dlethernet[3] = fromlen;
+            ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = fromlen;
             DBPRINT(("Found packet len %d, at pos %d in buflen %d.\n", fromlen, nitpos, nitlen));
             nitpos += fromlen;
             return (ATOM_T);
@@ -683,7 +683,7 @@ LispPTR get_packet(void) {
       memcpy(&ether_buf[0], nit_buf, data.len);
       ether_bsize = 0;
       ether_in++;
-      IOPage->dlethernet[3] = data.len;
+      ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = data.len;
       return (ATOM_T);
     }
   } else if (errno != EWOULDBLOCK)

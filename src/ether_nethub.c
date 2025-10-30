@@ -297,12 +297,10 @@ static int recvPacket(void) {
 #if defined(BYTESWAP)
   log_debug(("  recvPacket() :: byte-swapping %d bytes at %p\n", bLen, (void *)ether_buf));
   dblwordsSwap(ether_buf, bLen);
-  IOPage->dlethernet[2] = bLen;
 #else
   log_debug(("  recvPacket() :: %d bytes at %p\n", bLen, (void *)ether_buf));
-  IOPage->dlethernet[3] = bLen;
 #endif
-
+  ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = blen;
   ether_bsize = 0;
 
 
