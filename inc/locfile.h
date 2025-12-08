@@ -11,6 +11,7 @@
 #include <errno.h>
 #include <limits.h>   /* for NAME_MAX */
 #include <dirent.h>   /* for MAXNAMLEN */
+#include <string.h>  /* for strncpy in non-BYTESWAP case */
 #include "lispemul.h" /* for DLword */
 #include "commondefs.h" /* for error */
 
