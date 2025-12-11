@@ -17,6 +17,8 @@
 #include <stdbool.h>      // for false, bool, true
 #include <stdio.h>        // for NULL
 #include <stdlib.h>       // for exit
+#include <fcntl.h>        // for fcntl, O_ASYNC, ...
+#include <unistd.h>       // for getpid
 #include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "dbprint.h"      // for TPRINT
 #include "devif.h"        // for (anonymous), MRegion, DspInterface, OUTER_S...
@@ -248,6 +250,7 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
                     unsigned depth_hint)
 {
   Screen *Xscreen;
+  int xfd;
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */
                                   /* has to dealt with in a more */
@@ -360,5 +363,12 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
       break;
   }
   XInitImage(&dsp->ScreenBitmap);
+
+#if defined(O_ASYNC)
+  xfd = ConnectionNumber(dsp->display_id);
+  if (fcntl(xfd, F_SETOWN, getpid()) == -1) perror("X_init: fcntl F_SETOWN error");
+  if (fcntl(xfd, F_SETFL, fcntl(xfd, F_GETFL, 0) | O_ASYNC) == -1) perror("X_init: fcntl F_SETFL O_ASYNC error");
+#endif
+
   return (dsp);
 }
