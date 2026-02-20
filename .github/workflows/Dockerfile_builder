@@ -8,11 +8,11 @@
 #
 # ******************************************************************************
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 SHELL ["/bin/bash", "-c"]
 USER root:root
 # Install build tools
-RUN apt-get update && apt-get install -y make clang libx11-dev gcc
+RUN apt-get update && apt-get install -y make clang libx11-dev libbsd-dev libpcap-dev gcc
 USER root
 WORKDIR /root
 ENTRYPOINT /bin/bash
