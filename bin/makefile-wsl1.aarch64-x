@@ -19,8 +19,8 @@ XFLAGS = -DXWINDOW
 OPTFLAGS =  -O2 -g3
 DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) -D__wsl1__
 
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm
+LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lbsd
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm -lbsd
 
 OBJECTDIR = ../$(RELEASENAME)/
 
