@@ -16,13 +16,17 @@ XFILES = $(OBJECTDIR)xmkicon.o \
 
 XFLAGS = -DXWINDOW
 
+include makefile-linux-check-prerequisites
+BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
+BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
+
 # OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
 OPTFLAGS =  -O0 -g
 DEBUGFLAGS =
-DFLAGS = $(DEBUGFLAGS) $(XFLAGS) -DRELEASE=$(RELEASE) -DNOVERSION -DINIT
+DFLAGS = $(DEBUGFLAGS) $(XFLAGS) -DRELEASE=$(RELEASE) -DNOVERSION -DINIT $(BSD_CFLAGS)
 
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm -lbsd
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm -lbsd
+LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
+LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
 
 OBJECTDIR = ../$(RELEASENAME)/
 

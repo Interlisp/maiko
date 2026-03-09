@@ -13,12 +13,16 @@ XFILES = $(OBJECTDIR)sdl.o
 #
 XFLAGS = -DSDL=2
 
+include makefile-linux-check-prerequisites
+BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
+BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
+
 # OPTFLAGS is normally -O2.
 OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
+DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) $(BSD_CFLAGS)
 
-LDFLAGS = -lm -lSDL2 -lbsd
-LDELDFLAGS = -lbsd
+LDFLAGS = -lm -lSDL2 $(BSD_LDFLAGS)
+LDELDFLAGS = $(BSD_LDFLAGS)
 
 OBJECTDIR = ../$(RELEASENAME)/
 
