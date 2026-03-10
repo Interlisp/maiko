@@ -1,33 +1,12 @@
 # Options for Linux, aarch64 processor, X windows, for INIT processing
 
-CC = gcc $(GCC_CFLAGS)
-#CC = clang $(CLANG_CFLAGS)
+include linux-x.mk
 
-XFILES = $(OBJECTDIR)xmkicon.o \
-	$(OBJECTDIR)xbbt.o \
-	$(OBJECTDIR)dspif.o \
-	$(OBJECTDIR)xinit.o \
-	$(OBJECTDIR)xscroll.o \
-	$(OBJECTDIR)xcursor.o \
-	$(OBJECTDIR)xlspwin.o \
-	$(OBJECTDIR)xrdopt.o \
-	$(OBJECTDIR)xwinman.o
-
-
-XFLAGS = -DXWINDOW
-
-include makefile-linux-check-prerequisites
-BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
-BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
-
-# OPTFLAGS is normally -O2, for INIT we want unoptimized in case we need to debug it
-OPTFLAGS =  -O0 -g
 DEBUGFLAGS =
-DFLAGS = $(DEBUGFLAGS) $(XFLAGS) -DRELEASE=$(RELEASE) -DNOVERSION -DINIT $(BSD_CFLAGS)
+ADDITIONAL_DFLAGS = $(DEBUGFLAGS) -DNOVERSION -DINIT
 
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
+include linux-common.mk
 
-OBJECTDIR = ../$(RELEASENAME)/
+OPTFLAGS =  -O0 -g
 
 default	: ../$(OSARCHNAME)/ldeinit

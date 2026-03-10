@@ -17,4 +17,8 @@ ifneq ($(MAKECMDGOALS),clean)
   endif
 endif
 
+BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
+
+BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
+
 

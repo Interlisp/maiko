@@ -1,29 +1,7 @@
 # Options for Linux, ARMv7 and SDL
 
-CC = gcc $(GCC_CFLAGS)
-#CC = clang $(CLANG_CFLAGS)
+include linux-sdl.mk
 
-XFILES = $(OBJECTDIR)sdl.o
-
-#
-#  For SDL version 2
-#      -DSDL=2 in XFLAGS and -lSDL2 in LDFLAGS
-#  For SDL version 3
-#      -DSDL=3 in XFLAGS and -lSDL3 in LDFLAGS
-#
-XFLAGS = -DSDL=2
-
-include makefile-linux-check-prerequisites
-BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
-BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
-
-# OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) $(BSD_CFLAGS)
-
-LDFLAGS = -lm -lSDL2 $(BSD_LDFLAGS)
-LDELDFLAGS = $(BSD_LDFLAGS)
-
-OBJECTDIR = ../$(RELEASENAME)/
+include linux-common.mk
 
 default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl

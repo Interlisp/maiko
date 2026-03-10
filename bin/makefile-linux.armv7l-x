@@ -1,31 +1,7 @@
 # Options for Linux, ARMv7 and X-Window
 
-CC = gcc $(GCC_CFLAGS)
-#CC = clang $(CLANG_CFLAGS)
+include linux-x.mk
 
-XFILES = $(OBJECTDIR)xmkicon.o \
-	$(OBJECTDIR)xbbt.o \
-	$(OBJECTDIR)dspif.o \
-	$(OBJECTDIR)xinit.o \
-	$(OBJECTDIR)xscroll.o \
-	$(OBJECTDIR)xcursor.o \
-	$(OBJECTDIR)xlspwin.o \
-	$(OBJECTDIR)xrdopt.o \
-	$(OBJECTDIR)xwinman.o
-
-XFLAGS = -DXWINDOW
-
-include makefile-linux-check-prerequisites
-BSD_CFLAGS = $(shell pkg-config --cflags libbsd-overlay)
-BSD_LDFLAGS = $(shell pkg-config --libs libbsd-overlay)
-
-# OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) $(BSD_CFLAGS)
-
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm $(BSD_LDFLAGS)
-
-OBJECTDIR = ../$(RELEASENAME)/
+include linux-common.mk
 
 default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
