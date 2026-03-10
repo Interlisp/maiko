@@ -1,9 +1,12 @@
 # Object files
 *.o
+
 # Editor backups and recovery files
 *~
 \#*#
+
 .DS_Store
+
 # build directories
 build/**
 cmake-build-*/**
@@ -36,3 +39,26 @@ core
 *.core
 *.swp
 
+# .gitignore for submodules
+
+*.pdf
+index.html
+
+# manual cross-reference files
+
+*.IMPTR
+
+# (Accidentally) created sysouts at any level
+*.sysout
+*.SYSOUT
+
+# older versions
+
+*~
+
+# emacs detritus
+*\#
+\.\#*
+
+# Mac OS detritus
+.DS_Store
