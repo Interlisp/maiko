@@ -1,12 +1,9 @@
 # Options for Linux, x86 processor, X windows, for INIT processing
 
-include linux-x.mk
-
+OPTFLAGS =  -O0 -g
 DEBUGFLAGS =
 ADDITIONAL_DFLAGS = $(DEBUGFLAGS) -DNOVERSION -DINIT
+USE_LIBBSD=T
+USE_DISPLAY=init
 
 include linux-common.mk
-
-OPTFLAGS =  -O0 -g
-
-default	: ../$(OSARCHNAME)/ldeinit

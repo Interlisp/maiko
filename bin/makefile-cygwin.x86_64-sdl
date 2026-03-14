@@ -1,26 +1,9 @@
 # Options for Linux, Intel x86_64 and X-Window
 
-CC = gcc -m64 $(GCC_CFLAGS) -I/usr/local/include
-#CC = clang -m64 $(CLANG_CFLAGS)
+GCC_CFLAGS := -m64 $(GCC_CFLAGS) -I/usr/local/include
+CLANG_CFLAGS := -m64 $(CLANG_CFLAGS) -I/usr/local/include
+USE_DISPLAY=sdl
+USE_LIBBSD=F
+XLDFLAGS := -L/usr/local/lib -lSDL2
 
-XFILES = $(OBJECTDIR)sdl.o
-
-#
-#  For SDL version 2
-#      -DSDL=2 in XFLAGS and -lSDL2 in LDFLAGS
-#  For SDL version 3
-#      -DSDL=3 in XFLAGS and -lSDL3 in LDFLAGS
-#
-XFLAGS = -DSDL=2
-
-# OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
-
-LDFLAGS = -lm -L/usr/local/lib -lSDL2
-#
-LDELDFLAGS =
-
-OBJECTDIR = ../$(RELEASENAME)/
-
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl
+include linux-common.mk

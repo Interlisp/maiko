@@ -2,9 +2,8 @@
 
 GCC_CFLAGS := -m64 $(GCC_CFLAGS)
 CLANG_CFLAGS := -m64 $(CLANG_CFLAGS)
-
-include linux-x.mk
+USE_DISPLAY=x
+USE_LIBBSD=T
 
 include linux-common.mk
 
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
