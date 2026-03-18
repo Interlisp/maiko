@@ -1,8 +1,8 @@
 # Select whether to use clang or gcc
 # Priority
-#  1.  If -DUSE_GCC or -DUSE_CLANG on command line (but not both) use the requested compiler.
-#  2.  If one compiler is installed but not the other,  use the installed compiler.
-#  3.  Use clang
+#  1.  If USE_COMPILER=gcc or USE_COMPILER=clang on make command line use the requested compiler.
+#  2.  If clang is installed use it.
+#  3.  Use gcc
 
 EXISTS_GCC := $(shell command -v gcc)
 EXISTS_CLANG := $(shell command -v clang)
