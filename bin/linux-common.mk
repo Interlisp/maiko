@@ -2,11 +2,17 @@
 
 include linux-compiler.mk
 
+BSD_CFLAGS :=
+BSD_LDFLAGS :=
 ifeq ($(USE_LIBBSD),T)
-  include linux-libbsd.mk
-else
-  BSD_CFLAGS :=
-  BSD_LDFLAGS :=
+    # Use LIBBSD - but only if glibc < 2.38
+    # Because we only need strlcat, strlcpy and friends from libbsd
+    # and they are included in glibc from 2.38 on.
+    GLIBC_VERSION := $(shell ldd --version | head -1 | sed -e "s/^.*\([0-9]\.[0-9][0-9]\)/\\1/")
+    GLIBC_CHECK := $(shell echo "$(GLIBC_VERSION) >= 2.38" | bc)
+    ifneq ($(GLIBC_CHECK),1)
+      include linux-libbsd.mk
+    endif
 endif
 
 ifeq ($(USE_DISPLAY),x)
@@ -26,7 +32,12 @@ OPTFLAGS ?=  -O2 -g3
 DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE) $(BSD_CFLAGS) $(ADDITIONAL_DFLAGS)
 
 LDFLAGS =  $(XLDFLAGS) -lc -lm $(BSD_LDFLAGS)
-LDELDFLAGS =  $(XLDFLAGS) -lc -lm $(BSD_LDFLAGS)
+
+ifeq ($(USE_DISPLAY),x)
+  LDELDFLAGS =  $(XLDFLAGS) -lc -lm $(BSD_LDFLAGS)
+else
+  LDELDFLAGS = -lc -lm $(BSD_LDFLAGS)
+endif
 
 OBJECTDIR = ../$(RELEASENAME)/
 

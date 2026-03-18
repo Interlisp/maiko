@@ -540,12 +540,27 @@ IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/../" CACHE PATH "Installation prefix" FORCE)
 ENDIF()
 execute_process(
-  COMMAND sh -c "echo $(../bin/osversion).$(../bin/machinetype)"
-  OUTPUT_VARIABLE release_dir
-  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  COMMAND sh "${CMAKE_SOURCE_DIR}/bin/osversion"
+  OUTPUT_VARIABLE os_ver
   OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE res
 )
-INSTALL(TARGETS lde DESTINATION ${release_dir})
+if(NOT res EQUAL 0)
+  message(FATAL_ERROR "osversion script failed")
+endif()
+
+execute_process(
+  COMMAND sh "${CMAKE_SOURCE_DIR}/bin/machinetype"
+  OUTPUT_VARIABLE machine_type
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE res
+)
+if(NOT res EQUAL 0)
+  message(FATAL_ERROR "machinetype script failed")
+endif()
+
+set(release_dir "${os_ver}.${machine_type}")INSTALL(TARGETS lde DESTINATION ${release_dir})
+
 IF(MAIKO_DISPLAY_X11)
     INSTALL(TARGETS ldex ldeinit DESTINATION ${release_dir})
 ENDIF()
