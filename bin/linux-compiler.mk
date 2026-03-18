@@ -9,28 +9,25 @@ EXISTS_CLANG := $(shell command -v clang)
 ifeq ($(or $(EXISTS_GCC),$(EXISTS_CLANG)),)
   $(error "Cannot find compiler: neither gcc nor clang. Exiting.")
 endif
-ifneq ($(and $(USE_CLANG),$(USE_GCC)),)
-  $(error "Cannot use both USE_CLANG=T and USE_GCC=T.  Exiting.")
-endif
 COMPILER :=
-ifdef USE_CLANG
+ifeq ($(USE_COMPILER),clang)
   ifeq ($(EXISTS_CLANG),)
-    $(error "USE_CLANG=T given, but cannot find the clang compiler. Exiting")
+    $(error "USE_COMPILER=clang, but cannot find the clang compiler. Exiting")
   endif
   COMPILER := clang
-endif
-ifdef USE_GCC
+else ifeq ($(USE_COMPILER),gcc)
   ifeq ($(EXISTS_GCC),)
-    $(error "USE_GCC=T given, but cannot find the gcc compiler. Exiting")
+    $(error "USE_COMPILER=gcc given, but cannot find the gcc compiler. Exiting")
   endif
   COMPILER := gcc
+else ifneq ($(EXISTS_CLANG),)
+  COMPILER := clang
+else
+  COMPILER := gcc
 endif
+
 ifeq ($(COMPILER),)
-  ifneq ($(EXISTS_CLANG),)
-    COMPILER := clang
-  else
-    COMPILER := gcc
-  endif
+  $(error "Oops.  Trying to select gcc or clang but should never get here")
 endif
 
 ifeq ($(COMPILER),gcc)
