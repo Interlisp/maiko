@@ -37,9 +37,12 @@ IF(NEED_LIB_M)
 ENDIF()
 
 IF (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(LIBBSD-OVERLAY REQUIRED IMPORTED_TARGET "libbsd-overlay")
-    SET(MAIKO_LIBRARIES ${MAIKO_LIBRARIES} PkgConfig::LIBBSD-OVERLAY)
+    CHECK_LIBRARY_EXISTS(c strlcat "" NO_NEED_FOR_LIBBSD)
+    IF(NOT NO_NEED_FOR_LIBBSD)
+      find_package(PkgConfig REQUIRED)
+      pkg_check_modules(LIBBSD-OVERLAY REQUIRED IMPORTED_TARGET "libbsd-overlay")
+      SET(MAIKO_LIBRARIES ${MAIKO_LIBRARIES} PkgConfig::LIBBSD-OVERLAY)
+    ENDIF()
 ENDIF()
 
 SET (MAIKO_RELEASE 351 CACHE STRING "Release version to build. Release: 115, 200, 201, 210, 300, 350, 351")
@@ -559,7 +562,9 @@ if(NOT res EQUAL 0)
   message(FATAL_ERROR "machinetype script failed")
 endif()
 
-set(release_dir "${os_ver}.${machine_type}")INSTALL(TARGETS lde DESTINATION ${release_dir})
+set(release_dir "${os_ver}.${machine_type}")
+
+INSTALL(TARGETS lde DESTINATION ${release_dir})
 
 IF(MAIKO_DISPLAY_X11)
     INSTALL(TARGETS ldex ldeinit DESTINATION ${release_dir})
