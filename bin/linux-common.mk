@@ -9,7 +9,10 @@ ifeq ($(USE_LIBBSD),T)
     # Because we only need strlcat, strlcpy and friends from libbsd
     # and they are included in glibc from 2.38 on.
     GLIBC_VERSION := $(shell getconf GNU_LIBC_VERSION | sed 's/glibc //')
-    GLIBC_CHECK := $(shell echo "$(GLIBC_VERSION) >= 2.38" | bc)
+    GLIBC_CHECK := 0
+    ifneq ($(GLIBC_VERSION),)
+      GLIBC_CHECK := $(shell echo "$(GLIBC_VERSION) >= 2.38" | bc)
+    endif
     ifneq ($(GLIBC_CHECK),1)
       include linux-libbsd.mk
     endif
