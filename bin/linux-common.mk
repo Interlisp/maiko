@@ -8,7 +8,7 @@ ifeq ($(USE_LIBBSD),T)
     # Use LIBBSD - but only if glibc < 2.38
     # Because we only need strlcat, strlcpy and friends from libbsd
     # and they are included in glibc from 2.38 on.
-    GLIBC_VERSION := $(shell ldd --version | head -1 | sed -e "s/^.* \([0-9]\.[0-9]\+\)/\\1/")
+    GLIBC_VERSION := $(shell getconf GNU_LIBC_VERSION | sed 's/glibc //')
     GLIBC_CHECK := $(shell echo "$(GLIBC_VERSION) >= 2.38" | bc)
     ifneq ($(GLIBC_CHECK),1)
       include linux-libbsd.mk
