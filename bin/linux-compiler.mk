@@ -4,8 +4,8 @@
 #  2.  If clang is installed use it.
 #  3.  Use gcc
 
-EXISTS_GCC := $(shell command -v gcc)
-EXISTS_CLANG := $(shell command -v clang)
+EXISTS_GCC := $(shell /bin/sh -c command -v gcc)
+EXISTS_CLANG := $(shell /bin/sh -c command -v clang)
 ifeq ($(or $(EXISTS_GCC),$(EXISTS_CLANG)),)
   $(error "Cannot find compiler: neither gcc nor clang. Exiting.")
 endif
