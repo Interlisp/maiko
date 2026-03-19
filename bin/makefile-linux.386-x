@@ -1,27 +1,8 @@
 # Options for Linux, Intel 386/486 and X-Window
 
-CC = gcc -m32 $(GCC_CFLAGS)
-# CC = clang -m32 $(CLANG_CFLAGS)
+GCC_CFLAGS := -m32 $(GCC_CFLAGS)
+CLANG_CFLAGS := -m32 $(CLANG_CFLAGS)
+USE_DISPLAY=x
+USE_LIBBSD=T
 
-XFILES = $(OBJECTDIR)xmkicon.o \
-	$(OBJECTDIR)xbbt.o \
-	$(OBJECTDIR)dspif.o \
-	$(OBJECTDIR)xinit.o \
-	$(OBJECTDIR)xscroll.o \
-	$(OBJECTDIR)xcursor.o \
-	$(OBJECTDIR)xlspwin.o \
-	$(OBJECTDIR)xrdopt.o \
-	$(OBJECTDIR)xwinman.o
-
-XFLAGS = -DXWINDOW
-
-# OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
-
-LDFLAGS = -L/usr/X11/lib -lX11 -lc -lm
-LDELDFLAGS =  -L/usr/X11/lib -lX11 -lc -lm
-
-OBJECTDIR = ../$(RELEASENAME)/
-
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldex
+include linux-common.mk

@@ -1,25 +1,6 @@
 # Options for Linux, ARMv7 and SDL
 
-CC = gcc $(GCC_CFLAGS)
-#CC = clang $(CLANG_CFLAGS)
+USE_DISPLAY=sdl
+USE_LIBBSD=T
 
-XFILES = $(OBJECTDIR)sdl.o
-
-#
-#  For SDL version 2
-#      -DSDL=2 in XFLAGS and -lSDL2 in LDFLAGS
-#  For SDL version 3
-#      -DSDL=3 in XFLAGS and -lSDL3 in LDFLAGS
-#
-XFLAGS = -DSDL=2
-
-# OPTFLAGS is normally -O2.
-OPTFLAGS =  -O2 -g3
-DFLAGS = $(XFLAGS) -DRELEASE=$(RELEASE)
-
-LDFLAGS = -lm -lSDL2
-LDELDFLAGS =
-
-OBJECTDIR = ../$(RELEASENAME)/
-
-default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl
+include linux-common.mk

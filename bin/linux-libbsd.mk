@@ -1,0 +1,26 @@
+# Check that pkg-config is available and that the libbsd-dev package is installed
+# If one of these is missing, error out
+# FGH 2026-03-08
+ifneq ($(MAKECMDGOALS),clean)
+  ifneq ($(MAKECMDGOALS),cleanup)
+
+    CHK_PKG_CONFIG := $(shell /bin/sh -c "command -v pkg-config")
+    ifeq ($(CHK_PKG_CONFIG),)
+        # pkg-config not found, print an error
+        $(error "pkg-config not found. Please install it to build this project.")
+    endif
+
+    CHK_LIBBSD_DEV :=  $(shell pkg-config --exists libbsd-overlay && echo true)
+    ifneq ($(CHK_LIBBSD_DEV),true)
+      $(error "libbsd-dev (or libbsd-devel) package not found. Please install it to build this project.")
+    endif
+
+    BSD_CFLAGS := $(shell pkg-config --cflags libbsd-overlay)
+
+    BSD_LDFLAGS := $(shell pkg-config --libs libbsd-overlay)
+
+  endif  # clean
+endif  # cleanup
+
+
+
