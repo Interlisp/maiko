@@ -123,7 +123,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -157,7 +157,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -165,7 +165,7 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Setup release tag
       - name: Setup Release Tag
@@ -185,14 +185,14 @@ jobs:
 
       # Setup the Docker Machine Emulation environment.
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
       # Setup the Docker Buildx funtion
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v4
 
       # Do the Docker Build using the Dockerfile in the repository we
       # checked out.  Save the results in a directory under /tmp to be used
@@ -204,7 +204,7 @@ jobs:
       #       Dockerfile, NOT HERE IN THE WORKFLOW.
       #
       - name: Build Docker Image and Save It Locally
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v7
         with:
           builder: ${{ steps.buildx.outputs.name }}
           build-args: |
@@ -246,7 +246,7 @@ jobs:
 
       # Push Release to github
       - name: Push the release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           allowUpdates: true
           artifacts:
@@ -280,11 +280,11 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -376,7 +376,7 @@ jobs:
 
       # Push Release
       - name: Push the release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           allowUpdates: true
           artifacts:
@@ -434,13 +434,13 @@ jobs:
 
       # Checkout the branch
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: cygwin\maiko
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -470,7 +470,7 @@ jobs:
 
      # Push Release to github
       - name: Push the release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           allowUpdates: true
           artifacts:
@@ -501,7 +501,7 @@ jobs:
 
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
@@ -530,7 +530,7 @@ jobs:
 
       # Checkout the maiko branch
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Setup release tag
       - name: Setup Release Tag
@@ -547,7 +547,7 @@ jobs:
 
       # Push Release to github
       - name: Push the release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.21.0
         with:
           allowUpdates: true
           artifacts: ${{ steps.tag.outputs.release_tag }}-emscripten.tgz
@@ -573,7 +573,7 @@ jobs:
     steps:
       # Checkout the actions for this repo owner
       - name: Checkout Actions
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ github.repository_owner }}/.github
           path: ./Actions_${{ github.sha }}
