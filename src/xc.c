@@ -98,23 +98,20 @@
 #include "ubf3defs.h"
 #include "unwinddefs.h"
 #include "vars3defs.h"
-#ifdef XWINDOW
+#if defined(XWINDOW)
 #include "xwinmandefs.h"
+#elif defined(SDL)
+#include "sdldefs.h"
 #endif
 #include "z2defs.h"
 
 #ifdef DOS
-#include "devif.h"
 extern KbdInterface currentkbd;
 extern DspInterface currentdsp;
 extern MouseInterface currentmouse;
-#elif defined(XWINDOW)
+#else
 extern DspInterface currentdsp;
 #endif /* DOS */
-
-#ifdef SDL
-extern void process_SDLevents();
-#endif
 
 typedef struct conspage ConsPage;
 typedef ByteCode *InstPtr;
@@ -154,6 +151,8 @@ LispPTR tscache asm("bx");
 
 /* used by SIGIO signal handler to indicate I/O may be possible */
 extern volatile sig_atomic_t IO_Signalled;
+/* used by SIGVTALRM signal handler to indicate timer expired */
+extern volatile sig_atomic_t timer_Signalled;
 
 #ifdef PCTRACE
 /* For keeping a trace table (ring buffer) of 100 last PCs */
@@ -164,7 +163,7 @@ int pccounter = 0;     /* ring-buffer counter */
 #endif                 /* PCTRACE */
 
 extern int extended_frame;
-int extended_frame; /*indicates if soft stack overflow */
+int extended_frame; /* TRUE/FALSE indicates if soft stack overflow */
 
 static const int n_mask_array[16] = {
     1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,
@@ -175,9 +174,9 @@ extern int TIMER_INTERVAL;
 
 #if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
 
-#  if !defined(MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN)
-#    define MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN 20000
-#  endif
+#if !defined(MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN)
+#define MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN 20000
+#endif
 
 int insnsCountdownForTimerAsyncEmulation = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
 static int pseudoTimerAsyncCountdown = MAIKO_TIMER_ASYNC_EMULATION_INSNS_COUNTDOWN;
@@ -285,15 +284,12 @@ nextopcode:
   
 #if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
   if (--pseudoTimerAsyncCountdown <= 0) {
-	  Irq_Stk_Check = 0;
-	  Irq_Stk_End = 0;
-#if defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
-	  IO_Signalled = TRUE;
-#endif
+    /* Request interrupt handling */
+    Irq_Stk_End = Irq_Stk_Check = 0;
 #ifdef MAIKO_OS_EMSCRIPTEN
-	  emscripten_sleep(1);
+    emscripten_sleep(1);
 #endif
-	  pseudoTimerAsyncCountdown = insnsCountdownForTimerAsyncEmulation;
+    pseudoTimerAsyncCountdown = insnsCountdownForTimerAsyncEmulation;
   }
 #endif
 
@@ -1101,7 +1097,6 @@ check_interrupt:
     int need_irq;
     static int period_cnt = 60;
     extern int KBDEventFlg;
-    extern int ETHEREventCount;
     extern LispPTR *KEYBUFFERING68k;
     extern LispPTR *PENDINGINTERRUPT68k;
     extern LispPTR ATOM_STARTED;
@@ -1115,15 +1110,15 @@ check_interrupt:
      odd bugs, ... */
   /**** Changed back to > 31 July 97 ****/
   re_check_stack:
-    need_irq = 0;
+    need_irq = FALSE;
     if (((UNSIGNED)(CSTKPTR + 1) > Irq_Stk_Check) && (Irq_Stk_End > 0) && (Irq_Stk_Check > 0)) {
       HARD_PUSH(TOPOFSTACK);
       EXT;
-      extended_frame = NIL;
+      extended_frame = FALSE;
       if (do_stackoverflow(NIL)) {
       stackoverflow_help:
         period_cnt = 60;
-        need_irq = T;
+        need_irq = TRUE;
         error("Stack Overflow, MUST HARDRESET!");
         RET;
         TOPOFSTACK = NIL_PTR;
@@ -1131,28 +1126,28 @@ check_interrupt:
         RET;
         POP;
       }
-      Irq_Stk_Check = (UNSIGNED)EndSTKP - STK_MIN(FuncObj);
       need_irq = (Irq_Stk_End == 0) || extended_frame;
-      *PENDINGINTERRUPT68k |= extended_frame;
+      Irq_Stk_Check = (UNSIGNED)EndSTKP - STK_MIN(FuncObj);
       Irq_Stk_End = (UNSIGNED)EndSTKP;
+      *PENDINGINTERRUPT68k |= extended_frame ? ATOM_T : 0;
     }
 
-    /* This is a good time to process keyboard/mouse and ethernet I/O
-     * X events are not managed in the async/SIGIO code while
-     * raw ethernet, serial port, and socket connections are.
-     * If the system is configured with SIGIO handling we have a hint
-     * that allows us to cheaply skip if there's nothing to do
+    /* clear the flags set by the OS interrupt handlers that would
+     * allow us to distinguish between them.
      */
-#ifdef XWINDOW
-    process_Xevents(currentdsp);
+    timer_Signalled = IO_Signalled = FALSE;
+    /* this is a reasonable time to handle X/SDL display and
+     * other I/O events. These routines will set Irq_Stk_Check and
+     * Irq_Stk_End to zero and set interrupt state flags for the
+     * interrupts to be generated
+     */
+    process_Display_events(currentdsp);
+#ifndef INIT
+    process_io_events();
 #endif
-#ifdef SDL
-    process_SDLevents();
-#endif
-    if (IO_Signalled) {
-      IO_Signalled = FALSE;
-      process_io_events();
-    }
+    /* Irq_Stk_End and Irq_Stk_Check can also have been set to 0 by
+     * the VTALRM or SIGIO handlers (see timer.c)
+     */
 
     if ((Irq_Stk_End <= 0) || (Irq_Stk_Check <= 0) || need_irq) {
       if (StackOffsetFromNative(CSTKPTR) > InterfacePage->stackbase) {
@@ -1240,22 +1235,12 @@ check_interrupt:
             *PENDINGINTERRUPT68k = NIL;
             cause_interruptcall(INTERRUPTFRAME_index);
           }
-        } else if (ETHEREventCount > 0) {
-          INTSTAT *intstate = ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word));
-          if (!(intstate->ETHERInterrupt) && !(((INTSTAT2 *)intstate)->handledmask & 0x40)) {
-            intstate->ETHERInterrupt = 1;
-            ((INTSTAT2 *)intstate)->handledmask |= ((INTSTAT2 *)intstate)->pendingmask;
-            cause_interruptcall(INTERRUPTFRAME_index);
-            ETHEREventCount--;
-          } else
-            *PENDINGINTERRUPT68k = ATOM_T;
         }
         RET;
         CLR_IRQ;
       } /* Interrupts not Disabled */
       else {
-        /* Clear out IRQ (loses pending interrupt request
-           if interrupts are disabled) */
+        /* Clear out IRQ (loses pending request if interrupts are disabled) */
         CLR_IRQ;
         goto re_check_stack;
       }

@@ -7,5 +7,5 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
 void enable_Xkeyboard(DspInterface dsp);
 void disable_Xkeyboard(DspInterface dsp);
 void beep_Xkeyboard(DspInterface dsp);
-void process_Xevents(DspInterface dsp);
+void process_Display_events(DspInterface dsp);
 #endif
