@@ -118,6 +118,7 @@ DEVICES = $(OBJECTDIR)dspsubrs.o \
 	$(OBJECTDIR)ether_common.o \
 	$(OBJECTDIR)ether_sunos.o \
 	$(OBJECTDIR)ether_nethub.o \
+	$(OBJECTDIR)ether_pcap.o \
 	$(OBJECTDIR)tty.o \
 	$(OBJECTDIR)initkbd.o
 
@@ -494,6 +495,13 @@ $(OBJECTDIR)ether_nethub.o: $(SRCDIR)ether_nethub.c $(REQUIRED-INCS) \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
 	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether_nethub.c -o $(OBJECTDIR)ether_nethub.o
+
+$(OBJECTDIR)ether_pcap.o: $(SRCDIR)ether_pcap.c $(REQUIRED-INCS) \
+	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
+	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)ether_pcap.c -o $(OBJECTDIR)ether_pcap.o
 
 $(OBJECTDIR)findkey.o: $(SRCDIR)findkey.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \
