@@ -57,7 +57,7 @@ static DLword *extendstack(void) {
 
   if (easp < LOLOC(*LastStackAddr_word)) {
     if ((easp > LOLOC(*GuardStackAddr_word)) && ((*STACKOVERFLOW_word) == NIL)) {
-      extended_frame = 1;
+      extended_frame = TRUE;
       ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->stackoverflow = 1;
       *STACKOVERFLOW_word = *PENDINGINTERRUPT_word = ATOM_T;
     }
