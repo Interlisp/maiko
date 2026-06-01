@@ -365,6 +365,11 @@ void read_Xoption(int *argc, char *argv[])
     char ifname[32];
     XrmValueCopy(tmp, value, sizeof(tmp));
     fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
+    /* TBD: if we have just a single atom, no colons, it could be an interface name.
+          we should save it, enable the ethernet, and adjust the code in ether_pcap.c:init_ether
+          so that given an all zero ether_host it sees if there is a matching interface
+          from which it can extract the MAC address.
+    */
     if (fields == 6 || fields == 7) {
       ether_enabled = 1;
       ether_host[0] = b0;
@@ -375,10 +380,10 @@ void read_Xoption(int *argc, char *argv[])
       ether_host[5] = b5;
       if (fields == 7)
         strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
-    } else {
-      (void)fprintf(stderr, "Invalid argument for -E (pcap)\n");
-      exit(1);
+      return;
     }
+    (void)fprintf(stderr, "Invalid argument for -E %s (X/pcap)\n", tmp);
+    exit(1);
   }
 #endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP) */
 } /* end readXoption */

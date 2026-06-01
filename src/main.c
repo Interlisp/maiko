@@ -611,6 +611,7 @@ int main(int argc, char *argv[])
         int b[6];
         char ifname[32] = {0};
         fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+        /* TBD: see comments in xrdopts.c regarding determining ifname and MAC address */
         if (fields == 6 || fields == 7) {
           for (int x = 0; x < 6; x++) ether_host[x] = b[x] & 0xFF;
           if (fields == 7)
