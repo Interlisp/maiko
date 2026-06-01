@@ -391,22 +391,28 @@ void init_ether() {
     pcap_freealldevs(alldevs);
   }
   pcap_handle = pcap_create(ether_ifname, errbuf);
-  if (strlen(errbuf) > 0) {
-    fprintf(stderr, "%s\n", errbuf);
+  if (pcap_handle == NULL) {
+    fprintf(stderr, "pcap_create failed: %s\n", errbuf);
     return;
+  }
+  if (strlen(errbuf) > 0) {
+    fprintf(stderr, "pcap_create warning: %s\n", errbuf);
   }
   /* set up properties on the pcap_handle and then activate it */
   pcap_rval = pcap_set_immediate_mode(pcap_handle, 1);
   pcap_rval = pcap_set_buffer_size(pcap_handle, 65536);
   pcap_rval = pcap_set_snaplen(pcap_handle, 1518);
-  pcap_rval = pcap_setfilter(pcap_handle, &filter_match_none);
   pcap_rval = pcap_activate(pcap_handle);
   if (pcap_rval != 0) {
-    pcap_perror(pcap_handle, "pcap_activate: ");
+    pcap_perror(pcap_handle, "pcap_activate");
   }
   if (pcap_rval < 0) {
     pcap_close(pcap_handle);
     return;
+  }
+  pcap_rval = pcap_setfilter(pcap_handle, &filter_match_none);
+  if (pcap_rval != 0) {
+    pcap_perror(pcap_handle, "pcap_setfilter");
   }
   snprintf(filter_exp, sizeof(filter_exp), "ether proto 0x600 and (ether multicast or ether dst %02x:%02x:%02x:%02x:%02x:%02x)",
            ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4], ether_host[5]);
