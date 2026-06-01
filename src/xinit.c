@@ -364,11 +364,5 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
   }
   XInitImage(&dsp->ScreenBitmap);
 
-#if defined(O_ASYNC)
-  xfd = ConnectionNumber(dsp->display_id);
-  if (fcntl(xfd, F_SETOWN, getpid()) == -1) perror("X_init: fcntl F_SETOWN error");
-  if (fcntl(xfd, F_SETFL, fcntl(xfd, F_GETFL, 0) | O_ASYNC) == -1) perror("X_init: fcntl F_SETFL O_ASYNC error");
-#endif
-
   return (dsp);
 }

@@ -7,7 +7,7 @@
 /*                                                                             */
 /*******************************************************************************/
 
-#if defined(MAIKO_ENABLE_NETHUB) && !defined(MAIKO_ENABLE_ETHERNET)
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
 
 #include "version.h"
 
@@ -43,6 +43,7 @@
 **  --- ether implementation common data -------------------------------------------
 */
 
+extern int      ether_enabled; /* 0/1 should ethernet be turned on */
 extern int      ether_fd;      /* file descriptor for ether socket */
 extern u_char   ether_host[6]; /* 48 bit address of this node */
 extern const u_char   broadcast[6];
@@ -130,6 +131,12 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
 /*
 **  --- connect, disconnect and transmit packets -----------------------------------
 */
+
+void init_ether(void) {
+  /* because the rest of the system expects it to be called init_ether() */
+  if (ether_enabled == 0) return;
+  connectToHub();
+}
 
 void connectToHub(void) {
   if (nethubHost == NULL) {
@@ -300,7 +307,7 @@ static int recvPacket(void) {
 #else
   log_debug(("  recvPacket() :: %d bytes at %p\n", bLen, (void *)ether_buf));
 #endif
-  ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = blen;
+  ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = bLen;
   ether_bsize = 0;
 
 
@@ -571,5 +578,5 @@ LispPTR check_ether(void)
   return (ATOM_T);
 }
 
-#endif /* MAIKO_ENABLE_NETHUB */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB) */
 

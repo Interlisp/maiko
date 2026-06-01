@@ -1167,12 +1167,14 @@ check_interrupt:
             else
               period_cnt =
                   (*PERIODIC_INTERRUPT_FREQUENCY68k & 0xffff) * (1000000 / 60) / TIMER_INTERVAL;
-            /* number of 1/60 second periods between interrupts.
+            /* number of 1/60 second periods between interrupts (really??)
             TIMER_INTERVAL is the number of microseconds between
             timer interrupts. The calculation here avoids some
             overflow errors although there is some roundoff
             if the interrupt frequency number is too low,
-            it will bottom out and just set period_cnt to 0 */
+            it will bottom out and just set period_cnt to 0
+            Rewrite as ((*PIF & 0xffff) * 1000000UL) / (60 * TIMER_INTERVAL)
+            */
           }
         }
 

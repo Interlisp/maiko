@@ -100,8 +100,10 @@ extern int for_makeinit, please_fork, noscroll;
 
 /*** Ethernet stuff (JRB) **/
 #ifdef MAIKO_ENABLE_ETHERNET
+extern int ether_enabled;
 extern int ether_fd;
 extern u_char ether_host[6];
+extern char ether_ifname[32];
 #if defined(USE_NIT)
 extern struct sockaddr_nit snit;
 #endif /* USE_NIT */
@@ -135,7 +137,7 @@ void print_Xusage(const char *prog)
   (void)fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   (void)fprintf(stderr,
           " -xsync                               -turn  XSynchronize on. (default is off)\n\n");
-#if defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
   (void)fprintf(stderr,"\
  -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
  -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
@@ -324,7 +326,8 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }
 
   if (XrmGetResource(rDB, "ldex.xsync", "Ldex.xsync", str_type, &value) == True) { xsync = True; }
-#ifdef MAIKO_ENABLE_ETHERNET
+
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5;
     (void)strncpy(tmp, value.addr, value.size);
@@ -333,7 +336,7 @@ void read_Xoption(int *argc, char *argv[])
 #elif defined(USE_NIT)
     if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
                snit.snit_ifname) == 8)
-#endif /* USE_NIT */
+#endif
     {
       ether_host[0] = b0;
       ether_host[1] = b1;
@@ -347,5 +350,28 @@ void read_Xoption(int *argc, char *argv[])
       exit(1);
     }
   }
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT)) */
+
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP)
+  if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
+    int b0, b1, b2, b3, b4, b5, fields;
+    char ifname[32];
+    (void)strncpy(tmp, value.addr, value.size);
+    fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
+    if (fields == 6 || fields == 7) {
+      ether_enabled = 1;
+      ether_host[0] = b0;
+      ether_host[1] = b1;
+      ether_host[2] = b2;
+      ether_host[3] = b3;
+      ether_host[4] = b4;
+      ether_host[5] = b5;
+      if (fields == 7)
+        strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+    } else {
+      (void)fprintf(stderr, "Invalid argument for -E (pcap)\n");
+      exit(1);
+    }
+  }
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP) */
 } /* end readXoption */

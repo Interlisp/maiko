@@ -208,12 +208,14 @@ LispPTR *LastStackAddr_word;
 LispPTR *NeedHardreturnCleanup_word;
 
 /*** Ethernet stuff (JRB) **/
-#ifdef MAIKO_ENABLE_ETHERNET
+extern int ether_enabled;
 extern int ether_fd;
 extern u_char ether_host[6];
-#endif /* MAIKO_ENABLE_ETHERNET */
+extern char ether_ifname[32];
 
+#ifdef USE_NIT
 extern struct sockaddr_nit snit;
+#endif
 
 #ifdef INIT
 int for_makeinit = 1;
@@ -303,7 +305,7 @@ const char *helpstring =
  -help        Print this message\n";
 #endif /* DOS */
 
-#if defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
 const char *nethubHelpstring =
  "\
  -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
@@ -519,18 +521,19 @@ int main(int argc, char *argv[])
     }
 #endif /* SDL */
     /* Can only do this under SUNOs, for now */
+#if defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
-#ifdef MAIKO_ENABLE_ETHERNET
       int b0, b1, b2, b3, b4, b5;
 #if defined(USE_DLPI)
       if (argc > ++i &&
           sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
-#else
+#elif defined(USE_NIT)
       if (argc > ++i &&
           sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
                  snit.snit_ifname) == 8)
 #endif /* USE_DLPI */
       {
+        ether_enabled = 1;
         ether_host[0] = b0;
         ether_host[1] = b1;
         ether_host[2] = b2;
@@ -538,17 +541,17 @@ int main(int argc, char *argv[])
         ether_host[4] = b4;
         ether_host[5] = b5;
       } else {
-        (void)fprintf(stderr, "Missing or bogus -E argument\n");
+        (void)fprintf(stderr, "Missing or bogus -E argument (dlpi/nit)\n");
         ether_fd = -1;
         exit(1);
       }
-#endif /* MAIKO_ENABLE_ETHERNET */
-
     }
+#endif /* MAIKO_OS_SOLARIS && (defined(USE_DLPI) || defined(USE_NIT)) */
 
-#ifdef MAIKO_ENABLE_NETHUB
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
     else if (!strcmp(argv[i], "-nh-host")) {
       if (argc > ++i) {
+        ether_enabled = 1;
         setNethubHost(argv[i]);
       } else {
         (void)fprintf(stderr, "Missing argument after -nh-host\n");
@@ -599,7 +602,29 @@ int main(int argc, char *argv[])
         exit(1);
       }
     }
-#endif /* MAIKO_ENABLE_NETHUB */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB) */
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP)
+    else if (!strcmp(argv[i], "-E")) {
+      ether_enabled = 1;
+      if (argc > ++i) {
+        int fields;
+        int b[6];
+        char ifname[32] = {0};
+        fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+        if (fields == 6 || fields == 7) {
+          for (int x = 0; x < 6; x++) ether_host[x] = b[x] & 0xFF;
+          if (fields == 7)
+            strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+        } else {
+          (void)fprintf(stderr, "Invalid argument for -E (pcap)\n");
+          exit(1);
+        }
+      } else {
+        (void)fprintf(stderr, "Missing argument after -E\n");
+        exit(1);
+      }
+    }
+#endif
 
 #if defined(MAIKO_EMULATE_TIMER_INTERRUPTS) || defined(MAIKO_EMULATE_ASYNC_INTERRUPTS)
     else if (!strcmp(argv[i], "-intr-emu-insns")) {
@@ -693,13 +718,9 @@ int main(int argc, char *argv[])
 
   FD_ZERO(&LispReadFds);
 
-#ifdef MAIKO_ENABLE_ETHERNET
-  init_ether(); /* modified by kiuchi Nov. 4 */
-#endif          /* MAIKO_ENABLE_ETHERNET */
-
-#ifdef MAIKO_ENABLE_NETHUB
-  connectToHub();
-#endif
+  /* This must be called before init_ifpage() which will call init_ifpage_ether() */
+  /* a dummy stub is compiled in if no ethernet implementation was selected. */
+  if (ether_enabled) init_ether();
 
 #ifdef DOS
   init_host_filesystem();
@@ -810,6 +831,9 @@ void start_lisp(void) {
   /*       entering the bytecode dispatch loop; interrupts get     */
   /*       unblocked here 					   */
   int_init();
+#if defined(XWINDOW)
+  int_io_open(ConnectionNumber(currentdsp->display_id));
+#endif
 #ifdef DOS
   _dpmi_lockregion((void *)&dispatch, 32768);
 #endif /* DOS */

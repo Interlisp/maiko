@@ -7,10 +7,9 @@
 /*									*/
 /************************************************************************/
 
-#if defined(MAIKO_ENABLE_ETHERNET) && !defined(MAIKO_ENABLE_NETHUB)
-
 #include "version.h"
 
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
 #if defined(USE_DLPI)
 #define PKTFILTER 1
 #define NIOCSFLAGS SBIOCSFLAGS
@@ -30,7 +29,6 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/select.h>
-#ifdef MAIKO_ENABLE_ETHERNET
 #include <sys/socket.h>
 #include <net/if.h>
 #include <netdb.h>
@@ -62,7 +60,6 @@
 #endif
 #include <nlist.h>
 #endif /* DOS */
-#endif /* MAIKO_ENABLE_ETHERNET */
 
 #include "commondefs.h"
 #include "lispemul.h"
@@ -79,6 +76,7 @@
 #define NIOCSETF PFIOCSETF
 #endif
 
+extern int      ether_enabled; /* 0/1 should ethernet be turned on */
 extern int      ether_fd;      /* file descriptor for ether socket */
 static int      ether_intf_type = 0;
 extern u_char   ether_host[6]; /* 48 bit address of this node */
@@ -89,8 +87,6 @@ static u_char   nit_buf[3000]; /* the current chunk read from NIT (one packet) *
 extern LispPTR *PENDINGINTERRUPT68k;
 extern fd_set   LispReadFds;
 
-extern int ETHEREventCount;
-
 #define PacketTypeIP 0x0800
 #define PacketTypeARP 0x0806
 #define PacketTypeRARP 0x8035
@@ -98,7 +94,6 @@ extern int ETHEREventCount;
 #define PacketTypePUP 0x0200
 #define PacketType3TO10 0x0201
 
-#ifdef MAIKO_ENABLE_ETHERNET
 #ifdef PKTFILTER
 /* the receiving packetfilter structure */
 /* if this is changed, be sure to get the references to it in init_ether
@@ -213,8 +208,6 @@ int ether_out = 0; /* number of packets sent */
 static struct nit_ioc nioc;
 #endif /* PKTFILTER */
 
-#endif /* MAIKO_ENABLE_ETHERNET */
-
 /************************************************************************/
 /*									*/
 /*			e t h e r _ s u s p e n d			*/
@@ -226,7 +219,6 @@ static struct nit_ioc nioc;
 
 LispPTR ether_suspend(LispPTR args[])
 {
-#ifdef MAIKO_ENABLE_ETHERNET
 #ifdef PKTFILTER
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
@@ -262,8 +254,6 @@ LispPTR ether_suspend(LispPTR args[])
   }
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (ATOM_T);
 } /* ether_suspend */
 
@@ -277,7 +267,6 @@ LispPTR ether_suspend(LispPTR args[])
 
 LispPTR ether_resume(LispPTR args[])
 {
-#ifdef MAIKO_ENABLE_ETHERNET
   struct strioctl si;
   if (ether_fd == -1) return (NIL);
 #ifndef PKTFILTER
@@ -308,9 +297,6 @@ LispPTR ether_resume(LispPTR args[])
   }
 #endif /* USE_DLPI */
 #endif /* PKTFILTER */
-
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (ATOM_T);
 } /* ether_resume */
 
@@ -362,11 +348,10 @@ LispPTR ether_reset(LispPTR args[])
 LispPTR ether_get(LispPTR args[])
 {
   LispPTR result = NIL;
-#ifdef MAIKO_ENABLE_ETHERNET
   LispPTR MaxByteCount;
   sigset_t signals;
 
-  MaxByteCount = BYTERSPER_DLWORD * (0xFFFF & args[0]); /* words to bytes */
+  MaxByteCount = BYTESPER_DLWORD * (0xFFFF & args[0]); /* words to bytes */
 
   DBPRINT(("Ether Get.  "));
 
@@ -385,9 +370,6 @@ LispPTR ether_get(LispPTR args[])
 
   /* enable interrupts */
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
-
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (result);
 } /* ether_get */
 
@@ -399,7 +381,6 @@ LispPTR ether_get(LispPTR args[])
 
 LispPTR ether_send(LispPTR args[])
 {
-#ifdef MAIKO_ENABLE_ETHERNET
   /*
    *	Send a packet.
    */
@@ -452,8 +433,6 @@ LispPTR ether_send(LispPTR args[])
     }
 #endif /* PKTFILTER */
   }
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (ATOM_T);
 } /* ether_send */
 
@@ -473,29 +452,22 @@ LispPTR ether_setfilter(LispPTR args[])
 int estat[3];
 
 int *ether_debug(void) {
-#ifdef MAIKO_ENABLE_ETHERNET
   estat[0] = 0;
   if (ether_fd < 0) return (NIL);
   printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
          ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (estat);
 } /* end ether_debug */
 
-#ifdef MAIKO_ENABLE_ETHERNET
 static struct timeval EtherTimeout = {0, 0};
-#endif /* MAIKO_ENABLE_ETHERNET */
 
 /**********************************************************************
  *	check_ether()
  *	checks an incoming packet
  **********************************************************************/
 
-#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
 static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
-#endif
 #endif
 
 LispPTR check_ether(void) {
@@ -505,7 +477,6 @@ LispPTR check_ether(void) {
  *	and signal the icb and return T.
  */
 
-#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
   fd_set rfds;
   int result, fromlen;
@@ -520,12 +491,13 @@ LispPTR check_ether(void) {
   struct strbuf ctl, data;
   char ctlbuf[2000];
 #endif /* PKTFILTER */
+  if (ether_fd < 0) return (NIL);
 
   FD_SET(ether_fd, &rfds);
 #ifndef PKTFILTER
   i = 2;
   if (/* select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0 ) */ (1)) {
-    if ((ether_fd >= 0) && (ether_bsize > 0)) {
+    if (ether_bsize > 0) {
       while ((select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0) && (i-- > 0)) {
         if (nitpos >= nitlen) { /* Used up last NIT buffer full; read another. */
           nitlen = read(ether_fd, nit_buf, sizeof(nit_buf));
@@ -547,10 +519,8 @@ LispPTR check_ether(void) {
                     ("Found packet len %d, at pos %d in buflen %d.\n", fromlen, nitpos, nitlen));
                 nitpos += fromlen;
                 ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
-                ETHEREventCount++;
                 Irq_Stk_Check = Irq_Stk_End = 0;
                 *PENDINGINTERRUPT68k = ATOM_T;
-                /* return(NIL); */
                 return (ATOM_T);
               }
               nitpos += fromlen;
@@ -569,7 +539,7 @@ LispPTR check_ether(void) {
   }
 #else  /* PKTFILTER */
 
-  if (ether_fd >= 0 && ether_bsize > 0
+  if (ether_bsize > 0
       /*   && select(32, &rfds, NULL, NULL, &EtherTimeout) >= 0
        *     -- [on '90/02/14: getsignsldata() check this] */
       && (FD_ISSET(ether_fd, &rfds))) {
@@ -588,19 +558,15 @@ LispPTR check_ether(void) {
         ether_in++;
         ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = data.len;
         ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
-        ETHEREventCount++;
         Irq_Stk_Check = Irq_Stk_End = 0;
         *PENDINGINTERRUPT68k = ATOM_T;
-        return (NIL); /* return(ATOM_T); */
+        return(ATOM_T);
       }
     } else if (errno != EWOULDBLOCK) {
       perror("Check_ether read error:\n");
     }
   }
 #endif /* PKTFILTER */
-
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (NIL);
 } /* end check_ether */
 
@@ -614,7 +580,6 @@ LispPTR check_ether(void) {
 /************************************************************************/
 
 LispPTR get_packet(void) {
-#ifdef MAIKO_ENABLE_ETHERNET
 #ifndef PKTFILTER
   fd_set rfds;
   int result, fromlen;
@@ -689,26 +654,8 @@ LispPTR get_packet(void) {
   } else if (errno != EWOULDBLOCK)
     perror("Check_ether read error:\n");
 #endif /* PKTFILTER */
-
-#endif /* MAIKO_ENABLE_ETHERNET */
-
   return (NIL);
 } /* end get_packet */
-
-#ifdef MAIKO_ENABLE_ETHERNET
-/**********************************************************************
- *	ether_addr_equal(add1, add2)
- *	checks ethernet addresses equality
- *	Also believed obsolete
- **********************************************************************/
-
-static int ether_addr_equal(u_char add1[], u_char add2[])
-{
-  int i;
-  for (i = 0; i < 6; i++)
-    if (add1[i] != add2[i]) return (0);
-  return (1);
-}
 
 /**********************************************************************
  *	check_filter(buffer)
@@ -748,7 +695,6 @@ static void init_uid(void) {
 #if defined(USE_NIT)
 struct sockaddr_nit snit;
 #endif /* USE_NIT */
-#endif /* MAIKO_ENABLE_ETHERNET */
 
 /************************************************************************/
 /*			    i n i t _ e t h e r				*/
@@ -757,8 +703,6 @@ struct sockaddr_nit snit;
 /*      								*/
 /************************************************************************/
 void init_ether(void) {
-#ifdef MAIKO_ENABLE_ETHERNET
-
   /* JRB - This code will have to be a bit different for SUN 4.0; the			probable
      differences are in commented-out code below
       (not ifdefed because they're untested...)
@@ -770,6 +714,7 @@ void init_ether(void) {
      ((INTSTAT2 *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->handledmask = 0;
  */
 
+  if (ether_enabled == 0) return;
   if (ether_fd < 0) {
 /* it's not open yet, try and open it;
    if it's already open here, it was opened by ldeether and
@@ -1062,7 +1007,5 @@ void init_ether(void) {
 
     DBPRINT(("init_ether: **** Ethernet starts ****\n"));
   }
-#endif /* MAIKO_ENABLE_ETHERNET */
 }
-
-#endif /* defined(MAIKO_ENABLE_ETHERNET) */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT)) */
