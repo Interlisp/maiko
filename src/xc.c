@@ -1129,7 +1129,9 @@ check_interrupt:
       need_irq = (Irq_Stk_End == 0) || extended_frame;
       Irq_Stk_Check = (UNSIGNED)EndSTKP - STK_MIN(FuncObj);
       Irq_Stk_End = (UNSIGNED)EndSTKP;
-      *PENDINGINTERRUPT68k |= extended_frame ? ATOM_T : 0;
+      if (extended_frame) {
+        *PENDINGINTERRUPT68k = ATOM_T;
+      }
     }
 
     /* clear the flags set by the OS interrupt handlers that would
