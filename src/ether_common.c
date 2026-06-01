@@ -25,7 +25,7 @@
 extern int     ether_enabled;
 extern int     ether_fd;
 extern u_char  ether_host[6];
-extern u_char  ether_ifname[32];
+extern char  ether_ifname[32];
 extern const u_char  broadcast[6];
 extern int     ether_bsize;
 extern u_char *ether_buf;
@@ -33,7 +33,7 @@ extern u_char *ether_buf;
 int     ether_enabled  = 0;     /* ethernet disabled unless we ask for it */
 int     ether_fd      = -1;    /* file descriptor for ether socket */
 u_char  ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
-u_char  ether_ifname[32] = {0}; /* interface name (pcap, perhaps others) */
+char  ether_ifname[32] = "\0"; /* interface name (pcap, perhaps others) */
 const u_char  broadcast[6]  = {255, 255, 255, 255, 255, 255};
 int     ether_bsize   = 0;     /* if nonzero then a receive is pending */
 u_char *ether_buf     = NULL;  /* address of receive buffer */
