@@ -357,7 +357,7 @@ void read_Xoption(int *argc, char *argv[])
     int b0, b1, b2, b3, b4, b5, fields;
     char ifname[32];
     (void)strncpy(tmp, value.addr, value.size);
-    fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
+    fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
     if (fields == 6 || fields == 7) {
       ether_enabled = 1;
       ether_host[0] = b0;
