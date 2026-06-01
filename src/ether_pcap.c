@@ -251,7 +251,10 @@ LispPTR ether_get(LispPTR args[])
  *	send a packet
  **********************************************************************/
 
-/* normally an XNS packet would be no bigger than 576 bytes */
+/* We assert than the packets passed to ether_send() will never be
+   longer than 300 16-bit words.  Limit is defined by ETHERPACKET
+   datatype in Lisp source.
+*/
 #define MAXETHERPACKETWORDS 300
 
 LispPTR ether_send(LispPTR args[])
