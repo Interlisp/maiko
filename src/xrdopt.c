@@ -14,7 +14,8 @@
 #include <X11/Xlib.h>       // for XPointer, True, XParseGeometry, XResource...
 #include <X11/Xresource.h>  // for XrmoptionSepArg, XrmGetResource, Xrmoptio...
 #include <errno.h>          // for errno
-#include <limits.h>         // for PATH_MAX
+// #include <limits.h>         // for PATH_MAX
+#include <sys/param.h>      // for MAXPATHLEN
 #include <stdio.h>          // for fprintf, NULL, stderr, sscanf
 #include <stdlib.h>         // for getenv, exit, strtol
 #include <string.h>         // for strncpy, strlcat, strlcpy, strcmp
@@ -91,8 +92,8 @@ extern char backgroundColorName[64];
 extern char windowTitle[255];
 
 
-extern char sysout_name_cl[];
-extern char sysout_name_xrm[];
+extern char sysout_name_cl[MAXPATHLEN];
+extern char sysout_name_xrm[MAXPATHLEN];
 extern unsigned sysout_size;
 extern int for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
@@ -148,6 +149,12 @@ void print_Xusage(const char *prog)
   exit(EXIT_FAILURE);
 } /* end print_Xusage() */
 
+static void XrmValueCopy(char *dst, XrmValue value, size_t dstSize) {
+  size_t len = (value.size < dstSize) ? value.size : dstSize - 1;
+  memcpy(dst, value.addr, len);
+  dst[len] = '\0';
+}
+
 /************************************************************************/
 /*									*/
 /*			r e a d _ X o p t i o n				*/
@@ -195,7 +202,7 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(commandlineDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
     /* Get Sysout from command line only */
-    (void)strncpy(sysout_name_cl, value.addr, value.size);
+    XrmValueCopy(sysout_name_cl, value, sizeof(sysout_name_cl));
   }
 
   /* In order to access other DB's we have to open the main display now */
@@ -205,7 +212,7 @@ void read_Xoption(int *argc, char *argv[])
   /* protocol. */
 
   if (XrmGetResource(commandlineDB, "ldex.display", "Ldex.Display", str_type, &value) == True) {
-    (void)strncpy(Display_Name, value.addr, value.size);
+    XrmValueCopy(Display_Name, value, sizeof(Display_Name));
   } else if (getenv("DISPLAY") == (char *)NULL) {
     (void)fprintf(stderr, "Can't find a display. Either set the shell\n");
     (void)fprintf(stderr, "variable DISPLAY to an appropriate display\n");
@@ -246,48 +253,48 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
     /* Get Sysout from x resource manager */
-    (void)strncpy(sysout_name_xrm, value.addr, value.size);
+    XrmValueCopy(sysout_name_xrm, value, sizeof(sysout_name_xrm));
   }
 
   if (XrmGetResource(rDB, "ldex.title", "Ldex.Title", str_type, &value) == True) {
-    (void)strncpy(windowTitle, value.addr, sizeof(windowTitle) - 1);
+    XrmValueCopy(windowTitle, value, sizeof(windowTitle));
   } else {
-    (void)strncpy(windowTitle, WINDOW_NAME, sizeof(windowTitle) - 1);
+    (void)strlcpy(windowTitle, WINDOW_NAME, sizeof(windowTitle));
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
-    (void)strncpy(iconTitle, value.addr, value.size);
+    XrmValueCopy(iconTitle, value, sizeof(iconTitle));
   } else {
     (void)strlcpy(iconTitle, "Medley", sizeof(iconTitle));
   }
 
   if (XrmGetResource(rDB, "ldex.iconbitmap", "Ldex.Iconbitmap", str_type, &value) == True) {
-    (void)strncpy(iconpixmapfile, value.addr, value.size);
+    XrmValueCopy(iconpixmapfile, value, sizeof(iconpixmapfile));
   }
 
   /* Old style geometry definition. */
   if (XrmGetResource(rDB, "ldex.geometry", "Ldex.geometry", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     bitmask = XParseGeometry(tmp, &LispWindowRequestedX, &LispWindowRequestedY,
                              &LispWindowRequestedWidth, &LispWindowRequestedHeight);
   }
   if (XrmGetResource(rDB, "ldex.screen", "Ldex.screen", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     bitmask = XParseGeometry(tmp, &LispDisplayRequestedX, &LispDisplayRequestedY,
                              &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
   }
 
   if (XrmGetResource(rDB, "ldex.cursorColor", "Ldex.cursorColor", str_type, &value) == True) {
-    (void)strncpy(cursorColor, value.addr, sizeof(cursorColor) - 1);
+    XrmValueCopy(cursorColor, value, sizeof(cursorColor));
   }
 
   if (XrmGetResource(rDB, "ldex.foreground", "Ldex.foreground", str_type, &value) == True) {
-    (void)strncpy(foregroundColorName, value.addr, sizeof(foregroundColorName) - 1);
+    XrmValueCopy(foregroundColorName, value, sizeof(foregroundColorName));
   }
 
   if (XrmGetResource(rDB, "ldex.background", "Ldex.background", str_type, &value) == True) {
-    (void)strncpy(backgroundColorName, value.addr, sizeof(backgroundColorName) - 1);
+    XrmValueCopy(backgroundColorName, value, sizeof(backgroundColorName));
   }
 
   if (XrmGetResource(rDB, "ldex.NoFork", "Ldex.NoFork", str_type, &value) == True) {
@@ -299,7 +306,7 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   if (XrmGetResource(rDB, "ldex.timer", "Ldex.timer", str_type, &value) == True) {
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
@@ -316,7 +323,7 @@ void read_Xoption(int *argc, char *argv[])
       }
   */
   if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
@@ -330,7 +337,7 @@ void read_Xoption(int *argc, char *argv[])
 #if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5;
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
 #if defined(USE_DLPI)
     if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
 #elif defined(USE_NIT)
@@ -356,7 +363,7 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
     int b0, b1, b2, b3, b4, b5, fields;
     char ifname[32];
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
     if (fields == 6 || fields == 7) {
       ether_enabled = 1;
