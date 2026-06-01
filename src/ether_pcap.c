@@ -438,8 +438,9 @@ void init_ether() {
     return;
   }
   ether_fd = pcap_get_selectable_fd(pcap_handle);
-  if (ether_fd == -1) {
-    fprintf(stderr, "Couldn't get selectable fd for pcap\n");
+  if (ether_fd == -1 || ether_fd >= FD_SETSIZE) {
+    fprintf(stderr, "Couldn't get valid selectable fd for pcap\n");
+    ether_fd = -1;
     pcap_close(pcap_handle);
     return;
   }
