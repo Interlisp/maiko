@@ -247,17 +247,22 @@ LispPTR ether_get(LispPTR args[])
  *	ether_send(args) 175/75/2 max_words,buffer_addr
  *	send a packet
  **********************************************************************/
+
+/* normally an XNS packet would be no bigger than 576 bytes */
+#define MAXETHERPACKETWORDS 300
+
 LispPTR ether_send(LispPTR args[])
 {
   DLword wordCount;
   DLword *bufferAddr; /* buffer address pointer(in native address) */
 #ifdef BYTESWAP
-  DLword networkOrderBuffer[750];
+  DLword networkOrderBuffer[MAXETHERPACKETWORDS];
 #endif
   if (ether_fd < 0) return (NIL);
   wordCount = LispIntToCInt(args[0]);
   bufferAddr = NativeAligned2FromLAddr(args[1]);
 #ifdef BYTESWAP
+  if (wordCount > MAXETHERPACKETWORDS) wordCount = MAXETHERPACKETWORDS;
   for (int i = 0; i < wordCount; i++) {
     networkOrderBuffer[i] = htons(GETBASEWORD(bufferAddr, i));
   }
