@@ -124,14 +124,13 @@ static int recvPacket() {
   const uint8_t *packet = NULL;
   struct pcap_pkthdr *header = NULL;
 
-  switch (pcap_next_ex(pcap_handle, &header, (void *)&packet)) {
-  case 0:
-    return (0);
-  case PCAP_ERROR:
-  case PCAP_ERROR_BREAK:
+  pcap_rval = pcap_next_ex(pcap_handle, &header, (void *)&packet);
+  if (pcap_rval == 0) return(0);
+  if (pcap_rval != 1) {
     pcap_perror(pcap_handle, "recvPacket");
     return (0);
   }
+
   hlen = header->len;
   if (hlen > ether_bsize || hlen == 0) return (0);
 
@@ -389,6 +388,10 @@ void init_ether() {
       }
     }
     pcap_freealldevs(alldevs);
+  }
+  if(strlen(ether_ifname) == 0) {
+    fprintf(stderr, "No suitable network interface found\n");
+    return;
   }
   pcap_handle = pcap_create(ether_ifname, errbuf);
   if (pcap_handle == NULL) {
