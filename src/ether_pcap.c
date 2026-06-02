@@ -117,7 +117,7 @@ static int ether_out = 0; /* number of packets sent */
  *               length in bytes of the packet if one was read.
  * 
  **********************************************************************/
-static int recvPacket() {
+static int recvPacket(void) {
   int pcap_rval = 0;
   bpf_u_int32 hlen;
   const uint8_t *packet = NULL;
@@ -344,8 +344,6 @@ void init_ether() {
    */
 
   int pcap_rval = 0;
-  //  char *etherdev = getenv("LDEETHERDEV"); /* name of interface we want */
-  char devname[32] = {0};
   char errbuf[PCAP_ERRBUF_SIZE] = {0};
   char filter_exp[256];
   
