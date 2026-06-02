@@ -39,7 +39,6 @@
 #include <netinet/if_ether.h>
 
 #include <fcntl.h>
-#include <nlist.h>
 #include <pcap/pcap.h>
 
 #include "commondefs.h"
