@@ -1,5 +1,6 @@
 #ifndef ETHERDEFS_H
 #define ETHERDEFS_H 1
+#include <sys/types.h> /* for u_char */
 #include "lispemul.h" /* for LispPTR */
 LispPTR ether_suspend(LispPTR args[]);
 LispPTR ether_resume(LispPTR args[]);
@@ -14,7 +15,7 @@ LispPTR check_ether(void);
 void init_ifpage_ether(void);
 void init_ether(void);
 LispPTR check_sum(LispPTR *args);
-int ether_addr_equal(const uint8_t addr1[6], const uint8_t addr2[6]);
+int ether_addr_equal(const u_char addr1[6], const u_char addr2[6]);
 void setNethubHost(char* host);
 void setNethubPort(int port);
 void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5);

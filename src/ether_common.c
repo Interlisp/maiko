@@ -108,7 +108,7 @@ LispPTR check_sum(LispPTR *args)
  *	checks ethernet addresses equality
  **********************************************************************/
 
-int ether_addr_equal(const uint8_t addr1[6], const uint8_t addr2[6])
+int ether_addr_equal(const u_char addr1[6], const u_char addr2[6])
 {
   return (0 == memcmp(addr1, addr2, 6));
 }
