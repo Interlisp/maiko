@@ -492,7 +492,7 @@ LispPTR check_ether(void) {
   char ctlbuf[2000];
 #endif /* PKTFILTER */
   if (ether_fd < 0) return (NIL);
-
+  FD_ZERO(&rfds);
   FD_SET(ether_fd, &rfds);
 #ifndef PKTFILTER
   i = 2;
