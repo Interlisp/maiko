@@ -150,7 +150,9 @@ void print_Xusage(const char *prog)
 } /* end print_Xusage() */
 
 static void XrmValueCopy(char *dst, XrmValue value, size_t dstSize) {
-  size_t len = (value.size < dstSize) ? value.size : dstSize - 1;
+  size_t len;
+  if (dst == NULL || dstSize == 0) return; /* placate gemini */
+  len = (value.size < dstSize) ? value.size : dstSize - 1;
   memcpy(dst, value.addr, len);
   dst[len] = '\0';
 }
