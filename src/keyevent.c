@@ -274,7 +274,7 @@ void process_io_events(void)
 #endif
   iflags = 0;
   for (i = 0; i < 32; i++)
-    if (FD_ISSET(i, &rfds) & FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
+    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
   if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
     u_int *flags;
     flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
