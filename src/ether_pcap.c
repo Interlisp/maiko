@@ -274,7 +274,10 @@ LispPTR ether_send(LispPTR args[])
   }
   bufferAddr = networkOrderBuffer;
 #endif
-  pcap_inject(pcap_handle, bufferAddr, 2 * wordCount);
+  if (pcap_inject(pcap_handle, bufferAddr, 2 * wordCount) < 0) {
+    pcap_perror(pcap_handle, "ether_send");
+    return (NIL);
+  }
   ether_out++;
   return (ATOM_T);
 } /* ether_send */
@@ -420,6 +423,7 @@ void init_ether() {
   if (pcap_rval != 0) {
     pcap_perror(pcap_handle, "pcap_setfilter");
   }
+  /* filter for XNS - may want to do PUP later */
   snprintf(filter_exp, sizeof(filter_exp), "ether proto 0x600 and (ether multicast or ether dst %02x:%02x:%02x:%02x:%02x:%02x)",
            ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4], ether_host[5]);
   pcap_rval = pcap_compile(pcap_handle, &filter_match_xns, filter_exp, 0, PCAP_NETMASK_UNKNOWN);
