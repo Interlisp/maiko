@@ -338,21 +338,17 @@ void read_Xoption(int *argc, char *argv[])
 
 #if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
-    int b0, b1, b2, b3, b4, b5;
+    int b[6];
     XrmValueCopy(tmp, value, sizeof(tmp));
 #if defined(USE_DLPI)
-    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
+    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b[0], &b[1], &b[2], &b[3], &b[4], &b[5]) == 7)
 #elif defined(USE_NIT)
-    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
+    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b[0], &b[1], &b[2], &b[3], &b[4], &b[5],
                snit.snit_ifname) == 8)
 #endif
     {
-      ether_host[0] = b0;
-      ether_host[1] = b1;
-      ether_host[2] = b2;
-      ether_host[3] = b3;
-      ether_host[4] = b4;
-      ether_host[5] = b5;
+      for (int i = 0; i < 6; i++)
+        ether_host[i] = b[i] & 0xff;
     } else {
       (void)fprintf(stderr, "Missing or bogus -E argument\n");
       ether_fd = -1;
@@ -363,29 +359,26 @@ void read_Xoption(int *argc, char *argv[])
 
 #if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP)
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
-    int b0, b1, b2, b3, b4, b5, fields;
+    int b[6], fields;
     char ifname[32];
     XrmValueCopy(tmp, value, sizeof(tmp));
-    fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b0, &b1, &b2, &b3, &b4, &b5, ifname);
-    /* TBD: if we have just a single atom, no colons, it could be an interface name.
-          we should save it, enable the ethernet, and adjust the code in ether_pcap.c:init_ether
-          so that given an all zero ether_host it sees if there is a matching interface
-          from which it can extract the MAC address.
-    */
-    if (fields == 6 || fields == 7) {
+    if (strchr(tmp, ':') == NULL && strchr(tmp, '%') == NULL) {
+      /* assume it's an interface name for which we do not know the address */
       ether_enabled = 1;
-      ether_host[0] = b0;
-      ether_host[1] = b1;
-      ether_host[2] = b2;
-      ether_host[3] = b3;
-      ether_host[4] = b4;
-      ether_host[5] = b5;
-      if (fields == 7)
-        strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
-      return;
+      strlcpy(ether_ifname, tmp, sizeof(ether_ifname));
+    } else {
+      fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+      if (fields == 6 || fields == 7) {
+        ether_enabled = 1;
+        for (int i = 0; i < 6; i++)
+          ether_host[i] = b[i] & 0xff;
+        if (fields == 7)
+          strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+      } else {
+        (void)fprintf(stderr, "Invalid argument for -E %s (X/pcap)\n", tmp);
+        exit(1);
+      }
     }
-    (void)fprintf(stderr, "Invalid argument for -E %s (X/pcap)\n", tmp);
-    exit(1);
   }
 #endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP) */
 } /* end readXoption */

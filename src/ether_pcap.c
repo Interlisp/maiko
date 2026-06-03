@@ -343,15 +343,21 @@ void init_ether() {
    * pcap_inject/pcap_sendpacket => transmit a packet
    */
 
+  static const u_char ether_zero[6] = {0};
   int pcap_rval = 0;
   char errbuf[PCAP_ERRBUF_SIZE] = {0};
   char filter_exp[256];
-  
+  int find_ifname;
+  int find_ifaddr;
+
   /* ethernet may already be initialized - don't do it again */
   if (ether_fd >= 0 || ether_enabled == 0) return;
 
-  /* select an ethernet interface if one was not provided */
-  if (strlen(ether_ifname) == 0) {
+  /* select an ethernet interface/address if it was not fully specified */
+  find_ifname = strlen(ether_ifname) == 0;
+  find_ifaddr = ether_addr_equal(ether_host, ether_zero);
+
+  if (find_ifname || find_ifaddr) {
     pcap_if_t *alldevs = NULL;
     pcap_if_t *dev = NULL;
     pcap_rval = pcap_findalldevs(&alldevs, errbuf);
@@ -360,7 +366,13 @@ void init_ether() {
       return;
     }
     for (pcap_if_t *d = alldevs; d; d = d->next) {
-      if ((d->flags & PCAP_IF_UP) && (d->flags & PCAP_IF_RUNNING) && !(d->flags & PCAP_IF_LOOPBACK)) {
+      /* if only looking for the address, and not looking for a name */
+      if (find_ifaddr && !find_ifname) {
+        if (strcmp(d->name, ether_ifname) == 0) {
+          dev = d;
+          break;
+        }
+      } else if ((d->flags & PCAP_IF_UP) && (d->flags & PCAP_IF_RUNNING) && !(d->flags & PCAP_IF_LOOPBACK)) {
         dev = d;
         break;
       }

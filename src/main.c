@@ -610,15 +610,20 @@ int main(int argc, char *argv[])
         int fields;
         int b[6];
         char ifname[32] = {0};
-        fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
-        /* TBD: see comments in xrdopts.c regarding determining ifname and MAC address */
-        if (fields == 6 || fields == 7) {
-          for (int x = 0; x < 6; x++) ether_host[x] = b[x] & 0xFF;
-          if (fields == 7)
-            strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+        if (strchr(argv[i], ':') == NULL && strchr(argv[i], '%') == NULL) {
+          /* assume it's an interface name for which we do not know the address */
+          strlcpy(ether_ifname, argv[i], sizeof(ether_ifname));
         } else {
-          (void)fprintf(stderr, "Invalid argument for -E (pcap)\n");
-          exit(1);
+          fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+          /* TBD: see comments in xrdopts.c regarding determining ifname and MAC address */
+          if (fields == 6 || fields == 7) {
+            for (int x = 0; x < 6; x++) ether_host[x] = b[x] & 0xFF;
+            if (fields == 7)
+              strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+          } else {
+            (void)fprintf(stderr, "Invalid argument for -E (pcap)\n");
+            exit(1);
+          }
         }
       } else {
         (void)fprintf(stderr, "Missing argument after -E\n");
