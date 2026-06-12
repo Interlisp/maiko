@@ -220,7 +220,7 @@ void separate_host(char *lfname, char *host)
 LispPTR COM_openfile(LispPTR *args)
 {
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
-  char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
+  char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
   int fatp, dskp, rval, fd, link_check_flg, flags, *bufp;
   size_t slen;
   struct stat sbuf;
@@ -812,7 +812,7 @@ LispPTR DSK_getfilename(LispPTR *args)
   int dirp;
   int fatp;
   char lfname[MAXPATHLEN];
-  char aname[MAXNAMLEN];
+  char aname[MAXPATHLEN];
   char vname[MAXPATHLEN];
   char file[MAXPATHLEN];
   char dir[MAXPATHLEN];
@@ -1556,7 +1556,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
 #endif
   char *base;
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
-  char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
+  char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
   struct stat sbuf;
   LispPTR laddr;
 #ifdef DOS
@@ -1758,7 +1758,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
 {
   int dskp, rval, date;
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
-  char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
+  char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
   struct stat sbuf;
 #ifndef DOS
   struct timeval time[2];
@@ -2355,6 +2355,15 @@ void separate_version(char *name, size_t namesize, char *ver, size_t versize, in
        * ### are all numbers or not, if checkp is 1.
        */
       len = (end - start) - 1;
+      if (len >= sizeof(ver_buf)) {
+        /*
+         * The version field is longer than any valid version number
+         * (MAXVERSION is 9 digits), so it cannot be a real version.
+         * Treat it as "no version" rather than overflowing ver_buf.
+         */
+        *ver = '\0';
+        return;
+      }
       strncpy(ver_buf, start + 1, len);
       ver_buf[len] = '\0';
       if (checkp) {
@@ -3462,7 +3471,7 @@ static int check_vless_link(char *vless, FileName *varray, char *to_file, int *h
   unsigned max_no;
   ino_t vless_ino;
   struct stat sbuf;
-  char dir[MAXPATHLEN], name[MAXNAMLEN], ver[VERSIONLEN];
+  char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
   FileName *max_entry, *linked_entry;
 
   TIMEOUT(rval = stat(vless, &sbuf));
