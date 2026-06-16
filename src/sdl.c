@@ -1646,6 +1646,7 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
       sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
 #endif
 #endif
+  SDL_StopTextInput();
   printf("SDL initialised\n");
   return 0;
 }
