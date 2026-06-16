@@ -1646,7 +1646,11 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
       sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
 #endif
 #endif
+#if SDL_MAJOR_VERSION == 2
   SDL_StopTextInput();
+#else
+  SDL_StopTextInput(sdl_window);
+#endif
   printf("SDL initialised\n");
   return 0;
 }
