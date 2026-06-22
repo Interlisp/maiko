@@ -350,7 +350,7 @@ void read_Xoption(int *argc, char *argv[])
       for (int i = 0; i < 6; i++)
         ether_host[i] = b[i] & 0xff;
     } else {
-      (void)fprintf(stderr, "Missing or bogus -E argument\n");
+      (void)fprintf(stderr, "Missing or bogus -E or ldex.EtherNet resource argument\n");
       ether_fd = -1;
       exit(1);
     }
@@ -375,7 +375,7 @@ void read_Xoption(int *argc, char *argv[])
         if (fields == 7)
           strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
       } else {
-        (void)fprintf(stderr, "Invalid argument for -E %s (X/pcap)\n", tmp);
+        (void)fprintf(stderr, "Invalid argument for -E or ldex.EtherNet resource: %s (X/pcap)\n", tmp);
         exit(1);
       }
     }
