@@ -120,10 +120,10 @@ static int ether_out = 0; /* number of packets sent */
 static int recvPacket(void) {
   int pcap_rval = 0;
   bpf_u_int32 hlen;
-  const uint8_t *packet = NULL;
+  const u_char *packet = NULL;
   struct pcap_pkthdr *header = NULL;
 
-  pcap_rval = pcap_next_ex(pcap_handle, &header, (void *)&packet);
+  pcap_rval = pcap_next_ex(pcap_handle, &header, &packet);
   if (pcap_rval == 0) return(0);
   if (pcap_rval != 1) {
     pcap_perror(pcap_handle, "recvPacket");
@@ -388,14 +388,20 @@ void init_ether() {
 #elif defined(AF_LINK)
         /* this is BSD-like, macOS? */
         if (a->addr && a->addr->sa_family == AF_LINK) {
-          memcpy(ether_host, LLADDR(((struct sockaddr_dl *)(a->addr))), sizeof(ether_host));
-          break;
+          struct sockaddr_dl *sdl = (struct sockaddr_dl *)(a->addr);
+          if (sdl->sdl_alen == sizeof(ether_host)) {
+            memcpy(ether_host, LLADDR(sdl), sizeof(ether_host));
+            break;
+          }
         }
 #elif defined(AF_PACKET)
         /* this is Linux-like */
         if (a->addr && a->addr->sa_family == AF_PACKET) {
-          memcpy(ether_host, ((struct sockaddr_ll *)(a->addr))->sll_addr, sizeof(ether_host));
-          break;
+          struct sockaddr_ll *sll = (struct sockaddr_ll*)(a->addr);
+          if (sll->sll_halen == sizeof(ether_host)) {
+            memcpy(ether_host, sll->sll_addr, sizeof(ether_host));
+            break;
+          }
         }
 #else
 #warning Neither AF_LINK nor AF_PACKET address families defined
