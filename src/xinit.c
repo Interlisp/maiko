@@ -17,7 +17,6 @@
 #include <stdbool.h>      // for false, bool, true
 #include <stdio.h>        // for NULL
 #include <stdlib.h>       // for exit
-#include <fcntl.h>        // for fcntl, O_ASYNC, ...
 #include <unistd.h>       // for getpid
 #include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "dbprint.h"      // for TPRINT
@@ -250,7 +249,6 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
                     unsigned depth_hint)
 {
   Screen *Xscreen;
-  int xfd;
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */
                                   /* has to dealt with in a more */
