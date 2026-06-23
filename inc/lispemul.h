@@ -65,21 +65,28 @@ typedef struct closure_type {
 #endif /* BIGVM */
 
 typedef struct interrupt_state { /* Interrupt-request mask to communicate with INTERRUPTED */
-  unsigned LogFileIO : 1;        /* console msg arrived to print */
-  unsigned ETHERInterrupt : 1;   /* 10MB activity happened */
-  unsigned IOInterrupt : 1;      /* I/O happened (not used yet) */
-  unsigned gcdisabled : 1;
-  unsigned vmemfull : 1;
-  unsigned stackoverflow : 1;
-  unsigned storagefull : 1;
-  unsigned waitinginterrupt : 1;
-  unsigned nil : 8; /* mask of ints being processed */
+  DLword LogFileIO : 1;        /* console msg arrived to print */
+  DLword ETHERInterrupt : 1;   /* 10MB activity happened */
+  DLword IOInterrupt : 1;      /* I/O happened (not used yet) */
+  DLword gcdisabled : 1;
+  DLword vmemfull : 1;
+  DLword stackoverflow : 1;
+  DLword storagefull : 1;
+  DLword waitinginterrupt : 1;
+  DLword P_LogFileIO : 1;      /* interrupts awaiting processing, cleared by Lisp */
+  DLword P_ETHERInterrupt : 1;
+  DLword P_IOInterrupt : 1;
+  DLword P_gcdisabled : 1;
+  DLword P_vmemfull : 1;
+  DLword P_stackoverflow : 1;
+  DLword P_storagefull : 1;
+  DLword P_waitinginterrupt : 1;
   DLword intcharcode;
 } INTSTAT;
 
 typedef struct interrupt_state_2 { /* alternate view of the interrupt state */
-  unsigned pendingmask : 8;
-  unsigned handledmask : 8;
+  DLword pendingmask : 8;
+  DLword handledmask : 8;
   DLword nil;
 } INTSTAT2;
 
@@ -204,21 +211,28 @@ typedef struct closure_type {
 
 typedef struct interrupt_state { /* Interrupt-request mask to communicate with INTERRUPTED */
   DLword intcharcode;
-  unsigned nil : 8;
-  unsigned waitinginterrupt : 1;
-  unsigned storagefull : 1;
-  unsigned stackoverflow : 1;
-  unsigned vmemfull : 1;
-  unsigned gcdisabled : 1;
-  unsigned IOInterrupt : 1;    /* I/O happened (not used yet) */
-  unsigned ETHERInterrupt : 1; /* 10MB activity happened */
-  unsigned LogFileIO : 1;      /* console msg arrived to print */
+  DLword P_waitinginterrupt : 1; /* interrupts awaiting processing, cleared by Lisp */
+  DLword P_storagefull : 1;
+  DLword P_stackoverflow : 1;
+  DLword P_vmemfull : 1;
+  DLword P_gcdisabled : 1;
+  DLword P_IOInterrupt : 1;
+  DLword P_ETHERInterrupt : 1;
+  DLword P_LogFileIO : 1;
+  DLword waitinginterrupt : 1;
+  DLword storagefull : 1;
+  DLword stackoverflow : 1;
+  DLword vmemfull : 1;
+  DLword gcdisabled : 1;
+  DLword IOInterrupt : 1;    /* I/O happened (not used yet) */
+  DLword ETHERInterrupt : 1; /* 10MB activity happened */
+  DLword LogFileIO : 1;      /* console msg arrived to print */
 } INTSTAT;
 
 typedef struct interrupt_state_2 { /* alternate view of the interrupt state */
   DLword nil;
-  unsigned handledmask : 8;
-  unsigned pendingmask : 8;
+  DLword handledmask : 8;
+  DLword pendingmask : 8;
 } INTSTAT2;
 
 struct state {

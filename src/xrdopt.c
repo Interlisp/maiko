@@ -14,7 +14,8 @@
 #include <X11/Xlib.h>       // for XPointer, True, XParseGeometry, XResource...
 #include <X11/Xresource.h>  // for XrmoptionSepArg, XrmGetResource, Xrmoptio...
 #include <errno.h>          // for errno
-#include <limits.h>         // for PATH_MAX
+// #include <limits.h>         // for PATH_MAX
+#include <sys/param.h>      // for MAXPATHLEN
 #include <stdio.h>          // for fprintf, NULL, stderr, sscanf
 #include <stdlib.h>         // for getenv, exit, strtol
 #include <string.h>         // for strncpy, strlcat, strlcpy, strcmp
@@ -91,17 +92,19 @@ extern char backgroundColorName[64];
 extern char windowTitle[255];
 
 
-extern char sysout_name_cl[];
-extern char sysout_name_xrm[];
+extern char sysout_name_cl[MAXPATHLEN];
+extern char sysout_name_xrm[MAXPATHLEN];
 extern unsigned sysout_size;
 extern int for_makeinit, please_fork, noscroll;
 /* diagnostic flag for sysout dumping */
-/* extern unsigned maxpages; */
+extern unsigned maxpages;
 
 /*** Ethernet stuff (JRB) **/
 #ifdef MAIKO_ENABLE_ETHERNET
+extern int ether_enabled;
 extern int ether_fd;
 extern u_char ether_host[6];
+extern char ether_ifname[32];
 #if defined(USE_NIT)
 extern struct sockaddr_nit snit;
 #endif /* USE_NIT */
@@ -135,7 +138,7 @@ void print_Xusage(const char *prog)
   (void)fprintf(stderr, " -iconbitmap <path> | -ibm <path>     -bitmap for the medley icon\n");
   (void)fprintf(stderr,
           " -xsync                               -turn  XSynchronize on. (default is off)\n\n");
-#if defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
   (void)fprintf(stderr,"\
  -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
  -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
@@ -145,6 +148,14 @@ void print_Xusage(const char *prog)
   (void)fprintf(stderr, "Please refer to the manual for further information.\n\n");
   exit(EXIT_FAILURE);
 } /* end print_Xusage() */
+
+static void XrmValueCopy(char *dst, XrmValue value, size_t dstSize) {
+  size_t len;
+  if (dst == NULL || dstSize == 0) return; /* placate gemini */
+  len = (value.size < dstSize) ? value.size : dstSize - 1;
+  memcpy(dst, value.addr, len);
+  dst[len] = '\0';
+}
 
 /************************************************************************/
 /*									*/
@@ -193,7 +204,7 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(commandlineDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
     /* Get Sysout from command line only */
-    (void)strncpy(sysout_name_cl, value.addr, value.size);
+    XrmValueCopy(sysout_name_cl, value, sizeof(sysout_name_cl));
   }
 
   /* In order to access other DB's we have to open the main display now */
@@ -203,7 +214,7 @@ void read_Xoption(int *argc, char *argv[])
   /* protocol. */
 
   if (XrmGetResource(commandlineDB, "ldex.display", "Ldex.Display", str_type, &value) == True) {
-    (void)strncpy(Display_Name, value.addr, value.size);
+    XrmValueCopy(Display_Name, value, sizeof(Display_Name));
   } else if (getenv("DISPLAY") == (char *)NULL) {
     (void)fprintf(stderr, "Can't find a display. Either set the shell\n");
     (void)fprintf(stderr, "variable DISPLAY to an appropriate display\n");
@@ -244,48 +255,48 @@ void read_Xoption(int *argc, char *argv[])
 
   if (XrmGetResource(rDB, "ldex.sysout", "Ldex.Sysout", str_type, &value) == True) {
     /* Get Sysout from x resource manager */
-    (void)strncpy(sysout_name_xrm, value.addr, value.size);
+    XrmValueCopy(sysout_name_xrm, value, sizeof(sysout_name_xrm));
   }
 
   if (XrmGetResource(rDB, "ldex.title", "Ldex.Title", str_type, &value) == True) {
-    (void)strncpy(windowTitle, value.addr, sizeof(windowTitle) - 1);
+    XrmValueCopy(windowTitle, value, sizeof(windowTitle));
   } else {
-    (void)strncpy(windowTitle, WINDOW_NAME, sizeof(windowTitle) - 1);
+    (void)strlcpy(windowTitle, WINDOW_NAME, sizeof(windowTitle));
   }
   if (XrmGetResource(rDB, "ldex.icontitle", "Ldex.icontitle", str_type, &value) == True) {
-    (void)strncpy(iconTitle, value.addr, value.size);
+    XrmValueCopy(iconTitle, value, sizeof(iconTitle));
   } else {
     (void)strlcpy(iconTitle, "Medley", sizeof(iconTitle));
   }
 
   if (XrmGetResource(rDB, "ldex.iconbitmap", "Ldex.Iconbitmap", str_type, &value) == True) {
-    (void)strncpy(iconpixmapfile, value.addr, value.size);
+    XrmValueCopy(iconpixmapfile, value, sizeof(iconpixmapfile));
   }
 
   /* Old style geometry definition. */
   if (XrmGetResource(rDB, "ldex.geometry", "Ldex.geometry", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     bitmask = XParseGeometry(tmp, &LispWindowRequestedX, &LispWindowRequestedY,
                              &LispWindowRequestedWidth, &LispWindowRequestedHeight);
   }
   if (XrmGetResource(rDB, "ldex.screen", "Ldex.screen", str_type, &value) == True) {
     /* Get Geometry */
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     bitmask = XParseGeometry(tmp, &LispDisplayRequestedX, &LispDisplayRequestedY,
                              &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
   }
 
   if (XrmGetResource(rDB, "ldex.cursorColor", "Ldex.cursorColor", str_type, &value) == True) {
-    (void)strncpy(cursorColor, value.addr, sizeof(cursorColor) - 1);
+    XrmValueCopy(cursorColor, value, sizeof(cursorColor));
   }
 
   if (XrmGetResource(rDB, "ldex.foreground", "Ldex.foreground", str_type, &value) == True) {
-    (void)strncpy(foregroundColorName, value.addr, sizeof(foregroundColorName) - 1);
+    XrmValueCopy(foregroundColorName, value, sizeof(foregroundColorName));
   }
 
   if (XrmGetResource(rDB, "ldex.background", "Ldex.background", str_type, &value) == True) {
-    (void)strncpy(backgroundColorName, value.addr, sizeof(backgroundColorName) - 1);
+    XrmValueCopy(backgroundColorName, value, sizeof(backgroundColorName));
   }
 
   if (XrmGetResource(rDB, "ldex.NoFork", "Ldex.NoFork", str_type, &value) == True) {
@@ -297,24 +308,24 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   if (XrmGetResource(rDB, "ldex.timer", "Ldex.timer", str_type, &value) == True) {
-    (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
       TIMER_INTERVAL = i;
   }
 
-  /*    if (XrmGetResource(rDB,
-                         "ldex.maxpages",
-                         "Ldex.maxpages",
-                         str_type, &value) == True) {
-        (void)strncpy(tmp, value.addr, value.size);
-        maxpages = (unsigned)strtol((tmp, (char **)NULL, 10);
-	// should check no error here 
-      }
-  */
-  if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
+  if (XrmGetResource(rDB, "ldex.maxpages", "Ldex.maxpages", str_type, &value) == True) {
     (void)strncpy(tmp, value.addr, value.size);
+    XrmValueCopy(tmp, value, sizeof(tmp));
+    errno = 0;
+    i = (int)strtol(tmp, (char **)NULL, 10);
+    if (errno == 0 && i > 0)
+      maxpages = i;
+  }
+
+  if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
+    XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
     if (errno == 0 && i > 0)
@@ -324,28 +335,50 @@ void read_Xoption(int *argc, char *argv[])
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }
 
   if (XrmGetResource(rDB, "ldex.xsync", "Ldex.xsync", str_type, &value) == True) { xsync = True; }
-#ifdef MAIKO_ENABLE_ETHERNET
+
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
   if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
-    int b0, b1, b2, b3, b4, b5;
-    (void)strncpy(tmp, value.addr, value.size);
+    int b[6];
+    XrmValueCopy(tmp, value, sizeof(tmp));
 #if defined(USE_DLPI)
-    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
+    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b[0], &b[1], &b[2], &b[3], &b[4], &b[5]) == 7)
 #elif defined(USE_NIT)
-    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
+    if (sscanf(tmp, "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b[0], &b[1], &b[2], &b[3], &b[4], &b[5],
                snit.snit_ifname) == 8)
-#endif /* USE_NIT */
+#endif
     {
-      ether_host[0] = b0;
-      ether_host[1] = b1;
-      ether_host[2] = b2;
-      ether_host[3] = b3;
-      ether_host[4] = b4;
-      ether_host[5] = b5;
+      for (int i = 0; i < 6; i++)
+        ether_host[i] = b[i] & 0xff;
     } else {
-      (void)fprintf(stderr, "Missing or bogus -E argument\n");
+      (void)fprintf(stderr, "Missing or bogus -E or ldex.EtherNet resource argument\n");
       ether_fd = -1;
       exit(1);
     }
   }
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT)) */
+
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP)
+  if (XrmGetResource(rDB, "ldex.EtherNet", "Ldex.EtherNet", str_type, &value) == True) {
+    int b[6], fields;
+    char ifname[32];
+    XrmValueCopy(tmp, value, sizeof(tmp));
+    if (strchr(tmp, ':') == NULL && strchr(tmp, '%') == NULL) {
+      /* assume it's an interface name for which we do not know the address */
+      ether_enabled = 1;
+      strlcpy(ether_ifname, tmp, sizeof(ether_ifname));
+    } else {
+      fields = sscanf(tmp, "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+      if (fields == 6 || fields == 7) {
+        ether_enabled = 1;
+        for (int i = 0; i < 6; i++)
+          ether_host[i] = b[i] & 0xff;
+        if (fields == 7)
+          strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
+      } else {
+        (void)fprintf(stderr, "Invalid argument for -E or ldex.EtherNet resource: %s (X/pcap)\n", tmp);
+        exit(1);
+      }
+    }
+  }
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP) */
 } /* end readXoption */

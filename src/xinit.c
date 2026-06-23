@@ -17,6 +17,7 @@
 #include <stdbool.h>      // for false, bool, true
 #include <stdio.h>        // for NULL
 #include <stdlib.h>       // for exit
+#include <unistd.h>       // for getpid
 #include "adr68k.h"       // for NativeAligned4FromLAddr
 #include "dbprint.h"      // for TPRINT
 #include "devif.h"        // for (anonymous), MRegion, DspInterface, OUTER_S...
@@ -360,5 +361,6 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
       break;
   }
   XInitImage(&dsp->ScreenBitmap);
+
   return (dsp);
 }

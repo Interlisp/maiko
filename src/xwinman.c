@@ -172,7 +172,7 @@ void beep_Xkeyboard(DspInterface dsp)
 
 /************************************************************************/
 /*									*/
-/*		    p r o c e s s _ X e v e n t s			*/
+/*		p r o c e s s _ D i s p l a y _ e v e n t s		*/
 /*									*/
 /*  Take X key/mouse events and turn them into Lisp events		*/
 /*									*/
@@ -180,7 +180,7 @@ void beep_Xkeyboard(DspInterface dsp)
 
 extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
-void process_Xevents(DspInterface dsp)
+void process_Display_events(DspInterface dsp)
 {
   XEvent report;
 

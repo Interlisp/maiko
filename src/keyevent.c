@@ -60,9 +60,9 @@ void Mouse_hndlr(void); /* Fields mouse events from driver        */
 #include "xwinmandefs.h"
 #endif
 
-#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET)
 #include "etherdefs.h"
-#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 #include "dbprint.h"
 #if (defined(DOS) || defined(XWINDOW))
@@ -121,9 +121,9 @@ extern volatile sig_atomic_t XNeedSignal;
 
 extern int LogFileFd;
 
-#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET)
 extern int ether_fd;
-#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
+#endif /* MAIKO_ENABLE_ETHERNET */
 
 extern DLword *DisplayRegion68k;
 
@@ -231,52 +231,61 @@ void process_io_events(void)
   fd_set rfds;
   u_int iflags;
   int i;
-
-  memcpy(&rfds, &LispReadFds, sizeof(rfds));
-
-  if (select(32, &rfds, NULL, NULL, &SelectTimeout) > 0) {
+  INTSTAT *interrupt_state = ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word));
 
 #ifdef MAIKO_ENABLE_ETHERNET
-    if (ether_fd >= 0 && FD_ISSET(ether_fd, &rfds)) { /* Raw ethernet (NIT) I/O happened, so handle it. */
-      DBPRINT(("Handling enet interrupt.\n\n"));
-      check_ether();
+  /* Unfortunately, not all methods of accessing the ethernet will result in an
+   * fd on which select() will produce a useful result, so we rely on the ethernet
+   * implementation-specific check_ether() routine to return NIL(0) or T(non-zero)
+   * depending on whether a packet has been read - in which case an Ethernet
+   * interrupt will be signalled up to the Lisp code, and the packet will be
+   * picked up.
+   * If there is currently an Ethernet interrupt in progress we won't check,
+   * and check_ether() should return NIL immediately if the Ethernet is
+   * not active (ether_fd < 0).
+   */
+  if (0 == interrupt_state->P_ETHERInterrupt) {
+    if (check_ether()) {
+      /* the in-process bit gets set when xc.c passes it to Lisp */
+      interrupt_state->ETHERInterrupt = 1;
+      Irq_Stk_Check = Irq_Stk_End = 0;
+      *PENDINGINTERRUPT68k = ATOM_T;
     }
+  }
 #endif /* MAIKO_ENABLE_ETHERNET */
 
-#ifdef MAIKO_ENABLE_NETHUB
-    check_ether();
-#endif /* MAIKO_ENABLE_NETHUB */
+  memcpy(&rfds, &LispReadFds, sizeof(rfds));
+  if (select(FD_SETSIZE, &rfds, NULL, NULL, &SelectTimeout) <= 0) return;
 
 #ifdef RS232
-    if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
-      rs232c_read();
+  if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
+    rs232c_read();
 #endif /* RS232 */
 
 #if defined(MAIKO_HANDLE_CONSOLE_MESSAGES) && defined(LOGINT)
-    if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
-      flush_pty();          /* move the msg(s) to the log file */
+  if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
+    flush_pty();          /* move the msg(s) to the log file */
 
-      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->LogFileIO = 1;
+    ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->LogFileIO = 1;
 
-      *PENDINGINTERRUPT68k = ATOM_T;
-      Irq_Stk_End = Irq_Stk_Check = 0;
-    }
-#endif
-    iflags = 0;
-    for (i = 0; i < 32; i++)
-        if (FD_ISSET(i, &rfds) & FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
-    if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
-      u_int *flags;
-      flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
-      *flags = iflags;
-
-      ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->IOInterrupt = 1;
-
-      *PENDINGINTERRUPT68k = ATOM_T;
-      Irq_Stk_End = Irq_Stk_Check = 0;
-    }
+    *PENDINGINTERRUPT68k = ATOM_T;
+    Irq_Stk_End = Irq_Stk_Check = 0;
   }
-/* #endif */
+#endif
+  iflags = 0;
+  for (i = 0; i < 32; i++)
+    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
+  if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
+    u_int *flags;
+    flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
+    *flags = iflags;
+
+    ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->IOInterrupt = 1;
+
+    *PENDINGINTERRUPT68k = ATOM_T;
+    Irq_Stk_End = Irq_Stk_Check = 0;
+  }
+  /* #endif */
 #endif /* DOS */
 } /* end process_io_events */
 
