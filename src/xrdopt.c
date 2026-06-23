@@ -18,7 +18,7 @@
 #include <sys/param.h>      // for MAXPATHLEN
 #include <stdio.h>          // for fprintf, NULL, stderr, sscanf
 #include <stdlib.h>         // for getenv, exit, strtol
-#include <string.h>         // for strncpy, strlcat, strlcpy, strcmp
+#include <string.h>         // for memcpy, strlcpy, strcmp
 #include <sys/types.h>      // for u_char
 #include <unistd.h>         // for access, R_OK
 #include "xdefs.h"          // for WINDOW_NAME
@@ -227,8 +227,7 @@ void read_Xoption(int *argc, char *argv[])
   if ((xdisplay = XOpenDisplay(Display_Name)) != NULL) {
     /* read the other databases */
     /* Start with app-defaults/medley */
-    (void)strlcpy(tmp, "/usr/lib/X11/app-defaults/", sizeof(tmp));
-    (void)strlcat(tmp, "medley", sizeof(tmp));
+    (void)strlcpy(tmp, "/usr/lib/X11/app-defaults/medley", sizeof(tmp));
     applicationDB = XrmGetFileDatabase(tmp);
     if (applicationDB != NULL) { (void)XrmMergeDatabases(applicationDB, &rDB); }
     /* Then try the displays defaults */
@@ -243,13 +242,13 @@ void read_Xoption(int *argc, char *argv[])
   }
 
   envname = getenv("HOME");
-  (void)strlcpy(tmp, envname, sizeof(tmp));
-  (void)strlcat(tmp, "/.Xdefaults", sizeof(tmp));
-  if (access(tmp, R_OK) != 0) {
-    serverDB = XrmGetFileDatabase(tmp);
-    if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
+  if (envname != NULL) {
+    snprintf(tmp, sizeof(tmp), "%s/.Xdefaults", envname);
+    if (access(tmp, R_OK) != 0) {
+      serverDB = XrmGetFileDatabase(tmp);
+      if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
+    }
   }
-
   /* Now for the commandline */
   (void)XrmMergeDatabases(commandlineDB, &rDB);
 
