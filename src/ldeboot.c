@@ -199,11 +199,9 @@ int main(int argc, char *argv[]) {
   if (dirsepp == NULL) {
     argv[0] = filetorun;
   } else {
-    /* copy up to and including the final "/" in the path */
-    dirsepp = stpncpy(filetorunpath, argv[0], dirsepp + 1 - argv[0]);
-
-    /* dirsepp now points to the trailing null in the copy */
-    strncpy(dirsepp, filetorun, PATH_MAX - (dirsepp - filetorunpath));
+    /* copy directory prefix (up to and including the final "/") then filename */
+    snprintf(filetorunpath, PATH_MAX, "%.*s%s",
+             (int)(dirsepp + 1 - argv[0]), argv[0], filetorun);
     argv[0] = filetorunpath;
   }
   execvp(argv[0], argv);
