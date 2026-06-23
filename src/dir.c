@@ -2309,7 +2309,7 @@ LispPTR COM_next_file(LispPTR *args)
   laddr = gfsp->name;
   STRING_BASE(laddr, base);
 #ifndef BYTESWAP
-  strncpy(base, fp->lname, fp->lname_len);
+  memcpy(base, fp->lname, fp->lname_len);
 #else
   MemCpyToLispFromNative(base, fp->lname, fp->lname_len);
 #endif /* BYTESWAP	 */
@@ -2325,7 +2325,7 @@ LispPTR COM_next_file(LispPTR *args)
   laddr = gfsp->author;
   STRING_BASE(laddr, base);
 #ifndef BYTESWAP
-  strncpy(base, pp->author, pp->au_len);
+  memcpy(base, pp->author, pp->au_len);
 #else
   MemCpyToLispFromNative(base, pp->author, pp->au_len);
 #endif /* BYTESWAP	 */
