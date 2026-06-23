@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
   // and save it away if it is in case the X windows
   // arg processing changes argc/argv
   if (argc > 1 && argv[1][0] != '-') {
-    strncpy(sysout_name_first_arg, argv[1], MAXPATHLEN);
+    snprintf(sysout_name_first_arg, MAXPATHLEN, "%s", argv[1]);
   }
 
 
@@ -406,7 +406,7 @@ int main(int argc, char *argv[])
    /* Check for -sysout arg */
     if (!strcmp(argv[i], "-sysout")) {
       if (argc > ++i) {
-        strncpy(sysout_name_cl, argv[i], MAXPATHLEN);
+        snprintf(sysout_name_cl, MAXPATHLEN, "%s", argv[i]);
       }
     }
 
@@ -499,21 +499,21 @@ int main(int argc, char *argv[])
     } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0)
                || (strcmp(argv[i], "-title") == 0) || (strcmp(argv[i], "-TITLE") == 0)) {
       if (argc > ++i) {
-        strncpy(windowTitle, argv[i], sizeof(windowTitle) - 1);
+        snprintf(windowTitle, sizeof(windowTitle), "%s", argv[i]);
       } else {
         (void)fprintf(stderr, "Missing argument after -title\n");
         exit(1);
       }
     } else if (strcmp(argv[i], "-fg") == 0 || strcmp(argv[i], "-foreground") == 0) {
       if (argc > ++i) {
-        strncpy(foregroundColorName, argv[i], sizeof(foregroundColorName) - 1);
+        snprintf(foregroundColorName, sizeof(foregroundColorName), "%s", argv[i]);
       } else {
         (void)fprintf(stderr, "Missing argument after -fg/-foreground\n");
         exit(1);
       }
     } else if (strcmp(argv[i], "-bg") == 0 || strcmp(argv[i], "-background") == 0) {
       if (argc > ++i) {
-        strncpy(backgroundColorName, argv[i], sizeof(backgroundColorName) - 1);
+        snprintf(backgroundColorName, sizeof(backgroundColorName), "%s", argv[i]);
       } else {
         (void)fprintf(stderr, "Missing argument after -bg/-background\n");
         exit(1);
@@ -678,18 +678,17 @@ int main(int argc, char *argv[])
   //    5. Value as determined by X resource manager, if any
   //    6. Value of $HOME/lisp.virtualmem (or lisp.vm for DOS)
   //
-  if (sysout_name_cl[0] != '\0') { strncpy(sysout_name, sysout_name_cl, MAXPATHLEN); }
-  else if (sysout_name_first_arg[0] != '\0') { strncpy(sysout_name, sysout_name_first_arg, MAXPATHLEN); }
-  else if ((envname = getenv("LDESRCESYSOUT")) != NULL) { strncpy(sysout_name, envname, MAXPATHLEN); }
-  else if ((envname = getenv("LDESOURCESYSOUT")) != NULL) { strncpy(sysout_name, envname, MAXPATHLEN); }
-  else if (sysout_name_xrm[0] != '\0') { strncpy(sysout_name, sysout_name_xrm, MAXPATHLEN); }
+  if (sysout_name_cl[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_cl); }
+  else if (sysout_name_first_arg[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_first_arg); }
+  else if ((envname = getenv("LDESRCESYSOUT")) != NULL) { snprintf(sysout_name, MAXPATHLEN, "%s", envname); }
+  else if ((envname = getenv("LDESOURCESYSOUT")) != NULL) { snprintf(sysout_name, MAXPATHLEN, "%s", envname); }
+  else if (sysout_name_xrm[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_xrm); }
   else {
 #ifdef DOS
-    strncpy(sysout_name, "lisp.vm", MAXPATHLEN);
+    snprintf(sysout_name, MAXPATHLEN, "%s", "lisp.vm");
 #else
     if ((envname = getenv("HOME")) != NULL) {
-      strncpy(sysout_name, envname, MAXPATHLEN);
-      strncat(sysout_name, "/lisp.virtualmem", MAXPATHLEN - 17);
+      snprintf(sysout_name, MAXPATHLEN, "%s/lisp.virtualmem", envname);
     }
 #endif /* DOS */
   }
