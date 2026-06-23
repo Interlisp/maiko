@@ -22,7 +22,7 @@
 #endif
 #include <stdio.h>         // for fprintf, NULL, stderr
 #include <stdlib.h>        // for malloc, exit
-#include <string.h>        // for strlen, strncpy
+#include <string.h>        // for strlen, memcpy
 #include <time.h>          // for time_t
 #include <unistd.h>        // for gethostid, getuid
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
@@ -164,7 +164,7 @@ are null terminated instead */
       /* Lisp reserves 32 words for the BCPL String */
       len = (len < 32 * BYTESPER_DLWORD) ? len : 32 * BYTESPER_DLWORD - 1;
       *s = (char)len;
-      strncpy(s + 1, pwd->pw_name, len);
+      memcpy(s + 1, pwd->pw_name, len);
 #ifdef BYTESWAP
       /* we must swap the area we have written into, starting at 0155000 */
       /* rounding up to 4-byte words					 */
