@@ -14,7 +14,7 @@
 #include <stdio.h>          // for NULL, snprintf, size_t, rename, SEEK_SET
 #include <stddef.h>         // for ptrdiff_t
 #include <stdlib.h>         // for strtoul, qsort
-#include <string.h>         // for strlcpy, strcmp, strlen, strncpy, strchr
+#include <string.h>         // for strlcpy, strcmp, strlen, memcpy, strchr
 #include <sys/stat.h>       // for stat, fstat, mkdir, S_ISREG, st_atime, chmod
 #include <sys/types.h>      // for ino_t, time_t, off_t
 #include <unistd.h>         // for unlink, close, link, lseek, access, chdir
@@ -1030,7 +1030,7 @@ LispPTR DSK_getfilename(LispPTR *args)
       len = strlen(lfname);
 
 #ifndef BYTESWAP
-      strncpy(base, lfname, len);
+      memcpy(base, lfname, len);
 #else
       MemCpyToLispFromNative(base, lfname, len);
 #endif /* BYTESWAP */
@@ -1066,7 +1066,7 @@ LispPTR DSK_getfilename(LispPTR *args)
   len = strlen(lfname);
 
 #ifndef BYTESWAP
-  strncpy(base, lfname, len);
+  memcpy(base, lfname, len);
 #else
   MemCpyToLispFromNative(base, lfname, len);
 #endif /* BYTESWAP */
@@ -1504,7 +1504,7 @@ LispPTR DSK_directorynamep(LispPTR *args)
   STRING_BASE(args[1], base);
 
 #ifndef BYTESWAP
-  strncpy(base, dirname, len);
+  memcpy(base, dirname, len);
 #else
   MemCpyToLispFromNative(base, dirname, len);
 #endif /* BYTESWAP */
@@ -1667,7 +1667,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
       STRING_BASE(args[2], base);
       len = strlen(pwd->pw_name);
 #ifndef BYTESWAP
-      strncpy(base, pwd->pw_name, len);
+      memcpy(base, pwd->pw_name, len);
 #else
       MemCpyToLispFromNative(base, pwd->pw_name, len);
 #endif /* BYTESWAP */
@@ -1714,7 +1714,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
       STRING_BASE(laddr, base);
       len = strlen(pwd->pw_name);
 #ifndef BYTESWAP
-      strncpy(base, pwd->pw_name, len);
+      memcpy(base, pwd->pw_name, len);
 #else
       MemCpyToLispFromNative(base, pwd->pw_name, len);
 #endif /* BYTESWAP	 */
@@ -2335,7 +2335,7 @@ void separate_version(char *name, size_t namesize, char *ver, size_t versize, in
 {
   char *start, *end, *cp;
   unsigned ver_no;
-  size_t len;
+  ptrdiff_t len;
   char ver_buf[VERSIONLEN];
 
   if ((end = (char *)strchr(name, '~')) != (char *)NULL) {
@@ -2355,8 +2355,7 @@ void separate_version(char *name, size_t namesize, char *ver, size_t versize, in
        * ### are all numbers or not, if checkp is 1.
        */
       len = (end - start) - 1;
-      strncpy(ver_buf, start + 1, len);
-      ver_buf[len] = '\0';
+      snprintf(ver_buf, sizeof(ver_buf), "%.*s", (int)len, start + 1);
       if (checkp) {
         NumericStringP(ver_buf, YES, NO);
       YES:
