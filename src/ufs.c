@@ -217,7 +217,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   len = strlen(lfname);
 
 #ifndef BYTESWAP
-  strncpy(base, lfname, len);
+  memcpy(base, lfname, len);
 #else
   MemCpyToLispFromNative(base, lfname, len);
 #endif /* BYTESWAP */
@@ -421,7 +421,7 @@ LispPTR UFS_directorynamep(LispPTR *args)
   STRING_BASE(args[1], base);
 
 #ifndef BYTESWAP
-  strncpy(base, dirname, len);
+  memcpy(base, dirname, len);
 #else
   MemCpyToLispFromNative(base, dirname, len);
 #endif /* BYTESWAP */
