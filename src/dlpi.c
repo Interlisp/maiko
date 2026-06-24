@@ -157,8 +157,8 @@ int setup_dlpi_dev(char *device)
    */
   if ((p = strpbrk(device, "0123456789")) == NULL) return (-1);
 
-  strcpy(devname, DLPI_DEVDIR);
-  strncat(devname, device, p - device);
+  snprintf(devname, sizeof(devname), "%s%.*s",
+           DLPI_DEVDIR, (int)(p - device), device);
   devppa = atoi(p);
 
   /*
