@@ -429,7 +429,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
+          gh release download 2.32.10 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
           cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
 
       # Checkout the branch
