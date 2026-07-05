@@ -451,12 +451,14 @@ void init_ether() {
   pcap_rval = pcap_setfilter(pcap_handle, &filter_match_xns);
   if (pcap_rval == PCAP_ERROR) {
     fprintf(stderr, "Couldn't set filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
+    pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
     return;
   }
   pcap_rval = pcap_setnonblock(pcap_handle, 1, errbuf);
   if (pcap_rval == PCAP_ERROR) {
     fprintf(stderr, "%s\n", errbuf);
+    pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
     return;
   }
@@ -464,6 +466,7 @@ void init_ether() {
   if (ether_fd == -1 || ether_fd >= FD_SETSIZE) {
     fprintf(stderr, "Couldn't get valid selectable fd for pcap\n");
     ether_fd = -1;
+    pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
     return;
   }
