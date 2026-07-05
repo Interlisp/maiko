@@ -244,7 +244,7 @@ void read_Xoption(int *argc, char *argv[])
   envname = getenv("HOME");
   if (envname != NULL) {
     snprintf(tmp, sizeof(tmp), "%s/.Xdefaults", envname);
-    if (access(tmp, R_OK) != 0) {
+    if (access(tmp, R_OK) == 0) {
       serverDB = XrmGetFileDatabase(tmp);
       if (serverDB != NULL) { (void)XrmMergeDatabases(serverDB, &rDB); }
     }
