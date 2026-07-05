@@ -130,8 +130,9 @@ static int recvPacket(void) {
     return (0);
   }
 
+  /* ignore packets that are too big, empty, or not captured completely */
   hlen = header->len;
-  if (hlen > ether_bsize || hlen == 0) return (0);
+  if (hlen > ether_bsize || hlen == 0 || hlen != header->caplen) return (0);
 
 #ifdef BYTESWAP
   for (int i = 0; i < hlen / 2; i++) {
