@@ -358,6 +358,11 @@ void init_ether() {
   find_ifname = strlen(ether_ifname) == 0;
   find_ifaddr = ether_addr_equal(ether_host, ether_zero);
 
+  /* XXX: should be rewritten so that if given an interface name but no address it finds the address,
+     if given an address but no interface name it finds the interface name,
+     if given both, it checks that they're consistent
+     if given neither it finds the first up, running, non-loopback interface and its address
+  */
   if (find_ifname || find_ifaddr) {
     pcap_if_t *alldevs = NULL;
     pcap_if_t *dev = NULL;
