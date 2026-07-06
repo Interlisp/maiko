@@ -13,7 +13,7 @@
 # 2022-01-16 by Frank Halasz based on earlier workflow called buildDocker.yml
 # Updated 2023-06-06: Remove docker image push; increase build efficeincy for linux
 #
-# Copyright 2022-2023 by Interlisp.org
+# Copyright 2022-2026 by Interlisp.org
 #
 #
 # ******************************************************************************
@@ -389,8 +389,7 @@ jobs:
 
 ######################################################################################
 
-  # Windows: build for Windows-Cygwin via Docker build and use results to
-  # create and push release assets to github
+  # Windows: build for Windows-Cygwin and push release assets to github
 
   windows:
 
@@ -402,7 +401,7 @@ jobs:
           || needs.inputs.outputs.force == 'true'
       )
 
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     defaults:
       run:
@@ -420,17 +419,8 @@ jobs:
         run: |
           wget https://cygwin.com/setup-x86_64.exe -OutFile setup-x86_64.exe
           Unblock-File setup-x86_64.exe
-          Start-Process setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "https://mirrors.kernel.org/sourceware/cygwin/", "--packages", "nano,binutils,make,cmake,gcc,clang")
+          Start-Process setup-x86_64.exe -Wait -ArgumentList @("--root", ".\cygwin", "--quiet-mode", "--no-admin", "--wait", "--no-shortcuts", "--no-write-registry",  "--verbose", "--site", "https://mirrors.kernel.org/sourceware/cygwin/", "--packages", "binutils,make,gcc-core,clang,libX11-devel")
           cygwin\bin\bash -login -c 'sed -i -e "s/^none/#none/" /etc/fstab; echo "none / cygdrive binary,posix=0,user 0 0" >>/etc/fstab'
-
-      # Retrieve SDL2 and install in cygwin
-      - name: Install SDL2
-        id: sdl2
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release download 2.26.5 --repo interlisp/cygwin-sdl --pattern *.tgz --output .\cygwin\sdl2.tar.gz
-          cygwin\bin\bash -login -c 'cd /; tar xzf sdl2.tar.gz'
 
       # Checkout the branch
       - name: Checkout
@@ -455,18 +445,20 @@ jobs:
         with:
           path: cygwin/maiko
 
-      # Build maiko TODO-cleanup
-      - name: Build Cygwin-SDL Maiko
+      # Build maiko (X version) in Cygwin
+      - name: Build Cygwin-X Maiko
         run: |
-          cygwin\bin\bash -login -c 'cd /maiko/bin && ./makeright sdl cleanup && ./makeright sdl'
-          cygwin\bin\bash -login -c 'mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64'
-          cygwin\bin\bash -login -c 'cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin'
-          cygwin\bin\bash -login -c 'cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin'
-          cygwin\bin\bash -login -c 'cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64; cp /usr/local/bin/SDL2.DLL /tmp/maiko/cygwin.x86_64'
-          cygwin\bin\bash -login -c 'chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*'
-          cygwin\bin\bash -login -c 'echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldesdl > /tmp/maiko/cygwin.x86_64/ldesdl.exe.local'
-          cygwin\bin\bash -login -c 'mkdir -p /tmp/release_tars'
-          cygwin\bin\bash -login -c 'tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko'
+          cygwin\bin\bash -login << 'EOF'
+            cd /maiko/bin && ./makeright x cleanup && ./makeright x
+            mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
+            cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin
+            cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin
+            cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64
+            chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*
+            echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldex > /tmp/maiko/cygwin.x86_64/ldex.exe.local
+            mkdir -p /tmp/release_tars
+            tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
+          EOF
 
      # Push Release to github
       - name: Push the release
