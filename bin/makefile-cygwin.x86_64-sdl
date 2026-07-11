@@ -1,9 +1,0 @@
-# Options for Linux, Intel x86_64 and X-Window
-
-GCC_CFLAGS := -m64 $(GCC_CFLAGS) -I/usr/local/include
-CLANG_CFLAGS := -m64 $(CLANG_CFLAGS) -I/usr/local/include
-USE_DISPLAY=sdl
-USE_LIBBSD=F
-XLDFLAGS := -L/usr/local/lib -lSDL2
-
-include linux-common.mk

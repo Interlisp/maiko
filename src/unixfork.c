@@ -171,7 +171,7 @@ static int ForkUnixShell(int slot, char *PtySlave, char *termtype, char *shellar
    Byte 3:   Slot number.
    Byte 4:   unused.
    Byte 5:   unused.
- 
+
 
 In the case of F & P commands, additional data follows the 6 byte packet.
 This consists of 2 bytes representing the length of the shell command
@@ -373,7 +373,9 @@ int fork_Unix(void) {
             /* Copy the pipes onto stdin, stdout, and stderr */
             dup2(sock, 0);
             dup2(sock, 1);
+#if !defined(__CYGWIN__)
             dup2(sock, 2);
+#endif
 
             /* Make sure everything else is closed. */
             for (i = 3; i < sysconf(_SC_OPEN_MAX); i++) close(i);
