@@ -450,13 +450,14 @@ jobs:
         shell: bash
         run: |
           cygwin/bin/bash -login << 'EOF'
-            cd /maiko/bin && ./makeright x cleanup && ./makeright x
+            cd /maiko/bin && ./makeright x cleanup && ./makeright x && ./makeright init
             mkdir /tmp/maiko; mkdir /tmp/maiko/bin; mkdir /tmp/maiko/cygwin.x86_64
             cp /maiko/bin/osversion /tmp/maiko/bin; cp /maiko/bin/machinetype /tmp/maiko/bin
             cp /maiko/bin/config.guess /tmp/maiko/bin; cp /maiko/bin/config.sub /tmp/maiko/bin
             cp /maiko/cygwin.x86_64/* /tmp/maiko/cygwin.x86_64
             chmod +x /tmp/maiko/bin/*; chmod +x /tmp/maiko/cygwin.x86_64/*
             echo lde > /tmp/maiko/cygwin.x86_64/lde.exe.local; echo ldex > /tmp/maiko/cygwin.x86_64/ldex.exe.local
+            echo ldeinit > /tmp/maiko/cygwin.x86_64/ldeinit.exe.local
             mkdir -p /tmp/release_tars
             tar -c -z -C /tmp -f /tmp/release_tars/${{ steps.tag.outputs.release_tag }}-cygwin.x86_64.tgz maiko
           EOF
