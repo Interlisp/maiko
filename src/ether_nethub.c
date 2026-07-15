@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 
 #include "commondefs.h"
 #include "lispemul.h"
@@ -139,6 +140,8 @@ void init_ether(void) {
 }
 
 void connectToHub(void) {
+  static const int one = 1;
+
   if (nethubHost == NULL) {
     return;
   }
@@ -176,6 +179,10 @@ void connectToHub(void) {
   if (ether_fd < 0) {
     log_info(("connectToHub(): FAILED to create AF_INET/SOCK_STREAM socket\n"));
     return;
+  }
+
+  if (setsockopt(ether_fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) < 0) {
+    perror("connectToHub() - setsockopt(TCP_NODELAY) failed");
   }
 
   if (connect(ether_fd, (struct sockaddr*)&hubaddr, sizeof(hubaddr)) < 0) {
