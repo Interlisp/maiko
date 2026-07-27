@@ -127,23 +127,26 @@ ENDIF()
 # the following 2 lines should produce a dropdown-box in the cmake-gui
 # but this will happen only after running the command line version of cmake,
 # possibly after "clearing the cache" (i.e. starting with a fresh build directory)
-SET(MAIKO_NETWORK_TYPE NONE CACHE STRING "Type of networking to use: one of: NONE, SUN_DLPI, SUN_NIT, NETHUB")
-SET_PROPERTY(CACHE MAIKO_NETWORK_TYPE PROPERTY STRINGS NONE SUN_DLPI SUN_NIT NETHUB)
+SET(MAIKO_NETWORK_TYPE NONE CACHE STRING "Type of network implementation to use: one of: NONE, PCAP, SUN_DLPI, SUN_NIT, NETHUB")
+SET_PROPERTY(CACHE MAIKO_NETWORK_TYPE PROPERTY STRINGS NONE PCAP SUN_DLPI SUN_NIT NETHUB)
 
 # configure networking implementation to use
 IF(MAIKO_NETWORK_TYPE STREQUAL "NETHUB")
-  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_NETHUB")
-  MESSAGE("-- Configured for NETHUB network support")
+  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_NETHUB")
+  MESSAGE("-- Configured for NETHUB network implementation")
 ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "SUN_DLPI")
   LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_DLPI")
-  MESSAGE("-- Configured for (SunOS) DLPI networking")
+  MESSAGE("-- Configured for (SunOS) DLPI network implementation")
 ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "SUN_NIT")
   LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_NIT")
-  MESSAGE("-- Configured for (SunOS) NIT networking")
+  MESSAGE("-- Configured for (SunOS) NIT network implementation")
+ELSEIF(MAIKO_NETWORK_TYPE STREQUAL "PCAP")
+  LIST(APPEND MAIKO_DEFINITIONS "-DMAIKO_ENABLE_ETHERNET -DUSE_PCAP")
+  LIST(APPEND MAIKO_LIBRARIES "pcap")
+  MESSAGE("-- Configured for PCAP network implementation")
 ELSEIF(NOT MAIKO_NETWORK_TYPE STREQUAL "NONE")
-  MESSAGE(WARNING "Invalid option given for MAIKO_NETWORK_TYPE, must be one of:\nNONE, SUN_DLPI, SUN_NIT, NETHUB")
+  MESSAGE(WARNING "Invalid option given for MAIKO_NETWORK_TYPE, must be one of:\nNONE, PCAP, SUN_DLPI, SUN_NIT, NETHUB")
 ENDIF()
-
 
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
   LIST(APPEND MAIKO_DEFINITIONS
@@ -220,6 +223,7 @@ SET(MAIKO_SRCS
     src/ether_common.c
     src/ether_sunos.c
     src/ether_nethub.c
+    src/ether_pcap.c
     src/findkey.c
     src/foreign.c
     src/fp.c
@@ -469,9 +473,12 @@ IF(MAIKO_DISPLAY_SDL)
   TARGET_COMPILE_DEFINITIONS(lde PRIVATE ${MAIKO_DISPLAY_SDL_DEFINITIONS})
 ENDIF()
 
-ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
-TARGET_COMPILE_DEFINITIONS(ldeether PRIVATE ${MAIKO_DEFINITIONS})
-TARGET_INCLUDE_DIRECTORIES(ldeether PRIVATE inc)
+IF(MAIKO_NETWORK_TYPE STREQUAL "SUN_DLPI" OR MAIKO_NETWORK_TYPE STREQUAL "SUN_NIT")
+  MESSAGE("-- Adding ldeether")
+  ADD_EXECUTABLE(ldeether src/ldeether.c src/dlpi.c)
+  TARGET_COMPILE_DEFINITIONS(ldeether PRIVATE ${MAIKO_DEFINITIONS})
+  TARGET_INCLUDE_DIRECTORIES(ldeether PRIVATE inc)
+ENDIF()
 
 IF(MAIKO_DISPLAY_X11)
   ADD_EXECUTABLE(ldex

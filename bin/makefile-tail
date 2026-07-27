@@ -35,7 +35,7 @@
 
 REQUIRED-INCS = $(INCDIR)version.h $(INCDIR)maiko/platform.h
 
-CFLAGS = $(OPTFLAGS) $(DFLAGS)
+CFLAGS = $(OPTFLAGS) $(DFLAGS) $(NETWORK_CC_$(NETWORK))
 RFLAGS = -c $(CFLAGS) -I$(INCDIR) -I$(INCLUDEDIR)
 
 OFILES = $(OBJECTDIR)arithops.o \
@@ -83,7 +83,7 @@ OFILES = $(OBJECTDIR)arithops.o \
 	$(OBJECTDIR)unixcomm.o \
 	$(OBJECTDIR)uraid.o \
 	$(OBJECTDIR)rpc.o \
-  $(OBJECTDIR)ufn.o \
+ 	$(OBJECTDIR)ufn.o \
 	$(OBJECTDIR)z2.o \
 	$(OBJECTDIR)eqf.o \
 	$(OBJECTDIR)fp.o \
@@ -109,6 +109,7 @@ GCFILES = $(OBJECTDIR)gcscan.o \
 	$(OBJECTDIR)gcoflow.o
 
 DEVICES = $(OBJECTDIR)dspsubrs.o \
+	$(OBJECTDIR)dspif.o \
 	$(OBJECTDIR)initdsp.o \
 	$(OBJECTDIR)dsk.o \
 	$(OBJECTDIR)ufs.o \
@@ -118,6 +119,7 @@ DEVICES = $(OBJECTDIR)dspsubrs.o \
 	$(OBJECTDIR)ether_common.o \
 	$(OBJECTDIR)ether_sunos.o \
 	$(OBJECTDIR)ether_nethub.o \
+	$(OBJECTDIR)ether_pcap.o \
 	$(OBJECTDIR)tty.o \
 	$(OBJECTDIR)initkbd.o
 
@@ -148,7 +150,7 @@ $(OSARCHDIR)lde: $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o
 	$(CC) $(OBJECTDIR)ldeboot.o $(OBJECTDIR)unixfork.o $(LDELDFLAGS) -o $(OSARCHDIR)lde
 
 $(OSARCHDIR)$(LDENAME): $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o
-	$(CC) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) -o $(OSARCHDIR)$(LDENAME)
+	$(CC) $(LIBFILES) $(EXTFILES) $(OBJECTDIR)vdate.o $(LDFLAGS) $(NETWORK_LIB_$(NETWORK)) -o $(OSARCHDIR)$(LDENAME)
 	@ echo ""
 	@ echo "Executable is now named '$(OSARCHDIR)$(LDENAME)'"
 
@@ -494,6 +496,13 @@ $(OBJECTDIR)ether_nethub.o: $(SRCDIR)ether_nethub.c $(REQUIRED-INCS) \
 	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
 	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)ether_nethub.c -o $(OBJECTDIR)ether_nethub.o
+
+$(OBJECTDIR)ether_pcap.o: $(SRCDIR)ether_pcap.c $(REQUIRED-INCS) \
+	$(INCDIR)commondefs.h $(INCDIR)lispemul.h \
+	$(INCDIR)lispmap.h $(INCDIR)emlglob.h $(INCDIR)lsptypes.h $(INCDIR)lspglob.h \
+	$(INCDIR)ifpage.h $(INCDIR)iopage.h $(INCDIR)miscstat.h $(INCDIR)adr68k.h \
+	$(INCDIR)dbprint.h $(INCDIR)etherdefs.h
+	$(CC) $(RFLAGS) $(SRCDIR)ether_pcap.c -o $(OBJECTDIR)ether_pcap.o
 
 $(OBJECTDIR)findkey.o: $(SRCDIR)findkey.c $(REQUIRED-INCS) \
 	$(INCDIR)lispemul.h $(INCDIR)lispmap.h \

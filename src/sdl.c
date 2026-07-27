@@ -1393,7 +1393,7 @@ void sdl_update_display() {
 }
 #endif
 int process_events_time = 0;
-void process_SDLevents() {
+void process_Display_events(void *dsp) {
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     switch (event.type) {

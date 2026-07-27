@@ -7,7 +7,7 @@
 /*                                                                             */
 /*******************************************************************************/
 
-#if defined(MAIKO_ENABLE_NETHUB) && !defined(MAIKO_ENABLE_ETHERNET)
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
 
 #include "version.h"
 
@@ -23,6 +23,7 @@
 #include <errno.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#include <netinet/tcp.h>
 
 #include "commondefs.h"
 #include "lispemul.h"
@@ -43,6 +44,7 @@
 **  --- ether implementation common data -------------------------------------------
 */
 
+extern int      ether_enabled; /* 0/1 should ethernet be turned on */
 extern int      ether_fd;      /* file descriptor for ether socket */
 extern u_char   ether_host[6]; /* 48 bit address of this node */
 extern const u_char   broadcast[6];
@@ -131,7 +133,15 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
 **  --- connect, disconnect and transmit packets -----------------------------------
 */
 
+void init_ether(void) {
+  /* because the rest of the system expects it to be called init_ether() */
+  if (ether_enabled == 0) return;
+  connectToHub();
+}
+
 void connectToHub(void) {
+  static const int one = 1;
+
   if (nethubHost == NULL) {
     return;
   }
@@ -169,6 +179,10 @@ void connectToHub(void) {
   if (ether_fd < 0) {
     log_info(("connectToHub(): FAILED to create AF_INET/SOCK_STREAM socket\n"));
     return;
+  }
+
+  if (setsockopt(ether_fd, IPPROTO_TCP, TCP_NODELAY, &one, sizeof(one)) < 0) {
+    perror("connectToHub() - setsockopt(TCP_NODELAY) failed");
   }
 
   if (connect(ether_fd, (struct sockaddr*)&hubaddr, sizeof(hubaddr)) < 0) {
@@ -297,12 +311,10 @@ static int recvPacket(void) {
 #if defined(BYTESWAP)
   log_debug(("  recvPacket() :: byte-swapping %d bytes at %p\n", bLen, (void *)ether_buf));
   dblwordsSwap(ether_buf, bLen);
-  IOPage->dlethernet[2] = bLen;
 #else
   log_debug(("  recvPacket() :: %d bytes at %p\n", bLen, (void *)ether_buf));
-  IOPage->dlethernet[3] = bLen;
 #endif
-
+  ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = bLen;
   ether_bsize = 0;
 
 
@@ -573,5 +585,5 @@ LispPTR check_ether(void)
   return (ATOM_T);
 }
 
-#endif /* MAIKO_ENABLE_NETHUB */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB) */
 

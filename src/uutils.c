@@ -25,7 +25,7 @@
 #include <stddef.h>      // for size_t
 #include <stdio.h>       // for printf, NULL, snprintf, size_t
 #include <stdlib.h>      // for getenv
-#include <string.h>      // for strcmp, strcpy, strlen, strncpy
+#include <string.h>      // for strcmp, strlen, memcpy
 #include <unistd.h>      // for getuid, gethostid, gethostname, getpgrp
 #include "adr68k.h"      // for NativeAligned4FromLAddr
 #include "keyboard.h"    // for KBEVENT, KB_ALLUP, RING, KEYEVENTSIZE, MAXKE...
@@ -59,7 +59,7 @@ static int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
     case THIN_CHAR_TYPENUMBER:
       base = ((char *)NativeAligned2FromLAddr(arrayp->base)) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
-      strncpy(C, base, arrayp->fillpointer);
+      memcpy(C, base, arrayp->fillpointer);
 #else
       {
         size_t l = arrayp->fillpointer;
@@ -104,7 +104,7 @@ static int c_string_to_lisp_string(char *C, LispPTR Lisp) {
     case THIN_CHAR_TYPENUMBER:
       base = ((char *)NativeAligned2FromLAddr(arrayp->base)) + ((int)(arrayp->offset));
 #ifndef BYTESWAP
-      strcpy(base, C);
+      memcpy(base, C, length + 1);
 #else
       {
         char *dp = C;

@@ -10,6 +10,7 @@
 #include "version.h"
 
 #include <unistd.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "lsptypes.h"
@@ -21,23 +22,21 @@
  * global variables exported to ether_*.c and possibly others
  */
 
+extern int     ether_enabled;
 extern int     ether_fd;
 extern u_char  ether_host[6];
+extern char  ether_ifname[32];
 extern const u_char  broadcast[6];
 extern int     ether_bsize;
 extern u_char *ether_buf;
-extern int     ETHEREventCount;
 
+int     ether_enabled  = 0;     /* ethernet disabled unless we ask for it */
 int     ether_fd      = -1;    /* file descriptor for ether socket */
-
 u_char  ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
+char  ether_ifname[32] = "\0"; /* interface name (pcap, perhaps others) */
 const u_char  broadcast[6]  = {255, 255, 255, 255, 255, 255};
-
 int     ether_bsize   = 0;     /* if nonzero then a receive is pending */
 u_char *ether_buf     = NULL;  /* address of receive buffer */
-
-int     ETHEREventCount = 0;
-
 
 /*
  * public procedures
@@ -104,14 +103,35 @@ LispPTR check_sum(LispPTR *args)
 
 } /*check_sum */
 
+/**********************************************************************
+ *	ether_addr_equal(add1, add2)
+ *	checks ethernet addresses equality
+ **********************************************************************/
+
+int ether_addr_equal(const u_char addr1[6], const u_char addr2[6])
+{
+  return (0 == memcmp(addr1, addr2, 6));
+}
+
 
 /*
  * dummy implementation of SUBRs if none of the networking options is compiled in
  */
 
 
-#if !defined(MAIKO_ENABLE_ETHERNET) && !defined(MAIKO_ENABLE_NETHUB)
+#if !defined(MAIKO_ENABLE_ETHERNET)
 
+
+/************************************************************************/
+/*                                                                      */
+/*                      i n i t _ e t h e r                             */
+/*                                                                      */
+/*     Initialize ethernet implementation specific code                 */
+/*                                                                      */
+/************************************************************************/
+void init_ether(void) {
+  return;
+}
 
 /************************************************************************/
 /*                                                                      */

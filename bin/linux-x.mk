@@ -2,7 +2,6 @@
 
 XFILES = $(OBJECTDIR)xmkicon.o \
 	$(OBJECTDIR)xbbt.o \
-	$(OBJECTDIR)dspif.o \
 	$(OBJECTDIR)xinit.o \
 	$(OBJECTDIR)xscroll.o \
 	$(OBJECTDIR)xcursor.o \

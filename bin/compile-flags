@@ -124,19 +124,20 @@ BIGATOMS	True if this emulator will support 3-byte symbols, instead of
 NEWBITBLT	True if we want to use assembler BITBLT code, rather than
 		have code created inline by macro calls.
 
-USE_DLPI	True if the ethernet API is via the SysV Data Link Provider
-		Interface.  Solaris uses DLPI.
-
-USE_NIT		True if the ethernet API is via the Network Interface Tap.
-		SunOS uses NIT.
-
+MAIKO_ENABLE_ETHERNET enables support for networking, the flavor of networking
+                is chosen with a USE_xxx flag as follows
+		USE_NETHUB - Dodo Nethub networking for Dodo XNS services, see
+		     documentation: Using-Dodo-networking-with-Maiko.md
+		USE_PCAP - raw ethernet access for XNS and PUP networking using
+		     the libpcap library
+		USE_DLPI - raw ethernet access for XNS networking using the
+		data link provider interface (Solaris only)
+		USE_NIT - raw ethernet access for XNS networking using the
+		/dev/nit interface (SunOS/Solaris 1 only)
+		
 PKTFILTER	True if the ethernet packets are to be filtered before being
 		passed to the Lisp ethernet handler.  Available on Sun systems
-		for both the NIT and DLPI cases.
-
-MAIKO_ENABLE_NETHUB enables the support for Dodo Nethub networking for Dodo
-		XNS services, see documentation: using-dodo-networking-with-maiko.md
-		(implicitely disables USE_DLPI and USE_NIT)
+		for both the USE_NIT and USE_DLPI cases.
 
 MAIKO_EMULATE_TIMER_INTERRUPTS enables emulation of recurring timer interrupts for
 		platforms where SIGVTALRM/ITIMER_VIRTUAL or SIGALRM/ITIMER_REAL

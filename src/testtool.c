@@ -1023,9 +1023,11 @@ LispPTR MAKEATOM(char *string) {
 
 LispPTR *MakeAtom68k(char *string) {
   LispPTR index;
+  char errbuf[128];
   index = make_atom(string, 0, strlen(string));
   if (index == 0xffffffff) {
-      error("MakeAtom68k: no such atom found");
+    snprintf(errbuf, sizeof(errbuf), "MakeAtom68k: no such atom found: %s", string);
+    error(errbuf);
   }
 #ifdef BIGVM
   index = (ATOMS_HI << 16) + (index * 10) + NEWATOM_VALUE_OFFSET;

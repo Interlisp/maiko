@@ -97,6 +97,9 @@ unsigned int TIMEOUT_TIME = 10; /* For file system timeout, seconds, default 10 
 
 extern volatile sig_atomic_t IO_Signalled;
 volatile sig_atomic_t IO_Signalled = FALSE;
+extern volatile sig_atomic_t timer_Signalled;
+volatile sig_atomic_t timer_Signalled = FALSE;
+
 
 static int gettime(int casep);
 
@@ -409,9 +412,10 @@ void update_timer(void) {
         int_init() should be called before first entering dispatch loop.
         int_timer_init() is called by int_init() and arms the timer interrupt.
         int_io_init() is called by int_init() and arms the I/O interrupt.
+        int_io_service() handles the I/O interrupt set up by int_io_init
+                and sets IO_Signalled for instruction dispatch loop.
         int_timer_service() catches the timer signal and sets
-                Irq_Stk_Check & Irq_Stk_End to 0
-                so the rest of the system will see it and respond.
+                and sets timer_Signalled for instruction dispatch loop.
         int_block() and int_unblock() block timer interrupts  and release them.
         int_io_open(fd) should be called whenever a file that should interrupt
                 us is opened; it enables the interrupt on that fd.
@@ -419,9 +423,10 @@ void update_timer(void) {
                 us is closed; it disables the interrupt on that fd.
 */
 
-/* TIMER_INTERVAL usec ~ 20  per second.  This should live in some
-        machine-configuration
-        file somewhere - it can be changed as the -t parameter to lisp*/
+/* TIMER_INTERVAL usec between ticks - typically ~ 10ms, 100 Hz
+   This should live in some machine-configuration file somewhere
+   Value can be changed as the -t parameter to lisp
+*/
 extern int TIMER_INTERVAL;
 int TIMER_INTERVAL = 10000;
 
@@ -438,9 +443,8 @@ static void int_timer_service(int sig)
 {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
-
-  Irq_Stk_Check = 0;
-  Irq_Stk_End = 0;
+  timer_Signalled = TRUE;
+  Irq_Stk_End = Irq_Stk_Check = 0;
 }
 
 /************************************************************************/
@@ -543,11 +547,10 @@ void int_io_close(int fd)
 /*									*/
 /************************************************************************/
 
-static void int_io_service(int sig)
+static void int_io_service(int sig, siginfo_t *siginfo, void *v)
 {
-  Irq_Stk_Check = 0;
-  Irq_Stk_End = 0;
   IO_Signalled = TRUE;
+  Irq_Stk_End = Irq_Stk_Check = 0;
 }
 
 /************************************************************************/
@@ -564,9 +567,9 @@ static void int_io_service(int sig)
 static void int_io_init(void) {
 #if !defined(DOS) || !defined(MAIKO_OS_HAIKU)
   struct sigaction io_action;
-  io_action.sa_handler = int_io_service;
+  io_action.sa_sigaction = int_io_service;
   sigemptyset(&io_action.sa_mask);
-  io_action.sa_flags = 0;
+  io_action.sa_flags = SA_SIGINFO;
 
 #ifndef MAIKO_OS_HAIKU
   if (sigaction(SIGIO, &io_action, NULL) == -1) {

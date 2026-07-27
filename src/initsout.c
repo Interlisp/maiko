@@ -22,7 +22,7 @@
 #endif
 #include <stdio.h>         // for fprintf, NULL, stderr
 #include <stdlib.h>        // for malloc, exit
-#include <string.h>        // for strlen, strncpy
+#include <string.h>        // for strlen, memcpy
 #include <time.h>          // for time_t
 #include <unistd.h>        // for gethostid, getuid
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
@@ -46,7 +46,7 @@
 #include "mkcelldefs.h"    // for N_OP_createcell
 #include "testtooldefs.h"  // for MakeAtom68k, MAKEATOM
 
-#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET)
 #include "etherdefs.h"
 #endif
 
@@ -117,9 +117,9 @@ void init_ifpage(unsigned sysout_size) {
     Initialize IFPAGE
    */
   InterfacePage->machinetype = MACHINETYPE_MAIKO;
-#if defined(MAIKO_ENABLE_ETHERNET) || defined(MAIKO_ENABLE_NETHUB)
+#if defined(MAIKO_ENABLE_ETHERNET)
   init_ifpage_ether(); /* store ethernet ID in IF page */
-#endif /* MAIKO_ENABLE_ETHERNET or MAIKO_ENABLE_NETHUB */
+#endif /* MAIKO_ENABLE_ETHERNET */
   /*InterfacePage->dl24bitaddressable = (sysout_size == 32? 0xffff : 0);*/
   InterfacePage->dl24bitaddressable = (sysout_size == 8 ? 0 : 0xffff);
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;
@@ -164,7 +164,7 @@ are null terminated instead */
       /* Lisp reserves 32 words for the BCPL String */
       len = (len < 32 * BYTESPER_DLWORD) ? len : 32 * BYTESPER_DLWORD - 1;
       *s = (char)len;
-      strncpy(s + 1, pwd->pw_name, len);
+      memcpy(s + 1, pwd->pw_name, len);
 #ifdef BYTESWAP
       /* we must swap the area we have written into, starting at 0155000 */
       /* rounding up to 4-byte words					 */

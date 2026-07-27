@@ -77,6 +77,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 {
 #ifndef DOS
   int sock, len, buflen, res;
+  size_t namelen;
   unsigned ures;
   char namestring[100];
   char servstring[50];
@@ -252,8 +253,10 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ures = sizeof(addr);
       getpeername(sock, (struct sockaddr *)&addr, &ures);
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
-      strcpy((char *)buffer, host->h_name);
-      return (GetSmallp(strlen(host->h_name)));
+      if (!host) return (GetSmallp(0));
+      namelen = strlen(host->h_name);
+      memcpy((char *)buffer, host->h_name, namelen);
+      return (GetSmallp(namelen));
 
     case INETgetname: /* host addr, buffer for name string */
       sock = LispNumToCInt(nameConn);
@@ -262,8 +265,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
       if (!host) return (GetSmallp(0));
-      strcpy((char *)buffer, host->h_name);
-      return (GetSmallp(strlen(host->h_name)));
+      namelen = strlen(host->h_name);
+      memcpy((char *)buffer, host->h_name, namelen);
+      return (GetSmallp(namelen));
 
     case UDPListen: /* socket# to listen on */
       sock = LispNumToCInt(nameConn);
