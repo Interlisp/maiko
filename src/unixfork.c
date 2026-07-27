@@ -373,7 +373,7 @@ int fork_Unix(void) {
             /* Copy the pipes onto stdin, stdout, and stderr */
             dup2(sock, 0);
             dup2(sock, 1);
-#if !defined(__CYGWIN__)
+#if !defined(MAIKO_OS_CYGWIN)
             dup2(sock, 2);
 #endif
 
