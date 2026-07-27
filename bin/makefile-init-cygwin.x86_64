@@ -1,0 +1,9 @@
+# Options for Linux, x86 processor, X windows, for INIT processing
+
+OPTFLAGS =  -O0 -g
+DEBUGFLAGS =
+ADDITIONAL_DFLAGS = $(DEBUGFLAGS) -DNOVERSION -DINIT
+USE_LIBBSD=F
+USE_DISPLAY=init
+
+include linux-common.mk

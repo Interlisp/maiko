@@ -29,7 +29,7 @@
 /* if using inet_ntop you must #include <arpa/inet.h> */
 #endif /* DOS */
 
-#if (defined(OS5) || defined(__CYGWIN__)) && !defined(O_ASYNC)
+#if (defined(MAIKO_OS_SOLARIS) || defined(MAIKO_OS_CYGWIN)) && !defined(O_ASYNC)
 /* Cygwin and Solaris don't define O_ASYNC, yet still define FASYNC. */
 #define O_ASYNC FASYNC
 #endif
