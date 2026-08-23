@@ -30,7 +30,8 @@
 
 #include <stdio.h>         // for printf, sprintf, NULL
 #include <stdlib.h>        // for EXIT_FAILURE, EXIT_SUCCESS
-#include <time.h>          // for nanosleep, timespec
+#include <sys/time.h>      // for timespec
+#include <time.h>          // for nanosleep
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "arith.h"         // for N_GETNUMBER, ARITH_SWITCH
 #include "bbtsubdefs.h"    // for bitblt_bitmap, bitbltsub, bitshade_bitmap
