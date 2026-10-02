@@ -23,13 +23,13 @@
 #define MIN_FIXP (-2147483648) /* == 0x80000000  */
 
 #define SMALLP_ZERO ((LispPTR)S_POSITIVE)
-#define SMALLP_MINUSONE ((LispPTR)(S_NEGATIVE | 0xFFFF))
+#define SMALLP_MINUSONE ((LispPTR)(S_NEGATIVE | 0xFFFFU))
 /**
  * extract an integer value from a smallp
  */
 static inline int GetSmalldata(LispPTR x) {
-  if ((SEGMASK & (int)x) == S_POSITIVE) return (int)(x & 0xFFFF);
-  if ((SEGMASK & (int)x) == S_NEGATIVE) return (int)(x | 0xFFFF0000);
+  if ((SEGMASK & (LispPTR)x) == S_POSITIVE) return (int)(x & 0xFFFFU);
+  if ((SEGMASK & (LispPTR)x) == S_NEGATIVE) return (int)(x | 0xFFFF0000U);
   error("Not smallp address");
   return (0);
 }
@@ -42,7 +42,7 @@ static inline LispPTR GetSmallp(long x) {
   if (x >= 0) {
     if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
   } else {
-    if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFF));
+    if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFFU));
   }
   error("Not Smallp data");
   return (S_POSITIVE | 0);
@@ -64,8 +64,8 @@ static inline LispPTR GetPosSmallp(unsigned long x) {
 #define N_GETNUMBER(sour, dest, label)                        \
   do {                                                        \
     switch (SEGMASK & (sour)) {                               \
-    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFF); break;  \
-    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000); break; \
+    case S_POSITIVE: (dest) = (int)((sour) & 0xFFFFU); break;  \
+    case S_NEGATIVE: (dest) = (int)((sour) | 0xFFFF0000U); break; \
       default:                                                \
         /* NOLINTNEXTLINE(bugprone-macro-parentheses) */      \
         if (GetTypeNumber(sour) != TYPE_FIXP) goto label;     \
