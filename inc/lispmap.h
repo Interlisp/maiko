@@ -145,12 +145,12 @@
 
 /* for Small Positive */
 #define SPOS_HI		     14        /* Fake */
-#define S_POSITIVE	0xE0000
+#define S_POSITIVE	0xE0000U
 #define SPOS_SIZE	0x10000
 
 /* for Small Negative */
 #define SNEG_HI		     15        /* Fake */
-#define S_NEGATIVE	0xF0000
+#define S_NEGATIVE	0xF0000U
 #define SNEG_SIZE	0x10000
 
 /* for characters */
@@ -298,12 +298,12 @@
 
 /* for Small Positive */
 #define SPOS_HI		     14
-#define S_POSITIVE	0xE0000
+#define S_POSITIVE	0xE0000U
 #define SPOS_SIZE	0x10000
 
 /* for Small Negative */
 #define SNEG_HI		     15
-#define S_NEGATIVE	0xF0000
+#define S_NEGATIVE	0xF0000U
 #define SNEG_SIZE	0x10000
 
 /* for characters */
