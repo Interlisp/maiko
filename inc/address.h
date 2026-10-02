@@ -33,7 +33,7 @@
 #define LRSH(datum, n)			((datum) >> (n))
 
 #define HILOC(ptr)			(LRSH(((unsigned int)(ptr) & SEGMASK),16))
-#define LOLOC(ptr)			((unsigned int)(ptr) & 0x0ffff)
+#define LOLOC(ptr)			((unsigned int)(ptr) & 0x0ffffU)
 
 #define VAG2(hi,lo)			(LispPTR)(LLSH((hi),16) | (lo))
 
@@ -46,12 +46,12 @@
 
 /* Following MACRO defs. is related with POINTER which is defined as ACCESSFNS in Interlisp(LLNEW)  */
 #ifdef BIGVM
-#define POINTER_PAGE(datum)	(((unsigned int)(datum) & 0x0fffff00) >> 8 )
+#define POINTER_PAGE(datum)	(((unsigned int)(datum) & 0x0fffff00U) >> 8U )
 #define POINTER_SEGMENT(datum)		HILOC(datum)
-#define POINTER_PAGEBASE(datum)	((datum) & 0x0fffff00)
+#define POINTER_PAGEBASE(datum)	((datum) & 0x0fffff00U)
 #else
-#define POINTER_PAGE(datum)	(((unsigned int)(datum) & 0x0ffff00) >> 8 )
+#define POINTER_PAGE(datum)	(((unsigned int)(datum) & 0x0ffff00U) >> 8U )
 #define POINTER_SEGMENT(datum)		HILOC(datum)
-#define POINTER_PAGEBASE(datum)	((datum) & 0x0ffff00)
+#define POINTER_PAGEBASE(datum)	((datum) & 0x0ffff00U)
 #endif /* BIGVM */
 #endif /* ADDRESS_H */
