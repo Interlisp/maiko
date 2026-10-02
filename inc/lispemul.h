@@ -581,13 +581,13 @@ typedef struct newatom {
 /*									*/
 /************************************************************************/
 #ifdef BIGVM
-#define POINTERMASK 0xfffffff
-#define SEGMASK 0xfff0000
-#define mPAGEMASK 0xfffff00
+#define POINTERMASK 0xfffffffU
+#define SEGMASK 0xfff0000U
+#define mPAGEMASK 0xfffff00U
 #else
-#define POINTERMASK 0xffffff
-#define SEGMASK 0xff0000
-#define mPAGEMASK 0xffff00
+#define POINTERMASK 0xffffffU
+#define SEGMASK 0xff0000U
+#define mPAGEMASK 0xffff00U
 #endif /* BIGVM */
 
 /************************************************************************/
