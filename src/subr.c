@@ -33,7 +33,7 @@
 #include <time.h>          // for nanosleep, timespec
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "arith.h"         // for N_GETNUMBER, ARITH_SWITCH
-#include "bbtsubdefs.h"    // for bitblt_bitmap, bitbltsub, bitshade_bitmap
+#include "bbtsubdefs.h"    // for bitblt_bitmap, bitbltsub, bltshade_bitmap
 #include "cell.h"          // for PNCell, GetPnameCell
 #include "chardevdefs.h"   // for CHAR_bin, CHAR_bins, CHAR_bout, CHAR_bouts
 #include "commondefs.h"    // for error
@@ -374,9 +374,9 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = bitblt_bitmap(args);
       break;
 
-    case 0111 /*sb_BITSHADE_BITMAP*/:
-      POP_SUBR_ARGS; /* BITSHADE to a bitmap */
-      TopOfStack = bitshade_bitmap(args);
+    case sb_BLTSHADE_BITMAP:
+      POP_SUBR_ARGS; /* BLTSHADE to a bitmap */
+      TopOfStack = bltshade_bitmap(args);
       break;
 
 /**************/

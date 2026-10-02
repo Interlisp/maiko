@@ -895,7 +895,7 @@ LispPTR BLTSHADEBITMAP_index;
 /*                                                                      */
 /************************************************************************/
 
-LispPTR bitshade_bitmap(LispPTR *args) {
+LispPTR bltshade_bitmap(LispPTR *args) {
   BITMAP *DestBitmap, *texture68k;
   int dleft, dbottom, width, height;
   LispPTR clipreg;
@@ -1099,7 +1099,7 @@ do_it_now:
 
 bad_arg:
   return (NIL);
-} /* end of bitshade_bitmap */
+} /* end of bltshade_bitmap */
 
 /*
  *
