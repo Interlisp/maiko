@@ -85,9 +85,8 @@ extern LispPTR *PENDINGINTERRUPT68k;
 #define POP_SUBR_ARGS                                       \
   do {                                                      \
     args[0] = NIL_PTR;                                      \
-    if ((arg_num = (argnum /* = (Get_BYTE(PC+2))*/)) > 0) { \
-      while (arg_num > 0) PopStackTo(args[--arg_num]);      \
-    }                                                       \
+    arg_num = (argnum); /* Get_BYTE(PC+2) */                \
+    while (arg_num > 0) PopStackTo(args[--arg_num]);        \
   } while(0)
 
 void OP_subrcall(int subr_no, int argnum) {
