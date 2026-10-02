@@ -21,6 +21,7 @@
 
 #include <arpa/inet.h>
 #include "byteswapdefs.h"
+#include "lispemul.h"
 #include "lsptypes.h"
 
 /****************************************************************/

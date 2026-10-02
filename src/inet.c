@@ -19,6 +19,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <arpa/inet.h>  /* for htons, htonl, ntohl, ntohs */
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <sys/select.h> /* for FD_ fns */
@@ -26,7 +27,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
-/* if using inet_ntop you must #include <arpa/inet.h> */
 #endif /* DOS */
 
 #if (defined(MAIKO_OS_SOLARIS) || defined(MAIKO_OS_CYGWIN)) && !defined(O_ASYNC)

@@ -13,6 +13,7 @@
 #include <fcntl.h>          // for O_RDWR, O_CREAT, open, O_RDONLY, O_TRUNC
 #include <stdio.h>          // for NULL, snprintf, size_t, rename, SEEK_SET
 #include <stddef.h>         // for ptrdiff_t
+#include <stdint.h>         // for uint64_t
 #include <stdlib.h>         // for strtoul, qsort
 #include <string.h>         // for strlcpy, strcmp, strlen, memcpy, strchr
 #include <sys/stat.h>       // for stat, fstat, mkdir, S_ISREG, st_atime, chmod
@@ -38,7 +39,9 @@
 #include <pwd.h>            // for getpwuid, passwd
 #include <sys/param.h>      // for MAXPATHLEN
 #include <sys/statvfs.h>    // for statvfs
+#include <sys/stat.h>       // for Solaris futimens
 #include <sys/time.h>       // for timeval, utimes, futimens
+#include <time.h>           // for timespec
 #else
 #include <direct.h>
 #include <dos.h>
