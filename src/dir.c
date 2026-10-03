@@ -2243,7 +2243,7 @@ LispPTR COM_gen_files(LispPTR *args)
     case 0: return (SMALLP_ZERO);
 
     default:
-      if (!file_sort(&fp, (size_t)count, dskp ? dsk_filecmp : unix_filecmp)) return (SMALLP_MINUSONE);
+      if (!file_sort(&fp, (size_t)count, dskp ? &dsk_filecmp : &unix_filecmp)) return (SMALLP_MINUSONE);
       if (dskp) {
         if (highestp)
           count = trim_finfo_highest(&fp, highestp);
