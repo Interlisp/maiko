@@ -574,13 +574,13 @@ typedef struct
 	/* 								*/
 	/****************************************************************/
 
-#define GETBYTE(base) (* (unsigned char *) (3^(UNSIGNED)(base)))
+#define GETBYTE(base) (* (unsigned char *) (3U^(UNSIGNED)(base)))
   /* GETBASEWORD only works if base points to a 32-bit boundary */
 #define GETBASEWORD(base, offset) GETWORDBASEWORD((base),(offset))
-#define GETWORDBASEWORD(base, offset) (* (DLword *) (2^(UNSIGNED)((base)+(offset))))
-#define GETWORD(base) (* (DLword *) (2^(UNSIGNED)(base)))
-#define WORDPTR(base) ((DLword *)(2^(UNSIGNED)(base)))
-#define BYTEPTR(base) ((char *) (3^(UNSIGNED)(base)))
+#define GETWORDBASEWORD(base, offset) (* (DLword *) (2U^(UNSIGNED)((base)+(offset))))
+#define GETWORD(base) (* (DLword *) (2U^(UNSIGNED)(base)))
+#define WORDPTR(base) ((DLword *)(2U^(UNSIGNED)(base)))
+#define BYTEPTR(base) ((char *) (3U^(UNSIGNED)(base)))
 
 #endif /* BYTESWAP */
 
@@ -623,10 +623,10 @@ typedef struct
 #endif /* BIGVM */
 
 /* Get all type entry */
-#define GetTypeEntry(address)      ( GETWORD(MDStypetbl+((address)>>9)) )
+#define GetTypeEntry(address)      ( GETWORD(MDStypetbl+((address)>>9U)) )
 
 /* the type number is in the low 11 bits */
-#define GetTypeNumber(address)     (GetTypeEntry(address) & 0x7ff)
+#define GetTypeNumber(address)     (GetTypeEntry(address) & 0x7ffU)
 
 /* This MACRO is similar to LISTP */
 #define Listp(address)	(GetTypeNumber(address) == TYPE_LISTP)
