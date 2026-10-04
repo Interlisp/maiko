@@ -502,7 +502,7 @@ LispPTR vmem_save(char *sysout_file_name)
   (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
   currentdsp->device.locked--;
 
-#endif /* SUNDISPLAY */
+#endif /* DOS */
 
   /*printf("vmem is saved completely.\n");*/
   return (COMPLETESYSOUT);

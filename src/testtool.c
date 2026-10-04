@@ -716,7 +716,7 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
                      ((unsigned char)GETBYTE(addr + 2) << 8) + (unsigned char)GETBYTE(addr + 3));
 #else
       print_atomname(((unsigned char)GETBYTE(addr + 1) << 8) + (unsigned char)GETBYTE(addr + 2));
-#endif /* BIGATOMS */
+#endif /* BIGVM */
 
       putchar('\n');
       break;

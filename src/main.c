@@ -871,7 +871,7 @@ void print_info_lines(void) {
   printf("Supports 64Mb virtual memory.\n");
 #else
   printf("Supports 32Mb virtual memory.\n");
-#endif /* BIGVM */
+#endif /* BIGBIGVM */
 #ifdef NOVERSION
   printf("Does not enforce SYSOUT version matching.\n");
 #endif /* NOVERSION */

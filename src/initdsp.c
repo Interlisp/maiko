@@ -282,7 +282,7 @@ void flush_display_buffer(void) {
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, 0, 0, currentdsp->Display.width,
                                  currentdsp->Display.height);
   TPRINT(("Exit flush_display_buffer\n"));
-#endif /* DOS */
+#endif /* XWINDOW */
 }
 
 /************************************************************************/

@@ -448,7 +448,7 @@ LispPTR native_newframe(int slot)
                                              nametablesize is # of items in NT */
 #else
       nametablesize = newpfn2->ntsize;
-#endif /* 					    */
+#endif /* BIGATOMS */
     }
 
     for (i = nametablesize; --i >= 0;) {

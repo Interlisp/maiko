@@ -471,7 +471,7 @@ do_it_now:
 
 #ifdef SDL
   if (in_display_segment(dstbase)) flush_display_region(dx, dty, w, h);
-#endif /* XWINDOW */
+#endif /* SDL */
 
 #ifdef DOS
   /* Copy the changed section of display bank to the frame buffer */
