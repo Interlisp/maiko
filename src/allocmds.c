@@ -72,7 +72,6 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
   short num_pages;
   int limit;
   int used; /* used space in MDS page */
-  int i;
 
 #ifdef TRACE2
   printf("TRACE: initmdspage()\n");
@@ -88,7 +87,7 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
     limit = MDSINCREMENT;
   }
 
-  for (i = 0; i < num_pages; i++) {
+  for (int i = 0; i < num_pages; i++) {
     used = 0;
     while ((used += size) <= limit) {
       *base = prev;                /* write prev MDS address to the top of MDS page */
