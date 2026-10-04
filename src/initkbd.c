@@ -356,7 +356,7 @@ static u_char *make_X_keymap(void) {
   mapping = XGetKeyboardMapping(currentdsp->display_id, minkey, codecount, &symspercode);
   XUNLOCK(currentdsp);
 
-  for (; *key_sym_pairs != -1;) {
+  while (*key_sym_pairs != -1) {
     int reusable = *key_sym_pairs++, code = *key_sym_pairs++, sym = *key_sym_pairs++, xcode;
 
     if (sym_used && (sym == last_KEYSYM)) continue;

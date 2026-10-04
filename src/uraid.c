@@ -322,7 +322,7 @@ void copy_region(const DLword *src, DLword *dst, int width, int h)
 {
   int w;
 
-  for (; (h--);) {
+  while (h--) {
     for (w = width; (w--);) { GETWORD(dst++) = GETWORD(src++); }
   }
 }

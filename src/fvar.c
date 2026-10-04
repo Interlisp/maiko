@@ -140,7 +140,7 @@ newframe:
   }
 
   i = (UNSIGNED)(pindex + nametablesize);
-  for (; (UNSIGNED)i > (UNSIGNED)pindex;) { /* searching in NewFuncHeader */
+  while ((UNSIGNED)i > (UNSIGNED)pindex) { /* searching in NewFuncHeader */
 #ifdef BIGATOMS
 /* These used to be GETWORDs, but NAMETABLE is a CELL in 3-byte */
 #if 1
