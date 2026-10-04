@@ -50,7 +50,8 @@ LispPTR MVLIST_index;
 /****************************************************************/
 
 LispPTR values(int arg_count, LispPTR *args) {
-  FX2 *caller, *prevcaller = 0, *immediate_caller = 0;
+  FX2 *caller, *prevcaller = 0;
+  const FX2 *immediate_caller = 0;
   ByteCode *pc;
   int unbind_count = 0;
   struct fnhead *fnhead;
@@ -146,7 +147,8 @@ newpc:
 /****************************************************************/
 
 LispPTR values_list(int arg_count, LispPTR *args) {
-  FX2 *caller, *prevcaller = 0, *immediate_caller = 0;
+  FX2 *caller, *prevcaller = 0;
+  const FX2 *immediate_caller = 0;
   ByteCode *pc;
   int unbind_count = 0;
   struct fnhead *fnhead;
@@ -266,13 +268,12 @@ LispPTR make_value_list(int argcount, LispPTR *argarray) {
 
 void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
   int unbind;
-  LispPTR *stackptr = (LispPTR *)(Stackspace + frame->nextblock);
+  const LispPTR *stackptr = (LispPTR *)(Stackspace + frame->nextblock);
   for (unbind = 0; unbind < unbind_count; unbind++) {
     int value;
     LispPTR *lastpvar;
     int bindnvalues;
-    while ((int)*--stackptr >= 0)
-      ; /* find the binding mark */
+    while ((int)*--stackptr >= 0); /* find the binding mark */
     value = (int)*stackptr;
     lastpvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));
     bindnvalues = (~value) >> 16;

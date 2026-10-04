@@ -775,7 +775,7 @@ void walk_stack(StackWord *start68k) {
         } /* while end */
         /* CHECK_BF(scanptr68k); */
         {
-          Bframe *bf = (Bframe *)scanptr68k;
+          const Bframe *bf = (Bframe *)scanptr68k;
           printf("%04tx:  BF  usecnt %d, resid %d, padding %d, ivar 0x%04x\n",
                  (DLword *)scanptr68k - Stackspace, bf->usecnt, bf->residual, bf->padding,
                  bf->ivar);

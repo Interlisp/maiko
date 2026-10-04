@@ -85,7 +85,8 @@ const unsigned char reversedbits[256] = {
 
 void bit_reverse_region(unsigned short *top, int width, int height, int rasterwidth) {
   int i;
-  unsigned j, wordwid = (((unsigned)width + 31) >> 5) << 1;
+  unsigned j;
+  unsigned const wordwid = (((unsigned)width + 31) >> 5) << 1;
   unsigned short *word;
 
   for (i = 0; i < height; i++) {
