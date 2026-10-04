@@ -252,9 +252,10 @@ static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
   unsigned pgno = ListpDTD->dtd_nextpage;
 
   for (pg = (struct conspage *)NativeAligned4FromLPage(pgno); pgno;
-       pg = (struct conspage *)NativeAligned4FromLPage(pgno = pg->next_page))
-    if ((cell = find_pair_in_page(pg, cdrval))) return (cell);
-
+       pg = (struct conspage *)NativeAligned4FromLPage(pgno = pg->next_page)) {
+    cell = find_pair_in_page(pg, cdrval);
+    if (cell) return (cell);
+  }
   pg = next_conspage();
   cell = find_pair_in_page(pg, cdrval);
   return (cell);
