@@ -271,7 +271,7 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
     int value;
     LispPTR *lastpvar;
     int bindnvalues;
-    for (; ((int)*--stackptr >= 0);)
+    while ((int)*--stackptr >= 0)
       ; /* find the binding mark */
     value = (int)*stackptr;
     lastpvar = (LispPTR *)((DLword *)frame + FRAMESIZE + 2 + GetLoWord(value));

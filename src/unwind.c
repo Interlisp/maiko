@@ -79,7 +79,7 @@ LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
 
       lastpvar = (LispPTR *)(2 + PVar + (unsigned short)num);
       num = ~(num >> 16) + 1;
-      for (; --num > 0;) { *--lastpvar = 0xffffffff; /* Mark as UNBOUND */ }
+      while (--num > 0) { *--lastpvar = 0xffffffff; /* Mark as UNBOUND */ }
     }
   }
 
