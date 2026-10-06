@@ -162,6 +162,8 @@ static void LispStringToCString(LispPTR Lisp, char *C, size_t MaxLen) {
             	(FatP) = 1;                                             \
 		break;							\
 	default:							\
+	        (Length) = 0;						\
+		(FatP) = 0;						\
 		error("LispStringLength: Not a character array.\n");	\
       }									\
     } while (0)
