@@ -313,7 +313,7 @@ LispPTR vmem_save(char *sysout_file_name)
   int vmemsize; /* VMEMSIZE */
   int i;
   char tempname[MAXPATHLEN];
-  ssize_t rsize;
+  ssize_t rsize = 0;
   off_t roff;
   int rval;
 #ifndef DOS
