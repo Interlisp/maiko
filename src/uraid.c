@@ -263,7 +263,7 @@ extern int PrintMaxLevel; /* for print level */
 
 LispPTR parse_atomstring(char *string)
 {
-  char *start, *packageptr, *nameptr;
+  char *start, *packageptr = NULL, *nameptr = NULL;
   DLword packagelen = 0;
   DLword namelen = 0;
   DLword cnt;
