@@ -66,12 +66,12 @@
 
 /* Error return values from VMEMSAVE */
 #define COMPLETESYSOUT NIL
-#define BADFILENAME (S_POSITIVE | 1)
-#define NOFILESPACE (S_POSITIVE | 2)
-#define FILECANNOTOPEN (S_POSITIVE | 3)
-#define FILECANNOTSEEK (S_POSITIVE | 4)
-#define FILECANNOTWRITE (S_POSITIVE | 5)
-#define FILETIMEOUT (S_POSITIVE | 6)
+#define BADFILENAME (S_POSITIVE | 1U)
+#define NOFILESPACE (S_POSITIVE | 2U)
+#define FILECANNOTOPEN (S_POSITIVE | 3U)
+#define FILECANNOTSEEK (S_POSITIVE | 4U)
+#define FILECANNOTWRITE (S_POSITIVE | 5U)
+#define FILETIMEOUT (S_POSITIVE | 6U)
 
 extern struct pixrect *CursorBitMap, *InvisibleCursorBitMap;
 extern struct cursor CurrentCursor, InvisibleCursor;
