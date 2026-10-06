@@ -17,27 +17,27 @@
 
 #define	FDEV_PAGE_SIZE		512	/* 1 page == 512 byte */
 
-#define	RECOG_OLD		(S_POSITIVE | 0)
-#define	RECOG_OLDEST		(S_POSITIVE | 1)
-#define	RECOG_NEW		(S_POSITIVE | 2)
-#define	RECOG_OLD_NEW		(S_POSITIVE | 3)
-#define	RECOG_NON		(S_POSITIVE | 5)
+#define	RECOG_OLD		(S_POSITIVE | 0U)
+#define	RECOG_OLDEST		(S_POSITIVE | 1U)
+#define	RECOG_NEW		(S_POSITIVE | 2U)
+#define	RECOG_OLD_NEW		(S_POSITIVE | 3U)
+#define	RECOG_NON		(S_POSITIVE | 5U)
 
-#define	ACCESS_INPUT		(S_POSITIVE | 0)
-#define	ACCESS_OUTPUT		(S_POSITIVE | 1)
-#define	ACCESS_BOTH		(S_POSITIVE | 2)
-#define	ACCESS_APPEND		(S_POSITIVE | 3)
+#define	ACCESS_INPUT		(S_POSITIVE | 0U)
+#define	ACCESS_OUTPUT		(S_POSITIVE | 1U)
+#define	ACCESS_BOTH		(S_POSITIVE | 2U)
+#define	ACCESS_APPEND		(S_POSITIVE | 3U)
 
 /* For getfileinfo */
-#define	LENGTH			(S_POSITIVE | 1)
-#define	WDATE			(S_POSITIVE | 2)
-#define	RDATE			(S_POSITIVE | 3)
-#define	AUTHOR			(S_POSITIVE | 5)
-#define	PROTECTION		(S_POSITIVE | 6)
-#define	EOL			(S_POSITIVE | 7)
-#define	ALL			(S_POSITIVE | 8)
-#define INODE_LO		(S_POSITIVE | 9)
-#define INODE_HI		(S_POSITIVE | 10)
+#define	LENGTH			(S_POSITIVE | 1U)
+#define	WDATE			(S_POSITIVE | 2U)
+#define	RDATE			(S_POSITIVE | 3U)
+#define	AUTHOR			(S_POSITIVE | 5U)
+#define	PROTECTION		(S_POSITIVE | 6U)
+#define	EOL			(S_POSITIVE | 7U)
+#define	ALL			(S_POSITIVE | 8U)
+#define INODE_LO		(S_POSITIVE | 9U)
+#define INODE_HI		(S_POSITIVE | 10U)
 
 #define	ToLispTime(x)	((int)(x) + 29969152)
 			/* For getfileinfo. For WDATE&RDATE */

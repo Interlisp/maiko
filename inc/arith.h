@@ -45,7 +45,7 @@ static inline LispPTR GetSmallp(long x) {
     if (x >= MIN_SMALL) return (LispPTR)(S_NEGATIVE | (x & 0xFFFFU));
   }
   error("Not Smallp data");
-  return (S_POSITIVE | 0);
+  return (S_POSITIVE | 0U);
 }
 
 /**
@@ -54,7 +54,7 @@ static inline LispPTR GetSmallp(long x) {
 static inline LispPTR GetPosSmallp(unsigned long x) {
   if (x <= MAX_SMALL) return (LispPTR)(S_POSITIVE | x);
   error("Not Smallp data");
-  return (S_POSITIVE | 0);
+  return (S_POSITIVE | 0U);
 }
 
 #define FIXP_VALUE(dest) *((int *)NativeAligned4FromLAddr(dest))
