@@ -61,15 +61,15 @@ extern int BT_temp; /* holds the continue-character the user typed */
 
 LispPTR Uraid_mess = NIL;
 
-int error(const char *cp) {
+int error(const char *msg) {
   char *ptr;
   if (device_before_raid() < 0) {
     (void)fprintf(stderr, "Can't Enter URAID.\n");
     exit(-1);
   }
   /* comm read */
-  URaid_errmess = cp;
-  (void)fprintf(stderr, "\n*Error* %s\n", cp);
+  URaid_errmess = msg;
+  (void)fprintf(stderr, "\n*Error* %s\n", msg);
   fflush(stdin);
   (void)fprintf(stderr, "Enter the URaid\n");
   print(Uraid_mess);
@@ -126,5 +126,5 @@ uraidloop:
 /*									*/
 /************************************************************************/
 
-void warn(const char *s)
-{ printf("\nWARN: %s \n", s); }
+void warn(const char *msg)
+{ printf("\nWARN: %s \n", msg); }
