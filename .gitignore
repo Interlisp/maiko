@@ -11,6 +11,7 @@ cmake-build-*/**
 *.m68k-x/**
 *.m68k/**
 *.386-sdl/**
+*.386-sdl3/**
 *.386-x/**
 *.386/**
 *.ppc-x/**
@@ -19,6 +20,7 @@ cmake-build-*/**
 *.sparc/**
 *.x86_64-x/**
 *.x86_64-sdl/**
+*.x86_64-sdl3/**
 *.x86_64/**
 *.wasm/**
 *.wasm-wasm/**
@@ -28,6 +30,7 @@ cmake-build-*/**
 *.armv7l/**
 *.aarch64-x/**
 *.aarch64-sdl/**
+*.aarch64-sdl3/**
 *.aarch64/**
 init.386/**
 *.universal/**
