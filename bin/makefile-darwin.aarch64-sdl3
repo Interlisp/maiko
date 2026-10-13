@@ -1,0 +1,26 @@
+# Options for MacOS, arm64 (aka aarch64) processor, SDL
+
+CC = clang -target aarch64-apple-darwin $(CLANG_CFLAGS)
+
+XFILES = $(OBJECTDIR)sdl.o
+
+#
+#  For SDL version 2
+#      -DSDL=2 in SDLFLAGS and -framework SDL2 in LDFLAGS
+#  For SDL version 3
+#      -DSDL=3 in SDLFLAGS and -framework SDL3 in LDFLAGS
+#
+
+SDLFLAGS = -DSDL=3 -F /Library/Frameworks/SDL3.xcframework/macos-arm64_x86_64
+
+# OPTFLAGS is normally -O2.
+OPTFLAGS =  -O2 -g
+DEBUGFLAGS = # -DDEBUG -DOPTRACE
+DFLAGS = $(DEBUGFLAGS) $(SDLFLAGS) -DRELEASE=$(RELEASE)
+
+LDFLAGS = -rpath /Library/Frameworks/SDL3.xcframework/macos-arm64_x86_64 -F /Library/Frameworks/SDL3.xcframework/macos-arm64_x86_64 -framework SDL3
+LDELDFLAGS =
+
+OBJECTDIR = ../$(RELEASENAME)/
+
+default	: ../$(OSARCHNAME)/lde ../$(OSARCHNAME)/ldesdl
