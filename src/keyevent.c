@@ -495,7 +495,7 @@ void copy_cursor(int newx, int newy)
   } else {
     cursor68k = (CURSOR *)NativeAligned4FromLAddr(*CURRENTCURSOR68k);
     bitmap68k = (BITMAP *)NativeAligned4FromLAddr(cursor68k->CUIMAGE);
-    srcbase = (DLword *)NativeAligned2FromLAddr(bitmap68k->bmbase);
+    srcbase = NativeAligned2FromLAddr(bitmap68k->bmbase);
     dstbase = ColorDisplayRegion68k + (newy * DLWORD_PERLINE * COLOR_BITSPER_PIXEL);
     sx = 0;
     dx = newx * COLOR_BITSPER_PIXEL;

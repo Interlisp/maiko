@@ -122,7 +122,7 @@ LispPTR *alloc_mdspage(short int type) {
   LispPTR *ptr; /* points Top 32 bit of the MDS page */
   LispPTR next_page;
 
-  /* Next_Array=(DLword *)NativeAligned2FromLAddr(((*Next_Array_word)& 0xffff ) << 8); */
+  /* Next_Array=NativeAligned2FromLAddr(((*Next_Array_word)& 0xffff ) << 8); */
 
   if (LOLOC(*MDS_free_page_word) != NIL) {
     ptr = NativeAligned4FromLPage(LOLOC(*MDS_free_page_word));
@@ -136,9 +136,9 @@ LispPTR *alloc_mdspage(short int type) {
     /* I guess Next_MDSpage is redundant */
     checkfor_storagefull(NIL);
 #ifdef BIGVM
-    Next_MDSpage = (DLword *)NativeAligned2FromLAddr(((*Next_MDSpage_word)) << 8);
+    Next_MDSpage = NativeAligned2FromLAddr(((*Next_MDSpage_word)) << 8);
 #else
-    Next_MDSpage = (DLword *)NativeAligned2FromLAddr(((*Next_MDSpage_word) & 0xffff) << 8);
+    Next_MDSpage = NativeAligned2FromLAddr(((*Next_MDSpage_word) & 0xffff) << 8);
 #endif
     ptr = (LispPTR *)Next_MDSpage;       /* Get Pointer to First Page */
     Next_MDSpage -= DLWORDSPER_PAGE * 2; /* decrement MDS count */

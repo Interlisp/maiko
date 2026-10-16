@@ -356,7 +356,7 @@ void bitbltsub(LispPTR *argv) {
       wxoffset = (args[11] == NIL_PTR ? 0 : args[11] & 0xFFFF);
       wyoffset = (args[12] == NIL_PTR ? 0 : args[12] & 0xFFFF);
       sx = ((wxoffset) ? (dx - wxoffset) : dx) % BITSPERWORD;
-      dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
+      dstbase = NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
       gray = 1;
       if (texture == NIL_PTR) { /* White Shade */
         grayword[0] = 0;
@@ -390,7 +390,7 @@ void bitbltsub(LispPTR *argv) {
         }
       } else { /* A bitmap that is 16 bits wide. */
         texture68k = (BITMAP *)NativeAligned4FromLAddr(texture);
-        srcbase = (DLword *)NativeAligned2FromLAddr(texture68k->bmbase);
+        srcbase = NativeAligned2FromLAddr(texture68k->bmbase);
         num_gray = min(texture68k->bmheight, 16);
         curr_gray_line = (dty + wyoffset) % num_gray;
         srcbase += curr_gray_line;
@@ -419,15 +419,15 @@ void bitbltsub(LispPTR *argv) {
       backwardflg = T;
 
     if (backwardflg) {
-      srcbase = (DLword *)NativeAligned2FromLAddr(
+      srcbase = NativeAligned2FromLAddr(
           ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * (sty + h - 1)));
-      dstbase = (DLword *)NativeAligned2FromLAddr(
+      dstbase = NativeAligned2FromLAddr(
           ADDBASE(destbm->bmbase, destbm->bmrasterwidth * (dty + h - 1)));
       srcbpl = 0 - srcbpl;
       dstbpl = 0 - dstbpl;
     } else {
-      srcbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * sty));
-      dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
+      srcbase = NativeAligned2FromLAddr(ADDBASE(srcebm->bmbase, srcebm->bmrasterwidth * sty));
+      dstbase = NativeAligned2FromLAddr(ADDBASE(destbm->bmbase, destbm->bmrasterwidth * dty));
     }
 #ifdef REALCURSOR
     displayflg = n_new_cursorin(srcbase, sx, sty, w, h);
@@ -766,17 +766,17 @@ LispPTR bitblt_bitmap(LispPTR *args) {
     backwardflg = T;
 
   if (backwardflg) {
-    srcbase = (DLword *)NativeAligned2FromLAddr(
+    srcbase = NativeAligned2FromLAddr(
         ADDBASE(SourceBitmap->bmbase, SourceBitmap->bmrasterwidth * (sty + height - 1)));
-    dstbase = (DLword *)NativeAligned2FromLAddr(
+    dstbase = NativeAligned2FromLAddr(
         ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * (dty + height - 1)));
     srcbpl = 0 - srcbpl;
     dstbpl = 0 - dstbpl;
   } else {
-    srcbase = (DLword *)NativeAligned2FromLAddr(
+    srcbase = NativeAligned2FromLAddr(
         ADDBASE(SourceBitmap->bmbase, SourceBitmap->bmrasterwidth * sty));
     dstbase =
-        (DLword *)NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * dty));
+        NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, DestBitmap->bmrasterwidth * dty));
   }
 
   displayflg = n_new_cursorin(srcbase, slx, sty, width, height);
@@ -986,7 +986,7 @@ LispPTR bltshade_bitmap(LispPTR *args) {
 
   slx = left % BITSPERWORD;
 
-  dstbase = (DLword *)NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, (rasterwidth * dty)));
+  dstbase = NativeAligned2FromLAddr(ADDBASE(DestBitmap->bmbase, (rasterwidth * dty)));
 
   if (GetTypeNumber(texture) == TYPE_LITATOM) {
     if (texture == NIL_PTR) { /* White Shade */
@@ -1026,7 +1026,7 @@ LispPTR bltshade_bitmap(LispPTR *args) {
   /* Listp case alway punt to LISP */
   { /* A bitmap that is 16 bits wide. */
     texture68k = (BITMAP *)NativeAligned4FromLAddr(texture);
-    srcbase = (DLword *)NativeAligned2FromLAddr(texture68k->bmbase);
+    srcbase = NativeAligned2FromLAddr(texture68k->bmbase);
     num_gray = min(texture68k->bmheight, 16);
     curr_gray_line = (dty) % num_gray;
     srcbase += curr_gray_line;
@@ -1160,9 +1160,9 @@ void bltchar(LispPTR *args)
   pbt = (PILOTBBT *)NativeAligned4FromLAddr(((BLTC *)args)->pilotbbt);
   dspdata = (DISPLAYDATA *)NativeAligned4FromLAddr(((BLTC *)args)->displaydata);
 
-  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  srcbase = NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  dstbase = NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   srcbpl = abs(pbt->pbtsourcebpl);
   dstbpl = abs(pbt->pbtdestbpl);
@@ -1355,7 +1355,7 @@ void newbltchar(LispPTR *args) {
 
   right =
       curx +
-      GETWORD((DLword *)NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
+      GETWORD(NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
 
   if ((right > rmargin) && (curx > lmargin)) PUNT_TO_BLTCHAR;
   if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
@@ -1363,7 +1363,7 @@ void newbltchar(LispPTR *args) {
   {
     int newpos;
     newpos = curx +
-             GETWORD((DLword *)NativeAligned2FromLAddr(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
+             GETWORD(NativeAligned2FromLAddr(displaydata68k->ddwidthscache + ((BLTARG *)args)->char8code));
 
     if ((0 <= newpos) && (newpos < 65536))
       (displaydata68k->ddxposition) = (LispPTR)(S_POSITIVE | newpos);
@@ -1388,9 +1388,9 @@ void newbltchar(LispPTR *args) {
   w = right - left;
   if ((h <= 0) || (w <= 0)) return;
 
-  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  srcbase = NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  dstbase = NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   op = pbt->pbtoperation;
   src_comp = pbt->pbtsourcetype;
@@ -1766,7 +1766,7 @@ void tedit_bltchar(LispPTR *args)
     /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
     { PUNT_TO_TEDIT_BLTCHAR; }
   }
-  imagewidth = *((DLword *)NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
+  imagewidth = *(NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
   newx = ((TBLTARG *)args)->current_x + imagewidth;
   dx = ((TBLTARG *)args)->current_x;
   right = IMIN(newx, ((TBLTARG *)args)->clipright);
@@ -1774,9 +1774,9 @@ void tedit_bltchar(LispPTR *args)
   if (dx < right) {
     pbt = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
     h = pbt->pbtheight;
-    srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+    srcbase = NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 
-    dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+    dstbase = NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
     srcbpl = abs(pbt->pbtsourcebpl);
     dstbpl = abs(pbt->pbtdestbpl);
 
@@ -1849,7 +1849,7 @@ static int old_cursorin(DLword addrhi, DLword addrlo, int x, int w, int h, int y
       return (NIL);
   } /* MONO case end */
   else {
-    base68k = (DLword *)NativeAligned2FromLAddr(addrhi << 16 | addrlo);
+    base68k = NativeAligned2FromLAddr(addrhi << 16 | addrlo);
     if ((ColorDisplayRegion68k <= base68k) && (base68k <= COLOR_MAX_Address)) {
       y = (base68k - ColorDisplayRegion68k) / displaywidth;
     } else

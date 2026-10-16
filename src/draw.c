@@ -264,7 +264,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
 
   {
     DLword *start_addr;
-    start_addr = (DLword *)NativeAligned2FromLAddr(ptr);
+    start_addr = NativeAligned2FromLAddr(ptr);
 
     if (in_display_segment(start_addr) && in_display_segment(dataptr)) {
       int start_x, start_y, end_x, end_y, w, h;

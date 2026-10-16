@@ -121,7 +121,7 @@ LispPTR aref1(LispPTR array, int index) {
     retval |= S_POSITIVE;
     break;
   case 4: /* unsigned 16 bits */
-    retval = (GETWORD(((DLword *)NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
+    retval = (GETWORD((NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
     retval |= S_POSITIVE;
     break;
   case 38: /* pointer 32 bits */

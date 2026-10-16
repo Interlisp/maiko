@@ -679,7 +679,7 @@ LispPTR uraid_commands(void) {
       {
         int i;
         DLword *ptr, *endptr;
-        ptr = (DLword *)NativeAligned2FromLAddr(address);
+        ptr = NativeAligned2FromLAddr(address);
         endptr = ptr + num;
 
         while (ptr < endptr) {
@@ -761,7 +761,7 @@ LispPTR uraid_commands(void) {
 
       {
         DLword *ptr;
-        ptr = (DLword *)NativeAligned2FromLAddr(address);
+        ptr = NativeAligned2FromLAddr(address);
         *ptr = val;
         printf("0x%x : 0x%x\n", address, *ptr);
       }

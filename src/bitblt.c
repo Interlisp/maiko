@@ -103,8 +103,8 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
                cursorin(pbt->pbtsourcehi, (pbt->pbtsourcelo + (sx >> 4)), w, h, backwardflg);
 #endif /* SUNDISPLAY */
 
-  srcbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
-  dstbase = (DLword *)NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
+  srcbase = NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
+  dstbase = NativeAligned2FromLAddr(VAG2(pbt->pbtdesthi, pbt->pbtdestlo));
 
   srcbpl = pbt->pbtsourcebpl;
   dstbpl = pbt->pbtdestbpl;
@@ -197,7 +197,7 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     else
       return (NIL);
   } else {
-    base68k = (DLword *)NativeAligned2FromLAddr(addrhi << 16 | addrlo);
+    base68k = NativeAligned2FromLAddr(addrhi << 16 | addrlo);
     if ((ColorDisplayRegion68k <= base68k) && (base68k <= COLOR_MAX_Address)) {
       y = (base68k - ColorDisplayRegion68k) / displaywidth;
       x = (UNSIGNED)(base68k - ColorDisplayRegion68k) - (y * displaywidth);

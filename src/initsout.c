@@ -219,15 +219,15 @@ extern int for_makeinit;
 void build_lisp_map(void) {
   DLword index;
 
-  Stackspace = (DLword *)NativeAligned2FromLAddr(STK_OFFSET);
-  Plistspace = (DLword *)NativeAligned2FromLAddr(PLIS_OFFSET);
-  DTDspace = (DLword *)NativeAligned2FromLAddr(DTD_OFFSET);
-  MDStypetbl = (DLword *)NativeAligned2FromLAddr(MDS_OFFSET);
-  AtomHT = (DLword *)NativeAligned2FromLAddr(ATMHT_OFFSET);
-  Pnamespace = (DLword *)NativeAligned2FromLAddr(PNP_OFFSET);
-  AtomSpace = (DLword *)NativeAligned2FromLAddr(ATOMS_OFFSET);
-  Defspace = (DLword *)NativeAligned2FromLAddr(DEFS_OFFSET);
-  Valspace = (DLword *)NativeAligned2FromLAddr(VALS_OFFSET);
+  Stackspace = NativeAligned2FromLAddr(STK_OFFSET);
+  Plistspace = NativeAligned2FromLAddr(PLIS_OFFSET);
+  DTDspace = NativeAligned2FromLAddr(DTD_OFFSET);
+  MDStypetbl = NativeAligned2FromLAddr(MDS_OFFSET);
+  AtomHT = NativeAligned2FromLAddr(ATMHT_OFFSET);
+  Pnamespace = NativeAligned2FromLAddr(PNP_OFFSET);
+  AtomSpace = NativeAligned2FromLAddr(ATOMS_OFFSET);
+  Defspace = NativeAligned2FromLAddr(DEFS_OFFSET);
+  Valspace = NativeAligned2FromLAddr(VALS_OFFSET);
 
   DBPRINT(("Stackspace = %p.\n", (void *)Stackspace));
   DBPRINT(("AtomHT = %p.\n", (void *)AtomHT));
@@ -237,14 +237,14 @@ void build_lisp_map(void) {
 #ifdef BIGVM
   FPtoVP = NativeAligned4FromLAddr(FPTOVP_OFFSET);
 #else
-  FPtoVP = (DLword *)NativeAligned2FromLAddr(FPTOVP_OFFSET);
+  FPtoVP = NativeAligned2FromLAddr(FPTOVP_OFFSET);
 #endif /* BIGVM */
   IOPage = (IOPAGE *)NativeAligned4FromLAddr(IOPAGE_OFFSET);
   InterfacePage = (IFPAGE *)NativeAligned4FromLAddr(IFPAGE_OFFSET);
   MiscStats = (MISCSTATS *)NativeAligned4FromLAddr(MISCSTATS_OFFSET);
 
-  UFNTable = (DLword *)NativeAligned2FromLAddr(UFNTBL_OFFSET);
-  DisplayRegion = (DLword *)NativeAligned2FromLAddr(DISPLAY_OFFSET);
+  UFNTable = NativeAligned2FromLAddr(UFNTBL_OFFSET);
+  DisplayRegion = NativeAligned2FromLAddr(DISPLAY_OFFSET);
 
   HTmain = (GCENTRY *)NativeAligned4FromLAddr(HTMAIN_OFFSET);
   HToverflow = (GCENTRY *)NativeAligned4FromLAddr(HTOVERFLOW_OFFSET);
@@ -413,7 +413,7 @@ void init_for_keyhandle(void) {
   DOBUFFEREDTRANSITION_index = MAKEATOM("\\DOBUFFEREDTRANSITIONS");
   INTERRUPTFRAME_index = MAKEATOM("\\INTERRUPTFRAME");
 
-  CTopKeyevent = (DLword *)NativeAligned2FromLAddr(*KEYBOARDEVENTQUEUE68k);
+  CTopKeyevent = NativeAligned2FromLAddr(*KEYBOARDEVENTQUEUE68k);
 
   PERIODIC_INTERRUPT68k = MakeAtom68k("\\PERIODIC.INTERRUPT");
   PERIODIC_INTERRUPT_FREQUENCY68k = MakeAtom68k("\\PERIODIC.INTERRUPT.FREQUENCY");

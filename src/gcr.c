@@ -141,8 +141,8 @@ void disablegc1(int noerror) {
   gcinterruptstate = (struct interruptstate *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
   count = (128) * 256; /* This is test value. 128 is *MdsTTsize(\MDSTTsize) */
   for (i = 0; i < count; i++) {
-    typeword = GETWORD((DLword *)NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i));
-    GETWORD((DLword *)NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i)) = (typeword | TT_NOREF);
+    typeword = GETWORD(NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i));
+    GETWORD(NativeAligned2FromLAddr(LAddrFromNative(MDStypetbl) + i)) = (typeword | TT_NOREF);
   }
   *Reclaim_cnt_word = NIL;
   *ReclaimMin_word = NIL;

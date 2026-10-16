@@ -182,7 +182,7 @@ void C_slowbltchar(LispPTR *args)
     cl_bottom = n_dd->ddclippingbottom;
     cl_top = n_dd->ddclippingtop;
 
-    newx = curx + *(DLword *)NativeAligned2FromLAddr(n_dd->ddwidthscache + Char8Code(charcode));
+    newx = curx + *NativeAligned2FromLAddr(n_dd->ddwidthscache + Char8Code(charcode));
 
     if (newx > rmargin) PUNT_TO_SLOWBLTCHAR; /* do \DSPPRINTCR/LF */
 
@@ -221,9 +221,9 @@ void C_slowbltchar(LispPTR *args)
       src_h = n_srcBM->bmheight;
       src_w = n_srcBM->bmwidth;
 
-      src_x = *((DLword *)NativeAligned2FromLAddr(n_dd->ddoffsetscache + Char8Code(charcode)));
+      src_x = *(NativeAligned2FromLAddr(n_dd->ddoffsetscache + Char8Code(charcode)));
       src_y = 0;
-      w = *(DLword *)NativeAligned2FromLAddr(n_dd->ddcharimagewidths + Char8Code(charcode));
+      w = *NativeAligned2FromLAddr(n_dd->ddcharimagewidths + Char8Code(charcode));
       h = src_h;
 
       dst_x = (short)curx;
@@ -454,7 +454,7 @@ void Uncolorize_Bitmap(LispPTR args[])
 
   s_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[0]);
   d_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[1]);
-  OnOff = (DLword *)NativeAligned2FromLAddr(args[2]);
+  OnOff = NativeAligned2FromLAddr(args[2]);
 
   s_height = s_bitmap->bmheight;
   s_width = s_bitmap->bmwidth;
@@ -463,7 +463,7 @@ void Uncolorize_Bitmap(LispPTR args[])
   if (s_bitsperpixel != 8) return;
 
   s_base = (u_char *)NativeAligned2FromLAddr(s_bitmap->bmbase);
-  d_base = (DLword *)NativeAligned2FromLAddr(d_bitmap->bmbase);
+  d_base = NativeAligned2FromLAddr(d_bitmap->bmbase);
   s_rasterwidth = s_bitmap->bmrasterwidth;
   d_rasterwidth = d_bitmap->bmrasterwidth;
 
@@ -540,7 +540,7 @@ LispPTR Colorize_Bitmap(LispPTR args[])
   N_GETNUMBER(args[8], color0, bad_arg);
   N_GETNUMBER(args[9], color1, bad_arg);
 
-  s_base = (DLword *)NativeAligned2FromLAddr(s_bitmap->bmbase) +
+  s_base = NativeAligned2FromLAddr(s_bitmap->bmbase) +
            s_bitmap->bmrasterwidth * (s_bitmap->bmheight - (s_bottom + height));
   d_base = (u_char *)NativeAligned2FromLAddr(d_bitmap->bmbase) +
                      d_bitmap->bmrasterwidth * (d_bitmap->bmheight - (d_bottom + height));

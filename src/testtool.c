@@ -828,7 +828,7 @@ void dumps(LispPTR laddr) {
   int i;
   DLword *ptr;
 
-  ptr = (DLword *)NativeAligned2FromLAddr(laddr);
+  ptr = NativeAligned2FromLAddr(laddr);
 
   for (i = 0; i < 40; i++, ptr++)
     printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), (GETWORD(ptr) & 0xffff));

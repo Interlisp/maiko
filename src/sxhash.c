@@ -202,7 +202,7 @@ static unsigned short stringequalhash(LispPTR obj) {
     case TYPE_LITATOM:
       ind = ((int)obj) & POINTERMASK;
       pnptr = (PNCell *)GetPnameCell(ind);
-      base = (DLword *)NativeAligned2FromLAddr(pnptr->pnamebase);
+      base = NativeAligned2FromLAddr(pnptr->pnamebase);
       Prop = (PLCell *)GetPropCell(ind);
       fatp = Prop->fatpnamep;
       offset = 1;
@@ -270,7 +270,7 @@ static unsigned short stringhash(LispPTR obj) {
     case TYPE_LITATOM:
       ind = ((int)obj) & POINTERMASK;
       pnptr = (PNCell *)GetPnameCell(ind);
-      base = (DLword *)NativeAligned2FromLAddr(pnptr->pnamebase);
+      base = NativeAligned2FromLAddr(pnptr->pnamebase);
       Prop = (PLCell *)GetPropCell(ind);
       fatp = Prop->fatpnamep;
       offset = 1;

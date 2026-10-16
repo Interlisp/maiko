@@ -69,7 +69,7 @@ LispPTR N_OP_createcell(LispPTR tos) {
 
 retry:
   if ((tos = newcell = ((dtd68k->dtd_free) & POINTERMASK)) != NIL) {
-    ptr = (DLword *)NativeAligned2FromLAddr(newcell);
+    ptr = NativeAligned2FromLAddr(newcell);
     if (917505 == *(LispPTR *)ptr) error("N_OP_createcell E0001 error");
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;

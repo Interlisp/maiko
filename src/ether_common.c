@@ -78,7 +78,7 @@ LispPTR check_sum(LispPTR *args)
   DLword *address;
   int nwords;
 
-  address = (DLword *)NativeAligned2FromLAddr(*args++);
+  address = NativeAligned2FromLAddr(*args++);
   nwords = *args++;
 
   if (*args != NIL)
