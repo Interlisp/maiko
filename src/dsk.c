@@ -73,17 +73,17 @@ static struct {
   FileName *files;           /* array of files */
 } VA = {0};
 
-static int locate_file(char *dir, size_t dirsize, char *name);
+static int locate_file(char *dir, size_t dirsize, const char *name);
 static int make_directory(char *dir, size_t dirsize);
-static int maintain_version(char *file, int forcep);
+static int maintain_version(const char *file, int forcep);
 static int compare_file_versions(const void *a, const void *b);
-static int get_versionless(FileName *varray, char *file, char *dir);
-static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p);
-static int get_old(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_new(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile);
-static int get_version_array(char *dir, char *file);
+static int get_versionless(const FileName *varray, char *file, const char *dir);
+static int check_vless_link(const char *vless, const FileName *varray, char *to_file, int *highest_p);
+static int get_old(const char *dir, const FileName *varray, char *afile, char *vfile);
+static int get_oldest(const char *dir, const FileName *varray, char *afile, char *vfile);
+static int get_new(const char *dir, const FileName *varray, char *afile, char *vfile);
+static int get_old_new(const char *dir, const FileName *varray, char *afile, char *vfile);
+static int get_version_array(const char *dir, const char *file);
 #ifdef DOS
 static void separate_drive(char *lfname, char *drive)
 {
@@ -217,7 +217,7 @@ void separate_host(char *lfname, char *host)
  * open a specified file.
  */
 
-LispPTR COM_openfile(LispPTR *args)
+LispPTR COM_openfile(const LispPTR *args)
 {
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
   char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
@@ -551,7 +551,7 @@ LispPTR COM_openfile(LispPTR *args)
  * Lisp and it is passed to COM_closefile.
  */
 
-LispPTR COM_closefile(LispPTR *args)
+LispPTR COM_closefile(const LispPTR *args)
 {
 #ifdef DOS
 
@@ -804,7 +804,7 @@ LispPTR COM_closefile(LispPTR *args)
  * can open the file with the specified mode or not.
  */
 
-LispPTR DSK_getfilename(LispPTR *args)
+LispPTR DSK_getfilename(const LispPTR *args)
 {
   char *base;
   size_t len;
@@ -1093,7 +1093,7 @@ LispPTR DSK_getfilename(LispPTR *args)
  * a specified file.
  */
 
-LispPTR DSK_deletefile(LispPTR *args)
+LispPTR DSK_deletefile(const LispPTR *args)
 {
   char file[MAXPATHLEN], fbuf[MAXPATHLEN], vless[MAXPATHLEN];
   char dir[MAXPATHLEN], ver[VERSIONLEN];
@@ -1237,7 +1237,7 @@ LispPTR DSK_deletefile(LispPTR *args)
  * a specified file.
  */
 
-LispPTR DSK_renamefile(LispPTR *args)
+LispPTR DSK_renamefile(const LispPTR *args)
 {
   char src[MAXPATHLEN], dst[MAXPATHLEN];
   char fbuf[MAXPATHLEN], vless[MAXPATHLEN], svless[MAXPATHLEN];
@@ -1460,7 +1460,7 @@ LispPTR DSK_renamefile(LispPTR *args)
  * the directory name representation.
  */
 
-LispPTR DSK_directorynamep(LispPTR *args)
+LispPTR DSK_directorynamep(const LispPTR *args)
 {
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
@@ -1546,7 +1546,7 @@ LispPTR DSK_directorynamep(LispPTR *args)
  * Lisp sense.
  */
 
-LispPTR COM_getfileinfo(LispPTR *args)
+LispPTR COM_getfileinfo(const LispPTR *args)
 {
   int dskp, rval;
   size_t len;
@@ -1754,7 +1754,7 @@ LispPTR COM_getfileinfo(LispPTR *args)
  * make sense.
  */
 
-LispPTR COM_setfileinfo(LispPTR *args)
+LispPTR COM_setfileinfo(const LispPTR *args)
 {
   int dskp, rval, date;
   char lfname[MAXPATHLEN + 5], file[MAXPATHLEN], host[MAXNAMLEN];
@@ -1885,7 +1885,7 @@ LispPTR COM_setfileinfo(LispPTR *args)
  * remaining region of a buffer will be zero outed.  The size of a page is 512 bytes.
  */
 
-LispPTR COM_readpage(LispPTR *args)
+LispPTR COM_readpage(const LispPTR *args)
 {
   char *bufp;
   int fd, npage, rval;
@@ -1969,7 +1969,7 @@ rdlp:
  * The actual size of data written is specified with args[3].
  */
 
-LispPTR COM_writepage(LispPTR *args)
+LispPTR COM_writepage(const LispPTR *args)
 {
   int fd;
   int npage;
@@ -2040,7 +2040,7 @@ wlp:
  * truncate a file.
  */
 
-LispPTR COM_truncatefile(LispPTR *args)
+LispPTR COM_truncatefile(const LispPTR *args)
 {
   int fd;
   int length;
@@ -2110,7 +2110,7 @@ LispPTR COM_truncatefile(LispPTR *args)
  * Change the current directory of the process to the specified directory.
  */
 
-LispPTR COM_changedir(LispPTR *args)
+LispPTR COM_changedir(const LispPTR *args)
 {
   int dskp, rval;
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
@@ -2209,7 +2209,7 @@ LispPTR COM_changedir(LispPTR *args)
  * strips the version field by invoking DSK_getfilename with NON recognition mode.
  */
 
-LispPTR COM_getfreeblock(LispPTR *args)
+LispPTR COM_getfreeblock(const LispPTR *args)
 {
   int dskp, rval, *buf;
   char lfname[MAXPATHLEN + 5], dir[MAXPATHLEN], host[MAXNAMLEN];
@@ -2331,7 +2331,7 @@ LispPTR COM_getfreeblock(LispPTR *args)
  *
  */
 
-void separate_version(char *name, size_t namesize, char *ver, size_t versize, int checkp)
+void separate_version(const char *name, size_t namesize, char *ver, size_t versize, int checkp)
 {
   char *start, *end, *cp;
   unsigned ver_no;
@@ -2421,9 +2421,9 @@ NO:
  *
  */
 
-int unpack_filename(char *file, char *dir, char *name, char *ver, int checkp)
+int unpack_filename(const char *file, char *dir, char *name, char *ver, int checkp)
 {
-  char *cp;
+  const char *cp;
 
 #ifdef DOS
   if ((cp = (char *)max((UNSIGNED)strrchr(file, DIRSEP), (UNSIGNED)strrchr(file, UNIXDIRSEP))) == 0)
@@ -2560,7 +2560,7 @@ int true_name(char *path, size_t pathsize)
  *
  */
 
-void conc_dir_and_name(char *dir, char *name, char *fname, size_t fname_size)
+void conc_dir_and_name(const char *dir, const char *name, char *fname, size_t fname_size)
 {
   size_t current_len;
 
@@ -2595,7 +2595,7 @@ void conc_dir_and_name(char *dir, char *name, char *fname, size_t fname_size)
  *
  */
 
-void conc_name_and_version(char *name, char *ver, char *rname, size_t rname_size)
+void conc_name_and_version(const char *name, const char *ver, char *rname, size_t rname_size)
 {
 	if (*ver != '\0') {
           strlcpy(rname, name, rname_size);
@@ -2630,7 +2630,7 @@ void conc_name_and_version(char *name, char *ver, char *rname, size_t rname_size
  *
  */
 
-static int locate_file(char *dir, size_t dirsize, char *name)
+static int locate_file(char *dir, size_t dirsize, const char *name)
 {
 #ifdef DOS
   char path[MAXPATHLEN];
@@ -2901,7 +2901,7 @@ static int make_directory(char *dir, size_t dirsize)
 #ifdef DOS
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
   do {                                                                                                \
-    FileName *centry;                                                                     \
+    const FileName *centry;                                                                     \
     for (centry = varray, min_no = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no < min_no) {                                                           \
         min_no = centry->version_no;                                                               \
@@ -2912,7 +2912,7 @@ static int make_directory(char *dir, size_t dirsize)
 #else
 #define FindLowestVersion(varray, mentry, min_no)                                                  \
   do {                                                                                                \
-    FileName *centry;                                                                     \
+    const FileName *centry;                                                                     \
     for (centry = (varray), (min_no) = MAXVERSION; centry->version_no != LASTVERSIONARRAY; centry++) { \
       if (centry->version_no < (min_no) && centry->version_no != 0) {                                \
         (min_no) = centry->version_no;                                                               \
@@ -2948,7 +2948,7 @@ static int make_directory(char *dir, size_t dirsize)
 
 #define FindSpecifiedVersion(varray, sentry, ver_no)                        \
   do {                                                                         \
-    FileName *centry;                                              \
+    const FileName *centry;                                              \
                                                                             \
     (sentry) = (FileName *)NULL;                                              \
     for (centry = varray; centry->version_no != LASTVERSIONARRAY; centry++) \
@@ -2991,7 +2991,7 @@ static int compare_file_versions(const void *a, const void *b)
 /*									*/
 /************************************************************************/
 
-static int get_version_array(char *dir, char *file)
+static int get_version_array(const char *dir, const char *file)
 {
 #ifdef DOS
   /* DOS version-array builder */
@@ -3253,13 +3253,13 @@ static int get_version_array(char *dir, char *file)
  * to maintain the directory on which a file is being created.
  */
 
-static int maintain_version(char *file, int forcep)
+static int maintain_version(const char *file, int forcep)
 {
   char dir[MAXPATHLEN], fname[MAXNAMLEN], ver[VERSIONLEN];
   char old_file[MAXPATHLEN], vless[MAXPATHLEN];
   int highest_p;
   int rval, max_no;
-  FileName *entry;
+  const FileName *entry;
 
   if (unpack_filename(file, dir, fname, ver, 1) == 0) return (0);
   /*
@@ -3411,7 +3411,7 @@ static int maintain_version(char *file, int forcep)
  *
  */
 
-static int get_versionless(FileName *varray, char *file, char *dir)
+static int get_versionless(const FileName *varray, char *file, const char *dir)
 {
 #ifdef DOS
   return (0);
@@ -3464,14 +3464,14 @@ static int get_versionless(FileName *varray, char *file, char *dir)
  *
  */
 
-static int check_vless_link(char *vless, FileName *varray, char *to_file, int *highest_p)
+static int check_vless_link(const char *vless, const FileName *varray, char *to_file, int *highest_p)
 {
   int rval, found;
   unsigned max_no;
   ino_t vless_ino;
   struct stat sbuf;
   char dir[MAXPATHLEN], name[MAXPATHLEN], ver[VERSIONLEN];
-  FileName *max_entry, *linked_entry;
+  const FileName *max_entry, *linked_entry;
 
   TIMEOUT(rval = stat(vless, &sbuf));
   if (rval != 0) {
@@ -3566,13 +3566,13 @@ static int check_vless_link(char *vless, FileName *varray, char *to_file, int *h
  *
  */
 
-static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_old(const char *dir, const FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
   unsigned ver_no, max_no;
   int highest_p;
-  FileName *entry;
+  const FileName *entry;
 
   /* "Old" file have to be existing, thus varray should not be empty. */
   if (NoFileP(varray)) return (0);
@@ -3765,13 +3765,13 @@ static int get_old(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_oldest(const char *dir, const FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
   unsigned ver_no, min_no;
   int highest_p;
-  FileName *entry;
+  const FileName *entry;
 
   /* "Oldest" file have to be existing, thus varray should not be empty. */
   if (NoFileP(varray)) return (0);
@@ -3962,13 +3962,13 @@ static int get_oldest(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_new(const char *dir, const FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
   unsigned ver_no, max_no;
   int highest_p;
-  FileName *entry;
+  const FileName *entry;
 
   strlcpy(name, afile, sizeof(name));
   separate_version(name, sizeof(name), ver, sizeof(ver), 1);
@@ -4256,13 +4256,13 @@ static int get_new(char *dir, FileName *varray, char *afile, char *vfile)
  *
  */
 
-static int get_old_new(char *dir, FileName *varray, char *afile, char *vfile)
+static int get_old_new(const char *dir, const FileName *varray, char *afile, char *vfile)
 {
   char name[MAXPATHLEN], vless[MAXPATHLEN], to_file[MAXPATHLEN];
   char ver[VERSIONLEN], vbuf[VERSIONLEN];
   unsigned ver_no, max_no;
   int highest_p;
-  FileName *entry;
+  const FileName *entry;
 
   strlcpy(name, afile, sizeof(name));
   separate_version(name, sizeof(name), ver, sizeof(ver), 1);

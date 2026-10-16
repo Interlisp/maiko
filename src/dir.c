@@ -139,9 +139,9 @@ extern int Dummy_errno;
  * number of characters.
  */
 
-static int match_pattern(char *tp, char *pp)
+static int match_pattern(const char *tp, const char *pp)
 {
-  char *tsp, *psp;
+  const char *tsp, *psp;
   int inastr;
 
 #ifdef DOS
@@ -776,7 +776,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk_prop(const char *dir, const  char *name, const char *ver, FINFO **finfo_buf)
 {
   struct dirent *dp;
   FINFO *prevp;
@@ -1027,7 +1027,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
 
 #else  /* DOS */
 
-static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_dsk(const char *dir, const char *name, const char *ver, FINFO **finfo_buf)
 {
   struct dirent *dp;
   FINFO *prevp;
@@ -1194,7 +1194,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs_prop(const char *dir, const char *name, const char *ver, FINFO **finfo_buf)
 {
   struct dirent *dp;
   FINFO *prevp;
@@ -1352,7 +1352,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
   return (n);
 }
 #else  /* DOS */
-static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf)
+static int enum_ufs(const char *dir, const char *name, const char *ver, FINFO **finfo_buf)
 {
   struct dirent *dp;
   FINFO *prevp;
@@ -2119,7 +2119,7 @@ typedef struct ufsgfs {
  * Enumerates files matching pattern.
  */
 
-LispPTR COM_gen_files(LispPTR *args)
+LispPTR COM_gen_files(const LispPTR *args)
 {
   char fbuf[MAXPATHLEN + 5], dir[MAXPATHLEN], pattern[MAXPATHLEN];
   char host[MAXNAMLEN], name[MAXNAMLEN], ver[VERSIONLEN];
@@ -2279,7 +2279,7 @@ LispPTR COM_gen_files(LispPTR *args)
  * name.
  */
 
-LispPTR COM_next_file(LispPTR *args)
+LispPTR COM_next_file(const LispPTR *args)
 {
   LispPTR laddr;
   FPROP *pp;
@@ -2352,7 +2352,7 @@ LispPTR COM_next_file(LispPTR *args)
  * Abandon all cached information corresponding to the generator.
  */
 
-LispPTR COM_finish_finfo(LispPTR *args)
+LispPTR COM_finish_finfo(const LispPTR *args)
 {
   DFINFO *dfp;
   FINFO *fp;
