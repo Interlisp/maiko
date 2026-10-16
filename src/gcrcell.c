@@ -228,7 +228,7 @@ normal:
     carfield = car(ptrfield);
     ptrfield = cdr(ptrfield);
     carfield &= 0x0ffff;
-    REC_GCLOOKUPV((POINTERMASK & *(LispPTR *)NativeAligned4FromLAddr(tmpptr + carfield)), DELREF, val);
+    REC_GCLOOKUPV((POINTERMASK & *NativeAligned4FromLAddr(tmpptr + carfield)), DELREF, val);
 #ifndef NEWCDRCODING
     if (val != NIL) {
       if (ptrfield != NIL) {
@@ -259,7 +259,7 @@ normal:
 #endif /* NEWCDRCODING */
   }
 addtofreelist:
-  field = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
+  field = NativeAligned4FromLAddr(tmpptr);
   *field = typdtd->dtd_free;
   typdtd->dtd_free = tmpptr & POINTERMASK;
 #ifdef DTDDEBUG

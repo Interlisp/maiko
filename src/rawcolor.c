@@ -165,7 +165,7 @@ void C_slowbltchar(LispPTR *args)
   n_destbitmap = (BITMAP *)NativeAligned4FromLAddr(n_dd->dddestination);
 
   if ((n_fontd->ROTATION & 0xffff) == 0) {
-    if ((csinfo = *(((LispPTR *)NativeAligned4FromLAddr(n_fontd->FONTCHARSETVECTOR)) +
+    if ((csinfo = *((NativeAligned4FromLAddr(n_fontd->FONTCHARSETVECTOR)) +
                     CharSet(charcode))) == NIL)
       PUNT_TO_SLOWBLTCHAR; /* CSINFO is not cached */
 

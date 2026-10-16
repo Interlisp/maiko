@@ -1616,7 +1616,7 @@ static LispPTR changecharset_display(DISPLAYDATA *displaydata68k, DLword charset
 
   pbt68k = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
   fontd68k = (FONTDESC *)NativeAligned4FromLAddr(displaydata68k->ddfont);
-  base68k = (LispPTR *)NativeAligned4FromLAddr(fontd68k->FONTCHARSETVECTOR);
+  base68k = NativeAligned4FromLAddr(fontd68k->FONTCHARSETVECTOR);
 
   if ((csinfo = *(base68k + charset)) == NIL) { return (-1); /* punt case */ }
   csinfo68k = (CHARSETINFO *)NativeAligned4FromLAddr(csinfo);

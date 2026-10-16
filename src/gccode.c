@@ -48,7 +48,7 @@
 #define Reprobefn(bits, index) ((((bits) ^ ((bits) >> 8)) & min(63, index)) | 1)
 #define Fn16bits(a, b) (((a) + (b)) & 0x0ffff)
 #define Hashingbits(item) (HILOC(item) ^ (((LOLOC(item) & 0x1fff) << 3) ^ (LOLOC(item) >> 9)))
-#define Getikvalue(base, index) (*(LispPTR *)NativeAligned4FromLAddr((base) + ((index) << 1)))
+#define Getikvalue(base, index) (*NativeAligned4FromLAddr((base) + ((index) << 1)))
 
 #ifndef BYTESWAP
 typedef struct implicit_key_hash_table {
@@ -179,7 +179,7 @@ static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
 
 /* JRB - These values are xpointers; their high bytes are not set and
         shouldn't be looked at */
-#define getikkey(value) ((*(LispPTR *)NativeAligned4FromLAddr(value)) & POINTERMASK)
+#define getikkey(value) ((*NativeAligned4FromLAddr(value)) & POINTERMASK)
 
 static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   Ikhashtbl *ik_htable;

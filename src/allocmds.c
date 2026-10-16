@@ -125,7 +125,7 @@ LispPTR *alloc_mdspage(short int type) {
   /* Next_Array=(DLword *)NativeAligned2FromLAddr(((*Next_Array_word)& 0xffff ) << 8); */
 
   if (LOLOC(*MDS_free_page_word) != NIL) {
-    ptr = (LispPTR *)NativeAligned4FromLPage(LOLOC(*MDS_free_page_word));
+    ptr = NativeAligned4FromLPage(LOLOC(*MDS_free_page_word));
 
     if (((next_page = LOLOC(*ptr)) != 0) && (GetTypeNumber((*ptr)) != TYPE_SMALLP))
       error("alloc_mdspage: Bad Free Page Link");

@@ -81,13 +81,13 @@ LispPTR *fixp_value(LispPTR *ptr) {
   if (val < (S_NEGATIVE | 0xFFFF)) {
     LispPTR newval = N_OP_createcell(S_POSITIVE | TYPE_FIXP);
     LispPTR *newcell;
-    newcell = (LispPTR *)NativeAligned4FromLAddr(newval);
+    newcell = NativeAligned4FromLAddr(newval);
     *newcell = val & 0xFFFF; /* it was smallp, so fill in */
     *ptr = newval;
     GCLOOKUP(newval, ADDREF); /* so it has a refcount */
     return ((LispPTR *)newcell);
   }
-  return ((LispPTR *)NativeAligned4FromLAddr(val));
+  return (NativeAligned4FromLAddr(val));
 }
 
 #else
@@ -235,7 +235,7 @@ void build_lisp_map(void) {
   ListpDTD = (struct dtd *)GetDTD(TYPE_LISTP);
 
 #ifdef BIGVM
-  FPtoVP = (LispPTR *)NativeAligned4FromLAddr(FPTOVP_OFFSET);
+  FPtoVP = NativeAligned4FromLAddr(FPTOVP_OFFSET);
 #else
   FPtoVP = (DLword *)NativeAligned2FromLAddr(FPTOVP_OFFSET);
 #endif /* BIGVM */
@@ -407,7 +407,7 @@ void init_for_keyhandle(void) {
   LASTUSERACTION68k = MakeAtom68k("\\LASTUSERACTION");
 
 #ifndef INIT
-  CLastUserActionCell68k = (LispPTR *)NativeAligned4FromLAddr(*LASTUSERACTION68k & POINTERMASK);
+  CLastUserActionCell68k = NativeAligned4FromLAddr(*LASTUSERACTION68k & POINTERMASK);
 #endif
 
   DOBUFFEREDTRANSITION_index = MAKEATOM("\\DOBUFFEREDTRANSITIONS");

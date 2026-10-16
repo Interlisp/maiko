@@ -255,7 +255,7 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       return(T);
     } else {
       fbl = FreeBlockChainN(base_np->arlen);
-      rover = tmprover = (LispPTR *)NativeAligned4FromLAddr(fbl);
+      rover = tmprover = NativeAligned4FromLAddr(fbl);
       /* GETBASEPTR */
       if ((*rover & POINTERMASK) == NIL) {
         error("Free Block's bucket empty\n");
@@ -298,7 +298,7 @@ static void deleteblock(LispPTR base) {
     b = base_np->bkwd;
     b_np = (struct arrayblock *)NativeAligned4FromLAddr(b);
     fbl = FreeBlockChainN(base_np->arlen);
-    fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+    fbl_np = NativeAligned4FromLAddr(fbl);
     freeblock = POINTERMASK & *fbl_np;
     if (base == f) {
       if (base == freeblock)
@@ -344,7 +344,7 @@ static LispPTR linkblock(LispPTR base) {
   /* lisp pointer to bucket for size */
   fbl = FreeBlockChainN(base_np->arlen);
   /* native pointer to bucket */
-  fbl_np = (LispPTR *)NativeAligned4FromLAddr(POINTERMASK & fbl);
+  fbl_np = NativeAligned4FromLAddr(POINTERMASK & fbl);
   /* lisp pointer to first free block on chain */
   freeblock = POINTERMASK & (*fbl_np);
   if (freeblock == NIL) { /* no blocks already in chain */
@@ -568,7 +568,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       btrailer = (ptr - 2) + DLWORDSPER_CELL * (base_np->arlen - ARRAYBLOCKTRAILERCELLS);
       tmpptr = ptr;
       do {
-        tmpp = (LispPTR *)NativeAligned4FromLAddr(tmpptr);
+        tmpp = NativeAligned4FromLAddr(tmpptr);
         /* GCLOOKUP(0x8000,DELREF, *tmpp);*/ /* added 8-Oct-87 TT */
         REC_GCLOOKUP(*tmpp, DELREF);
         *tmpp = NIL;
@@ -653,7 +653,7 @@ static void printfreeblockchainhead(int index)
   LispPTR *fbl_np;
 
   fbl = POINTERMASK & ((*FreeBlockBuckets_word) + (DLWORDSPER_CELL * index));
-  fbl_np = (LispPTR *)NativeAligned4FromLAddr(fbl);
+  fbl_np = NativeAligned4FromLAddr(fbl);
   /* lisp pointer to free block on chain */
   freeblock = POINTERMASK & (*fbl_np);
   if (freeblock == NIL) { /* no blocks in chain */

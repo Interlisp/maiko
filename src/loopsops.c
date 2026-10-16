@@ -198,14 +198,14 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
       if (classptr->selectors == NIL_PTR) {
         goto next_class;
       } else {
-        selectorptr = (LispPTR *)NativeAligned4FromLAddr(classptr->selectors);
+        selectorptr = NativeAligned4FromLAddr(classptr->selectors);
       }
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
           ce->class = objptr->class;
           ce->selector = selector;
-          return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
+          return (ce->method_fn = (NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
       }
 
@@ -248,13 +248,13 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       if (classptr->selectors == NIL_PTR)
         goto next_class;
       else
-        selectorptr = (LispPTR *)NativeAligned4FromLAddr(classptr->selectors);
+        selectorptr = NativeAligned4FromLAddr(classptr->selectors);
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
           ce->class = class;
           ce->selector = selector;
-          return (ce->method_fn = ((LispPTR *)NativeAligned4FromLAddr(classptr->methods))[i - 1]);
+          return (ce->method_fn = (NativeAligned4FromLAddr(classptr->methods))[i - 1]);
         }
       }
 
@@ -309,7 +309,7 @@ LispPTR LCGetIVValue(LispPTR object, LispPTR iv) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
-  val = ((LispPTR *)NativeAligned4FromLAddr(objptr->iDescrs))[index];
+  val = (NativeAligned4FromLAddr(objptr->iDescrs))[index];
   if (!LC_TYPEP(val, atom_annotatedValue)) return val;
 pnut:
   RETCALL(atom_GetIVValue_LCUFN, 2);
@@ -328,7 +328,7 @@ LispPTR LCPutIVValue(LispPTR object, LispPTR iv, LispPTR val) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
-  valptr = &(((LispPTR *)NativeAligned4FromLAddr(objptr->iDescrs))[index]);
+  valptr = &((NativeAligned4FromLAddr(objptr->iDescrs))[index]);
   if (!LC_TYPEP(*valptr, atom_annotatedValue)) {
     FRPLPTR((*valptr), val);
     return val;

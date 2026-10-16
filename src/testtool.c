@@ -817,7 +817,7 @@ void dumpl(LispPTR laddr) {
   int i;
   LispPTR *ptr;
 
-  ptr = (LispPTR *)NativeAligned4FromLAddr(laddr);
+  ptr = NativeAligned4FromLAddr(laddr);
 
   for (i = 0; i < 40; i++, ptr++) printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
 }
@@ -1218,7 +1218,7 @@ void dtd_chain(DLword type) {
   dtdp = (struct dtd *)GetDTD(type);
 
   next = dtdp->dtd_free;
-  next68k = (LispPTR *)NativeAligned4FromLAddr(next);
+  next68k = NativeAligned4FromLAddr(next);
 
   while ((*next68k) != 0) {
     if (type != GetTypeNumber(next)) {
@@ -1229,7 +1229,7 @@ void dtd_chain(DLword type) {
     putchar('\n');
 
     next = *next68k;
-    next68k = (LispPTR *)NativeAligned4FromLAddr(next);
+    next68k = NativeAligned4FromLAddr(next);
   }
   printf("That's All !\n");
 
@@ -1256,7 +1256,7 @@ void check_dtd_chain(DLword type)
       return;
     }
     onext = next;
-    next = *((LispPTR *)NativeAligned4FromLAddr(next));
+    next = *(NativeAligned4FromLAddr(next));
     next &= POINTERMASK;
   }
 }

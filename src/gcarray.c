@@ -125,7 +125,7 @@ LispPTR aref1(LispPTR array, int index) {
     retval |= S_POSITIVE;
     break;
   case 38: /* pointer 32 bits */
-    retval = (*(((LispPTR *)NativeAligned4FromLAddr(base)) + index));
+    retval = (*((NativeAligned4FromLAddr(base)) + index));
     break;
   default: error("Not Implemented in gc's aref1 (other types)");
   }
@@ -301,7 +301,7 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 LispPTR with_symbol(LispPTR char_base, LispPTR offset, LispPTR charlen, LispPTR fatp,
                     LispPTR hashtbl, LispPTR result) {
   char *charbase68k = (char *)NativeAligned2FromLAddr(char_base);
-  LispPTR *resultptr = (LispPTR *)NativeAligned4FromLAddr(result);
+  LispPTR *resultptr = NativeAligned4FromLAddr(result);
   DLword chars = charlen & 0xFFFF; /* charlen must be a SMALLP! */
   DLword offst = offset & 0xFFFF;
   int symbol; /* Where the symbol goes pro tem */

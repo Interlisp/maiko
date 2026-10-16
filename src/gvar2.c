@@ -42,7 +42,7 @@ LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
 
 #ifdef BIGATOMS
   if (0 != (atom_index & SEGMASK))
-    pslot = (LispPTR *)NativeAligned4FromLAddr(atom_index + NEWATOM_VALUE_OFFSET);
+    pslot = NativeAligned4FromLAddr(atom_index + NEWATOM_VALUE_OFFSET);
   else
 #endif /* BIGATOMS */
 

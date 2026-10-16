@@ -460,14 +460,14 @@ int sf(struct frameex1 *fx_addr68k) {
         printf("[fvar  ");
         print_atomname(get_fvar_name(fx_addr68k, i));
         printf("  on stack]  ");
-        print(*(LispPTR *)NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
+        print(*NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
         putchar('\n');
         BT_morep;
       } else {
         printf("[fvar  ");
         print_atomname(get_fvar_name(fx_addr68k, i));
         printf("  top value ]   ");
-        print(*(LispPTR *)NativeAligned4FromLAddr(((int)(0xFFF & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
+        print(*NativeAligned4FromLAddr(((int)(0xFFF & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
         putchar('\n');
         BT_morep;
       }
@@ -531,14 +531,14 @@ int sf(struct frameex1 *fx_addr68k) {
       printf("[fvar  ");
       print_atomname(get_fvar_name(fx_addr68k, i));
       printf("  on stack]  ");
-      print(*(LispPTR *)NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
+      print(*NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
       putchar('\n');
       BT_morep;
     } else {
       printf("[fvar  ");
       print_atomname(get_fvar_name(fx_addr68k, i));
       printf("  top value ]   ");
-      print(*(LispPTR *)NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
+      print(*NativeAligned4FromLAddr(((int)(0x0F & GETWORD(ptrlo)) << 16) | GETWORD(ptrhi)));
       putchar('\n');
       BT_morep;
     }
