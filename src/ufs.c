@@ -156,19 +156,20 @@ exit_host_filesystem(void) {
  * can open the file with the specified mode or not.
  */
 
-LispPTR UFS_getfilename(LispPTR *args)
-{
+LispPTR UFS_getfilename(LispPTR *args) {
   char *base;
   size_t len;
   int rval;
   char lfname[MAXPATHLEN], file[MAXPATHLEN];
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[3]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[3]);
 
   LispStringLength(args[0], len, rval);
   len += 1; /* Add 1 for terminating NULL char. */
-  if (len > MAXPATHLEN) FileNameTooLong(NIL);
+  if (len > MAXPATHLEN) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 /*
@@ -192,7 +193,7 @@ LispPTR UFS_getfilename(LispPTR *args)
       TIMEOUT(rval = access(file, F_OK));
       if (rval == -1) {
         *Lisp_errno = errno;
-        return (NIL);
+        return NIL;
       }
       break;
 
@@ -211,7 +212,9 @@ LispPTR UFS_getfilename(LispPTR *args)
    * Now, we convert a file name back to Lisp format.  The version field have not
    * to be converted.  The fourth argument for lisppathname specifies it.
    */
-  if (lisppathname(file, lfname, sizeof(lfname), 0, 0) == 0) return (NIL);
+  if (lisppathname(file, lfname, sizeof(lfname), 0, 0) == 0) {
+    return (NIL);
+  }
 
   STRING_BASE(args[2], base);
   len = strlen(lfname);
@@ -222,7 +225,7 @@ LispPTR UFS_getfilename(LispPTR *args)
   MemCpyToLispFromNative(base, lfname, len);
 #endif /* BYTESWAP */
 
-  return (GetSmallp(len));
+  return GetSmallp(len);
 }
 
 /*
@@ -244,14 +247,13 @@ LispPTR UFS_getfilename(LispPTR *args)
  * a specified file.
  */
 
-LispPTR UFS_deletefile(LispPTR *args)
-{
+LispPTR UFS_deletefile(LispPTR *args) {
   char file[MAXPATHLEN], fbuf[MAXPATHLEN];
   struct stat sbuf;
   int len, rval;
 
   ERRSETJMP(NIL);
-  Lisp_errno = (int *)(NativeAligned4FromLAddr(args[1]));
+  Lisp_errno = (int *)NativeAligned4FromLAddr(args[1]);
 
   LispStringLength(args[0], len, rval);
   len += 1;
@@ -262,13 +264,15 @@ LispPTR UFS_deletefile(LispPTR *args)
 #ifdef DOS
   if (unixpathname(fbuf, file, sizeof(file), 0, 0, 0, 0, 0) == 0) return (NIL);
 #else
-  if (unixpathname(fbuf, file, sizeof(file), 0, 0) == 0) return (NIL);
+  if (unixpathname(fbuf, file, sizeof(file), 0, 0) == 0) {
+    return (NIL);
+  }
 #endif /* DOS */
   /* check if we're operating on directory or file */
   TIMEOUT(rval = stat(file, &sbuf));
   if (rval == -1) {
     *Lisp_errno = errno;
-    return (NIL);
+    return NIL;
   }
   /*
    * On UNIX device, all we have to do is just to unlink the file
@@ -281,7 +285,7 @@ LispPTR UFS_deletefile(LispPTR *args)
   }
   if (rval == -1) {
     *Lisp_errno = errno;
-    return (NIL);
+    return NIL;
   }
 
   return (ATOM_T);
@@ -310,8 +314,7 @@ LispPTR UFS_deletefile(LispPTR *args)
  * a specified file.
  */
 
-LispPTR UFS_renamefile(LispPTR *args)
-{
+LispPTR UFS_renamefile(LispPTR *args) {
   char fbuf[MAXPATHLEN], src[MAXPATHLEN], dst[MAXPATHLEN];
   int rval, len;
 
@@ -380,8 +383,7 @@ LispPTR UFS_renamefile(LispPTR *args)
  * the directory name representation.
  */
 
-LispPTR UFS_directorynamep(LispPTR *args)
-{
+LispPTR UFS_directorynamep(LispPTR *args) {
   char dirname[MAXPATHLEN];
   char fullname[MAXPATHLEN];
   size_t len;
@@ -447,32 +449,37 @@ LispPTR UFS_directorynamep(LispPTR *args)
  */
 
 void UnixVersionToLispVersion(char *pathname, size_t pathsize, int vlessp) {
-    char *ep = &pathname[strlen(pathname) - 1];
-    char *uvp;
+  char *ep = &pathname[strlen(pathname) - 1];
+  char *uvp;
 
 #ifdef IFSVERSION
-    if (isdigit(*ep)) goto maybeifsversion;       /* possibly foo!## */
+  if (isdigit(*ep)) goto maybeifsversion; /* possibly foo!## */
 #endif
-    if (*ep-- != '~') goto noversion;             /* definitely not .~###~ */
-    if (!isdigit(*ep)) goto noversion;            /* requires at least one digit */
-    while (isdigit(*ep)) ep--;                    /* consume all digits */
-    if (*ep-- != '~') goto noversion;             /* definitely not .~###~ */
-    if (*ep != '.') goto noversion;
-    /* must end .~###~ and ep points at the dot */
-    *ep++ = ';';  /* smash . to ; and point to ~  where version will go*/
-    for (uvp = ep + 1; *uvp == '0' && *(uvp + 1) != '~'; uvp++); /* skip leading zeroes */
-    while (*uvp != '~') *ep++ = *uvp++;           /* shift version back */
-    *ep = '\0';                                   /* terminate the string */
-    return;
- noversion:
-    if (!vlessp) strlcat(pathname, ";1", pathsize);
-    return;
+  if (*ep-- != '~') goto noversion;  /* definitely not .~###~ */
+  if (!isdigit(*ep)) goto noversion; /* requires at least one digit */
+  while (isdigit(*ep)) ep--;         /* consume all digits */
+  if (*ep-- != '~') goto noversion;  /* definitely not .~###~ */
+  if (*ep != '.') goto noversion;
+  /* must end .~###~ and ep points at the dot */
+  *ep++ = ';'; /* smash . to ; and point to ~  where version will go*/
+  for (uvp = ep + 1; *uvp == '0' && *(uvp + 1) != '~'; uvp++) { /* skip leading zeroes */
+  }
+  while (*uvp != '~') {
+    *ep++ = *uvp++; /* shift version back */
+  }
+  *ep = '\0'; /* terminate the string */
+  return;
+noversion:
+  if (!vlessp) {
+    strlcat(pathname, ";1", pathsize);
+  }
 #ifdef IFSVERSION
- maybeifsversion:
-    while (isdigit(*ep)) ep--;                     /* consume all digits */
-    if (*ep != '!') goto noversion;
-    *ep = ';';
-    return;
+  return;
+maybeifsversion:
+  while (isdigit(*ep)) ep--; /* consume all digits */
+  if (*ep != '!') goto noversion;
+  *ep = ';';
+  return;
 #endif
 }
 
@@ -491,31 +498,30 @@ void UnixVersionToLispVersion(char *pathname, size_t pathsize, int vlessp) {
  *
  */
 void LispVersionToUnixVersion(char *pathname, size_t pathsize) {
-    char version[VERSIONLEN] = {0};
-    char *vp = NULL;
-    char *ep = &pathname[strlen(pathname) - 1];   /* from the end */
-    while (ep >= pathname) {                      /* until the beginning */
-        if (*ep == ';' &&                           /* found a semicolon */
-            (ep == pathname || *(ep - 1) != '\'')) {/* at the beginning or not quoted */
-            vp = ep;                                  /* version starts at unquoted semicolon */
-            break;                                    /* stop when found version */
-        }
-        ep--;                                       /* previous character */
+  char version[VERSIONLEN] = {0};
+  char *vp = NULL;
+  char *ep = &pathname[strlen(pathname) - 1];    /* from the end */
+  while (ep >= pathname) {                       /* until the beginning */
+    if (*ep == ';' &&                            /* found a semicolon */
+        (ep == pathname || *(ep - 1) != '\'')) { /* at the beginning or not quoted */
+      vp = ep;                                   /* version starts at unquoted semicolon */
+      break;                                     /* stop when found version */
     }
+    ep--; /* previous character */
+  }
 
-    if (vp == NULL) return;                       /* there was no version field */
+  if (vp == NULL) return; /* there was no version field */
 
-    *vp++ = '\0';                                 /* end name at the semicolon */
-    if (*vp == '\0') return;                      /* empty version field */
+  *vp++ = '\0';            /* end name at the semicolon */
+  if (*vp == '\0') return; /* empty version field */
 
-    while (*vp == '0') vp++;                      /* skip leading zeros */
-    if (*vp == '\0') return;                      /* all zero version is no version */
-    version[0] = '.';                             /* leading version marker */
-    version[1] = '~';                             /* leading version marker */
-    strlcat(version, vp, VERSIONLEN);             /* the trimmed version from the source */
-    strlcat(version, "~", VERSIONLEN);            /* trailing version marker */
-    strlcat(pathname, version, pathsize);         /* concatenate version to pathname */
-    return;
+  while (*vp == '0') vp++;              /* skip leading zeros */
+  if (*vp == '\0') return;              /* all zero version is no version */
+  version[0] = '.';                     /* leading version marker */
+  version[1] = '~';                     /* leading version marker */
+  strlcat(version, vp, VERSIONLEN);     /* the trimmed version from the source */
+  strlcat(version, "~", VERSIONLEN);    /* trailing version marker */
+  strlcat(pathname, version, pathsize); /* concatenate version to pathname */
 }
 
 /*
@@ -554,7 +560,8 @@ void LispVersionToUnixVersion(char *pathname, size_t pathsize) {
  *
  */
 #ifdef DOS
-int unixpathname(char *src, char *dst, int dstlen, int versionp, int genp, char *drive, int *extlenptr, char *rawname)
+int unixpathname(char *src, char *dst, int dstlen, int versionp, int genp, char *drive,
+                 int *extlenptr, char *rawname)
 #else
 int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
 #endif /* DOS */
@@ -599,7 +606,10 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
  * in the course of the following conversion.
  */
 #ifdef DOS
-  if (versionp) LispVersionToUnixVersion(lfname, version); else version = -1;
+  if (versionp)
+    LispVersionToUnixVersion(lfname, version);
+  else
+    version = -1;
 #else
   if (versionp) LispVersionToUnixVersion(lfname, sizeof(lfname));
 #endif /* DOS */
@@ -965,8 +975,7 @@ int unixpathname(char *src, char *dst, size_t dstlen, int versionp, int genp)
  *
  */
 
-int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, int versionp)
-{
+int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, int versionp) {
   char *cp, *dp, *lnamep, *cnamep;
   char namebuf[MAXPATHLEN], fbuf[MAXPATHLEN], ver[VERSIONLEN];
   int i, mask, extensionp;
@@ -983,7 +992,7 @@ int lisppathname(char *fullname, char *lispname, size_t lispnamesize, int dirp, 
     *lispname++ = *fullname++;
   }
 #endif
-  
+
   if (!dirp) {
     /*
      * The characters which are dealt with specially (i.e. are quoted)
