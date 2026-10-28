@@ -30,10 +30,10 @@ N_OP_bind(stack_pointer, tos, n1, n2)
 ***************************************************/
 
 LispPTR *N_OP_bind(LispPTR *stack_pointer, LispPTR tos, unsigned byte1, unsigned byte2) {
-  unsigned n1;         /* # slots to bind to NIL (0, 0) */
-  unsigned n2;         /* # slots to bind to value in stack */
+  unsigned n1;    /* # slots to bind to NIL (0, 0) */
+  unsigned n2;    /* # slots to bind to value in stack */
   LispPTR *ppvar; /* pointer to argued slot in Pvar area */
-  unsigned i;          /* temporary for control */
+  unsigned i;     /* temporary for control */
 
 #ifdef TRACE
   printPC();
@@ -44,13 +44,17 @@ LispPTR *N_OP_bind(LispPTR *stack_pointer, LispPTR tos, unsigned byte1, unsigned
   n2 = byte1 & 0xf;
   ppvar = (LispPTR *)PVar + 1 + byte2;
 
-  for (i = 0; i < n1; i++) { *--ppvar = NIL_PTR; }
+  for (i = 0; i < n1; i++) {
+    *--ppvar = NIL_PTR;
+  }
 
   if (n2 == 0) {
     *stack_pointer++ = tos; /* push TopOfStack to Evaluation stack */
   } else {
     *--ppvar = tos; /* bind to TopOfStack */
-    for (i = 1; i < n2; i++) { *--ppvar = *(--stack_pointer); }
+    for (i = 1; i < n2; i++) {
+      *--ppvar = *(--stack_pointer);
+    }
   }
 
   i = ~(n1 + n2); /* x: 1's complement of number of bind slots */
@@ -72,7 +76,6 @@ LispPTR N_OP_unbind(stackpointer)
 LispPTR *N_OP_unbind(LispPTR *stack_pointer) {
   DLword num;     /* number of unbind sot */
   LispPTR *ppvar; /* pointer to last PVAR slot. */
-  DLword i;       /* temporary for control */
   LispPTR value;
 
 #ifdef TRACE
@@ -81,14 +84,17 @@ LispPTR *N_OP_unbind(LispPTR *stack_pointer) {
 #endif
 
   /* now, stack_pointer points the latter part in slot */
-  while (!(*--stack_pointer & 0x80000000)); /* scan (until MSB == 1) */
+  while (!(*--stack_pointer & 0x80000000)) { /* scan (until MSB == 1) */
+  }
 
   value = *stack_pointer;
   num = (DLword) ~(value >> 16);
   ppvar = (LispPTR *)(PVar + 2 + GetLoWord(value));
   value = 0xffffffff;
-  for (i = 0; i < num; i++) { *--ppvar = value; }
-  return (stack_pointer);
+  for (DLword i = 0; i < num; i++) {
+    *--ppvar = value;
+  }
+  return stack_pointer;
 }
 
 /**************************************************
@@ -106,9 +112,8 @@ N_OP_dunbind
 ***************************************************/
 
 LispPTR *N_OP_dunbind(LispPTR *stack_pointer, LispPTR tos) {
-  DLword num;     /* number of unbind sot */
+  DLword num;     /* number of unbind slot */
   LispPTR *ppvar; /* pointer to last PVAR slot. */
-  DLword i;       /* temporary for control */
   LispPTR value;
 
 #ifdef TRACE
@@ -124,18 +129,22 @@ LispPTR *N_OP_dunbind(LispPTR *stack_pointer, LispPTR tos) {
     value = 0xffffffff;
     if (num != 0) {
       ppvar = (LispPTR *)(PVar + 2 + GetLoWord(tos));
-      for (i = 0; i < num; ++i) { *--ppvar = value; }
+      for (DLword i = 0; i < num; ++i) {
+        *--ppvar = value;
+      }
     }
   } else {
     /* tos is bound */
     /* now, stack_pointer points the latter part in slot */
-    while (!((*--stack_pointer) & 0x80000000));/* scan (until MSB == 1) */
+    while (!((*--stack_pointer) & 0x80000000)); /* scan (until MSB == 1) */
 
     value = *stack_pointer;
     num = ~(GetHiWord(value));
     ppvar = (LispPTR *)(PVar + 2 + GetLoWord(value));
     value = 0xffffffff;
-    for (i = 0; i < num; i++) { *--ppvar = value; }
+    for (DLword i = 0; i < num; i++) {
+      *--ppvar = value;
+    }
   }
 
   return (stack_pointer);
