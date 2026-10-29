@@ -32,10 +32,10 @@
 #define LLSH(datum, n)			((datum) << (n))
 #define LRSH(datum, n)			((datum) >> (n))
 
-#define HILOC(ptr)			(LRSH(((unsigned int)(ptr) & SEGMASK),16))
+#define HILOC(ptr)			(LRSH(((unsigned int)(ptr) & SEGMASK),16U))
 #define LOLOC(ptr)			((unsigned int)(ptr) & 0x0ffffU)
 
-#define VAG2(hi,lo)			(LispPTR)(LLSH((hi),16) | (lo))
+#define VAG2(hi,lo)			(LispPTR)(LLSH((hi),16U) | (lo))
 
 
 /* NOTE: argument off must be WORD offset */
