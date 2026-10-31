@@ -1762,11 +1762,11 @@ void tedit_bltchar(LispPTR *args)
 #endif
 
   displaydata68k = (DISPLAYDATA *)NativeAligned4FromLAddr(((TBLTARG *)args)->displaydata);
-  if (displaydata68k->ddcharset != ((TBLTARG *)args)->charset) {
+  if ((displaydata68k->ddcharset & 0xFFFFU) != ((TBLTARG *)args)->charset) {
     /**if(changecharset_display(displaydata68k, ((TBLTARG *)args)->charset)== -1)**/
     { PUNT_TO_TEDIT_BLTCHAR; }
   }
-  imagewidth = *((DLword *)NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
+  imagewidth = GETWORD(NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((TBLTARG *)args)->char8code));
   newx = ((TBLTARG *)args)->current_x + imagewidth;
   dx = ((TBLTARG *)args)->current_x;
   right = IMIN(newx, ((TBLTARG *)args)->clipright);
