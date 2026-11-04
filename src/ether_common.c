@@ -10,13 +10,14 @@
 #include "version.h"
 
 #include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-
-#include "lsptypes.h"
-#include "lspglob.h"
-#include "adr68k.h"
-#include "etherdefs.h"
+#include <string.h>     // for memcmp, NULL
+#include <sys/types.h>  // for u_char
+#include "adr68k.h"     // for NativeAligned2FromLAddr
+#include "etherdefs.h"  // for check_sum, ether_addr_equal, init_ifpage_ether
+#include "lispemul.h"   // for DLword, LispPTR, NIL
+#include "lispmap.h"    // for S_POSITIVE
+#include "lspglob.h"    // for InterfacePage
+#include "lsptypes.h"   // for GETWORD
 
 /*
  * global variables exported to ether_*.c and possibly others

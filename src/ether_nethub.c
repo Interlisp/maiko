@@ -11,11 +11,14 @@
 
 #include "version.h"
 
+#include <stdint.h>
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/select.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <arpa/inet.h>
 #include <poll.h>
 #include <signal.h>

@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) { return (0); }
 
 #if defined(USE_DLPI)
 #include <sys/stream.h>
-#include <sys/stropts.h>
+#include <stropts.h>
 #include <sys/pfmod.h>
 #include "dlpidefs.h"
 

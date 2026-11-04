@@ -37,6 +37,10 @@
 #endif               /* USE_DLPI */
 #endif               /* MAIKO_ENABLE_ETHERNET */
 
+#if defined(XWINDOW)
+#include <X11/Xlib.h>      // for ConnectionNumber
+#endif
+
 #include "emlglob.h"
 #include "adr68k.h"
 #include "stack.h"

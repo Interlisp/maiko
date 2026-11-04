@@ -57,6 +57,7 @@
 #include <sys/param.h>
 #include <sys/stropts.h>
 #include <sys/stream.h>
+#include <sys/types.h>
 #include <sys/dlpi.h>
 #ifdef OS5
 #include <sys/bufmod.h>
@@ -69,6 +70,7 @@
 #include <sys/sockio.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
+#include <sys/types.h>
 #include <net/if.h>
 #include <signal.h>
 #include <string.h>
