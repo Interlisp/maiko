@@ -17,16 +17,17 @@ ENDIF()
 
 find_program(
     CLANG_TIDY_EXE
-    NAMES "clang-tidy" "clang-tidy16" "clang-tidy15" "clang-tidy14" "clang-tidy13" "clang-tidy12" "clang-tidy11" "clang-tidy10"
+    NAMES "clang-tidy" "clang-tidy24" "clang-tidy23" "clang-tidy22" "clang-tidy21" "clang-tidy20" "clang-tidy19" "clang-tidy18" "clang-tidy17" "clang-tidy16" "clang-tidy15"
     DOC "Path to clang-tidy executable"
 )
 
-IF (CLANG_TIDY_EXE)
-   IF (NOT CMAKE_CROSSCOMPILING)
 # There are many many warnings for strcpy instances to deal with,
 # but suppress it for now so that other issues are more obvious
-#
-        SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} -checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero -header-filter=.*)
+SET(MAIKO_CLANG_TIDY_CHECKS --checks=-*,cert-*,clang-analyzer-security.*,-clang-analyzer-security.insecureAPI.strcpy,-clang-analyzer-security.insecureAPI.bzero --header-filter=^inc/.*)
+
+IF (CLANG_TIDY_EXE)
+   IF (NOT CMAKE_CROSSCOMPILING)
+      SET(CMAKE_C_CLANG_TIDY ${CLANG_TIDY_EXE} ${MAIKO_CLANG_TIDY_CHECKS})
    ENDIF()
 ENDIF()
 
