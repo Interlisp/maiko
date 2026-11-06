@@ -301,7 +301,7 @@ int fork_Unix(void) {
 
         if (slot < 0) {
           printf("Can't get process slot for PTY shell.\n");
-          fflush(stdout);
+          (void)fflush(stdout);
           IOBuf[3] = 0;
           break;
         }
@@ -339,7 +339,7 @@ int fork_Unix(void) {
 
         if (pid == -1) {
           printf("Impossible failure from ForkUnixShell??\n");
-          fflush(stdout);
+          (void)fflush(stdout);
           IOBuf[3] = 0;
         } else {
           /* ForkUnixShell sets the pid and standard in/out variables */
@@ -384,7 +384,7 @@ int fork_Unix(void) {
           if (status < 0) {
             perror("slave connect");
             printf("Name = %s.\n", PipeName);
-            fflush(stdout);
+            (void)fflush(stdout);
             exit(1);
           }
           DBPRINT(("Slave connected on %s.\n", PipeName));

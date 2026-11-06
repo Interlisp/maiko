@@ -43,8 +43,8 @@ void DSP_dspbout(LispPTR *args) /* args[0] :	charcode	*/
 {
   int charcode = (args[0] & 0x7F);
   /* Interlisp-D uses CR as EOL which isn't useful here */
-  putc((charcode == '\r') ? '\n' : charcode, BCPLDISPLAY);
-  fflush(BCPLDISPLAY);
+  (void)putc((charcode == '\r') ? '\n' : charcode, BCPLDISPLAY);
+  (void)fflush(BCPLDISPLAY);
 }
 
 /****************************************************

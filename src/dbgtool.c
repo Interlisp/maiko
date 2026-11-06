@@ -69,7 +69,7 @@ jmp_buf BT_jumpbuf;
     if ((BT_temp != '!') && (++BT_lines > BTMAXLINE)) {         \
       printf("Press Return(Esc & Ret to quit, ! don't stop):"); \
       BT_temp = getch();                                        \
-      fflush(stdin);                                            \
+      (void)fflush(stdin);                                      \
       BT_lines = 0;                                             \
       if (BT_temp == 27) longjmp(BT_jumpbuf, 1);                \
     }                                                           \
@@ -81,7 +81,7 @@ jmp_buf BT_jumpbuf;
     if (++BT_lines > BTMAXLINE) {                   \
       printf("Press Return(to quit Esc and Ret):"); \
       BT_temp = getchar();                          \
-      fflush(stdin);                                \
+      (void)fflush(stdin);                          \
       BT_lines = 0;                                 \
       if (BT_temp == 27) longjmp(BT_jumpbuf, 1);    \
     }                                               \
@@ -597,7 +597,7 @@ void bt1(FX *startFX) {
       {
         int c;
         c = getchar();
-        fflush(stdin);
+        (void)fflush(stdin);
         if ((c == 'Y') || (c == 'y')) {
           fnum = 0;
           memset(URaid_FXarray, 0, URMAXFXNUM * 4);

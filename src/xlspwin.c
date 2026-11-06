@@ -108,7 +108,7 @@ void Create_LispWindow(DspInterface dsp)
   if (foregroundColorName[0]) {
     status = XAllocNamedColor(dsp->display_id, Colors, foregroundColorName, &foregroundColor_xcsd, &foregroundColor_xcsd);
     if (status == 0) {
-      fprintf(stderr, "Color allocation failed for foreground color: %s\n", foregroundColorName);
+      (void)fprintf(stderr, "Color allocation failed for foreground color: %s\n", foregroundColorName);
       exit(1);
     }
     foregroundPixel = foregroundColor_xcsd.pixel;
@@ -116,7 +116,7 @@ void Create_LispWindow(DspInterface dsp)
   if (backgroundColorName[0]) {
     status = XAllocNamedColor(dsp->display_id, Colors, backgroundColorName, &backgroundColor_xcsd, &backgroundColor_xcsd);
     if (status == 0) {
-      fprintf(stderr, "Color allocation failed for background color: %s\n", backgroundColorName);
+      (void)fprintf(stderr, "Color allocation failed for background color: %s\n", backgroundColorName);
       exit(1);
     }
     backgroundPixel = backgroundColor_xcsd.pixel;

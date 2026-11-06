@@ -778,7 +778,7 @@ LispPTR uraid_commands(void) {
           return (NIL);
         }
       }
-      fflush(stdin);
+      (void)fflush(stdin);
       URaid_currentFX = URMAXFXNUM + 1;
       return (T);
     /* break; */
@@ -791,11 +791,11 @@ LispPTR uraid_commands(void) {
           /*PC+= 3; for currentfx->pc ajust:MOve to subr */
           contextsw(ResetFXP, 2, 0);
           /*PC -= 3;  in subr.c it increments by 3 */
-          fflush(stdin);
+          (void)fflush(stdin);
           return (NIL); /* return to dispatch */
         }
       }
-      fflush(stdin);
+      (void)fflush(stdin);
       break;
     case 'e': /* exit to UNIX */
 #ifdef DOS
@@ -808,7 +808,7 @@ LispPTR uraid_commands(void) {
         c = getchar();
         if ((c == 'Y') || (c == 'y')) exit(0);
       }
-      fflush(stdin);
+      (void)fflush(stdin);
       URaid_currentFX = URMAXFXNUM + 1;
       break;
     case 's': /* SHELL */

@@ -115,5 +115,5 @@ void describedsp(DspInterface dsp) {
   printf("mouse_invisible= %d\n", dsp->mouse_invisible);
   printf("\n");
 #endif /* DOS */
-  fflush(stdout);
+  (void)fflush(stdout);
 }

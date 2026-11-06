@@ -793,7 +793,7 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
       break;
     default: putchar('\n');
   }
-  fflush(stdout); /* Make sure each line is really printed as we go. */
+  (void) fflush(stdout); /* Make sure each line is really printed as we go. */
   return (len);
 }
 
@@ -1070,7 +1070,7 @@ jmp_buf SD_jumpbuf;
       int temp;                                        \
       printf("\nPress Return:(to quit Esc and Ret):"); \
       temp = getchar();                                \
-      fflush(stdin);                                   \
+      (void)fflush(stdin);                             \
       sdlines = 0;                                     \
       if (temp == 27) longjmp(SD_jumpbuf, 1);          \
     }                                                  \
@@ -1288,12 +1288,12 @@ void Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos) {
   }
   if (numargs) prindatum(arg1);
   printf(").\n");
-  fflush(stdout);
+  (void)fflush(stdout);
 }
 
 void Trace_APPLY(int atomindex) {
   printf("APPLYing an atom:  ");
   print_atomname(atomindex);
   printf(".\n");
-  fflush(stdout);
+  (void)fflush(stdout);
 }

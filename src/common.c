@@ -70,12 +70,12 @@ int error(const char *msg) {
   /* comm read */
   URaid_errmess = msg;
   (void)fprintf(stderr, "\n*Error* %s\n", msg);
-  fflush(stdin);
+  (void)fflush(stdin);
   (void)fprintf(stderr, "Enter the URaid\n");
   print(Uraid_mess);
   putchar('\n');
   /* XXX: make sure output is flushed so we can see where we are */
-  fflush(stdout); fflush(stderr);
+  (void)fflush(stdout); (void)fflush(stderr);
   URaid_currentFX = URMAXFXNUM + 1;
   memset(URaid_FXarray, 0, URMAXFXNUM * 4);
 #ifndef DOS
@@ -101,7 +101,7 @@ uraidloop:
 
     if (uraid_commands() == NIL) break;
     /* XXX: make sure output is flushed so we can see where we are */
-    fflush(stdout); fflush(stderr);
+    (void)fflush(stdout); (void)fflush(stderr);
   } /* for end */
 
   /**TopOfStack = NIL;if error is called from subr TOS will be set NIL**/
@@ -112,7 +112,7 @@ uraidloop:
       c = getchar();
       if ((c == 'Y') || (c == 'y')) exit(-1);
     }
-    fflush(stdin);
+    (void)fflush(stdin);
     goto uraidloop;
   }
   return (0);

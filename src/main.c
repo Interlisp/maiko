@@ -694,7 +694,7 @@ int main(int argc, char *argv[])
   }
   if ((sysout_name[0] == '\0') || (access(sysout_name, R_OK))) {
     perror("Couldn't find a sysout to run");
-    fprintf(stderr, "Looking for: %s\n", sysout_name);
+    (void)fprintf(stderr, "Looking for: %s\n", sysout_name);
     (void)fprintf(stderr, "%s%s", helpstring, nethubHelpstring);
     exit(1);
   }

@@ -574,7 +574,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       DBPRINT(("Fork Shell; Master PTY = %d. Slave=%c%c.\n", Master, SlavePTY[0], SlavePTY[1]));
       if (Master < 0) {
         printf("Open of lisp side of PTY failed.\n");
-        fflush(stdout);
+        (void)fflush(stdout);
         return (NIL);
       }
 
@@ -612,7 +612,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         return (GetSmallp(Master));
       } else {
         printf("Fork failed.\n");
-        fflush(stdout);
+        (void)fflush(stdout);
         printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
         close(Master);
         return (NIL);
