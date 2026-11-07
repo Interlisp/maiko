@@ -164,10 +164,10 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 
   if (backward) y -= h;
 
-  if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL))
+  if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL)) {
     return (T);
-  else
-    return (NIL);
+  }
+  return (NIL);
 }
 #else
 
@@ -211,9 +211,8 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     if ((x < MOUSEXR) && ((x + (w >> 3)) > MOUSEXL) && (y < MOUSEYH) &&
         (y + h > MOUSEYL)) { /* printf("cursorin T\n"); */
       return (T);
-    } else
-      return (NIL);
-
+    }
+    return (NIL);
   } /* on COLOR screen */
 }
 #endif /* COLOR */

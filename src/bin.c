@@ -47,6 +47,6 @@ LispPTR N_OP_bin(LispPTR tos) {
 
     /* get BYTE data and set it to TOS */
     return (S_POSITIVE | (Get_BYTE(buff68k + (stream68k->COFFSET)++)));
-  } else
-    ERROR_EXIT(tos);
+  }
+  ERROR_EXIT(tos);
 }
