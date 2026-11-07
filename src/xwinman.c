@@ -53,12 +53,13 @@ extern u_char *SUNLispKeyMap;
 /* ubound: return (unsigned) value if it is between lower and upper otherwise lower or upper */
 static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
 {
-  if (value <= lower)
-    return (lower);
-  else if (value >= upper)
-    return (upper);
-  else
-    return (value);
+  if (value <= lower) {
+    return lower;
+  }
+  if (value >= upper) {
+    return upper;
+  }
+  return value;
 }
 
 void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)

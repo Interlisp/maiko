@@ -21,12 +21,13 @@ int ScrollPitch = SCROLL_PITCH;
 /* sbound: return (signed) value if it is between lower and upper otherwise lower or upper */
 static inline int sbound(int lower, int value, int upper)
 {
-  if (value <= lower)
-    return (lower);
-  else if (value >= upper)
-    return (upper);
-  else
-    return (value);
+  if (value <= lower) {
+    return lower;
+  }
+  if (value >= upper) {
+    return upper;
+  }
+  return value;
 }
 
 /* Move the DisplayWindow and the ScrollButtons to a new */
