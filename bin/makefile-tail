@@ -1008,6 +1008,9 @@ $(OBJECTDIR)xwinman.o: $(SRCDIR)xwinman.c $(REQUIRED-INCS) \
 $(OBJECTDIR)sdl.o: $(SRCDIR)sdl.c $(REQUIRED-INCS)
 	$(CC) $(RFLAGS) $(SRCDIR)sdl.c -o $(OBJECTDIR)sdl.o
 
+$(OBJECTDIR)sdl3.o: $(SRCDIR)sdl3.c $(REQUIRED-INCS)
+	$(CC) $(RFLAGS) $(SRCDIR)sdl3.c -o $(OBJECTDIR)sdl3.o
+
 $(OBJECTDIR)foreign.o: $(SRCDIR)foreign.c $(REQUIRED-INCS) \
 	$(INCDIR)/foreigndefs.h
 	$(CC) $(RFLAGS) $(SRCDIR)foreign.c -o $(OBJECTDIR)foreign.o
