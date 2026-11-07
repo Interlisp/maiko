@@ -54,31 +54,23 @@
 LispPTR car(LispPTR datum)
 /* datum must be LISP pointer(word offset) */
 {
-  ConsCell *datum68k;
-  ConsCell *temp;
-
-  datum68k = (ConsCell *)(NativeAligned4FromLAddr(datum));
+  if (datum == NIL_PTR || datum == ATOM_T) {
+    return datum;
+  }
   if (Listp(datum)) {
+    ConsCell *datum68k = (ConsCell *)(NativeAligned4FromLAddr(datum));
     if (datum68k->cdr_code == CDR_INDIRECT) {
-      temp = (ConsCell *)NativeAligned4FromLAddr(datum68k->car_field);
-      return ((LispPTR)temp->car_field);
-    } else
-      return ((LispPTR)datum68k->car_field);
+      ConsCell *temp = (ConsCell *)NativeAligned4FromLAddr(datum68k->car_field);
+      return (LispPTR)temp->car_field;
+    }
+    return (LispPTR)datum68k->car_field;
   }
-
-  else if (datum == NIL_PTR)
-    return ((LispPTR)NIL_PTR);
-
-  else {
-    if (datum == ATOM_T) return (ATOM_T);
-
-    /** We assume CAR/CDRERR is CDR ***/
-    else if ((datum & SEGMASK) == 0) /* LITATOM */
-      return (NIL);
-    else
-      error("car : ARG not list");
-    return (NIL); /* NOT REACHED */
+  /** We assume CAR/CDRERR is CDR ***/
+  if ((datum & SEGMASK) == 0) { /* LITATOM */
+    return NIL_PTR;
   }
+  error("car : ARG not list");
+  return NIL_PTR; /* NOT REACHED */
 } /* end of car */
 
 /************************************************************************/
@@ -96,28 +88,37 @@ LispPTR cdr(LispPTR datum)
   DLword cdr_code;
   ConsCell *temp;
 
-  if (datum == NIL_PTR) return (NIL_PTR);
-  if (!Listp(datum)) error("cdr : ARG not list");
+  if (datum == NIL_PTR) {
+    return NIL_PTR;
+  }
+  if (!Listp(datum)) {
+    error("cdr : ARG not list");
+    return NIL_PTR;
+  }
 
-  datum68k = (ConsCell *)(NativeAligned4FromLAddr(datum));
+  datum68k = (ConsCell *)NativeAligned4FromLAddr(datum);
   cdr_code = datum68k->cdr_code;
 
-  if (cdr_code == CDR_NIL) return (NIL_PTR); /* cdr is nil */
-  if ((cdr_code & CDR_ONPAGE) != 0) /* cdr-samepage */
+  if (cdr_code == CDR_NIL) {
+    return NIL_PTR; /* cdr is nil */
+  }
+  if ((cdr_code & CDR_ONPAGE) != 0) {/* cdr-samepage */
 #ifdef NEWCDRCODING
-    return (datum + ((cdr_code & 7) << 1));
+    return datum + ((cdr_code & 7) << 1);
 #else
-    return (POINTER_PAGEBASE(datum) + ((cdr_code & 127) << 1));
+    return POINTER_PAGEBASE(datum) + ((cdr_code & 127) << 1);
 #endif                                 /* NEWCDRCODING */
-  if (cdr_code == CDR_INDIRECT) /* cdr_code > CDR_ONPAGE cdr-indirect */
-    return (cdr((LispPTR)(datum68k->car_field)));
+  }
+  if (cdr_code == CDR_INDIRECT) { /* cdr_code > CDR_ONPAGE cdr-indirect */
+    return cdr((LispPTR)(datum68k->car_field));
+  }
   /* cdr isn't a CONS, but is stored on this page. */
 #ifdef NEWCDRCODING
-  temp = (ConsCell *)(NativeAligned4FromLAddr(datum + (cdr_code << 1)));
+  temp = (ConsCell *)NativeAligned4FromLAddr(datum + (cdr_code << 1));
 #else
-  temp = (ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(datum) + (cdr_code << 1)));
+  temp = (ConsCell *)NativeAligned4FromLAddr(POINTER_PAGEBASE(datum) + (cdr_code << 1));
 #endif /* NEWCDRCODING */
-  return ((LispPTR)temp->car_field);
+  return (LispPTR)temp->car_field;
 } /* end of cdr */
 
 /**********************************************************************/
@@ -146,31 +147,31 @@ LispPTR rplaca(LispPTR x, LispPTR y)
   printf("TRACE: rplaca()\n");
 #endif
 
-  if (Listp(x) == NIL) { /* arg isn't a CONS cell, might be NIL */
-    if (x == NIL_PTR) {
-      if (y != NIL_PTR)
-        error("Attempt to RPLACA NIL");
-      else
-        return (NIL_PTR);
-    } else
-      error("ARG not List");
-      return (NIL_PTR); /* NOT REACHED */
+  /* fast cases before checking type */
+  if (x == NIL_PTR) {
+    if (y == NIL_PTR) {
+      return NIL_PTR;
+    }
+    error("Attempt to RPLACA NIL");
+    return (NIL_PTR);
+  }
+  if (!Listp(x)) { /* arg isn't a CONS cell */
+    error("ARG not List");
+    return (NIL_PTR); /* NOT REACHED */
   }
 
-  else {
-    x_68k = (ConsCell *)NativeAligned4FromLAddr(x);
+  x_68k = (ConsCell *)NativeAligned4FromLAddr(x);
 
-    GCLOOKUP(car(x), DELREF); /* set up reference count */
-    GCLOOKUP(y, ADDREF);
+  GCLOOKUP(car(x), DELREF); /* set up reference count */
+  GCLOOKUP(y, ADDREF);
 
-    if (x_68k->cdr_code == CDR_INDIRECT) {
-      temp = (ConsCell *)NativeAligned4FromLAddr((LispPTR)x_68k->car_field);
-      temp->car_field = y;
-    } else
-      x_68k->car_field = y;
-
-    return (x);
+  if (x_68k->cdr_code == CDR_INDIRECT) {
+    temp = (ConsCell *)NativeAligned4FromLAddr((LispPTR)x_68k->car_field);
+    temp->car_field = y;
+  } else {
+    x_68k->car_field = y;
   }
+  return x;
 } /* end of rplaca */
 
 /**********************************************************************/
@@ -205,115 +206,115 @@ LispPTR rplacd(LispPTR x, LispPTR y)
   DLword cdr_code;
   struct conspage *cons68k;
 
-  if (Listp(x) == NIL) {
-    if (x == NIL_PTR) {
-      if (y != NIL_PTR)
-        error("Attempt to RPLACD NIL");
-      else
-        return (NIL_PTR);
-    } else
+  /* fast cases before checking type */
+  if (x == NIL_PTR) {
+    if (y == NIL_PTR) {
+      return NIL_PTR;
+    }
+    error("Attempt to RPLACD NIL");
+    return NIL_PTR;
+  }
+  if (!Listp(x)) {
       error("ARG not List");
+      return NIL_PTR; 
   }
 
+  x_68k = (ConsCell *)NativeAligned4FromLAddr(x);
+
+  GCLOOKUP(cdr(x), DELREF); /* set up reference count */
+  GCLOOKUP(y, ADDREF);
+
+  cdr_code = x_68k->cdr_code;
+
+  if (cdr_code == CDR_INDIRECT) {
+    /* cdr-indirect */
+
+    rp_page = (LispPTR)x_68k->car_field;
+    temp68k = (ConsCell *)NativeAligned4FromLAddr(rp_page);
+#ifdef NEWCDRCODING
+    cdr_cell = (rp_page) + (temp68k->cdr_code << 1);
+#else
+    cdr_cell = POINTER_PAGEBASE(rp_page) + (temp68k->cdr_code << 1);
+#endif /* NEWCDRCODING */
+
+    cdr_cell68k = (ConsCell *)NativeAligned4FromLAddr(cdr_cell);
+    *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code is set to 0 */
+  } else if (cdr_code <= CDR_MAXINDIRECT) {
+    /* cdr-differentpage */
+#ifdef NEWCDRCODING
+    cdr_cell = x + (cdr_code << 1);
+#else
+    cdr_cell = POINTER_PAGEBASE(x) + (cdr_code << 1);
+#endif /* NEWCDRCODING */
+    cdr_cell68k = (ConsCell *)NativeAligned4FromLAddr(cdr_cell);
+    *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code is set to 0 */
+
+  } else if (y == NIL_PTR)
+    /* cdr-samepage & y is nil */
+    x_68k->cdr_code = CDR_NIL;
+#ifdef NEWCDRCODING
+  else if (((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y)) && (y > x) && (y <= (x + 14)))
+    /* cdr-samepage & x and y are on same page */
+    x_68k->cdr_code = CDR_ONPAGE + ((y - x) >> 1);
+#else
+  else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y))
+    /* cdr-samepage & x and y are on same page */
+    x_68k->cdr_code = CDR_ONPAGE + ((y & 0xff) >> 1);
+#endif /* NEWCDRCODING */
   else {
-    x_68k = (ConsCell *)NativeAligned4FromLAddr(x);
+    /* cdr-samepage & x and y are on different page */
 
-    GCLOOKUP(cdr(x), DELREF); /* set up reference count */
-    GCLOOKUP(y, ADDREF);
-
-    cdr_code = x_68k->cdr_code;
-
-    if (cdr_code == CDR_INDIRECT) {
-      /* cdr-indirect */
-
-      rp_page = (LispPTR)x_68k->car_field;
-      temp68k = (ConsCell *)NativeAligned4FromLAddr(rp_page);
+    cons68k = (struct conspage *)(NativeAligned4FromLAddr(rp_page));
 #ifdef NEWCDRCODING
-      cdr_cell = (rp_page) + (temp68k->cdr_code << 1);
-#else
-      cdr_cell = POINTER_PAGEBASE(rp_page) + (temp68k->cdr_code << 1);
-#endif /* NEWCDRCODING */
+    if ((cons68k->count > 0) && (cdr_cell68k = find_close_cell(cons68k, x))) {
+      /* at least one free-cell on x's conspage */
+      /* AND it's within CDR-code range of x. */
 
-      cdr_cell68k = (ConsCell *)NativeAligned4FromLAddr(cdr_cell);
-      *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code is set to 0 */
-    } else if (cdr_code <= CDR_MAXINDIRECT) {
-/* cdr-differentpage */
-#ifdef NEWCDRCODING
-      cdr_cell = x + (cdr_code << 1);
-#else
-      cdr_cell = POINTER_PAGEBASE(x) + (cdr_code << 1);
-#endif /* NEWCDRCODING */
-      cdr_cell68k = (ConsCell *)NativeAligned4FromLAddr(cdr_cell);
-      *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code is set to 0 */
+      *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
 
-    } else if (y == NIL_PTR)
-      /* cdr-samepage & y is nil */
-      x_68k->cdr_code = CDR_NIL;
-#ifdef NEWCDRCODING
-    else if (((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y)) && (y > x) && (y <= (x + 14)))
-      /* cdr-samepage & x and y are on same page */
-      x_68k->cdr_code = CDR_ONPAGE + ((y - x) >> 1);
+      x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - x) >> 1;
+    }
 #else
-    else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y))
-      /* cdr-samepage & x and y are on same page */
-      x_68k->cdr_code = CDR_ONPAGE + ((y & 0xff) >> 1);
+    if (cons68k->count > 0) {
+      /* at least one free-cell on x's conspage */
+      cdr_cell68k = GetNewCell_68k(cons68k);
+      cons68k->count--;
+      cons68k->next_cell = ((freecons *)cdr_cell68k)->next_free;
+
+      *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
+
+      x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - rp_page) >> 1;
+    }
 #endif /* NEWCDRCODING */
     else {
-      /* cdr-samepage & x and y are on different page */
-
-      cons68k = (struct conspage *)(NativeAligned4FromLAddr(rp_page));
+      /* no more free-cell on x's conspage */
 #ifdef NEWCDRCODING
-      if ((cons68k->count > 0) && (cdr_cell68k = find_close_cell(cons68k, x))) {
-        /* at least one free-cell on x's conspage */
-        /* AND it's within CDR-code range of x. */
-
-        *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
-
-        x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - x) >> 1;
-      }
+      temp68k = (ConsCell *)find_cdrable_pair(x, y);
+      temp68k->car_field = x_68k->car_field;
+      x_68k->car_field = LAddrFromNative(temp68k);
+      x_68k->cdr_code = CDR_INDIRECT;
 #else
-      if (cons68k->count > 0) {
-        /* at least one free-cell on x's conspage */
-        cdr_cell68k = GetNewCell_68k(cons68k);
-        cons68k->count--;
-        cons68k->next_cell = ((freecons *)cdr_cell68k)->next_free;
+      cons68k = next_conspage();
 
-        *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
+      cdr_cell68k = GetNewCell_68k(cons68k);
+      cons68k->next_cell = ((freecons *)cdr_cell68k)->next_free;
+      temp68k = GetNewCell_68k(cons68k);
+      cons68k->next_cell = ((freecons *)temp68k)->next_free;
 
-        x_68k->cdr_code = (LAddrFromNative(cdr_cell68k) - rp_page) >> 1;
-      }
+      cons68k->count -= 2;
+
+      *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
+
+      temp68k->car_field = x_68k->car_field;
+      x_68k->car_field = LAddrFromNative(temp68k);
+
+      temp68k->cdr_code = (LAddrFromNative(cdr_cell68k) & 0xff) >> 1;
+
+      x_68k->cdr_code = CDR_INDIRECT;
 #endif /* NEWCDRCODING */
-      else {
-/* no more free-cell on x's conspage */
-#ifdef NEWCDRCODING
-        temp68k = (ConsCell *)find_cdrable_pair(x, y);
-        temp68k->car_field = x_68k->car_field;
-        x_68k->car_field = LAddrFromNative(temp68k);
-        x_68k->cdr_code = CDR_INDIRECT;
-#else
-        cons68k = next_conspage();
-
-        cdr_cell68k = GetNewCell_68k(cons68k);
-        cons68k->next_cell = ((freecons *)cdr_cell68k)->next_free;
-        temp68k = GetNewCell_68k(cons68k);
-        cons68k->next_cell = ((freecons *)temp68k)->next_free;
-
-        cons68k->count -= 2;
-
-        *(LispPTR *)cdr_cell68k = y & POINTERMASK; /* cdr_code set to 0 */
-
-        temp68k->car_field = x_68k->car_field;
-        x_68k->car_field = LAddrFromNative(temp68k);
-
-        temp68k->cdr_code = (LAddrFromNative(cdr_cell68k) & 0xff) >> 1;
-
-        x_68k->cdr_code = CDR_INDIRECT;
-#endif /* NEWCDRCODING */
-      }
     }
   }
-  return (x);
-
+  return x;
 } /* end of rplacd */
 
 /**********************************************************************/
@@ -330,22 +331,20 @@ LispPTR rplacd(LispPTR x, LispPTR y)
 
 LispPTR N_OP_car(LispPTR tos) {
   ConsCell *datum68k;
-  ConsCell *temp;
 
-  datum68k = (ConsCell *)(NativeAligned4FromLAddr(tos));
-  if (Listp(tos)) {
-    if (datum68k->cdr_code == CDR_INDIRECT) {
-      temp = (ConsCell *)NativeAligned4FromLAddr(datum68k->car_field);
-      return ((LispPTR)temp->car_field);
-    } else
-      return ((LispPTR)datum68k->car_field);
-  } else if (tos == NIL_PTR)
-    return (tos);
-  else if (tos == ATOM_T)
-    return (tos);
-  else {
-    ERROR_EXIT(tos);
+  if (tos == NIL_PTR || tos == ATOM_T) {
+    return tos;
   }
+  if (!Listp(tos)) {
+    ERROR_EXIT(tos);
+    return NIL_PTR;
+  }
+  datum68k = (ConsCell *)NativeAligned4FromLAddr(tos);
+  if (datum68k->cdr_code == CDR_INDIRECT) {
+    ConsCell *temp = (ConsCell *)NativeAligned4FromLAddr(datum68k->car_field);
+    return (LispPTR)temp->car_field;
+  }
+  return (LispPTR)datum68k->car_field;
 } /* end of N_OP_car */
 
 /**********************************************************************/
@@ -368,23 +367,27 @@ LispPTR N_OP_cdr(LispPTR tos) {
       ERROR_EXIT(tos);
   }
 
-  datum68k = (ConsCell *)(NativeAligned4FromLAddr(tos));
+  datum68k = (ConsCell *)NativeAligned4FromLAddr(tos);
   cdr_code = datum68k->cdr_code;
 
-    if (cdr_code == CDR_NIL) return (NIL_PTR); /* cdr-nil */
-    if (cdr_code > CDR_ONPAGE) /* cdr-samepage */
+  if (cdr_code == CDR_NIL) {
+    return NIL_PTR; /* cdr-nil */
+  }
+  if (cdr_code > CDR_ONPAGE) { /* cdr-samepage */
 #ifdef NEWCDRCODING
-      return (tos + ((cdr_code & 7) << 1));
+    return tos + ((cdr_code & 7) << 1);
 #else
-      return (POINTER_PAGEBASE(tos) + ((cdr_code & 127) << 1));
+    return POINTER_PAGEBASE(tos) + ((cdr_code & 127) << 1);
 #endif                                 /*NEWCDRCODING */
-    if (cdr_code == CDR_INDIRECT) /* cdr-indirect */
-      return (cdr((LispPTR)(datum68k->car_field)));
-    /* cdr-differentpage */
+  }
+  if (cdr_code == CDR_INDIRECT) { /* cdr-indirect */
+    return cdr((LispPTR)(datum68k->car_field));
+  }
+  /* cdr-differentpage */
 #ifdef NEWCDRCODING
-    return ((LispPTR)((ConsCell *)(NativeAligned4FromLAddr(tos + (cdr_code << 1))))->car_field);
+  return (LispPTR)((ConsCell *)(NativeAligned4FromLAddr(tos + (cdr_code << 1))))->car_field;
 #else
-    return ((LispPTR)((ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(tos) + (cdr_code << 1))))->car_field);
+  return (LispPTR)((ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(tos) + (cdr_code << 1))))->car_field;
 #endif /*NEWCDRCODING */
 } /* end of N_OP_cdr */
 
@@ -404,30 +407,28 @@ LispPTR N_OP_rplaca(LispPTR tosm1, LispPTR tos) {
   ConsCell *x_68k;
   ConsCell *temp;
 
-  if (Listp(tosm1) == NIL) {
-    if (tosm1 == NIL_PTR) {
-      if (tos != NIL_PTR)
-        ERROR_EXIT(tos);
-      else
-        return (tosm1);
-    } else
-      ERROR_EXIT(tos);
+  if (tosm1 == NIL_PTR) {
+    if (tos == NIL_PTR) {
+      return NIL_PTR;
+    }
+    ERROR_EXIT(tos);
+  }
+  if (!Listp(tosm1)) {
+    ERROR_EXIT(tos);
   }
 
-  else {
-    x_68k = (ConsCell *)NativeAligned4FromLAddr(tosm1);
+  x_68k = (ConsCell *)NativeAligned4FromLAddr(tosm1);
 
-    GCLOOKUP(car(tosm1), DELREF); /* set up reference count */
-    GCLOOKUP(tos, ADDREF);
+  GCLOOKUP(car(tosm1), DELREF); /* set up reference count */
+  GCLOOKUP(tos, ADDREF);
 
-    if (x_68k->cdr_code == CDR_INDIRECT) {
-      temp = (ConsCell *)NativeAligned4FromLAddr((LispPTR)x_68k->car_field);
-      temp->car_field = tos;
-    } else
-      x_68k->car_field = tos;
-
-    return (tosm1);
+  if (x_68k->cdr_code == CDR_INDIRECT) {
+    temp = (ConsCell *)NativeAligned4FromLAddr((LispPTR)x_68k->car_field);
+    temp->car_field = tos;
+  } else {
+    x_68k->car_field = tos;
   }
+  return (tosm1);
 } /* end of N_OP_rplaca */
 
 /**********************************************************************/
@@ -444,21 +445,18 @@ LispPTR N_OP_rplaca(LispPTR tosm1, LispPTR tos) {
 /**********************************************************************/
 
 LispPTR N_OP_rplacd(LispPTR tosm1, LispPTR tos) {
-  if (Listp(tosm1) == NIL) {
-    if (tosm1 == NIL_PTR) {
-      if (tos != NIL_PTR)
-        ERROR_EXIT(tos);
-      else
-        return (tosm1);
-    } else
+
+  if (tosm1 == NIL_PTR) {
+    if (tos == NIL_PTR) {
+      return NIL_PTR;
+    }
+    ERROR_EXIT(tos);
+  }
+  if (!Listp(tosm1)) {
       ERROR_EXIT(tos);
   }
-
-  else
-    rplacd(tosm1, tos);
-
-  return (tosm1);
-
+  rplacd(tosm1, tos);
+  return tosm1;
 } /* end of N_OP_rplacd */
 
 /************************************************************************/
@@ -491,10 +489,11 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
         noffset = FREECONS(page, offset)->next_free;
       }
       cell = (ConsCell *)((DLword *)page + offset);
-      if (prior)
+      if (prior) {
         FREECONS(page, prior)->next_free = FREECONS(page, offset)->next_free;
-      else
+      } else {
         page->next_cell = FREECONS(page, offset)->next_free;
+      }
       page->count -= 1;
       cell->cdr_code = CDR_ONPAGE | ((oldoffset - offset) >> 1);
       if (254 < (offset + ((cell->cdr_code & 7) << 1))) error("in fcpc, page overflow.");
@@ -504,7 +503,7 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
     prior = offset;
     offset = ((freecons *)((DLword *)page + offset))->next_free;
   }
-  return ((ConsCell *)0); /* No cell close enough */
+  return (ConsCell *)0; /* No cell close enough */
 }
 
 #ifdef NEWCDRCODING
@@ -529,19 +528,19 @@ static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell) {
 
   while (offset) {
     if ((offset > oldoffset) && (offset <= (oldoffset + 14))) {
-      if (prior)
+      if (prior) {
         ((freecons *)((DLword *)page + prior))->next_free =
             ((freecons *)((DLword *)page + offset))->next_free;
-      else
+      } else {
         page->next_cell = ((freecons *)((DLword *)page + offset))->next_free;
+      }
       page->count -= 1;
       return (ConsCell *)((DLword *)page + offset);
     }
-
     prior = offset;
     offset = ((freecons *)((DLword *)page + offset))->next_free;
   }
-  return ((ConsCell *)0); /* No cell close enough */
+  return (ConsCell *)0; /* No cell close enough */
 }
 
 /************************************************************************/
@@ -557,7 +556,9 @@ static ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, Lisp
 
   prior = priorprior = nprior = 0;
 
-  if (pg->count < 2) return (ConsCell *)0;
+  if (pg->count < 2) {
+    return (ConsCell *)0;
+  }
 
   offset = pg->next_cell;
 
@@ -576,44 +577,46 @@ static ConsCell *find_cdrpair_in_page(struct conspage *pg, LispPTR carpart, Lisp
 
       carcell = (ConsCell *)(((DLword *)pg) + offset);
       cdrcell = (ConsCell *)(((DLword *)pg) + prior);
-      if (priorprior)
+      if (priorprior) {
         FREECONS(pg, priorprior)->next_free = FREECONS(pg, poffset)->next_free;
-      else
+      } else {
         pg->next_cell = FREECONS(pg, poffset)->next_free;
-
-      if (nprior) FREECONS(pg, nprior)->next_free = FREECONS(pg, offset)->next_free;
-
+      }
+      if (nprior) {
+        FREECONS(pg, nprior)->next_free = FREECONS(pg, offset)->next_free;
+      }
       pg->count -= 2;
 
       *(LispPTR *)carcell = carpart;
       *(LispPTR *)cdrcell = cdrpart;
 
-      carcell->cdr_code = (cdrcell - carcell);
-      return (carcell);
-    } else if (prior && (offset > prior) && (offset <= prior + 14)) {
+      carcell->cdr_code = cdrcell - carcell;
+      return carcell;
+    }
+    if (prior && (offset > prior) && (offset <= prior + 14)) {
       ConsCell *carcell, *cdrcell;
 
       carcell = (ConsCell *)(((DLword *)pg) + prior);
       cdrcell = (ConsCell *)(((DLword *)pg) + offset);
-      if (priorprior)
+      if (priorprior) {
         FREECONS(pg, priorprior)->next_free = ((freecons *)cdrcell)->next_free;
-      else
+      } else {
         pg->next_cell = ((freecons *)cdrcell)->next_free;
-
+      }
       pg->count -= 2;
 
       *(LispPTR *)carcell = carpart;
       *(LispPTR *)cdrcell = cdrpart;
 
       carcell->cdr_code = (cdrcell - carcell);
-      return (carcell);
+      return carcell;
     }
     priorprior = prior;
     prior = offset;
     offset = FREECONS(pg, offset)->next_free;
   }
 
-  return (0); /* found no entries in this page, so return failure code */
+  return (ConsCell *)0; /* found no entries in this page, so return failure code */
 }
 
 /************************************************************************/
@@ -631,10 +634,11 @@ static ConsCell *find_cdrable_pair(LispPTR carpart, LispPTR cdrpart) {
 
   for (pg = (struct conspage *)NativeAligned4FromLPage(pgno = ListpDTD->dtd_nextpage); pgno;
        pg = (struct conspage *)NativeAligned4FromLPage(pgno = pg->next_page)) {
-    if ((cell = find_cdrpair_in_page(pg, carpart, cdrpart))) return (cell);
+    cell = find_cdrpair_in_page(pg, carpart, cdrpart);
+    if (cell) {
+      return (cell);
+    }
   }
-
   return (find_cdrpair_in_page(next_conspage(), carpart, cdrpart));
 }
-
 #endif
