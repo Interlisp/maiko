@@ -215,10 +215,7 @@ LispPTR N_OP_greaterp(LispPTR tosm1, LispPTR tos) {
   N_GETNUMBER(tosm1, arg1, do_ufn);
   N_GETNUMBER(tos, arg2, do_ufn);
 
-  if (arg1 > arg2)
-    return (ATOM_T);
-  else
-    return (NIL_PTR);
+  return (arg1 > arg2) ? ATOM_T : NIL_PTR;
 
 do_ufn:
   return (N_OP_fgreaterp(tosm1, tos));
@@ -230,12 +227,9 @@ LispPTR N_OP_igreaterp(LispPTR tosm1, LispPTR tos) {
   N_IGETNUMBER(tosm1, arg1, do_ufn);
   N_IGETNUMBER(tos, arg2, do_ufn);
 
-  if (arg1 > arg2)
-    return (ATOM_T);
-  else
-    return (NIL_PTR);
+  return (arg1 > arg2) ? ATOM_T : NIL_PTR;
 
-do_ufn:
+ do_ufn:
   ERROR_EXIT(tos);
 }
 
