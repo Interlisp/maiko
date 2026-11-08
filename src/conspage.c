@@ -138,13 +138,18 @@ struct conspage *next_conspage(void) {
     prior = next;
   }
 
-  if (prior)
+  if (prior) {
     priorpg->next_page = LPageFromNative(page1);
-  else
+  } else {
     ListpDTD->dtd_nextpage = LPageFromNative(page1);
+  }
 
-  if (page2->next_page) error("page2 has a next page??");
-  if (page2 == priorpg) error("loop in conspage next_pages");
+  if (page2->next_page) {
+    error("page2 has a next page??");
+  }
+  if (page2 == priorpg) {
+    error("loop in conspage next_pages");
+  }
 #else
   for (next = (int)ListpDTD->dtd_nextpage; /* /!\ Note no exit condition /!\ */ /* get next free conspage */
        ; ListpDTD->dtd_nextpage = next = page1->next_page, page1->next_page = 0xffff) {
@@ -172,7 +177,7 @@ struct conspage *next_conspage(void) {
   } /* for loop end */
 #endif /* NEWCDRCODING */
 ex:
-  return (page1);
+  return page1;
 } /* next_conspage end */
 
 /************************************************************************/
@@ -192,7 +197,9 @@ static ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
   ConsCell *carcell, *cdrcell;
   unsigned int offset, prior, priorprior, noffset, nprior, poffset;
 
-  if (pg->count < 2) return ((ConsCell *)0);
+  if (pg->count < 2) {
+    return (ConsCell *)0;
+  }
 
   priorprior = prior = nprior = 0;
 
@@ -210,40 +217,53 @@ static ConsCell *find_pair_in_page(struct conspage *pg, LispPTR cdrval) {
         }
         carcell = (ConsCell *)((DLword *)pg + offset);
         cdrcell = (ConsCell *)((DLword *)pg + prior);
-        if (priorprior)
+        if (priorprior) {
           FREECONS(pg, priorprior)->next_free = FREECONS(pg, poffset)->next_free;
-        else
+        } else {
           pg->next_cell = FREECONS(pg, poffset)->next_free;
-        if (nprior) FREECONS(pg, nprior)->next_free = FREECONS(pg, offset)->next_free;
+        }
+        if (nprior) {
+          FREECONS(pg, nprior)->next_free = FREECONS(pg, offset)->next_free;
+        }
         carcell->cdr_code = cdrcell - carcell;
 #ifdef NEWCDRCODING
-        if ((cdrcell - carcell) > 7) error("in find_pair_in_page, cdr code too big.");
-        if (254 < (offset + (carcell->cdr_code << 1))) error("in fpip, page overflow.");
+        if ((cdrcell - carcell) > 7) {
+          error("in find_pair_in_page, cdr code too big.");
+        }
+        if (254 < (offset + (carcell->cdr_code << 1))) {
+          error("in fpip, page overflow.");
+        }
 #endif /* NEWCDRCODING */
         pg->count -= 2;
         *((LispPTR *)cdrcell) = cdrval;
-        return (carcell);
-      } else if ((offset > prior) && (offset <= prior + 14)) {
+        return carcell;
+      }
+      if ((offset > prior) && (offset <= prior + 14)) {
         carcell = (ConsCell *)((DLword *)pg + prior);
         cdrcell = (ConsCell *)((DLword *)pg + offset);
-        if (priorprior)
+        if (priorprior) {
           FREECONS(pg, priorprior)->next_free = ((freecons *)cdrcell)->next_free;
-        else
+        } else {
           pg->next_cell = ((freecons *)cdrcell)->next_free;
+        }
         carcell->cdr_code = cdrcell - carcell;
 #ifdef NEWCDRCODING
-        if ((cdrcell - carcell) > 7) error("in find_pair_in_page, cdr code too big.");
-        if (254 < (prior + (carcell->cdr_code << 1))) error("in fpip, page overflow.");
+        if ((cdrcell - carcell) > 7) {
+          error("in find_pair_in_page, cdr code too big.");
+        }
+        if (254 < (prior + (carcell->cdr_code << 1))) {
+          error("in fpip, page overflow.");
+        }
 #endif /* NEWCDRCODING */
         pg->count -= 2;
         *((LispPTR *)cdrcell) = cdrval;
-        return (carcell);
+        return carcell;
       }
     }
     priorprior = prior;
     prior = offset;
   }
-  return ((ConsCell *)0);
+  return (ConsCell *)0;
 }
 
 static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
@@ -254,11 +274,13 @@ static ConsCell *find_cdrcodable_pair(LispPTR cdrval) {
   for (pg = (struct conspage *)NativeAligned4FromLPage(pgno); pgno;
        pg = (struct conspage *)NativeAligned4FromLPage(pgno = pg->next_page)) {
     cell = find_pair_in_page(pg, cdrval);
-    if (cell) return (cell);
+    if (cell) {
+      return cell;
+    }
   }
   pg = next_conspage();
   cell = find_pair_in_page(pg, cdrval);
-  return (cell);
+  return cell;
 } /* end of find_cdrcodable_pair */
 
 static ConsCell *find_free_cons_cell(void) {
@@ -272,13 +294,13 @@ static ConsCell *find_free_cons_cell(void) {
       pg->count--;
       cell = (ConsCell *)(((DLword *)pg) + (pg->next_cell));
       pg->next_cell = ((freecons *)cell)->next_free;
-      return (cell);
+      return cell;
     } else { /* remove the empty page from the free chain */
       pgno = ListpDTD->dtd_nextpage = pg->next_page;
       pg->next_page = CONSPAGE_LAST;
     }
 
-  return ((ConsCell *)0);
+  return (ConsCell *)0;
 } /* end of find_free_cons_cell */
 
 /**********************************************************************/
@@ -305,13 +327,16 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
 
   if (cons_cdr == NIL_PTR) {
 #ifdef NEWCDRCODING
-    if ((new_cell = find_free_cons_cell())) { /* next page has 1 or more free cells */
+    new_cell = find_free_cons_cell();
+    if (new_cell) { /* next page has 1 or more free cells */
 #else
     if ((ListpDTD->dtd_nextpage != 0) &&
         (GetCONSCount(ListpDTD->dtd_nextpage) > 0)) { /* next page has 1 or more free cells */
       new_page = ListpDTD->dtd_nextpage;
       new_conspage = (struct conspage *)NativeAligned4FromLPage(new_page);
-      if (new_conspage->next_cell == 0) error("count ne 0, but nothing on free chain.");
+      if (new_conspage->next_cell == 0) {
+        error("count ne 0, but nothing on free chain.");
+      }
       new_cell = GetNewCell_68k(new_conspage); /* get new cell */
 
       new_conspage->count--;                                       /* decrement free cnt. */
@@ -323,11 +348,9 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
       new_cell->cdr_code = CDR_NIL;
 
       ListpDTD->dtd_cnt0++;
-
     }      /* if (ListpDTD.. end */
     else { /* Need to get a new CONS page */
       new_conspage = next_conspage();
-
       new_cell = GetNewCell_68k(new_conspage);
 
       new_conspage->count--;                                       /* decrement free cnt. */
@@ -411,25 +434,23 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
       *((LispPTR *)temp_cell) = cons_cdr; /* Indirect CDR ptr */
 #endif /* NEWCDRCODING */
       new_cell->car_field = cons_car;
-
 #ifndef NEWCDRCODING
-      /* culc. cdr code */
+      /* calc. cdr code */
       new_cell->cdr_code = (((LispPTR)LAddrFromNative(temp_cell)) & 0xff) >> 1;
 #endif /* NEWCDRCODING */
 
       ListpDTD->dtd_oldcnt++; /* added feb-12 take */
-
     } /* else end */
-
   } /* else (cons_cdr==NIL end) */
 
   new_page = LAddrFromNative(new_cell);
   GCLOOKUP(new_page, DELREF);
 #ifdef NEWCDRCODING
-  if (254 < ((new_page & 0xff) + ((new_cell->cdr_code & 7) << 1)))
+  if (254 < ((new_page & 0xff) + ((new_cell->cdr_code & 7) << 1))) {
     error("in CONS, cdr code too big.");
+  }
 #endif /* NEWCDRCODING */
-  return (new_page);
+  return new_page;
 
 } /* N_OP_cons() end */
 
@@ -437,4 +458,6 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
 /* function cons same as N_OP_cons				      */
 /**********************************************************************/
 
-LispPTR cons(LispPTR cons_car, LispPTR cons_cdr) { return (N_OP_cons(cons_car, cons_cdr)); }
+LispPTR cons(LispPTR cons_car, LispPTR cons_cdr) {
+  return N_OP_cons(cons_car, cons_cdr);
+}
