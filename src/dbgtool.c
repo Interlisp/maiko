@@ -600,7 +600,6 @@ int sf(struct frameex1 *fx_addr68k) {
 void bt1(FX *startFX) {
   FX *fx;
   struct fnhead *fnobj;
-  FX *get_nextFX(FX * fx);
   int fnum = 0;
   BT_lines = 0;
   fx = startFX;
@@ -688,7 +687,6 @@ void bt(void) {
 void btvv(void) {
   struct frameex1 *fx_addr68k;
   LispPTR atomindex;
-  FX *get_nextFX(FX * fx);
 
   fx_addr68k = CURRENTFX;
 

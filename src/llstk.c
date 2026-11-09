@@ -305,8 +305,6 @@ DLword *freestackblock(DLword n, StackWord *start68k, int align)
   StackWord *easp68k;
   DLword freesize;
 
-  DLword *extendstack(void);
-
   if (n % 2) {
     error("asking for odd-length stack block");
   }

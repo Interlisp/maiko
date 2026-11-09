@@ -109,10 +109,6 @@ void DSP_Cursor(LispPTR *args, int argnum)
  * args[1] :	hot spot Y
  */
 {
-  extern int ScreenLocked;
-  extern DLword *EmCursorX68K, *EmCursorY68K;
-  extern int LastCursorX, LastCursorY;
-
 #if defined(XWINDOW)
   /* For X-Windows, set the cursor to the given location. */
   Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));

@@ -307,7 +307,6 @@ lp:
 /* trace the link in ListpDTD->dtd_nextpage */
 
 void trace_listpDTD(void) {
-  extern struct dtd *ListpDTD;
   printf("Dump conspages from ListpDTD chain\n");
   dump_conspage((struct conspage *)NativeAligned4FromLPage(ListpDTD->dtd_nextpage), T);
 }
@@ -990,7 +989,6 @@ void dump_CSTK(int before) {
 
 void btv(void) {
   struct frameex1 *fx_addr68k;
-  struct frameex1 *get_nextFX(FX * fx);
 
   fx_addr68k = CURRENTFX;
 

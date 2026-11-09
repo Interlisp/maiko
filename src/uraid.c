@@ -147,7 +147,6 @@ extern fd_set LispReadFds;
 extern struct cursor CurrentCursor, InvisibleCursor;
 extern struct screen LispScreen;
 extern int displaywidth, displayheight;
-extern DLword *DisplayRegion68k;
 extern int FrameBufferFd, ether_fd, RS232C_Fd;
 
 #ifdef COLOR
