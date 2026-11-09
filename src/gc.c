@@ -39,5 +39,4 @@ void OP_gcref(void) {
 #endif
   GCLOOKUPV(TopOfStack, Get_code_BYTE(PC + 1), TopOfStack);
   PC += 2;
-  return;
 }

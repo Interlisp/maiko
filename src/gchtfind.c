@@ -247,7 +247,6 @@ void enter_big_reference_count(LispPTR ptr) {
 
   oventry->ovfl_cnt = MAX_GCCOUNT;
   oventry->ovfl_ptr = ptr;
-  return;
 }
 
 /************************************************************************/

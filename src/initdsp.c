@@ -311,9 +311,6 @@ void byte_swapped_displayregion(int x, int y, int w, int h) {
                              0xfffffffc);
 
   bit_reverse_region((unsigned short *)longptr, w, h, DLWORD_PERLINE);
-
-  return;
-
 } /* byte_swapped_displayregion end */
 #endif /* BYTESWAP */
 

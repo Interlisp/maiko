@@ -91,7 +91,6 @@ unsigned long GenericReturnT(void *d) {
 }
 void GenericReturnVoid(void *d) {
   (void)d;
-  return;
 }
 void GenericPanic(void *d) {
   (void)d;
