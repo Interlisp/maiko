@@ -154,7 +154,7 @@ void print_package_name(int index) {
   if (compare_chars(pname, "INTERLISP", len) == T) {
     printf("IL:");
     return;
-  } else if (compare_chars(pname, "LISP", len) == T) {
+  } if (compare_chars(pname, "LISP", len) == T) {
     printf("CL:");
     return;
   } else if (compare_chars(pname, "XEROX-COMMON-LISP", len) == T) {
@@ -1003,8 +1003,7 @@ FX *get_nextFX(FX *fx) {
 
   if (URaid_scanlink == URSCAN_ALINK)
     return ((FX *)NativeAligned4FromStackOffset(GETALINK(fx)));
-  else
-    return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
+      return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
 
 } /* get_nextFX end */
 

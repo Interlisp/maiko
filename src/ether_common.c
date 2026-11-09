@@ -98,8 +98,7 @@ LispPTR check_sum(LispPTR *args)
 
   if (checksum == MASKWORD1)
     return (S_POSITIVE); /* ret 0 */
-  else
-    return (S_POSITIVE | checksum);
+      return (S_POSITIVE | checksum);
 
 } /*check_sum */
 

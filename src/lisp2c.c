@@ -90,7 +90,7 @@ LispPTR CIntToLispInt(int cint) {
     wordp = (LispPTR *)createcell68k(TYPE_FIXP);
     *((int *)wordp) = cint;
     return (LAddrFromNative(wordp));
-  } else if (cint >= 0) { /* its a positive smallp! */
+  } if (cint >= 0) { /* its a positive smallp! */
     return (S_POSITIVE | cint);
   } else { /* its a negative smallp! */
     return (S_NEGATIVE | (0xFFFF & cint));

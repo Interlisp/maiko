@@ -164,9 +164,8 @@ LispPTR compare_chars(const char *char1, const char *char2, DLword length) {
 
   {
     return (T);
-  } else {
-    return (NIL);
-  }
+  }     return (NIL);
+
 
 } /* end compare_chars */
 
@@ -207,13 +206,13 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
         char1+= sizeof(DLword); char2+=sizeof(DLword);
       }
       return (T);
-    } else { /* both thin, so compare 'em a byte at a time */
+    } /* both thin, so compare 'em a byte at a time */
              /* (it's this way in case we're byte-swapped.)*/
       int i;
       for (i = 0; i < length; i++)
         if (GETBYTE(char1++) != GETBYTE(char2++)) return (NIL);
       return (T);
-    }
+
 #else
     /* This one fails for byte-swapped machines */
     if (fat1) length = length + length;
@@ -227,13 +226,11 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
   } else if (fat1) { /* char1 is fat, char2 isn't */
       if (lispcmp((const DLword *)char1, char2, length))
       return (T);
-    else
-      return (NIL);
+          return (NIL);
   } else { /* char2 is fat, char1 isn't */
       if (lispcmp((const DLword *)char2, char1, length))
       return (T);
-    else
-      return (NIL);
+          return (NIL);
   }
 
 } /* end compare_lisp_chars */

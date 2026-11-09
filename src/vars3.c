@@ -41,11 +41,10 @@ struct cadr_cell cadr(LispPTR cell_adr)
       cadr1.car_cell = 0;
       cadr1.cdr_cell = 0;
       return (cadr1);
-    } else {
-      cadr1.car_cell = car(cell_adr);
+    }       cadr1.car_cell = car(cell_adr);
       cadr1.cdr_cell = cdr(cell_adr);
       return (cadr1);
-    }
+
   }
   pcons = (ConsCell *)NativeAligned4FromLAddr(cell_adr);
   while (pcons->cdr_code == CDR_INDIRECT) {

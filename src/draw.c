@@ -49,8 +49,7 @@ LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h)
 {
   if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL))
     return (T);
-  else
-    return (NIL);
+      return (NIL);
 }
 #endif
 

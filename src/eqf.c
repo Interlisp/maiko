@@ -98,8 +98,7 @@ LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
   } else {
     if (Numberp(arg2)) {
       return (NIL);
-    } else
-      ERROR_EXIT(arg2);
+    }       ERROR_EXIT(arg2);
   }
 
   /* now we know both are numbers */
@@ -190,8 +189,7 @@ arg2_small:
   } else {
     if (Numberp(arg2)) {
       return (NIL);
-    } else
-      ERROR_EXIT(arg2);
+    }       ERROR_EXIT(arg2);
   }
 
   /* now we know both are numbers */
@@ -218,8 +216,7 @@ arg2_small:
     N_MakeFloat(arg2, f2, arg2);
     if ((f1 + 0.0f) == (f2 + 0.0f))
       return (ATOM_T);
-    else
-      return (NIL);
+          return (NIL);
   } else
     return (NIL); /* neither is float, types are different */
 

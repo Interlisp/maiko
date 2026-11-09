@@ -226,7 +226,7 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
       return(T);
-    } else if (base_np->inuse == free) {
+    } if (base_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
       return(T);
@@ -253,8 +253,7 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
     if ((bkwd_np->fwd != base) || (fwd_np->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
       return(T);
-    } else {
-      fbl = FreeBlockChainN(base_np->arlen);
+    }       fbl = FreeBlockChainN(base_np->arlen);
       rover = tmprover = NativeAligned4FromLAddr(fbl);
       /* GETBASEPTR */
       if ((*rover & POINTERMASK) == NIL) {
@@ -267,7 +266,7 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
         rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
       } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
       return (NIL);
-    }
+
   }
   return (NIL);
 }
@@ -306,7 +305,7 @@ static void deleteblock(LispPTR base) {
       else
         error("GC error:deleting last list # FREEBLOCKLIST\n");
       return;
-    } else if (base == freeblock)
+    } if (base == freeblock)
       *fbl_np = f;
     f_np->bkwd = b;
     b_np->fwd = f;
@@ -463,7 +462,7 @@ static LispPTR arrayblockmerger(LispPTR base, LispPTR nbase) {
  *     the block behind it is in use
  * in which case it is linked onto the freelist (fwd and backward pointers)
  * and added to the free block chain by size.
- * If it can be merged, 
+ * If it can be merged,
  */
 LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
@@ -668,8 +667,7 @@ void printfreeblockchainn(int arlen)
   if (arlen >= 0) {
     printfreeblockchainhead(BucketIndex(arlen));
     return;
-  } else
-    for (int i = 0; i <= MAXBUCKETINDEX; i++) {
+  }     for (int i = 0; i <= MAXBUCKETINDEX; i++) {
       printfreeblockchainhead(i);
     }
 }

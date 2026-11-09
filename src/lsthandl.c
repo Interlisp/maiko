@@ -98,7 +98,7 @@ LispPTR N_OP_listget(LispPTR plist, LispPTR tos) {
 
       if (Listp(cadrobj.cdr_cell))
         return (car(cadrobj.cdr_cell));
-      else /* must punt in case car/cdrerr */
+      /* must punt in case car/cdrerr */
         SAVE_ERROR_EXIT2(plist, tos);
     }
 

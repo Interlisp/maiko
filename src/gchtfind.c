@@ -229,8 +229,7 @@ void enter_big_reference_count(LispPTR ptr) {
       error("ERROR : PTR already in overflow table.\n");
       oventry->ovfl_cnt += 0x10000; /* "Assure it lives forever" */
       return;
-    } else
-      ++oventry;
+    }       ++oventry;
   }
 
   if (tmp == NIL) {

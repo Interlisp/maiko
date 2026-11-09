@@ -437,12 +437,11 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         unlink(PipeName);
         DBPRINT(("New process: slot/PipeFD %d PID %d\n", PipeFD, UJ[PipeFD].PID));
         return (GetSmallp(PipeFD));
-      } else {
-        DBPRINT(("Fork request failed."));
+      }         DBPRINT(("Fork request failed."));
         close(sockFD);
         unlink(PipeName);
         return (NIL);
-      }
+
     }
 
     case 1: /* Write byte */
@@ -459,8 +458,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             if (dest == 0) {
               wait_for_comm_processes();
               return (NIL);
-            } else
-              return (GetSmallp(1));
+            }               return (GetSmallp(1));
 
 	  case UJSOCKET:
 	  case UJUNUSED:
@@ -610,13 +608,12 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         UJ[Master].status = -1;
         DBPRINT(("Forked pty in slot %d.\n", Master));
         return (GetSmallp(Master));
-      } else {
-        printf("Fork failed.\n");
+      }         printf("Fork failed.\n");
         (void)fflush(stdout);
         printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
         close(Master);
         return (NIL);
-      }
+
     }
 
     case 5: /* Kill all the subprocesses */ close_unix_descriptors(); return (ATOM_T);
@@ -678,8 +675,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       if (UJ[slot].status == -1)
         return (ATOM_T);
-      else
-        return (GetSmallp(UJ[slot].status));
+              return (GetSmallp(UJ[slot].status));
 
     case 8: /* Return largest supported command */ return (GetSmallp(15));
 
@@ -849,8 +845,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       N_GETNUMBER(args[1], streamFD, bad);
       if (valid_slot(streamFD))
         return GetSmallp(UJ[streamFD].type);
-      else
-        return NIL;
+              return NIL;
     }
 
     case 15: /* Write buffer */

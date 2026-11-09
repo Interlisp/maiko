@@ -83,15 +83,13 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
   lisp_Xvideocolor(invert);
   if (invert)
     return ATOM_T;
-  else
-    return NIL;
+      return NIL;
 #elif defined(SDL)
   invert = args[0] & 0xFFFF;
   sdl_set_invert(invert);
   if (invert)
     return ATOM_T;
-  else
-    return NIL;
+      return NIL;
 #else
   return NIL;
 #endif

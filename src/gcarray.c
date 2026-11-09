@@ -228,10 +228,9 @@ retry:
                                             fatpnamep, fatp)
                        : compare_chars((pname_base + 1 + fatpnamep), char_base, length)))) {
       return (index);
-    } else {
-      indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
+    }       indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
       goto retry;
-    }
+
   }
   /*   else return(0xffffffff); */ /* can't find */
 }
@@ -286,8 +285,7 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 
   if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) != 0xffffffff)
     return (index);
-  else
-    return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
+      return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
 }
 
 /************************************************************************/

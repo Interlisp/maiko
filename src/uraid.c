@@ -362,10 +362,9 @@ LispPTR uraid_commands(void) {
     if (URaid_currentFX > URaid_ArrMAXIndex) {
       printf("There is no more stack.\n");
       return (T);
-    } else {
-      sf(URaid_FXarray[URaid_currentFX++]);
+    }       sf(URaid_FXarray[URaid_currentFX++]);
       return (T);
-    }
+
   }
   switch (URaid_comm[0]) {
 /*** Displaying STACK stuff */
@@ -448,9 +447,8 @@ LispPTR uraid_commands(void) {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
-      } else {
-	printf("Atom: %s index %d\n", URaid_arg1, index);
-      }
+      } 	printf("Atom: %s index %d\n", URaid_arg1, index);
+
       print(*((LispPTR *)GetVALCELL68k(index)));
       break;
     case 'B': { /* print array block */
@@ -497,17 +495,15 @@ LispPTR uraid_commands(void) {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
-      } else {
-	printf("Atom: %s index %d\n", URaid_arg1, index);
-      }
+      } 	printf("Atom: %s index %d\n", URaid_arg1, index);
+
       defcell68k = (DefCell *)GetDEFCELL68k(index);
       if (defcell68k->ccodep) {
         printf("{CCODEP}0x%x\n", defcell68k->defpointer);
         return (T);
-      } else {
-        print(defcell68k->defpointer);
+      }         print(defcell68k->defpointer);
         return (T);
-      }
+
 
     case 'M': /* Machine States */
       printf("TOS   : 0x%x\n", TopOfStack);
@@ -709,8 +705,7 @@ LispPTR uraid_commands(void) {
         if (errno != 0 || *endpointer != '\0') {
           printf(" Bad value\n");
           return (T);
-        } else {
-          if ((val < -65536) || (65535 < val)) {
+        }           if ((val < -65536) || (65535 < val)) {
             printf("Bad Val range\n");
             return (T);
           }
@@ -720,7 +715,7 @@ LispPTR uraid_commands(void) {
             val = val & 0xffff;
             val |= S_NEGATIVE;
           }
-        }
+
       }
       printf("Old value is ");
       print(*((LispPTR *)GetVALCELL68k(index)));
@@ -847,7 +842,7 @@ LispPTR uraid_commands(void) {
       else {
         errno = 0;
         num = strtoul(URaid_arg1, &endpointer, 10);
-        if (errno != 0 || *endpointer != '\0') { 
+        if (errno != 0 || *endpointer != '\0') {
           printf("Illegal argument, not number\n");
           return (T);
         }

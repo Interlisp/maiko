@@ -134,8 +134,7 @@ newpc:
 
   if (arg_count > 0)
     return (args[0]);
-  else
-    return (NIL_PTR);
+      return (NIL_PTR);
 }
 
 /****************************************************************/
@@ -232,8 +231,7 @@ newpc:
 
   if (Listp(args[0]))
     return (car(args[0]));
-  else
-    return (args[0]);
+      return (args[0]);
 }
 
 /************************************************************************/

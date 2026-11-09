@@ -190,8 +190,7 @@ LispPTR subr_gettime(LispPTR args[])
   if (args[1]) {
     *((int *)NativeAligned4FromLAddr(args[1])) = result;
     return (args[1]);
-  } else
-    N_ARITH_SWITCH(result);
+  }     N_ARITH_SWITCH(result);
 }
 
 /************************************************************************/

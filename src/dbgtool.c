@@ -125,8 +125,7 @@ LispPTR get_ivar_name(struct frameex1 *fx_addr68k, DLword offset, int *localivar
       /* target ivar was in name table */
       *localivar = 0;
       return ((LispPTR)(GetNTEntry(first_table)));
-    } else {
-/* Target ivar is in locar vars table */
+    } /* Target ivar is in locar vars table */
 #ifdef BIGATOMS
       first_table = (NAMETABLE *)(fnobj + 1) + (fnobj->ntsize);
       second_table =
@@ -135,7 +134,7 @@ LispPTR get_ivar_name(struct frameex1 *fx_addr68k, DLword offset, int *localivar
       first_table = (NAMETABLE *)(fnobj + 1) + (fnobj->ntsize << 1);
       second_table = first_table + (((DLword *)fnobj + (fnobj->startpc >> 1) - first_table) >> 1);
 #endif
-    }
+
   } else {
 /* name table doesn't exist, so all ivars are in locar vars table */
 #ifdef BIGATOMS

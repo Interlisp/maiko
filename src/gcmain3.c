@@ -320,8 +320,7 @@ LispPTR gcscanstack(void) {
       case STK_GUARD: /* stack's tail ? */ {
         if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K)
           return (NIL);
-        else {
-          obasicframe = basicframe;
+                  obasicframe = basicframe;
           basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
 
           if (0 != (3 & (UNSIGNED)basicframe)) {
@@ -332,7 +331,7 @@ LispPTR gcscanstack(void) {
                     (void *)basicframe, (void *)obasicframe);
             error(debugStr);
           }
-        }
+
         break;
       }
       case STK_FSB: {

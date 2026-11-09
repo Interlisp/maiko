@@ -182,9 +182,8 @@ static int match_pattern(const char *tp, const char *pp)
           pp = psp;
           tsp = tp;
           continue;
-        } else {
-          return (0);
-        }
+        }           return (0);
+
     }
   }
 }
@@ -732,7 +731,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf)
     n++;
   }
   alarm(0); // cancel alarm from S_TOUT
-  
+
   /***********************/
   /* Now go looking for version-0 entries */
   /***********************/
@@ -982,7 +981,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf)
     n++;
   }
   alarm(0); // ensure alarm from S_TOUT is cancelled
-  
+
   /***********************/
   /* Now go looking for version-0 entries */
   /***********************/

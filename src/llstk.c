@@ -69,8 +69,7 @@ static DLword *extendstack(void) {
     SETUPGUARDBLOCK(NativeAligned2FromStackOffset(InterfacePage->endofstack), 2);
     MAKEFREEBLOCK(NativeAligned2FromStackOffset(easp), 2);
     return ((DLword *)NativeAligned4FromStackOffset(scanptr));
-  } else
-    return (NIL);
+  }     return (NIL);
 } /* end extendstack */
 
 /******************************************************************/
@@ -402,8 +401,7 @@ FREE:
     MAKEFREEBLOCK(freeptr68k, wantedsize);
     MAKEFREEBLOCK(((DLword *)scanptr68k) + n, freesize - wantedsize - n);
     return ((DLword *)scanptr68k);
-  } else
-    MAKEFREEBLOCK(freeptr68k, freesize);
+  }     MAKEFREEBLOCK(freeptr68k, freesize);
 
   goto NEXT;
 } /* freestackblock end */
@@ -433,8 +431,7 @@ void decusecount68k(FX *frame68k) {
     if (frame68k->usecount != 0) {
       frame68k->usecount--;
       return;
-    } else {
-      alink68k = NativeAligned2FromStackOffset(GETALINK(frame68k));
+    }       alink68k = NativeAligned2FromStackOffset(GETALINK(frame68k));
       blink68k = (Bframe *)NativeAligned4FromStackOffset(GETBLINK(frame68k));
       clink68k = NativeAligned2FromStackOffset(GETCLINK(frame68k));
 
@@ -459,7 +456,7 @@ void decusecount68k(FX *frame68k) {
 
       frame68k = (FX *)clink68k;
 
-    } /* else end */
+    /* else end */
 
   } /*while end */
 } /* decusecount68k end */
@@ -979,8 +976,7 @@ void check_FX(FX *fx68k) {
   mtmp = (Bframe *)NativeAligned4FromStackOffset(mblink);
   if ((dummybf->residual != NIL) && (dummybf->ivar == mtmp->ivar))
     return;
-  else
-    error("CheckFX:bad residual case");
+      error("CheckFX:bad residual case");
 
 } /* END check_FX */
 
@@ -1002,8 +998,7 @@ void check_BF(Bframe *bf68k) {
   /* If the frame is residual (whatever that means), it's OK */
   if (bf68k->residual == T)
     return;
-  else {
-    if (bf68k->ivar & 1)
+      if (bf68k->ivar & 1)
       error("IVAR is ODD in a BF");
     else
       for (iptr68k = (Bframe *)NativeAligned4FromStackOffset(bf68k->ivar);
@@ -1013,7 +1008,7 @@ void check_BF(Bframe *bf68k) {
         /* bits set. */
         if (iptr68k->flags != STK_NOTFLG) warn("CheckBF:Stack-bits set in IVAR");
       }
-  }
+
 
 } /* end check_BF */
 

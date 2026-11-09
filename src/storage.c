@@ -240,12 +240,12 @@ static LispPTR dremove(LispPTR x, LispPTR l) {
 
   if (Listp(l) == NIL)
     return (NIL);
-  else if (x == car(l)) {
+  if (x == car(l)) {
     if (cdr(l) != NIL) {
       rplaca(l, car(cdr(l)));
       rplacd(l, cdr(cdr(l)));
       return (dremove(x, l));
-    } else 
+    } else
         return (NIL);
   } else {
     z = l;

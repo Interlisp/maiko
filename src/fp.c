@@ -144,6 +144,5 @@ LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   if (arg1 > arg2)
     return (ATOM_T);
-  else
-    return (NIL_PTR);
+      return (NIL_PTR);
 } /* end N_OP_fgreaterp()  */
