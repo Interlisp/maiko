@@ -394,8 +394,9 @@ LispPTR N_OP_times2(LispPTR tosm1, LispPTR tos) {
 #else
 
   result = arg1 * arg2;
-  if ((arg2 != 0) && ((result / arg2) != arg1))
+  if ((arg2 != 0) && ((result / arg2) != arg1)) {
     goto doufn2;
+  }
   N_ARITH_SWITCH(result);
 
 #endif

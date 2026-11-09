@@ -1177,10 +1177,11 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
         break;
 
       case STK_FX:
-        /*if((((FX *)stkptr)->pc < 24) ||
+        /* if((((FX *)stkptr)->pc < 24) ||
                 (((FX *)stkptr)->alink==0)  ||
-                 (STKHPTR(stkptr)->usecount > 31))
-         {goto badblock;};*/
+                 (STKHPTR(stkptr)->usecount > 31)) {
+         goto badblock;
+         } */
         if (silent) {
           SD_morep;
           printf("\n0x%x: FX for ", LAddrFromNative(stkptr));

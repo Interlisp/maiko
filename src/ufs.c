@@ -478,8 +478,9 @@ void UnixVersionToLispVersion(char *pathname, size_t pathsize, int vlessp) {
   char *uvp;
 
 #ifdef IFSVERSION
-  if (isdigit(*ep))
+  if (isdigit(*ep)) {
     goto maybeifsversion; /* possibly foo!## */
+  }
 #endif
   if (*ep-- != '~') {
     goto noversion; /* definitely not .~###~ */
@@ -514,8 +515,9 @@ noversion:
 maybeifsversion:
   while (isdigit(*ep))
     ep--; /* consume all digits */
-  if (*ep != '!')
+  if (*ep != '!') {
     goto noversion;
+  }
   *ep = ';';
   return;
 #endif

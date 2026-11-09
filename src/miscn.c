@@ -129,36 +129,46 @@ int OP_miscn(int misc_index, int arg_count) {
       break;
 #ifdef RS232
     case miscn_RAW_RS232C_OPEN:
-      if ((result = raw_rs232c_open(args[0])) == NIL)
+      if ((result = raw_rs232c_open(args[0])) == NIL) {
         goto do_ufn;
-
+      }
       break;
 
     case miscn_RAW_RS232C_CLOSE:
-      if ((result = raw_rs232c_close(args[0])) == NIL)
+      if ((result = raw_rs232c_close(args[0])) == NIL) {
         goto do_ufn;
-
+      }
       break;
 
     case miscn_RAW_RS232C_SETPARAM:
-      if ((result = raw_rs232c_setparams(args[0], args[1])) == NIL)
+      if ((result = raw_rs232c_setparams(args[0], args[1])) == NIL) {
         goto do_ufn;
+      }
       break;
+
     case miscn_RAW_RS232C_GETPARAM:
       /******/ break;
     case miscn_RAW_RS232C_READ:
-      if ((result = raw_rs232c_read(args[0], args[1], args[2])) == NIL)
+      if ((result = raw_rs232c_read(args[0], args[1], args[2])) == NIL) {
         goto do_ufn;
+      }
       break;
+
     case miscn_RAW_RS232C_WRITE:
-      if ((result = raw_rs232c_write(args[0], args[1], args[2])) == NIL)
+      if ((result = raw_rs232c_write(args[0], args[1], args[2])) == NIL) {
         goto do_ufn;
+      }
       break;
+
     case miscn_RAW_RS232C_SETINT:
-      if ((result = raw_rs232c_setint(args[0], args[1])) == NIL)
+      if ((result = raw_rs232c_setint(args[0], args[1])) == NIL) {
         goto do_ufn;
+      }
       break;
-    case miscn_CHATTER: result = chatter(args); break;
+
+    case miscn_CHATTER:
+      result = chatter(args);
+      break;
 #endif /* RS232 */
 
 #ifdef JLISP

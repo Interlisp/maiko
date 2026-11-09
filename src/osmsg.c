@@ -96,8 +96,9 @@ void mess_init(void) {
 needpty:
   while (ptynum < 16) {
     ptyname[9] = "0123456789abcdef"[ptynum];
-    if ((ptyfd = open(ptyname, 2)) >= 0)
+    if ((ptyfd = open(ptyname, 2)) >= 0) {
       goto gotpty;
+    }
     ptynum++;
   }
   return;

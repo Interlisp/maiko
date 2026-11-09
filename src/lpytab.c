@@ -296,8 +296,9 @@ int yyparse(void) {
   ** we have a new state - find out what to do
   */
   yy_newstate:
-    if ((yy_n = yypact[yy_state]) <= YYFLAG)
+    if ((yy_n = yypact[yy_state]) <= YYFLAG) {
       goto yydefault; /* simple state */
+    }
 #if YYDEBUG
     /*
     ** if debugging, need to mark whether new token grabbed
@@ -324,8 +325,9 @@ int yyparse(void) {
       }
     }
 #endif /* YYDEBUG */
-    if (((yy_n += yychar) < 0) || (yy_n >= YYLAST))
+    if (((yy_n += yychar) < 0) || (yy_n >= YYLAST)) {
       goto yydefault;
+    }
     if (yychk[yy_n = yyact[yy_n]] == yychar) /*valid shift*/
     {
       yychar = -1;
