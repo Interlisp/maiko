@@ -108,8 +108,9 @@ LispPTR N_OP_arg0(LispPTR tos) {
   if ((SEGMASK & tos) != S_POSITIVE) {
     /* error("OP_arg0: Bad TopOfStack\n"); */
     ERROR_EXIT(tos);
-  } else
+  } else {
     num = 0xFFFF & tos;
+}
   if (CURRENTFX->alink & 0x1) {
     /* slow */
     bf = Stackspace + CURRENTFX->blink;
@@ -156,10 +157,11 @@ LispPTR N_OP_assoc(LispPTR key, LispPTR list) {
       return (cadr1.car_cell);
     }
     /* search the rest of A-list */
-    if (Listp(cdr))
+    if (Listp(cdr)) {
       cadr1 = cadr(cdr);
-    else
+    } else {
       cdr = NIL;
+}
     /* check for interrupts and punt to handle one safely */
     if (!Irq_Stk_End) {
       TopOfStack = cdr; /* for next execution */

@@ -1027,10 +1027,11 @@ nextopcode:
 
     case 0360:
     case360 : {
-      if (TOPOFSTACK == POP_TOS_1)
+      if (TOPOFSTACK == POP_TOS_1) {
         TOPOFSTACK = ATOM_T;
-      else
+      } else {
         TOPOFSTACK = NIL_PTR;
+}
       nextop1;
     }
 
@@ -1160,15 +1161,16 @@ check_interrupt:
         /*** If SPY is running, check to see if it ***/
         /*** needs an interrupt; give it one, if so. ***/
         if (*PERIODIC_INTERRUPT68k != NIL) {
-          if (period_cnt > 0)
+          if (period_cnt > 0) {
             period_cnt--;
-          else {
+          } else {
             cause_interruptcall(PERIODIC_INTERRUPTFRAME_index);
-            if (*PERIODIC_INTERRUPT_FREQUENCY68k == NIL)
+            if (*PERIODIC_INTERRUPT_FREQUENCY68k == NIL) {
               period_cnt = 0;
-            else
+            } else {
               period_cnt =
                 ((*PERIODIC_INTERRUPT_FREQUENCY68k & 0xffff) * 1000000ULL) / (60 * TIMER_INTERVAL);
+}
             /* number of 1/60 second periods between interrupts (really??)
             TIMER_INTERVAL is the number of microseconds between timer interrupts.
             */

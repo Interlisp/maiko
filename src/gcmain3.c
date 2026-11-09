@@ -114,10 +114,11 @@ nextentry:
         ptr = VAG2(GetSegnuminColl(offset), (probe << 1));
         DelLink(link, prev, entry);
         GcreclaimLp(ptr);
-        if (HTLPTR->contents == 0)
+        if (HTLPTR->contents == 0) {
           goto nextentry;
-        else
+        } else {
           goto retry;
+}
       }
       if ((offset = ((struct htcoll *)link)->next_free)) {
         prev = link;
@@ -167,10 +168,11 @@ LispPTR gcmapunscan(void) {
         goto scnlp;
       }
     } else if (HENTRY->stackref) {
-      if (HENTRY->count == 1)
+      if (HENTRY->count == 1) {
         HTLPTR->contents = 0;
-      else
+      } else {
         HENTRY->stackref = 0;
+}
     }
   }
   return (NIL);
@@ -258,8 +260,9 @@ LispPTR gcscanstack(void) {
 #endif
                 ntend = (UNSIGNED)(((DLword *)qtemp) + FNHEADSIZE +
                                    (((struct fnhead *)qtemp)->ntsize) * 2);
-              } else
+              } else {
                 Stkref(nametable);
+}
             } /* frameex->validnametable */
 
             obasicframe = basicframe;
@@ -318,8 +321,9 @@ LispPTR gcscanstack(void) {
         break;
       }
       case STK_GUARD: /* stack's tail ? */ {
-        if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K)
+        if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K) {
           return (NIL);
+}
                   obasicframe = basicframe;
           basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
 

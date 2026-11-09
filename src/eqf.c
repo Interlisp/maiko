@@ -84,7 +84,8 @@ BIGNUM  (integer that can't be represented bigger than 32 bits)
 LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
   int type;
 
-  if (arg2 == arg1) return (ATOM_T);
+  if (arg2 == arg1) { return (ATOM_T);
+}
   IF_IMMEDIATE(arg1, return (NIL), return (NIL));
   IF_IMMEDIATE(arg2, return (NIL), return (NIL));
 
@@ -94,7 +95,8 @@ LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
   /* can return NIL if one is a number and the other isn't */
 
   if (Numberp(arg1)) {
-    if (!Numberp(arg2)) return (NIL);
+    if (!Numberp(arg2)) { return (NIL);
+}
   } else {
     if (Numberp(arg2)) {
       return (NIL);
@@ -103,7 +105,8 @@ LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
 
   /* now we know both are numbers */
 
-  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) return (NIL);
+  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) { return (NIL);
+}
 
   /* now we know both are the same type. Shouldn't see any SMALLPs */
 
@@ -132,7 +135,8 @@ LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
 LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
   int type;
 
-  if (arg2 == arg1) return (ATOM_T);
+  if (arg2 == arg1) { return (ATOM_T);
+}
   IF_IMMEDIATE(arg1, return (NIL), return (NIL));
   IF_IMMEDIATE(arg2, return (NIL), return (NIL));
 
@@ -140,7 +144,8 @@ LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
 
   /* can return NIL if one is a number and the other isn't */
 
-  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) return (NIL);
+  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) { return (NIL);
+}
 
   /* now we know both are the same type. Shouldn't see any SMALLPs */
 
@@ -156,8 +161,9 @@ LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
     default:
       if (Numberp(arg1)) {
         ERROR_EXIT(arg2);
-      } else
+      } else {
         return (NIL);
+}
   }
 
 } /* end N_OP_eqlop */
@@ -173,7 +179,8 @@ LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
 LispPTR N_OP_equal(LispPTR arg1, LispPTR arg2) {
   int type, type2;
 
-  if (arg2 == arg1) return (ATOM_T);
+  if (arg2 == arg1) { return (ATOM_T);
+}
 
   IF_IMMEDIATE(arg1, return (NIL), goto arg1_small);
   IF_IMMEDIATE(arg2, return (NIL), goto arg2_small);
@@ -185,7 +192,8 @@ arg1_small:
 arg2_small:
 
   if (Numberp(arg1)) {
-    if (!Numberp(arg2)) return (NIL);
+    if (!Numberp(arg2)) { return (NIL);
+}
   } else {
     if (Numberp(arg2)) {
       return (NIL);
@@ -214,11 +222,13 @@ arg2_small:
     float f1, f2;
     N_MakeFloat(arg1, f1, arg2);
     N_MakeFloat(arg2, f2, arg2);
-    if ((f1 + 0.0f) == (f2 + 0.0f))
+    if ((f1 + 0.0f) == (f2 + 0.0f)) {
       return (ATOM_T);
+}
           return (NIL);
-  } else
+  } else {
     return (NIL); /* neither is float, types are different */
+}
 
 } /* end N_OP_equal */
 
@@ -237,9 +247,12 @@ LispPTR N_OP_eqq(LispPTR arg1, LispPTR arg2) /* CL:=    opcode 0377 */
   int type1, type2;
   float f1, f2;
 
-  if (!((type1 = GetTypeEntry(arg1)) & TT_NUMBERP)) ERROR_EXIT(arg2);
-  if (arg2 == arg1) return (ATOM_T);
-  if (!((type2 = GetTypeEntry(arg2)) & TT_NUMBERP)) ERROR_EXIT(arg2);
+  if (!((type1 = GetTypeEntry(arg1)) & TT_NUMBERP)) { ERROR_EXIT(arg2);
+}
+  if (arg2 == arg1) { return (ATOM_T);
+}
+  if (!((type2 = GetTypeEntry(arg2)) & TT_NUMBERP)) { ERROR_EXIT(arg2);
+}
   type1 &= 0x7ff;
   type2 &= 0x7ff;
 
@@ -256,10 +269,11 @@ LispPTR N_OP_eqq(LispPTR arg1, LispPTR arg2) /* CL:=    opcode 0377 */
       switch (type2) {
         case TYPE_SMALLP: return (NIL);
         case TYPE_FIXP:
-          if (FIXP_VALUE(arg1) == FIXP_VALUE(arg2))
+          if (FIXP_VALUE(arg1) == FIXP_VALUE(arg2)) {
             return (ATOM_T);
-          else
+          } else {
             return (NIL);
+}
         case TYPE_FLOATP: goto checkfloats;
         default: ERROR_EXIT(arg2);
       }
@@ -279,8 +293,11 @@ checkfloats:
 
   N_MakeFloat(arg1, f1, arg2);
   N_MakeFloat(arg2, f2, arg2);
-  if (f1 == f2) return (ATOM_T);
-  if ((f1 == -0.0f) && (f2 == 0.0f)) return (ATOM_T);
-  if ((f1 == 0.0f) && (f2 == -0.0f)) return (ATOM_T);
+  if (f1 == f2) { return (ATOM_T);
+}
+  if ((f1 == -0.0f) && (f2 == 0.0f)) { return (ATOM_T);
+}
+  if ((f1 == 0.0f) && (f2 == -0.0f)) { return (ATOM_T);
+}
   return (NIL);
 } /* end N_OP_eqq() */

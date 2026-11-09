@@ -138,10 +138,11 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
 
   /* use default or the previous one */
   if (sys_size == 0) {
-    if (ifpage.process_size == 0)        /* Pure LISP.SYSOUT */
+    if (ifpage.process_size == 0) {        /* Pure LISP.SYSOUT */
       sys_size = DEFAULT_MAX_SYSOUTSIZE; /* default for pure SYSOUT */
-    else
+    } else {
       sys_size = ifpage.process_size; /* use previous one */
+}
   }
 
   /* Checks for specifying the process size (phase II) */
@@ -215,9 +216,10 @@ unsigned sysout_loader(const char *sysout_file_name, unsigned sys_size) {
     exit(1);
   }
 
-  if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0)
+  if ((stat_buf.st_size & (BYTESPER_PAGE - 1)) != 0) {
     printf("CAUTION::not an integral number of pages.  sysout & 0x%x = 0x%x\n",
            BYTESPER_PAGE - 1, (int)(stat_buf.st_size & (BYTESPER_PAGE - 1)));
+}
 
   if (ifpage.nactivepages != (sysout_size / 2)) {
     printf("sysout_loader:IFPAGE says sysout size is %d\n", ifpage.nactivepages);

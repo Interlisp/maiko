@@ -95,7 +95,8 @@ void gcarrangementstack(void) {
   PushCStack;
   tmpnextblock = LAddrFromNative(CurrentStackPTR += DLWORDSPER_CELL);
   CURRENTFX->nextblock = LOLOC(tmpnextblock);
-  if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) error("creating 0-long stack block.");
+  if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) { error("creating 0-long stack block.");
+}
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;
   GETWORD(CurrentStackPTR + 1) = (((UNSIGNED)EndSTKP - (UNSIGNED)CurrentStackPTR) >> 1);
 }
@@ -124,9 +125,11 @@ void doreclaim(void) {
     update_miscstats();
     gcmisc = *((MISCSTATS *)MiscStats);
     *Reclaim_cnt_word = NIL;
-    if (*GcMess_word != NIL) flip_cursor();
+    if (*GcMess_word != NIL) { flip_cursor();
+}
     dogc01();
-    if (*GcMess_word != NIL) flip_cursor();
+    if (*GcMess_word != NIL) { flip_cursor();
+}
     *Reclaim_cnt_word = *ReclaimMin_word;
     update_miscstats();
     MiscStats->gctime = MiscStats->gctime + MiscStats->totaltime - gcmisc.totaltime +

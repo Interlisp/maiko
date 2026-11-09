@@ -93,7 +93,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     case TCPhostlookup:
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
-      if (!host) return (NIL);
+      if (!host) { return (NIL);
+}
       res = ntohl(*(in_addr_t *)host->h_addr);
       N_ARITH_SWITCH(res);
       break;
@@ -102,7 +103,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       LispStringToCString(proto, servstring, 50);
       service = getservbyname(namestring, servstring);
-      if (!service) return (NIL);
+      if (!service) { return (NIL);
+}
       return (GetSmallp(ntohs(service->s_port)));
 
     case TCPsocket:
@@ -127,7 +129,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     string_host:
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
-      if (!host) return (NIL);
+      if (!host) { return (NIL);
+}
       memcpy((char *)&farend.sin_addr, (char *)host->h_addr, host->h_length);
     host_ok:
       sock = LispNumToCInt(proto);
@@ -173,7 +176,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       len = LispNumToCInt(length);
       result = read(sock, buffer, len);
       if (result < 0) {
-        if (errno == EWOULDBLOCK) return (ATOM_T);
+        if (errno == EWOULDBLOCK) { return (ATOM_T);
+}
         perror("TCP read");
         *Lisp_errno = errno;
         return (NIL);
@@ -238,7 +242,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(nameConn);
       result = accept(sock, NULL, 0);
       if (result < 0) {
-        if (errno != EWOULDBLOCK) perror("TCP Accept");
+        if (errno != EWOULDBLOCK) { perror("TCP Accept");
+}
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
@@ -253,7 +258,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ures = sizeof(addr);
       getpeername(sock, (struct sockaddr *)&addr, &ures);
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
-      if (!host) return (GetSmallp(0));
+      if (!host) { return (GetSmallp(0));
+}
       namelen = strlen(host->h_name);
       memcpy((char *)buffer, host->h_name, namelen);
       return (GetSmallp(namelen));
@@ -264,7 +270,8 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ures = sizeof(addr);
       addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
-      if (!host) return (GetSmallp(0));
+      if (!host) { return (GetSmallp(0));
+}
       namelen = strlen(host->h_name);
       memcpy((char *)buffer, host->h_name, namelen);
       return (GetSmallp(namelen));

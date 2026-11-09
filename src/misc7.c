@@ -49,7 +49,8 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 
   DBPRINT(("MISC7 op with alpha byte %d.\n", alpha));
 
-  if (alpha != 1) ERROR_EXIT(arg7);
+  if (alpha != 1) { ERROR_EXIT(arg7);
+}
 
   base = NativeAligned2FromLAddr(arg1);
   N_GETNUMBER(arg2, x, doufn);

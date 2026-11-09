@@ -129,7 +129,8 @@ struct buffer {
 static int integerlength(unsigned int n) {
   int p = 0;
 
-  if (n <= 2) return (n); /* easy case */
+  if (n <= 2) { return (n); /* easy case */
+}
   if (n >= 65536) {
     n >>= 16;
     p += 16;
@@ -191,7 +192,8 @@ LispPTR releasingvmempage(LispPTR ptr) {
   LispPTR buffer = findptrsbuffer(ptr);
   struct buffer *buffer_np;
 
-  if (buffer == NIL) return (NIL); /* Not in use, OK to reclaim it */
+  if (buffer == NIL) { return (NIL); /* Not in use, OK to reclaim it */
+}
 
   buffer_np = (struct buffer *)NativeAligned4FromLAddr(buffer);
   buffer_np->noreference = T; /* Mark the buffer free to use ?? */
@@ -245,8 +247,9 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
       return(T);
-    } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE))
+    } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE)) {
       return (NIL);
+}
     /* Remaining tests only for free list. */
     fwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->fwd);
     bkwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->bkwd);
@@ -261,7 +264,8 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
         return(T);
       }
       do {
-        if ((*rover & POINTERMASK) == base) return (NIL);
+        if ((*rover & POINTERMASK) == base) { return (NIL);
+}
         checkarrayblock((*rover & POINTERMASK), T, NIL);
         rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
       } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
@@ -300,13 +304,15 @@ static void deleteblock(LispPTR base) {
     fbl_np = NativeAligned4FromLAddr(fbl);
     freeblock = POINTERMASK & *fbl_np;
     if (base == f) {
-      if (base == freeblock)
+      if (base == freeblock) {
         *fbl_np = NIL;
-      else
+      } else {
         error("GC error:deleting last list # FREEBLOCKLIST\n");
+}
       return;
-    } if (base == freeblock)
+    } if (base == freeblock) {
       *fbl_np = f;
+}
     f_np->bkwd = b;
     b_np->fwd = f;
   }
@@ -331,8 +337,9 @@ static LispPTR linkblock(LispPTR base) {
   LispPTR fbl, freeblock;
   LispPTR *fbl_np;
 
-  if (*FreeBlockBuckets_word == NIL)
+  if (*FreeBlockBuckets_word == NIL) {
     return (base);
+}
 
   base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
   if (base_np->arlen < MINARRAYBLOCKSIZE) {
@@ -468,14 +475,16 @@ LispPTR mergebackward(LispPTR base) {
   LispPTR pbase;
   struct arrayblock *ptrailer_np;
 
-  if (base == NIL)
+  if (base == NIL) {
     return (NIL);
+}
   /* back up to get the trailer of the previous block */
   ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
   /* check that there are no disqualifying conditions for merging with previous block */
   if ((*ArrayMerging_word == NIL) ||
-           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T))))
+           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T)))) {
     return (linkblock(base));
+}
   /* back up to the header of the previous block */
   pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
   /* check that it is free, but skip free list checks */
@@ -496,18 +505,24 @@ LispPTR mergebackward(LispPTR base) {
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
   struct arrayblock *base_np, *nbase_np;
-  if (*ArrayMerging_word == NIL) return NIL;
-  if (base == NIL) return NIL;
-  if (checkarrayblock(base, T, T)) return NIL;
+  if (*ArrayMerging_word == NIL) { return NIL;
+}
+  if (base == NIL) { return NIL;
+}
+  if (checkarrayblock(base, T, T)) { return NIL;
+}
 
   base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
   nbase = base + DLWORDSPER_CELL * (base_np->arlen);
-  if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) return NIL;
+  if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) { return NIL;
+}
 
   nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
   nbinuse = nbase_np->inuse;
-  if (checkarrayblock(nbase, !nbinuse, NIL)) return NIL;
-  if (nbinuse) return (NIL);
+  if (checkarrayblock(nbase, !nbinuse, NIL)) { return NIL;
+}
+  if (nbinuse) { return (NIL);
+}
   deleteblock(nbase);
   deleteblock(base);
   return (arrayblockmerger(base, nbase));
@@ -580,8 +595,9 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
 
       /* default:   No Action */
   }
-  if (reclaim_p == T)
+  if (reclaim_p == T) {
     mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base_np->arlen)));
+}
   return (T);
 }
 
@@ -627,23 +643,28 @@ void printarrayblock(LispPTR base) {
   printf("This array block: 0x%x.  Previous: 0x%x.  Next: 0x%x.\n", base, pbase, nbase);
   printf("        password: 0x%x     gctype: 0x%x   in use: %d\n", base_np->password,
          base_np->gctype, base_np->inuse);
-  if (!base_np->inuse)
+  if (!base_np->inuse) {
     printf("      Free list: fwd 0x%x bkwd 0x%x\n", base_np->fwd, base_np->bkwd);
+}
   printf("  Header  Length: %d cells.\n\n", base_np->arlen);
   printf(" Trailer  Length: %d cells.\n\n", trailer_np->arlen);
 
   addr = ((LispPTR *)base_np) - 20;
-  for (; addr < (LispPTR *)base_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  for (; addr < (LispPTR *)base_np; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+}
   printf("%16p (0x%8x) %8x <- array header\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)base_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  for (; addr < (LispPTR *)base_np + 20; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+}
   printf(". . .\n");
 
   addr = ((LispPTR *)trailer_np) - 20;
-  for (; addr < (LispPTR *)trailer_np; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  for (; addr < (LispPTR *)trailer_np; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+}
   printf("%16p (0x%8x) %8x <- array trailer\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)trailer_np + 20; addr++) printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  for (; addr < (LispPTR *)trailer_np + 20; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+}
 }
 
 static void printfreeblockchainhead(int index)

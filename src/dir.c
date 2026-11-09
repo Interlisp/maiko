@@ -155,13 +155,17 @@ static int match_pattern(const char *tp, const char *pp)
       case '\0': return ((*tp == '\0') ? 1 : 0);
 
       case '*':
-        while (*pp == '*') pp++; /* Skip successive '*'s. */
-        if (*pp == '\0') return (1);
+        while (*pp == '*') { pp++; /* Skip successive '*'s. */
+}
+        if (*pp == '\0') { return (1);
+}
 
         psp = pp;
-        while (*tp != *pp && *tp != '\0') tp++;
+        while (*tp != *pp && *tp != '\0') { tp++;
+}
 
-        if (*tp == '\0') return (0);
+        if (*tp == '\0') { return (0);
+}
 
         tsp = tp;
         inastr = 1;
@@ -169,7 +173,8 @@ static int match_pattern(const char *tp, const char *pp)
         continue;
 
       default:
-        if (*tp == *pp) continue;
+        if (*tp == *pp) { continue;
+}
 
         if (inastr) {
           /*
@@ -178,7 +183,8 @@ static int match_pattern(const char *tp, const char *pp)
            * next to tsp.  If found retry from there.
            */
           for (tp = tsp + 1; *tp != '\0' && *tp != *psp; tp++) {}
-          if (*tp == '\0') return (0);
+          if (*tp == '\0') { return (0);
+}
           pp = psp;
           tsp = tp;
           continue;
@@ -287,15 +293,17 @@ static int quote_fname(char *file, size_t filesize)
   while (*cp && !extensionp) {
     switch (*cp) {
       case '.':
-        if (*(cp + 1)) extensionp = 1;
+        if (*(cp + 1)) { extensionp = 1;
+}
         cp++;
         break;
 
       case '\'':
-        if (*(cp + 1) != '\0')
+        if (*(cp + 1) != '\0') {
           cp += 2;
-        else
+        } else {
           cp++;
+}
         break;
 
       default: cp++; break;
@@ -375,15 +383,17 @@ static int quote_fname_ufs(char *file, size_t filesize)
   while (*cp && !extensionp) {
     switch (*cp) {
       case '.':
-        if (*(cp + 1)) extensionp = 1;
+        if (*(cp + 1)) { extensionp = 1;
+}
         cp++;
         break;
 
       case '\'':
-        if (*(cp + 1) != '\0')
+        if (*(cp + 1) != '\0') {
           cp += 2;
-        else
+        } else {
           cp++;
+}
         break;
 
       default: cp++; break;
@@ -582,8 +592,10 @@ static int get_finfo_id(void) {
   int i;
   DFINFO *dfap;
 
-  for (i = 0; i < MAXFINFO; i++)
-    if (FinfoArray[i].head == (FINFO *)0) return (i);
+  for (i = 0; i < MAXFINFO; i++) {
+    if (FinfoArray[i].head == (FINFO *)0) { return (i);
+}
+}
 
   if ((dfap = (DFINFO *)calloc(sizeof(DFINFO), MAXFINFO + FINFOARRAYRSIZE)) == (DFINFO *)NULL) {
     *Lisp_errno = errno;
@@ -797,9 +809,10 @@ static int enum_dsk_prop(const char *dir, const  char *name, const char *ver, FI
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
        dp != (struct dirent *)NULL || errno == EINTR;
-       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) {
     if (dp) {
-      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) { continue;
+}
       MatchP((char *)dp->d_name, name, ver, match, unmatch);
     unmatch:
       continue;
@@ -840,10 +853,11 @@ static int enum_dsk_prop(const char *dir, const  char *name, const char *ver, FI
       strlcpy(nextp->no_ver_name, dp->d_name, sizeof(nextp->no_ver_name));
       separate_version(nextp->no_ver_name, sizeof(nextp->no_ver_name), fver, sizeof(fver), 1);
       DOWNCASE(nextp->no_ver_name);
-      if (*fver == '\0')
+      if (*fver == '\0') {
         nextp->version = 0;
-      else
+      } else {
         nextp->version = strtoul(fver, (char **)NULL, 10);
+}
       nextp->ino = sbuf.st_ino;
       nextp->prop->length = (unsigned)sbuf.st_size;
       nextp->prop->wdate = (unsigned)ToLispTime(sbuf.st_mtime);
@@ -858,8 +872,10 @@ static int enum_dsk_prop(const char *dir, const  char *name, const char *ver, FI
       }
       n++;
     }
+}
   TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
-  if (n > 0) *finfo_buf = prevp;
+  if (n > 0) { *finfo_buf = prevp;
+}
   return (n);
 }
 #endif /* DOS */
@@ -1046,9 +1062,10 @@ static int enum_dsk(const char *dir, const char *name, const char *ver, FINFO **
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
        dp != (struct dirent *)NULL || errno == EINTR;
-       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) {
     if (dp) {
-      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) { continue;
+}
       MatchP((char *)dp->d_name, name, ver, match, unmatch);
     unmatch:
       continue;
@@ -1089,15 +1106,18 @@ static int enum_dsk(const char *dir, const char *name, const char *ver, FINFO **
       strlcpy(nextp->no_ver_name, dp->d_name, sizeof(nextp->no_ver_name));
       separate_version(nextp->no_ver_name, sizeof(nextp->no_ver_name), fver, sizeof(fver), 1);
       DOWNCASE(nextp->no_ver_name);
-      if (*fver == '\0')
+      if (*fver == '\0') {
         nextp->version = 0;
-      else
+      } else {
         nextp->version = strtoul(fver, (char **)NULL, 10);
+}
       nextp->ino = sbuf.st_ino;
       n++;
     }
+}
   TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
-  if (n > 0) *finfo_buf = prevp;
+  if (n > 0) { *finfo_buf = prevp;
+}
   return (n);
 }
 #endif /* DOS */
@@ -1213,9 +1233,10 @@ static int enum_ufs_prop(const char *dir, const char *name, const char *ver, FIN
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
        dp != (struct dirent *)NULL || errno == EINTR;
-       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) {
     if (dp) {
-      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) { continue;
+}
       MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
     unmatch:
       continue;
@@ -1259,8 +1280,10 @@ static int enum_ufs_prop(const char *dir, const char *name, const char *ver, FIN
       nextp->prop->protect = (unsigned)sbuf.st_mode;
       n++;
     }
+}
   TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
-  if (n > 0) *finfo_buf = prevp;
+  if (n > 0) { *finfo_buf = prevp;
+}
   return (n);
 }
 #endif /* DOS */
@@ -1370,9 +1393,10 @@ static int enum_ufs(const char *dir, const char *name, const char *ver, FINFO **
 
   for (S_TOUT(dp = readdir(dirp)), nextp = prevp = (FINFO *)NULL, n = 0;
        dp != (struct dirent *)NULL || errno == EINTR;
-       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp)
+       errno = 0, S_TOUT(dp = readdir(dirp)), prevp = nextp) {
     if (dp) {
-      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) continue;
+      if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0 || dp->d_ino == 0) { continue;
+}
       MatchP_Case((char *)dp->d_name, name, ver, match, unmatch);
     unmatch:
       continue;
@@ -1411,8 +1435,10 @@ static int enum_ufs(const char *dir, const char *name, const char *ver, FINFO **
       nextp->ino = sbuf.st_ino;
       n++;
     }
+}
   TIMEOUT(closedir(dirp)); // cancels alarm from S_TOUT
-  if (n > 0) *finfo_buf = prevp;
+  if (n > 0) { *finfo_buf = prevp;
+}
   return (n);
 }
 #endif /* DOS*/
@@ -1501,10 +1527,11 @@ static int trim_finfo(FINFO **fp)
           sp->next = (FINFO *)NULL;
           FreeFinfo(sp);
           pnum = num;
-          if (pp != (FINFO *)NULL)
+          if (pp != (FINFO *)NULL) {
             pp->next = mp;
-          else
+          } else {
             *fp = mp;
+}
           pp = cp;
           sp = cp = cp->next;
         }
@@ -1643,10 +1670,11 @@ static int trim_finfo_highest(FINFO **fp, int highestp)
           }
           FreeFinfo(sp);
           num = ++pnum;
-          if (pp != (FINFO *)NULL)
+          if (pp != (FINFO *)NULL) {
             pp->next = mp;
-          else
+          } else {
             *fp = mp;
+}
           pp = mp;
           sp = cp = mp->next;
         }
@@ -1760,10 +1788,11 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
         } else {
           tp->next = (FINFO *)NULL;
         }
-        if (pp != (FINFO *)NULL)
+        if (pp != (FINFO *)NULL) {
           pp->next = vp;
-        else
+        } else {
           *fp = vp;
+}
         FreeFinfo(sp);
       }
       pp = vp;
@@ -1816,10 +1845,11 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
              * should be removed.
              */
             tp = cp->next;
-            if (pp != (FINFO *)NULL)
+            if (pp != (FINFO *)NULL) {
               pp->next = tp;
-            else
+            } else {
               *fp = tp;
+}
             cp->next = (FINFO *)NULL;
             FreeFinfo(sp);
             sp = cp = tp;
@@ -1831,10 +1861,11 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
            * no versioned file match with rver.
            */
           tp = cp->next;
-          if (pp != (FINFO *)NULL)
+          if (pp != (FINFO *)NULL) {
             pp->next = tp;
-          else
+          } else {
             *fp = tp;
+}
           cp->next = (FINFO *)NULL;
           FreeFinfo(sp);
           sp = cp = tp;
@@ -1846,10 +1877,11 @@ static int trim_finfo_version(FINFO **fp, unsigned rver)
          */
         if (rver != 1) {
           cp = sp->next;
-          if (pp != (FINFO *)NULL)
+          if (pp != (FINFO *)NULL) {
             pp->next = cp;
-          else
+          } else {
             *fp = cp;
+}
           sp->next = (FINFO *)NULL;
           FreeFinfo(sp);
           sp = cp;
@@ -1902,7 +1934,8 @@ static FINFO **prepare_sort_buf(FINFO *fp, size_t n)
     *Lisp_errno = errno;
     return ((FINFO **)NULL);
   }
-  for (bp = bufp; fp != (FINFO *)NULL; fp = fp->next, bp++) *bp = fp;
+  for (bp = bufp; fp != (FINFO *)NULL; fp = fp->next, bp++) { *bp = fp;
+}
 
   return (bufp);
 }
@@ -1933,12 +1966,16 @@ static int dsk_filecmp(const void *p1, const void *p2)
   int res;
   unsigned v1, v2;
 
-  if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) return (res);
+  if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) { return (res);
+}
 
-  if ((*fp1)->version == (*fp2)->version) return (0);
+  if ((*fp1)->version == (*fp2)->version) { return (0);
+}
 #ifndef DOS
-  if ((v1 = (*fp1)->version) == 0) return (-1);
-  if ((v2 = (*fp2)->version) == 0) return (1);
+  if ((v1 = (*fp1)->version) == 0) { return (-1);
+}
+  if ((v2 = (*fp2)->version) == 0) { return (1);
+}
 #endif /* DOS */
   return ((v1 < v2) ? 1 : -1);
 }
@@ -1989,14 +2026,16 @@ static int file_sort(FINFO **fpp, size_t n, int (*sortfn)(const void *, const vo
   FINFO **fp;
   FINFO **sort_bufp;
 
-  if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) return (0);
+  if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) { return (0);
+}
 
   qsort(sort_bufp, n, sizeof(FINFO *), sortfn);
 
   /*
    * Relink FINFO structures in a buffer.
    */
-  for (fp = sort_bufp; n > 1; fp++, n--) (*fp)->next = *(fp + 1);
+  for (fp = sort_bufp; n > 1; fp++, n--) { (*fp)->next = *(fp + 1);
+}
   (*fp)->next = (FINFO *)NULL;
 
   *fpp = *sort_bufp;
@@ -2143,7 +2182,8 @@ LispPTR COM_gen_files(const LispPTR *args)
    */
   count = dskp ? count + 4 + 1 : count + 2 + 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (count > MAXPATHLEN + 5) FileNameTooLong((SMALLP_MINUSONE));
+  if (count > MAXPATHLEN + 5) { FileNameTooLong((SMALLP_MINUSONE));
+}
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
@@ -2153,17 +2193,19 @@ LispPTR COM_gen_files(const LispPTR *args)
 #endif /* DOS */
 
   UPCASE(host);
-  if (strcmp(host, "DSK") == 0)
+  if (strcmp(host, "DSK") == 0) {
     dskp = 1;
-  else if (strcmp(host, "UNIX") == 0)
+  } else if (strcmp(host, "UNIX") == 0) {
     dskp = 0;
-  else
+  } else {
     return (NIL);
+}
 
-  if (args[1] == NIL)
+  if (args[1] == NIL) {
     propp = 0;
-  else
+  } else {
     propp = 1;
+}
 
 /*
  * The way to deal with the version field in file enumeration is a little
@@ -2193,19 +2235,22 @@ LispPTR COM_gen_files(const LispPTR *args)
     return (SMALLP_MINUSONE);
   }
 
-  if (!unpack_filename(pattern, dir, name, ver, 0)) return (SMALLP_MINUSONE);
+  if (!unpack_filename(pattern, dir, name, ver, 0)) { return (SMALLP_MINUSONE);
+}
 
   if (dskp) {
     /*
      * On {DSK}, we have to make sure dir is case insensitively existing
      * directory.
      */
-    if (true_name(dir, sizeof(dir)) != -1) return (SMALLP_MINUSONE);
+    if (true_name(dir, sizeof(dir)) != -1) { return (SMALLP_MINUSONE);
+}
 
     if (*ver != '\0') {
       highestp = 0;
       version = strtoul(ver, (char **)NULL, 10);
-      if (version > 0) strlcpy(ver, "*", sizeof(ver));
+      if (version > 0) { strlcpy(ver, "*", sizeof(ver));
+}
     } else {
       version = 0;
       for (cp = fbuf; *cp; cp++) {}
@@ -2222,18 +2267,20 @@ LispPTR COM_gen_files(const LispPTR *args)
         highestp = 0;
       }
     }
-    if (propp)
+    if (propp) {
       count = enum_dsk_prop(dir, name, ver, &fp);
-    else
+    } else {
       count = enum_dsk(dir, name, ver, &fp);
+}
   } else {
     /* Makes UNIX device matches any version. */
     strlcpy(ver, "*", sizeof(ver));
 
-    if (propp)
+    if (propp) {
       count = enum_ufs_prop(dir, name, ver, &fp);
-    else
+    } else {
       count = enum_ufs(dir, name, ver, &fp);
+}
   }
 
   switch (count) {
@@ -2242,17 +2289,20 @@ LispPTR COM_gen_files(const LispPTR *args)
     case 0: return (SMALLP_ZERO);
 
     default:
-      if (!file_sort(&fp, (size_t)count, dskp ? &dsk_filecmp : &unix_filecmp)) return (SMALLP_MINUSONE);
+      if (!file_sort(&fp, (size_t)count, dskp ? &dsk_filecmp : &unix_filecmp)) { return (SMALLP_MINUSONE);
+}
       if (dskp) {
-        if (highestp)
+        if (highestp) {
           count = trim_finfo_highest(&fp, highestp);
-        else if (version > 0 && count > 0)
+        } else if (version > 0 && count > 0) {
           count = trim_finfo_version(&fp, version);
-        else
+        } else {
           count = trim_finfo(&fp);
+}
       }
 
-      if ((fid = get_finfo_id()) < 0) return (SMALLP_MINUSONE);
+      if ((fid = get_finfo_id()) < 0) { return (SMALLP_MINUSONE);
+}
       *(int *)(NativeAligned4FromLAddr(args[2])) = fid;
       FinfoArray[fid].head = fp;
       FinfoArray[fid].next = fp;
@@ -2296,13 +2346,15 @@ LispPTR COM_next_file(const LispPTR *args)
 
   finfoid = (int)gfsp->finfoid;
 
-  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (SMALLP_MINUSONE);
+  if (finfoid < 0 || MAXFINFO - 1 < finfoid) { return (SMALLP_MINUSONE);
+}
 
   propp = gfsp->propp;
 
   dfp = &FinfoArray[finfoid];
   fp = dfp->next;
-  if (dfp->head == NULL || fp == NULL) return (SMALLP_MINUSONE);
+  if (dfp->head == NULL || fp == NULL) { return (SMALLP_MINUSONE);
+}
   dfp->next = fp->next;
 
   laddr = gfsp->name;
@@ -2313,7 +2365,8 @@ LispPTR COM_next_file(const LispPTR *args)
   MemCpyToLispFromNative(base, fp->lname, fp->lname_len);
 #endif /* BYTESWAP	 */
 
-  if (!propp) return (GetPosSmallp(fp->lname_len));
+  if (!propp) { return (GetPosSmallp(fp->lname_len));
+}
 
   pp = fp->prop;
   gfsp->length = pp->length;
@@ -2363,7 +2416,8 @@ LispPTR COM_finish_finfo(const LispPTR *args)
 
   finfoid = LispNumToCInt(args[0]);
 
-  if (finfoid < 0 || MAXFINFO - 1 < finfoid) return (NIL);
+  if (finfoid < 0 || MAXFINFO - 1 < finfoid) { return (NIL);
+}
 
   dfp = &FinfoArray[finfoid];
   if ((fp = dfp->head) == (FINFO *)0) {

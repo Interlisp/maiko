@@ -81,16 +81,19 @@ int error(const char *msg) {
 #ifndef DOS
   {
     int stat = fcntl(fileno(stdin), F_GETFL, 0);
-    if (stat != O_RDONLY && stat != O_RDWR)
+    if (stat != O_RDONLY && stat != O_RDWR) {
       if (freopen("/dev/tty", "r", stdin) == NULL) {
         perror("Reopen of stdin failed.");
         exit(0);
       }
+}
   }
 #endif /* DOS */
 uraidloop:
-  if (setjmp(BT_jumpbuf) == 1) goto uraidloop;
-  if (setjmp(SD_jumpbuf) == 1) goto uraidloop;
+  if (setjmp(BT_jumpbuf) == 1) { goto uraidloop;
+}
+  if (setjmp(SD_jumpbuf) == 1) { goto uraidloop;
+}
   for (;;) { /* URAID LOOP */
 
     uraid_commclear();
@@ -99,7 +102,8 @@ uraidloop:
     for (ptr = URaid_inputstring; (*ptr = getchar()) != '\n'; ptr++) {}
     URaid_argnum = sscanf(URaid_inputstring, "%1s%s%s", URaid_comm, URaid_arg1, URaid_arg2);
 
-    if (uraid_commands() == NIL) break;
+    if (uraid_commands() == NIL) { break;
+}
     /* XXX: make sure output is flushed so we can see where we are */
     (void)fflush(stdout); (void)fflush(stderr);
   } /* for end */
@@ -110,7 +114,8 @@ uraidloop:
     {
       int c;
       c = getchar();
-      if ((c == 'Y') || (c == 'y')) exit(-1);
+      if ((c == 'Y') || (c == 'y')) { exit(-1);
+}
     }
     (void)fflush(stdin);
     goto uraidloop;

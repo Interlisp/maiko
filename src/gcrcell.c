@@ -147,7 +147,8 @@ lp:
   tmpptr &= -2; /* turn off low bit of pointer, so we never reclaim odd'ns */
 #endif
 
-  if ((tmpptr & 0x0FFF0000) == 0x60000) error("freeing an old atom??");
+  if ((tmpptr & 0x0FFF0000) == 0x60000) { error("freeing an old atom??");
+}
 
   typ = GetTypeNumber(tmpptr);
 #ifdef DEBUG
@@ -163,9 +164,9 @@ lp:
         tmpptr = tmpcell;
         code = ptr->cdr_code;
       }
-      if (index != -1) /* car part */
+      if (index != -1) { /* car part */
         index = -1;
-      else {
+      } else {
         REC_GCLOOKUPV(car(tmpptr), DELREF, val);
         if (val != NIL) {
           ptr->car_field = donext;
@@ -187,18 +188,21 @@ lp:
       goto doval;
     }
     case TYPE_ARRAYBLOCK:
-      if ((index == -1) && reclaimarrayblock(tmpptr))
+      if ((index == -1) && reclaimarrayblock(tmpptr)) {
         goto trynext;
-      else
+      } else {
         break;
+}
     case TYPE_STACKP:
-      if ((index == -1) && reclaimstackp(tmpptr)) goto trynext;
+      if ((index == -1) && reclaimstackp(tmpptr)) { goto trynext;
+}
       break;
     case TYPE_VMEMPAGEP:
       if ((index == -1) && releasingvmempage(tmpptr)) {
         goto trynext;
-      } else
+      } else {
         break;
+}
     case TYPE_CODEHUNK1:
     case TYPE_CODEHUNK2:
     case TYPE_CODEHUNK3:
@@ -209,10 +213,11 @@ lp:
     case TYPE_CODEHUNK8:
     case TYPE_CODEHUNK9:
     case TYPE_CODEHUNK10:
-      if ((index == -1) && reclaimcodeblock(tmpptr))
+      if ((index == -1) && reclaimcodeblock(tmpptr)) {
         goto trynext;
-      else
+      } else {
         break;
+}
     default:;
   }
 normal:
@@ -221,7 +226,8 @@ normal:
   if (index != -1) {
     index = (index << 1);
     ptrfield = cdr(ptrfield);
-    while ((car(ptrfield) & 0x0ffff) != index) ptrfield = cdr(ptrfield);
+    while ((car(ptrfield) & 0x0ffff) != index) { ptrfield = cdr(ptrfield);
+}
     index = -1;
   }
   while (ptrfield != NIL) {
@@ -253,8 +259,9 @@ normal:
           ADD_TO_DO(tmpptr, (car(ptrfield) & 0xffff) >> 1);
           goto doval;
         }
-      } else
+      } else {
         goto addtofreelist;
+}
     }
 #endif /* NEWCDRCODING */
   }
@@ -327,7 +334,8 @@ void freelistcell(LispPTR cell) {
   pbase = (struct conspage *)NativeAligned4FromLPage(POINTER_PAGE(cell));
   celloffset = (LispPTR)cell & 0xFF;
 #ifdef NEWCDRCODING
-  if (celloffset < 8) error("freeing CONS cell that's really freelist ptr");
+  if (celloffset < 8) { error("freeing CONS cell that's really freelist ptr");
+}
 #endif /* NEWCDRCODING */
 
   if (pbase->count) /* There are free cells on the page already */
@@ -346,10 +354,11 @@ void freelistcell(LispPTR cell) {
       prior = offset;
     }
 
-    if (prior)
+    if (prior) {
       FREECONS(pbase, prior)->next_free = celloffset;
-    else
+    } else {
       pbase->next_cell = celloffset;
+}
     ((freecons *)cell68k)->next_free = offset;
   } else /* NO FREE CELLS.  Just replace next_free. */
   {

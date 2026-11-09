@@ -168,21 +168,33 @@ void tty_put(void)
 static speed_t tty_baudtosymbol(short aBaud)
 {
   /* This matches the constants in DLTTY where possible. */
-  if (aBaud == 0) return (B50);
-  if (aBaud == 1) return (B75);
-  if (aBaud == 2) return (B110);
-  if (aBaud == 3) return (B134);
-  if (aBaud == 4) return (B150);
-  if (aBaud == 5) return (B300);
-  if (aBaud == 6) return (B600);
-  if (aBaud == 7) return (B1200);
-  if (aBaud == 8) return (B1800);
+  if (aBaud == 0) { return (B50);
+}
+  if (aBaud == 1) { return (B75);
+}
+  if (aBaud == 2) { return (B110);
+}
+  if (aBaud == 3) { return (B134);
+}
+  if (aBaud == 4) { return (B150);
+}
+  if (aBaud == 5) { return (B300);
+}
+  if (aBaud == 6) { return (B600);
+}
+  if (aBaud == 7) { return (B1200);
+}
+  if (aBaud == 8) { return (B1800);
+}
   /* 9 is defined to be 2000, not in POSIX */
-  if (aBaud == 10) return (B2400);
+  if (aBaud == 10) { return (B2400);
+}
   /* 11 is defined to be 3600, not in POSIX */
-  if (aBaud == 12) return (B4800);
+  if (aBaud == 12) { return (B4800);
+}
   /* 13 is defined to be 7200, not in POSIX */
-  if (aBaud == 14) return (B9600);
+  if (aBaud == 14) { return (B9600);
+}
   return (-1);
 }
 
@@ -205,7 +217,8 @@ void tty_setbaudrate(void)
 
 void tty_setparam(void)
 {
-  if (DLTTYPortCmd->outdata & SET_BAUD_RATE) tty_setbaudrate();
+  if (DLTTYPortCmd->outdata & SET_BAUD_RATE) { tty_setbaudrate();
+}
 }
 
 void tty_breakon(void)
@@ -221,20 +234,21 @@ void tty_breakoff(void)
 void tty_cmd(void)
 {
   if (DLTTYPortCmd->command >= PUT_CHAR) {
-    if (DLTTYPortCmd->command == PUT_CHAR)
+    if (DLTTYPortCmd->command == PUT_CHAR) {
       tty_put();
-    else if (DLTTYPortCmd->command == SET_PARAM)
+    } else if (DLTTYPortCmd->command == SET_PARAM) {
       tty_setparam();
-    else if (DLTTYPortCmd->command == TTY_ON)
+    } else if (DLTTYPortCmd->command == TTY_ON) {
       tty_open();
-    else if (DLTTYPortCmd->command == TTY_OFF)
+    } else if (DLTTYPortCmd->command == TTY_OFF) {
       tty_close();
-    else if (DLTTYPortCmd->command == TTY_BREAK_ON)
+    } else if (DLTTYPortCmd->command == TTY_BREAK_ON) {
       tty_breakon();
-    else if (DLTTYPortCmd->command == TTY_BREAK_OFF)
+    } else if (DLTTYPortCmd->command == TTY_BREAK_OFF) {
       tty_breakoff();
-    else
+    } else {
       error("TTY: tty_cmd");
+}
 
     DLTTYPortCmd->command &= ~PUT_CHAR;
   }

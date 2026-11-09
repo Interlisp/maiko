@@ -32,14 +32,18 @@ LispPTR N_OP_ubfloat3(int arg3, LispPTR arg2, LispPTR arg1, int alpha) {
   float flot;
 
   val = *(float *)&arg3; /* why? */
-  if (alpha) ERROR_EXIT(arg1);
+  if (alpha) { ERROR_EXIT(arg1);
+}
   FPCLEAR;
-  if ((arg1 & SEGMASK) != S_POSITIVE) ERROR_EXIT(arg1);
+  if ((arg1 & SEGMASK) != S_POSITIVE) { ERROR_EXIT(arg1);
+}
   degree = 0xFFFF & arg1;
   fptr = (float *)NativeAligned4FromLAddr(arg2);
   ans = *((float *)fptr);
-  while (degree--) ans = (ans * val) + *((float *)(++fptr));
-  if (FPTEST(ans)) ERROR_EXIT(arg1); /* relies on contagion of inf, nan? */
+  while (degree--) { ans = (ans * val) + *((float *)(++fptr));
+}
+  if (FPTEST(ans)) { ERROR_EXIT(arg1); /* relies on contagion of inf, nan? */
+}
   flot = ans;
   ret = *(int *)&flot; /* why? */
   return (ret);

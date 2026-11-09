@@ -135,9 +135,10 @@ Pixmap make_Xicon(DspInterface dsp)
     XPutImage(dsp->display_id, IconPixmap, dsp->Copy_GC, &IconImage, 0, 0, 0, 0, Lisp_icon_width,
               Lisp_icon_height);
 
-  } else if (value == BitmapFileInvalid)
+  } else if (value == BitmapFileInvalid) {
     (void)fprintf(stderr, "Iconpixmapfile %s contains invalid bitmap data\n", iconpixmapfile);
-  else if (value == BitmapNoMemory)
+  } else if (value == BitmapNoMemory) {
     (void)fprintf(stderr, "Not enough memory to allocate icon pixmap\n");
+}
   return (IconPixmap);
 } /* end make_Xicon */

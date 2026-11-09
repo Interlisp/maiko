@@ -76,7 +76,8 @@ void nnewframe(struct frameex1 *newpfra2, DLword *achain, int name)
 newframe:
   /* assume that apframe1 points to the next frame to be scanned */
   ph = newpfra2->alink;
-  if (ph == 0) error("alink = 0 in nnewframe");
+  if (ph == 0) { error("alink = 0 in nnewframe");
+}
   if (ph == ENDSTACKMARK) {
 /* endStack */
 #ifdef BIGATOMS
@@ -117,11 +118,12 @@ newframe:
   {                                  /* open new block to try and conserve address */
     struct fnhead *newpfn2; /* ptr to new fn header */
 
-    if (newpfra2->validnametable) /* check VALIDNAMETABLE */
+    if (newpfra2->validnametable) { /* check VALIDNAMETABLE */
 #ifdef BIGVM
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->nametable);
-    else
+    } else {
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->fnheader);
+}
 #else
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
           ((newpfra2->hi2nametable) << 16 | newpfra2->lonametable));
@@ -214,7 +216,7 @@ newframe:
       case FVPVARHI: /* 0x8000 or 0x80000000(BIGATOMS) */
         ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
         /* ppvar points to argued Pvar */
-        if (WBITSPTR(ppvar)->xMSB) /* check UNBOUND (if *ppvar is negative , unbound) */
+        if (WBITSPTR(ppvar)->xMSB) { /* check UNBOUND (if *ppvar is negative , unbound) */
           switch (ph) {
             case 0: continue;
             case 1:
@@ -222,6 +224,7 @@ newframe:
               /* case 2 : goto cont3;
               case 3 : goto cont4; */
           }
+}
         GETBASEWORD(achain, 1) = STK_HI;
         GETBASEWORD(achain, 0) = 0xFFFF & LAddrFromNative(ppvar);
         /* save High word of PVAR slot address to FVAR slot */
@@ -229,7 +232,8 @@ newframe:
         return;
       case FVFVARHI: /* 0xC000 or 0xC0000000(BIGATOMS) */
         ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
-        if (WBITSPTR(ppvar)->LSB) goto endlookfor;
+        if (WBITSPTR(ppvar)->LSB) { goto endlookfor;
+}
         /* Not Found in new FnHeader, scan next one. */
         *((int *)achain) = *((int *)ppvar);
         /* save address of FX to FVAR slot */
@@ -427,7 +431,8 @@ LispPTR native_newframe(int slot)
     /* assume that apframe1 points to the next frame to be scanned */
 
     alink = newpfra2->alink;
-    if (alink == 0) error("alink is 0 in native_newframe");
+    if (alink == 0) { error("alink is 0 in native_newframe");
+}
     if (alink == ENDSTACKMARK) { /* End of stack, so return top-level-value */
       /*	    if (name & SEGMASK) printf("native_newframe returning name 0x%x, result
          0x%x.\n",

@@ -62,7 +62,8 @@ void Init_XCursor(void) {
   /* this is guaranteed to be our first cursor, isn't it? */
   cursorlist = (struct MXCURSOR *)malloc(sizeof(struct MXCURSOR));
   cursorlist->next = NULL;
-  for (i = 0; i < CURSORHEIGHT; i++) cursorlist->bitmap[i] = newbm[i];
+  for (i = 0; i < CURSORHEIGHT; i++) { cursorlist->bitmap[i] = newbm[i];
+}
   set_Xcursor(currentdsp, (uint8_t *)newbm, 0, 0, &(cursorlist->Xid), 1);
   DefineCursor(currentdsp, currentdsp->DisplayWindow, &(cursorlist->Xid));
 } /* end Init_XCursor */
@@ -91,15 +92,19 @@ void Set_XCursor(int x, int y)
 
   XLOCK; /* No signals while setting the cursor */
   for (clp = cursorlist; clp != NULL; clbp = clp, clp = clp->next) {
-    for (i = 0; i < CURSORHEIGHT; i++)
-      if (clp->bitmap[i] != newbm[i]) break;
-    if (i == CURSORHEIGHT) break;
+    for (i = 0; i < CURSORHEIGHT; i++) {
+      if (clp->bitmap[i] != newbm[i]) { break;
+}
+}
+    if (i == CURSORHEIGHT) { break;
+}
   }
 
   if (clp == NULL) { /* it isn't there, push on a new one */
     clp = (struct MXCURSOR *)malloc(sizeof(struct MXCURSOR));
     /* and fill it up with the current new cursor */
-    for (i = 0; i < CURSORHEIGHT; i++) clp->bitmap[i] = newbm[i];
+    for (i = 0; i < CURSORHEIGHT; i++) { clp->bitmap[i] = newbm[i];
+}
 #ifdef NEWXCURSOR
     /* JDS 000521 Added "15-" to fix cursor troubles at window edge */
     set_Xcursor(currentdsp, (uint8_t *)newbm, x, 15 - y, &(clp->Xid), 1);
@@ -167,10 +172,13 @@ void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hot
   Pixmap Cursor_src, Cursor_msk;
 
 #ifdef BYTESWAP
-  if (from_lisp)
-    for (i = 0; i < 32; i++) image[i] = reversedbits[bitmap[i ^ 3]];
-  else
-    for (i = 0; i < 32; i++) image[i] = reversedbits[bitmap[i]];
+  if (from_lisp) {
+    for (i = 0; i < 32; i++) { image[i] = reversedbits[bitmap[i ^ 3]];
+}
+  } else {
+    for (i = 0; i < 32; i++) { image[i] = reversedbits[bitmap[i]];
+}
+}
 #else
   for (i = 0; i < 32; i++) image[i] = reversedbits[bitmap[i]];
 #endif /* BYTESWAP */

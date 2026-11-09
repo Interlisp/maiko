@@ -281,8 +281,9 @@ LispPTR parse_atomstring(char *string)
   if (packagelen == 0) { /* treat as IL: */
     nameptr = start;
     namelen = cnt;
-  } else
+  } else {
     namelen = cnt - 1;
+}
 
   if ((packagelen == 0) || (strncmp(packageptr, "IL", packagelen) == 0)) { /* default IL: */
     aindex = make_atom(nameptr, 0, namelen);
@@ -290,10 +291,12 @@ LispPTR parse_atomstring(char *string)
       printf("trying IL:\n");
       aindex = get_package_atom(nameptr, namelen, "INTERLISP", 9, 0);
     }
-  } else
+  } else {
     aindex = get_package_atom(nameptr, namelen, packageptr, packagelen, 0);
+}
 
-  if (aindex == 0xffffffff) return (0xffffffff);
+  if (aindex == 0xffffffff) { return (0xffffffff);
+}
   printf("INDEX : %d\n", aindex & 0xffff);
   return (aindex & 0xffff);
 }
@@ -398,12 +401,13 @@ LispPTR uraid_commands(void) {
       URaid_currentFX = num + 1;
       break;
     case 'k':
-      if ((URaid_arg1[0] == 'A') || (URaid_arg1[0] == 'a'))
+      if ((URaid_arg1[0] == 'A') || (URaid_arg1[0] == 'a')) {
         URaid_scanlink = URSCAN_ALINK;
-      else if ((URaid_arg1[0] == 'C') || (URaid_arg1[0] == 'c'))
+      } else if ((URaid_arg1[0] == 'C') || (URaid_arg1[0] == 'c')) {
         URaid_scanlink = URSCAN_CLINK;
-      else
+      } else {
         printf("Link type should be A or C\n");
+}
       break;
     case 'l':
       if (URaid_argnum == 1) {
@@ -697,9 +701,9 @@ LispPTR uraid_commands(void) {
       }
       if (strncmp(URaid_arg2, "NIL", 3) == 0) {
         val = NIL;
-      } else if (*URaid_arg2 == 'T')
+      } else if (*URaid_arg2 == 'T') {
         val = ATOM_T;
-      else {
+      } else {
         errno = 0;
         val = strtol(URaid_arg2, &endpointer, 10);
         if (errno != 0 || *endpointer != '\0') {
@@ -709,9 +713,9 @@ LispPTR uraid_commands(void) {
             printf("Bad Val range\n");
             return (T);
           }
-          if (val >= 0)
+          if (val >= 0) {
             val |= S_POSITIVE;
-          else {
+          } else {
             val = val & 0xffff;
             val |= S_NEGATIVE;
           }
@@ -801,7 +805,8 @@ LispPTR uraid_commands(void) {
       {
         int c;
         c = getchar();
-        if ((c == 'Y') || (c == 'y')) exit(0);
+        if ((c == 'Y') || (c == 'y')) { exit(0);
+}
       }
       (void)fflush(stdin);
       URaid_currentFX = URMAXFXNUM + 1;
@@ -837,9 +842,9 @@ LispPTR uraid_commands(void) {
       }
       break;
     case '(':
-      if (URaid_argnum == 1)
+      if (URaid_argnum == 1) {
         num = 2;
-      else {
+      } else {
         errno = 0;
         num = strtoul(URaid_arg1, &endpointer, 10);
         if (errno != 0 || *endpointer != '\0') {
@@ -994,7 +999,8 @@ int device_after_raid(void) {
   extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
   extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
   FD_ZERO(&LispReadFds);
-  if (re_init_display(DISPLAY_OFFSET, 65536 * 16 * 2) == -1) return (-1);
+  if (re_init_display(DISPLAY_OFFSET, 65536 * 16 * 2) == -1) { return (-1);
+}
   set_cursor();
   init_keyboard(1);
 

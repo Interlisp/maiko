@@ -110,7 +110,8 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  if (doFork) fork_Unix();
+  if (doFork) { fork_Unix();
+}
 
 #ifdef SDL
 #ifdef XWINDOW

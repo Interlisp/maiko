@@ -79,10 +79,12 @@ static FX *make_FXcopy(FX *fx68k) {
     new68k = freestackblock(size, (StackWord *)CURRENTFX,
                             (StackOffsetFromNative(fx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
   } /*if end */
-  else
+  else {
     new68k = freestackblock(size, (StackWord *)CURRENTFX, -1); /* No align */
+}
 
-  if (new68k == 0) return (0); /* No more space for STACK */
+  if (new68k == 0) { return (0); /* No more space for STACK */
+}
 
   /* blt(dest,source,size) */
   blt(new68k, (((DLword *)fx68k) - DLWORDSPER_CELL), size);
@@ -97,7 +99,8 @@ static FX *make_FXcopy(FX *fx68k) {
   CHECK_BF(retbf68k);
 
 #ifdef BIGVM
-  if (nametbl_on_stk) ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+  if (nametbl_on_stk) { ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+}
 #else
   if (nametbl_on_stk) ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
 #endif
@@ -181,16 +184,20 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
         /* make FREEBLOCK for real BF */
         GETWORD(IVar) = STK_FSB_WORD;
         GETWORD(IVar + 1) = (((UNSIGNED)currentBF - (UNSIGNED)IVar) >> 1) + 2;
-        if (0 == GETWORD(IVar + 1)) error("creating 0-len block");
-      } else
+        if (0 == GETWORD(IVar + 1)) { error("creating 0-len block");
+}
+      } else {
         BFRAMEPTR(currentBF)->usecnt--;
-    } else
+}
+    } else {
       freeptr = IVar; /* reset free ptr: not residual case */
+}
 
     /* free FX + BF(dummy or real) */
     GETWORD(freeptr) = STK_FSB_WORD;
     GETWORD(freeptr + 1) = ((UNSIGNED)EndSTKP - (UNSIGNED)freeptr) >> 1;
-    if (0 == GETWORD(freeptr + 1)) error("creating 0-len block");
+    if (0 == GETWORD(freeptr + 1)) { error("creating 0-len block");
+}
     S_CHECK(EndSTKP >= freeptr, "EndSTKP < freeptr!");
     S_CHECK(FSB_size(freeptr) >= MINEXTRASTACKWORDS,
             "free block < min size, after deciding it fits.");
@@ -198,10 +205,12 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
     PVar = ((DLword *)returnFX) + FRAMESIZE;
     /*  Now right CURRENTFX(PVar) is set */
 
-    if (GETWORD(next68k) != STK_FSB_WORD) error("OP_return: MP9316");
+    if (GETWORD(next68k) != STK_FSB_WORD) { error("OP_return: MP9316");
+}
 
     freeptr = next68k;
-    while (GETWORD(freeptr) == STK_FSB_WORD) EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+    while (GETWORD(freeptr) == STK_FSB_WORD) { EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+}
 
     if (CURRENTFX->incall) { /* this frame is  Interrupted */
       error("Stack error: INCALL bit found in returnee frame");
@@ -212,8 +221,9 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
         TopOfStack = *((LispPTR *)CurrentStackPTR);
         CurrentStackPTR -= 2;
 
-      } else
+      } else {
         CurrentStackPTR = next68k - 2;
+}
 
       S_CHECK(EndSTKP >= freeptr, "EndSTKP < freeptr");
 
@@ -242,10 +252,11 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
     MAKE_FXCOPY(returnFX); /* smashes returnFX */
     goto retry;
   } else {
-    if ((next68k == IVar) || (BFRAMEPTR(currentBF)->usecnt == 0))
+    if ((next68k == IVar) || (BFRAMEPTR(currentBF)->usecnt == 0)) {
       goto another;
-    else
+    } else {
       error("Shouldn't");
+}
   }
   error("Control reached end of slowreturn()!");
   return (NIL); /* NOT REACHED */
@@ -256,18 +267,21 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
 void incusecount68k(FX *fx68k) {
   StackWord *scanptr68k;
 
-  if (FX_INVALIDP(fx68k)) return;
+  if (FX_INVALIDP(fx68k)) { return;
+}
 
   CHECK_FX(fx68k);
 
-  if ((++(fx68k->usecount)) > MAXSAFEUSECOUNT)
+  if ((++(fx68k->usecount)) > MAXSAFEUSECOUNT) {
     error("MP9324:Stack frame use count maximum exceeded");
+}
 
   scanptr68k = (StackWord *)NativeAligned2FromStackOffset(fx68k->nextblock);
   switch (STKWORD(scanptr68k)->flags) {
     case STK_NOTFLG:
-      while (STKWORD(scanptr68k)->flags != STK_BF)
+      while (STKWORD(scanptr68k)->flags != STK_BF) {
         scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
+}
       break;
 
     case STK_BF: break;

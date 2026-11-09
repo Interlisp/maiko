@@ -53,7 +53,8 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 + arg2;
-  if (FPTEST(result)) ERROR_EXIT(parg2);
+  if (FPTEST(result)) { ERROR_EXIT(parg2);
+}
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -76,7 +77,8 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 - arg2;
-  if (FPTEST(result)) ERROR_EXIT(parg2);
+  if (FPTEST(result)) { ERROR_EXIT(parg2);
+}
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -99,7 +101,8 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 * arg2;
-  if (FPTEST(result)) ERROR_EXIT(parg2);
+  if (FPTEST(result)) { ERROR_EXIT(parg2);
+}
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -123,7 +126,8 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   FPCLEAR;
   result = arg1 / arg2;
 
-  if (FPTEST(result)) ERROR_EXIT(parg2);
+  if (FPTEST(result)) { ERROR_EXIT(parg2);
+}
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -142,7 +146,8 @@ LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
 
   N_MakeFloat(parg1, arg1, parg2);
   N_MakeFloat(parg2, arg2, parg2);
-  if (arg1 > arg2)
+  if (arg1 > arg2) {
     return (ATOM_T);
+}
       return (NIL_PTR);
 } /* end N_OP_fgreaterp()  */

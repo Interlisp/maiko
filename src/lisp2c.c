@@ -52,14 +52,16 @@ void LispStringToCStr(LispPTR lispstring, char *cstring) {
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
       base = ((char *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
-      for (i = 0; i < Len; i++) cstring[i] = base[i];
+      for (i = 0; i < Len; i++) { cstring[i] = base[i];
+}
       cstring[Len] = '\0';
       break;
 
     case FAT_CHAR_TYPENUMBER:
       sbase = ((short *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
       base = (char *)sbase;
-      for (i = 0; i < Len * 2; i++) cstring[i] = base[i];
+      for (i = 0; i < Len * 2; i++) { cstring[i] = base[i];
+}
       cstring[Len * 2] = '\0';
       break;
 

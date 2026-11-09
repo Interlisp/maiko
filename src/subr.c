@@ -415,8 +415,10 @@ void OP_subrcall(int subr_no, int argnum) {
     case sb_LISP_FINISH: {
       int status;
       POP_SUBR_ARGS;
-      if (argnum == 0 || argnum == 1 || (argnum == 2 && args[1] == NIL)) lisp_finish(EXIT_SUCCESS);
-      if (argnum > 2) lisp_finish(EXIT_FAILURE);
+      if (argnum == 0 || argnum == 1 || (argnum == 2 && args[1] == NIL)) { lisp_finish(EXIT_SUCCESS);
+}
+      if (argnum > 2) { lisp_finish(EXIT_FAILURE);
+}
       N_GETNUMBER(args[1], status, exit_fail);
       lisp_finish(status);
     exit_fail:
@@ -442,7 +444,8 @@ void OP_subrcall(int subr_no, int argnum) {
       switch (args[0] & 0xffff) {
         case 00: {
           UNSIGNED iarg;
-          if (argnum != 2) goto ret_nil;
+          if (argnum != 2) { goto ret_nil;
+}
           N_GETNUMBER(args[1], iarg, ret_nil);
           ARITH_SWITCH(*((LispPTR *)iarg), TopOfStack);
           break;
@@ -450,7 +453,8 @@ void OP_subrcall(int subr_no, int argnum) {
 
         case 01: {
           UNSIGNED iarg, iarg2;
-          if (argnum != 3) goto ret_nil;
+          if (argnum != 3) { goto ret_nil;
+}
           N_GETNUMBER(args[1], iarg, ret_nil);
           N_GETNUMBER(args[2], iarg2, ret_nil);
           *((LispPTR *)iarg) = iarg2;

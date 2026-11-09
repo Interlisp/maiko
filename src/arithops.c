@@ -305,7 +305,8 @@ do_ufn:
 LispPTR N_OP_makenumber(LispPTR tosm1, LispPTR tos) {
   int result;
 
-  if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) ERROR_EXIT(tos);
+  if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) { ERROR_EXIT(tos);
+}
   /* UB: left shift of 49152 by 16 places cannot be represented in type 'int' */
   result = (int)(((tosm1 & 0xffff) << 16) | (tos & 0xffff));
   N_ARITH_SWITCH(result);
@@ -433,7 +434,8 @@ LispPTR N_OP_quot(LispPTR tosm1, LispPTR tos) {
 
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) goto doufn2;
+  if (arg2 == 0) { goto doufn2;
+}
 
   result = arg1 / arg2; /* lmm: note: no error case!! */
   N_ARITH_SWITCH(result);
@@ -451,7 +453,8 @@ LispPTR N_OP_iquot(LispPTR tosm1, LispPTR tos) {
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) goto doufn;
+  if (arg2 == 0) { goto doufn;
+}
 
   result = arg1 / arg2;
   N_ARITH_SWITCH(result);
@@ -475,7 +478,8 @@ LispPTR N_OP_iremainder(LispPTR tosm1, LispPTR tos) {
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) goto doufn;
+  if (arg2 == 0) { goto doufn;
+}
 
   result = arg1 % arg2;
   N_ARITH_SWITCH(result);

@@ -127,9 +127,9 @@ LispPTR *alloc_mdspage(short int type) {
   if (LOLOC(*MDS_free_page_word) != NIL) {
     ptr = NativeAligned4FromLPage(LOLOC(*MDS_free_page_word));
 
-    if (((next_page = LOLOC(*ptr)) != 0) && (GetTypeNumber((*ptr)) != TYPE_SMALLP))
+    if (((next_page = LOLOC(*ptr)) != 0) && (GetTypeNumber((*ptr)) != TYPE_SMALLP)) {
       error("alloc_mdspage: Bad Free Page Link");
-    else {
+    } else {
       *MDS_free_page_word = S_POSITIVE | next_page;
     }
   } else {

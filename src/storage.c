@@ -64,7 +64,8 @@ void checkfor_storagefull(unsigned int npages) {
 #endif
 
   if ((pagesleft < GUARDSTORAGEFULL) || (npages != 0)) {
-    if (*STORAGEFULLSTATE_word == NIL) set_storage_state();
+    if (*STORAGEFULLSTATE_word == NIL) { set_storage_state();
+}
 
     switch (*STORAGEFULLSTATE_word & 0xffff) {
       case SFS_NOTSWITCHABLE:
@@ -116,14 +117,16 @@ void checkfor_storagefull(unsigned int npages) {
           *Next_MDSpage_word = *SecondMDSPage_word;
           advance_storagestate(SFS_FULLYSWITCHED);
           return;
-        } else if (npages != NIL)
+        } else if (npages != NIL) {
           if ((npages + GUARDSTORAGEFULL) >=
 #ifdef BIGVM
-              ((*SecondMDSPage_word) - (*Next_Array_word)))
+              ((*SecondMDSPage_word) - (*Next_Array_word))) {
 #else
               ((*SecondMDSPage_word & 0xffff) - (*Next_Array_word & 0xffff)))
 #endif
             return; /*  (NIL); */
+}
+}
         return;     /* (T); */
       /* break; */
 
@@ -131,8 +134,9 @@ void checkfor_storagefull(unsigned int npages) {
         error("checkfor_storagefull: Shouldn't"); /* (*STORAGEFULLSTATE_word) & 0xffff) */
         break;
     }
-  } else
+  } else {
     return; /*(NIL); */
+}
 } /* checkfor_storagefull end */
 
 /*****************************************************************/
@@ -217,10 +221,11 @@ static void advance_storagestate(DLword flg) {
 /*****************************************************************/
 static void set_storage_state(void) {
   if ((*MACHINETYPE_word & 0xffff) == MACHINETYPE_MAIKO) {
-    if (InterfacePage->dl24bitaddressable != 0)
+    if (InterfacePage->dl24bitaddressable != 0) {
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_SWITCHABLE;
-    else
+    } else {
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_NOTSWITCHABLE;
+}
 
     *SYSTEMCACHEVARS_word = cons(STORAGEFULLSTATE_index, *SYSTEMCACHEVARS_word);
 
@@ -238,24 +243,27 @@ static void set_storage_state(void) {
 static LispPTR dremove(LispPTR x, LispPTR l) {
   LispPTR z;
 
-  if (Listp(l) == NIL)
+  if (Listp(l) == NIL) {
     return (NIL);
+}
   if (x == car(l)) {
     if (cdr(l) != NIL) {
       rplaca(l, car(cdr(l)));
       rplacd(l, cdr(cdr(l)));
       return (dremove(x, l));
-    } else
+    } else {
         return (NIL);
+}
   } else {
     z = l;
   lp:
-    if (Listp(cdr(l)) == NIL)
+    if (Listp(cdr(l)) == NIL) {
       return (z);
-    else if (x == car(cdr(l)))
+    } else if (x == car(cdr(l))) {
       rplacd(l, cdr(cdr(l)));
-    else
+    } else {
       l = cdr(l);
+}
     goto lp;
   }
 }
@@ -364,8 +372,9 @@ LispPTR newpage(LispPTR base) {
       *VMEM_FULL_STATE_word = S_POSITIVE; /* set 0 */
     } else if (InterfacePage->key == IFPVALID_KEY) {
       *VMEM_FULL_STATE_word = ATOM_T;
-    } else
+    } else {
       *VMEM_FULL_STATE_word = MAKEATOM("DIRTY");
+}
   }
 
   return (base);

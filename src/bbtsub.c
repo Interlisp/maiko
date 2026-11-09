@@ -342,7 +342,8 @@ void bitbltsub(LispPTR *argv) {
 
     w = pbt->pbtwidth;
     h = pbt->pbtheight;
-    if (h <= 0 || w <= 0) return;
+    if (h <= 0 || w <= 0) { return;
+}
     src_comp = bbsrc_type(sourcetype, operation);
     op = bbop(sourcetype, operation);
 
@@ -409,13 +410,13 @@ void bitbltsub(LispPTR *argv) {
                       backwardflg = T;
     out for now */
     /* compute flags */
-    if (srcebm != destbm)
+    if (srcebm != destbm) {
       ;
-    else if (sty > dty)
+    } else if (sty > dty) {
       ;
-    else if (dty > sty + h)
+    } else if (dty > sty + h) {
       ;
-    else if (sty != dty || (sx < dx && dx < sx + w)) {
+    } else if (sty != dty || (sx < dx && dx < sx + w)) {
       backwardflg = T;
     }
 
@@ -743,13 +744,13 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   srcbpl = SourceBitmap->bmrasterwidth << 4U;
 
   /* compute flags */
-  if (SourceBitmap != DestBitmap)
+  if (SourceBitmap != DestBitmap) {
     ;
-  else if (sty > dty)
+  } else if (sty > dty) {
     ;
-  else if (dty > sty + height)
+  } else if (dty > sty + height) {
     ;
-  else if (sty != dty || (slx < dlx && dlx < slx + width)) {
+  } else if (sty != dty || (slx < dlx && dlx < slx + width)) {
     backwardflg = T;
   }
 
@@ -1330,8 +1331,10 @@ void newbltchar(LispPTR *args) {
       curx +
       GETWORD(NativeAligned2FromLAddr(displaydata68k->ddcharimagewidths + ((BLTARG *)args)->char8code));
 
-  if (right > rmargin && curx > lmargin) PUNT_TO_BLTCHAR;
-  if (((BLTARG *)args)->displaystream != *TOPWDS68k) PUNT_TO_BLTCHAR;
+  if (right > rmargin && curx > lmargin) { PUNT_TO_BLTCHAR;
+}
+  if (((BLTARG *)args)->displaystream != *TOPWDS68k) { PUNT_TO_BLTCHAR;
+}
 
   {
     int newpos;
@@ -1354,13 +1357,15 @@ void newbltchar(LispPTR *args) {
   }
   if (curx > (int)displaydata68k->ddclippingleft) {
     left = curx;
-  } else
+  } else {
     left = displaydata68k->ddclippingleft;
+}
 
   pbt = (PILOTBBT *)NativeAligned4FromLAddr(displaydata68k->ddpilotbbt);
   h = pbt->pbtheight;
   w = right - left;
-  if (h <= 0 || w <= 0) return;
+  if (h <= 0 || w <= 0) { return;
+}
 
   srcbase = NativeAligned2FromLAddr(VAG2(pbt->pbtsourcehi, pbt->pbtsourcelo));
 

@@ -73,8 +73,9 @@ int gcscan1(int probe)
     /* Start addr. of scanning */
     htlptr = (struct htlinkptr *)(HTmain + probe);
     contents = ((struct htlinkptr *)GCPTR(htlptr))->contents;
-    if (contents && (((struct hashentry *)GCPTR(HTENDS))->collision || (GetStkCnt(contents) == 0)))
+    if (contents && (((struct hashentry *)GCPTR(HTENDS))->collision || (GetStkCnt(contents) == 0))) {
       return (probe);
+}
   }
   return (-1);
 }
@@ -87,8 +88,9 @@ int gcscan2(int probe)
   {
     htlptr = (struct htlinkptr *)(HTmain + probe);
     /* Start addr. of scanning */
-    if (((HTSTKBIT | 1) & ((struct htlinkptr *)GCPTR(htlptr))->contents) != 0)
+    if (((HTSTKBIT | 1) & ((struct htlinkptr *)GCPTR(htlptr))->contents) != 0) {
       return (probe); /* stackref or collision ON */
+}
   }
   return (-1);
 }

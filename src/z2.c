@@ -62,10 +62,11 @@ LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
       return (cadr1.car_cell);
     }
     /* search the rest of A-list */
-    if (Listp(cdrcell))
+    if (Listp(cdrcell)) {
       cadr1 = cadr(cdrcell);
-    else
+    } else {
       cdrcell = NIL;
+}
     /* check for interrupts and punt to handle one safely */
     if (!Irq_Stk_End) {
       TopOfStack = cdrcell; /* for continuation */
@@ -90,7 +91,8 @@ LispPTR N_OP_clfmemb(LispPTR item, LispPTR list) { /* OP 35Q */
         so I copied it */
 
   while (Listp(list)) {
-    if (item == car(list)) return list;
+    if (item == car(list)) { return list;
+}
     list = cdr(list);
     /* if we get an interrupt, punt so we can handle it safely */
     if (!Irq_Stk_End) {
@@ -98,7 +100,8 @@ LispPTR N_OP_clfmemb(LispPTR item, LispPTR list) { /* OP 35Q */
       TIMER_EXIT(list);
     }
   }
-  if (list) ERROR_EXIT(list);
+  if (list) { ERROR_EXIT(list);
+}
   return list;
 
 } /* end N_OP_clfmemb() */

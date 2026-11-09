@@ -182,7 +182,8 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCMethodCache[METH_CACHE_INDEX((cur_class = objptr->class), selector)]);
-  if (ce->class == cur_class && ce->selector == selector) return ce->method_fn;
+  if (ce->class == cur_class && ce->selector == selector) { return ce->method_fn;
+}
 
   /* not in cache, search class then supers */
   {
@@ -210,7 +211,8 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) break;
+      if ((cur_class = car(supers)) == NIL_PTR) { break;
+}
       supers = cdr(supers);
     }
   }
@@ -229,11 +231,13 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
 
   /* Check cache before doing type check */
   ce = &(LCMethodCache[METH_CACHE_INDEX(class, selector)]);
-  if (ce->class == class && ce->selector == selector) return ce->method_fn;
+  if (ce->class == class && ce->selector == selector) { return ce->method_fn;
+}
 
   /* it wasn't there, go search class then supers */
 
-  if (!LC_TYPEP(class, atom_class)) RETCALL(atom_FetchMethod_LCUFN, 2);
+  if (!LC_TYPEP(class, atom_class)) { RETCALL(atom_FetchMethod_LCUFN, 2);
+}
   {
     LispPTR cur_class = class;
     LispPTR supers = ((struct LCClass *)NativeAligned4FromLAddr(cur_class))->supers;
@@ -245,10 +249,11 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       LispPTR *selectorptr;
 
       classptr = (struct LCClass *)NativeAligned4FromLAddr(cur_class);
-      if (classptr->selectors == NIL_PTR)
+      if (classptr->selectors == NIL_PTR) {
         goto next_class;
-      else
+      } else {
         selectorptr = NativeAligned4FromLAddr(classptr->selectors);
+}
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
@@ -259,7 +264,8 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) break;
+      if ((cur_class = car(supers)) == NIL_PTR) { break;
+}
       supers = cdr(supers);
     }
   }
@@ -279,9 +285,11 @@ LispPTR LCFindVarIndex(LispPTR iv, LispPTR object) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCIVCache[IV_CACHE_INDEX((iNames = objptr->iNames), iv)]);
-  if (ce->iNames == iNames && ce->iv == iv) return ce->index;
+  if (ce->iNames == iNames && ce->iv == iv) { return ce->index;
+}
 
-  if (!Listp(iNames)) return NIL_PTR; /* FastFindIndex lisp macro (& others?) */
+  if (!Listp(iNames)) { return NIL_PTR; /* FastFindIndex lisp macro (& others?) */
+}
                                       /* needs this check too ! */
   {
     int i;
@@ -310,7 +318,8 @@ LispPTR LCGetIVValue(LispPTR object, LispPTR iv) {
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
   val = (NativeAligned4FromLAddr(objptr->iDescrs))[index];
-  if (!LC_TYPEP(val, atom_annotatedValue)) return val;
+  if (!LC_TYPEP(val, atom_annotatedValue)) { return val;
+}
 pnut:
   RETCALL(atom_GetIVValue_LCUFN, 2);
   /*
@@ -353,7 +362,8 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   struct fnhead *tmp_fn;
   int rest; /* use for alignments */
 
-  if (atom_index == 0xffffffff) error("Loops punt to nonexistent fn");
+  if (atom_index == 0xffffffff) { error("Loops punt to nonexistent fn");
+}
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;

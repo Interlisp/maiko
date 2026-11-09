@@ -370,9 +370,11 @@ LispPTR vmem_save(char *sysout_file_name)
   TIMEOUT(sysout = open(sysout_file_name, O_WRONLY, 0666));
   if (sysout == -1) {
     /* No file error skip return. */
-    if (errno != ENOENT) return (FILECANNOTOPEN); /* No such file error.*/
-  } else
+    if (errno != ENOENT) { return (FILECANNOTOPEN); /* No such file error.*/
+}
+  } else {
     TIMEOUT(rval = close(sysout));
+}
 
   /* open temp file */
   TIMEOUT(sysout = open(tempname, O_WRONLY | O_CREAT | O_TRUNC, 0666));
@@ -445,7 +447,8 @@ LispPTR vmem_save(char *sysout_file_name)
           ba += maxpages * DLWORDSPER_PAGE;
           pc -= maxpages;
         }
-        if (pc > 0) TIMEOUT(rsize = write(sysout, ba, pc * BYTESPER_PAGE));
+        if (pc > 0) { TIMEOUT(rsize = write(sysout, ba, pc * BYTESPER_PAGE));
+}
       } else {
         unsigned int oldTT = TIMEOUT_TIME;
         /* As we can spend longer than TIMEOUT_TIME doing a big
@@ -497,8 +500,9 @@ LispPTR vmem_save(char *sysout_file_name)
   TIMEOUT(rval = unlink(sysout_file_name));
   if (rval == -1) {
     /* No file error skip return. */
-    if (errno != ENOENT) /* No such file error.*/
+    if (errno != ENOENT) { /* No such file error.*/
       return (FILECANNOTOPEN);
+}
   }
 
   TIMEOUT(rval = rename(tempname, sysout_file_name));

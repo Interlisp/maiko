@@ -359,15 +359,18 @@ static u_char *make_X_keymap(void) {
   while (*key_sym_pairs != -1) {
     int reusable = *key_sym_pairs++, code = *key_sym_pairs++, sym = *key_sym_pairs++, xcode;
 
-    if (sym_used && (sym == last_KEYSYM)) continue;
+    if (sym_used && (sym == last_KEYSYM)) { continue;
+}
 
     sym_used = 0;
     last_KEYSYM = sym;
 
     xcode = find_unused_key(mapping, minkey, codecount, symspercode, sym, table);
 
-    if (xcode == 0) continue;
-    if ((!reusable) && (lisp_codes_used[code] != 0)) continue;
+    if (xcode == 0) { continue;
+}
+    if ((!reusable) && (lisp_codes_used[code] != 0)) { continue;
+}
 
     sym_used = 1;
     last_KEYSYM = sym;
@@ -450,20 +453,21 @@ void keyboardtype(int fd)
 #endif /* XWINDOW */
   } /* if end */
   else {
-    if (strcmp("as3000j", key) == 0)
+    if (strcmp("as3000j", key) == 0) {
       type = KB_AS3000J;
-    else if (strcmp("type4", key) == 0)
+    } else if (strcmp("type4", key) == 0) {
       type = KB_SUN4;
-    else if (strcmp("type2", key) == 0)
+    } else if (strcmp("type2", key) == 0) {
       type = KB_SUN2;
-    else if (strcmp("jle", key) == 0)
+    } else if (strcmp("jle", key) == 0) {
       type = KB_JLE;
-    else if (strcmp("X", key) == 0 || strcmp("x", key) == 0)
+    } else if (strcmp("X", key) == 0 || strcmp("x", key) == 0) {
       type = KB_X;
-    else if (strcmp("sdl", key) == 0)
+    } else if (strcmp("sdl", key) == 0) {
       type = KB_SDL;
-    else
+    } else {
       type = KB_SUN3; /* default */
+}
   }
 
   switch (type) {

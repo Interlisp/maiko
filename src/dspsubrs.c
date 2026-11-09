@@ -81,14 +81,16 @@ LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
 #if   defined(XWINDOW)
   invert = args[0] & 0xFFFF;
   lisp_Xvideocolor(invert);
-  if (invert)
+  if (invert) {
     return ATOM_T;
+}
       return NIL;
 #elif defined(SDL)
   invert = args[0] & 0xFFFF;
   sdl_set_invert(invert);
-  if (invert)
+  if (invert) {
     return ATOM_T;
+}
       return NIL;
 #else
   return NIL;
@@ -134,8 +136,9 @@ void DSP_SetMousePos(LispPTR *args)
 {
 
 #ifdef XWINDOW
-  if (Mouse_Included)
+  if (Mouse_Included) {
     set_Xmouseposition((int)(GetSmalldata(args[0])), (int)(GetSmalldata(args[1])));
+}
 #endif /* XWINDOW */
 #ifdef SDL
   int x = (int)(GetSmalldata(args[0]));

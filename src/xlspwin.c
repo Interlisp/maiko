@@ -397,8 +397,9 @@ do_ring:
   r = RING_READ(CTopKeyevent);
   w = RING_WRITE(CTopKeyevent);
 
-  if (r == w) /* event queue FULL */
+  if (r == w) { /* event queue FULL */
     goto KBnext;
+}
 
   kbevent = (KBEVENT *)(CTopKeyevent + w);
   /*    RCLK(kbevent->time); */
@@ -410,13 +411,16 @@ do_ring:
   kbevent->W5 = *EmKbdAd568K;
   kbevent->WU = *EmRealUtilin68K;
 
-  if (r == 0) /* Queue was empty */
+  if (r == 0) { /* Queue was empty */
     ((RING *)CTopKeyevent)->read = w;
-  if (w >= MAXKEYEVENT)
+}
+  if (w >= MAXKEYEVENT) {
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
-  else
+  } else {
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
+}
 
 KBnext:
-  if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
+  if (*KEYBUFFERING68k == NIL) { *KEYBUFFERING68k = ATOM_T;
+}
 }

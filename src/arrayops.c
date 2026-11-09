@@ -37,7 +37,8 @@ type    size    typenumber
 LispPTR N_OP_misc3(LispPTR baseL, LispPTR typenumber, LispPTR inx, int alpha) {
   int index, type;
 
-  if (alpha != 9) ERROR_EXIT(inx);
+  if (alpha != 9) { ERROR_EXIT(inx);
+}
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
 
@@ -60,7 +61,8 @@ LispPTR N_OP_misc4(LispPTR data, LispPTR base, LispPTR typenumber,
                    LispPTR inx, int alpha) {
   int index, type;
 
-  if (alpha != 7) ERROR_EXIT(inx);
+  if (alpha != 7) { ERROR_EXIT(inx);
+}
 
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
@@ -83,12 +85,14 @@ LispPTR N_OP_aref1(LispPTR arrayarg, LispPTR inx) {
   OneDArray *arrayblk;
 
   /*  verify array  */
-  if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) ERROR_EXIT(inx);
+  if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) { ERROR_EXIT(inx);
+}
   arrayblk = (OneDArray *)NativeAligned4FromLAddr(arrayarg);
 
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
-  if (index >= arrayblk->totalsize) ERROR_EXIT(inx);
+  if (index >= arrayblk->totalsize) { ERROR_EXIT(inx);
+}
   index += arrayblk->offset;
 
   /*  setup base  */
@@ -114,12 +118,14 @@ LispPTR N_OP_aset1(LispPTR data, LispPTR arrayarg, LispPTR inx) {
   int index;
 
   /*  verify array  */
-  if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) ERROR_EXIT(inx);
+  if (GetTypeNumber(arrayarg) != TYPE_ONED_ARRAY) { ERROR_EXIT(inx);
+}
   arrayblk = (OneDArray *)NativeAligned4FromLAddr(arrayarg);
 
   /*  test and setup index  */
   N_GetPos(inx, index, inx);
-  if (index >= arrayblk->totalsize) ERROR_EXIT(inx);
+  if (index >= arrayblk->totalsize) { ERROR_EXIT(inx);
+}
   index += arrayblk->offset;
 
   /*  setup base  */
@@ -148,15 +154,18 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   int j;
 
   /*  verify array  */
-  if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
+  if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) { ERROR_EXIT(inx1);
+}
   arrayblk = (LispArray *)NativeAligned4FromLAddr(arrayarg);
   baseL = arrayblk->base;
 
   /*  test and setup index  */
   N_GetPos(inx1, temp, inx1);
-  if (temp >= (j = arrayblk->Dim1)) ERROR_EXIT(inx1);
+  if (temp >= (j = arrayblk->Dim1)) { ERROR_EXIT(inx1);
+}
   N_GetPos(inx0, arindex, inx1);
-  if (arindex >= arrayblk->Dim0) ERROR_EXIT(inx1);
+  if (arindex >= arrayblk->Dim0) { ERROR_EXIT(inx1);
+}
   arindex *= j;
   arindex += temp;
 
@@ -173,15 +182,18 @@ LispPTR N_OP_aset2(LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
   int j;
 
   /*  verify array  */
-  if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) ERROR_EXIT(inx1);
+  if (GetTypeNumber(arrayarg) != TYPE_TWOD_ARRAY) { ERROR_EXIT(inx1);
+}
   arrayblk = (LispArray *)NativeAligned4FromLAddr(arrayarg);
   base = arrayblk->base;
 
   /*  test and setup index  */
   N_GetPos(inx1, temp, inx1);
-  if (temp >= (j = arrayblk->Dim1)) ERROR_EXIT(inx1);
+  if (temp >= (j = arrayblk->Dim1)) { ERROR_EXIT(inx1);
+}
   N_GetPos(inx0, index, inx1);
-  if (index >= arrayblk->Dim0) ERROR_EXIT(inx1);
+  if (index >= arrayblk->Dim0) { ERROR_EXIT(inx1);
+}
   index *= j;
   index += temp;
 

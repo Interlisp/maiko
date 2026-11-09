@@ -255,7 +255,8 @@ void process_io_events(void)
 #endif /* MAIKO_ENABLE_ETHERNET */
 
   memcpy(&rfds, &LispReadFds, sizeof(rfds));
-  if (select(FD_SETSIZE, &rfds, NULL, NULL, &SelectTimeout) <= 0) return;
+  if (select(FD_SETSIZE, &rfds, NULL, NULL, &SelectTimeout) <= 0) { return;
+}
 
 #ifdef RS232
   if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
@@ -273,8 +274,10 @@ void process_io_events(void)
   }
 #endif
   iflags = 0;
-  for (i = 0; i < 32; i++)
-    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) iflags |= 1 << i;
+  for (i = 0; i < 32; i++) {
+    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) { iflags |= 1 << i;
+}
+}
   if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
     u_int *flags;
     flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
@@ -365,7 +368,8 @@ void taking_mouse_down(void) {
 #ifdef DOS
   (currentdsp->mouse_invisible)(currentdsp, IOPage);
 #else
-  if (!DisplayInitialized) return;
+  if (!DisplayInitialized) { return;
+}
 
   /* restore saved image */
   srcbase = MonoCursor_savebitmap;

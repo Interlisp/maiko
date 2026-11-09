@@ -54,7 +54,8 @@ int OP_miscn(int misc_index, int arg_count) {
     int arg_num = arg_count;
     if (arg_num > 0) {
       *stk++ = (LispPTR)TopOfStack;
-      while (arg_num > 0) args[--arg_num] = *--stk;
+      while (arg_num > 0) { args[--arg_num] = *--stk;
+}
     }
   }
 
@@ -64,7 +65,8 @@ int OP_miscn(int misc_index, int arg_count) {
     case miscn_USER_SUBR: {
       int user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
-      if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) goto do_ufn;
+      if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) { goto do_ufn;
+}
     } break;
     case miscn_SXHASH: result = SX_hash(args[0]); break;
 
@@ -91,27 +93,32 @@ int OP_miscn(int misc_index, int arg_count) {
 
     case miscn_LCFetchMethod:
       result = LCFetchMethod(args[0], args[1]);
-      if (result < 0) goto lc_ufn;
+      if (result < 0) { goto lc_ufn;
+}
       break;
 
     case miscn_LCFetchMethodOrHelp:
       result = LCFetchMethodOrHelp(args[0], args[1]);
-      if (result < 0) goto lc_ufn;
+      if (result < 0) { goto lc_ufn;
+}
       break;
 
     case miscn_LCFindVarIndex:
       result = LCFindVarIndex(args[0], args[1]);
-      if (result < 0) goto lc_ufn;
+      if (result < 0) { goto lc_ufn;
+}
       break;
 
     case miscn_LCGetIVValue:
       result = LCGetIVValue(args[0], args[1]);
-      if (result < 0) goto lc_ufn;
+      if (result < 0) { goto lc_ufn;
+}
       break;
 
     case miscn_LCPutIVValue:
       result = LCPutIVValue(args[0], args[1], args[2]);
-      if (result < 0) goto lc_ufn;
+      if (result < 0) { goto lc_ufn;
+}
       break;
 #ifdef RS232
     case miscn_RAW_RS232C_OPEN:

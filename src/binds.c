@@ -136,7 +136,8 @@ LispPTR *N_OP_dunbind(LispPTR *stack_pointer, LispPTR tos) {
   } else {
     /* tos is bound */
     /* now, stack_pointer points the latter part in slot */
-    while (!((*--stack_pointer) & 0x80000000)); /* scan (until MSB == 1) */
+    while (!((*--stack_pointer) & 0x80000000)) {; /* scan (until MSB == 1) */
+}
 
     value = *stack_pointer;
     num = ~(GetHiWord(value));

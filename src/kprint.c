@@ -44,8 +44,9 @@ void prindatum(LispPTR x) {
     if (Printdepth == PrintMaxLevel) {
       if (GetTypeNumber(x) == TYPE_LISTP) {
         printf("(-)");
-      } else
+      } else {
         printf("*");
+}
     }
     return;
   }
@@ -84,10 +85,11 @@ void prindatum(LispPTR x) {
       break;
 
     case TYPE_SMALLP:
-      if ((x & SEGMASK) == S_POSITIVE)
+      if ((x & SEGMASK) == S_POSITIVE) {
         printf("%d", LOLOC(x)); /* print positive smallp */
-      else
+      } else {
         printf("%d", (LOLOC(x) | 0xffff0000)); /* print negative smallp */
+}
       break;
     case TYPE_FIXP:
       print_fixp(x); /* print fixp  */
@@ -107,13 +109,14 @@ void prindatum(LispPTR x) {
       break;
     default: dtd_base = (struct dtd *)GetDTD(typen); printf("{");
 #ifdef BIGVM
-      if ((typename = dtd_base->dtd_name) != 0)
+      if ((typename = dtd_base->dtd_name) != 0) {
 #else
       if ((typename = dtd_base->dtd_namelo + (dtd_base->dtd_namehi << 16)) != 0)
 #endif
         print_atomname(typename);
-      else
+      } else {
         printf("unknown");
+}
       printf("}0x");
       printf("%x", x); /* print lisp address in hex */
   }

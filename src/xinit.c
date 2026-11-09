@@ -194,7 +194,8 @@ void Open_Display(DspInterface dsp)
 
   /* When we make the initial screen we haven't yet read in the */
   /* displayregion bitmap. Fix this now. */
-  if (dsp->ScreenBitmap.data == NULL) dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
+  if (dsp->ScreenBitmap.data == NULL) { dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
+}
 
   Create_LispWindow(dsp); /* Make the main window */
   Lisp_Xinitialized = true;
@@ -257,7 +258,8 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
 
   /* Try to open the X display. If this isn't possible, we just */
   /* return FALSE. */
-  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) return (NULL);
+  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) { return (NULL);
+}
 
   XSetIOErrorHandler(X_FatalErrorHandler);
   XSetIOErrorExitHandler(dsp->display_id, X_FatalErrorExitHandler, NULL);
@@ -283,15 +285,17 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
     dsp->Display.height =
       (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
                                                           adjust for scroll gadgets*/
-  } else
+  } else {
     dsp->Display.height = ubound(WIN_MIN_HEIGHT, height_hint, WIN_MAX_HEIGHT);
+}
 
   if (width_hint == 0) {
     dsp->Display.width =
       (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
                                                          adjust for scroll gadgets*/
-  } else
+  } else {
     dsp->Display.width = ubound(WIN_MIN_WIDTH, width_hint, WIN_MAX_WIDTH);
+}
 
   /************************************************************/
   /* 		Set the size of ScreenBitMap                  */

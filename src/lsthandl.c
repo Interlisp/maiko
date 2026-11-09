@@ -34,12 +34,14 @@
 LispPTR N_OP_fmemb(LispPTR item, LispPTR tos) { /* OP 34Q */
 
   while (Listp(tos)) {
-    if (item == car(tos)) return tos;
+    if (item == car(tos)) { return tos;
+}
     tos = cdr(tos);
     /* if we get an interrupt, punt so we can handle it safely */
     if (!Irq_Stk_End) { TIMER_EXIT(tos); }
   }
-  if (tos) ERROR_EXIT(tos);
+  if (tos) { ERROR_EXIT(tos);
+}
   return tos;
 
 } /* N_OP_fmemb end */
@@ -56,11 +58,13 @@ LispPTR N_OP_fmemb(LispPTR item, LispPTR tos) { /* OP 34Q */
 
 LispPTR fmemb(LispPTR item, LispPTR list) {
   while (Listp(list)) {
-    if (item == car(list)) return (list);
+    if (item == car(list)) { return (list);
+}
     list = cdr(list);
   }
 
-  if (list) return (list);
+  if (list) { return (list);
+}
   return (list);
 
 } /* fmemb end */
@@ -94,10 +98,12 @@ LispPTR N_OP_listget(LispPTR plist, LispPTR tos) {
     S_N_CHECKANDCADR2(plist, cadrobj, tos, plist);
 
     if (cadrobj.car_cell == tos) {
-      if (cadrobj.cdr_cell == NIL_PTR) return NIL_PTR;
+      if (cadrobj.cdr_cell == NIL_PTR) { return NIL_PTR;
+}
 
-      if (Listp(cadrobj.cdr_cell))
+      if (Listp(cadrobj.cdr_cell)) {
         return (car(cadrobj.cdr_cell));
+}
       /* must punt in case car/cdrerr */
         SAVE_ERROR_EXIT2(plist, tos);
     }

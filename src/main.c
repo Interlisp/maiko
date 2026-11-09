@@ -725,7 +725,8 @@ int main(int argc, char *argv[])
 
   /* This must be called before init_ifpage() which will call init_ifpage_ether() */
   /* a dummy stub is compiled in if no ethernet implementation was selected. */
-  if (ether_enabled) init_ether();
+  if (ether_enabled) { init_ether();
+}
 
 #ifdef DOS
   init_host_filesystem();
@@ -735,7 +736,8 @@ int main(int argc, char *argv[])
 
   if (FindUnixPipes()) /* must call the routine to allocate storage, */
   {                    /* in case we're re-starting a savevm w/open ptys */
-    if (please_fork) (void)fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
+    if (please_fork) { (void)fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
+}
   }
 #endif /* DOS */
 
@@ -824,9 +826,11 @@ void start_lisp(void) {
 
   freeptr = next68k = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
-  if (GETWORD(next68k) != STK_FSB_WORD) error("Starting Lisp: Next stack block isn't free!");
+  if (GETWORD(next68k) != STK_FSB_WORD) { error("Starting Lisp: Next stack block isn't free!");
+}
 
-  while (GETWORD(freeptr) == STK_FSB_WORD) EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+  while (GETWORD(freeptr) == STK_FSB_WORD) { EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+}
 
   CurrentStackPTR = next68k - 2;
 

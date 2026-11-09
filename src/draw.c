@@ -47,8 +47,9 @@ extern int MonoOrColor;
 #ifdef DISPLAYBUFFER
 LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h)
 {
-  if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL))
+  if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL)) {
     return (T);
+}
       return (NIL);
 }
 #endif
@@ -126,12 +127,13 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
   delta &= 0xFFFF;
   op &= 3;
 
-  if ((SEGMASK & width) == S_POSITIVE)
+  if ((SEGMASK & width) == S_POSITIVE) {
     width &= 0xFFFF;
-  else if ((SEGMASK & width) == S_NEGATIVE)
+  } else if ((SEGMASK & width) == S_NEGATIVE) {
     width |= 0xFFFF0000;
-  else
+  } else {
     ERROR_EXIT(numy);
+}
 
   curbit = 0x8000 >> (curbit & 0xFFFF);
   dataptr = NativeAligned2FromLAddr(ptr);
@@ -281,8 +283,10 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
       w = abs(start_x - end_x) + 1;
       h = abs(start_y - end_y) + 1;
 
-      if (start_x > end_x) start_x = end_x;
-      if (start_y > end_y) start_y = end_y;
+      if (start_x > end_x) { start_x = end_x;
+}
+      if (start_y > end_y) { start_y = end_y;
+}
 
 #if defined(XWINDOW) || defined(BYTESWAP)
       flush_display_region(start_x, start_y, w, h);

@@ -157,21 +157,24 @@ LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR
   struct arrayheader *vec68k;
   int fatpnamep;
 
-  if (!hashtbl) return (0xffffffff);
+  if (!hashtbl) { return (0xffffffff);
+}
 
-  if (lispp)
+  if (lispp) {
     hashval = compute_lisp_hash(char_base, offset, length, fatp);
-  else
+  } else {
     hashval = compute_hash(char_base, offset, length);
+}
 
   ehashval = Entry_hash(length, hashval);
   hashtbladdr = (struct hashtable *)NativeAligned4FromLAddr(hashtbl);
 
   /* Move our string ptr up by offset, allowing for fatness */
-  if (fatp)
+  if (fatp) {
     char_base += (offset << 1);
-  else
+  } else {
     char_base += offset;
+}
 
 #ifdef BIGATOMS
   vecs = hashtbladdr->table;
@@ -185,7 +188,8 @@ loop_thru_hashtables:
   hashes = cdr(hashes);
   vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
-  if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
+  if (arraylen == 0) { return (0xffffffff); /*kludge TAKE*/
+}
   h2 = Rehash_factor(hashval, arraylen);
   indexvar = (hashval % arraylen);
 #else
@@ -203,7 +207,8 @@ retry:
   while (ehashval != (ehash = 0xFF & aref1(hash, indexvar))) {
     if (ehash == NIL) { /* Ran out of entries in this table; try next or fail */
 #ifdef BIGATOMS
-      if (hashes == NIL) return (0xffffffff); /* Last table.  Fail. */
+      if (hashes == NIL) { return (0xffffffff); /* Last table.  Fail. */
+}
       goto loop_thru_hashtables;
 #else
       return (0xffffffff);
@@ -218,7 +223,8 @@ retry:
     char *pname_base;
 
     index = aref1(vec, indexvar);
-    if ((index & SEGMASK) == S_POSITIVE) index &= 0xFFFF;
+    if ((index & SEGMASK) == S_POSITIVE) { index &= 0xFFFF;
+}
 
     pnptr = (PNCell *)GetPnameCell(index);
     fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
@@ -255,20 +261,21 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 
   /* For convenience, recognize the common package nicknames: */
 
-  if (0 == strncmp(packname, "XCL", packlen))
+  if (0 == strncmp(packname, "XCL", packlen)) {
     packindex = find_package_from_name("XEROX-COMMON-LISP", 17);
-  else if (0 == strncmp(packname, "SI", packlen))
+  } else if (0 == strncmp(packname, "SI", packlen)) {
     packindex = find_package_from_name("SYSTEM", 6);
-  else if (0 == strncmp(packname, "CL", packlen))
+  } else if (0 == strncmp(packname, "CL", packlen)) {
     packindex = find_package_from_name("LISP", 4);
-  else if (0 == strncmp(packname, "XCLC", packlen))
+  } else if (0 == strncmp(packname, "XCLC", packlen)) {
     packindex = find_package_from_name("COMPILER", 8);
 
   /**** else if (0 == strncmp(packname, "KEYWORD", packlen))
       packindex = 7;***/
 
-  else
+  } else {
     packindex = find_package_from_name(packname, packlen);
+}
 
   if (packindex < 0) {
     printf("getting package index failed %s:%s\n", packname, char_base);
@@ -283,8 +290,9 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
                            (packaddr->INTERNAL_SYMBOLS));
    return( find_symbol(char_base, 0, charlen, hashtbladdr, 0, 0) );*/
 
-  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) != 0xffffffff)
+  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) != 0xffffffff) {
     return (index);
+}
       return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
 }
 

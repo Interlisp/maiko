@@ -86,17 +86,19 @@ newpc:
 
     case opc_FN1:
       if (MVLIST_index == Get_code_AtomNo(pc + 1)) {
-        if (unbind_count > 0) simulate_unbind(caller, unbind_count, prevcaller);
+        if (unbind_count > 0) { simulate_unbind(caller, unbind_count, prevcaller);
+}
 #ifndef BIGATOMS
         /* would add 3 to  PC, but miscn return code does.*/
         if (caller == immediate_caller) PC = pc;
 #else
         /* BUT 3's not enough for big atoms, so add diff between FN op size & MISCN op size */
-        if (caller == immediate_caller) PC = pc + (FN_OPCODE_SIZE - 3);
+        if (caller == immediate_caller) { PC = pc + (FN_OPCODE_SIZE - 3);
 #endif /* BIGATOMS */
 
-        else
+        } else {
           caller->pc = (UNSIGNED)pc + FN_OPCODE_SIZE - (UNSIGNED)fnhead;
+}
         return (make_value_list(arg_count, args));
       }
       break;
@@ -109,7 +111,8 @@ newpc:
     case opc_JUMPX: {
       short displacement;
       displacement = (short)(GETBYTE((char *)pc + 1));
-      if (displacement >= 128) displacement -= 256;
+      if (displacement >= 128) { displacement -= 256;
+}
       pc += displacement;
       goto newpc;
     }
@@ -117,7 +120,8 @@ newpc:
     case opc_JUMPXX: {
       int displacement;
       displacement = (int)Get_code_DLword(pc + 1);
-      if (displacement >= 32768) displacement -= 65536;
+      if (displacement >= 32768) { displacement -= 65536;
+}
       pc += displacement;
       goto newpc;
     }
@@ -132,8 +136,9 @@ newpc:
   /* Default case:  Return a single value. */
   /*****************************************/
 
-  if (arg_count > 0)
+  if (arg_count > 0) {
     return (args[0]);
+}
       return (NIL_PTR);
 }
 
@@ -183,17 +188,19 @@ newpc:
 
     case opc_FN1:
       if (MVLIST_index == Get_code_AtomNo(pc + 1)) {
-        if (unbind_count > 0) simulate_unbind(caller, unbind_count, prevcaller);
+        if (unbind_count > 0) { simulate_unbind(caller, unbind_count, prevcaller);
+}
 /* would add 3 to PC, but miscn ret code does. */
 #ifndef BIGATOMS
         if (caller == immediate_caller) PC = pc;
 #else
         /* BUT 3's not enough for big atoms, so add 1 */
-        if (caller == immediate_caller) PC = pc + (FN_OPCODE_SIZE - 3);
+        if (caller == immediate_caller) { PC = pc + (FN_OPCODE_SIZE - 3);
 #endif /* BIGATOMS */
 
-        else
+        } else {
           caller->pc = (UNSIGNED)pc + FN_OPCODE_SIZE - (UNSIGNED)fnhead;
+}
         return (args[0]);
       }
       break;
@@ -206,7 +213,8 @@ newpc:
     case opc_JUMPX: {
       short displacement;
       displacement = (short)(GETBYTE((char *)pc + 1));
-      if (displacement >= 128) displacement -= 256;
+      if (displacement >= 128) { displacement -= 256;
+}
       pc += displacement;
       goto newpc;
     }
@@ -214,7 +222,8 @@ newpc:
     case opc_JUMPXX: {
       int displacement;
       displacement = (int)Get_code_DLword(pc + 1);
-      if (displacement >= 32768) displacement -= 65536;
+      if (displacement >= 32768) { displacement -= 65536;
+}
       pc += displacement;
       goto newpc;
     }
@@ -229,8 +238,9 @@ newpc:
   /* Default case:  Return a single value. */
   /*****************************************/
 
-  if (Listp(args[0]))
+  if (Listp(args[0])) {
     return (car(args[0]));
+}
       return (args[0]);
 }
 
@@ -248,7 +258,8 @@ newpc:
 LispPTR make_value_list(int argcount, LispPTR *argarray) {
   LispPTR result = NIL_PTR;
   int i;
-  if (argcount == 0) return (NIL_PTR);
+  if (argcount == 0) { return (NIL_PTR);
+}
   for (i = argcount - 1; i >= 0; i--) { result = cons(argarray[i], result); }
   return (result);
 }
@@ -283,8 +294,9 @@ void simulate_unbind(FX2 *frame, int unbind_count, FX2 *returner) {
     /* in inlineC.h						  */
     /*	MAKEFREEBLOCK(stackptr, (DLword *)stackptr-nextblock); */
   }
-  if (returner)
+  if (returner) {
     returner->fast = 0; /* since we've destroyed contiguity */
+}
                         /* in the stack, but that only
                            matters if there's a return. */
 }

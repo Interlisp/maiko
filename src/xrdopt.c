@@ -151,7 +151,8 @@ void print_Xusage(const char *prog)
 
 static void XrmValueCopy(char *dst, XrmValue value, size_t dstSize) {
   size_t len;
-  if (dst == NULL || dstSize == 0) return; /* placate gemini */
+  if (dst == NULL || dstSize == 0) { return; /* placate gemini */
+}
   len = (value.size < dstSize) ? value.size : dstSize - 1;
   memcpy(dst, value.addr, len);
   dst[len] = '\0';
@@ -310,24 +311,27 @@ void read_Xoption(int *argc, char *argv[])
     XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
-    if (errno == 0 && i > 0)
+    if (errno == 0 && i > 0) {
       TIMER_INTERVAL = i;
+}
   }
 
   if (XrmGetResource(rDB, "ldex.maxpages", "Ldex.maxpages", str_type, &value) == True) {
     XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
-    if (errno == 0 && i > 0)
+    if (errno == 0 && i > 0) {
       maxpages = i;
+}
   }
 
   if (XrmGetResource(rDB, "ldex.memory", "Ldex.memory", str_type, &value) == True) {
     XrmValueCopy(tmp, value, sizeof(tmp));
     errno = 0;
     i = (int)strtol(tmp, (char **)NULL, 10);
-    if (errno == 0 && i > 0)
+    if (errno == 0 && i > 0) {
       sysout_size = (unsigned)i;
+}
   }
 
   if (XrmGetResource(rDB, "ldex.Init", "Ldex.Init", str_type, &value) == True) { for_makeinit = 1; }

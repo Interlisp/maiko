@@ -176,7 +176,8 @@ void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width,
     LineBLT8(srcbase, offset, width, destl, |=, noop);
   } else if (operation == ERASE_atom) { /*erase */
     LineBLT8(srcbase, offset, width, destl, &= ~, noop);
-  } else
+  } else {
     error("lineBlt8:Illegal operation specified");
+}
 }
 /* lineBlt8 end */

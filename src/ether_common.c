@@ -81,23 +81,27 @@ LispPTR check_sum(LispPTR *args)
   address = NativeAligned2FromLAddr(*args++);
   nwords = *args++;
 
-  if (*args != NIL)
+  if (*args != NIL) {
     checksum = (*args) & MASKWORD1;
-  else
+  } else {
     checksum = 0;
+}
 
   for (; nwords > (S_POSITIVE); address++, nwords--) {
     checksum = checksum + GETWORD(address);
-    if (checksum > 0xffff) checksum = (checksum & 0xffff) + 1; /* add carry */
+    if (checksum > 0xffff) { checksum = (checksum & 0xffff) + 1; /* add carry */
+}
 
-    if (checksum > 0x7fff) /* ROTATE LEFT 1 */
+    if (checksum > 0x7fff) { /* ROTATE LEFT 1 */
       checksum = ((checksum & 0x7fff) << 1) | 1;
-    else
+    } else {
       checksum = checksum << 1;
+}
   }
 
-  if (checksum == MASKWORD1)
+  if (checksum == MASKWORD1) {
     return (S_POSITIVE); /* ret 0 */
+}
       return (S_POSITIVE | checksum);
 
 } /*check_sum */

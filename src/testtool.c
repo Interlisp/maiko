@@ -379,7 +379,8 @@ void dump_fnbody(LispPTR fnblockaddr)
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
   for (i = 0; i < 2000; i++) {
     int len = print_opcode(fnobj->startpc + i, scratch, fnobj);
-    if (len < 1) return;
+    if (len < 1) { return;
+}
     scratch += len;
     i += (len - 1);
   }
@@ -684,8 +685,10 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
   int len = oplength[op] + 1;
 
   printf(" 0%04o (0x%04x)    ", pc, pc);
-  for (i = 0; i < len; i++) printf("%4o", 0xFF & GETBYTE(addr + i));
-  for (; i < 9; i++) printf("    ");
+  for (i = 0; i < len; i++) { printf("%4o", 0xFF & GETBYTE(addr + i));
+}
+  for (; i < 9; i++) { printf("    ");
+}
   printf("%s", opcode_table[op]);
 
   switch (op) {
@@ -819,7 +822,8 @@ void dumpl(LispPTR laddr) {
 
   ptr = NativeAligned4FromLAddr(laddr);
 
-  for (i = 0; i < 40; i++, ptr++) printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
+  for (i = 0; i < 40; i++, ptr++) { printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
+}
 }
 
 /**** dump specified area (in 16 bit width) ***/
@@ -830,8 +834,9 @@ void dumps(LispPTR laddr) {
 
   ptr = NativeAligned2FromLAddr(laddr);
 
-  for (i = 0; i < 40; i++, ptr++)
+  for (i = 0; i < 40; i++, ptr++) {
     printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), (GETWORD(ptr) & 0xffff));
+}
 }
 
 /***********************/
@@ -867,8 +872,10 @@ void dump_bf(Bframe *bf) {
 printflags:
   printf("\n %x : %x %x ", LAddrFromNative(bf), *(DLword *)bf, *((DLword *)bf + 1));
   putchar('[');
-  if (BFRAMEPTR(bf)->residual) printf("Residual, ");
-  if (BFRAMEPTR(bf)->padding) printf("Padded, ");
+  if (BFRAMEPTR(bf)->residual) { printf("Residual, ");
+}
+  if (BFRAMEPTR(bf)->padding) { printf("Padded, ");
+}
   printf("usecnt=%d ] ", BFRAMEPTR(bf)->usecnt);
   printf("ivar : 0x%x", BFRAMEPTR(bf)->ivar);
 }
@@ -891,11 +898,15 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   printf("\n %x : %x %x ", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   putchar('[');
-  if (fx_addr68k->fast) printf("F,");
-  if (fx_addr68k->incall) printf("incall, ");
-  if (fx_addr68k->validnametable) printf("V, ");
+  if (fx_addr68k->fast) { printf("F,");
+}
+  if (fx_addr68k->incall) { printf("incall, ");
+}
+  if (fx_addr68k->validnametable) { printf("V, ");
+}
   printf("usecnt = %d]; alink", fx_addr68k->usecount);
-  if (fx_addr68k->alink & 1) printf("[SLOWP]");
+  if (fx_addr68k->alink & 1) { printf("[SLOWP]");
+}
 
   ptr += 2;
   printf("\n %x : %x %x fnheadlo, fnheadhi\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
@@ -1001,8 +1012,9 @@ int get_framename(struct frameex1 *fx_addr68k) {
 
 FX *get_nextFX(FX *fx) {
 
-  if (URaid_scanlink == URSCAN_ALINK)
+  if (URaid_scanlink == URSCAN_ALINK) {
     return ((FX *)NativeAligned4FromStackOffset(GETALINK(fx)));
+}
       return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
 
 } /* get_nextFX end */
@@ -1052,8 +1064,9 @@ void GETTOPVAL(char *string) {
   {
     cell68k = (LispPTR *)GetVALCELL68k(index);
     print(*cell68k);
-  } else
+  } else {
     printf("'%s': no such symbol.\n", string);
+}
 }
 
 /****************************************************************************/
@@ -1103,15 +1116,17 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
   DLword size;
   int sdlines = 0;
 
-  if (start == 0)
+  if (start == 0) {
     start68k = Stackspace + InterfacePage->stackbase;
-  else
+  } else {
     start68k = NativeAligned2FromStackOffset(start);
+}
 
-  if (end == 0)
+  if (end == 0) {
     end68k = Stackspace + InterfacePage->endofstack;
-  else
+  } else {
     end68k = NativeAligned2FromStackOffset(end);
+}
 
   stkptr = (STKH *)start68k;
 
@@ -1121,10 +1136,11 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
       case STK_FSB:
         if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) { goto badblock; }
         size = GETWORD(((DLword *)stkptr) + 1);
-        if (STKHPTR(stkptr)->flags1 == STK_GUARD)
+        if (STKHPTR(stkptr)->flags1 == STK_GUARD) {
           printf("\n0x%x GUARD, size : 0x%x", LAddrFromNative(stkptr), size);
-        else
+        } else {
           printf("\n0x%x FSB,   size : 0x%x", LAddrFromNative(stkptr), size);
+}
 
         if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; }
 
@@ -1145,10 +1161,14 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           printf("\n0x%x: FX for ", LAddrFromNative(stkptr));
           print(get_framename((struct frameex1 *)stkptr));
           printf(" [");
-          if (((FX *)stkptr)->fast) printf("fast,");
-          if (((FX *)stkptr)->incall) printf("incall,");
-          if (((FX *)stkptr)->validnametable) printf("V,");
-          if (((FX *)stkptr)->nopush) printf("nopush,");
+          if (((FX *)stkptr)->fast) { printf("fast,");
+}
+          if (((FX *)stkptr)->incall) { printf("incall,");
+}
+          if (((FX *)stkptr)->validnametable) { printf("V,");
+}
+          if (((FX *)stkptr)->nopush) { printf("nopush,");
+}
           printf("]");
         } else {
           dump_fx((struct frameex1 *)stkptr);
@@ -1185,11 +1205,14 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           SD_morep;
           printf("\n0x%x BF,   ", LAddrFromNative(stkptr));
           putchar('[');
-          if (BFRAMEPTR(stkptr)->residual) printf("Res,");
-          if (BFRAMEPTR(stkptr)->padding) printf("Pad,");
+          if (BFRAMEPTR(stkptr)->residual) { printf("Res,");
+}
+          if (BFRAMEPTR(stkptr)->padding) { printf("Pad,");
+}
           printf("ivar : 0x%x]", BFRAMEPTR(stkptr)->ivar);
-        } else
+        } else {
           dump_bf((Bframe *)stkptr);
+}
 
         stkptr = (STKH *)(((DLword *)stkptr) + 2);
         break;
@@ -1248,7 +1271,8 @@ void check_dtd_chain(DLword type)
       return;
     }
 
-    if (next & 0x8000000) error("impossibly-big free pointer!");
+    if (next & 0x8000000) { error("impossibly-big free pointer!");
+}
 
     if (type != GetTypeNumber(next)) {
       error("BAD cell in next dtdfree ");
@@ -1285,7 +1309,8 @@ void Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos) {
       printf(", ");
     }
   }
-  if (numargs) prindatum(arg1);
+  if (numargs) { prindatum(arg1);
+}
   printf(").\n");
   (void)fflush(stdout);
 }

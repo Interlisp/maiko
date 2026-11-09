@@ -109,7 +109,8 @@ LispPTR rpc(LispPTR *args)
   /* SET UP THE SOCKET */
 
   /* Open the socket; Might want to make this non-blocking */
-  if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) goto handle_error;
+  if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) { goto handle_error;
+}
 
   /* The sockets that rpc controls don't block */
   fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK);
@@ -122,15 +123,17 @@ LispPTR rpc(LispPTR *args)
   if (hp) {
     sin1.sin_family = hp->h_addrtype;
     memcpy(&sin1.sin_addr, hp->h_addr, hp->h_length);
-  } else
+  } else {
     goto handle_error;
+}
 
   /* Convert to network byte order */
   sin1.sin_port = htons((u_short)port);
 
   /* Send buffer out on the socket */
-  if (sendto(s, outbuf, out_length, 0, (struct sockaddr *)&sin1, sizeof(sin1)) != out_length)
+  if (sendto(s, outbuf, out_length, 0, (struct sockaddr *)&sin1, sizeof(sin1)) != out_length) {
     goto handle_error;
+}
 
   /* Set up the timers */
   time_waited.tv_sec = 0;
@@ -157,31 +160,35 @@ receive:
        */
       if ((time_waited.tv_sec > total_timeout.tv_sec) ||
           ((time_waited.tv_sec == total_timeout.tv_sec) &&
-           (time_waited.tv_usec >= total_timeout.tv_usec)))
+           (time_waited.tv_usec >= total_timeout.tv_usec))) {
         goto handle_error;
-      else
+      } else {
         break;
+}
 
     /* An error was generated, Unless it was a system error stop */
     case -1:
-      if (errno == EINTR)
+      if (errno == EINTR) {
         goto receive;
-      else
+      } else {
         goto handle_error;
+}
   }
   /* Nothing arrived for this socket, try again */
-  if (!FD_ISSET(s, &read_descriptors)) goto receive;
+  if (!FD_ISSET(s, &read_descriptors)) { goto receive;
+}
 
 /* Something arrived; try to get it */
 
 getbuf:
   fromlen = sizeof(struct sockaddr);
   received = recvfrom(s, inbuf, UDP_DATA_BLOCK_SIZE, 0, (struct sockaddr *)&from, &fromlen);
-  if (received < 0) switch (errno) {
+  if (received < 0) { switch (errno) {
       case EINTR: goto getbuf;
       case EWOULDBLOCK: goto receive;
       default: goto handle_error;
     }
+}
 
   /* close the socket */
   close(s);

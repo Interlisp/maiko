@@ -1008,8 +1008,9 @@ do_ring:
   r = RING_READ(CTopKeyevent);
   w = RING_WRITE(CTopKeyevent);
 
-  if (r == w) /* event queue FULL */
+  if (r == w) { /* event queue FULL */
     goto KBnext;
+}
 
   kbevent = (KBEVENT *)(CTopKeyevent + w);
   /*    RCLK(kbevent->time); */
@@ -1021,19 +1022,23 @@ do_ring:
   kbevent->W5 = *EmKbdAd568K;
   kbevent->WU = *EmRealUtilin68K;
 
-  if (r == 0) /* Queue was empty */
+  if (r == 0) { /* Queue was empty */
     ((RING *)CTopKeyevent)->read = w;
-  if (w >= MAXKEYEVENT)
+}
+  if (w >= MAXKEYEVENT) {
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
-  else
+  } else {
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
+}
 
 KBnext:
-  if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
+  if (*KEYBUFFERING68k == NIL) { *KEYBUFFERING68k = ATOM_T;
+}
 }
 
 static int min(int a, int b) {
-  if (a < b) return a;
+  if (a < b) { return a;
+}
   return b;
 }
 
@@ -1044,10 +1049,14 @@ static int min_y = INT_MAX;
 static int max_x = 0;
 static int max_y = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
-  if (x < min_x) min_x = x;
-  if (y < min_y) min_y = y;
-  if (x + w > max_x) max_x = min(x + w, sdl_displaywidth - 1);
-  if (y + h > max_y) max_y = min(y + h, sdl_displayheight - 1);
+  if (x < min_x) { min_x = x;
+}
+  if (y < min_y) { min_y = y;
+}
+  if (x + w > max_x) { max_x = min(x + w, sdl_displaywidth - 1);
+}
+  if (y + h > max_y) { max_y = min(y + h, sdl_displayheight - 1);
+}
   display_update_needed = 1;
 }
 
@@ -1072,8 +1081,9 @@ static void replicate_bits(int bits, int reps, Uint8 *out) {
   int dbit = 7;
   for (int ibit = 15; ibit >= 0; --ibit) {
     for (int r = 0; r < reps; r++) {
-      if (bits & (1 << ibit))
+      if (bits & (1 << ibit)) {
         out[dbyte] |= 1 << dbit;
+}
       if (--dbit < 0) {
         dbyte++;
         dbit = 7;
@@ -1083,8 +1093,10 @@ static void replicate_bits(int bits, int reps, Uint8 *out) {
 }
 
 static int cursor_equal_p(const DLword *a, const DLword *b) {
-  for (int i = 0; i < CURSORHEIGHT; i++)
-    if (a[i] != b[i]) return FALSE;
+  for (int i = 0; i < CURSORHEIGHT; i++) {
+    if (a[i] != b[i]) { return FALSE;
+}
+}
   return TRUE;
 }
 
@@ -1122,7 +1134,8 @@ static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot
   /* no scaling is an easy case, scale > 1 is harder */
   if (sdl_pixelscale == 1) {
     Uint8 sdl_cursor_data[32];
-    for (int i = 0; i < 32; i++) sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
+    for (int i = 0; i < 32; i++) { sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
+}
     c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16, 16, hot_x, hot_y);
   } else {
     Uint8 *sdl_cursor_data = calloc(sdl_pixelscale * sdl_pixelscale, 32);
@@ -1139,7 +1152,8 @@ static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot
     }
     c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16 * sdl_pixelscale, 16 * sdl_pixelscale, hot_x, hot_y);
   }
-  if (c == NULL) printf("ERROR creating cursor: %s\n", SDL_GetError());
+  if (c == NULL) { printf("ERROR creating cursor: %s\n", SDL_GetError());
+}
   clp->cursor = c;
   clp->next = sdl_cursorlist;
   sdl_cursorlist = clp;
@@ -1281,7 +1295,8 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
 #endif
 static int map_key(SDL_Keycode k) {
   for (int i = 0; keymap[i] != -1; i += 2) {
-    if (keymap[i + 1] == k) return keymap[i];
+    if (keymap[i + 1] == k) { return keymap[i];
+}
   }
   return -1;
 }
@@ -1294,7 +1309,8 @@ static void handle_keydown(SDL_Keycode k, unsigned short mod) {
     // printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, FALSE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+    if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
   }
 }
 static void handle_keyup(SDL_Keycode k, unsigned short mod) {
@@ -1305,7 +1321,8 @@ static void handle_keyup(SDL_Keycode k, unsigned short mod) {
     // printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, TRUE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+    if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
   }
 }
 extern DLword *EmCursorX68K, *EmCursorY68K;
@@ -1325,9 +1342,11 @@ extern LispPTR *CLastUserActionCell68k;
 static void sdl_update_viewport(int width, int height) {
   /* XXX: needs work */
   int w = width / 32 * 32;
-  if (w > sdl_displaywidth * sdl_pixelscale) w = sdl_displaywidth * sdl_pixelscale;
+  if (w > sdl_displaywidth * sdl_pixelscale) { w = sdl_displaywidth * sdl_pixelscale;
+}
   int h = height / 32 * 32;
-  if (h > sdl_displayheight * sdl_pixelscale) h = sdl_displayheight * sdl_pixelscale;
+  if (h > sdl_displayheight * sdl_pixelscale) { h = sdl_displayheight * sdl_pixelscale;
+}
   SDL_Rect r;
   r.x = 0;
   r.y = 0;
@@ -1476,7 +1495,8 @@ void process_Display_events(void *dsp) {
         int ix, iy;
         float x, y;
 #endif
-        if (!sdl_window_focusp) break;
+        if (!sdl_window_focusp) { break;
+}
         SDL_GetMouseState(&x, &y);
         x /= sdl_pixelscale;
         y /= sdl_pixelscale;
@@ -1491,7 +1511,8 @@ void process_Display_events(void *dsp) {
         *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(iy & 0xFFFF);
 #endif
         DoRing();
-        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
         break;
       }
 #if SDL_MAJOR_VERSION == 2
@@ -1505,7 +1526,8 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
         break;
       }
 #if SDL_MAJOR_VERSION == 2
@@ -1519,7 +1541,8 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
         break;
       }
 #if SDL_MAJOR_VERSION == 2

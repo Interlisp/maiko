@@ -101,18 +101,22 @@ LispPTR N_OP_lsh(LispPTR a, LispPTR b) {
   N_GETNUMBER(a, arg2, do_ufn);
 
   if (size > 0) {
-    if (size > 31) goto do_ufn;
+    if (size > 31) { goto do_ufn;
+}
     arg = arg2 << size;
-    if ((arg >> size) != arg2) goto do_ufn;
+    if ((arg >> size) != arg2) { goto do_ufn;
+}
   } else if (size < 0) {
-    if (size < -31) goto do_ufn;
+    if (size < -31) { goto do_ufn;
+}
     arg = arg2 >> -size;
     /*** Commented out JDS 1/27/89:  This punts if you shifted ***/
     /*** ANY 1 bits off the right edge.  You CAN'T overflow    ***/
     /*** in this direction!!                                   ***/
     /*		if ((arg << -size) != arg2) goto do_ufn; */
-  } else
+  } else {
     return (a);
+}
 
   N_ARITH_SWITCH(arg);
 

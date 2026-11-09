@@ -87,7 +87,8 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 
   w = pbt->pbtwidth;
   h = pbt->pbtheight;
-  if ((h <= 0) || (w <= 0)) return (pilot_bt_tbl);
+  if ((h <= 0) || (w <= 0)) { return (pilot_bt_tbl);
+}
   dx = pbt->pbtdestbit;
   sx = pbt->pbtsourcebit;
   backwardflg = pbt->pbtbackward;
@@ -159,10 +160,12 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
   } else if (addrhi == DISPLAY_HI + 1) {
     y = (addrlo + DLWORDSPER_SEGMENT) / DisplayRasterWidth;
     x = ((addrlo + DLWORDSPER_SEGMENT) - y * DisplayRasterWidth) << 4;
-  } else
+  } else {
     return (NIL);
+}
 
-  if (backward) y -= h;
+  if (backward) { y -= h;
+}
 
   if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL)) {
     return (T);

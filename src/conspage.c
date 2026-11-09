@@ -289,7 +289,7 @@ static ConsCell *find_free_cons_cell(void) {
   unsigned pgno = ListpDTD->dtd_nextpage;
 
   for (pg = (struct conspage *)NativeAligned4FromLPage(pgno); pgno;
-       pg = (struct conspage *)NativeAligned4FromLPage(pgno))
+       pg = (struct conspage *)NativeAligned4FromLPage(pgno)) {
     if (pg->count) {
       pg->count--;
       cell = (ConsCell *)(((DLword *)pg) + (pg->next_cell));
@@ -299,6 +299,7 @@ static ConsCell *find_free_cons_cell(void) {
       pgno = ListpDTD->dtd_nextpage = pg->next_page;
       pg->next_page = CONSPAGE_LAST;
     }
+}
 
   return (ConsCell *)0;
 } /* end of find_free_cons_cell */

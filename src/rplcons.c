@@ -45,7 +45,8 @@ LispPTR N_OP_rplcons(LispPTR list, LispPTR item) {
   LispPTR page;
 #endif
 
-  if (!Listp(list)) ERROR_EXIT(item);
+  if (!Listp(list)) { ERROR_EXIT(item);
+}
 
 /* There are some rest Cell and "list" must be ONPAGE cdr_coded */
 #ifndef NEWCDRCODING

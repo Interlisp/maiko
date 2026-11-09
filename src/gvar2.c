@@ -41,13 +41,14 @@ LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
   LispPTR *pslot; /* Native pointer to GVAR slot of atom */
 
 #ifdef BIGATOMS
-  if (0 != (atom_index & SEGMASK))
+  if (0 != (atom_index & SEGMASK)) {
     pslot = NativeAligned4FromLAddr(atom_index + NEWATOM_VALUE_OFFSET);
-  else
+  } else {
 #endif /* BIGATOMS */
 
 #ifdef BIGVM
     pslot = ((LispPTR *)AtomSpace) + (5 * atom_index) + NEWATOM_VALUE_PTROFF;
+}
 #else
     pslot = (LispPTR *)Valspace + atom_index;
 #endif /* BIGVM */

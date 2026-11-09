@@ -187,7 +187,7 @@ void process_Display_events(DspInterface dsp)
 
   while (XPending(dsp->display_id)) {
     XNextEvent(dsp->display_id, &report);
-    if (report.xany.window == dsp->DisplayWindow) /* Try the most important window first. */
+    if (report.xany.window == dsp->DisplayWindow) { /* Try the most important window first. */
       switch (report.type) {
 #ifndef INIT
         case MotionNotify:
@@ -200,12 +200,14 @@ void process_Display_events(DspInterface dsp)
         case KeyPress:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
           DoRing();
-          if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
           break;
         case KeyRelease:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], TRUE);
           DoRing();
-          if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
           break;
         case ButtonPress:
           switch (report.xbutton.button) {
@@ -219,7 +221,8 @@ void process_Display_events(DspInterface dsp)
             default: break;
           }
           DoRing();
-          if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
           break;
         case ButtonRelease:
           switch (report.xbutton.button) {
@@ -233,7 +236,8 @@ void process_Display_events(DspInterface dsp)
             default: break;
           }
           DoRing();
-          if ((KBDEventFlg += 1) > 0) Irq_Stk_End = Irq_Stk_Check = 0;
+          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
+}
           break;
         case EnterNotify: Mouse_Included = TRUE; break;
         case LeaveNotify: Mouse_Included = FALSE; break;
@@ -245,7 +249,7 @@ void process_Display_events(DspInterface dsp)
           break;
         default: break;
       }
-    else if (report.xany.window == dsp->LispWindow)
+    } else if (report.xany.window == dsp->LispWindow) {
       switch (report.xany.type) {
         case ConfigureNotify:
           lisp_Xconfigure(dsp, report.xconfigure.x, report.xconfigure.y, (unsigned)report.xconfigure.width,
@@ -261,8 +265,8 @@ void process_Display_events(DspInterface dsp)
           break;
         default: break;
       }
-    else if (noscroll) continue;
-    else if (report.xany.window == dsp->HorScrollBar)
+    } else if (noscroll) { continue;
+    } else if (report.xany.window == dsp->HorScrollBar) {
       switch (report.type) {
         case ButtonPress:
           switch (report.xbutton.button) {
@@ -297,7 +301,7 @@ void process_Display_events(DspInterface dsp)
 	  break;
         default: break;
       }
-    else if (report.xany.window == dsp->VerScrollBar)
+    } else if (report.xany.window == dsp->VerScrollBar) {
       switch (report.type) {
         case ButtonPress:
           switch (report.xbutton.button) {
@@ -332,18 +336,19 @@ void process_Display_events(DspInterface dsp)
           break;
         default: break;
       }
-    else if ((report.xany.window == dsp->NEGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1))
+    } else if ((report.xany.window == dsp->NEGrav) && (report.xany.type == ButtonPress) &&
+             ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->NEGrav, NorthEastGravity);
-    else if ((report.xany.window == dsp->SEGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1))
+    } else if ((report.xany.window == dsp->SEGrav) && (report.xany.type == ButtonPress) &&
+             ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->SEGrav, SouthEastGravity);
-    else if ((report.xany.window == dsp->SWGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1))
+    } else if ((report.xany.window == dsp->SWGrav) && (report.xany.type == ButtonPress) &&
+             ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->SWGrav, SouthWestGravity);
-    else if ((report.xany.window == dsp->NWGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1))
+    } else if ((report.xany.window == dsp->NWGrav) && (report.xany.type == ButtonPress) &&
+             ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->NWGrav, NorthWestGravity);
+}
     XFlush(dsp->display_id);
   } /* end while */
 } /* end process_Xevents */

@@ -103,7 +103,8 @@ void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
                                    */
 {
 #if   XWINDOW
-  if (args[0] == ATOM_T) beep_Xkeyboard(currentdsp);
+  if (args[0] == ATOM_T) { beep_Xkeyboard(currentdsp);
+}
 #elif DOS
   if (args[0] == ATOM_T) {
     bell_status_word = inp(0x61);

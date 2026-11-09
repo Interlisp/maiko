@@ -193,8 +193,9 @@ static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
       if (item == getikkey(value)) { goto found; }
-    } else
+    } else {
       return (NIL);
+}
   }
   reprobe = Reprobefn(bits, limits);
 lp:
@@ -203,8 +204,9 @@ lp:
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
       if (item == getikkey(value)) { goto found; }
-    } else
+    } else {
       return (NIL);
+}
   }
   goto lp;
 found:
@@ -240,7 +242,8 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
   }
   fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
   REC_GCLOOKUP((POINTERMASK & fnbase->framename), DELREF);
-  if (fnbase->startpc != 0) map_code_pointers(codebase, DELREF);
+  if (fnbase->startpc != 0) { map_code_pointers(codebase, DELREF);
+}
   return (NIL);
 }
 

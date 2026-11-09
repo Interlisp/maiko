@@ -51,7 +51,8 @@ LispPTR N_OP_ubfloat1(LispPTR arg, int alpha) {
       float temp;
       int val;
       temp = *(float *)&arg;
-      if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) ERROR_EXIT(arg);
+      if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) { ERROR_EXIT(arg);
+}
       val = (int)temp;
       N_ARITH_SWITCH(val);
     }

@@ -234,7 +234,8 @@ void enter_big_reference_count(LispPTR ptr) {
 
   if (tmp == NIL) {
     if (Evenp(LAddrFromNative(oventry + 1), DLWORDSPER_PAGE)) {
-      if ((UNSIGNED)oventry + 1 >= (UNSIGNED)HTcoll) error("GC big reference count table overflow");
+      if ((UNSIGNED)oventry + 1 >= (UNSIGNED)HTcoll) { error("GC big reference count table overflow");
+}
       newpage(LAddrFromNative(oventry + 1));
     }
   }
@@ -257,14 +258,17 @@ void modify_big_reference_count(GCENTRY *entry, DLword casep, LispPTR ptr) {
   LispPTR tmp;
 
   /* ditto comment in entry_big_reference_count */
-  if (ptr & 1) ptr &= 0xfffffffe;
+  if (ptr & 1) { ptr &= 0xfffffffe;
+}
   oventry = (struct gc_ovfl *)HTbigcount;
-  while ((tmp = oventry->ovfl_ptr) != ptr)
+  while ((tmp = oventry->ovfl_ptr) != ptr) {
     if (tmp == NIL) {
       error("refcnt previously overflowed, but not found in table.\n");
       return;
-    } else
+    } else {
       ++oventry; /* increment by size of oventry structure */
+}
+}
 
   switch (casep) {
     case ADDREF: ++(oventry->ovfl_cnt); return;
@@ -344,7 +348,8 @@ LispPTR htfind(LispPTR ptr, int casep) {
 
   entry_contents = GETGC(entry);
 
-  if (entry_contents == 0) NewEntry(entry, hiptr, casep, ptr);
+  if (entry_contents == 0) { NewEntry(entry, hiptr, casep, ptr);
+}
   /* NewEntry returns */
 
   if (entry_contents & 1) { /* low bit means a collision entry */
@@ -388,7 +393,8 @@ newlink:
 
   /* collision didn't match  */
   entry_contents = GETGC((GCENTRY *)link + 1);
-  if (entry_contents == 0) goto nolink;
+  if (entry_contents == 0) { goto nolink;
+}
 
   /* try the next link in the collision table */
   prev = link;
@@ -396,10 +402,11 @@ newlink:
   goto newlink;
 
 dellink:
-  if (prev)
+  if (prev) {
     GETGC((GCENTRY *)prev + 1) = GETGC((GCENTRY *)link + 1);
-  else
+  } else {
     GETGC((GCENTRY *)entry) = (GETGC((GCENTRY *)link + 1)) | 1;
+}
   FreeLink(link);
   link = HTcoll + (GETGC((GCENTRY *)entry)) - 1;
   if (GETGC(link + 1) == 0) {
@@ -465,7 +472,8 @@ LispPTR rec_htfind(LispPTR ptr, int casep) {
 
   entry_contents = GETGC(entry);
 
-  if (entry_contents == 0) RecNewEntry(entry, hiptr, casep, ptr);
+  if (entry_contents == 0) { RecNewEntry(entry, hiptr, casep, ptr);
+}
   /* NewEntry returns */
 
   if (entry_contents & 1) { /* low bit means a collision entry */
@@ -514,10 +522,11 @@ newlink:
   goto newlink;
 
 dellink:
-  if (prev)
+  if (prev) {
     GETGC((GCENTRY *)prev + 1) = GETGC((GCENTRY *)link + 1);
-  else
+  } else {
     GETGC((GCENTRY *)entry) = (GETGC((GCENTRY *)link + 1)) | 1;
+}
 
   FreeLink(link);
   link = HTcoll + ((GETGC((GCENTRY *)entry)) - 1);

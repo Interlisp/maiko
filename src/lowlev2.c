@@ -94,7 +94,8 @@ LispPTR N_OP_getbasebyte(LispPTR base_addr, LispPTR byteoffset) {
 ***********************************************************/
 
 LispPTR N_OP_putbasebyte(LispPTR base_addr, LispPTR byteoffset, LispPTR tos) {
-  if (((SEGMASK & tos) != S_POSITIVE) || ((unsigned short)tos >= 256)) ERROR_EXIT(tos);
+  if (((SEGMASK & tos) != S_POSITIVE) || ((unsigned short)tos >= 256)) { ERROR_EXIT(tos);
+}
   switch ((SEGMASK & byteoffset)) {
     case S_POSITIVE: byteoffset &= 0x0000FFFF; break;
     case S_NEGATIVE: byteoffset |= 0xFFFF0000; break;
