@@ -11,16 +11,16 @@
 #include "version.h"
 
 /*
-*	vmemsave.c
-*
-*
-*/
+ *	vmemsave.c
+ *
+ *
+ */
 
 #include <errno.h>
 #include <fcntl.h>
 #include <setjmp.h>
 #include <signal.h>
-#include <stddef.h>	// for ptrdiff_t
+#include <stddef.h>  // for ptrdiff_t
 #include <stdio.h>
 #include <stdlib.h>
 #ifndef DOS
@@ -37,7 +37,6 @@
 #define alarm(x) 1
 #endif /* DOS */
 
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "lspglob.h"
@@ -47,7 +46,7 @@
 #include "locfile.h"
 #include "dbprint.h"
 #include "devif.h"
-#include "ifpage.h"       // for MACHINETYPE_MAIKO
+#include "ifpage.h"  // for MACHINETYPE_MAIKO
 
 #include "vmemsavedefs.h"
 #include "byteswapdefs.h"
@@ -58,11 +57,12 @@
 #include "ufsdefs.h"
 
 /* Definitions incorporated from vmemsave.h (removed) */
-#define	FP_IFPAGE  512			/* IFPAGE address in sysoutfile by Byte */
-#define	DOMINOPAGES  301		/* skip dominopages  in  fptovp */
-#define	SKIPPAGES  301			/* save first filepage  */
-#define	SKIP_DOMINOPAGES  153600	/* Byte size in sysoutfile for dominocode */
-#define	SAVE_IFPAGE	223		/* Virtual address for IFPAGES's buffer page. This value is \EMUSWAPBUFFERS in lisp. */
+#define FP_IFPAGE 512           /* IFPAGE address in sysoutfile by Byte */
+#define DOMINOPAGES 301         /* skip dominopages  in  fptovp */
+#define SKIPPAGES 301           /* save first filepage  */
+#define SKIP_DOMINOPAGES 153600 /* Byte size in sysoutfile for dominocode */
+#define SAVE_IFPAGE \
+  223 /* Virtual address for IFPAGES's buffer page. This value is \EMUSWAPBUFFERS in lisp. */
 
 /* Error return values from VMEMSAVE */
 #define COMPLETESYSOUT NIL
@@ -92,8 +92,7 @@ extern int please_fork;
 /*									*/
 /************************************************************************/
 
-static int lispstringP(LispPTR Lisp)
-{
+static int lispstringP(LispPTR Lisp) {
   switch (((OneDArray *)(NativeAligned4FromLAddr(Lisp)))->typenumber) {
     case THIN_CHAR_TYPENUMBER:
     case FAT_CHAR_TYPENUMBER: return (1);
@@ -138,8 +137,7 @@ static int lispstringP(LispPTR Lisp)
 /*									*/
 /************************************************************************/
 
-LispPTR vmem_save0(LispPTR *args)
-{
+LispPTR vmem_save0(LispPTR *args) {
   char *def;
   char pathname[MAXPATHLEN], sysout[MAXPATHLEN], host[MAXNAMLEN];
 #ifdef DOS
@@ -215,12 +213,13 @@ LispPTR vmem_save0(LispPTR *args)
 #ifndef BIGVM
 #ifndef BYTESWAP
 static int twowords(const void *i, const void *j) /* the difference between two  DLwords. */
-{ return (*(const DLword *)i - *(const DLword *)j); }
+{
+  return (*(const DLword *)i - *(const DLword *)j);
+}
 
 #define FPTOVP_ENTRY (FPTOVP_OFFSET >> 8)
 
-static void sort_fptovp(DLword *fptovp, size_t size)
-{
+static void sort_fptovp(DLword *fptovp, size_t size) {
   size_t oldsize, i;
   ptrdiff_t oldloc, newloc;
   DLword *fptr;
@@ -243,7 +242,8 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
   for (fptr = fptovp, i = 0; GETWORD(fptr) != FPTOVP_ENTRY && i < size; fptr++, i++)
     ;
 
-  if (GETWORD(fptr) != FPTOVP_ENTRY) error("Couldn't find FPTOVP_ENTRY second time!\n");
+  if (GETWORD(fptr) != FPTOVP_ENTRY)
+    error("Couldn't find FPTOVP_ENTRY second time!\n");
   newloc = fptr - fptovp;
 
   /* Supposedly all we have to do is adjust the fptovpstart and nactivepages
@@ -313,8 +313,7 @@ ONE_MORE_TIME: /* Tacky, but why repeat code? */
 extern unsigned maxpages;
 unsigned maxpages = 65536;
 
-LispPTR vmem_save(char *sysout_file_name)
-{
+LispPTR vmem_save(char *sysout_file_name) {
   int sysout; /* SysoutFile descriptor */
 #ifdef BIGVM
   unsigned int *fptovp;
@@ -335,9 +334,9 @@ LispPTR vmem_save(char *sysout_file_name)
   extern DLword *EmCursorBitMap68K;
 #endif /* DOS */
 
-/* remove cursor image from screen */
+  /* remove cursor image from screen */
 
-#ifdef   DOS
+#ifdef DOS
   /*  For DOS, must also take the mouse cursor away (it's  */
   /*  written into the display-region bitmap).	     */
   currentdsp->device.locked++;
@@ -370,11 +369,12 @@ LispPTR vmem_save(char *sysout_file_name)
   TIMEOUT(sysout = open(sysout_file_name, O_WRONLY, 0666));
   if (sysout == -1) {
     /* No file error skip return. */
-    if (errno != ENOENT) { return (FILECANNOTOPEN); /* No such file error.*/
-}
+    if (errno != ENOENT) {
+      return (FILECANNOTOPEN); /* No such file error.*/
+    }
   } else {
     TIMEOUT(rval = close(sysout));
-}
+  }
 
   /* open temp file */
   TIMEOUT(sysout = open(tempname, O_WRONLY | O_CREAT | O_TRUNC, 0666));
@@ -426,10 +426,13 @@ LispPTR vmem_save(char *sysout_file_name)
 
       /* Now, let's see how many pages we can dump */
       while (GETFPTOVP(fptovp, i) == oldfptovp && i < vmemsize) {
-        contig_pages++; oldfptovp++; i++;
+        contig_pages++;
+        oldfptovp++;
+        i++;
       }
       i--; /* Previous loop always overbumps i */
-      DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages, (char *)base_addr - (char *)Lisp_world, saveoldfptovp));
+      DBPRINT(("%4d: writing %d pages from %tx (%d)\n", i, contig_pages,
+               (char *)base_addr - (char *)Lisp_world, saveoldfptovp));
 
 #ifdef BYTESWAP
       word_swap_page(base_addr, contig_pages * CELLSPER_PAGE);
@@ -447,8 +450,9 @@ LispPTR vmem_save(char *sysout_file_name)
           ba += maxpages * DLWORDSPER_PAGE;
           pc -= maxpages;
         }
-        if (pc > 0) { TIMEOUT(rsize = write(sysout, ba, pc * BYTESPER_PAGE));
-}
+        if (pc > 0) {
+          TIMEOUT(rsize = write(sysout, ba, pc * BYTESPER_PAGE));
+        }
       } else {
         unsigned int oldTT = TIMEOUT_TIME;
         /* As we can spend longer than TIMEOUT_TIME doing a big
@@ -463,7 +467,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
       if (rsize == -1) {
         err_mess("write", errno);
-	return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
+        return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
       }
     }
   }
@@ -485,7 +489,7 @@ LispPTR vmem_save(char *sysout_file_name)
 
   if (rsize == -1) {
     err_mess("write", errno);
-	return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
+    return ((errno == ENOSPC) || (errno == EDQUOT)) ? NOFILESPACE : FILECANNOTWRITE;
   }
 
 #ifdef OS5
@@ -495,14 +499,16 @@ LispPTR vmem_save(char *sysout_file_name)
 #else
   TIMEOUT(rval = close(sysout));
 #endif /* OS5 */
-  if (rval == -1) { return (FILECANNOTWRITE); }
+  if (rval == -1) {
+    return (FILECANNOTWRITE);
+  }
 
   TIMEOUT(rval = unlink(sysout_file_name));
   if (rval == -1) {
     /* No file error skip return. */
     if (errno != ENOENT) { /* No such file error.*/
       return (FILECANNOTOPEN);
-}
+    }
   }
 
   TIMEOUT(rval = rename(tempname, sysout_file_name));

@@ -42,34 +42,36 @@
 /*  Convert a lisp string to a C string up to MaxLen long. */
 /***********************************************************/
 
-#define LStringToCString(Lisp, C, MaxLen, Len)                                                     \
-  do {                                                                                                \
-    OneDArray *arrayp;                                                                             \
-    char *base;                                                                                    \
-    short *sbase;                                                                                  \
-    int i;                                                                                         \
-                                                                                                   \
-    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
-    Len = min(MaxLen, arrayp->fillpointer);                                                        \
-                                                                                                   \
-    switch (arrayp->typenumber) {                                                                  \
-      case THIN_CHAR_TYPENUMBER:                                                                   \
-        base =                                                                                     \
-            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
-        for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
-        C[Len] = '\0';                                                                             \
-        break;                                                                                     \
-                                                                                                   \
-      case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase =                                                                                    \
-            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
-        base = (char *)sbase;                                                                      \
-        for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
-        C[Len * 2] = '\0';                                                                         \
-        break;                                                                                     \
-                                                                                                   \
-      default: error("LStringToCString can not handle\n");                                         \
-    }                                                                                              \
+#define LStringToCString(Lisp, C, MaxLen, Len)                                     \
+  do {                                                                             \
+    OneDArray *arrayp;                                                             \
+    char *base;                                                                    \
+    short *sbase;                                                                  \
+    int i;                                                                         \
+                                                                                   \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));           \
+    Len = min(MaxLen, arrayp->fillpointer);                                        \
+                                                                                   \
+    switch (arrayp->typenumber) {                                                  \
+      case THIN_CHAR_TYPENUMBER:                                                   \
+        base = ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) +   \
+               ((int)(arrayp->offset));                                            \
+        for (i = 0; i < Len; i++)                                                  \
+          C[i] = base[i];                                                          \
+        C[Len] = '\0';                                                             \
+        break;                                                                     \
+                                                                                   \
+      case FAT_CHAR_TYPENUMBER:                                                    \
+        sbase = ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + \
+                ((int)(arrayp->offset));                                           \
+        base = (char *)sbase;                                                      \
+        for (i = 0; i < Len * 2; i++)                                              \
+          C[i] = base[i];                                                          \
+        C[Len * 2] = '\0';                                                         \
+        break;                                                                     \
+                                                                                   \
+      default: error("LStringToCString can not handle\n");                         \
+    }                                                                              \
   } while (0)
 
 /************************************************************************/
@@ -134,7 +136,9 @@ LispPTR call_c_fn(LispPTR *args) {
   *errorflag = 0;
 
   /* Initialize the argvector */
-  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; }
+  for (i = 0; i < Max_Arg; i++) {
+    intarg[i] = 0;
+  }
 
   /* Test the function addr. If it is 0 we can not execute. */
   if (fnaddr == 0) {
@@ -153,7 +157,9 @@ LispPTR call_c_fn(LispPTR *args) {
     printf("errorflag: %d\n", *tracedesc++);
     printf("arglistlength: %d\n", *tracedesc++);
     printf("smasher: %d\n", *tracedesc++);
-    for (i = 0; i < arglistlength; i++) { printf("arg[%d]= %d\n", i, *tracedesc++); }
+    for (i = 0; i < arglistlength; i++) {
+      printf("arg[%d]= %d\n", i, *tracedesc++);
+    }
     printf("End Foreign function call=====\n");
   }
 #endif /* TRACE */
@@ -362,10 +368,18 @@ LispPTR call_c_fn(LispPTR *args) {
 /* These used to live in hacks.c, but were only used here. The code */
 /* involved here is not valid ANSI C and will have to be fixed before */
 /* this code can be used again. */
-static int pickapart1(int i1, int i2, int i3, int i4) { return (i1); }
-static int pickapart2(int i1, int i2, int i3, int i4) { return (i2); }
-static int pickapart3(int i1, int i2, int i3, int i4) { return (i3); }
-static int pickapart4(int i1, int i2, int i3, int i4) { return (i4); }
+static int pickapart1(int i1, int i2, int i3, int i4) {
+  return (i1);
+}
+static int pickapart2(int i1, int i2, int i3, int i4) {
+  return (i2);
+}
+static int pickapart3(int i1, int i2, int i3, int i4) {
+  return (i3);
+}
+static int pickapart4(int i1, int i2, int i3, int i4) {
+  return (i4);
+}
 
 /************************************************************************/
 /*									*/
@@ -416,7 +430,9 @@ LispPTR smashing_c_fn(LispPTR *args) {
   valueplace = (int *)NativeAligned4FromLAddr(args[1]);
 
   /* Initialize the argvector */
-  for (i = 0; i < Max_Arg; i++) { intarg[i] = 0; }
+  for (i = 0; i < Max_Arg; i++) {
+    intarg[i] = 0;
+  }
 
   /* Test the function addr. If it is 0 we can not execute. */
   if (fnaddr == 0) {
@@ -804,7 +820,9 @@ int Mdld_list_undefined_sym(void) {
   printf("TRACE: dld_list_undefined_sym()\n");
 #endif
 
-  if (dld_undefined_sym_count == 0) { return (NIL); }
+  if (dld_undefined_sym_count == 0) {
+    return (NIL);
+  }
 
   temp = (int)dld_list_undefined_sym();
   N_ARITH_SWITCH(temp);

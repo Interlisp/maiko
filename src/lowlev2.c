@@ -10,13 +10,13 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
+#include "adr68k.h"  // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "emlglob.h"
 #include "lispemul.h"     // for state, LispPTR, ERROR_EXIT, SEGMASK, POINTE...
 #include "lispmap.h"      // for S_POSITIVE, S_NEGATIVE
 #include "lowlev2defs.h"  // for N_OP_addbase, N_OP_getbasebyte, N_OP_putbas...
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETBYTE, GetTypeNumber, TYPE_FIXP
+#include "lsptypes.h"  // for GETBYTE, GetTypeNumber, TYPE_FIXP
 
 /*** NOTE: these routines likely not called (see inlinedefsC.h) ***/
 
@@ -47,7 +47,7 @@ LispPTR N_OP_addbase(LispPTR base, LispPTR offset) {
           return (base + *(int *)NativeAligned4FromLAddr(offset));
         default: /* floatp also */ ERROR_EXIT(offset);
       } /* end switch */
-  }     /* end switch */
+  } /* end switch */
 }
 
 /************************************************************
@@ -76,8 +76,9 @@ LispPTR N_OP_getbasebyte(LispPTR base_addr, LispPTR byteoffset) {
       } /* end switch */
       break;
   } /* end switch */
-  return ((0xFF & (GETBYTE((char *)NativeAligned2FromLAddr((POINTERMASK & base_addr)) + byteoffset))) |
-          S_POSITIVE);
+  return (
+      (0xFF & (GETBYTE((char *)NativeAligned2FromLAddr((POINTERMASK & base_addr)) + byteoffset))) |
+      S_POSITIVE);
 }
 
 /************************************************************
@@ -94,8 +95,9 @@ LispPTR N_OP_getbasebyte(LispPTR base_addr, LispPTR byteoffset) {
 ***********************************************************/
 
 LispPTR N_OP_putbasebyte(LispPTR base_addr, LispPTR byteoffset, LispPTR tos) {
-  if (((SEGMASK & tos) != S_POSITIVE) || ((unsigned short)tos >= 256)) { ERROR_EXIT(tos);
-}
+  if (((SEGMASK & tos) != S_POSITIVE) || ((unsigned short)tos >= 256)) {
+    ERROR_EXIT(tos);
+  }
   switch ((SEGMASK & byteoffset)) {
     case S_POSITIVE: byteoffset &= 0x0000FFFF; break;
     case S_NEGATIVE: byteoffset |= 0xFFFF0000; break;

@@ -13,12 +13,12 @@
 #include "car-cdrdefs.h"  // for car, cdr
 #include "cell.h"         // for cadr_cell, CDR_NIL, CDR_INDIRECT, S_N_CHECK...
 #include "emlglob.h"
-#include "lispemul.h"     // for state, ConsCell, LispPTR, NIL_PTR, DLword
-#include "lispmap.h"      // for S_POSITIVE
-#include "lspglob.h"      // for Stackspace
-#include "lsptypes.h"     // for Listp
-#include "stack.h"        // for frameex1
-#include "vars3defs.h"    // for N_OP_arg0, N_OP_assoc, cadr
+#include "lispemul.h"   // for state, ConsCell, LispPTR, NIL_PTR, DLword
+#include "lispmap.h"    // for S_POSITIVE
+#include "lspglob.h"    // for Stackspace
+#include "lsptypes.h"   // for Listp
+#include "stack.h"      // for frameex1
+#include "vars3defs.h"  // for N_OP_arg0, N_OP_assoc, cadr
 
 /*******************************************
 cadr
@@ -41,10 +41,10 @@ struct cadr_cell cadr(LispPTR cell_adr)
       cadr1.car_cell = 0;
       cadr1.cdr_cell = 0;
       return (cadr1);
-    }       cadr1.car_cell = car(cell_adr);
-      cadr1.cdr_cell = cdr(cell_adr);
-      return (cadr1);
-
+    }
+    cadr1.car_cell = car(cell_adr);
+    cadr1.cdr_cell = cdr(cell_adr);
+    return (cadr1);
   }
   pcons = (ConsCell *)NativeAligned4FromLAddr(cell_adr);
   while (pcons->cdr_code == CDR_INDIRECT) {
@@ -110,7 +110,7 @@ LispPTR N_OP_arg0(LispPTR tos) {
     ERROR_EXIT(tos);
   } else {
     num = 0xFFFF & tos;
-}
+  }
   if (CURRENTFX->alink & 0x1) {
     /* slow */
     bf = Stackspace + CURRENTFX->blink;
@@ -144,9 +144,13 @@ LispPTR N_OP_assoc(LispPTR key, LispPTR list) {
   struct cadr_cell cadr1;
   LispPTR cdr; /* address of (cdr A-list); Lisp address */
 
-  if (list == NIL_PTR) { return (NIL_PTR); }
+  if (list == NIL_PTR) {
+    return (NIL_PTR);
+  }
 
-  if (!Listp(list)) { return (NIL_PTR); }
+  if (!Listp(list)) {
+    return (NIL_PTR);
+  }
 
   S_N_CHECKANDCADR(list, cadr1, list);
 
@@ -161,7 +165,7 @@ LispPTR N_OP_assoc(LispPTR key, LispPTR list) {
       cadr1 = cadr(cdr);
     } else {
       cdr = NIL;
-}
+    }
     /* check for interrupts and punt to handle one safely */
     if (!Irq_Stk_End) {
       TopOfStack = cdr; /* for next execution */

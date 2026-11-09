@@ -42,15 +42,19 @@ int chatter_fd;
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
-        base = ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
-        for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
+        base =                                                                                     \
+            ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        for (i = 0; i < Len; i++)                                                                  \
+          C[i] = base[i];                                                                          \
         C[Len] = '\0';                                                                             \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) +                     \
+                ((int)(arrayp->offset));                                                           \
         base = (char *)sbase;                                                                      \
-        for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
+        for (i = 0; i < Len * 2; i++)                                                              \
+          C[i] = base[i];                                                                          \
         C[Len * 2] = '\0';                                                                         \
         break;                                                                                     \
                                                                                                    \
@@ -69,15 +73,19 @@ int chatter_fd;
                                                                                                    \
     switch (arrayp->typenumber) {                                                                  \
       case THIN_CHAR_TYPENUMBER:                                                                   \
-        base = ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset));   \
-        for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
+        base =                                                                                     \
+            ((char *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        for (idx = 0; idx < Len; idx++)                                                            \
+          base[idx] = C[idx];                                                                      \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
       case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) + ((int)(arrayp->offset)); \
+        sbase = ((short *)(NativeAligned2FromLAddr((UNSIGNED)arrayp->base))) +                     \
+                ((int)(arrayp->offset));                                                           \
         base = (char *)sbase;                                                                      \
-        for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
+        for (idx = 0; idx < Len * 2; idx++)                                                        \
+          base[idx] = C[idx];                                                                      \
         arrayp->fillpointer = Len;                                                                 \
         break;                                                                                     \
                                                                                                    \
@@ -85,16 +93,15 @@ int chatter_fd;
     }                                                                                              \
   }
 
-#define IntToFixp(C, Lisp)                            \
-  {                                                   \
-    int *base;                                        \
-                                                      \
+#define IntToFixp(C, Lisp)                                 \
+  {                                                        \
+    int *base;                                             \
+                                                           \
     base = (int *)NativeAligned4FromLAddr((UNSIGNED)Lisp); \
-    *base = C;                                        \
+    *base = C;                                             \
   }
 
-chatter(LispPTR *args)
-{
+chatter(LispPTR *args) {
   int result;
   int length;
   int number;
@@ -140,8 +147,7 @@ chatter(LispPTR *args)
     return (NIL);
 }
 
-chatter_open(char *dev)
-{
+chatter_open(char *dev) {
   struct termios termdata;
 
   if ((chatter_fd = open(dev, O_RDWR)) < 0) {
@@ -184,8 +190,7 @@ chatter_close(void) {
   return (0);
 }
 
-chatter_write_string(char *data, int len)
-{
+chatter_write_string(char *data, int len) {
   if (write(chatter_fd, data, len) < 0) {
     perror("WRITE ERROR");
     return (-1);
@@ -193,8 +198,7 @@ chatter_write_string(char *data, int len)
   return (0);
 }
 
-chatter_write_code(unsigned char code)
-{
+chatter_write_code(unsigned char code) {
   if (write(chatter_fd, &code, 1) < 0) {
     perror("WRITE ERROR");
     return (-1);
@@ -202,8 +206,7 @@ chatter_write_code(unsigned char code)
   return (0);
 }
 
-chatter_read(unsigned char *data, int len)
-{
+chatter_read(unsigned char *data, int len) {
   if (read(chatter_fd, data, len) < 0) {
     perror("READ ERROR");
     return (-1);

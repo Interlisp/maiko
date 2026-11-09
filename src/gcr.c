@@ -57,14 +57,14 @@
 #include "commondefs.h"    // for error
 #include "dspsubrsdefs.h"  // for flip_cursor
 #include "emlglob.h"
-#include "gcmain3defs.h"   // for gcmapscan, gcmapunscan, gcscanstack
-#include "gcrdefs.h"       // for disablegc1, dogc01, doreclaim, gcarrangeme...
-#include "lispemul.h"      // for state, NIL, DLword, CurrentStackPTR, ATOM_T
-#include "lspglob.h"       // for MiscStats, GcDisabled_word, Reclaim_cnt_word
-#include "lsptypes.h"      // for GETWORD, TT_NOREF
-#include "miscstat.h"      // for MISCSTATS
-#include "stack.h"         // for STK_FSB_WORD, frameex1
-#include "timerdefs.h"     // for update_miscstats
+#include "gcmain3defs.h"  // for gcmapscan, gcmapunscan, gcscanstack
+#include "gcrdefs.h"      // for disablegc1, dogc01, doreclaim, gcarrangeme...
+#include "lispemul.h"     // for state, NIL, DLword, CurrentStackPTR, ATOM_T
+#include "lspglob.h"      // for MiscStats, GcDisabled_word, Reclaim_cnt_word
+#include "lsptypes.h"     // for GETWORD, TT_NOREF
+#include "miscstat.h"     // for MISCSTATS
+#include "stack.h"        // for STK_FSB_WORD, frameex1
+#include "timerdefs.h"    // for update_miscstats
 
 #ifndef BYTESWAP
 struct interruptstate {
@@ -95,8 +95,9 @@ void gcarrangementstack(void) {
   PushCStack;
   tmpnextblock = LAddrFromNative(CurrentStackPTR += DLWORDSPER_CELL);
   CURRENTFX->nextblock = LOLOC(tmpnextblock);
-  if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) { error("creating 0-long stack block.");
-}
+  if ((UNSIGNED)EndSTKP == (UNSIGNED)CurrentStackPTR) {
+    error("creating 0-long stack block.");
+  }
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;
   GETWORD(CurrentStackPTR + 1) = (((UNSIGNED)EndSTKP - (UNSIGNED)CurrentStackPTR) >> 1);
 }
@@ -125,11 +126,13 @@ void doreclaim(void) {
     update_miscstats();
     gcmisc = *((MISCSTATS *)MiscStats);
     *Reclaim_cnt_word = NIL;
-    if (*GcMess_word != NIL) { flip_cursor();
-}
+    if (*GcMess_word != NIL) {
+      flip_cursor();
+    }
     dogc01();
-    if (*GcMess_word != NIL) { flip_cursor();
-}
+    if (*GcMess_word != NIL) {
+      flip_cursor();
+    }
     *Reclaim_cnt_word = *ReclaimMin_word;
     update_miscstats();
     MiscStats->gctime = MiscStats->gctime + MiscStats->totaltime - gcmisc.totaltime +

@@ -17,10 +17,10 @@
 /*									*/
 /************************************************************************/
 
-#include "adr68k.h"      // for LAddrFromNative
+#include "adr68k.h"  // for LAddrFromNative
 #include "emlglob.h"
-#include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
-#include "lispemul.h"    // for state, LispPTR, DLword, ERROR_EXIT, ATOM_T
+#include "fpdefs.h"    // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
+#include "lispemul.h"  // for state, LispPTR, DLword, ERROR_EXIT, ATOM_T
 #include "lspglob.h"
 #include "lsptypes.h"    // for TYPE_FLOATP
 #include "medleyfp.h"    // for FPCLEAR, FPTEST
@@ -53,8 +53,9 @@ LispPTR N_OP_fplus2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 + arg2;
-  if (FPTEST(result)) { ERROR_EXIT(parg2);
-}
+  if (FPTEST(result)) {
+    ERROR_EXIT(parg2);
+  }
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -77,8 +78,9 @@ LispPTR N_OP_fdifference(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 - arg2;
-  if (FPTEST(result)) { ERROR_EXIT(parg2);
-}
+  if (FPTEST(result)) {
+    ERROR_EXIT(parg2);
+  }
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -101,8 +103,9 @@ LispPTR N_OP_ftimes2(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   FPCLEAR;
   result = arg1 * arg2;
-  if (FPTEST(result)) { ERROR_EXIT(parg2);
-}
+  if (FPTEST(result)) {
+    ERROR_EXIT(parg2);
+  }
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -126,8 +129,9 @@ LispPTR N_OP_fquotient(LispPTR parg1, LispPTR parg2) {
   FPCLEAR;
   result = arg1 / arg2;
 
-  if (FPTEST(result)) { ERROR_EXIT(parg2);
-}
+  if (FPTEST(result)) {
+    ERROR_EXIT(parg2);
+  }
   wordp = (float *)createcell68k(TYPE_FLOATP);
   *wordp = result;
   return (LAddrFromNative(wordp));
@@ -148,6 +152,6 @@ LispPTR N_OP_fgreaterp(LispPTR parg1, LispPTR parg2) {
   N_MakeFloat(parg2, arg2, parg2);
   if (arg1 > arg2) {
     return (ATOM_T);
-}
-      return (NIL_PTR);
+  }
+  return (NIL_PTR);
 } /* end N_OP_fgreaterp()  */

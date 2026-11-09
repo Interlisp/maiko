@@ -18,8 +18,7 @@
 #pragma global assoc
 #endif
 
-void ftran(int start, int end, double *pcol)
-{
+void ftran(int start, int end, double *pcol) {
   int i, j;
   int k, r;
   double theta;
@@ -29,7 +28,8 @@ void ftran(int start, int end, double *pcol)
 #pragma routine permutation(Eta_rownr)
 #endif
 
-  if (Verbose) printf("ftran\n");
+  if (Verbose)
+    printf("ftran\n");
   for (i = start; i <= end; i++) {
     k = Endetacol[i] - 1;
     r = Eta_rownr[k];
@@ -45,11 +45,11 @@ void ftran(int start, int end, double *pcol)
 #endif
 
   for (i = 0; i <= Rows; i++)
-    if (abs(pcol[i]) < EPSEL) pcol[i] = 0;
+    if (abs(pcol[i]) < EPSEL)
+      pcol[i] = 0;
 } /* ftran */
 
-void btran(int numc, double *row)
-{
+void btran(int numc, double *row) {
   int i, j, k;
   double f;
 
@@ -57,11 +57,13 @@ void btran(int numc, double *row)
 #pragma safe(row, Endetacol)
 #endif
 
-  if (Verbose) printf("btran\n");
+  if (Verbose)
+    printf("btran\n");
   for (i = numc; i >= 1; i--) {
     f = 0;
     k = Endetacol[i];
-    for (j = Endetacol[i - 1]; j < k; j++) f += row[Eta_rownr[j]] * Eta_value[j];
+    for (j = Endetacol[i - 1]; j < k; j++)
+      f += row[Eta_rownr[j]] * Eta_value[j];
     if (abs(f) < EPSEL)
       row[Eta_rownr[k - 1]] = 0;
     else

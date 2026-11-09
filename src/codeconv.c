@@ -40,7 +40,8 @@ int FatcharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
   ptr = euc_ptr;
   printf("FatcharNStoEUC start\n");
   printf("ns_len = %d\n", ns_len);
-  for (i = 0; i < ns_len * 2; i++) printf("%x ", ns_ptr[i]);
+  for (i = 0; i < ns_len * 2; i++)
+    printf("%x ", ns_ptr[i]);
   printf("\n");
 #endif
 
@@ -68,7 +69,8 @@ int FatcharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
 #ifdef DEBUG
   printf("FatcharNStoEUC end\n");
   printf("euc_len = %d\n", euc_len);
-  for (i = 0; i < euc_len; i++) printf("%x ", ptr[i]);
+  for (i = 0; i < euc_len; i++)
+    printf("%x ", ptr[i]);
   printf("\n");
 #endif
 
@@ -86,7 +88,8 @@ int ThincharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
   ptr = euc_ptr;
   printf("ThincharNStoEUC start\n");
   printf("ns_len = %d\n", ns_len);
-  for (i = 0; i < ns_len; i++) printf("%x ", ns_ptr[i]);
+  for (i = 0; i < ns_len; i++)
+    printf("%x ", ns_ptr[i]);
   printf("\n");
 #endif
 
@@ -111,7 +114,8 @@ int ThincharNStoEUC(unsigned char *ns_ptr, int ns_len, unsigned char *euc_ptr) {
 #ifdef DEBUG
   printf("ThincharNStoEUC end\n");
   printf("euc_len = %d\n", euc_len);
-  for (i = 0; i < euc_len; i++) printf("%x ", ptr[i]);
+  for (i = 0; i < euc_len; i++)
+    printf("%x ", ptr[i]);
   printf("\n");
 #endif
 
@@ -126,7 +130,8 @@ int EUCtoFatcharNS(unsigned char *euc_ptr, unsigned char *ns_ptr) {
 
 #ifdef DEBUG
   printf("EUCtoFatcharNS start\n");
-  for (i = 0; i < strlen(euc_ptr); i++) printf("%x ", euc_ptr[i]);
+  for (i = 0; i < strlen(euc_ptr); i++)
+    printf("%x ", euc_ptr[i]);
   printf("\n");
 #endif
 
@@ -148,7 +153,8 @@ int EUCtoFatcharNS(unsigned char *euc_ptr, unsigned char *ns_ptr) {
 #ifdef DEBUG
   printf("EUCtoFatcharNS end\n");
   printf("ns_len = %d\n", ns_len);
-  for (i = 0; i < ns_len * 2; i++) printf("%x ", ns_ptr[i]);
+  for (i = 0; i < ns_len * 2; i++)
+    printf("%x ", ns_ptr[i]);
   printf("\n");
 #endif
 
@@ -162,7 +168,8 @@ int EUCstrlen(char *euc_ptr) {
   int i;
 
   printf("EUCstrlen start\n");
-  for (i = 0; i < strlen(euc_ptr); i++) printf("%x ", euc_ptr[i]);
+  for (i = 0; i < strlen(euc_ptr); i++)
+    printf("%x ", euc_ptr[i]);
   printf("\n");
 #endif
 

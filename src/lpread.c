@@ -50,8 +50,7 @@ extern REAL Infinite;
  */
 
 void readlispinput(lprec *lp, float *lisprhs, short *lisprelns, int *lispcend, lispmr *lispmat,
-                   short *lispints, float *lisplowbo, float *lispupbo)
-{
+                   short *lispints, float *lisplowbo, float *lispupbo) {
   int i, j, k, index, nn_ind;
   int x;
 
@@ -65,11 +64,14 @@ void readlispinput(lprec *lp, float *lisprhs, short *lisprelns, int *lispcend, l
       lp->orig_upbo[i] = lispupbo[i];
   }
 
-  for (i = Rows; i >= 0; i--) { lp->orig_rh[i] = lisprhs[i]; }
+  for (i = Rows; i >= 0; i--) {
+    lp->orig_rh[i] = lisprhs[i];
+  }
 
   memcpy(lp->col_end, lispcend, (Columns + 1) * sizeof(int));
 #ifdef BYTESWAP
-  for (i = 0; i < Sum + 1; i++) lp->must_be_int[i] = lispints[i ^ 1];
+  for (i = 0; i < Sum + 1; i++)
+    lp->must_be_int[i] = lispints[i ^ 1];
 #else
   memcpy(lp->must_be_int, lispints, (Sum + 1) * sizeof(short));
 #endif /* BYTESWAP */

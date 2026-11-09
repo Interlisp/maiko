@@ -61,8 +61,7 @@ extern volatile sig_atomic_t XNeedSignal;
 volatile sig_atomic_t XNeedSignal = 0; /* T if an X interrupt happened while XLOCK asserted */
 
 /* ubound: return (unsigned) value if it is between lower and upper otherwise lower or upper */
-static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
-{
+static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper) {
   if (value <= lower) {
     return lower;
   }
@@ -79,8 +78,7 @@ static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
 /*	Turn on the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void init_Xevent(DspInterface dsp)
-{
+void init_Xevent(DspInterface dsp) {
   int GravMask, BarMask;
 
   GravMask =
@@ -108,8 +106,7 @@ void init_Xevent(DspInterface dsp)
 /*	Turn off the X window we've been using for display.		*/
 /*									*/
 /************************************************************************/
-void lisp_Xexit(DspInterface dsp)
-{
+void lisp_Xexit(DspInterface dsp) {
   assert(Lisp_Xinitialized);
 
   XLOCK;
@@ -129,8 +126,7 @@ void lisp_Xexit(DspInterface dsp)
 /*	the X windows we use for Medley's display.			*/
 /*									*/
 /************************************************************************/
-void Xevent_before_raid(DspInterface dsp)
-{
+void Xevent_before_raid(DspInterface dsp) {
   TPRINT(("TRACE: Xevent_before_raid()\n"));
 
   XSelectInput(dsp->display_id, dsp->LispWindow, NoEventMask);
@@ -156,8 +152,7 @@ void Xevent_before_raid(DspInterface dsp)
 /*	from the X server in the windows we use for the display.	*/
 /*									*/
 /************************************************************************/
-void Xevent_after_raid(DspInterface dsp)
-{
+void Xevent_after_raid(DspInterface dsp) {
   init_Xevent(dsp);
   (dsp->bitblt_to_screen)(dsp, 0, dsp->Visible.x, dsp->Visible.y, dsp->Visible.width,
                           dsp->Visible.height);
@@ -177,8 +172,7 @@ void Xevent_after_raid(DspInterface dsp)
 /*									*/
 /*									*/
 /************************************************************************/
-void Open_Display(DspInterface dsp)
-{
+void Open_Display(DspInterface dsp) {
   assert(Lisp_Xinitialized == false);
 
   /****************************************************/
@@ -194,16 +188,16 @@ void Open_Display(DspInterface dsp)
 
   /* When we make the initial screen we haven't yet read in the */
   /* displayregion bitmap. Fix this now. */
-  if (dsp->ScreenBitmap.data == NULL) { dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
-}
+  if (dsp->ScreenBitmap.data == NULL) {
+    dsp->ScreenBitmap.data = (char *)DisplayRegion68k;
+  }
 
   Create_LispWindow(dsp); /* Make the main window */
   Lisp_Xinitialized = true;
   init_Xevent(dsp); /* Turn on the event reporting */
 } /* end OpenDisplay */
 
-int X_FatalErrorHandler(Display *display)
-{
+int X_FatalErrorHandler(Display *display) {
   /* when the fatal error handler gets called it can do cleanup
    * and either exit, or return.  If it returns, the
    * FatalErrorExitHandler will be called
@@ -215,8 +209,7 @@ int X_FatalErrorHandler(Display *display)
   return 0;
 }
 
-void X_FatalErrorExitHandler(Display *display, void *userdata)
-{
+void X_FatalErrorExitHandler(Display *display, void *userdata) {
   /* If we were invoking a SAVEVM/LOGOUT in the interrupt context we
    * would not exit here, as the Lisp VM needs to continue to run
    */
@@ -248,8 +241,7 @@ void X_FatalErrorExitHandler(Display *display, void *userdata)
 /*********************************************************************/
 
 DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, unsigned height_hint,
-                    unsigned depth_hint)
-{
+                    unsigned depth_hint) {
   Screen *Xscreen;
 
   dsp->identifier = Display_Name; /* This is a hack. The display name */
@@ -258,8 +250,9 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
 
   /* Try to open the X display. If this isn't possible, we just */
   /* return FALSE. */
-  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) { return (NULL);
-}
+  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) {
+    return (NULL);
+  }
 
   XSetIOErrorHandler(X_FatalErrorHandler);
   XSetIOErrorExitHandler(dsp->display_id, X_FatalErrorExitHandler, NULL);
@@ -283,19 +276,19 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
   /* Set the width and height of the display.  */
   if (height_hint == 0) {
     dsp->Display.height =
-      (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
-                                                          adjust for scroll gadgets*/
+        (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+                                                            adjust for scroll gadgets*/
   } else {
     dsp->Display.height = ubound(WIN_MIN_HEIGHT, height_hint, WIN_MAX_HEIGHT);
-}
+  }
 
   if (width_hint == 0) {
     dsp->Display.width =
-      (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
-                                                         adjust for scroll gadgets*/
+        (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp); /* In the default case,
+                                                           adjust for scroll gadgets*/
   } else {
     dsp->Display.width = ubound(WIN_MIN_WIDTH, width_hint, WIN_MAX_WIDTH);
-}
+  }
 
   /************************************************************/
   /* 		Set the size of ScreenBitMap                  */
@@ -322,17 +315,17 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
   /* Set the geometry of the Visible (Lisp) window. */
   dsp->Visible.width =
       ubound(OUTER_SB_WIDTH(dsp), LispWindowRequestedWidth,
-            min(dsp->Display.width, (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
+             min(dsp->Display.width, (unsigned)WidthOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
   dsp->Visible.height =
       ubound(OUTER_SB_WIDTH(dsp), LispWindowRequestedHeight,
-            min(dsp->Display.height, (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
+             min(dsp->Display.height, (unsigned)HeightOfScreen(Xscreen) - OUTER_SB_WIDTH(dsp)));
 
   /* Initialize the screen image structure. */
   dsp->ScreenBitmap.width = (int)dsp->Display.width;
   dsp->ScreenBitmap.height = (int)dsp->Display.height;
   dsp->ScreenBitmap.xoffset = 0;
-  dsp->bitsperpixel =
-    (unsigned short)DefaultDepthOfScreen(ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
+  dsp->bitsperpixel = (unsigned short)DefaultDepthOfScreen(
+      ScreenOfDisplay(dsp->display_id, DefaultScreen(dsp->display_id)));
 #if (defined(BYTESWAP))
   dsp->ScreenBitmap.byte_order = LSBFirst;
 #else  /* BYTESWAP */

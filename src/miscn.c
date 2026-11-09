@@ -16,18 +16,18 @@
 */
 /***********************************************************/
 
-#include "arith.h"         // for N_GETNUMBER
-#include "commondefs.h"    // for error
+#include "arith.h"       // for N_GETNUMBER
+#include "commondefs.h"  // for error
 #include "emlglob.h"
 #include "lispemul.h"      // for LispPTR, state, CurrentStackPTR, TopOfStack
 #include "loopsopsdefs.h"  // for LCFetchMethod, LCFetchMethodOrHelp, LCFind...
 #include "lspglob.h"
 #include "lsptypes.h"
-#include "miscndefs.h"     // for OP_miscn
-#include "mvsdefs.h"       // for values, values_list
-#include "subrs.h"         // for miscn_LCFetchMethod, miscn_LCFetchMethodOr...
-#include "sxhashdefs.h"    // for STRING_EQUAL_HASHBITS, STRING_HASHBITS
-#include "usrsubrdefs.h"   // for UserSubr
+#include "miscndefs.h"    // for OP_miscn
+#include "mvsdefs.h"      // for values, values_list
+#include "subrs.h"        // for miscn_LCFetchMethod, miscn_LCFetchMethodOr...
+#include "sxhashdefs.h"   // for STRING_EQUAL_HASHBITS, STRING_HASHBITS
+#include "usrsubrdefs.h"  // for UserSubr
 
 /***********************************************************/
 /*
@@ -54,8 +54,9 @@ int OP_miscn(int misc_index, int arg_count) {
     int arg_num = arg_count;
     if (arg_num > 0) {
       *stk++ = (LispPTR)TopOfStack;
-      while (arg_num > 0) { args[--arg_num] = *--stk;
-}
+      while (arg_num > 0) {
+        args[--arg_num] = *--stk;
+      }
     }
   }
 
@@ -65,8 +66,9 @@ int OP_miscn(int misc_index, int arg_count) {
     case miscn_USER_SUBR: {
       int user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
-      if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) { goto do_ufn;
-}
+      if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) {
+        goto do_ufn;
+      }
     } break;
     case miscn_SXHASH: result = SX_hash(args[0]); break;
 
@@ -93,57 +95,68 @@ int OP_miscn(int misc_index, int arg_count) {
 
     case miscn_LCFetchMethod:
       result = LCFetchMethod(args[0], args[1]);
-      if (result < 0) { goto lc_ufn;
-}
+      if (result < 0) {
+        goto lc_ufn;
+      }
       break;
 
     case miscn_LCFetchMethodOrHelp:
       result = LCFetchMethodOrHelp(args[0], args[1]);
-      if (result < 0) { goto lc_ufn;
-}
+      if (result < 0) {
+        goto lc_ufn;
+      }
       break;
 
     case miscn_LCFindVarIndex:
       result = LCFindVarIndex(args[0], args[1]);
-      if (result < 0) { goto lc_ufn;
-}
+      if (result < 0) {
+        goto lc_ufn;
+      }
       break;
 
     case miscn_LCGetIVValue:
       result = LCGetIVValue(args[0], args[1]);
-      if (result < 0) { goto lc_ufn;
-}
+      if (result < 0) {
+        goto lc_ufn;
+      }
       break;
 
     case miscn_LCPutIVValue:
       result = LCPutIVValue(args[0], args[1], args[2]);
-      if (result < 0) { goto lc_ufn;
-}
+      if (result < 0) {
+        goto lc_ufn;
+      }
       break;
 #ifdef RS232
     case miscn_RAW_RS232C_OPEN:
-      if ((result = raw_rs232c_open(args[0])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_open(args[0])) == NIL)
+        goto do_ufn;
 
       break;
 
     case miscn_RAW_RS232C_CLOSE:
-      if ((result = raw_rs232c_close(args[0])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_close(args[0])) == NIL)
+        goto do_ufn;
 
       break;
 
     case miscn_RAW_RS232C_SETPARAM:
-      if ((result = raw_rs232c_setparams(args[0], args[1])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_setparams(args[0], args[1])) == NIL)
+        goto do_ufn;
       break;
     case miscn_RAW_RS232C_GETPARAM:
       /******/ break;
     case miscn_RAW_RS232C_READ:
-      if ((result = raw_rs232c_read(args[0], args[1], args[2])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_read(args[0], args[1], args[2])) == NIL)
+        goto do_ufn;
       break;
     case miscn_RAW_RS232C_WRITE:
-      if ((result = raw_rs232c_write(args[0], args[1], args[2])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_write(args[0], args[1], args[2])) == NIL)
+        goto do_ufn;
       break;
     case miscn_RAW_RS232C_SETINT:
-      if ((result = raw_rs232c_setint(args[0], args[1])) == NIL) goto do_ufn;
+      if ((result = raw_rs232c_setint(args[0], args[1])) == NIL)
+        goto do_ufn;
       break;
     case miscn_CHATTER: result = chatter(args); break;
 #endif /* RS232 */
@@ -159,7 +172,7 @@ int OP_miscn(int misc_index, int arg_count) {
     case /* miscn_CALL_C*/ 014:
       /* result = call_c_fn(args); */
       result = 0;
-    break;
+      break;
 
     default: goto do_ufn;
 
@@ -172,7 +185,7 @@ int OP_miscn(int misc_index, int arg_count) {
   TopOfStack = (LispPTR)result;
   return (0);
 
-/* A UFN request, so return 1 & don't change the Machine State */
+  /* A UFN request, so return 1 & don't change the Machine State */
 
 do_ufn:
   return (1);

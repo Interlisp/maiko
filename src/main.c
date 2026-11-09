@@ -231,21 +231,23 @@ int display_max = 65536 * 16 * 2;
 /* diagnostic flag for sysout dumping */
 extern unsigned maxpages;
 
-char sysout_name_cl[MAXPATHLEN] = "\0"; /* sysout name as per -sysout command line arg ; Set by read_Xoption, in the X version. */
-char sysout_name_xrm[MAXPATHLEN] = "\0"; /* sysout name as per X resource manager, if any */
+char sysout_name_cl[MAXPATHLEN] =
+    "\0"; /* sysout name as per -sysout command line arg ; Set by read_Xoption, in the X version. */
+char sysout_name_xrm[MAXPATHLEN] = "\0";       /* sysout name as per X resource manager, if any */
 char sysout_name_first_arg[MAXPATHLEN] = "\0"; /* sysout name as per 1st command line arg, if any */
-char sysout_name[MAXPATHLEN] = "\0"; /* "final" sysout name chosen from above */
+char sysout_name[MAXPATHLEN] = "\0";           /* "final" sysout name chosen from above */
 
-unsigned sysout_size = 0;    /* ditto */
+unsigned sysout_size = 0; /* ditto */
 
-int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout) after each printf */
+int flushing = FALSE; /* see dbprint.h if set, all debug/trace printing will call fflush(stdout)
+                         after each printf */
 
 #if defined(DOS) || defined(XWINDOW)
 #include "devif.h"
 extern DspInterface currentdsp;
 #endif /* DOS || XWINDOW */
 #ifdef SDL
-#include "sdldefs.h"	/* for init_SDL */
+#include "sdldefs.h" /* for init_SDL */
 #endif
 extern const time_t MDate;
 extern const char *MaikoGitVersion;
@@ -307,7 +309,7 @@ const char *helpstring =
 
 #if defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB)
 const char *nethubHelpstring =
- "\
+    "\
  -nh-host dodo-host        Hostname for Dodo Nethub (no networking if missing)\n\
  -nh-port port-number      Port for Dodo Nethub (optional, default: 3333)\n\
  -nh-mac XX-XX-XX-XX-XX-XX Machine-ID for Maiko-VM (optional, default: CA-FF-EE-12-34-56) \n\
@@ -343,8 +345,7 @@ extern int pixelScale;
 /*									*/
 /************************************************************************/
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   int i;
   char *envname;
   extern int TIMER_INTERVAL;
@@ -376,7 +377,6 @@ int main(int argc, char *argv[])
     snprintf(sysout_name_first_arg, MAXPATHLEN, "%s", argv[1]);
   }
 
-
 #ifdef XWINDOW
   read_Xoption(&argc, argv);
 #endif /* XWINDOW */
@@ -396,14 +396,13 @@ int main(int argc, char *argv[])
     exit(0);
   }
 
-
   for (; i < argc; i += 1) { /* step by 1 in case of typo */
 
-   // NOTE:  in the case of X Windows, some of the args being checked for in this loop
-   // have already been processed (and removed from argv) by the call to read_Xoption()
-   // above.  (See readXoption() in xrdopt.c)
+    // NOTE:  in the case of X Windows, some of the args being checked for in this loop
+    // have already been processed (and removed from argv) by the call to read_Xoption()
+    // above.  (See readXoption() in xrdopt.c)
 
-   /* Check for -sysout arg */
+    /* Check for -sysout arg */
     if (!strcmp(argv[i], "-sysout")) {
       if (argc > ++i) {
         snprintf(sysout_name_cl, MAXPATHLEN, "%s", argv[i]);
@@ -471,13 +470,13 @@ int main(int argc, char *argv[])
     } else if ((strcmp(argv[i], "-nomouse") == 0) || (strcmp(argv[i], "-NOMOUSE") == 0)) {
       nomouseflag = TRUE;
     }
-
 #endif /* DOS */
 #ifdef SDL
     else if ((strcmp(argv[i], "-sc") == 0) || (strcmp(argv[i], "-SC") == 0)) {
       if (argc > ++i) {
-        int read = sscanf(argv[i], "%dx%d", &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
-        if(read != 2) {
+        int read =
+            sscanf(argv[i], "%dx%d", &LispDisplayRequestedWidth, &LispDisplayRequestedHeight);
+        if (read != 2) {
           (void)fprintf(stderr, "Could not parse -sc argument %s\n", argv[i]);
           exit(1);
         }
@@ -488,7 +487,7 @@ int main(int argc, char *argv[])
     } else if ((strcmp(argv[i], "-pixelscale") == 0) || (strcmp(argv[i], "-PIXELSCALE") == 0)) {
       if (argc > ++i) {
         int read = sscanf(argv[i], "%d", &pixelScale);
-        if(read != 1) {
+        if (read != 1) {
           (void)fprintf(stderr, "Could not parse -pixelscale argument %s\n", argv[i]);
           exit(1);
         }
@@ -496,8 +495,8 @@ int main(int argc, char *argv[])
         (void)fprintf(stderr, "Missing argument after -pixelscale\n");
         exit(1);
       }
-    } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0)
-               || (strcmp(argv[i], "-title") == 0) || (strcmp(argv[i], "-TITLE") == 0)) {
+    } else if ((strcmp(argv[i], "-t") == 0) || (strcmp(argv[i], "-T") == 0) ||
+               (strcmp(argv[i], "-title") == 0) || (strcmp(argv[i], "-TITLE") == 0)) {
       if (argc > ++i) {
         snprintf(windowTitle, sizeof(windowTitle), "%s", argv[i]);
       } else {
@@ -520,7 +519,7 @@ int main(int argc, char *argv[])
       }
     }
 #endif /* SDL */
-    /* Can only do this under SUNOs, for now */
+       /* Can only do this under SUNOs, for now */
 #if defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
     else if (!strcmp(argv[i], "-E")) { /**** ethernet info	****/
       int b0, b1, b2, b3, b4, b5;
@@ -528,9 +527,8 @@ int main(int argc, char *argv[])
       if (argc > ++i &&
           sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5) == 7)
 #elif defined(USE_NIT)
-      if (argc > ++i &&
-          sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3, &b4, &b5,
-                 snit.snit_ifname) == 8)
+      if (argc > ++i && sscanf(argv[i], "%d:%x:%x:%x:%x:%x:%x:%s", &ether_fd, &b0, &b1, &b2, &b3,
+                               &b4, &b5, snit.snit_ifname) == 8)
 #endif /* USE_DLPI */
       {
         ether_enabled = 1;
@@ -557,8 +555,7 @@ int main(int argc, char *argv[])
         (void)fprintf(stderr, "Missing argument after -nh-host\n");
         exit(1);
       }
-    }
-    else if (!strcmp(argv[i], "-nh-port")) {
+    } else if (!strcmp(argv[i], "-nh-port")) {
       if (argc > ++i) {
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
@@ -572,11 +569,10 @@ int main(int argc, char *argv[])
         (void)fprintf(stderr, "Missing argument after -nh-port\n");
         exit(1);
       }
-    }
-    else if (!strcmp(argv[i], "-nh-mac")) {
+    } else if (!strcmp(argv[i], "-nh-mac")) {
       if (argc > ++i) {
         int b0, b1, b2, b3, b4, b5;
-        if (sscanf(argv[i], "%x-%x-%x-%x-%x-%x",  &b0, &b1, &b2, &b3, &b4, &b5) == 6) {
+        if (sscanf(argv[i], "%x-%x-%x-%x-%x-%x", &b0, &b1, &b2, &b3, &b4, &b5) == 6) {
           setNethubMac(b0, b1, b2, b3, b4, b5);
         } else {
           (void)fprintf(stderr, "Invalid argument for -nh-mac\n");
@@ -586,8 +582,7 @@ int main(int argc, char *argv[])
         (void)fprintf(stderr, "Missing argument after -nh-mac\n");
         exit(1);
       }
-    }
-    else if (!strcmp(argv[i], "-nh-loglevel")) {
+    } else if (!strcmp(argv[i], "-nh-loglevel")) {
       if (argc > ++i) {
         errno = 0;
         tmpint = strtol(argv[i], (char **)NULL, 10);
@@ -614,10 +609,12 @@ int main(int argc, char *argv[])
           /* assume it's an interface name for which we do not know the address */
           strlcpy(ether_ifname, argv[i], sizeof(ether_ifname));
         } else {
-          fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s",  &b[0], &b[1], &b[2], &b[3], &b[4], &b[5], ifname);
+          fields = sscanf(argv[i], "%x:%x:%x:%x:%x:%x%%%31s", &b[0], &b[1], &b[2], &b[3], &b[4],
+                          &b[5], ifname);
           /* TBD: see comments in xrdopts.c regarding determining ifname and MAC address */
           if (fields == 6 || fields == 7) {
-            for (int x = 0; x < 6; x++) ether_host[x] = b[x] & 0xFF;
+            for (int x = 0; x < 6; x++)
+              ether_host[x] = b[x] & 0xFF;
             if (fields == 7)
               strlcpy(ether_ifname, ifname, sizeof(ether_ifname));
           } else {
@@ -678,12 +675,17 @@ int main(int argc, char *argv[])
   //    5. Value as determined by X resource manager, if any
   //    6. Value of $HOME/lisp.virtualmem (or lisp.vm for DOS)
   //
-  if (sysout_name_cl[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_cl); }
-  else if (sysout_name_first_arg[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_first_arg); }
-  else if ((envname = getenv("LDESRCESYSOUT")) != NULL) { snprintf(sysout_name, MAXPATHLEN, "%s", envname); }
-  else if ((envname = getenv("LDESOURCESYSOUT")) != NULL) { snprintf(sysout_name, MAXPATHLEN, "%s", envname); }
-  else if (sysout_name_xrm[0] != '\0') { snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_xrm); }
-  else {
+  if (sysout_name_cl[0] != '\0') {
+    snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_cl);
+  } else if (sysout_name_first_arg[0] != '\0') {
+    snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_first_arg);
+  } else if ((envname = getenv("LDESRCESYSOUT")) != NULL) {
+    snprintf(sysout_name, MAXPATHLEN, "%s", envname);
+  } else if ((envname = getenv("LDESOURCESYSOUT")) != NULL) {
+    snprintf(sysout_name, MAXPATHLEN, "%s", envname);
+  } else if (sysout_name_xrm[0] != '\0') {
+    snprintf(sysout_name, MAXPATHLEN, "%s", sysout_name_xrm);
+  } else {
 #ifdef DOS
     snprintf(sysout_name, MAXPATHLEN, "%s", "lisp.vm");
 #else
@@ -700,13 +702,11 @@ int main(int argc, char *argv[])
   }
   /* OK, sysout name is now in sysout_name */
 
-
   //
   //
   // End of command line arg processing
   //
   //
-
 
 /* Sanity checks. */
 #ifdef DOS
@@ -725,8 +725,9 @@ int main(int argc, char *argv[])
 
   /* This must be called before init_ifpage() which will call init_ifpage_ether() */
   /* a dummy stub is compiled in if no ethernet implementation was selected. */
-  if (ether_enabled) { init_ether();
-}
+  if (ether_enabled) {
+    init_ether();
+  }
 
 #ifdef DOS
   init_host_filesystem();
@@ -736,8 +737,9 @@ int main(int argc, char *argv[])
 
   if (FindUnixPipes()) /* must call the routine to allocate storage, */
   {                    /* in case we're re-starting a savevm w/open ptys */
-    if (please_fork) { (void)fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
-}
+    if (please_fork) {
+      (void)fprintf(stderr, "Failed to find UNIXCOMM file handles; no processes\n");
+    }
   }
 #endif /* DOS */
 
@@ -750,7 +752,7 @@ int main(int argc, char *argv[])
   /* Load sysout to VM space and returns real sysout_size(not 0) */
   sysout_size = sysout_loader(sysout_name, sysout_size);
 
-  build_lisp_map(); /* build up map */
+  build_lisp_map();         /* build up map */
   init_ifpage(sysout_size); /* init interface page */
   init_iopage();
   init_miscstats();
@@ -769,7 +771,6 @@ int main(int argc, char *argv[])
 
   /* Get OS message to ~/lisp.log and print the message to prompt window */
   if (!for_makeinit) {
-
     init_keyboard(0); /* can't turn on the keyboard yet or you will die
                          in makeinit.  Pilotbitblt will turn it on if
                          you used the proper switches when building LDE.
@@ -826,11 +827,13 @@ void start_lisp(void) {
 
   freeptr = next68k = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
-  if (GETWORD(next68k) != STK_FSB_WORD) { error("Starting Lisp: Next stack block isn't free!");
-}
+  if (GETWORD(next68k) != STK_FSB_WORD) {
+    error("Starting Lisp: Next stack block isn't free!");
+  }
 
-  while (GETWORD(freeptr) == STK_FSB_WORD) { EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
-}
+  while (GETWORD(freeptr) == STK_FSB_WORD) {
+    EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+  }
 
   CurrentStackPTR = next68k - 2;
 

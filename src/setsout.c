@@ -26,7 +26,7 @@
 #include <stdlib.h>  // for exit, strtol
 #include <unistd.h>  // for lseek, close, read, write
 #ifdef BYTESWAP
-#include "byteswapdefs.h"   // for word_swap_page
+#include "byteswapdefs.h"  // for word_swap_page
 #endif
 #include "ifpage.h"  // for IFPAGE
 #include "lspglob.h"

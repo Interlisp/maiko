@@ -25,7 +25,9 @@
 /************************************************************************/
 
 void perrorn(char *s, int n) {
-  if (s != NULL && *s != '\0') { (void)fprintf(stderr, "%s: ", s); }
+  if (s != NULL && *s != '\0') {
+    (void)fprintf(stderr, "%s: ", s);
+  }
   (void)fprintf(stderr, "%s\n", strerror(n));
 }
 

@@ -26,7 +26,7 @@
 #include "lispemul.h"
 #include "lspglob.h"
 #include "lispmap.h"
-#include "adr68k.h" // for NativeAligned4FromLAddr, NativeAligned2FromLAddr
+#include "adr68k.h"  // for NativeAligned4FromLAddr, NativeAligned2FromLAddr
 #include "arith.h"
 
 #define CFREE(x)     \
@@ -44,7 +44,8 @@ static lprec *initmilp(lprec *lp) {
   int *num, *rownum;
   sstate *st; /* for saving state at timeouts */
 
-  if (!lp) CALLOC(lp, 1, lprec);
+  if (!lp)
+    CALLOC(lp, 1, lprec);
 
   /* Done already in lisp. Rows--; */
   Sum = Rows + Columns;
@@ -135,8 +136,10 @@ static lprec *initmilp(lprec *lp) {
     lp->bas[i] = i;
     lp->basis[i] = TRUE;
   }
-  for (i = Rows + 1; i <= Sum; i++) lp->basis[i] = FALSE;
-  for (i = 0; i <= Sum; i++) lp->lower[i] = TRUE;
+  for (i = Rows + 1; i <= Sum; i++)
+    lp->basis[i] = FALSE;
+  for (i = 0; i <= Sum; i++)
+    lp->lower[i] = TRUE;
 
   lp->eta_valid = TRUE;
   lp->eta_size = 0;
@@ -171,7 +174,8 @@ static lprec *initmilp(lprec *lp) {
 
   CALLOC(lp->ch_sign, Rows + 1, short);
 
-  for (i = 0; i <= Rows; i++) lp->ch_sign[i] = FALSE;
+  for (i = 0; i <= Rows; i++)
+    lp->ch_sign[i] = FALSE;
 
   st = lp->solve_states = NULL;
   for (i = 0; i < Sum + 2; i++) {
@@ -182,7 +186,8 @@ static lprec *initmilp(lprec *lp) {
       st = st->next;
     } else {
       st = (sstate *)malloc(sizeof(sstate));
-      if (!st) ERROR(ERR_NOMEM); /* Tell the guy there's no memory */
+      if (!st)
+        ERROR(ERR_NOMEM); /* Tell the guy there's no memory */
       st->next = lp->solve_states;
       st->saved = 0;
       st->notint = 0; /* And the not-integer field */
@@ -204,7 +209,8 @@ int lpmain(LispPTR lispresults) {
 
   SolveCount = 0; /* reset the "timer", to limit length of a run */
 
-  if (failure = setjmp(LP_jmpbuf)) return (S_POSITIVE | failure);
+  if (failure = setjmp(LP_jmpbuf))
+    return (S_POSITIVE | failure);
 
   /* solve it */
 
@@ -217,19 +223,20 @@ int lpmain(LispPTR lispresults) {
   Medley_lp->num_inv = Num_inv;
 
   if ((failure == INT_SOLN) || (failure == OPTIMAL))
-    for (i = 0; i < Sum + 1; i++) results[i] = Best_solution[i];
+    for (i = 0; i < Sum + 1; i++)
+      results[i] = Best_solution[i];
 
   return (S_POSITIVE | failure); /* Tell him what happened so far. */
 
 } /* main */
 
 int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int mat, int ints,
-            int lowbo, int upbo, int objbound)
-{
+            int lowbo, int upbo, int objbound) {
   double obj_bound = -Infinite;
   int failure, i, autoscale;
 
-  if (failure = setjmp(LP_jmpbuf)) return (S_POSITIVE | failure);
+  if (failure = setjmp(LP_jmpbuf))
+    return (S_POSITIVE | failure);
 
   /* mallopt(M_DEBUG, 1);*/ /*debugging!!!!*/
 
@@ -241,8 +248,9 @@ int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int m
 
   Medley_lp = initmilp(Medley_lp);
   readlispinput(Medley_lp, NativeAligned4FromLAddr(rhs), NativeAligned2FromLAddr(relns),
-                NativeAligned4FromLAddr(cend), NativeAligned4FromLAddr(mat), NativeAligned2FromLAddr(ints),
-                NativeAligned4FromLAddr(lowbo), NativeAligned4FromLAddr(upbo));
+                NativeAligned4FromLAddr(cend), NativeAligned4FromLAddr(mat),
+                NativeAligned2FromLAddr(ints), NativeAligned4FromLAddr(lowbo),
+                NativeAligned4FromLAddr(upbo));
 
   auto_scale(Medley_lp); /* Scale values */
 
@@ -268,8 +276,10 @@ int lpsetup(int rows, int cols, int nonnuls, int rhs, int relns, int cend, int m
         Medley_lp->basis[i] = TRUE;
         Medley_lp->bas[i] = i;
       }
-      for (i = Medley_lp->rows + 1; i <= Medley_lp->sum; i++) Medley_lp->basis[i] = FALSE;
-      for (i = 0; i <= Medley_lp->sum; i++) Medley_lp->lower[i] = TRUE;
+      for (i = Medley_lp->rows + 1; i <= Medley_lp->sum; i++)
+        Medley_lp->basis[i] = FALSE;
+      for (i = 0; i <= Medley_lp->sum; i++)
+        Medley_lp->lower[i] = TRUE;
       Medley_lp->basis_valid = TRUE;
     }
 

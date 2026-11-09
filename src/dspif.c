@@ -38,7 +38,9 @@ static VESA_p(void) {
   return (VESA_call(3, 0));
 }
 
-static VGA_p(void) { return (TRUE); }
+static VGA_p(void) {
+  return (TRUE);
+}
 #endif /* DOS */
 
 void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
@@ -47,7 +49,8 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
 
   TPRINT(("Enter make_dsp_instance, dosdisplaymode is: %d\n", dosdisplaymode));
 
-  if (depth_hint == 0) depth_hint = 1;
+  if (depth_hint == 0)
+    depth_hint = 1;
 
   switch (dosdisplaymode) {
     case 1: VGA_init(dsp, 0, 0, 0, depth_hint); break;
@@ -82,8 +85,14 @@ void make_dsp_instance(DspInterface dsp, char *lispbitmap, int width_hint, int h
 /* Utility function that just returns T                              */
 /*                                                                   */
 /*********************************************************************/
-unsigned long GenericReturnT(void *d) { (void)d; return (T); }
-void GenericReturnVoid(void *d) {(void)d; return; }
+unsigned long GenericReturnT(void *d) {
+  (void)d;
+  return (T);
+}
+void GenericReturnVoid(void *d) {
+  (void)d;
+  return;
+}
 void GenericPanic(void *d) {
   (void)d;
   TPRINT(("Enter GenericPanic\n"));

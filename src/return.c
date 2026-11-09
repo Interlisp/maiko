@@ -104,7 +104,7 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
     error("contextswitch sets Incall");
   } else {
     CURRENTFX->nopush = T;
-}
+  }
 
   /* store PC */
   CURRENTFX->pc = (UNSIGNED)PC - (UNSIGNED)FuncObj + bytenum;
@@ -123,23 +123,27 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
   /* FSB set */
   GETWORD(CurrentStackPTR) = STK_FSB_WORD;
   GETWORD(CurrentStackPTR + 1) = (((UNSIGNED)EndSTKP - (UNSIGNED)CurrentStackPTR) >> 1);
-  if (0 == GETWORD(CurrentStackPTR + 1)) { error("creating 0-long free stack block.");
-}
+  if (0 == GETWORD(CurrentStackPTR + 1)) {
+    error("creating 0-long free stack block.");
+  }
 #ifdef STACKCHECK
-  if (EndSTKP < CurrentStackPTR) error("contextsw:Illegal ESP");
+  if (EndSTKP < CurrentStackPTR)
+    error("contextsw:Illegal ESP");
 #endif
 
   Midpunt(fxnum); /* exchanging FX */
 
   next68k = NativeAligned2FromStackOffset(CURRENTFX->nextblock);
 
-  if (GETWORD(next68k) != STK_FSB_WORD) { error("contextsw(): MP9316");
-}
+  if (GETWORD(next68k) != STK_FSB_WORD) {
+    error("contextsw(): MP9316");
+  }
   freeptr = next68k;
 
   /* Merging FSB area */
-  while (GETWORD(freeptr) == STK_FSB_WORD) { EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
-}
+  while (GETWORD(freeptr) == STK_FSB_WORD) {
+    EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+  }
 
 #ifdef DEBUG
   printf("contextsw:ESTKP set ");
@@ -168,7 +172,8 @@ void contextsw(DLword fxnum, DLword bytenum, DLword flags)
 
 #ifdef STACKCHECK
     CHECKFX;
-    if (EndSTKP < CurrentStackPTR) error("contextsw:Illegal ESP");
+    if (EndSTKP < CurrentStackPTR)
+      error("contextsw:Illegal ESP");
 #endif
     FastRetCALL;
     return;

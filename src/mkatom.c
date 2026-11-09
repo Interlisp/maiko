@@ -31,7 +31,7 @@
 /**********************************************************************/
 
 #ifndef BYTESWAP
-#include <string.h>      // for memcmp
+#include <string.h>  // for memcmp
 #endif
 #include "adr68k.h"      // for NativeAligned2FromLAddr
 #include "cell.h"        // for PNCell, GetPnameCell
@@ -68,7 +68,7 @@ DLword compute_hash(const char *char_base, DLword offset, DLword length) {
 
   char_base += offset;
   hash = (DLword)((*char_base) << 8); /* get first byte */
-  char_base++;                     /* skip length area */
+  char_base++;                        /* skip length area */
 
   for (number = 1; number <= length - 1; char_base++, number++) {
     hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
@@ -98,14 +98,15 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
   DLword temp1;
   const DLword *word_base;
 
-  if (length == 0) { return (0);
-}
+  if (length == 0) {
+    return (0);
+  }
 
   if (fatp) { /* fat characters in the string to be searched. */
     word_base = (const DLword *)char_base;
     word_base += offset;
     hash = (DLword)((0xFF & GETWORD(word_base)) << 8); /* get first byte */
-    word_base++;                                     /* skip length area */
+    word_base++;                                       /* skip length area */
 
     for (number = 1; number <= length - 1; word_base++, number++) {
       hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
@@ -115,7 +116,7 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
   } else {
     char_base += offset;
     hash = (DLword)((0xFF & GETBYTE(char_base)) << 8); /* get first byte */
-    char_base++;                                  /* skip length area */
+    char_base++;                                       /* skip length area */
 
     for (number = 1; number <= length - 1; char_base++, number++) {
       hash = (hash + ((hash & 4095) << 2)) & 0x0ffff;
@@ -128,12 +129,12 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
 } /* end compute_lisp_hash */
 
 #ifdef BYTESWAP
-static int bytecmp(const char *char1, const char *char2, int len)
-{
+static int bytecmp(const char *char1, const char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
-      if (GETBYTE(char1++) != *(const uint8_t *)(char2++)) { return (0);
-}
+    if (GETBYTE(char1++) != *(const uint8_t *)(char2++)) {
+      return (0);
+    }
   }
   return (1);
 }
@@ -166,16 +167,17 @@ LispPTR compare_chars(const char *char1, const char *char2, DLword length) {
 
   {
     return (T);
-  }     return (NIL);
-
+  }
+  return (NIL);
 
 } /* end compare_chars */
 
 static int lispcmp(const DLword *char1, const char *char2, int len) {
   int index;
   for (index = 0; index < len; index++) {
-      if (GETWORD(char1++) != GETBYTE(char2++)) { return (0);
-}
+    if (GETWORD(char1++) != GETBYTE(char2++)) {
+      return (0);
+    }
   }
   return (1);
 }
@@ -197,31 +199,35 @@ static int lispcmp(const DLword *char1, const char *char2, int len) {
 */
 /**********************************************************************/
 
-LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
-                           DLword fat1, DLword fat2) {
+LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length, DLword fat1,
+                           DLword fat2) {
   if ((!fat1) == (!fat2)) { /* both fat or both non-fat. */
 #ifdef BYTESWAP
     if (fat1) { /* both fat, so compare 'em a word at a time */
       int i;
       for (i = 0; i < length; i++) {
-        if (GETWORD(char1) != GETWORD(char2)) { return (NIL);
-}
+        if (GETWORD(char1) != GETWORD(char2)) {
+          return (NIL);
+        }
         /* increment by size of fat character, i.e., DLword, 2 bytes */
-        char1+= sizeof(DLword); char2+=sizeof(DLword);
+        char1 += sizeof(DLword);
+        char2 += sizeof(DLword);
       }
       return (T);
     } /* both thin, so compare 'em a byte at a time */
-             /* (it's this way in case we're byte-swapped.)*/
-      int i;
-      for (i = 0; i < length; i++) {
-        if (GETBYTE(char1++) != GETBYTE(char2++)) { return (NIL);
-}
-}
-      return (T);
+    /* (it's this way in case we're byte-swapped.)*/
+    int i;
+    for (i = 0; i < length; i++) {
+      if (GETBYTE(char1++) != GETBYTE(char2++)) {
+        return (NIL);
+      }
+    }
+    return (T);
 
 #else
     /* This one fails for byte-swapped machines */
-    if (fat1) length = length + length;
+    if (fat1)
+      length = length + length;
     if (memcmp(char1, char2, length) == 0)
       return (T);
     else {
@@ -230,15 +236,15 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
 #endif /* BYTESWAP */
 
   } else if (fat1) { /* char1 is fat, char2 isn't */
-      if (lispcmp((const DLword *)char1, char2, length)) {
+    if (lispcmp((const DLword *)char1, char2, length)) {
       return (T);
-}
-          return (NIL);
+    }
+    return (NIL);
   } else { /* char2 is fat, char1 isn't */
-      if (lispcmp((const DLword *)char2, char1, length)) {
+    if (lispcmp((const DLword *)char2, char1, length)) {
       return (T);
-}
-          return (NIL);
+    }
+    return (NIL);
   }
 
 } /* end compare_lisp_chars */
@@ -264,8 +270,7 @@ LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length,
 */
 /**********************************************************************/
 
-LispPTR make_atom(const char *char_base, DLword offset, DLword length)
-{
+LispPTR make_atom(const char *char_base, DLword offset, DLword length) {
   DLword hash;
   LispPTR hash_entry; /* hash entry contents */
   DLword atom_index;
@@ -281,26 +286,24 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length)
 
   first_char = (*(char_base + offset)) & 0xff;
   switch (length) {
-  case 0:
-    /* the zero-length atom has hashcode 0 */
-    hash = 0;
-    first_char = 255;
-    break;
+    case 0:
+      /* the zero-length atom has hashcode 0 */
+      hash = 0;
+      first_char = 255;
+      break;
 
-  case 1:
-    /* One-character atoms live in well known places, no need to hash */
-    if (first_char > '9') {
-      return ((LispPTR)(ATOMoffset + (first_char - 10)));
-}
-    if (first_char >= '0' ) { /* 0..9 */
-      return ((LispPTR)(S_POSITIVE + (first_char - '0')));
-}
-    /* other one character atoms */
-    return ((LispPTR)(ATOMoffset + first_char));
+    case 1:
+      /* One-character atoms live in well known places, no need to hash */
+      if (first_char > '9') {
+        return ((LispPTR)(ATOMoffset + (first_char - 10)));
+      }
+      if (first_char >= '0') { /* 0..9 */
+        return ((LispPTR)(S_POSITIVE + (first_char - '0')));
+      }
+      /* other one character atoms */
+      return ((LispPTR)(ATOMoffset + first_char));
 
-  default:
-    hash = compute_hash(char_base, offset, length);
-    break;
+    default: hash = compute_hash(char_base, offset, length); break;
   }
 
   /* This point corresponds with LP in Lisp source */

@@ -33,22 +33,22 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>        // for sprintf
-#include "address.h"      // for VAG2
-#include "adr68k.h"       // for NativeAligned4FromLAddr, NativeAligned2FromStackOffset
-#include "commondefs.h"   // for error
+#include <stdio.h>       // for sprintf
+#include "address.h"     // for VAG2
+#include "adr68k.h"      // for NativeAligned4FromLAddr, NativeAligned2FromStackOffset
+#include "commondefs.h"  // for error
 #include "emlglob.h"
-#include "gcdata.h"       // for GCENTRY, REC_GCLOOKUP, STKREF, hashentry
-#include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcmain3defs.h"  // for gcmapscan, gcmapunscan, gcscanstack
-#include "gcrcelldefs.h"  // for gcreccell
-#include "gcscandefs.h"   // for gcscan1, gcscan2
-#include "ifpage.h"       // for IFPAGE
-#include "lispemul.h"     // for LispPTR, DLword, NIL, FRAMESIZE, POINTERMASK
-#include "lispmap.h"      // for HTMAIN_SIZE, STK_HI
-#include "lspglob.h"      // for HTcoll, HTmain, InterfacePage
+#include "gcdata.h"        // for GCENTRY, REC_GCLOOKUP, STKREF, hashentry
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
+#include "gcmain3defs.h"   // for gcmapscan, gcmapunscan, gcscanstack
+#include "gcrcelldefs.h"   // for gcreccell
+#include "gcscandefs.h"    // for gcscan1, gcscan2
+#include "ifpage.h"        // for IFPAGE
+#include "lispemul.h"      // for LispPTR, DLword, NIL, FRAMESIZE, POINTERMASK
+#include "lispmap.h"       // for HTMAIN_SIZE, STK_HI
+#include "lspglob.h"       // for HTcoll, HTmain, InterfacePage
 #include "lsptypes.h"
-#include "stack.h"        // for Bframe, fnhead, frameex1, STK_BF, STK_FSB
+#include "stack.h"  // for Bframe, fnhead, frameex1, STK_BF, STK_FSB
 
 #define PADDING 4
 #define ADD_OFFSET(ptr, dloffset) ((LispPTR *)(((DLword *)(ptr)) + (dloffset)))
@@ -56,15 +56,16 @@
 #ifdef BIGVM
 #define BIND_BITS(value) ((unsigned int)(value) >> 28)
 #define BF_FLAGS(value) ((unsigned int)(value) >> 29)
-#define PTR_BITS(entry) ((unsigned int)(entry)&POINTERMASK)
-#define GetSegnuminColl(entry1) (((entry1)&0xFFFE) >> 1)
-#define StkCntIsZero(entry1) (!((entry1)&0xFFFF0000))
-#define StkrefP(entry1) ((entry1)&0x10000)
-#define SinglerefP(entry1) (((entry1)&0xFFFE0000) == 0x20000)
+#define PTR_BITS(entry) ((unsigned int)(entry) & POINTERMASK)
+#define GetSegnuminColl(entry1) (((entry1) & 0xFFFE) >> 1)
+#define StkCntIsZero(entry1) (!((entry1) & 0xFFFF0000))
+#define StkrefP(entry1) ((entry1) & 0x10000)
+#define SinglerefP(entry1) (((entry1) & 0xFFFE0000) == 0x20000)
 #define Boundp(frame_field) ((frame_field) == 0)
 #define Stkref(ptr) REC_GCLOOKUP(ptr, STKREF)
-#define GcreclaimLp(ptr) \
-  while (((ptr) = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
+#define GcreclaimLp(ptr)                  \
+  while (((ptr) = gcreccell(ptr)) != NIL) \
+  REC_GCLOOKUP(ptr, ADDREF)
 #define HTLPTR ((struct htlinkptr *)(entry))
 #define HENTRY ((struct hashentry *)(entry))
 #define HTMAIN_ENTRY_COUNT (HTMAIN_SIZE >> 1)
@@ -75,19 +76,19 @@
 #define BF_FLAGS(value) ((unsigned int)(value) >> 29)
 #define PTR_BITS(entry) ((unsigned int)((unsigned int)((entry) << 8) >> 8))
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1)
-#define StkCntIsZero(entry1) (!((entry1)&0x0fe00))
-#define StkrefP(entry1) ((entry1)&0x0200)
-#define SinglerefP(entry1) (((entry1)&0xFC00) == 0x0400)
+#define StkCntIsZero(entry1) (!((entry1) & 0x0fe00))
+#define StkrefP(entry1) ((entry1) & 0x0200)
+#define SinglerefP(entry1) (((entry1) & 0xFC00) == 0x0400)
 #define Boundp(frame_field) ((frame_field) == 0)
 #define Stkref(ptr) REC_GCLOOKUP(ptr, STKREF)
-#define GcreclaimLp(ptr) \
-  while ((ptr = gcreccell(ptr)) != NIL) REC_GCLOOKUP(ptr, ADDREF)
+#define GcreclaimLp(ptr)                \
+  while ((ptr = gcreccell(ptr)) != NIL) \
+  REC_GCLOOKUP(ptr, ADDREF)
 #define HTLPTR ((struct htlinkptr *)WORDPTR(entry))
 #define HENTRY ((struct hashentry *)WORDPTR(entry))
 #define HTMAIN_ENTRY_COUNT HTMAIN_SIZE
 #define STKREFBIT 0x200
 #endif /* BIGVM */
-
 
 LispPTR gcmapscan(void) {
   int probe;
@@ -118,7 +119,7 @@ nextentry:
           goto nextentry;
         } else {
           goto retry;
-}
+        }
       }
       if ((offset = ((struct htcoll *)link)->next_free)) {
         prev = link;
@@ -172,7 +173,7 @@ LispPTR gcmapunscan(void) {
         HTLPTR->contents = 0;
       } else {
         HENTRY->stackref = 0;
-}
+      }
     }
   }
   return (NIL);
@@ -192,8 +193,7 @@ LispPTR gcscanstack(void) {
 
   if (0 != (3 & (UNSIGNED)basicframe)) {
     char debugStr[100];
-    sprintf(debugStr,
-            "Frame ptr (%p) not to word bound at start of gcscanstack.",
+    sprintf(debugStr, "Frame ptr (%p) not to word bound at start of gcscanstack.",
             (void *)basicframe);
     error(debugStr);
   }
@@ -225,11 +225,11 @@ LispPTR gcscanstack(void) {
             for (pcou = fnheader->nlocals; pcou-- != 0;) {
               LispPTR value;
               value = *pvars;
-              if
-                Boundp(BIND_BITS(value)) Stkref(value);
+              if Boundp (BIND_BITS(value))
+                Stkref(value);
               ++pvars;
             } /* for */
-          }   /* int pcou */
+          } /* int pcou */
 
           {
             UNSIGNED qtemp;
@@ -262,7 +262,7 @@ LispPTR gcscanstack(void) {
                                    (((struct fnhead *)qtemp)->ntsize) * 2);
               } else {
                 Stkref(nametable);
-}
+              }
             } /* frameex->validnametable */
 
             obasicframe = basicframe;
@@ -282,8 +282,8 @@ LispPTR gcscanstack(void) {
             while ((UNSIGNED)basicframe < (UNSIGNED)qtemp) {
               LispPTR value;
               value = *((LispPTR *)basicframe);
-              if
-                Boundp(BIND_BITS(value)) Stkref(value);
+              if Boundp (BIND_BITS(value))
+                Stkref(value);
               basicframe++;
             } /* while */
 
@@ -317,24 +317,24 @@ LispPTR gcscanstack(void) {
             }
 
           } /* LOCAL regs qtemp next */
-        }   /* local regs fnheader frameex */
+        } /* local regs fnheader frameex */
         break;
       }
       case STK_GUARD: /* stack's tail ? */ {
         if ((UNSIGNED)basicframe >= (UNSIGNED)scanend68K) {
           return (NIL);
-}
-                  obasicframe = basicframe;
-          basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
+        }
+        obasicframe = basicframe;
+        basicframe = (Bframe *)((DLword *)basicframe + basicframe->ivar);
 
-          if (0 != (3 & (UNSIGNED)basicframe)) {
-            char debugStr[100];
-            sprintf(debugStr,
-                    "Frame ptr (%p) not to word bound "
-                    "in gcscanstack() STK_GUARD; old frame = %p.",
-                    (void *)basicframe, (void *)obasicframe);
-            error(debugStr);
-          }
+        if (0 != (3 & (UNSIGNED)basicframe)) {
+          char debugStr[100];
+          sprintf(debugStr,
+                  "Frame ptr (%p) not to word bound "
+                  "in gcscanstack() STK_GUARD; old frame = %p.",
+                  (void *)basicframe, (void *)obasicframe);
+          error(debugStr);
+        }
 
         break;
       }
@@ -372,5 +372,5 @@ LispPTR gcscanstack(void) {
            }
            **** */
     } /* switch */
-  }   /* while(1) */
+  } /* while(1) */
 }

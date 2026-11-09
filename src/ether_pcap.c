@@ -55,16 +55,16 @@
 #include "ifpage.h"
 #include "iopage.h"
 
-extern int      ether_enabled; /* 0/1 should ethernet be turned on */
-extern int      ether_fd;      /* file descriptor for ether socket */
-extern u_char   ether_host[6]; /* 48 bit address of this node */
-extern char     ether_ifname[32]; /* name of ethernet interface */
-extern u_char   broadcast[6];
-extern int      ether_bsize;   /* if nonzero then a receive is pending */
-extern u_char  *ether_buf;     /* address of receive buffer */
+extern int ether_enabled;     /* 0/1 should ethernet be turned on */
+extern int ether_fd;          /* file descriptor for ether socket */
+extern u_char ether_host[6];  /* 48 bit address of this node */
+extern char ether_ifname[32]; /* name of ethernet interface */
+extern u_char broadcast[6];
+extern int ether_bsize;   /* if nonzero then a receive is pending */
+extern u_char *ether_buf; /* address of receive buffer */
 
 extern LispPTR *PENDINGINTERRUPT68k;
-extern fd_set   LispReadFds;
+extern fd_set LispReadFds;
 
 #ifndef ETHERTYPE_PUP
 #define ETHERTYPE_PUP 0x0200
@@ -76,7 +76,7 @@ extern fd_set   LispReadFds;
 #define ETHERTYPE_3TO10 0x0201
 #endif
 #ifndef AF_PACKET
-#define AF_PACKET (AF_MAX+1)
+#define AF_PACKET (AF_MAX + 1)
 #endif
 
 static pcap_t *pcap_handle;
@@ -94,16 +94,12 @@ static pcap_t *pcap_handle;
  * We'll still need to get the mac address for use in the interface page.
  */
 
-static struct bpf_insn bpf_insns_none[] = {
-  { 0x6, 0, 0, 0x00000000 }
-};
+static struct bpf_insn bpf_insns_none[] = {{0x6, 0, 0, 0x00000000}};
 
 static struct bpf_program filter_match_xns;
 
-static struct bpf_program filter_match_none = {
-  sizeof(bpf_insns_none) / sizeof(struct bpf_insn),
-  bpf_insns_none
-};
+static struct bpf_program filter_match_none = {sizeof(bpf_insns_none) / sizeof(struct bpf_insn),
+                                               bpf_insns_none};
 
 static int ether_in = 0;  /* number of packets received */
 static int ether_out = 0; /* number of packets sent */
@@ -115,7 +111,7 @@ static int ether_out = 0; /* number of packets sent */
  *      to 0.
  *      Returns: 0 if no packet was read,
  *               length in bytes of the packet if one was read.
- * 
+ *
  **********************************************************************/
 static int recvPacket(void) {
   int pcap_rval = 0;
@@ -124,7 +120,8 @@ static int recvPacket(void) {
   struct pcap_pkthdr *header = NULL;
 
   pcap_rval = pcap_next_ex(pcap_handle, &header, &packet);
-  if (pcap_rval == 0) return(0);
+  if (pcap_rval == 0)
+    return (0);
   if (pcap_rval != 1) {
     pcap_perror(pcap_handle, "recvPacket");
     return (0);
@@ -132,7 +129,8 @@ static int recvPacket(void) {
 
   /* ignore packets that are too big, empty, or not captured completely */
   hlen = header->len;
-  if (hlen > ether_bsize || hlen == 0 || hlen != header->caplen) return (0);
+  if (hlen > ether_bsize || hlen == 0 || hlen != header->caplen)
+    return (0);
 
 #ifdef BYTESWAP
   for (int i = 0; i < hlen / 2; i++) {
@@ -158,9 +156,9 @@ static int recvPacket(void) {
 /*									*/
 /************************************************************************/
 
-LispPTR ether_suspend(LispPTR args[])
-{
-  if (ether_fd == -1) return (NIL);
+LispPTR ether_suspend(LispPTR args[]) {
+  if (ether_fd == -1)
+    return (NIL);
 
   /* The trick here is to install a packet filter */
   /* that rejects all packets, I think... 	*/
@@ -177,9 +175,9 @@ LispPTR ether_suspend(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR ether_resume(LispPTR args[])
-{
-  if (ether_fd == -1) return (NIL);
+LispPTR ether_resume(LispPTR args[]) {
+  if (ether_fd == -1)
+    return (NIL);
 
   /* Install a packet filter that accepts all packets we want */
   pcap_setfilter(pcap_handle, &filter_match_xns);
@@ -194,9 +192,9 @@ LispPTR ether_resume(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR ether_ctrlr(LispPTR args[])
-{
-  if (ether_fd < 0) return (NIL);
+LispPTR ether_ctrlr(LispPTR args[]) {
+  if (ether_fd < 0)
+    return (NIL);
   return (ATOM_T);
 }
 
@@ -204,9 +202,10 @@ LispPTR ether_ctrlr(LispPTR args[])
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-LispPTR ether_reset(LispPTR args[])
-{
-  if (ether_fd < 0) { return (NIL); }
+LispPTR ether_reset(LispPTR args[]) {
+  if (ether_fd < 0) {
+    return (NIL);
+  }
   ether_bsize = 0; /* deactivate receiver */
   return (ATOM_T);
 } /* ether_reset */
@@ -229,20 +228,22 @@ LispPTR ether_reset(LispPTR args[])
 /*	it's OK to read packets from the network on interrupt.		*/
 /*									*/
 /************************************************************************/
-LispPTR ether_get(LispPTR args[])
-{
+LispPTR ether_get(LispPTR args[]) {
   LispPTR result = NIL;
   LispPTR MaxByteCount;
   int length;
-  
+
   DBPRINT(("Ether Get.  "));
-  if (ether_fd < 0) return (NIL);
+  if (ether_fd < 0)
+    return (NIL);
   MaxByteCount = BYTESPER_DLWORD * LispIntToCInt(args[0]); /* words to bytes */
-  if (MaxByteCount == 0) return (NIL);
+  if (MaxByteCount == 0)
+    return (NIL);
   ether_buf = (u_char *)NativeAligned2FromLAddr(args[1]);
   ether_bsize = MaxByteCount; /* do this LAST; it enables reads */
   length = recvPacket();
-  if (length == 0) return (NIL);
+  if (length == 0)
+    return (NIL);
   return (T);
 } /* ether_get */
 
@@ -257,18 +258,19 @@ LispPTR ether_get(LispPTR args[])
 */
 #define MAXETHERPACKETWORDS 300
 
-LispPTR ether_send(LispPTR args[])
-{
+LispPTR ether_send(LispPTR args[]) {
   DLword wordCount;
   DLword *bufferAddr; /* buffer address pointer(in native address) */
 #ifdef BYTESWAP
   DLword networkOrderBuffer[MAXETHERPACKETWORDS];
 #endif
-  if (ether_fd < 0) return (NIL);
+  if (ether_fd < 0)
+    return (NIL);
   wordCount = LispIntToCInt(args[0]);
   bufferAddr = NativeAligned2FromLAddr(args[1]);
 #ifdef BYTESWAP
-  if (wordCount > MAXETHERPACKETWORDS) wordCount = MAXETHERPACKETWORDS;
+  if (wordCount > MAXETHERPACKETWORDS)
+    wordCount = MAXETHERPACKETWORDS;
   for (int i = 0; i < wordCount; i++) {
     networkOrderBuffer[i] = htons(GETBASEWORD(bufferAddr, i));
   }
@@ -287,8 +289,9 @@ LispPTR ether_send(LispPTR args[])
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
 
-LispPTR ether_setfilter(LispPTR args[])
-{ return (NIL); }
+LispPTR ether_setfilter(LispPTR args[]) {
+  return (NIL);
+}
 /* ether_setfilter */
 
 /**********************************************************************
@@ -300,7 +303,8 @@ int estat[3];
 
 int *ether_debug() {
   estat[0] = 0;
-  if (ether_fd < 0) return (NIL);
+  if (ether_fd < 0)
+    return (NIL);
   printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
          ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
   return (estat);
@@ -312,14 +316,15 @@ int *ether_debug() {
  **********************************************************************/
 
 LispPTR check_ether() {
-/*
- * If the receiver is active then check if any packets are available
- * from the ethernet, with the side-effect of reading a packet
- * and setting the length in the ethernet ICB.
- * Returns T if a packet was read, otherwise NIL.
- */
+  /*
+   * If the receiver is active then check if any packets are available
+   * from the ethernet, with the side-effect of reading a packet
+   * and setting the length in the ethernet ICB.
+   * Returns T if a packet was read, otherwise NIL.
+   */
 
-  if (ether_fd < 0 || ether_bsize == 0) return (NIL);
+  if (ether_fd < 0 || ether_bsize == 0)
+    return (NIL);
 
   return (0 == recvPacket()) ? NIL : ATOM_T;
 } /* end check_ether */
@@ -331,7 +336,7 @@ LispPTR check_ether() {
 /*      								*/
 /************************************************************************/
 void init_ether() {
-  /* Uses the following pcap library routines - 
+  /* Uses the following pcap library routines -
    * pcap_create => gets a pcap_t handle
    * pcap_findalldevs => list of network devices to capture on
    * pcap_freealldevs => free the list of network devices from pcap_findalldevs
@@ -352,16 +357,17 @@ void init_ether() {
   int find_ifaddr;
 
   /* ethernet may already be initialized - don't do it again */
-  if (ether_fd >= 0 || ether_enabled == 0) return;
+  if (ether_fd >= 0 || ether_enabled == 0)
+    return;
 
   /* select an ethernet interface/address if it was not fully specified */
   find_ifname = strlen(ether_ifname) == 0;
   find_ifaddr = ether_addr_equal(ether_host, ether_zero);
 
-  /* XXX: should be rewritten so that if given an interface name but no address it finds the address,
-     if given an address but no interface name it finds the interface name,
-     if given both, it checks that they're consistent
-     if given neither it finds the first up, running, non-loopback interface and its address
+  /* XXX: should be rewritten so that if given an interface name but no address it finds the
+     address, if given an address but no interface name it finds the interface name, if given both,
+     it checks that they're consistent if given neither it finds the first up, running, non-loopback
+     interface and its address
   */
   if (find_ifname || find_ifaddr) {
     pcap_if_t *alldevs = NULL;
@@ -378,7 +384,8 @@ void init_ether() {
           dev = d;
           break;
         }
-      } else if ((d->flags & PCAP_IF_UP) && (d->flags & PCAP_IF_RUNNING) && !(d->flags & PCAP_IF_LOOPBACK)) {
+      } else if ((d->flags & PCAP_IF_UP) && (d->flags & PCAP_IF_RUNNING) &&
+                 !(d->flags & PCAP_IF_LOOPBACK)) {
         dev = d;
         break;
       }
@@ -387,7 +394,7 @@ void init_ether() {
     if (dev) {
       strlcpy(ether_ifname, dev->name, sizeof(ether_ifname));
       for (pcap_addr_t *a = dev->addresses; a; a = a->next) {
-#if defined(MAIKO_OS_SOLARIS)        
+#if defined(MAIKO_OS_SOLARIS)
         /* Solaris defines both AF_LINK and AF_PACKET but neither give us
          * the desired result
          */
@@ -403,7 +410,7 @@ void init_ether() {
 #elif defined(AF_PACKET)
         /* this is Linux-like */
         if (a->addr && a->addr->sa_family == AF_PACKET) {
-          struct sockaddr_ll *sll = (struct sockaddr_ll*)(a->addr);
+          struct sockaddr_ll *sll = (struct sockaddr_ll *)(a->addr);
           if (sll->sll_halen == sizeof(ether_host)) {
             memcpy(ether_host, sll->sll_addr, sizeof(ether_host));
             break;
@@ -416,7 +423,7 @@ void init_ether() {
     }
     pcap_freealldevs(alldevs);
   }
-  if(strlen(ether_ifname) == 0) {
+  if (strlen(ether_ifname) == 0) {
     fprintf(stderr, "No suitable network interface found\n");
     return;
   }
@@ -445,8 +452,10 @@ void init_ether() {
     pcap_perror(pcap_handle, "pcap_setfilter");
   }
   /* filter for XNS - may want to do PUP later */
-  snprintf(filter_exp, sizeof(filter_exp), "ether proto 0x600 and (ether multicast or ether dst %02x:%02x:%02x:%02x:%02x:%02x)",
-           ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4], ether_host[5]);
+  snprintf(filter_exp, sizeof(filter_exp),
+           "ether proto 0x600 and (ether multicast or ether dst %02x:%02x:%02x:%02x:%02x:%02x)",
+           ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4],
+           ether_host[5]);
   pcap_rval = pcap_compile(pcap_handle, &filter_match_xns, filter_exp, 0, PCAP_NETMASK_UNKNOWN);
   if (pcap_rval == PCAP_ERROR) {
     fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
@@ -477,9 +486,8 @@ void init_ether() {
   }
   FD_SET(ether_fd, &LispReadFds);
 
-  printf("Ethernet starts on interface %s at %02x:%02x:%02x:%02x:%02x:%02x\n",
-         ether_ifname, ether_host[0], ether_host[1], ether_host[2],
-         ether_host[3],ether_host[4],ether_host[5]);
+  printf("Ethernet starts on interface %s at %02x:%02x:%02x:%02x:%02x:%02x\n", ether_ifname,
+         ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4], ether_host[5]);
   DBPRINT(("init_ether: **** Ethernet starts ****\n"));
 }
 #endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_PCAP) */

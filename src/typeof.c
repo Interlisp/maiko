@@ -20,7 +20,7 @@
 
 */
 
-#include "lispemul.h"    // for LispPTR, ATOM_T, NIL_PTR
+#include "lispemul.h"  // for LispPTR, ATOM_T, NIL_PTR
 #include "lspglob.h"
 #include "lsptypes.h"    // for dtd, GetDTD, GetTypeNumber
 #include "typeofdefs.h"  // for N_OP_instancep
@@ -43,7 +43,9 @@ LispPTR N_OP_instancep(LispPTR tos, int atom_index) {
        atom_index != dtd68k->dtd_namelo + (dtd68k->dtd_namehi << 16);
 #endif /* BIGVM */
        dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
-    if (dtd68k->dtd_supertype == 0) { return (NIL_PTR); }
+    if (dtd68k->dtd_supertype == 0) {
+      return (NIL_PTR);
+    }
   }
   return (ATOM_T);
 

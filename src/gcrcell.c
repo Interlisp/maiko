@@ -63,20 +63,20 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>        // for printf
-#include "address.h"      // for POINTER_PAGE
-#include "adr68k.h"       // for NativeAligned4FromLAddr, NativeAligned4FromLPage
-#include "car-cdrdefs.h"  // for car, cdr
-#include "cell.h"         // for conspage, freecons, FREECONS, CDR_INDIRECT
-#include "commondefs.h"   // for error
-#include "gccodedefs.h"   // for reclaimcodeblock
-#include "gcdata.h"       // for DELREF, REC_GCLOOKUPV, ADDREF, REC_GCLOOKUP
-#include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcfinaldefs.h"  // for reclaimarrayblock, reclaimstackp, releasing...
-#include "gcrcelldefs.h"  // for freelistcell, gcreccell
-#include "lispemul.h"     // for LispPTR, ConsCell, NIL, POINTERMASK, DLword
-#include "lspglob.h"      // for ListpDTD
-#include "lsptypes.h"     // for dtd, GetDTD, GetTypeNumber, TYPE_ARRAYBLOCK
+#include <stdio.h>         // for printf
+#include "address.h"       // for POINTER_PAGE
+#include "adr68k.h"        // for NativeAligned4FromLAddr, NativeAligned4FromLPage
+#include "car-cdrdefs.h"   // for car, cdr
+#include "cell.h"          // for conspage, freecons, FREECONS, CDR_INDIRECT
+#include "commondefs.h"    // for error
+#include "gccodedefs.h"    // for reclaimcodeblock
+#include "gcdata.h"        // for DELREF, REC_GCLOOKUPV, ADDREF, REC_GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
+#include "gcfinaldefs.h"   // for reclaimarrayblock, reclaimstackp, releasing...
+#include "gcrcelldefs.h"   // for freelistcell, gcreccell
+#include "lispemul.h"      // for LispPTR, ConsCell, NIL, POINTERMASK, DLword
+#include "lspglob.h"       // for ListpDTD
+#include "lsptypes.h"      // for dtd, GetDTD, GetTypeNumber, TYPE_ARRAYBLOCK
 #ifdef DTDDEBUG
 #include "testtooldefs.h"
 #endif
@@ -90,18 +90,19 @@
 #endif /* NEWCDRCODING */
 
 #define TODO_LIMIT 1000
-#define ADD_TO_DO(ptr, offset)                               \
-  do {                                                       \
-    if (do_count < TODO_LIMIT) {                               \
-      if ((ptr) & 0xF0000000) error("illegal ptr in addtodo"); \
-      to_do[do_count] = (ptr);                                 \
-      to_do_offset[do_count] = offset;                         \
-      todo_uses++;                                             \
-      /*REC_GCLOOKUP((ptr), ADDREF);*/                         \
-      do_count++;                                              \
-    } else { /* error("GC missing some to-do's"); */           \
-      todo_misses++;                                           \
-    }                                                          \
+#define ADD_TO_DO(ptr, offset)                       \
+  do {                                               \
+    if (do_count < TODO_LIMIT) {                     \
+      if ((ptr) & 0xF0000000)                        \
+        error("illegal ptr in addtodo");             \
+      to_do[do_count] = (ptr);                       \
+      to_do_offset[do_count] = offset;               \
+      todo_uses++;                                   \
+      /*REC_GCLOOKUP((ptr), ADDREF);*/               \
+      do_count++;                                    \
+    } else { /* error("GC missing some to-do's"); */ \
+      todo_misses++;                                 \
+    }                                                \
   } while (0)
 
 static unsigned todo_uses = 0;
@@ -142,17 +143,20 @@ lp:
  # endif
 */
 #ifdef DEBUG
-  if (tmpptr & 1) error("Reclaiming cell pointer with low bit 1.");
+  if (tmpptr & 1)
+    error("Reclaiming cell pointer with low bit 1.");
 #else
   tmpptr &= -2; /* turn off low bit of pointer, so we never reclaim odd'ns */
 #endif
 
-  if ((tmpptr & 0x0FFF0000) == 0x60000) { error("freeing an old atom??");
-}
+  if ((tmpptr & 0x0FFF0000) == 0x60000) {
+    error("freeing an old atom??");
+  }
 
   typ = GetTypeNumber(tmpptr);
 #ifdef DEBUG
-  if (typ == 6) printf("Reclaiming array ptr 0x%x.\n", tmpptr);
+  if (typ == 6)
+    printf("Reclaiming array ptr 0x%x.\n", tmpptr);
 #endif
   switch (typ) {
     case TYPE_LISTP: {
@@ -192,17 +196,18 @@ lp:
         goto trynext;
       } else {
         break;
-}
+      }
     case TYPE_STACKP:
-      if ((index == -1) && reclaimstackp(tmpptr)) { goto trynext;
-}
+      if ((index == -1) && reclaimstackp(tmpptr)) {
+        goto trynext;
+      }
       break;
     case TYPE_VMEMPAGEP:
       if ((index == -1) && releasingvmempage(tmpptr)) {
         goto trynext;
       } else {
         break;
-}
+      }
     case TYPE_CODEHUNK1:
     case TYPE_CODEHUNK2:
     case TYPE_CODEHUNK3:
@@ -217,7 +222,7 @@ lp:
         goto trynext;
       } else {
         break;
-}
+      }
     default:;
   }
 normal:
@@ -226,8 +231,9 @@ normal:
   if (index != -1) {
     index = (index << 1);
     ptrfield = cdr(ptrfield);
-    while ((car(ptrfield) & 0x0ffff) != index) { ptrfield = cdr(ptrfield);
-}
+    while ((car(ptrfield) & 0x0ffff) != index) {
+      ptrfield = cdr(ptrfield);
+    }
     index = -1;
   }
   while (ptrfield != NIL) {
@@ -261,7 +267,7 @@ normal:
         }
       } else {
         goto addtofreelist;
-}
+      }
     }
 #endif /* NEWCDRCODING */
   }
@@ -334,8 +340,9 @@ void freelistcell(LispPTR cell) {
   pbase = (struct conspage *)NativeAligned4FromLPage(POINTER_PAGE(cell));
   celloffset = (LispPTR)cell & 0xFF;
 #ifdef NEWCDRCODING
-  if (celloffset < 8) { error("freeing CONS cell that's really freelist ptr");
-}
+  if (celloffset < 8) {
+    error("freeing CONS cell that's really freelist ptr");
+  }
 #endif /* NEWCDRCODING */
 
   if (pbase->count) /* There are free cells on the page already */
@@ -358,7 +365,7 @@ void freelistcell(LispPTR cell) {
       FREECONS(pbase, prior)->next_free = celloffset;
     } else {
       pbase->next_cell = celloffset;
-}
+    }
     ((freecons *)cell68k)->next_free = offset;
   } else /* NO FREE CELLS.  Just replace next_free. */
   {

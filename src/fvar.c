@@ -68,7 +68,7 @@ void nnewframe(struct frameex1 *newpfra2, DLword *achain, int name)
 /* Atom index num. of target FVAR slot. */
 {
   NAMETABLE *pindex; /* '90/06/06 osamu changed from DLword *
-                               * index to indexs of new name table */
+                      * index to indexs of new name table */
   UNSIGNED i;        /* temp for control */
   int nametablesize; /* NameTable size of current function header. */
   int ph;            /* alink temp, also phase */
@@ -76,8 +76,9 @@ void nnewframe(struct frameex1 *newpfra2, DLword *achain, int name)
 newframe:
   /* assume that apframe1 points to the next frame to be scanned */
   ph = newpfra2->alink;
-  if (ph == 0) { error("alink = 0 in nnewframe");
-}
+  if (ph == 0) {
+    error("alink = 0 in nnewframe");
+  }
   if (ph == ENDSTACKMARK) {
 /* endStack */
 #ifdef BIGATOMS
@@ -115,7 +116,7 @@ newframe:
   ph &= 0xFFFE; /* to mask off SLOW bit */
   newpfra2 = (struct frameex1 *)(-FRAMESIZE + Stackspace + ph);
 
-  {                                  /* open new block to try and conserve address */
+  {                         /* open new block to try and conserve address */
     struct fnhead *newpfn2; /* ptr to new fn header */
 
     if (newpfra2->validnametable) { /* check VALIDNAMETABLE */
@@ -123,12 +124,11 @@ newframe:
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->nametable);
     } else {
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(newpfra2->fnheader);
-}
+    }
 #else
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
           ((newpfra2->hi2nametable) << 16 | newpfra2->lonametable));
-    else
-      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
+      else newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
           ((newpfra2->hi2fnheader) << 16 | newpfra2->lofnheader));
 #endif /* BIGVM */
     pindex = (NAMETABLE *)((DLword *)newpfn2 + FNHEADSIZE);
@@ -137,7 +137,7 @@ newframe:
     nametablesize = (newpfn2->ntsize >> 1); /* ntsize is # of words in NT
                                                not # of element */
 #else
-    nametablesize = newpfn2->ntsize;
+      nametablesize = newpfn2->ntsize;
 #endif
   }
 
@@ -178,77 +178,79 @@ newframe:
 #endif
 
 #else
-    if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
-      ph = 1;
-      goto foundit;
-    }
-  cont2:
-    if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
-      ph = 2;
-      goto foundit;
-    }
-  cont3:
-    if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
-      ph = 3;
-      goto foundit;
-    }
-  cont4:
-    if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
-      ph = 0;
-      goto foundit;
-    }
+      if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
+        ph = 1;
+        goto foundit;
+      }
+    cont2:
+      if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
+        ph = 2;
+        goto foundit;
+      }
+    cont3:
+      if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
+        ph = 3;
+        goto foundit;
+      }
+    cont4:
+      if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
+        ph = 0;
+        goto foundit;
+      }
 #endif
     continue;
-  foundit : {
-    int fvartype;   /* probing fvar vartype */
-    int fvaroffset; /* probing fvar varoffset */
-    DLword *ppvar;  /* ptr to probing var candidate */
+  foundit:
+    {
+      int fvartype;   /* probing fvar vartype */
+      int fvaroffset; /* probing fvar varoffset */
+      DLword *ppvar;  /* ptr to probing var candidate */
 #ifdef BIGATOMS
-    fvartype = (int)*(pindex + nametablesize - 1);
+      fvartype = (int)*(pindex + nametablesize - 1);
 #else
-    fvartype = GETWORD(pindex + nametablesize - 1);
+        fvartype = GETWORD(pindex + nametablesize - 1);
 #endif /* BIGATOMS */
 
-    fvaroffset = NT_OFFSET_MASK & fvartype;
-    fvaroffset <<= 1;
-    fvartype &= NT_TYPE_MASK;
-    switch (fvartype) {
-      case FVPVARHI: /* 0x8000 or 0x80000000(BIGATOMS) */
-        ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
-        /* ppvar points to argued Pvar */
-        if (WBITSPTR(ppvar)->xMSB) { /* check UNBOUND (if *ppvar is negative , unbound) */
-          switch (ph) {
-            case 0: continue;
-            case 1:
-              goto cont2;
-              /* case 2 : goto cont3;
-              case 3 : goto cont4; */
+      fvaroffset = NT_OFFSET_MASK & fvartype;
+      fvaroffset <<= 1;
+      fvartype &= NT_TYPE_MASK;
+      switch (fvartype) {
+        case FVPVARHI: /* 0x8000 or 0x80000000(BIGATOMS) */
+          ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
+          /* ppvar points to argued Pvar */
+          if (WBITSPTR(ppvar)->xMSB) { /* check UNBOUND (if *ppvar is negative , unbound) */
+            switch (ph) {
+              case 0: continue;
+              case 1:
+                goto cont2;
+                /* case 2 : goto cont3;
+                case 3 : goto cont4; */
+            }
           }
-}
-        GETBASEWORD(achain, 1) = STK_HI;
-        GETBASEWORD(achain, 0) = 0xFFFF & LAddrFromNative(ppvar);
-        /* save High word of PVAR slot address to FVAR slot */
-        /* achain points to target FVAR slot */
-        return;
-      case FVFVARHI: /* 0xC000 or 0xC0000000(BIGATOMS) */
-        ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
-        if (WBITSPTR(ppvar)->LSB) { goto endlookfor;
-}
-        /* Not Found in new FnHeader, scan next one. */
-        *((int *)achain) = *((int *)ppvar);
-        /* save address of FX to FVAR slot */
-        /* achain points to target FVAR slot */
-        return;
-      case FVIVARHI: /* 0x000: */
-        ppvar = -1 + (DLword *)newpfra2;
-        /* ppvar points to IVAR field in Basic  frame */
-        GETBASEWORD(achain, 1) = STK_HI;
-        GETBASEWORD(achain, 0) = GETWORD(ppvar) + fvaroffset;
-        return;
-      default: error("Stack corrupted: bad value in name table");
-    } /* end switch */
-  }   /* end if */
-  }   /* end for */
+          GETBASEWORD(achain, 1) = STK_HI;
+          GETBASEWORD(achain, 0) = 0xFFFF & LAddrFromNative(ppvar);
+          /* save High word of PVAR slot address to FVAR slot */
+          /* achain points to target FVAR slot */
+          return;
+        case FVFVARHI: /* 0xC000 or 0xC0000000(BIGATOMS) */
+          ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
+          if (WBITSPTR(ppvar)->LSB) {
+            goto endlookfor;
+          }
+          /* Not Found in new FnHeader, scan next one. */
+          *((int *)achain) = *((int *)ppvar);
+          /* save address of FX to FVAR slot */
+          /* achain points to target FVAR slot */
+          return;
+        case FVIVARHI: /* 0x000: */
+          ppvar = -1 + (DLword *)newpfra2;
+          /* ppvar points to IVAR field in Basic  frame */
+          GETBASEWORD(achain, 1) = STK_HI;
+          GETBASEWORD(achain, 0) = GETWORD(ppvar) + fvaroffset;
+          return;
+        default: error("Stack corrupted: bad value in name table");
+      } /* end switch */
+    } /* end if */
+  } /* end for */
 
 endlookfor:
   goto newframe; /* scan the next one */
@@ -263,8 +265,7 @@ endlookfor:
         2. call fvlookfor.
 
 ****************************************************************************/
-void nfvlookup(struct frameex1 *apframe1, DLword *achain,
-               struct fnhead *apfnhead1)
+void nfvlookup(struct frameex1 *apframe1, DLword *achain, struct fnhead *apfnhead1)
 /* pointer to current frame extension */
 /* pointer to 1st word of the searching
    FVAR slot in CurrentFrameExtension */
@@ -277,11 +278,12 @@ void nfvlookup(struct frameex1 *apframe1, DLword *achain,
   paoffset = ((UNSIGNED)achain - (UNSIGNED)PVar) >> 2;
 /* slot to looked for, 2word offset from PVar */
 #ifdef BIGATOMS
-  nnewframe(apframe1, achain, (*((LispPTR *)((DLword *)pfh + apfnhead1->fvaroffset) + paoffset -
-                                 apfnhead1->nlocals)));
+  nnewframe(
+      apframe1, achain,
+      (*((LispPTR *)((DLword *)pfh + apfnhead1->fvaroffset) + paoffset - apfnhead1->nlocals)));
 #else
-  nnewframe(apframe1, achain,
-            (GETWORD(pfh + (apfnhead1->fvaroffset + paoffset - apfnhead1->nlocals))));
+    nnewframe(apframe1, achain,
+              (GETWORD(pfh + (apfnhead1->fvaroffset + paoffset - apfnhead1->nlocals))));
 #endif
 }
 
@@ -310,8 +312,8 @@ LispPTR N_OP_fvarn(int n)
     nfvlookup(CURRENTFX, chain, FuncObj);
   }
 
-  return (GetLongWord(
-      NativeAligned4FromLAddr(POINTERMASK & (((GETBASEWORD(chain, 1)) << 16) | GETBASEWORD(chain, 0)))));
+  return (GetLongWord(NativeAligned4FromLAddr(
+      POINTERMASK & (((GETBASEWORD(chain, 1)) << 16) | GETBASEWORD(chain, 0)))));
 }
 
 /******************************************************************************
@@ -373,17 +375,17 @@ LispPTR N_OP_fvar_(LispPTR tos, int n) {
 
 #define STK_HI_RET(x) (((int)(x) << 16) | 1 | ((unsigned int)(x) >> 16))
 
-
 #else
 
 #ifdef BIGVM
-#define VALS_HI_RET(x)                                                                            \
-  ((((int)(x)&SEGMASK) == 0) ? (swapx((ATOMS_HI << 16) + (10 * (int)(x)) + NEWATOM_VALUE_OFFSET)) \
-                             : (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
+#define VALS_HI_RET(x)                                                      \
+  ((((int)(x) & SEGMASK) == 0)                                              \
+       ? (swapx((ATOMS_HI << 16) + (10 * (int)(x)) + NEWATOM_VALUE_OFFSET)) \
+       : (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
 #else
-#define VALS_HI_RET(x)                                                                    \
-  ((((int)(x)&SEGMASK) == 0) ? (((int)(x) << 17) + VALS_HI + ((unsigned short)(x) >> 15)) \
-                             : (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
+#define VALS_HI_RET(x)                                                                      \
+  ((((int)(x) & SEGMASK) == 0) ? (((int)(x) << 17) + VALS_HI + ((unsigned short)(x) >> 15)) \
+                               : (swapx((int)(x) + NEWATOM_VALUE_OFFSET)))
 #endif /* BIGVM */
 
 #define STK_HI_RET(x) (((unsigned int)(x) << 16) | 1 | ((unsigned int)(x) >> 16))
@@ -414,7 +416,7 @@ LispPTR native_newframe(int slot)
 #ifdef BIGATOMS
     name = (int)*((LispPTR *)((DLword *)fnobj + fnobj->fvaroffset) + rslot - fnobj->nlocals);
 #else
-    name = GETWORD((DLword *)fnobj + (fnobj->fvaroffset + rslot - fnobj->nlocals));
+      name = GETWORD((DLword *)fnobj + (fnobj->fvaroffset + rslot - fnobj->nlocals));
 #endif
 
     newpfra2 = (struct frameex2 *)((DLword *)pvar - FRAMESIZE);
@@ -431,8 +433,9 @@ LispPTR native_newframe(int slot)
     /* assume that apframe1 points to the next frame to be scanned */
 
     alink = newpfra2->alink;
-    if (alink == 0) { error("alink is 0 in native_newframe");
-}
+    if (alink == 0) {
+      error("alink is 0 in native_newframe");
+    }
     if (alink == ENDSTACKMARK) { /* End of stack, so return top-level-value */
       /*	    if (name & SEGMASK) printf("native_newframe returning name 0x%x, result
          0x%x.\n",
@@ -441,7 +444,7 @@ LispPTR native_newframe(int slot)
     }
     newpfra2 = (struct frameex2 *)(-FRAMESIZE + Stackspace + (alink & 0xFFFE));
 
-    {                                  /* open new block to try and conserve address */
+    {                         /* open new block to try and conserve address */
       struct fnhead *newpfn2; /* ptr to new fn header */
 
       newpfn2 = GETNAMETABLE(newpfra2);
@@ -452,7 +455,7 @@ LispPTR native_newframe(int slot)
       nametablesize = (newpfn2->ntsize >> 1); /* ntsize is # of words in NT
                                              nametablesize is # of items in NT */
 #else
-      nametablesize = newpfn2->ntsize;
+        nametablesize = newpfn2->ntsize;
 #endif /* BIGATOMS */
     }
 
@@ -461,9 +464,8 @@ LispPTR native_newframe(int slot)
 #ifdef BIGATOMS
       if ((LispPTR) * ((NAMETABLE *)pindex++) == (LispPTR)name) {
 #else
-      if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
+        if (GETWORD((NAMETABLE *)pindex++) == (DLword)name) {
 #endif /* BIGATOMS    */
-
 
         int fvartype;   /* probing fvar vartype */
         int fvaroffset; /* probing fvar varoffset */
@@ -471,7 +473,7 @@ LispPTR native_newframe(int slot)
 #ifdef BIGATOMS
         fvartype = (int)*(pindex + nametablesize - 1);
 #else
-        fvartype = GETWORD(pindex + nametablesize - 1);
+          fvartype = GETWORD(pindex + nametablesize - 1);
 #endif /* BIGATOMS */
 
         fvaroffset = (NT_OFFSET_MASK & fvartype) << 1;
@@ -489,7 +491,9 @@ LispPTR native_newframe(int slot)
             return (*((LispPTR *)achain) = STK_HI_RET(LAddrFromNative(ppvar)));
           case FVFVARHI: /* 0xC000 or 0xC0000000(NEWATOM S) */
             ppvar = FRAMESIZE + (DLword *)newpfra2 + fvaroffset;
-            if (WBITSPTR(ppvar)->LSB) { goto endlookfor; }
+            if (WBITSPTR(ppvar)->LSB) {
+              goto endlookfor;
+            }
             /* Not Found in new FuncHeader, scan next one. */
             /* save address of frame extension to FVAR slot */
             /* achain points to target FVAR slot */
@@ -500,8 +504,8 @@ LispPTR native_newframe(int slot)
             return (*((LispPTR *)achain) = STK_HI_RET(GETWORD(ppvar) + fvaroffset));
           default: error("Stack corrupted: bad value in name table");
         } /* end switch */
-      }   /* end if */
-    }     /* end for */
+      } /* end if */
+    } /* end for */
 
   endlookfor:
     goto natnewframe; /* scan the next one */

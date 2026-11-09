@@ -49,7 +49,6 @@
 #include "commondefs.h"
 #include "mkcelldefs.h"
 
-
 #define TCPhostlookup 0
 #define TCPservicelookup 1
 #define TCPsocket 2
@@ -73,8 +72,8 @@ extern int *Lisp_errno;
 extern fd_set LispReadFds;
 fd_set LispIOFds;
 
-LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, LispPTR bufaddr, LispPTR maxlen)
-{
+LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, LispPTR bufaddr,
+                     LispPTR maxlen) {
 #ifndef DOS
   int sock, len, buflen, res;
   size_t namelen;
@@ -93,8 +92,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     case TCPhostlookup:
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
-      if (!host) { return (NIL);
-}
+      if (!host) {
+        return (NIL);
+      }
       res = ntohl(*(in_addr_t *)host->h_addr);
       N_ARITH_SWITCH(res);
       break;
@@ -103,8 +103,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       LispStringToCString(nameConn, namestring, 100);
       LispStringToCString(proto, servstring, 50);
       service = getservbyname(namestring, servstring);
-      if (!service) { return (NIL);
-}
+      if (!service) {
+        return (NIL);
+      }
       return (GetSmallp(ntohs(service->s_port)));
 
     case TCPsocket:
@@ -129,8 +130,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
     string_host:
       LispStringToCString(nameConn, namestring, 100);
       host = gethostbyname(namestring);
-      if (!host) { return (NIL);
-}
+      if (!host) {
+        return (NIL);
+      }
       memcpy((char *)&farend.sin_addr, (char *)host->h_addr, host->h_length);
     host_ok:
       sock = LispNumToCInt(proto);
@@ -176,8 +178,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       len = LispNumToCInt(length);
       result = read(sock, buffer, len);
       if (result < 0) {
-        if (errno == EWOULDBLOCK) { return (ATOM_T);
-}
+        if (errno == EWOULDBLOCK) {
+          return (ATOM_T);
+        }
         perror("TCP read");
         *Lisp_errno = errno;
         return (NIL);
@@ -223,7 +226,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 #endif
 
 #ifdef F_SETOWN
-	fcntl(result, F_SETOWN, getpid());
+        fcntl(result, F_SETOWN, getpid());
 #endif
         if (listen(result, 5) == -1) {
           perror("TCP Listen");
@@ -233,7 +236,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
         }
         sigprocmask(SIG_UNBLOCK, &signals, NULL);
       }
-      FD_SET(result, &LispIOFds);  /* so we get interrupts */
+      FD_SET(result, &LispIOFds); /* so we get interrupts */
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
@@ -242,8 +245,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       sock = LispNumToCInt(nameConn);
       result = accept(sock, NULL, 0);
       if (result < 0) {
-        if (errno != EWOULDBLOCK) { perror("TCP Accept");
-}
+        if (errno != EWOULDBLOCK) {
+          perror("TCP Accept");
+        }
         return (NIL);
       }
       fcntl(result, F_SETFL, fcntl(result, F_GETFL, 0) | O_NONBLOCK);
@@ -258,8 +262,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ures = sizeof(addr);
       getpeername(sock, (struct sockaddr *)&addr, &ures);
       host = gethostbyaddr((const char *)&addr, ures, AF_INET);
-      if (!host) { return (GetSmallp(0));
-}
+      if (!host) {
+        return (GetSmallp(0));
+      }
       namelen = strlen(host->h_name);
       memcpy((char *)buffer, host->h_name, namelen);
       return (GetSmallp(namelen));
@@ -270,8 +275,9 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       ures = sizeof(addr);
       addr.sin_addr.s_addr = htonl(sock);
       host = gethostbyaddr((const char *)&addr, ures, 0);
-      if (!host) { return (GetSmallp(0));
-}
+      if (!host) {
+        return (GetSmallp(0));
+      }
       namelen = strlen(host->h_name);
       memcpy((char *)buffer, host->h_name, namelen);
       return (GetSmallp(namelen));
@@ -295,7 +301,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 #ifdef F_SETOWN
       fcntl(result, F_SETOWN, getpid());
 #endif
-      FD_SET(result, &LispIOFds);  /* so we get interrupts */
+      FD_SET(result, &LispIOFds); /* so we get interrupts */
       FD_SET(result, &LispReadFds);
       DBPRINT(("LispIOFds = %p\n", (void *)&LispIOFds));
       return (GetSmallp(result));
@@ -316,7 +322,7 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
 #endif /* BYTESWAP */
       result = sendto(sock, buffer, buflen, 0, (struct sockaddr *)&farend, sizeof farend);
 #ifdef BYTESWAP
-        word_swap_page(buffer, (buflen + 3) >> 2);
+      word_swap_page(buffer, (buflen + 3) >> 2);
 #endif /* BYTESWAP */
       if (result < 0) {
         perror("UDP Send");

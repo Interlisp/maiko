@@ -44,7 +44,6 @@ static struct MXCURSOR {
 extern int Current_Hot_X, Current_Hot_Y;
 int Current_Hot_X = 0, Current_Hot_Y = 0;
 
-
 /************************************************************************/
 /*									*/
 /*			I n i t _ X C u r s o r				*/
@@ -62,8 +61,9 @@ void Init_XCursor(void) {
   /* this is guaranteed to be our first cursor, isn't it? */
   cursorlist = (struct MXCURSOR *)malloc(sizeof(struct MXCURSOR));
   cursorlist->next = NULL;
-  for (i = 0; i < CURSORHEIGHT; i++) { cursorlist->bitmap[i] = newbm[i];
-}
+  for (i = 0; i < CURSORHEIGHT; i++) {
+    cursorlist->bitmap[i] = newbm[i];
+  }
   set_Xcursor(currentdsp, (uint8_t *)newbm, 0, 0, &(cursorlist->Xid), 1);
   DefineCursor(currentdsp, currentdsp->DisplayWindow, &(cursorlist->Xid));
 } /* end Init_XCursor */
@@ -83,8 +83,7 @@ void Init_XCursor(void) {
 /*									*/
 /************************************************************************/
 
-void Set_XCursor(int x, int y)
-{
+void Set_XCursor(int x, int y) {
   /* compare cursor in IOPage memory with cursors we've seen before */
   struct MXCURSOR *clp, *clbp = NULL;
   DLword *newbm = ((DLword *)(IOPage->dlcursorbitmap));
@@ -93,18 +92,21 @@ void Set_XCursor(int x, int y)
   XLOCK; /* No signals while setting the cursor */
   for (clp = cursorlist; clp != NULL; clbp = clp, clp = clp->next) {
     for (i = 0; i < CURSORHEIGHT; i++) {
-      if (clp->bitmap[i] != newbm[i]) { break;
-}
-}
-    if (i == CURSORHEIGHT) { break;
-}
+      if (clp->bitmap[i] != newbm[i]) {
+        break;
+      }
+    }
+    if (i == CURSORHEIGHT) {
+      break;
+    }
   }
 
   if (clp == NULL) { /* it isn't there, push on a new one */
     clp = (struct MXCURSOR *)malloc(sizeof(struct MXCURSOR));
     /* and fill it up with the current new cursor */
-    for (i = 0; i < CURSORHEIGHT; i++) { clp->bitmap[i] = newbm[i];
-}
+    for (i = 0; i < CURSORHEIGHT; i++) {
+      clp->bitmap[i] = newbm[i];
+    }
 #ifdef NEWXCURSOR
     /* JDS 000521 Added "15-" to fix cursor troubles at window edge */
     set_Xcursor(currentdsp, (uint8_t *)newbm, x, 15 - y, &(clp->Xid), 1);
@@ -114,15 +116,15 @@ void Set_XCursor(int x, int y)
     clp->next = cursorlist;
     cursorlist = clp;
   } else
-      /* found it, move it to the front of the list
-         (this should reduce search time on the average by keeping
-         the popular cursors near the front of the list)
-         */
-      if (clp != cursorlist) { /* don't move if it's already there */
-    clbp->next = clp->next;
-    clp->next = cursorlist;
-    cursorlist = clp;
-  }
+    /* found it, move it to the front of the list
+       (this should reduce search time on the average by keeping
+       the popular cursors near the front of the list)
+       */
+    if (clp != cursorlist) { /* don't move if it's already there */
+      clbp->next = clp->next;
+      clp->next = cursorlist;
+      cursorlist = clp;
+    }
   DefineCursor(currentdsp, currentdsp->DisplayWindow, &(clp->Xid));
   XUNLOCK(currentdsp); /* Signals OK now */
 
@@ -143,8 +145,7 @@ void Set_XCursor(int x, int y)
 /*									*/
 /************************************************************************/
 
-void init_Xcursor(DspInterface dsp)
-{
+void init_Xcursor(DspInterface dsp) {
   TPRINT(("TRACE: init_Xcursor()\n"));
 
   XLOCK; /* Take no X signals during this activity (ISC 386) */
@@ -164,8 +165,8 @@ void init_Xcursor(DspInterface dsp)
 /*									*/
 /************************************************************************/
 
-void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hotspot_y, Cursor *return_cursor, int from_lisp)
-{
+void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hotspot_y,
+                 Cursor *return_cursor, int from_lisp) {
   extern const unsigned char reversedbits[];
   unsigned char image[32];
   int i;
@@ -173,21 +174,24 @@ void set_Xcursor(DspInterface dsp, const uint8_t *bitmap, int hotspot_x, int hot
 
 #ifdef BYTESWAP
   if (from_lisp) {
-    for (i = 0; i < 32; i++) { image[i] = reversedbits[bitmap[i ^ 3]];
-}
+    for (i = 0; i < 32; i++) {
+      image[i] = reversedbits[bitmap[i ^ 3]];
+    }
   } else {
-    for (i = 0; i < 32; i++) { image[i] = reversedbits[bitmap[i]];
-}
-}
+    for (i = 0; i < 32; i++) {
+      image[i] = reversedbits[bitmap[i]];
+    }
+  }
 #else
-  for (i = 0; i < 32; i++) image[i] = reversedbits[bitmap[i]];
+  for (i = 0; i < 32; i++)
+    image[i] = reversedbits[bitmap[i]];
 #endif /* BYTESWAP */
 
   XLOCK;
-  Cursor_src = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,
-					   16, 16, 1, 0, 1); /* Has to have a depth of 1! */
-  Cursor_msk = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image,
-					   16, 16, 1, 0, 1); /* Has to have a depth of 1! */
+  Cursor_src = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image, 16,
+                                           16, 1, 0, 1); /* Has to have a depth of 1! */
+  Cursor_msk = XCreatePixmapFromBitmapData(dsp->display_id, dsp->DisplayWindow, (char *)image, 16,
+                                           16, 1, 0, 1); /* Has to have a depth of 1! */
   *return_cursor = XCreatePixmapCursor(dsp->display_id, Cursor_src, Cursor_msk, &cursor_fore_xcsd,
                                        &cursor_back_xcsd, hotspot_x, hotspot_y);
 

@@ -21,7 +21,7 @@ MouseInterface currentmouse = &curmouse;
 #ifdef DOS
 #include <dos.h>
 #include "lispemul.h"
-#include "dspifdefs.h"  /* for GenericReturnVoid */
+#include "dspifdefs.h" /* for GenericReturnVoid */
 
 int nomouseflag = FALSE;
 extern LispPTR *LASTUSERACTION68k;
@@ -54,14 +54,14 @@ int probemouse(void) {
     regs.w.eax = 0; /* Func 0 = Reset mouse, ret. button info */
     int86(0x33, &regs, &regs);
 
-    if (regs.x.ax == 0x0000) VESA_errorexit("No mouse driver found.", -1);
+    if (regs.x.ax == 0x0000)
+      VESA_errorexit("No mouse driver found.", -1);
     return (regs.x.bx);
   }
 }
 #endif
 
-void make_mouse_instance(MouseInterface mouse)
-{
+void make_mouse_instance(MouseInterface mouse) {
 #ifdef DOS
 
   int NumberOfButtons;

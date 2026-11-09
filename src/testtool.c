@@ -41,18 +41,18 @@
 
 
 */
-#include <inttypes.h>      // for PRIoPTR, PRIuPTR
-#include <setjmp.h>        // for longjmp, jmp_buf
-#include <stdint.h>        // for int8_t, uint8_t, uintptr_t
-#include <stdio.h>         // for printf, putchar, fflush, getchar, stdin
-#include <stdlib.h>        // for exit
-#include <string.h>        // for strlen
-#include "adr68k.h"        // for LAddrFromNative, NativeAligned2FromLAddr, NativeAligned4FromLAddr
-#include "array.h"         // for arrayheader
-#include "cell.h"          // for conspage, PNCell, GetDEFCELL68k, GetPnameCell
-#include "commondefs.h"    // for error
-#include "dbgtooldefs.h"   // for get_fn_fvar_name
-#include "debug.h"         // for PACKAGE
+#include <inttypes.h>     // for PRIoPTR, PRIuPTR
+#include <setjmp.h>       // for longjmp, jmp_buf
+#include <stdint.h>       // for int8_t, uint8_t, uintptr_t
+#include <stdio.h>        // for printf, putchar, fflush, getchar, stdin
+#include <stdlib.h>       // for exit
+#include <string.h>       // for strlen
+#include "adr68k.h"       // for LAddrFromNative, NativeAligned2FromLAddr, NativeAligned4FromLAddr
+#include "array.h"        // for arrayheader
+#include "cell.h"         // for conspage, PNCell, GetDEFCELL68k, GetPnameCell
+#include "commondefs.h"   // for error
+#include "dbgtooldefs.h"  // for get_fn_fvar_name
+#include "debug.h"        // for PACKAGE
 #include "emlglob.h"
 #include "gcarraydefs.h"   // for aref1
 #include "kprintdefs.h"    // for print, prindatum
@@ -116,11 +116,15 @@ int find_package_from_name(const char *packname, int len) {
     package = (PACKAGE *)NativeAligned4FromLAddr(aref1(*Package_from_Index_word, index));
     namestring = (NEWSTRINGP *)NativeAligned4FromLAddr(package->NAME);
     pname = (char *)NativeAligned2FromLAddr(namestring->base);
-    if (namestring->offset != 0) { pname += namestring->offset; }
+    if (namestring->offset != 0) {
+      pname += namestring->offset;
+    }
 
     len2 = (DLword)(namestring->fillpointer);
     if (len == len2) {
-      if (compare_chars(pname, packname, len) == T) { return (index); }
+      if (compare_chars(pname, packname, len) == T) {
+        return (index);
+      }
     }
   } /* for end */
   return (-1);
@@ -154,7 +158,8 @@ void print_package_name(int index) {
   if (compare_chars(pname, "INTERLISP", len) == T) {
     printf("IL:");
     return;
-  } if (compare_chars(pname, "LISP", len) == T) {
+  }
+  if (compare_chars(pname, "LISP", len) == T) {
     printf("CL:");
     return;
   } else if (compare_chars(pname, "XEROX-COMMON-LISP", len) == T) {
@@ -318,7 +323,7 @@ void trace_listpDTD(void) {
 void a68k(LispPTR lispptr) {
   DLword *val;
   val = NativeAligned2FromLAddr(lispptr);
-  printf("68k: %p (%"PRIuPTR")\n", (void *)val, (uintptr_t)val);
+  printf("68k: %p (%" PRIuPTR ")\n", (void *)val, (uintptr_t)val);
 }
 
 /************************************************************************/
@@ -373,14 +378,16 @@ void dump_fnbody(LispPTR fnblockaddr)
   for (i = 20; i < (fnobj->startpc); i += 2) {
     int word;
     word = (int)(0xffff & (GETWORD((DLword *)(scratch + i))));
-    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LAddrFromNative(scratch + i), (void *)(scratch + i), word, word);
+    printf(" 0x%x(%p 68k): 0%6o  0x%4x\n", LAddrFromNative(scratch + i), (void *)(scratch + i),
+           word, word);
   }
 
   scratch = (DLbyte *)fnobj + (fnobj->startpc);
   for (i = 0; i < 2000; i++) {
     int len = print_opcode(fnobj->startpc + i, scratch, fnobj);
-    if (len < 1) { return;
-}
+    if (len < 1) {
+      return;
+    }
     scratch += len;
     i += (len - 1);
   }
@@ -416,263 +423,262 @@ void dump_fnobj(LispPTR index)
 /************************************************************************/
 
 /* Opcode names, by opcode */
-const char *opcode_table[256] = {
-                           "-X-",
-                           "CAR",
-                           "CDR",
-                           "LISTP",
-                           "NTYPX",
-                           "TYPEP",
-                           "DTEST",
-                           "UNWIND",
-                           "FN0",
-                           "FN1",
-                           "FN2",
-                           "FN3",
-                           "FN4",
-                           "FNX",
-                           "APPLYFN",
-                           "CHECKAPPLY*",
-                           "RETURN",
-                           "BIND",
-                           "UNBIND",
-                           "DUNBIND",
-                           "RPLPTR.N",
-                           "GCREF",
-                           "ASSOC",
-                           "GVAR_",
-                           "RPLACA",
-                           "RPLACD",
-                           "CONS",
-                           "CMLASSOC",
-                           "FMEMB",
-                           "CMLMEMBER",
-                           "FINDKEY",
-                           "CREATECELL",
-                           "BIN",
-                           "BOUT",
-                           "PROLOG",
-                           "RESTLIST",
-                           "MISCN",
-                           "<>",
-                           "RPLCONS",
-                           "LISTGET",
-                           "ELT",
-                           "NTHCHC",
-                           "SETA",
-                           "RPLCHARCODE",
-                           "EVAL",
-                           "ENVCALL",
-                           "TYPECHECK.N",
-                           "STKSCAN",
-                           "BUSBLT",
-                           "MISC8",
-                           "UBFLOAT3",
-                           "TYPEMASK.N",
-                           "PROLOG",
-                           "PROLOG",
-                           "PROLOG",
-                           "PROLOG",
-                           "PSEUDOCOLOR",
-                           "<>",
-                           "EQL",
-                           "DRAWLINE",
-                           "STORE.N",
-                           "COPY.N",
-                           "RAID",
-                           "\\RETURN",
-                           "IVAR0",
-                           "IVAR1",
-                           "IVAR2",
-                           "IVAR3",
-                           "IVAR4",
-                           "IVAR5",
-                           "IVAR6",
-                           "IVARX",
-                           "PVAR0",
-                           "PVAR1",
-                           "PVAR2",
-                           "PVAR3",
-                           "PVAR4",
-                           "PVAR5",
-                           "PVAR6",
-                           "PVARX",
-                           "FVAR0",
-                           "FVAR1",
-                           "FVAR2",
-                           "FVAR3",
-                           "FVAR4",
-                           "FVAR5",
-                           "FVAR6",
-                           "FVARX",
-                           "PVAR_0",
-                           "PVAR_1",
-                           "PVAR_2",
-                           "PVAR_3",
-                           "PVAR_4",
-                           "PVAR_5",
-                           "PVAR_6",
-                           "PVAR_X",
-                           "GVAR",
-                           "ARG0",
-                           "IVARX_",
-                           "FVARX_",
-                           "COPY",
-                           "MYARGCOUNT",
-                           "MYALINK",
-                           "ACONST",
-                           "'NIL",
-                           "'T",
-                           "'0",
-                           "'1",
-                           "SIC",
-                           "SNIC",
-                           "SICX",
-                           "GCONST",
-                           "ATOMNUMBER",
-                           "READFLAGS",
-                           "READRP",
-                           "WRITEMAP",
-                           "RPPORT",
-                           "WPRTPORT",
-                           "PILOTBBT",
-                           "RCLK",
-                           "MISC1",
-                           "MISC2",
-                           "RECCELL",
-                           "GCSCAN1",
-                           "GCSCAN2",
-                           "SUBRCALL",
-                           "CONTEXT",
-                           "<>",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "JUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "FJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "TJUMP",
-                           "JUMPX",
-                           "JUMPXX",
-                           "FJUMPX",
-                           "TJUMPX",
-                           "NFJUMPX",
-                           "NTJUMPX",
-                           "AREF1",
-                           "ASET1",
-                           "PVAR_0^",
-                           "PVAR_1^",
-                           "PVAR_2^",
-                           "PVAR_3^",
-                           "PVAR_4^",
-                           "PVAR_5^",
-                           "PVAR_6^",
-                           "POP",
-                           "POP.N",
-                           "ATOMCELL.N",
-                           "GETBASEBYTE",
-                           "INSTANCEP",
-                           "BLT",
-                           "MISC10",
-                           "<>",
-                           "PUTBASEBYTE",
-                           "GETBASE.N",
-                           "GETBASEPTR.N",
-                           "GETBITS.N.FD",
-                           "<>",
-                           "CMLEQUAL",
-                           "PUTBASE.N",
-                           "PUTBASEPTR.N",
-                           "PUTBITS.N.FD",
-                           "ADDBASE",
-                           "VAG2",
-                           "HILOC",
-                           "LOLOC",
-                           "PLUS2",
-                           "DIFFERENCE",
-                           "TIMES2",
-                           "QUOTIENT",
-                           "IPLUS2",
-                           "IDIFFERENCE",
-                           "ITIMES2",
-                           "IQUOTIENT",
-                           "IREMAINDER",
-                           "IPLUS.N",
-                           "IDIFFERENCE.N",
-                           "<>",
-                           "LLSH1",
-                           "LLSH8",
-                           "LRSH1",
-                           "LRSH8",
-                           "LOGOR2",
-                           "LOGAND2",
-                           "LOGXOR2",
-                           "LSH",
-                           "FPLUS2",
-                           "FIDFFERENCE",
-                           "FTIMES2",
-                           "FQUOTIENT",
-                           "UBFLOAT2",
-                           "UBFLOAT1",
-                           "AREF2",
-                           "ASET2",
-                           "EQ",
-                           "IGREATERP",
-                           "FGREATERP",
-                           "GREATERP",
-                           "EQUAL",
-                           "MAKENUMBER",
-                           "BOXIPLUS",
-                           "BOSIDIFFERENCE",
-                           "FLOATBLT",
-                           "FFTSTEP",
-                           "MISC3",
-                           "MISC4",
-                           "UPCTRACE",
-                           "SWAP",
-                           "NOP",
-                           "CL="
+const char *opcode_table[256] = {"-X-",
+                                 "CAR",
+                                 "CDR",
+                                 "LISTP",
+                                 "NTYPX",
+                                 "TYPEP",
+                                 "DTEST",
+                                 "UNWIND",
+                                 "FN0",
+                                 "FN1",
+                                 "FN2",
+                                 "FN3",
+                                 "FN4",
+                                 "FNX",
+                                 "APPLYFN",
+                                 "CHECKAPPLY*",
+                                 "RETURN",
+                                 "BIND",
+                                 "UNBIND",
+                                 "DUNBIND",
+                                 "RPLPTR.N",
+                                 "GCREF",
+                                 "ASSOC",
+                                 "GVAR_",
+                                 "RPLACA",
+                                 "RPLACD",
+                                 "CONS",
+                                 "CMLASSOC",
+                                 "FMEMB",
+                                 "CMLMEMBER",
+                                 "FINDKEY",
+                                 "CREATECELL",
+                                 "BIN",
+                                 "BOUT",
+                                 "PROLOG",
+                                 "RESTLIST",
+                                 "MISCN",
+                                 "<>",
+                                 "RPLCONS",
+                                 "LISTGET",
+                                 "ELT",
+                                 "NTHCHC",
+                                 "SETA",
+                                 "RPLCHARCODE",
+                                 "EVAL",
+                                 "ENVCALL",
+                                 "TYPECHECK.N",
+                                 "STKSCAN",
+                                 "BUSBLT",
+                                 "MISC8",
+                                 "UBFLOAT3",
+                                 "TYPEMASK.N",
+                                 "PROLOG",
+                                 "PROLOG",
+                                 "PROLOG",
+                                 "PROLOG",
+                                 "PSEUDOCOLOR",
+                                 "<>",
+                                 "EQL",
+                                 "DRAWLINE",
+                                 "STORE.N",
+                                 "COPY.N",
+                                 "RAID",
+                                 "\\RETURN",
+                                 "IVAR0",
+                                 "IVAR1",
+                                 "IVAR2",
+                                 "IVAR3",
+                                 "IVAR4",
+                                 "IVAR5",
+                                 "IVAR6",
+                                 "IVARX",
+                                 "PVAR0",
+                                 "PVAR1",
+                                 "PVAR2",
+                                 "PVAR3",
+                                 "PVAR4",
+                                 "PVAR5",
+                                 "PVAR6",
+                                 "PVARX",
+                                 "FVAR0",
+                                 "FVAR1",
+                                 "FVAR2",
+                                 "FVAR3",
+                                 "FVAR4",
+                                 "FVAR5",
+                                 "FVAR6",
+                                 "FVARX",
+                                 "PVAR_0",
+                                 "PVAR_1",
+                                 "PVAR_2",
+                                 "PVAR_3",
+                                 "PVAR_4",
+                                 "PVAR_5",
+                                 "PVAR_6",
+                                 "PVAR_X",
+                                 "GVAR",
+                                 "ARG0",
+                                 "IVARX_",
+                                 "FVARX_",
+                                 "COPY",
+                                 "MYARGCOUNT",
+                                 "MYALINK",
+                                 "ACONST",
+                                 "'NIL",
+                                 "'T",
+                                 "'0",
+                                 "'1",
+                                 "SIC",
+                                 "SNIC",
+                                 "SICX",
+                                 "GCONST",
+                                 "ATOMNUMBER",
+                                 "READFLAGS",
+                                 "READRP",
+                                 "WRITEMAP",
+                                 "RPPORT",
+                                 "WPRTPORT",
+                                 "PILOTBBT",
+                                 "RCLK",
+                                 "MISC1",
+                                 "MISC2",
+                                 "RECCELL",
+                                 "GCSCAN1",
+                                 "GCSCAN2",
+                                 "SUBRCALL",
+                                 "CONTEXT",
+                                 "<>",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "JUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "FJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "TJUMP",
+                                 "JUMPX",
+                                 "JUMPXX",
+                                 "FJUMPX",
+                                 "TJUMPX",
+                                 "NFJUMPX",
+                                 "NTJUMPX",
+                                 "AREF1",
+                                 "ASET1",
+                                 "PVAR_0^",
+                                 "PVAR_1^",
+                                 "PVAR_2^",
+                                 "PVAR_3^",
+                                 "PVAR_4^",
+                                 "PVAR_5^",
+                                 "PVAR_6^",
+                                 "POP",
+                                 "POP.N",
+                                 "ATOMCELL.N",
+                                 "GETBASEBYTE",
+                                 "INSTANCEP",
+                                 "BLT",
+                                 "MISC10",
+                                 "<>",
+                                 "PUTBASEBYTE",
+                                 "GETBASE.N",
+                                 "GETBASEPTR.N",
+                                 "GETBITS.N.FD",
+                                 "<>",
+                                 "CMLEQUAL",
+                                 "PUTBASE.N",
+                                 "PUTBASEPTR.N",
+                                 "PUTBITS.N.FD",
+                                 "ADDBASE",
+                                 "VAG2",
+                                 "HILOC",
+                                 "LOLOC",
+                                 "PLUS2",
+                                 "DIFFERENCE",
+                                 "TIMES2",
+                                 "QUOTIENT",
+                                 "IPLUS2",
+                                 "IDIFFERENCE",
+                                 "ITIMES2",
+                                 "IQUOTIENT",
+                                 "IREMAINDER",
+                                 "IPLUS.N",
+                                 "IDIFFERENCE.N",
+                                 "<>",
+                                 "LLSH1",
+                                 "LLSH8",
+                                 "LRSH1",
+                                 "LRSH8",
+                                 "LOGOR2",
+                                 "LOGAND2",
+                                 "LOGXOR2",
+                                 "LSH",
+                                 "FPLUS2",
+                                 "FIDFFERENCE",
+                                 "FTIMES2",
+                                 "FQUOTIENT",
+                                 "UBFLOAT2",
+                                 "UBFLOAT1",
+                                 "AREF2",
+                                 "ASET2",
+                                 "EQ",
+                                 "IGREATERP",
+                                 "FGREATERP",
+                                 "GREATERP",
+                                 "EQUAL",
+                                 "MAKENUMBER",
+                                 "BOXIPLUS",
+                                 "BOSIDIFFERENCE",
+                                 "FLOATBLT",
+                                 "FFTSTEP",
+                                 "MISC3",
+                                 "MISC4",
+                                 "UPCTRACE",
+                                 "SWAP",
+                                 "NOP",
+                                 "CL="
 
 };
 
@@ -685,10 +691,12 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
   int len = oplength[op] + 1;
 
   printf(" 0%04o (0x%04x)    ", pc, pc);
-  for (i = 0; i < len; i++) { printf("%4o", 0xFF & GETBYTE(addr + i));
-}
-  for (; i < 9; i++) { printf("    ");
-}
+  for (i = 0; i < len; i++) {
+    printf("%4o", 0xFF & GETBYTE(addr + i));
+  }
+  for (; i < 9; i++) {
+    printf("    ");
+  }
   printf("%s", opcode_table[op]);
 
   switch (op) {
@@ -779,8 +787,7 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
       printf(" 0%o (0x%x)\n", pc + (int8_t)GETBYTE(addr + 1), pc + (int8_t)GETBYTE(addr + 1));
       break;
     case 0261: /* JUMPXX */
-      printf(" 0%o (0x%x)\n",
-             pc + ((int8_t)GETBYTE(addr + 1) << 8) + (uint8_t)GETBYTE(addr + 2),
+      printf(" 0%o (0x%x)\n", pc + ((int8_t)GETBYTE(addr + 1) << 8) + (uint8_t)GETBYTE(addr + 2),
              pc + ((int8_t)GETBYTE(addr + 1) << 8) + (uint8_t)GETBYTE(addr + 2));
       break;
     case 0120: /* FVAR opcodes */
@@ -796,7 +803,7 @@ int print_opcode(int pc, DLbyte *addr, struct fnhead *fnobj) {
       break;
     default: putchar('\n');
   }
-  (void) fflush(stdout); /* Make sure each line is really printed as we go. */
+  (void)fflush(stdout); /* Make sure each line is really printed as we go. */
   return (len);
 }
 
@@ -812,7 +819,7 @@ void doko(void) {
   printf(" At ");
   print_atomname(FuncObj->framename);
   putchar('\n');
-  printf("   PC cnt = 0%"PRIoPTR"\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
+  printf("   PC cnt = 0%" PRIoPTR "\n", ((UNSIGNED)(PC) - (UNSIGNED)FuncObj));
 }
 
 /**** dump specified area (in 32 bit width) ***/
@@ -822,8 +829,9 @@ void dumpl(LispPTR laddr) {
 
   ptr = NativeAligned4FromLAddr(laddr);
 
-  for (i = 0; i < 40; i++, ptr++) { printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
-}
+  for (i = 0; i < 40; i++, ptr++) {
+    printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), *ptr);
+  }
 }
 
 /**** dump specified area (in 16 bit width) ***/
@@ -836,7 +844,7 @@ void dumps(LispPTR laddr) {
 
   for (i = 0; i < 40; i++, ptr++) {
     printf("LADDR 0x%x : %d\n", LAddrFromNative(ptr), (GETWORD(ptr) & 0xffff));
-}
+  }
 }
 
 /***********************/
@@ -856,7 +864,9 @@ void dump_bf(Bframe *bf) {
     return;
   }
 
-  if (BFRAMEPTR(bf)->residual) { goto printflags; }
+  if (BFRAMEPTR(bf)->residual) {
+    goto printflags;
+  }
 
   ptr = NativeAligned2FromStackOffset(bf->ivar);
   if ((((DLword *)bf - ptr) > 512) || (((UNSIGNED)ptr & 1) != 0)) {
@@ -872,10 +882,12 @@ void dump_bf(Bframe *bf) {
 printflags:
   printf("\n %x : %x %x ", LAddrFromNative(bf), *(DLword *)bf, *((DLword *)bf + 1));
   putchar('[');
-  if (BFRAMEPTR(bf)->residual) { printf("Residual, ");
-}
-  if (BFRAMEPTR(bf)->padding) { printf("Padded, ");
-}
+  if (BFRAMEPTR(bf)->residual) {
+    printf("Residual, ");
+  }
+  if (BFRAMEPTR(bf)->padding) {
+    printf("Padded, ");
+  }
   printf("usecnt=%d ] ", BFRAMEPTR(bf)->usecnt);
   printf("ivar : 0x%x", BFRAMEPTR(bf)->ivar);
 }
@@ -898,18 +910,23 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   printf("\n %x : %x %x ", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
 
   putchar('[');
-  if (fx_addr68k->fast) { printf("F,");
-}
-  if (fx_addr68k->incall) { printf("incall, ");
-}
-  if (fx_addr68k->validnametable) { printf("V, ");
-}
+  if (fx_addr68k->fast) {
+    printf("F,");
+  }
+  if (fx_addr68k->incall) {
+    printf("incall, ");
+  }
+  if (fx_addr68k->validnametable) {
+    printf("V, ");
+  }
   printf("usecnt = %d]; alink", fx_addr68k->usecount);
-  if (fx_addr68k->alink & 1) { printf("[SLOWP]");
-}
+  if (fx_addr68k->alink & 1) {
+    printf("[SLOWP]");
+  }
 
   ptr += 2;
-  printf("\n %x : %x %x fnheadlo, fnheadhi\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
+  printf("\n %x : %x %x fnheadlo, fnheadhi\n", LAddrFromNative(ptr), GETWORD(ptr),
+         GETWORD(ptr + 1));
 
   ptr += 2;
   printf("\n %x : %x %x next,     pc\n", LAddrFromNative(ptr), GETWORD(ptr), GETWORD(ptr + 1));
@@ -923,7 +940,9 @@ void dump_fx(struct frameex1 *fx_addr68k) {
   /* should pay attention to the name table like RAID does */
 
   next68k = NativeAligned2FromStackOffset(fx_addr68k->nextblock);
-  if (fx_addr68k == CURRENTFX) { next68k = CurrentStackPTR + 2; }
+  if (fx_addr68k == CURRENTFX) {
+    next68k = CurrentStackPTR + 2;
+  }
 
   if ((next68k < ptr) || (((UNSIGNED)next68k & 1) != 0)) {
     printf("\nNext block invalid");
@@ -1011,16 +1030,15 @@ int get_framename(struct frameex1 *fx_addr68k) {
 } /* get_framename end */
 
 FX *get_nextFX(FX *fx) {
-
   if (URaid_scanlink == URSCAN_ALINK) {
     return ((FX *)NativeAligned4FromStackOffset(GETALINK(fx)));
-}
-      return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
+  }
+  return ((FX *)NativeAligned4FromStackOffset(GETCLINK(fx)));
 
 } /* get_nextFX end */
 
 LispPTR MAKEATOM(char *string) {
-    return (make_atom(string, 0, strlen(string)));
+  return (make_atom(string, 0, strlen(string)));
 }
 
 /************************************************************************/
@@ -1045,7 +1063,7 @@ LispPTR *MakeAtom68k(char *string) {
 #else
   index = VALS_OFFSET + (index << 1);
 #endif /* BIGVM */
-  return ((LispPTR *) NativeAligned4FromLAddr(index));
+  return ((LispPTR *)NativeAligned4FromLAddr(index));
 }
 
 /************************************************************************/
@@ -1066,25 +1084,26 @@ void GETTOPVAL(char *string) {
     print(*cell68k);
   } else {
     printf("'%s': no such symbol.\n", string);
-}
+  }
 }
 
 /****************************************************************************/
 /*     all_stack_dump(start,end)
-*/
+ */
 
 jmp_buf SD_jumpbuf;
 
 #define SDMAXLINE 30
-#define SD_morep                                     \
-  do {                                               \
+#define SD_morep                                       \
+  do {                                                 \
     if (++sdlines > SDMAXLINE) {                       \
       int temp;                                        \
       printf("\nPress Return:(to quit Esc and Ret):"); \
       temp = getchar();                                \
       (void)fflush(stdin);                             \
       sdlines = 0;                                     \
-      if (temp == 27) longjmp(SD_jumpbuf, 1);          \
+      if (temp == 27)                                  \
+        longjmp(SD_jumpbuf, 1);                        \
     }                                                  \
   } while (0)
 
@@ -1120,13 +1139,13 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
     start68k = Stackspace + InterfacePage->stackbase;
   } else {
     start68k = NativeAligned2FromStackOffset(start);
-}
+  }
 
   if (end == 0) {
     end68k = Stackspace + InterfacePage->endofstack;
   } else {
     end68k = NativeAligned2FromStackOffset(end);
-}
+  }
 
   stkptr = (STKH *)start68k;
 
@@ -1134,20 +1153,26 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
     switch (STKHPTR(stkptr)->flags1) {
       case STK_GUARD:
       case STK_FSB:
-        if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) { goto badblock; }
+        if ((STKHPTR(stkptr)->flags2 != 0) || (STKHPTR(stkptr)->usecount != 0)) {
+          goto badblock;
+        }
         size = GETWORD(((DLword *)stkptr) + 1);
         if (STKHPTR(stkptr)->flags1 == STK_GUARD) {
           printf("\n0x%x GUARD, size : 0x%x", LAddrFromNative(stkptr), size);
         } else {
           printf("\n0x%x FSB,   size : 0x%x", LAddrFromNative(stkptr), size);
-}
+        }
 
-        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; }
+        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) {
+          goto badblock;
+        }
 
         SD_morep;
         size = GETWORD(((DLword *)stkptr) + 1);
       checksize:
-        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) { goto badblock; }
+        if (size <= 0 || size > ((DLword *)end68k - (DLword *)stkptr)) {
+          goto badblock;
+        }
         stkptr = (STKH *)(((DLword *)stkptr) + size);
         break;
 
@@ -1161,14 +1186,18 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           printf("\n0x%x: FX for ", LAddrFromNative(stkptr));
           print(get_framename((struct frameex1 *)stkptr));
           printf(" [");
-          if (((FX *)stkptr)->fast) { printf("fast,");
-}
-          if (((FX *)stkptr)->incall) { printf("incall,");
-}
-          if (((FX *)stkptr)->validnametable) { printf("V,");
-}
-          if (((FX *)stkptr)->nopush) { printf("nopush,");
-}
+          if (((FX *)stkptr)->fast) {
+            printf("fast,");
+          }
+          if (((FX *)stkptr)->incall) {
+            printf("incall,");
+          }
+          if (((FX *)stkptr)->validnametable) {
+            printf("V,");
+          }
+          if (((FX *)stkptr)->nopush) {
+            printf("nopush,");
+          }
           printf("]");
         } else {
           dump_fx((struct frameex1 *)stkptr);
@@ -1185,7 +1214,9 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
         orig68k = (DLword *)stkptr;
 
         while (STKHPTR(stkptr)->flags1 != STK_BF) {
-          if (STKHPTR(stkptr)->flags1 != STK_NOTFLG) { goto badblock; }
+          if (STKHPTR(stkptr)->flags1 != STK_NOTFLG) {
+            goto badblock;
+          }
           stkptr = (STKH *)(((DLword *)stkptr) + DLWORDSPER_CELL);
         }
 
@@ -1205,14 +1236,16 @@ void all_stack_dump(DLword start, DLword end, DLword silent)
           SD_morep;
           printf("\n0x%x BF,   ", LAddrFromNative(stkptr));
           putchar('[');
-          if (BFRAMEPTR(stkptr)->residual) { printf("Res,");
-}
-          if (BFRAMEPTR(stkptr)->padding) { printf("Pad,");
-}
+          if (BFRAMEPTR(stkptr)->residual) {
+            printf("Res,");
+          }
+          if (BFRAMEPTR(stkptr)->padding) {
+            printf("Pad,");
+          }
           printf("ivar : 0x%x]", BFRAMEPTR(stkptr)->ivar);
         } else {
           dump_bf((Bframe *)stkptr);
-}
+        }
 
         stkptr = (STKH *)(((DLword *)stkptr) + 2);
         break;
@@ -1257,8 +1290,7 @@ void dtd_chain(DLword type) {
 
 } /*  dtd_chain end **/
 
-void check_dtd_chain(DLword type)
-{
+void check_dtd_chain(DLword type) {
   LispPTR next, onext;
 
   onext = 0;
@@ -1271,8 +1303,9 @@ void check_dtd_chain(DLword type)
       return;
     }
 
-    if (next & 0x8000000) { error("impossibly-big free pointer!");
-}
+    if (next & 0x8000000) {
+      error("impossibly-big free pointer!");
+    }
 
     if (type != GetTypeNumber(next)) {
       error("BAD cell in next dtdfree ");
@@ -1309,8 +1342,9 @@ void Trace_FNCall(int numargs, int atomindex, int arg1, LispPTR *tos) {
       printf(", ");
     }
   }
-  if (numargs) { prindatum(arg1);
-}
+  if (numargs) {
+    prindatum(arg1);
+  }
   printf(").\n");
   (void)fflush(stdout);
 }

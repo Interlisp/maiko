@@ -82,12 +82,13 @@ extern LispPTR *PENDINGINTERRUPT68k;
 */
 /***********************************************************/
 
-#define POP_SUBR_ARGS                                       \
-  do {                                                      \
-    args[0] = NIL_PTR;                                      \
-    arg_num = (argnum); /* Get_BYTE(PC+2) */                \
-    while (arg_num > 0) PopStackTo(args[--arg_num]);        \
-  } while(0)
+#define POP_SUBR_ARGS                        \
+  do {                                       \
+    args[0] = NIL_PTR;                       \
+    arg_num = (argnum); /* Get_BYTE(PC+2) */ \
+    while (arg_num > 0)                      \
+      PopStackTo(args[--arg_num]);           \
+  } while (0)
 
 void OP_subrcall(int subr_no, int argnum) {
   static LispPTR args[30];
@@ -219,7 +220,7 @@ void OP_subrcall(int subr_no, int argnum) {
       POP_SUBR_ARGS;
       subr_copytimestats(args);
       /* no result */
-      TopOfStack = NIL; 
+      TopOfStack = NIL;
       break;
 
     /*************/
@@ -415,10 +416,12 @@ void OP_subrcall(int subr_no, int argnum) {
     case sb_LISP_FINISH: {
       int status;
       POP_SUBR_ARGS;
-      if (argnum == 0 || argnum == 1 || (argnum == 2 && args[1] == NIL)) { lisp_finish(EXIT_SUCCESS);
-}
-      if (argnum > 2) { lisp_finish(EXIT_FAILURE);
-}
+      if (argnum == 0 || argnum == 1 || (argnum == 2 && args[1] == NIL)) {
+        lisp_finish(EXIT_SUCCESS);
+      }
+      if (argnum > 2) {
+        lisp_finish(EXIT_FAILURE);
+      }
       N_GETNUMBER(args[1], status, exit_fail);
       lisp_finish(status);
     exit_fail:
@@ -436,7 +439,7 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = NIL_PTR;
       break;
 
-    /* read & write a abs memory address */
+      /* read & write a abs memory address */
 
     case sb_NATIVE_MEMORY_REFERENCE:
       POP_SUBR_ARGS;
@@ -444,8 +447,9 @@ void OP_subrcall(int subr_no, int argnum) {
       switch (args[0] & 0xffff) {
         case 00: {
           UNSIGNED iarg;
-          if (argnum != 2) { goto ret_nil;
-}
+          if (argnum != 2) {
+            goto ret_nil;
+          }
           N_GETNUMBER(args[1], iarg, ret_nil);
           ARITH_SWITCH(*((LispPTR *)iarg), TopOfStack);
           break;
@@ -453,16 +457,17 @@ void OP_subrcall(int subr_no, int argnum) {
 
         case 01: {
           UNSIGNED iarg, iarg2;
-          if (argnum != 3) { goto ret_nil;
-}
+          if (argnum != 3) {
+            goto ret_nil;
+          }
           N_GETNUMBER(args[1], iarg, ret_nil);
           N_GETNUMBER(args[2], iarg2, ret_nil);
           *((LispPTR *)iarg) = iarg2;
           break;
         }
 
-        /* case 02: Used to be get an emulator address for
-         * defunct NATIVETRAN feature. */
+          /* case 02: Used to be get an emulator address for
+           * defunct NATIVETRAN feature. */
       }
       break;
 
@@ -520,7 +525,7 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = DSK_directorynamep(args);
       break;
 
-    /* Communications with Unix Subprocess */
+      /* Communications with Unix Subprocess */
 
     case sb_UNIX_HANDLECOMM: POP_SUBR_ARGS;
 #ifndef DOS
@@ -528,19 +533,19 @@ void OP_subrcall(int subr_no, int argnum) {
 #endif /* DOS */
       break;
 
-    /*
-            case 0166: POP_SUBR_ARGS;
-                             error("called SUBR 0166, not defined!!");
-                                  {int temp;
-                             N_GETNUMBER(TopOfStack, temp, badarg);
-                             temp = (UNSIGNED) NativeAligned4FromLAddr(temp);
-                             ARITH_SWITCH(temp, TopOfStack);
-                             break;
-                    badarg:	TopOfStack = NIL;
-                            break;
-                            }
-    */
-    /* OS message print routines */
+      /*
+              case 0166: POP_SUBR_ARGS;
+                               error("called SUBR 0166, not defined!!");
+                                    {int temp;
+                               N_GETNUMBER(TopOfStack, temp, badarg);
+                               temp = (UNSIGNED) NativeAligned4FromLAddr(temp);
+                               ARITH_SWITCH(temp, TopOfStack);
+                               break;
+                      badarg:	TopOfStack = NIL;
+                              break;
+                              }
+      */
+      /* OS message print routines */
 
     case sb_MESSAGE_READP:
       POP_SUBR_ARGS;
@@ -552,14 +557,14 @@ void OP_subrcall(int subr_no, int argnum) {
       TopOfStack = mess_read(args);
       break;
 
-    /* RPC routines */
+      /* RPC routines */
 
     case sb_RPC_CALL:
       POP_SUBR_ARGS;
       TopOfStack = rpc(args);
       break;
 
-    /* Unix username/password utilities */
+      /* Unix username/password utilities */
 
     case sb_CHECKBCPLPASSWORD:
       POP_SUBR_ARGS;
@@ -678,8 +683,8 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
 
     case sb_CAUSE_INTERRUPT: /* Cause an interrupt to occur.  Used by */
-               /* Lisp INTERRUPTED to re-set an interrupt */
-               /* when it's uninterruptible. 		*/
+                             /* Lisp INTERRUPTED to re-set an interrupt */
+                             /* when it's uninterruptible. 		*/
       POP_SUBR_ARGS;
       Irq_Stk_Check = Irq_Stk_End = 0;
       *PENDINGINTERRUPT68k = ATOM_T;
@@ -787,20 +792,20 @@ void OP_subrcall(int subr_no, int argnum) {
       break;
     }
 #endif /* LPSOLVE */
-  case sb_YIELD: {
+    case sb_YIELD: {
       struct timespec rqts = {0, 833333};
       unsigned sleepnanos;
       POP_SUBR_ARGS;
       N_GETNUMBER(args[0], sleepnanos, ret_nil);
       if (sleepnanos > 999999999) {
-          TopOfStack = NIL;
-          break;
+        TopOfStack = NIL;
+        break;
       }
       rqts.tv_nsec = sleepnanos;
       nanosleep(&rqts, NULL);
       TopOfStack = ATOM_T;
       break;
-  }
+    }
     default: {
       char errtext[200];
       sprintf(errtext, "OP_subrcall: Invalid alpha byte 0%o", ((*(PC + 1)) & 0xff));

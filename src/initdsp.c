@@ -15,14 +15,14 @@
  *	Author	:	Osamu Nakamura
  */
 
-#include <unistd.h>       // for getpagesize
+#include <unistd.h>  // for getpagesize
 #ifdef BYTESWAP
 #include "byteswapdefs.h"
 #endif
-#include "dbprint.h"      // for DBPRINT, TPRINT
-#include "devconf.h"      // for SUN2BW
-#include "devif.h"        // for (anonymous), MRegion, DevRec, DspInterface
-#include "display.h"      // for DLWORD_PERLINE, DISPLAYBUFFER
+#include "dbprint.h"  // for DBPRINT, TPRINT
+#include "devconf.h"  // for SUN2BW
+#include "devif.h"    // for (anonymous), MRegion, DevRec, DspInterface
+#include "display.h"  // for DLWORD_PERLINE, DISPLAYBUFFER
 #include "emlglob.h"
 #include "ifpage.h"       // for IFPAGE
 #include "initdspdefs.h"  // for clear_display, display_before_exit, flush_d...
@@ -36,7 +36,6 @@
 #ifdef OS4
 #include <vfork.h>
 #endif /* OS4 */
-
 
 #ifdef DOS
 #define getpagesize() 512
@@ -53,7 +52,6 @@ extern DspInterface currentdsp;
 #define FBTYPE_SUNFAST_COLOR 12
 #endif
 
-
 int FrameBufferFd = -1;
 
 extern int sdl_displaywidth, sdl_displayheight, sdl_pixelscale;
@@ -68,7 +66,6 @@ DLword *DisplayRegion68k_end_addr;
 
 /* some functions use this variable when undef DISPLAYBUFFER */
 DLword *DISP_MAX_Address;
-
 
 extern DLword *EmCursorBitMap68K;
 
@@ -87,7 +84,6 @@ extern void sdl_notify_damage(int, int, int, int);
 DLword *DisplayRegion68k_end_addr;
 extern int *Xdisplay; /* DAANGER -jarl nilsson 27-apr-92 */
 #endif                /* XWINDOW */
-
 
 /************************************************************************/
 /*									*/
@@ -113,7 +109,6 @@ void init_cursor(void) {
 /*									*/
 /************************************************************************/
 void set_cursor(void) {
-
 #ifdef XWINDOW
   Init_XCursor();
 #endif /* XWINDOW */
@@ -131,7 +126,6 @@ void set_cursor(void) {
 
 #ifndef COLOR
 void clear_display(void) {
-
 #ifdef DOS
   TPRINT(("Enter Clear_display\n"));
   (currentdsp->cleardisplay)(currentdsp);
@@ -148,8 +142,10 @@ void clear_display(void) {
 #ifndef DISPLAYBUFFER
     word = DisplayRegion68k;
     for (h = displayheight; (h--);) {
-      for (w = DisplayRasterWidth; (w--);) { *word++ = 0; }
-    }      /* end for(h) */
+      for (w = DisplayRasterWidth; (w--);) {
+        *word++ = 0;
+      }
+    } /* end for(h) */
 #else  /* DISPLAYBUFFER */
     pr_rop(ColorDisplayPixrect, 0, 0, displaywidth, displayheight, PIX_CLR, ColorDisplayPixrect, 0,
            0);
@@ -157,22 +153,19 @@ void clear_display(void) {
   } else { /* MonoOrColo is COLOR_SCREEN */
     word = ColorDisplayRegion68k;
     for (h = displayheight; (h--);) {
-      for (w = DisplayRasterWidth * 8; (w--);) { *word++ = 0; }
+      for (w = DisplayRasterWidth * 8; (w--);) {
+        *word++ = 0;
+      }
     } /* end for(h) */
-  }   /* end if(MonoOrColor) */
+  } /* end if(MonoOrColor) */
 }
 #endif /* COLOR */
 
 /*  ================================================================  */
 /*  Now takes 68k address, function renamed for safety  */
 
-void init_display2(DLword *display_addr, unsigned display_max)
-{
-
-
-
+void init_display2(DLword *display_addr, unsigned display_max) {
   DisplayRegion68k = (DLword *)display_addr;
-
 
 #if (defined(XWINDOW) || defined(DOS))
   (currentdsp->device.enter)(currentdsp);
@@ -185,12 +178,13 @@ void init_display2(DLword *display_addr, unsigned display_max)
 #endif /* SDL */
   DisplayRasterWidth = displaywidth / BITSPER_DLWORD;
 
-  if ((displaywidth * displayheight) > display_max) { displayheight = display_max / displaywidth; }
+  if ((displaywidth * displayheight) > display_max) {
+    displayheight = display_max / displaywidth;
+  }
   DISP_MAX_Address = DisplayRegion68k + DisplayRasterWidth * displayheight;
   DBPRINT(("FBIOGTYPE w x h = %d x %d\n", displaywidth, displayheight));
 
   DBPRINT(("FBIOGTYPE w x h = %d x %d\n", displaywidth, displayheight));
-
 
 #ifdef XWINDOW
   DisplayType = SUN2BW;
@@ -200,12 +194,12 @@ void init_display2(DLword *display_addr, unsigned display_max)
   DisplayType = SUN2BW;
 #endif /* SDL */
   init_cursor();
-  DisplayByteSize = ((displaywidth * displayheight / 8 + ((unsigned)getpagesize() - 1)) & (unsigned)-getpagesize());
+  DisplayByteSize = ((displaywidth * displayheight / 8 + ((unsigned)getpagesize() - 1)) &
+                     (unsigned)-getpagesize());
 
   DBPRINT(("Display address: %p\n", (void *)DisplayRegion68k));
   DBPRINT(("        length : 0x%x\n", DisplayByteSize));
   DBPRINT(("        pg size: 0x%x\n", getpagesize()));
-
 
 #ifdef DOS
   (currentdsp->cleardisplay)(currentdsp);
@@ -214,7 +208,6 @@ void init_display2(DLword *display_addr, unsigned display_max)
 #endif /* DOS */
 
   DBPRINT(("after clear_display()\n"));
-
 
   DBPRINT(("exiting init_display\n"));
 }
@@ -227,7 +220,6 @@ void init_display2(DLword *display_addr, unsigned display_max)
 /*									*/
 /************************************************************************/
 void display_before_exit(void) {
-
 #ifdef TRUECOLOR
   truecolor_before_exit();
 #endif /* TRUECOLOR */
@@ -298,8 +290,7 @@ void flush_display_buffer(void) {
 /*	h  the height of the piece to display, in pixels		*/
 /*									*/
 /************************************************************************/
-void flush_display_region(int x, int y, int w, int h)
-{
+void flush_display_region(int x, int y, int w, int h) {
   //  printf("flush_display_region %d %d %d %d\n", x, y, w, h);
 #ifdef SDL
   sdl_notify_damage(x, y, w, h);
@@ -311,8 +302,7 @@ void flush_display_region(int x, int y, int w, int h)
 #endif /* DOS */
 }
 #ifdef BYTESWAP
-void byte_swapped_displayregion(int x, int y, int w, int h)
-{
+void byte_swapped_displayregion(int x, int y, int w, int h) {
   unsigned int *longptr;
 
   /* Get QUAD byte aligned pointer */
@@ -342,8 +332,7 @@ void byte_swapped_displayregion(int x, int y, int w, int h)
 /*									*/
 /************************************************************************/
 
-void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h)
-{
+void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h) {
   int y;
   y = ((DLword *)ybase - DisplayRegion68k) / DLWORD_PERLINE;
   //  printf("flush_display_lineregion %d %d %d %d\n", x, y, w, h);
@@ -374,8 +363,7 @@ void flush_display_lineregion(UNSIGNED x, DLword *ybase, int w, int h)
 
 #define BITSPERWORD 16
 
-void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h)
-{
+void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h) {
   int y, x, baseoffset;
   baseoffset = (((DLword *)ybase) - DisplayRegion68k);
   y = baseoffset / DLWORD_PERLINE;
@@ -384,7 +372,7 @@ void flush_display_ptrregion(DLword *ybase, UNSIGNED bitoffset, int w, int h)
 #ifdef SDL
   sdl_notify_damage(x, y, w, h);
 #endif
-#if   (defined(XWINDOW) || defined(DOS))
+#if (defined(XWINDOW) || defined(DOS))
   TPRINT(("Enter flush_display_ptrregion\n x=%d, y=%d, w=%d, h=%d\n", x, y, w, h));
   (currentdsp->bitblt_to_screen)(currentdsp, DisplayRegion68k, x, y, w, h);
   TPRINT(("Exit flush_display_ptrregion\n"));

@@ -54,8 +54,7 @@ extern LispPTR *LASTUSERACTION68k;
 void ButtonTimer(void);
 void MouseButtonSignal(void);
 
-void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
-{
+void EnterDosMouse(MouseInterface mouse, DspInterface dsp) {
   union REGS regs;
 
   probemouse();
@@ -78,7 +77,9 @@ void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
   /* Lock the handler routines */
   _dpmi_lockregion((void *)mouse->Handler, 4096);
 
-  if (mouse->Button.TwoButtonP) { _dpmi_lockregion((void *)&ButtonTimer, 4096); }
+  if (mouse->Button.TwoButtonP) {
+    _dpmi_lockregion((void *)&ButtonTimer, 4096);
+  }
 
   /* Lock the structures used, both pointers to 'em & the whole structure. */
   _dpmi_lockregion((void *)&IOPage, sizeof(IOPage));
@@ -142,8 +143,7 @@ void EnterDosMouse(MouseInterface mouse, DspInterface dsp)
   mouse->device.active = TRUE;
 }
 
-void ExitDosMouse(MouseInterface mouse)
-{
+void ExitDosMouse(MouseInterface mouse) {
   if (mouse->device.active) {
     /* Unlock myself */
     _dpmi_unlockregion((void *)mouse, sizeof(*mouse));
@@ -180,8 +180,7 @@ void ExitDosMouse(MouseInterface mouse)
   }
 }
 
-void DosMouseAfterRaid(MouseInterface mouse, DspInterface dsp)
-{
+void DosMouseAfterRaid(MouseInterface mouse, DspInterface dsp) {
   union REGS regs;
 
   /* Screen mode changed. We have to reinit the ranges. */
@@ -198,8 +197,9 @@ void DosMouseAfterRaid(MouseInterface mouse, DspInterface dsp)
   mouse->device.active = TRUE;
 }
 
-void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp)
-{ mouse->device.active = FALSE; }
+void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp) {
+  mouse->device.active = FALSE;
+}
 
 /***************************************************************/
 /*            d o s _ c u r s o r _ i n v i s s i b l e        */
@@ -209,7 +209,9 @@ void DosMouseBeforeRaid(MouseInterface mouse, DspInterface dsp)
 /***************************************************************/
 void dos_cursor_invisible(DspInterface dsp, IOPAGE *iop)
 
-{ (dsp->bitblt_to_screen)(dsp, DisplayRegion68k, iop->dlcursorx, iop->dlcursory, 16, 16); }
+{
+  (dsp->bitblt_to_screen)(dsp, DisplayRegion68k, iop->dlcursorx, iop->dlcursory, 16, 16);
+}
 
 /***************************************************************/
 /*              d o s _ c u r s o r _ v i s s i b l e          */
@@ -256,8 +258,7 @@ set_DOSmouseposition(DspInterface dsp, int x, int y)
   currentmouse->device.active--;
 }
 
-void docopy(int newx, int newy)
-{
+void docopy(int newx, int newy) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w = 16, h = 16, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
@@ -279,8 +280,7 @@ void docopy(int newx, int newy)
 #endif /* NEWBITBLT */
 }
 
-unsigned long dostaking_mouse_up(int newx, int newy)
-{
+unsigned long dostaking_mouse_up(int newx, int newy) {
   /* save hidden bitmap */
 
   DLword *srcbase, *dstbase;
@@ -331,8 +331,7 @@ unsigned long dostaking_mouse_up(int newx, int newy)
   return (T);
 }
 
-dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
-{
+dostaking_mouse_down(DspInterface dsp, IOPAGE *iop) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
@@ -370,8 +369,7 @@ dostaking_mouse_down(DspInterface dsp, IOPAGE *iop)
 /*                                                                      */
 /************************************************************************/
 
-void MouseButtonSignal(MouseInterface mouse)
-{
+void MouseButtonSignal(MouseInterface mouse) {
   DLword w, r;
   KBEVENT *kbevent;
 
@@ -398,7 +396,8 @@ void MouseButtonSignal(MouseInterface mouse)
     kbevent->WU = IOPage->dlutilin;
 
     /* If queue was empty, update the read pointer */
-    if (r == 0) CTopKeyevent->ring.vectorindex.read = w;
+    if (r == 0)
+      CTopKeyevent->ring.vectorindex.read = w;
 
     /* Update the write pointer */
     if (w >= mouse->maxkeyevent)
@@ -407,7 +406,8 @@ void MouseButtonSignal(MouseInterface mouse)
       CTopKeyevent->ring.vectorindex.write += mouse->keyeventsize;
   }
 
-  if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
+  if (*KEYBUFFERING68k == NIL)
+    *KEYBUFFERING68k = ATOM_T;
 
   KBDEventFlg++; /* Signal the emulator to tell Lisp */
   Irq_Stk_Check = 0;
@@ -472,7 +472,8 @@ void TwoButtonHandler(void) {
   stk_ptr = (_XSTACK *)_get_stk_frame(); /* Get ptr to V86 _XSTACK frame */
   stk_ptr->opts |= _STK_NOINT;           /* Bypass real-mode handler */
 
-  if (!currentmouse->device.active) return;
+  if (!currentmouse->device.active)
+    return;
 
   if (stk_ptr->eax & LB_PRESS)
     if (currentmouse->Button.RunTimer) /* Prior right-down seen... */
@@ -604,14 +605,20 @@ void ThreeButtonHandler(void)
     mouse_flags = stk_ptr->eax; /* Save event flags from mouse driver */
 
     /* Decode the transition bits. */
-    if (mouse_flags & LB_PRESS) currentmouse->Button.Left = TRUE;
-    if (mouse_flags & LB_OFF) currentmouse->Button.Left = FALSE;
+    if (mouse_flags & LB_PRESS)
+      currentmouse->Button.Left = TRUE;
+    if (mouse_flags & LB_OFF)
+      currentmouse->Button.Left = FALSE;
 
-    if (mouse_flags & CB_PRESS) currentmouse->Button.Middle = TRUE;
-    if (mouse_flags & CB_OFF) currentmouse->Button.Middle = FALSE;
+    if (mouse_flags & CB_PRESS)
+      currentmouse->Button.Middle = TRUE;
+    if (mouse_flags & CB_OFF)
+      currentmouse->Button.Middle = FALSE;
 
-    if (mouse_flags & RB_PRESS) currentmouse->Button.Right = TRUE;
-    if (mouse_flags & RB_OFF) currentmouse->Button.Right = FALSE;
+    if (mouse_flags & RB_PRESS)
+      currentmouse->Button.Right = TRUE;
+    if (mouse_flags & RB_OFF)
+      currentmouse->Button.Right = FALSE;
 
     if ((!currentdsp->device.locked) && (mouse_flags & MOUSE_MV)) {
       currentmouse->Cursor.Moved = TRUE;

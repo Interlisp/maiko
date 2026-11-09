@@ -9,9 +9,9 @@
 
 #include "version.h"
 
-#include "arith.h"      // for N_GETNUMBER, N_ARITH_SWITCH
+#include "arith.h"  // for N_GETNUMBER, N_ARITH_SWITCH
 #include "emlglob.h"
-#include "lispemul.h"   // for state, ERROR_EXIT, LispPTR
+#include "lispemul.h"  // for state, ERROR_EXIT, LispPTR
 #include "lspglob.h"
 #include "lsptypes.h"
 #include "shiftdefs.h"  // for N_OP_llsh1, N_OP_llsh8, N_OP_lrsh1, N_OP_lrsh8
@@ -34,7 +34,7 @@ LispPTR N_OP_llsh1(LispPTR a) {
   arg1 <<= 1;
   N_ARITH_SWITCH(arg1);
 
- du_ufn:
+du_ufn:
   ERROR_EXIT(a);
 }
 
@@ -50,7 +50,7 @@ LispPTR N_OP_llsh8(LispPTR a) {
   arg1 <<= 8;
   N_ARITH_SWITCH(arg1);
 
- du_ufn:
+du_ufn:
   ERROR_EXIT(a);
 }
 
@@ -66,9 +66,8 @@ LispPTR N_OP_lrsh1(LispPTR a) {
   arg1 = (unsigned)arg1 >> 1;
   N_ARITH_SWITCH(arg1);
 
- du_ufn:
+du_ufn:
   ERROR_EXIT(a);
-
 }
 
 /************************************************************
@@ -83,7 +82,7 @@ LispPTR N_OP_lrsh8(LispPTR a) {
   arg1 = (unsigned)arg1 >> 8;
   N_ARITH_SWITCH(arg1);
 
- du_ufn:
+du_ufn:
   ERROR_EXIT(a);
 }
 
@@ -101,14 +100,17 @@ LispPTR N_OP_lsh(LispPTR a, LispPTR b) {
   N_GETNUMBER(a, arg2, do_ufn);
 
   if (size > 0) {
-    if (size > 31) { goto do_ufn;
-}
+    if (size > 31) {
+      goto do_ufn;
+    }
     arg = arg2 << size;
-    if ((arg >> size) != arg2) { goto do_ufn;
-}
+    if ((arg >> size) != arg2) {
+      goto do_ufn;
+    }
   } else if (size < 0) {
-    if (size < -31) { goto do_ufn;
-}
+    if (size < -31) {
+      goto do_ufn;
+    }
     arg = arg2 >> -size;
     /*** Commented out JDS 1/27/89:  This punts if you shifted ***/
     /*** ANY 1 bits off the right edge.  You CAN'T overflow    ***/
@@ -116,7 +118,7 @@ LispPTR N_OP_lsh(LispPTR a, LispPTR b) {
     /*		if ((arg << -size) != arg2) goto do_ufn; */
   } else {
     return (a);
-}
+  }
 
   N_ARITH_SWITCH(arg);
 

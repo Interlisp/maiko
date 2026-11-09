@@ -52,16 +52,18 @@ void LispStringToCStr(LispPTR lispstring, char *cstring) {
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
       base = ((char *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
-      for (i = 0; i < Len; i++) { cstring[i] = base[i];
-}
+      for (i = 0; i < Len; i++) {
+        cstring[i] = base[i];
+      }
       cstring[Len] = '\0';
       break;
 
     case FAT_CHAR_TYPENUMBER:
       sbase = ((short *)(NativeAligned2FromLAddr(arrayp->base))) + ((int)(arrayp->offset));
       base = (char *)sbase;
-      for (i = 0; i < Len * 2; i++) { cstring[i] = base[i];
-}
+      for (i = 0; i < Len * 2; i++) {
+        cstring[i] = base[i];
+      }
       cstring[Len * 2] = '\0';
       break;
 
@@ -81,7 +83,7 @@ int LispIntToCInt(LispPTR lispint) {
         sprintf(msg, "Arg 0x%x isn't a lisp integer.", lispint);
         error(msg);
         /* NOTREACHED */
-        return(0);
+        return (0);
       }
   }
 }
@@ -92,7 +94,8 @@ LispPTR CIntToLispInt(int cint) {
     wordp = (LispPTR *)createcell68k(TYPE_FIXP);
     *((int *)wordp) = cint;
     return (LAddrFromNative(wordp));
-  } if (cint >= 0) { /* its a positive smallp! */
+  }
+  if (cint >= 0) { /* its a positive smallp! */
     return (S_POSITIVE | cint);
   } else { /* its a negative smallp! */
     return (S_NEGATIVE | (0xFFFF & cint));

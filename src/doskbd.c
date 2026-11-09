@@ -85,7 +85,7 @@ extern LispPTR *KEYBUFFERING68k;
 /*  of the handler, so let's do it once, correctly.)  */
 /******************************************************/
 #define ENABLE_KBD                                               \
-  do {                                                              \
+  do {                                                           \
     outp(INTA00, ENDOFINTERRUPT);                                \
     outp(KBD_COMMAND_PORT, KBD_ENABLE); /* Turn kbd on again. */ \
   } while (0)
@@ -118,7 +118,9 @@ void Kbd_event(void) {
 
   _disable();                          /* prevent further interrupts from killing us */
   outp(KBD_COMMAND_PORT, KBD_DISABLE); /* Turn the kbd off. */
-  do { tmpkey = inp(KBD_STATUS_PORT); } while (tmpkey & KBD_INP_FULL);
+  do {
+    tmpkey = inp(KBD_STATUS_PORT);
+  } while (tmpkey & KBD_INP_FULL);
 
   /* Finite state machine that either returns or goes to label handle: */
   switch (tmpkey = inp(KBD_SCAN_CODE_PORT)) {
@@ -193,7 +195,7 @@ handle:
   /* Uraid may touch a swapped out address and that dumps Medley */
   if (((IOPage->dlkbdad2 & 2113) == 0) || /* Ctrl-shift-NEXT */
       ((IOPage->dlkbdad2 & 2114) == 0)) { /* Ctrl-shift-DEL */
-    currentkbd->URaid = TRUE;                /* Tell the dispatch loop about it. */
+    currentkbd->URaid = TRUE;             /* Tell the dispatch loop about it. */
     return;
   }
 
@@ -212,7 +214,8 @@ handle:
     kbevent->WU = IOPage->dlutilin;
 
     /* If queue was empty, update the read pointer */
-    if (r == 0) CTopKeyevent->ring.vectorindex.read = w;
+    if (r == 0)
+      CTopKeyevent->ring.vectorindex.read = w;
 
     /* Update the write pointer */
     if (w >= currentkbd->maxkeyevent)
@@ -220,7 +223,8 @@ handle:
     else
       CTopKeyevent->ring.vectorindex.write += currentkbd->keyeventsize;
   }
-  if (*KEYBUFFERING68k == NIL) *KEYBUFFERING68k = ATOM_T;
+  if (*KEYBUFFERING68k == NIL)
+    *KEYBUFFERING68k = ATOM_T;
 
   KBDEventFlg++;
   Irq_Stk_End = 0;
@@ -240,8 +244,7 @@ extern u_char DOSLispKeyMap_101[];
 /*      normal DOS handler.                                             */
 /************************************************************************/
 
-void ExitDosKbd(KbdInterface kbd)
-{
+void ExitDosKbd(KbdInterface kbd) {
   if (kbd->device.active == TRUE) {
     kbd->device.active = FALSE;
 
@@ -272,13 +275,13 @@ void ExitDosKbd(KbdInterface kbd)
 /*                                                                      */
 /************************************************************************/
 
-void EnterDosKbd(KbdInterface kbd)
-{
+void EnterDosKbd(KbdInterface kbd) {
   int i;
 
   if (kbd->device.active == FALSE) {
     kbd->device.active = TRUE;
-    for (i = 0; i < 0x80; i++) kbd->KeyMap[i] = DOSLispKeyMap_101[i];
+    for (i = 0; i < 0x80; i++)
+      kbd->KeyMap[i] = DOSLispKeyMap_101[i];
 
     if (eurokbd)
       kbd->keyeventsize = EUROKEYEVENTSIZE;

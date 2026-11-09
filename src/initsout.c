@@ -18,16 +18,16 @@
 #include "version.h"
 
 #ifndef DOS
-#include <pwd.h>           // for getpwuid, passwd
+#include <pwd.h>  // for getpwuid, passwd
 #endif
-#include <stdio.h>         // for fprintf, NULL, stderr
-#include <stdlib.h>        // for malloc, exit
-#include <string.h>        // for strlen, memcpy
-#include <time.h>          // for time_t
-#include <unistd.h>        // for gethostid, getuid
-#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
+#include <stdio.h>   // for fprintf, NULL, stderr
+#include <stdlib.h>  // for malloc, exit
+#include <string.h>  // for strlen, memcpy
+#include <time.h>    // for time_t
+#include <unistd.h>  // for gethostid, getuid
+#include "adr68k.h"  // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #ifdef BYTESWAP
-#include "byteswapdefs.h"   // for word_swap_page
+#include "byteswapdefs.h"  // for word_swap_page
 #endif
 #include "cell.h"          // for GetVALCELL68k
 #include "dbprint.h"       // for DBPRINT
@@ -119,7 +119,7 @@ void init_ifpage(unsigned sysout_size) {
   InterfacePage->machinetype = MACHINETYPE_MAIKO;
 #if defined(MAIKO_ENABLE_ETHERNET)
   init_ifpage_ether(); /* store ethernet ID in IF page */
-#endif /* MAIKO_ENABLE_ETHERNET */
+#endif                 /* MAIKO_ENABLE_ETHERNET */
   /*InterfacePage->dl24bitaddressable = (sysout_size == 32? 0xffff : 0);*/
   InterfacePage->dl24bitaddressable = (sysout_size == 8 ? 0 : 0xffff);
   new_lastvmem = (sysout_size * PAGES_IN_MBYTE) - 1;
@@ -145,9 +145,9 @@ void init_ifpage(unsigned sysout_size) {
   InterfacePage->serialnumber = 0xffff & gethostid();
 #endif /* DOS MAIKO_OS_HAIKU */
 
-/* get user name and stuff into vmem; this is the VMEM buffer;
-This is a BCPL string -- it starts with a length count. C strings
-are null terminated instead */
+  /* get user name and stuff into vmem; this is the VMEM buffer;
+  This is a BCPL string -- it starts with a length count. C strings
+  are null terminated instead */
   InterfacePage->usernameaddr = 0;
 #ifndef DOS
   {
@@ -171,7 +171,6 @@ are null terminated instead */
       word_swap_page(NativeAligned2FromLAddr(0155000), (len + 1 + 2 + 3) / 4);
 #endif
     }
-
   }
 #endif /* DOS */
 
@@ -299,7 +298,8 @@ void build_lisp_map(void) {
     Deleted_Implicit_Hash_Slot_word = (LispPTR *)malloc(4);
     *Deleted_Implicit_Hash_Slot_word = NIL;
   } else {
-    DBPRINT(("%p %p %p %p %p", (void *)Stackspace, (void *)Plistspace, (void *)DTDspace, (void *)MDStypetbl, (void *)AtomHT));
+    DBPRINT(("%p %p %p %p %p", (void *)Stackspace, (void *)Plistspace, (void *)DTDspace,
+             (void *)MDStypetbl, (void *)AtomHT));
 
     index = get_package_atom("*CLOSURE-CACHE-ENABLED*", 23, "SI", 2, NIL);
     Closure_Cache_Enabled_word = GetVALCELL68k(index);

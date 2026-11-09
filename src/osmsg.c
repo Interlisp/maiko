@@ -34,7 +34,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-
 #include "lispemul.h"
 #include "lispmap.h"
 #include "adr68k.h"
@@ -63,7 +62,7 @@ static char logfile[100];
 static int log_id;
 static int previous_size;
 static int logChanged; /* T if log file has changed since last READ */
-                /* Set by flush_pty, to avoid the stat call  */
+                       /* Set by flush_pty, to avoid the stat call  */
 int LogFileFd = -1;
 extern fd_set LispReadFds;
 #endif
@@ -97,7 +96,8 @@ void mess_init(void) {
 needpty:
   while (ptynum < 16) {
     ptyname[9] = "0123456789abcdef"[ptynum];
-    if ((ptyfd = open(ptyname, 2)) >= 0) goto gotpty;
+    if ((ptyfd = open(ptyname, 2)) >= 0)
+      goto gotpty;
     ptynum++;
   }
   return;
@@ -132,10 +132,12 @@ gotpty:
   pwd = getpwuid(getuid());
   sprintf(logfile, "/tmp/%s-lisp.log", pwd->pw_name);
   if (unlink(logfile) == -1) { /* delete old log file */
-    if (errno != ENOENT) return;
+    if (errno != ENOENT)
+      return;
   }
 
-  if ((log_id = open(logfile, (O_RDWR | O_CREAT), 0666)) < 0) return;
+  if ((log_id = open(logfile, (O_RDWR | O_CREAT), 0666)) < 0)
+    return;
 #ifdef LOGINT
   LogFileFd = cons_pty; /* was kept as an fd_set, but doesn't need to be */
   fcntl(cons_pty, F_SETFL, fcntl(cons_pty, F_GETFL, 0) | O_ASYNC | O_NONBLOCK);
@@ -209,7 +211,8 @@ LispPTR mess_readp(void) {
       if( previous_size < (int)(sbuf.st_size) ) return(ATOM_T);
   * * * * * * * * * * * * * */
 
-  if (logChanged) return (ATOM_T);
+  if (logChanged)
+    return (ATOM_T);
 #endif /* MAIKO_HANDLE_CONSOLE_MESSAGES */
   return (NIL);
 }
@@ -243,7 +246,8 @@ LispPTR mess_read(LispPTR *args)
 
   close(log_id);
   TIMEOUT(log_id = open(logfile, O_RDONLY));
-  if (log_id == -1) return (NIL);
+  if (log_id == -1)
+    return (NIL);
   TIMEOUT(i = fstat(log_id, &sbuf));
   if (i != 0) {
     OSMESSAGE_PRINT(printf("stat err\n"));
@@ -278,7 +282,8 @@ LispPTR mess_read(LispPTR *args)
   previous_size += size;
 
   for (i = 0; i < size; ++i) {
-    if (temp_buf[i] == '\n') temp_buf[i] = '\000';
+    if (temp_buf[i] == '\n')
+      temp_buf[i] = '\000';
   }
   /* COPY actual Lisp Buffer(for BYTESWAP magic) */
   MemCpyToLispFromNative(base, temp_buf, size);
@@ -317,7 +322,8 @@ LispPTR flush_pty(void) {
 /* polling pty nd flush os message to log file */
 #ifndef LOGINT
   FD_SET(cons_pty, &rfds);
-  if (select(32, &rfds, NULL, NULL, &selecttimeout) <= 0) return (NIL);
+  if (select(32, &rfds, NULL, NULL, &selecttimeout) <= 0)
+    return (NIL);
 
   if ((cons_pty >= 0) && FD_ISSET(cons_pty, &rfds))
 #else /* LOGINT */
@@ -328,16 +334,19 @@ LispPTR flush_pty(void) {
     DBPRINT(("Log msgs being printed...\n"));
     close(log_id);
     TIMEOUT(log_id = open(logfile, O_WRONLY | O_APPEND, 0666));
-    if (log_id == -1) return (NIL);
+    if (log_id == -1)
+      return (NIL);
 #ifndef LOGINT
     size = read(cons_pty, buf, MESSAGE_BUFFER_SIZE - 1);
 #endif
-    if (size == -1) return (NIL);
+    if (size == -1)
+      return (NIL);
 
     /* Check free space to avoid printing System Error Message
        to /dev/console */
     TIMEOUT(rval = statvfs("/tmp", &vfsbuf));
-    if (rval != 0) return (NIL);
+    if (rval != 0)
+      return (NIL);
 
     if (vfsbuf.f_bavail <= (long)0) {
       /* No Free Space */

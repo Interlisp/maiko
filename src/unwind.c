@@ -22,7 +22,7 @@
 /******************************************************************/
 
 #include "emlglob.h"
-#include "lispemul.h"    // for LispPTR, state, DLword, PVar, CurrentStackPTR
+#include "lispemul.h"  // for LispPTR, state, DLword, PVar, CurrentStackPTR
 #include "lspglob.h"
 #include "unwinddefs.h"  // for N_OP_unwind
 
@@ -79,13 +79,17 @@ LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
 
       lastpvar = (LispPTR *)(2 + PVar + (unsigned short)num);
       num = ~(num >> 16) + 1;
-      while (--num > 0) { *--lastpvar = 0xffffffff; /* Mark as UNBOUND */ }
+      while (--num > 0) {
+        *--lastpvar = 0xffffffff; /* Mark as UNBOUND */
+      }
     }
   }
 
   /* endptr = cstkptr */
 
-  if (keep) { *(cstkptr++) = tos; }
+  if (keep) {
+    *(cstkptr++) = tos;
+  }
   return (cstkptr);
 
 } /* N_OP_unwind */
@@ -105,8 +109,7 @@ LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
 /******************************************************************/
 #define SMALLP(x) (((unsigned int)x >> 16) == (S_POSITIVE >> 16))
 
-LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
-{
+LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder) {
   LispPTR target;
   FX *target_addr;
   LispPTR pc = NIL_PTR;
@@ -122,16 +125,18 @@ LispPTR find_the_blip(LispPTR blip, LispPTR throwp, FX *unwinder)
       if (var_name_in_frame == CATCH_RETURN_TO_ATOM) {
         if (throwp) {
           pc = pvar_value_in_frame(target_addr, CATCH_RETURN_PC_ATOM);
-          if
-            !(SMALLP(pc))error("Catch return-to frame lacks PC");
+          if !(SMALLP(pc))
+            error("Catch return-to frame lacks PC");
         }
         goto cons_result;
       } else if (var_name_in_frame == CATCH_RETURN_FROM_ATOM) {
-        if (throwp) { target = GETCLINK(target_addr); }
+        if (throwp) {
+          target = GETCLINK(target_addr);
+        }
         goto cons_result;
       }
     } /* if blip */
-  }  /* for */
+  } /* for */
 
 no_result:
   return (NIL_PTR);
@@ -139,8 +144,7 @@ cons_result:
   return (cons(StackOffsetFromNative(target), pc));
 }
 
-LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
-{
+LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code) {
   DLword *name_ptr;
   DLword *name_bind_ptr;
   DLword *name_table_base;
@@ -150,8 +154,11 @@ LispPTR variable_name_in_frame(FX *fx_addr, LispPTR code)
   name_ptr = name_table_base + FNHEADSIZE;
   name_table_base = name_ptr + ((FNHEAD *)name_table_base)->ntsize;
 
-  while (value = GETWORD(name_ptr++)) do {
-      if (code == GETWORD(name_bind_ptr++)) { return (value) }
+  while (value = GETWORD(name_ptr++))
+    do {
+      if (code == GETWORD(name_bind_ptr++)) {
+        return (value)
+      }
     } /* while */
   return (NIL_PTR);
 }; /* variable_name_in_frame */
@@ -177,12 +184,13 @@ LispPTR pvar_value_in_frame(FX *frame_addr, LispPTR atom_index)
   name_ptr = name_table_base + FNHEADSIZE;
   name_table_base = name_ptr + ((FNHEAD *)name_table_base)->ntsize;
 
-  while (value = GETWORD(name_ptr++)) do {
+  while (value = GETWORD(name_ptr++))
+    do {
       if (value == atom_index) {
         DLword bind_info = GETWORD(name_bind_ptr);
         if ((bind_info >> 8) == FVPVAR) {
           LispPTR slot_value = *((LispPTR *)(FRAMESIZE + (DLword *)frame_addr) +
-                                          (bind_info - (FVPVAR << 8))) if (slot_value > 0) {
+                                 (bind_info - (FVPVAR << 8))) if (slot_value > 0) {
             return (slot_value & POINTERMASK);
           }
         }

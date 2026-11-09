@@ -31,7 +31,6 @@
 #include <stk.h>
 #endif /* DOS */
 
-
 #ifdef XWINDOW
 #include <X11/X.h>
 #include <X11/Xlib.h>
@@ -109,65 +108,61 @@ u_char *SUNLispKeyMap;
 
 /* keymap for type3 */
 static u_char SUNLispKeyMap_for3[128] = {
-    /*   0 */ 255,  61, 255,  91, 255,  97,  99, 255,
-    /*   8 */ 100, 255,  67, 255,  68, 255, 101, 255,
-    /*  16 */  66, 104,  80,  47, 255,  73,  74,  75,
-    /*  24 */ 255,  92,  63, 255, 255,  33,  32,  17,
-    /*  32 */  16,   1,   0,   2,   4,  53,  22,   8,
-    /*  40 */  10,  59,  45,  13, 255,  81,  82,  83,
-    /*  48 */ 255,  14, 255,  62, 255,  34,  19,  18,
-    /*  56 */   3,  48,  49,  51,   6,  23,  25,  11,
-    /*  64 */  58,  29,  15, 255,  84,  85,  87, 255,
-    /*  72 */ 111,  89, 255, 255,  36,  21,  20,   5,
-    /*  80 */  35,  50,  52,  38,   9,  26,  43,  28,
-    /*  88 */ 105,  44, 255,  94,  69,  70, 255,  90,
-    /*  96 */ 255,  46, 255,  41,  40,  24,  37,   7,
-    /* 104 */  39,  54,  55,  27,  42,  12,  60,  71,
-    /* 112 */  98,  76,  72, 255, 255, 255, 255,  56,
-    /* 120 */  31,  57,  93, 255, 255, 255, 255, 255
-};
+    /*   0 */ 255, 61,  255, 91,  255, 97,  99,  255,
+    /*   8 */ 100, 255, 67,  255, 68,  255, 101, 255,
+    /*  16 */ 66,  104, 80,  47,  255, 73,  74,  75,
+    /*  24 */ 255, 92,  63,  255, 255, 33,  32,  17,
+    /*  32 */ 16,  1,   0,   2,   4,   53,  22,  8,
+    /*  40 */ 10,  59,  45,  13,  255, 81,  82,  83,
+    /*  48 */ 255, 14,  255, 62,  255, 34,  19,  18,
+    /*  56 */ 3,   48,  49,  51,  6,   23,  25,  11,
+    /*  64 */ 58,  29,  15,  255, 84,  85,  87,  255,
+    /*  72 */ 111, 89,  255, 255, 36,  21,  20,  5,
+    /*  80 */ 35,  50,  52,  38,  9,   26,  43,  28,
+    /*  88 */ 105, 44,  255, 94,  69,  70,  255, 90,
+    /*  96 */ 255, 46,  255, 41,  40,  24,  37,  7,
+    /* 104 */ 39,  54,  55,  27,  42,  12,  60,  71,
+    /* 112 */ 98,  76,  72,  255, 255, 255, 255, 56,
+    /* 120 */ 31,  57,  93,  255, 255, 255, 255, 255};
 
 /* for type4 */
 
 static u_char SUNLispKeyMap_for4[128] = {
-    /*   0 */ 255,  61, 255,  91, 255,  97,  99, 106,
-    /*   8 */ 100, 107,  67, 108,  68,  47, 101,  30,
-    /*  16 */  66, 104,  80,  31, 255,  75, 110,  74,
-    /*  24 */ 255, 109,  63, 255, 255,  33,  32,  17,
-    /*  32 */  16,   1,   0,   2,   4,  53,  22,   8,
-    /*  40 */  10,  59,  45,  15, 255,  64,  65,  95,
-    /*  48 */ 255,  14,  13,  89, 255,  34,  19,  18,
-    /*  56 */   3,  48,  49,  51,   6,  23,  25,  11,
-    /*  64 */  58,  29,  13,  93,  81,  82,  83,  96,
-    /*  72 */ 111,  62, 255, 255,  36,  21,  20,   5,
-    /*  80 */  35,  50,  52,  38,   9,  26,  43,  28,
-    /*  88 */ 105,  44,  76,  84,  85,  87,  98,  90,
-    /*  96 */ 255,  46,  73,  41,  40,  24,  37,   7,
-    /* 104 */  39,  54,  55,  27,  42,  12,  60,  71,
-    /* 112 */  94,  69,  70, 255, 255, 255,  92,  56,
-    /* 120 */  86,  57,  88, 255, 103, 102, 255, 255
-};
+    /*   0 */ 255, 61,  255, 91,  255, 97,  99,  106,
+    /*   8 */ 100, 107, 67,  108, 68,  47,  101, 30,
+    /*  16 */ 66,  104, 80,  31,  255, 75,  110, 74,
+    /*  24 */ 255, 109, 63,  255, 255, 33,  32,  17,
+    /*  32 */ 16,  1,   0,   2,   4,   53,  22,  8,
+    /*  40 */ 10,  59,  45,  15,  255, 64,  65,  95,
+    /*  48 */ 255, 14,  13,  89,  255, 34,  19,  18,
+    /*  56 */ 3,   48,  49,  51,  6,   23,  25,  11,
+    /*  64 */ 58,  29,  13,  93,  81,  82,  83,  96,
+    /*  72 */ 111, 62,  255, 255, 36,  21,  20,  5,
+    /*  80 */ 35,  50,  52,  38,  9,   26,  43,  28,
+    /*  88 */ 105, 44,  76,  84,  85,  87,  98,  90,
+    /*  96 */ 255, 46,  73,  41,  40,  24,  37,  7,
+    /* 104 */ 39,  54,  55,  27,  42,  12,  60,  71,
+    /* 112 */ 94,  69,  70,  255, 255, 255, 92,  56,
+    /* 120 */ 86,  57,  88,  255, 103, 102, 255, 255};
 
 /* for jle */
 
-static u_char SUNLispKeyMap_jle[128] = {
-    /*   0 */ 255,  61, 255,  91, 255,  97,  99, 106,
-    /*   8 */ 100, 107,  67, 108,  68,  47, 101,  71,
-    /*  16 */  66, 104,  80,  31, 255,  75, 110,  74,
-    /*  24 */ 255, 109,  63, 255, 255,  33,  32,  17,
-    /*  32 */  16,   1,   0,   2,   4,  53,  22,   8,
-    /*  40 */  59,  45,  30,  15, 255,  64,  65,  95,
-    /*  48 */ 255,  14,  13,  89, 255,  34,  19,  18,
-    /*  56 */   3,  48,  49,  51,   6,  23,  25,  11,
-    /*  64 */  58,  29,  13,  93,  81,  82,  83,  96,
-    /*  72 */ 111,  62, 255, 255,  36,  21,  20,   5,
-    /*  80 */  35,  50,  52,  38,   9,  26,  43,  28,
-    /*  88 */ 105,  44,  76,  84,  85,  87,  98,  90,
-    /*  96 */ 255,  46,  73,  41,  40,  24,  37,   7,
-    /* 104 */  39,  54,  55,  27,  42,  12,  60,  10,
-    /* 112 */  94,  69,  70,  72, 103, 109,  92,  56,
-    /* 120 */  86,  57,  88, 255, 255, 102, 255, 255
-};
+static u_char SUNLispKeyMap_jle[128] = {/*   0 */ 255, 61,  255, 91,  255, 97,  99,  106,
+                                        /*   8 */ 100, 107, 67,  108, 68,  47,  101, 71,
+                                        /*  16 */ 66,  104, 80,  31,  255, 75,  110, 74,
+                                        /*  24 */ 255, 109, 63,  255, 255, 33,  32,  17,
+                                        /*  32 */ 16,  1,   0,   2,   4,   53,  22,  8,
+                                        /*  40 */ 59,  45,  30,  15,  255, 64,  65,  95,
+                                        /*  48 */ 255, 14,  13,  89,  255, 34,  19,  18,
+                                        /*  56 */ 3,   48,  49,  51,  6,   23,  25,  11,
+                                        /*  64 */ 58,  29,  13,  93,  81,  82,  83,  96,
+                                        /*  72 */ 111, 62,  255, 255, 36,  21,  20,  5,
+                                        /*  80 */ 35,  50,  52,  38,  9,   26,  43,  28,
+                                        /*  88 */ 105, 44,  76,  84,  85,  87,  98,  90,
+                                        /*  96 */ 255, 46,  73,  41,  40,  24,  37,  7,
+                                        /* 104 */ 39,  54,  55,  27,  42,  12,  60,  10,
+                                        /* 112 */ 94,  69,  70,  72,  103, 109, 92,  56,
+                                        /* 120 */ 86,  57,  88,  255, 255, 102, 255, 255};
 /* [40]   10 -> 59  */
 /* [41]   59 -> 45  */
 /* [42]   45 -> 30  */
@@ -184,14 +179,22 @@ static u_char *XGenericKeyMap; /* filled in with malloc if needed */
 u_char DOSLispKeyMap_101[0x80] = {
     /*         0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
 
-    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,    4,    53,   22,   8,    10,   59,   15,   34,
-    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,   25,   11,   58,   29,   44,   36,   21,   20,
-    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,   28,   45,   41,   105,  40,   24,   37,   7,
-    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,   31,   57,   56,   97,   99,   100,  67,   68,
-    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   81,   82,   83,   96,   84,   85,   87,   102,  94,
-    /* 5*/ 69,   70,   98,   13,   0xff, 0xff, 0xff, 107,  108,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,  131,  132,  92,   61,   0xff, 0xff, 0xff, 0xff,
-    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,
+    4,           53,   22,   8,    10,   59,   15,   34,
+    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,
+    25,          11,   58,   29,   44,   36,   21,   20,
+    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,
+    28,          45,   41,   105,  40,   24,   37,   7,
+    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,
+    31,          57,   56,   97,   99,   100,  67,   68,
+    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   81,
+    82,          83,   96,   84,   85,   87,   102,  94,
+    /* 5*/ 69,   70,   98,   13,   0xff, 0xff, 0xff, 107,
+    108,         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,
+    131,         132,  92,   61,   0xff, 0xff, 0xff, 0xff,
+    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff,        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 #endif /* NEVER */
 
 #ifdef DOS
@@ -199,14 +202,22 @@ u_char DOSLispKeyMap_101[0x80] = {
 static u_char DOSLispKeyMap_101[0x80] = {
     /*         0    1    2    3    4    5    6    7    8    9    a    b    c    d    e    f */
 
-    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,    4,    53,   22,   8,    10,   59,   15,   34,
-    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,   25,   11,   58,   29,   44,   36,   21,   20,
-    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,   28,   45,   41,   105,  40,   24,   37,   7,
-    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,   31,   57,   56,   97,   99,   100,  67,   68,
-    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   62,   130,  63,   96,   129,  85,   132,  102,  90,
-    /* 5*/ 131,  91,   89,   46,   0xff, 0xff, 0xff, 107,  108,  0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,  131,  132,  92,   61,   0xff, 0xff, 0xff, 0xff,
-    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
+    /* 0*/ 0xff, 33,   32,   17,   16,   1,    0,    2,
+    4,           53,   22,   8,    10,   59,   15,   34,
+    /* 1*/ 19,   18,   3,    48,   49,   51,   6,    23,
+    25,          11,   58,   29,   44,   36,   21,   20,
+    /* 2*/ 5,    35,   50,   52,   38,   9,    26,   43,
+    28,          45,   41,   105,  40,   24,   37,   7,
+    /* 3*/ 39,   54,   55,   27,   42,   12,   60,   95,
+    31,          57,   56,   97,   99,   100,  67,   68,
+    /* 4*/ 101,  66,   104,  80,   106,  73,   74,   62,
+    130,         63,   96,   129,  85,   132,  102,  90,
+    /* 5*/ 131,  91,   89,   46,   0xff, 0xff, 0xff, 107,
+    108,         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    /* 6*/ 89,   62,   63,   46,   90,   91,   130,  129,
+    131,         132,  92,   61,   0xff, 0xff, 0xff, 0xff,
+    /* 7*/ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff,        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
 #endif
 
 void init_keyboard(int flg) /* if 0 init else re-init */
@@ -215,9 +226,11 @@ void init_keyboard(int flg) /* if 0 init else re-init */
   /* if using a raw keyboard, LispKbdFd would be the result of opening /dev/kbd
    * and it would be added to LispReadFds to generate keyboard events
    */
-  if (flg == 0) { keyboardtype(LispKbdFd); }
+  if (flg == 0) {
+    keyboardtype(LispKbdFd);
+  }
 
-#if   XWINDOW
+#if XWINDOW
   init_Xevent(currentdsp);
 #elif DOS
   if (flg == 0) { /* Install the handlers ONLY when we */
@@ -238,7 +251,7 @@ void init_keyboard(int flg) /* if 0 init else re-init */
 /*  ----------------------------------------------------------------*/
 
 void device_before_exit(void) {
-#ifdef   DOS
+#ifdef DOS
   (currentmouse->device.exit)(currentmouse);
   (currentkbd->device.exit)(currentkbd);
 #endif /* SUNDISPLAY DOS*/
@@ -275,12 +288,11 @@ void set_kbd_iopointers(void) {
 
 /*  ----------------------------------------------------------------*/
 
-
 #define MIN_KEYTYPE 3
 #define KB_AS3000J (7 + MIN_KEYTYPE)
-#define KB_RS6000 (8 + MIN_KEYTYPE) /* TODO: Can we remove this? */
+#define KB_RS6000 (8 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
 #define KB_DEC3100 (9 + MIN_KEYTYPE) /* TODO: Can we remove this? */
-#define KB_HP9000 (10 + MIN_KEYTYPE)  /* TODO: Can we remove this? */
+#define KB_HP9000 (10 + MIN_KEYTYPE) /* TODO: Can we remove this? */
 #define KB_X (11 + MIN_KEYTYPE)
 #define KB_DOS (12 + MIN_KEYTYPE)
 #define KB_SDL (13 + MIN_KEYTYPE)
@@ -299,14 +311,13 @@ void set_kbd_iopointers(void) {
 /* For the JLE keyboard */
 #define KB_JLE 5
 
-
 #ifdef XWINDOW
 /*
- * 
+ *
  */
 
-static int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int sym, u_char *table)
-{
+static int find_unused_key(KeySym *map, int minkey, int codecount, int symspercode, int sym,
+                           u_char *table) {
   int i;
 
   for (i = 0; i < (codecount * symspercode); i++) {
@@ -314,9 +325,9 @@ static int find_unused_key(KeySym *map, int minkey, int codecount, int symsperco
       int code = minkey + (i / symspercode);
       if (table[code - 7] != 255) {
 #ifdef DEBUG
-          printf("table[%d - 7] != 255\n", code);
+        printf("table[%d - 7] != 255\n", code);
 #endif
-          continue;
+        continue;
       }
       return (code);
     }
@@ -359,18 +370,21 @@ static u_char *make_X_keymap(void) {
   while (*key_sym_pairs != -1) {
     int reusable = *key_sym_pairs++, code = *key_sym_pairs++, sym = *key_sym_pairs++, xcode;
 
-    if (sym_used && (sym == last_KEYSYM)) { continue;
-}
+    if (sym_used && (sym == last_KEYSYM)) {
+      continue;
+    }
 
     sym_used = 0;
     last_KEYSYM = sym;
 
     xcode = find_unused_key(mapping, minkey, codecount, symspercode, sym, table);
 
-    if (xcode == 0) { continue;
-}
-    if ((!reusable) && (lisp_codes_used[code] != 0)) { continue;
-}
+    if (xcode == 0) {
+      continue;
+    }
+    if ((!reusable) && (lisp_codes_used[code] != 0)) {
+      continue;
+    }
 
     sym_used = 1;
     last_KEYSYM = sym;
@@ -381,17 +395,17 @@ static u_char *make_X_keymap(void) {
 #ifdef DEBUG
   printf("\n\n\tXGetKeyboardMapping table\n\n");
   for (i = 0; i < codecount * symspercode; i += symspercode) {
-      printf("%d:", minkey + (i / symspercode));
-      for (int j = 0; j < symspercode; j++) {
-        printf("\t %8lx", (unsigned long)mapping[i+j]);
-      }
-      printf("\n");
+    printf("%d:", minkey + (i / symspercode));
+    for (int j = 0; j < symspercode; j++) {
+      printf("\t %8lx", (unsigned long)mapping[i + j]);
+    }
+    printf("\n");
   }
 
   printf("\n\n\tKeyboard mapping table\n\n");
   for (i = 0; i < 256; i += 8) {
-    printf("%d:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, table[i], table[i + 1], table[i + 2], table[i + 3], table[i + 4],
-           table[i + 5], table[i + 6], table[i + 7]);
+    printf("%d:\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", i, table[i], table[i + 1], table[i + 2],
+           table[i + 3], table[i + 4], table[i + 5], table[i + 6], table[i + 7]);
   }
 #endif /* DEBUG */
 
@@ -422,15 +436,14 @@ static u_char *make_X_keymap(void) {
 /*									*/
 /************************************************************************/
 
-void keyboardtype(int fd)
-{
+void keyboardtype(int fd) {
   int type;
   int i;
   char *key;
 
 #if defined(OS4)
   for (i = 0; i < 5000; i++) { /* IDLE LOOP */
-  }                            /* because of a SunOS bug */
+  } /* because of a SunOS bug */
 #endif
 
   /* clear the keyboard field in devconfig */
@@ -467,7 +480,7 @@ void keyboardtype(int fd)
       type = KB_SDL;
     } else {
       type = KB_SUN3; /* default */
-}
+    }
   }
 
   switch (type) {
@@ -503,9 +516,9 @@ void keyboardtype(int fd)
       break;
 #endif /* XWINDOW */
 #ifdef SDL
-  case KB_SDL:
-    InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
-    break;
+    case KB_SDL:
+      InterfacePage->devconfig |= KB_SUN3 - MIN_KEYTYPE; /* 10 */
+      break;
 #endif /* SDL */
 #ifdef DOS
     case KB_DOS:

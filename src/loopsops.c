@@ -30,8 +30,8 @@
 #include "lispmap.h"       // for S_POSITIVE
 #include "loopsopsdefs.h"  // for lcfuncall, LCFetchMethod, LCFetchMethodOrHelp
 #include "lspglob.h"
-#include "lsptypes.h"      // for GetDTD, GetTypeNumber, dtd, Listp, GETWORD
-#include "stack.h"         // for frameex1, fnhead, BF_MARK, FX_MARK, STK_SAFE
+#include "lsptypes.h"  // for GetDTD, GetTypeNumber, dtd, Listp, GETWORD
+#include "stack.h"     // for frameex1, fnhead, BF_MARK, FX_MARK, STK_SAFE
 
 struct LCIVCacheEntry;
 struct LCInstance;
@@ -51,7 +51,7 @@ static const char il_string[] = "INTERLISP";
 
 /* These assume 0 <= POSINT <= 65535 */
 #define SMALLP_FROM_POSINT(x) ((x) | S_POSITIVE)
-#define POSINT_FROM_SMALLP(x) ((x)&0xffff)
+#define POSINT_FROM_SMALLP(x) ((x) & 0xffff)
 
 #define RETCALL(fn, argnum) return lcfuncall(fn, argnum, 3)
 
@@ -65,47 +65,52 @@ static const char il_string[] = "INTERLISP";
 #define INSTANCEP(obj) (LC_TYPEP((obj), atom_instance))
 #define CLASSP(obj) (LC_TYPEP((obj), atom_class))
 
-#define INSTANCE_OR_PUNT(obj, fn, argnum)                     \
-  do {                                                        \
-    if (!LC_TYPEP((obj), atom_instance)) RETCALL(fn, argnum); \
+#define INSTANCE_OR_PUNT(obj, fn, argnum) \
+  do {                                    \
+    if (!LC_TYPEP((obj), atom_instance))  \
+      RETCALL(fn, argnum);                \
   } while (0)
 
-#define INSTANCE_CLASS_OR_PUNT(obj, fn, argnum)                         \
-  do {                                                                  \
-    LispPTR tmp = DTD_FROM_LADDR(obj);                         \
-    if (tmp != atom_instance && tmp != atom_class) RETCALL(fn, argnum); \
+#define INSTANCE_CLASS_OR_PUNT(obj, fn, argnum)    \
+  do {                                             \
+    LispPTR tmp = DTD_FROM_LADDR(obj);             \
+    if (tmp != atom_instance && tmp != atom_class) \
+      RETCALL(fn, argnum);                         \
   } while (0)
 
-#define LC_INIT \
-  if (atom_instance == 0) LCinit()
+#define LC_INIT           \
+  if (atom_instance == 0) \
+  LCinit()
 
-#define GET_IV_INDEX(objptr, iv, dest, otherwise)                 \
-  do {                                                            \
-    struct LCIVCacheEntry *ce;                           \
-    LispPTR iNames = (objptr)->iNames;                   \
-                                                                  \
-    ce = &(LCIVCache[IV_CACHE_INDEX(iNames, iv)]);                \
-    if (ce->iNames == iNames && ce->iv == (iv)) {                 \
-      (dest) = POSINT_FROM_SMALLP(ce->index);                     \
-    } else {                                                      \
-      if (!Listp(iNames)) {                                       \
-        otherwise;                                                \
-      } else {                                                    \
-        int i = 0;                                       \
-        while (1) {                                               \
-          if (car(iNames) == (iv)) {                              \
-            ce->iNames = (objptr)->iNames;                        \
-            ce->iv = iv;                                          \
-            ce->index = SMALLP_FROM_POSINT(i);                    \
-            (dest) = i;                                           \
-            break;                                                \
-          } else {                                                \
-            i++;                                                  \
-            if ((iNames = cdr(iNames)) == NIL_PTR) { otherwise; } \
-          }                                                       \
-        }                                                         \
-      }                                                           \
-    }                                                             \
+#define GET_IV_INDEX(objptr, iv, dest, otherwise)    \
+  do {                                               \
+    struct LCIVCacheEntry *ce;                       \
+    LispPTR iNames = (objptr)->iNames;               \
+                                                     \
+    ce = &(LCIVCache[IV_CACHE_INDEX(iNames, iv)]);   \
+    if (ce->iNames == iNames && ce->iv == (iv)) {    \
+      (dest) = POSINT_FROM_SMALLP(ce->index);        \
+    } else {                                         \
+      if (!Listp(iNames)) {                          \
+        otherwise;                                   \
+      } else {                                       \
+        int i = 0;                                   \
+        while (1) {                                  \
+          if (car(iNames) == (iv)) {                 \
+            ce->iNames = (objptr)->iNames;           \
+            ce->iv = iv;                             \
+            ce->index = SMALLP_FROM_POSINT(i);       \
+            (dest) = i;                              \
+            break;                                   \
+          } else {                                   \
+            i++;                                     \
+            if ((iNames = cdr(iNames)) == NIL_PTR) { \
+              otherwise;                             \
+            }                                        \
+          }                                          \
+        }                                            \
+      }                                              \
+    }                                                \
   } while (0)
 
 struct LCClass { /* class datatype */
@@ -119,15 +124,15 @@ struct LCInstance { /* instance datatype */
 
 static struct LCMethodCacheEntry {
   LispPTR class, selector, method_fn, junk;
-} * LCMethodCache;
+} *LCMethodCache;
 
 static struct LCIVCacheEntry {
   LispPTR iNames, iv, index, junk;
-} * LCIVCache;
+} *LCIVCache;
 
 static LispPTR atom_instance = 0, /* various atom indices */
     atom_class, atom_annotatedValue, atom_FetchMethodOrHelp_LCUFN, atom_FetchMethod_LCUFN,
-        atom_FindVarIndex_LCUFN, atom_GetIVValue_LCUFN, atom_PutIVValue_LCUFN;
+               atom_FindVarIndex_LCUFN, atom_GetIVValue_LCUFN, atom_PutIVValue_LCUFN;
 
 /* Called once to initialize the "constants" above */
 
@@ -150,19 +155,20 @@ LispPTR LCinit(void) {
    so the loop is unnecessary.  */
 /* * * NOT USED * * */
 #ifdef NEVER
-int LCTypeOf(LispPTR thing, LispPTR typename)
-{
+int LCTypeOf(LispPTR thing, LispPTR typename) {
   struct dtd *dtd68k;
 #ifdef BIGVM
   for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(thing)); typename != (dtd68k->dtd_name);
        dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
-    if (dtd68k->dtd_supertype == 0) return 0;
+    if (dtd68k->dtd_supertype == 0)
+      return 0;
   }
 #else
   for (dtd68k = (struct dtd *)GetDTD(GetTypeNumber(thing));
        typename != dtd68k->dtd_namelo + (dtgd68k->dtd_namehi << 16);
        dtd68k = (struct dtd *)GetDTD(dtd68k->dtd_supertype)) {
-    if (dtd68k->dtd_supertype == 0) return 0;
+    if (dtd68k->dtd_supertype == 0)
+      return 0;
   }
 #endif /* BIGVM */
   return 1;
@@ -182,8 +188,9 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCMethodCache[METH_CACHE_INDEX((cur_class = objptr->class), selector)]);
-  if (ce->class == cur_class && ce->selector == selector) { return ce->method_fn;
-}
+  if (ce->class == cur_class && ce->selector == selector) {
+    return ce->method_fn;
+  }
 
   /* not in cache, search class then supers */
   {
@@ -211,8 +218,9 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) { break;
-}
+      if ((cur_class = car(supers)) == NIL_PTR) {
+        break;
+      }
       supers = cdr(supers);
     }
   }
@@ -231,13 +239,15 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
 
   /* Check cache before doing type check */
   ce = &(LCMethodCache[METH_CACHE_INDEX(class, selector)]);
-  if (ce->class == class && ce->selector == selector) { return ce->method_fn;
-}
+  if (ce->class == class && ce->selector == selector) {
+    return ce->method_fn;
+  }
 
   /* it wasn't there, go search class then supers */
 
-  if (!LC_TYPEP(class, atom_class)) { RETCALL(atom_FetchMethod_LCUFN, 2);
-}
+  if (!LC_TYPEP(class, atom_class)) {
+    RETCALL(atom_FetchMethod_LCUFN, 2);
+  }
   {
     LispPTR cur_class = class;
     LispPTR supers = ((struct LCClass *)NativeAligned4FromLAddr(cur_class))->supers;
@@ -253,7 +263,7 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
         goto next_class;
       } else {
         selectorptr = NativeAligned4FromLAddr(classptr->selectors);
-}
+      }
 
       while ((val = selectorptr[i++]) != NIL_PTR) {
         if (val == selector) {
@@ -264,8 +274,9 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) { break;
-}
+      if ((cur_class = car(supers)) == NIL_PTR) {
+        break;
+      }
       supers = cdr(supers);
     }
   }
@@ -285,12 +296,14 @@ LispPTR LCFindVarIndex(LispPTR iv, LispPTR object) {
 
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   ce = &(LCIVCache[IV_CACHE_INDEX((iNames = objptr->iNames), iv)]);
-  if (ce->iNames == iNames && ce->iv == iv) { return ce->index;
-}
+  if (ce->iNames == iNames && ce->iv == iv) {
+    return ce->index;
+  }
 
-  if (!Listp(iNames)) { return NIL_PTR; /* FastFindIndex lisp macro (& others?) */
-}
-                                      /* needs this check too ! */
+  if (!Listp(iNames)) {
+    return NIL_PTR; /* FastFindIndex lisp macro (& others?) */
+  }
+  /* needs this check too ! */
   {
     int i;
 
@@ -318,8 +331,9 @@ LispPTR LCGetIVValue(LispPTR object, LispPTR iv) {
   objptr = (struct LCInstance *)NativeAligned4FromLAddr(object);
   GET_IV_INDEX(objptr, iv, index, goto pnut);
   val = (NativeAligned4FromLAddr(objptr->iDescrs))[index];
-  if (!LC_TYPEP(val, atom_annotatedValue)) { return val;
-}
+  if (!LC_TYPEP(val, atom_annotatedValue)) {
+    return val;
+  }
 pnut:
   RETCALL(atom_GetIVValue_LCUFN, 2);
   /*
@@ -362,8 +376,9 @@ LispPTR lcfuncall(unsigned int atom_index, int argnum, int bytenum)
   struct fnhead *tmp_fn;
   int rest; /* use for alignments */
 
-  if (atom_index == 0xffffffff) { error("Loops punt to nonexistent fn");
-}
+  if (atom_index == 0xffffffff) {
+    error("Loops punt to nonexistent fn");
+  }
 
   /* Get Next Block offset from argnum */
   CURRENTFX->nextblock = (LAddrFromNative(CurrentStackPTR) & 0x0ffff) - (argnum << 1) + 4 /* +3  */;

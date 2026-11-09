@@ -25,8 +25,9 @@ int UserSubr(int user_subr_index, int num_args, unsigned *args) {
   printf("debug: case: 0x%x, args: 0x%x\n", user_subr_index, num_args);
   {
     int i;
-    for (i = 0; i < num_args; i++) { printf("debug: arg[%d]: 0x%x\n", i, args[i]);
-}
+    for (i = 0; i < num_args; i++) {
+      printf("debug: arg[%d]: 0x%x\n", i, args[i]);
+    }
   }
 
   switch (user_subr_index) {
@@ -34,8 +35,7 @@ int UserSubr(int user_subr_index, int num_args, unsigned *args) {
       printf("sample UFN\n");
       result = args[0];
       break;
-  default:
-      return (-1); /* DO UFN */
+    default: return (-1); /* DO UFN */
   }
 
   return (result);

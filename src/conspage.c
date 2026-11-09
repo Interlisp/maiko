@@ -26,7 +26,7 @@
 #include "gchtfinddefs.h"  // for htfind, rec_htfind
 #include "lispemul.h"      // for ConsCell, DLword, LispPTR, NIL_PTR, DLWORD...
 #include "lspglob.h"
-#include "lsptypes.h"      // for dtd, Listp, TYPE_LISTP
+#include "lsptypes.h"  // for dtd, Listp, TYPE_LISTP
 
 /**
  * Initializes a page of CONS cells, sets up the free count and
@@ -60,8 +60,7 @@
  * @param[in] link Lisp page number of next cons page
  */
 
-static void init_conspage(struct conspage *base, unsigned int link)
-{
+static void init_conspage(struct conspage *base, unsigned int link) {
   ConsCell *cell;
   int j; /* DL-> int */
 
@@ -151,7 +150,8 @@ struct conspage *next_conspage(void) {
     error("loop in conspage next_pages");
   }
 #else
-  for (next = (int)ListpDTD->dtd_nextpage; /* /!\ Note no exit condition /!\ */ /* get next free conspage */
+  for (next = (int)ListpDTD->dtd_nextpage;
+       /* /!\ Note no exit condition /!\ */ /* get next free conspage */
        ; ListpDTD->dtd_nextpage = next = page1->next_page, page1->next_page = 0xffff) {
     if (next == 0) {
       /* Allocate 2 conspages and get 1st page base */
@@ -172,7 +172,8 @@ struct conspage *next_conspage(void) {
       page1 = (struct conspage *)NativeAligned4FromLPage(next); /*Jan-21*/
     }
 
-    if (page1->count > 1) break;
+    if (page1->count > 1)
+      break;
 
   } /* for loop end */
 #endif /* NEWCDRCODING */
@@ -299,7 +300,7 @@ static ConsCell *find_free_cons_cell(void) {
       pgno = ListpDTD->dtd_nextpage = pg->next_page;
       pg->next_page = CONSPAGE_LAST;
     }
-}
+  }
 
   return (ConsCell *)0;
 } /* end of find_free_cons_cell */
@@ -349,7 +350,7 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
       new_cell->cdr_code = CDR_NIL;
 
       ListpDTD->dtd_cnt0++;
-    }      /* if (ListpDTD.. end */
+    } /* if (ListpDTD.. end */
     else { /* Need to get a new CONS page */
       new_conspage = next_conspage();
       new_cell = GetNewCell_68k(new_conspage);
@@ -363,8 +364,8 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
 
       ListpDTD->dtd_oldcnt++;
 
-    }  /* else 1 end */
-  }    /* if(cons_cdr.. end */
+    } /* else 1 end */
+  } /* if(cons_cdr.. end */
   else /* cons_cdr != NIL */
   {
     new_page = POINTER_PAGE(cons_cdr); /* Y's page num */

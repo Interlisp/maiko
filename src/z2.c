@@ -27,12 +27,12 @@
 #include "cell.h"          // for cadr_cell, S_N_CHECKANDCADR
 #include "conspagedefs.h"  // for cons
 #include "emlglob.h"
-#include "lispemul.h"      // for state, LispPTR, NIL_PTR, ERROR_EXIT, Irq_S...
-#include "lispmap.h"       // for ATOM_OFFSET, S_CHARACTER, S_NEGATIVE, S_PO...
+#include "lispemul.h"  // for state, LispPTR, NIL_PTR, ERROR_EXIT, Irq_S...
+#include "lispmap.h"   // for ATOM_OFFSET, S_CHARACTER, S_NEGATIVE, S_PO...
 #include "lspglob.h"
-#include "lsptypes.h"      // for Listp, GetTypeNumber, TYPE_LISTP
-#include "vars3defs.h"     // for cadr
-#include "z2defs.h"        // for N_OP_classoc, N_OP_clfmemb, N_OP_restlist
+#include "lsptypes.h"   // for Listp, GetTypeNumber, TYPE_LISTP
+#include "vars3defs.h"  // for cadr
+#include "z2defs.h"     // for N_OP_classoc, N_OP_clfmemb, N_OP_restlist
 
 /*   N_OP_classoc()  OP 33Q  */
 LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
@@ -49,9 +49,13 @@ LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
   /* JRB - Don Charnley claims the code below should be identical to the
         code in IL:ASSOC, so I copied my new and exciting version over */
 
-  if (list == NIL_PTR) { return (NIL_PTR); }
+  if (list == NIL_PTR) {
+    return (NIL_PTR);
+  }
 
-  if (GetTypeNumber(list) != TYPE_LISTP) { return (NIL_PTR); }
+  if (GetTypeNumber(list) != TYPE_LISTP) {
+    return (NIL_PTR);
+  }
 
   S_N_CHECKANDCADR(list, cadr1, list);
 
@@ -66,7 +70,7 @@ LispPTR N_OP_classoc(LispPTR key, LispPTR list) {
       cadr1 = cadr(cdrcell);
     } else {
       cdrcell = NIL;
-}
+    }
     /* check for interrupts and punt to handle one safely */
     if (!Irq_Stk_End) {
       TopOfStack = cdrcell; /* for continuation */
@@ -91,8 +95,9 @@ LispPTR N_OP_clfmemb(LispPTR item, LispPTR list) { /* OP 35Q */
         so I copied it */
 
   while (Listp(list)) {
-    if (item == car(list)) { return list;
-}
+    if (item == car(list)) {
+      return list;
+    }
     list = cdr(list);
     /* if we get an interrupt, punt so we can handle it safely */
     if (!Irq_Stk_End) {
@@ -100,8 +105,9 @@ LispPTR N_OP_clfmemb(LispPTR item, LispPTR list) { /* OP 35Q */
       TIMER_EXIT(list);
     }
   }
-  if (list) { ERROR_EXIT(list);
-}
+  if (list) {
+    ERROR_EXIT(list);
+  }
   return list;
 
 } /* end N_OP_clfmemb() */
@@ -155,7 +161,9 @@ fin:	DelRef tail
 
 LispPTR N_OP_restlist(LispPTR tail, int last, int skip) {
   last &= 0xFFFF;
-  while (skip <= last) { tail = cons(GetLongWord(IVar + (--last << 1)), tail); }
+  while (skip <= last) {
+    tail = cons(GetLongWord(IVar + (--last << 1)), tail);
+  }
   return (tail);
 } /* end N_OP_restlist() */
 

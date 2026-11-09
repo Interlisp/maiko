@@ -60,8 +60,9 @@ static inline ssize_t SAFEREAD(int f, unsigned char *b, int c) {
   ssize_t res;
   do {
     res = read(f, b, c);
-    if (res >= 0) { return (res);
-}
+    if (res >= 0) {
+      return (res);
+    }
   } while (errno == EINTR || errno == EAGAIN);
   perror("reading UnixPipeIn");
   return (res);
@@ -123,7 +124,7 @@ int find_process_slot(int pid)
       DBPRINT(("find_process_slot = %d.\n", slot));
       return slot;
     }
-}
+  }
   return -1;
 }
 
@@ -198,19 +199,20 @@ void close_unix_descriptors(void) /* Get ready to shut Maiko down */
   for (int slot = 0; slot < NPROCS; slot++) {
     /* If this slot has an active job */
     switch (UJ[slot].type) {
-      case UJUNUSED:
-        break;
+      case UJUNUSED: break;
       case UJSHELL:
-        if (kill(UJ[slot].PID, SIGKILL) < 0) { perror("Killing shell");
-}
+        if (kill(UJ[slot].PID, SIGKILL) < 0) {
+          perror("Killing shell");
+        }
         UJ[slot].PID = 0;
         DBPRINT(("Kill 5 closing shell desc %d.\n", slot));
         close(slot);
         break;
 
       case UJPROCESS:
-        if (kill(UJ[slot].PID, SIGKILL) < 0) { perror("Killing process");
-}
+        if (kill(UJ[slot].PID, SIGKILL) < 0) {
+          perror("Killing process");
+        }
         UJ[slot].PID = 0;
         DBPRINT(("Kill 5 closing process desc %d.\n", slot));
         close(slot);
@@ -260,31 +262,31 @@ int FindUnixPipes(void) {
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       UnixPipeIn = inttmp;
-}
+    }
   }
   if ((envtmp = getenv("LDEPIPEOUT"))) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       UnixPipeOut = inttmp;
-}
+    }
   }
   if ((envtmp = getenv("LDESTARTTIME"))) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       StartTime = inttmp;
-}
+    }
   }
   if ((envtmp = getenv("LDEUNIXPID"))) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       UnixPID = inttmp;
-}
+    }
   }
 
-/* This is a good place to initialize stuff like the UJ table */
+  /* This is a good place to initialize stuff like the UJ table */
   NPROCS = sysconf(_SC_OPEN_MAX);
 
   UJ = (struct unixjob *)malloc(NPROCS * sizeof(struct unixjob));
@@ -292,8 +294,9 @@ int FindUnixPipes(void) {
   cleareduj.pathname = NULL;
   cleareduj.PID = 0;
   cleareduj.type = UJUNUSED;
-  for (int i = 0; i < NPROCS; i++) { UJ[i] = cleareduj;
-}
+  for (int i = 0; i < NPROCS; i++) {
+    UJ[i] = cleareduj;
+  }
 
   DBPRINT(("NPROCS is %d; leaving FindUnixPipes\n", NPROCS));
   return (UnixPipeIn == -1 || UnixPipeOut == -1 || StartTime == -1 || UnixPID == -1);
@@ -411,8 +414,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       DBPRINT(("Socket %d bound to name %s.\n", sockFD, PipeName));
 
-      if (listen(sockFD, 1) < 0) { perror("Listen");
-}
+      if (listen(sockFD, 1) < 0) {
+        perror("Listen");
+      }
 
       memset(d, 0, sizeof(d));
       d[0] = 'F';
@@ -430,12 +434,14 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       case0_lp:
         TIMEOUT(PipeFD = accept(sockFD, NULL, NULL));
         if (PipeFD < 0) {
-          if (errno == EINTR) { goto case0_lp;
-}
+          if (errno == EINTR) {
+            goto case0_lp;
+          }
           perror("Accept.");
           close(sockFD);
-          if (unlink(PipeName) < 0) { perror("Unlink");
-}
+          if (unlink(PipeName) < 0) {
+            perror("Unlink");
+          }
           return (NIL);
         }
         if (fcntl(PipeFD, F_SETFL, fcntl(PipeFD, F_GETFL, 0) | O_NONBLOCK) == -1) {
@@ -449,11 +455,11 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         unlink(PipeName);
         DBPRINT(("New process: slot/PipeFD %d PID %d\n", PipeFD, UJ[PipeFD].PID));
         return (GetSmallp(PipeFD));
-      }         DBPRINT(("Fork request failed."));
-        close(sockFD);
-        unlink(PipeName);
-        return (NIL);
-
+      }
+      DBPRINT(("Fork request failed."));
+      close(sockFD);
+      unlink(PipeName);
+      return (NIL);
     }
 
     case 1: /* Write byte */
@@ -462,7 +468,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       N_GETNUMBER(args[2], dest, bad);
       ch = dest; /* ch is a char */
 
-      if (valid_slot(slot) && (UJ[slot].status == -1)) { switch (UJ[slot].type) {
+      if (valid_slot(slot) && (UJ[slot].status == -1)) {
+        switch (UJ[slot].type) {
           case UJPROCESS:
           case UJSHELL:
           case UJSOSTREAM:
@@ -470,13 +477,13 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             if (dest == 0) {
               wait_for_comm_processes();
               return (NIL);
-            }               return (GetSmallp(1));
+            }
+            return (GetSmallp(1));
 
-	  case UJSOCKET:
-	  case UJUNUSED:
-	    return (NIL);
+          case UJSOCKET:
+          case UJUNUSED: return (NIL);
         }
-}
+      }
       break;
 
     case 2: /* Read byte */
@@ -490,15 +497,17 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       N_GETNUMBER(args[1], slot, bad); /* Get job # */
 
-      if (!valid_slot(slot)) { return (NIL); /* No fd open; punt the read */
-}
+      if (!valid_slot(slot)) {
+        return (NIL); /* No fd open; punt the read */
+      }
       switch (UJ[slot].type) {
         case UJPROCESS:
         case UJSHELL:
         case UJSOSTREAM:
           TIMEOUT(dest = read(slot, buf, 1));
-          if (dest > 0) { return (GetSmallp(buf[0]));
-}
+          if (dest > 0) {
+            return (GetSmallp(buf[0]));
+          }
           /* Something's amiss; check our process status */
           wait_for_comm_processes();
           if ((dest == 0) &&
@@ -518,9 +527,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           DBPRINT(("Indicating EOF from PTY desc %d.\n", slot));
           return (NIL);
 
-	case UJSOCKET:
-	case UJUNUSED:
-	    return (NIL);
+        case UJSOCKET:
+        case UJUNUSED: return (NIL);
       }
 
     case 3: /* Kill process */
@@ -529,51 +537,56 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       N_GETNUMBER(args[1], slot, bad);
 
       DBPRINT(("Terminating process in slot %d.\n", slot));
-      if (!valid_slot(slot)) { return (ATOM_T);
-}
+      if (!valid_slot(slot)) {
+        return (ATOM_T);
+      }
       /* in all cases we need to close() the file descriptor */
-      if (slot == 0) { DBPRINT(("ZERO SLOT\n"));
-}
+      if (slot == 0) {
+        DBPRINT(("ZERO SLOT\n"));
+      }
       close(slot);
       switch (UJ[slot].type) {
-      case UJSHELL:
-      case UJPROCESS:
-        /* wait for up to 0.1s for it to exit on its own after the close() */
-        for (int i = 0; i < 10; i++) {
-          wait_for_comm_processes();
-          if (UJ[slot].status != -1) { break;
-}
-          usleep(10000);
-        }
-        /* check again before we terminate it */
-        if (UJ[slot].status != -1) { break;
-}
-        kill(UJ[slot].PID, SIGKILL);
-        for (int i = 0; i < 10; i++) {
-          /* Waiting for the process to exit is possibly risky.
-             Sending SIGKILL is always supposed to kill
-             a process, but on very rare occurrences this doesn't
-             happen because of a Unix kernel bug, usually a user-
-             written device driver which hasn't been fully
-             debugged.  So we time it out just be safe. */
-          wait_for_comm_processes();
-          usleep(10000);
-          if (UJ[slot].status != -1) { break;
-}
-        }
-        break;
-      case UJSOCKET:
-        if (UJ[slot].pathname) {
-          DBPRINT(("Unlinking %s\n", UJ[slot].pathname));
-          if (unlink(UJ[slot].pathname) < 0) { perror("Kill 3 unlink");
-}
-          free(UJ[slot].pathname);
-          UJ[slot].pathname = NULL;
-        }
-        break;
-      case UJSOSTREAM:
-      case UJUNUSED:
-	break;
+        case UJSHELL:
+        case UJPROCESS:
+          /* wait for up to 0.1s for it to exit on its own after the close() */
+          for (int i = 0; i < 10; i++) {
+            wait_for_comm_processes();
+            if (UJ[slot].status != -1) {
+              break;
+            }
+            usleep(10000);
+          }
+          /* check again before we terminate it */
+          if (UJ[slot].status != -1) {
+            break;
+          }
+          kill(UJ[slot].PID, SIGKILL);
+          for (int i = 0; i < 10; i++) {
+            /* Waiting for the process to exit is possibly risky.
+               Sending SIGKILL is always supposed to kill
+               a process, but on very rare occurrences this doesn't
+               happen because of a Unix kernel bug, usually a user-
+               written device driver which hasn't been fully
+               debugged.  So we time it out just be safe. */
+            wait_for_comm_processes();
+            usleep(10000);
+            if (UJ[slot].status != -1) {
+              break;
+            }
+          }
+          break;
+        case UJSOCKET:
+          if (UJ[slot].pathname) {
+            DBPRINT(("Unlinking %s\n", UJ[slot].pathname));
+            if (unlink(UJ[slot].pathname) < 0) {
+              perror("Kill 3 unlink");
+            }
+            free(UJ[slot].pathname);
+            UJ[slot].pathname = NULL;
+          }
+          break;
+        case UJSOSTREAM:
+        case UJUNUSED: break;
       }
       UJ[slot].type = UJUNUSED;
       UJ[slot].PID = 0;
@@ -629,12 +642,12 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         UJ[Master].status = -1;
         DBPRINT(("Forked pty in slot %d.\n", Master));
         return (GetSmallp(Master));
-      }         printf("Fork failed.\n");
-        (void)fflush(stdout);
-        printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
-        close(Master);
-        return (NIL);
-
+      }
+      printf("Fork failed.\n");
+      (void)fflush(stdout);
+      printf("d = %d, %d, %d, %d, %d, %d\n", d[0], d[1], d[2], d[3], d[4], d[5]);
+      close(Master);
+      return (NIL);
     }
 
     case 5: /* Kill all the subprocesses */ close_unix_descriptors(); return (ATOM_T);
@@ -654,8 +667,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       SAFEREAD(UnixPipeIn, d, 6);
 
       switch (UJ[dest].type) {
-        case UJUNUSED:
-          break;
+        case UJUNUSED: break;
 
         case UJSHELL:
           DBPRINT(("Kill 5 closing shell desc %d.\n", dest));
@@ -687,7 +699,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       UJ[dest].type = UJUNUSED;
       UJ[dest].PID = 0;
       return (ATOM_T);
-    /* break; */
+      /* break; */
 
     case 7: /* Current job status */
 
@@ -696,8 +708,8 @@ LispPTR Unix_handlecomm(LispPTR *args) {
 
       if (UJ[slot].status == -1) {
         return (ATOM_T);
-}
-              return (GetSmallp(UJ[slot].status));
+      }
+      return (GetSmallp(UJ[slot].status));
 
     case 8: /* Return largest supported command */ return (GetSmallp(15));
 
@@ -714,12 +726,14 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         DLword *bufp;
         int terno; /* holds errno thru sys calls after I/O fails */
 
-        N_GETNUMBER(args[1], slot, bad);     /* Get job # */
-        if (!valid_slot(slot)) { return (NIL); /* No fd open; punt the read */
-}
+        N_GETNUMBER(args[1], slot, bad); /* Get job # */
+        if (!valid_slot(slot)) {
+          return (NIL); /* No fd open; punt the read */
+        }
 
         bufp = (NativeAligned2FromLAddr(args[2])); /* User buffer */
-        DBPRINT(("Read buffer slot %d, type is %d buffer LAddr 0x%x (native %p)\n", slot, UJ[slot].type, args[2], bufp));
+        DBPRINT(("Read buffer slot %d, type is %d buffer LAddr 0x%x (native %p)\n", slot,
+                 UJ[slot].type, args[2], bufp));
 
         switch (UJ[slot].type) {
           case UJSHELL:
@@ -742,7 +756,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
                 (UJ[slot].status == -1)) {
               /* No available chars, but other guy still running */
               return (ATOM_T);
-}
+            }
 
             /* At this point, we either got an I/O error, or there */
             /* were no chars available and the other end has terminated. */
@@ -753,8 +767,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
             return (NIL);
 
           case UJSOCKET:
-          case UJUNUSED:
-            return (NIL);
+          case UJUNUSED: return (NIL);
         }
       }
 
@@ -776,11 +789,10 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         pty = slot;
         /* Change window size, then
            notify process group of the change */
-        if ((ioctl(pty, TIOCSWINSZ, &w) >= 0) &&
-            ((pgrp = tcgetpgrp(pty)) >= 0) &&
+        if ((ioctl(pty, TIOCSWINSZ, &w) >= 0) && ((pgrp = tcgetpgrp(pty)) >= 0) &&
             (killpg(pgrp, SIGWINCH) >= 0)) {
           return (ATOM_T);
-}
+        }
         return (GetSmallp(errno));
       }
 
@@ -819,8 +831,9 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         return (NIL);
       }
       DBPRINT(("Socket %d bound to name %s.\n", sockFD, shcom));
-      if (listen(sockFD, 1) < 0) { perror("Listen");
-}
+      if (listen(sockFD, 1) < 0) {
+        perror("Listen");
+      }
       /* Set up the IO not to block */
       fcntl(sockFD, F_SETFL, fcntl(sockFD, F_GETFL, 0) | O_NONBLOCK);
 
@@ -862,7 +875,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         }
       } else {
         return (NIL);
-}
+      }
     }
 
     case 14: /* return type of socket */
@@ -872,17 +885,17 @@ LispPTR Unix_handlecomm(LispPTR *args) {
       N_GETNUMBER(args[1], streamFD, bad);
       if (valid_slot(streamFD)) {
         return GetSmallp(UJ[streamFD].type);
-}
-              return NIL;
+      }
+      return NIL;
     }
 
     case 15: /* Write buffer */
     {
       DLword *bufp;
       int i;
-      N_GETNUMBER(args[1], slot, bad);              /* Get job # */
+      N_GETNUMBER(args[1], slot, bad);           /* Get job # */
       bufp = (NativeAligned2FromLAddr(args[2])); /* User buffer */
-      N_GETNUMBER(args[3], i, bad);                 /* # to write */
+      N_GETNUMBER(args[3], i, bad);              /* # to write */
       DBPRINT(("Write buffer, type is %d\n", UJ[slot].type));
 
       switch (UJ[slot].type) {
@@ -898,14 +911,15 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           word_swap_page(bufp, (i + 3) >> 2);
 #endif /* BYTESWAP */
 
-          if (dest > 0) { return (GetSmallp(dest));
-}
+          if (dest > 0) {
+            return (GetSmallp(dest));
+          }
           /* Something's amiss; update process status */
           wait_for_comm_processes(); /* make sure we're up to date */
           if (((dest == 0) || (errno == EWOULDBLOCK)) && (UJ[slot].status == -1)) {
             /* No room to write, but other guy still running */
             return (ATOM_T);
-}
+          }
           /* At this point, we either got an I/O error, or there */
           /* were no chars available and the other end has terminated. */
           /* Either way, signal EOF. */
@@ -913,8 +927,7 @@ LispPTR Unix_handlecomm(LispPTR *args) {
           return (NIL);
 
         case UJUNUSED:
-        case UJSOCKET:
-          return (NIL);
+        case UJSOCKET: return (NIL);
       }
     }
 

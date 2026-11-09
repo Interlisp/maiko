@@ -11,22 +11,24 @@
 
 #include "version.h"
 
-#include <fcntl.h>         // for fcntl, F_GETFL, O_RDONLY, O_RDWR
-#include <setjmp.h>        // for setjmp, jmp_buf
-#include <stdio.h>         // for fflush, fprintf, printf, getchar, stderr
-#include <stdlib.h>        // for exit
-#include <string.h>        // for memset
-#include <sys/select.h>    // for fd_set
-#include "commondefs.h"    // for error, stab, warn
-#include "dbprint.h"       // for DBPRINT
+#include <fcntl.h>       // for fcntl, F_GETFL, O_RDONLY, O_RDWR
+#include <setjmp.h>      // for setjmp, jmp_buf
+#include <stdio.h>       // for fflush, fprintf, printf, getchar, stderr
+#include <stdlib.h>      // for exit
+#include <string.h>      // for memset
+#include <sys/select.h>  // for fd_set
+#include "commondefs.h"  // for error, stab, warn
+#include "dbprint.h"     // for DBPRINT
 #include "emlglob.h"
-#include "kprintdefs.h"    // for print
-#include "lispemul.h"      // for NIL, DLword, LispPTR
+#include "kprintdefs.h"  // for print
+#include "lispemul.h"    // for NIL, DLword, LispPTR
 #include "lspglob.h"
 #include "uraiddefs.h"     // for device_after_raid, device_before_raid, ura...
 #include "uraidextdefs.h"  // for URMAXFXNUM, URaid_inputstring, URaid_FXarray
 
-void stab(void) { DBPRINT(("Now in stab\n")); }
+void stab(void) {
+  DBPRINT(("Now in stab\n"));
+}
 
 /***************************************************************
 error
@@ -75,7 +77,8 @@ int error(const char *msg) {
   print(Uraid_mess);
   putchar('\n');
   /* XXX: make sure output is flushed so we can see where we are */
-  (void)fflush(stdout); (void)fflush(stderr);
+  (void)fflush(stdout);
+  (void)fflush(stderr);
   URaid_currentFX = URMAXFXNUM + 1;
   memset(URaid_FXarray, 0, URMAXFXNUM * 4);
 #ifndef DOS
@@ -86,14 +89,16 @@ int error(const char *msg) {
         perror("Reopen of stdin failed.");
         exit(0);
       }
-}
+    }
   }
 #endif /* DOS */
 uraidloop:
-  if (setjmp(BT_jumpbuf) == 1) { goto uraidloop;
-}
-  if (setjmp(SD_jumpbuf) == 1) { goto uraidloop;
-}
+  if (setjmp(BT_jumpbuf) == 1) {
+    goto uraidloop;
+  }
+  if (setjmp(SD_jumpbuf) == 1) {
+    goto uraidloop;
+  }
   for (;;) { /* URAID LOOP */
 
     uraid_commclear();
@@ -102,10 +107,12 @@ uraidloop:
     for (ptr = URaid_inputstring; (*ptr = getchar()) != '\n'; ptr++) {}
     URaid_argnum = sscanf(URaid_inputstring, "%1s%s%s", URaid_comm, URaid_arg1, URaid_arg2);
 
-    if (uraid_commands() == NIL) { break;
-}
+    if (uraid_commands() == NIL) {
+      break;
+    }
     /* XXX: make sure output is flushed so we can see where we are */
-    (void)fflush(stdout); (void)fflush(stderr);
+    (void)fflush(stdout);
+    (void)fflush(stderr);
   } /* for end */
 
   /**TopOfStack = NIL;if error is called from subr TOS will be set NIL**/
@@ -114,8 +121,9 @@ uraidloop:
     {
       int c;
       c = getchar();
-      if ((c == 'Y') || (c == 'y')) { exit(-1);
-}
+      if ((c == 'Y') || (c == 'y')) {
+        exit(-1);
+      }
     }
     (void)fflush(stdin);
     goto uraidloop;
@@ -131,5 +139,6 @@ uraidloop:
 /*									*/
 /************************************************************************/
 
-void warn(const char *msg)
-{ printf("\nWARN: %s \n", msg); }
+void warn(const char *msg) {
+  printf("\nWARN: %s \n", msg);
+}

@@ -28,9 +28,9 @@
 #include "emlglob.h"
 
 #ifndef BIGATOMS
-N_OP_atomcellN(int tos, int n)
-{
-  if ((tos & 0xffff0000) != 0) ERROR_EXIT(tos);
+N_OP_atomcellN(int tos, int n) {
+  if ((tos & 0xffff0000) != 0)
+    ERROR_EXIT(tos);
 
   tos = (tos << 1);
 

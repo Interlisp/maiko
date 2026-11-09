@@ -27,7 +27,7 @@
  * XXX: With SDL3, using the window surface results in a black screen
  */
 
-#define  SDLRENDERING 1
+#define SDLRENDERING 1
 
 static SDL_Window *sdl_window = NULL;
 #if defined(SDLRENDERING)
@@ -953,9 +953,9 @@ extern char backgroundColorName[64];
  * through the X11 color names table, returning an SDL pixel
  * according to the given pixel format
  */
-static Uint32 sdl_MapColorName(const SDL_PixelFormat * format, char *name) {
+static Uint32 sdl_MapColorName(const SDL_PixelFormat *format, char *name) {
   /* check for #RRBBGG format */
-  if (name[0]=='#' && strlen(name) == 7 && strspn(&name[1], "0123456789abcdefABCDEF") == 6) {
+  if (name[0] == '#' && strlen(name) == 7 && strspn(&name[1], "0123456789abcdefABCDEF") == 6) {
     unsigned long pixval = strtoul(&name[1], NULL, 16);
 #if SDL_MAJOR_VERSION == 2
     return SDL_MapRGB(format, (pixval >> 16) & 0xFF, (pixval >> 8) & 0xFF, pixval & 0xFF);
@@ -964,7 +964,7 @@ static Uint32 sdl_MapColorName(const SDL_PixelFormat * format, char *name) {
 #endif
   }
   /* then try for a named color */
-  for (int i = 0; i < sizeof(colornames)/sizeof(colornames[0]); i++) {
+  for (int i = 0; i < sizeof(colornames) / sizeof(colornames[0]); i++) {
     if (0 == strcasecmp(name, colornames[i].name)) {
 #if SDL_MAJOR_VERSION == 2
       return SDL_MapRGB(format, colornames[i].red, colornames[i].green, colornames[i].blue);
@@ -974,7 +974,7 @@ static Uint32 sdl_MapColorName(const SDL_PixelFormat * format, char *name) {
     }
   }
   /* fail */
-  return(0);
+  return (0);
 }
 void DoRing() {
   DLword w, r;
@@ -1010,7 +1010,7 @@ do_ring:
 
   if (r == w) { /* event queue FULL */
     goto KBnext;
-}
+  }
 
   kbevent = (KBEVENT *)(CTopKeyevent + w);
   /*    RCLK(kbevent->time); */
@@ -1024,21 +1024,23 @@ do_ring:
 
   if (r == 0) { /* Queue was empty */
     ((RING *)CTopKeyevent)->read = w;
-}
+  }
   if (w >= MAXKEYEVENT) {
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
   } else {
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
-}
+  }
 
 KBnext:
-  if (*KEYBUFFERING68k == NIL) { *KEYBUFFERING68k = ATOM_T;
-}
+  if (*KEYBUFFERING68k == NIL) {
+    *KEYBUFFERING68k = ATOM_T;
+  }
 }
 
 static int min(int a, int b) {
-  if (a < b) { return a;
-}
+  if (a < b) {
+    return a;
+  }
   return b;
 }
 
@@ -1049,14 +1051,18 @@ static int min_y = INT_MAX;
 static int max_x = 0;
 static int max_y = 0;
 void sdl_notify_damage(int x, int y, int w, int h) {
-  if (x < min_x) { min_x = x;
-}
-  if (y < min_y) { min_y = y;
-}
-  if (x + w > max_x) { max_x = min(x + w, sdl_displaywidth - 1);
-}
-  if (y + h > max_y) { max_y = min(y + h, sdl_displayheight - 1);
-}
+  if (x < min_x) {
+    min_x = x;
+  }
+  if (y < min_y) {
+    min_y = y;
+  }
+  if (x + w > max_x) {
+    max_x = min(x + w, sdl_displaywidth - 1);
+  }
+  if (y + h > max_y) {
+    max_y = min(y + h, sdl_displayheight - 1);
+  }
   display_update_needed = 1;
 }
 
@@ -1083,7 +1089,7 @@ static void replicate_bits(int bits, int reps, Uint8 *out) {
     for (int r = 0; r < reps; r++) {
       if (bits & (1 << ibit)) {
         out[dbyte] |= 1 << dbit;
-}
+      }
       if (--dbit < 0) {
         dbyte++;
         dbit = 7;
@@ -1094,9 +1100,10 @@ static void replicate_bits(int bits, int reps, Uint8 *out) {
 
 static int cursor_equal_p(const DLword *a, const DLword *b) {
   for (int i = 0; i < CURSORHEIGHT; i++) {
-    if (a[i] != b[i]) { return FALSE;
-}
-}
+    if (a[i] != b[i]) {
+      return FALSE;
+    }
+  }
   return TRUE;
 }
 
@@ -1134,8 +1141,9 @@ static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot
   /* no scaling is an easy case, scale > 1 is harder */
   if (sdl_pixelscale == 1) {
     Uint8 sdl_cursor_data[32];
-    for (int i = 0; i < 32; i++) { sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
-}
+    for (int i = 0; i < 32; i++) {
+      sdl_cursor_data[i] = GETBYTE(((Uint8 *)cursor) + i);
+    }
     c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16, 16, hot_x, hot_y);
   } else {
     Uint8 *sdl_cursor_data = calloc(sdl_pixelscale * sdl_pixelscale, 32);
@@ -1147,13 +1155,16 @@ static SDL_Cursor *sdl_getOrAllocateCursor(DLword cursor[16], int hot_x, int hot
       replicate_bits(v, sdl_pixelscale, &sdl_cursor_data[db]);
       /* and then copy the replicated bits for the copies of the row */
       for (int j = 1; j < sdl_pixelscale; j++) {
-        memcpy(&sdl_cursor_data[db + (j * 2 * sdl_pixelscale)], &sdl_cursor_data[db], 2 * sdl_pixelscale);
+        memcpy(&sdl_cursor_data[db + (j * 2 * sdl_pixelscale)], &sdl_cursor_data[db],
+               2 * sdl_pixelscale);
       }
     }
-    c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16 * sdl_pixelscale, 16 * sdl_pixelscale, hot_x, hot_y);
+    c = SDL_CreateCursor(sdl_cursor_data, sdl_cursor_data, 16 * sdl_pixelscale, 16 * sdl_pixelscale,
+                         hot_x, hot_y);
   }
-  if (c == NULL) { printf("ERROR creating cursor: %s\n", SDL_GetError());
-}
+  if (c == NULL) {
+    printf("ERROR creating cursor: %s\n", SDL_GetError());
+  }
   clp->cursor = c;
   clp->next = sdl_cursorlist;
   sdl_cursorlist = clp;
@@ -1295,8 +1306,9 @@ void sdl_bitblt_to_window_surface(int _x, int _y, int _w, int _h) {
 #endif
 static int map_key(SDL_Keycode k) {
   for (int i = 0; keymap[i] != -1; i += 2) {
-    if (keymap[i + 1] == k) { return keymap[i];
-}
+    if (keymap[i + 1] == k) {
+      return keymap[i];
+    }
   }
   return -1;
 }
@@ -1309,8 +1321,9 @@ static void handle_keydown(SDL_Keycode k, unsigned short mod) {
     // printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, FALSE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+    if ((KBDEventFlg += 1) > 0) {
+      Irq_Stk_End = Irq_Stk_Check = 0;
+    }
   }
 }
 static void handle_keyup(SDL_Keycode k, unsigned short mod) {
@@ -1321,8 +1334,9 @@ static void handle_keyup(SDL_Keycode k, unsigned short mod) {
     // printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, TRUE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+    if ((KBDEventFlg += 1) > 0) {
+      Irq_Stk_End = Irq_Stk_Check = 0;
+    }
   }
 }
 extern DLword *EmCursorX68K, *EmCursorY68K;
@@ -1342,11 +1356,13 @@ extern LispPTR *CLastUserActionCell68k;
 static void sdl_update_viewport(int width, int height) {
   /* XXX: needs work */
   int w = width / 32 * 32;
-  if (w > sdl_displaywidth * sdl_pixelscale) { w = sdl_displaywidth * sdl_pixelscale;
-}
+  if (w > sdl_displaywidth * sdl_pixelscale) {
+    w = sdl_displaywidth * sdl_pixelscale;
+  }
   int h = height / 32 * 32;
-  if (h > sdl_displayheight * sdl_pixelscale) { h = sdl_displayheight * sdl_pixelscale;
-}
+  if (h > sdl_displayheight * sdl_pixelscale) {
+    h = sdl_displayheight * sdl_pixelscale;
+  }
   SDL_Rect r;
   r.x = 0;
   r.y = 0;
@@ -1405,7 +1421,8 @@ void sdl_update_display() {
 #if SDL_MAJOR_VERSION == 2
     SDL_LowerBlitScaled(sdl_buffersurface, &r, sdl_windowsurface, &s);
 #else
-    SDL_BlitSurfaceUncheckedScaled(sdl_buffersurface, &r, sdl_windowsurface, &s, SDL_SCALEMODE_NEAREST);
+    SDL_BlitSurfaceUncheckedScaled(sdl_buffersurface, &r, sdl_windowsurface, &s,
+                                   SDL_SCALEMODE_NEAREST);
 #endif
     SDL_UpdateWindowSurfaceRects(sdl_window, &s, 1);
   }
@@ -1433,14 +1450,9 @@ void process_Display_events(void *dsp) {
             sdl_windowheight = event.window.data2;
             sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
             break;
-          case SDL_WINDOWEVENT_FOCUS_GAINED:
-            sdl_window_focusp = 1;
-            break;
-          case SDL_WINDOWEVENT_FOCUS_LOST:
-            sdl_window_focusp = 0;
-            break;
-        default:
-          break;
+          case SDL_WINDOWEVENT_FOCUS_GAINED: sdl_window_focusp = 1; break;
+          case SDL_WINDOWEVENT_FOCUS_LOST: sdl_window_focusp = 0; break;
+          default: break;
         }
         break;
 #else
@@ -1450,12 +1462,8 @@ void process_Display_events(void *dsp) {
         sdl_windowheight = event.window.data2;
         sdl_update_viewport(sdl_windowwidth, sdl_windowheight);
         break;
-      case SDL_EVENT_WINDOW_FOCUS_GAINED:
-        sdl_window_focusp = 1;
-        break;
-      case SDL_EVENT_WINDOW_FOCUS_LOST:
-        sdl_window_focusp = 0;
-        break;
+      case SDL_EVENT_WINDOW_FOCUS_GAINED: sdl_window_focusp = 1; break;
+      case SDL_EVENT_WINDOW_FOCUS_LOST: sdl_window_focusp = 0; break;
 #endif
 #if SDL_MAJOR_VERSION == 2
       case SDL_KEYDOWN:
@@ -1495,8 +1503,9 @@ void process_Display_events(void *dsp) {
         int ix, iy;
         float x, y;
 #endif
-        if (!sdl_window_focusp) { break;
-}
+        if (!sdl_window_focusp) {
+          break;
+        }
         SDL_GetMouseState(&x, &y);
         x /= sdl_pixelscale;
         y /= sdl_pixelscale;
@@ -1511,8 +1520,9 @@ void process_Display_events(void *dsp) {
         *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(iy & 0xFFFF);
 #endif
         DoRing();
-        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+        if ((KBDEventFlg += 1) > 0) {
+          Irq_Stk_End = Irq_Stk_Check = 0;
+        }
         break;
       }
 #if SDL_MAJOR_VERSION == 2
@@ -1526,8 +1536,9 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+        if ((KBDEventFlg += 1) > 0) {
+          Irq_Stk_End = Irq_Stk_Check = 0;
+        }
         break;
       }
 #if SDL_MAJOR_VERSION == 2
@@ -1541,8 +1552,9 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+        if ((KBDEventFlg += 1) > 0) {
+          Irq_Stk_End = Irq_Stk_Check = 0;
+        }
         break;
       }
 #if SDL_MAJOR_VERSION == 2
@@ -1569,7 +1581,7 @@ void process_Display_events(void *dsp) {
         /*   printf("SDL_KEYMAPCHANGED\n"); break; */
         /* case SDL_TEXTINPUT: */
         /*   printf("SDL_TEXTINPUT\n"); break; */
-    default: /* printf("other event type: %d\n", event.type); */ break;
+      default: /* printf("other event type: %d\n", event.type); */ break;
     }
   }
   if (display_update_needed) {
@@ -1629,12 +1641,11 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
 #endif
   printf("Creating texture...\n");
   sdl_texture = SDL_CreateTexture(sdl_renderer, sdl_pixelformat->format,
-                                  SDL_TEXTUREACCESS_STREAMING,
-                                  sdl_displaywidth, sdl_displayheight);
-  sdl_foreground_color = sdl_MapColorName(sdl_pixelformat,
-                                          foregroundColorName[0] ? foregroundColorName : "black");
-  sdl_background_color = sdl_MapColorName(sdl_pixelformat,
-                                          backgroundColorName[0] ? backgroundColorName : "white");
+                                  SDL_TEXTUREACCESS_STREAMING, sdl_displaywidth, sdl_displayheight);
+  sdl_foreground_color =
+      sdl_MapColorName(sdl_pixelformat, foregroundColorName[0] ? foregroundColorName : "black");
+  sdl_background_color =
+      sdl_MapColorName(sdl_pixelformat, backgroundColorName[0] ? backgroundColorName : "white");
   sdl_foreground = sdl_foreground_color;
   sdl_background = sdl_background_color;
 #if SDL_MAJOR_VERSION == 2
@@ -1646,10 +1657,10 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
   printf("Creating window surface and buffer surface\n");
   sdl_windowsurface = SDL_GetWindowSurface(sdl_window);
   sdl_pixelformat = sdl_windowsurface->format;
-  sdl_foreground_color = sdl_MapColorName(sdl_pixelformat,
-                                          foregroundColorName[0] ? foregroundColorName : "black");
-  sdl_background_color = sdl_MapColorName(sdl_pixelformat,
-                                          backgroundColorName[0] ? backgroundColorName : "white");
+  sdl_foreground_color =
+      sdl_MapColorName(sdl_pixelformat, foregroundColorName[0] ? foregroundColorName : "black");
+  sdl_background_color =
+      sdl_MapColorName(sdl_pixelformat, backgroundColorName[0] ? backgroundColorName : "white");
   sdl_foreground = sdl_foreground_color;
   sdl_background = sdl_background_color;
 #if SDL_MAJOR_VERSION == 2
@@ -1664,9 +1675,9 @@ int init_SDL(char *windowtitle, int w, int h, int s) {
       buffer, sdl_displaywidth, sdl_displayheight, sdl_bytesperpixel * 8,
       sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
 #else
-  sdl_buffersurface = SDL_CreateSurfaceFrom(
-      buffer, sdl_displaywidth, sdl_displayheight,
-      sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
+  sdl_buffersurface =
+      SDL_CreateSurfaceFrom(buffer, sdl_displaywidth, sdl_displayheight,
+                            sdl_displaywidth * sdl_bytesperpixel, sdl_pixelformat->format);
 #endif
 #endif
 #if SDL_MAJOR_VERSION == 2

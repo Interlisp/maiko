@@ -26,11 +26,12 @@
                                                                   : yytchar) == EOF       \
        ? 0                                                                                \
        : yytchar)
-#define unput(c)                     \
-  {                                  \
-    yytchar = (c);                   \
-    if (yytchar == '\n') yylineno--; \
-    *yysptr++ = yytchar;             \
+#define unput(c)         \
+  {                      \
+    yytchar = (c);       \
+    if (yytchar == '\n') \
+      yylineno--;        \
+    *yysptr++ = yytchar; \
   }
 #define yymore() (yymorfg = 1)
 #define ECHO fprintf(yyout, "%s", yytext)
@@ -74,7 +75,8 @@ yylex(void) {
   yyfussy:
     switch (nstr) {
       case 0:
-        if (yywrap()) return (0);
+        if (yywrap())
+          return (0);
         break;
       case 1: {
         BEGIN COMMENT;
@@ -104,7 +106,8 @@ yylex(void) {
       case 10: {
         Sign = 0;
         for (x = 0; x < yyleng; x++)
-          if (yytext[x] == '-' || yytext[x] == '+') Sign = (Sign == (yytext[x] == '+'));
+          if (yytext[x] == '-' || yytext[x] == '+')
+            Sign = (Sign == (yytext[x] == '+'));
         return (SIGN);
         /* Sign is TRUE if the sign-string
            represents a '-'. Otherwise Sign
@@ -482,16 +485,24 @@ int *yyfnd;
 extern struct yysvf *yyestate;
 int yyprevious = YYNEWLINE;
 int yyback(int *p, int m) {
-  if (p == 0) return (0);
+  if (p == 0)
+    return (0);
   while (*p) {
-    if (*p++ == m) return (1);
+    if (*p++ == m)
+      return (1);
   }
   return (0);
 }
 /* the following are only used in the lex library */
-int yyinput(void) { return (input()); }
-void yyoutput(int c) { output(c); }
-void yyunput(int c) { unput(c); }
+int yyinput(void) {
+  return (input());
+}
+void yyoutput(int c) {
+  output(c);
+}
+void yyunput(int c) {
+  unput(c);
+}
 
 int yylook(void) {
   struct yysvf *yystate, **lsp;
@@ -517,16 +528,20 @@ int yylook(void) {
   for (;;) {
     lsp = yylstate;
     yyestate = yystate = yybgin;
-    if (yyprevious == YYNEWLINE) yystate++;
+    if (yyprevious == YYNEWLINE)
+      yystate++;
     for (;;) {
 #ifdef LEXDEBUG
-      if (debug) fprintf(yyout, "state %d\n", yystate - yysvec - 1);
+      if (debug)
+        fprintf(yyout, "state %d\n", yystate - yysvec - 1);
 #endif
       yyt = yystate->yystoff;
       if (yyt == yycrank && !yyfirst) { /* may not be any transitions */
         yyz = yystate->yyother;
-        if (yyz == 0) break;
-        if (yyz->yystoff == yycrank) break;
+        if (yyz == 0)
+          break;
+        if (yyz->yystoff == yycrank)
+          break;
       }
       *yylastch++ = yych = input();
       yyfirst = 0;
@@ -555,7 +570,8 @@ int yylook(void) {
       else if ((int)yyt < (int)yycrank) { /* r < yycrank */
         yyt = yyr = yycrank + (yycrank - yyt);
 #ifdef LEXDEBUG
-        if (debug) fprintf(yyout, "compressed state\n");
+        if (debug)
+          fprintf(yyout, "compressed state\n");
 #endif
         yyt = yyt + yych;
         if (yyt <= yytop && yyt->verify + yysvec == yystate) {
@@ -587,7 +603,8 @@ int yylook(void) {
       }
       if ((yystate = yystate->yyother) && (yyt = yystate->yystoff) != yycrank) {
 #ifdef LEXDEBUG
-        if (debug) fprintf(yyout, "fall back to state %d\n", yystate - yysvec - 1);
+        if (debug)
+          fprintf(yyout, "fall back to state %d\n", yystate - yysvec - 1);
 #endif
         goto tryagain;
       }
@@ -643,10 +660,12 @@ int yylook(void) {
       return (0);
     }
     yyprevious = yytext[0] = input();
-    if (yyprevious > 0) output(yyprevious);
+    if (yyprevious > 0)
+      output(yyprevious);
     yylastch = yytext;
 #ifdef LEXDEBUG
-    if (debug) putchar('\n');
+    if (debug)
+      putchar('\n');
 #endif
   }
 }

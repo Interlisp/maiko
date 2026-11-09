@@ -76,14 +76,14 @@ extern DspInterface currentdsp;
 
 /*  EmMouseX68K are already swapped, no need for GETWORD */
 #define MouseMove(x, y)           \
-  do {                               \
+  do {                            \
     *((DLword *)EmMouseX68K) = x; \
     *((DLword *)EmMouseY68K) = y; \
   } while (0)
 #ifdef NEVER
 #ifndef BYTESWAP
 #define PUTBASEBIT68K(base68k, offset, bitvalue)               \
-  do {                                                            \
+  do {                                                         \
     if (bitvalue)                                              \
       *((DLword *)(base68k) + (((u_short)(offset)) >> 4)) |=   \
           1 << (15 - ((u_short)(offset)) % BITSPER_DLWORD);    \
@@ -97,7 +97,7 @@ extern DspInterface currentdsp;
    back to i386 address pointer */
 
 #define PUTBASEBIT68K(base68k, offset, bitvalue)                       \
-  do {                                                                    \
+  do {                                                                 \
     int real68kbase;                                                   \
     real68kbase = 2 ^ ((int)(base68k));                                \
     if (bitvalue)                                                      \
@@ -147,8 +147,6 @@ extern DLword *EmCursorX68K;
 extern DLword *EmCursorY68K;
 
 /*  EmXXXX68K are already swapped, no need for GETWORD */
-
-
 
 /* commented out is some code that would also clobber
         Irq_Stk_Check & Irq_Stk_End to force
@@ -225,8 +223,7 @@ DLword ColorCursor_savebitmap[CURSORWIDTH / COLORPIXELS_IN_DLWORD * CURSORHEIGHT
 /*									*/
 /************************************************************************/
 
-void process_io_events(void)
-{
+void process_io_events(void) {
 #ifndef DOS
   fd_set rfds;
   u_int iflags;
@@ -255,17 +252,20 @@ void process_io_events(void)
 #endif /* MAIKO_ENABLE_ETHERNET */
 
   memcpy(&rfds, &LispReadFds, sizeof(rfds));
-  if (select(FD_SETSIZE, &rfds, NULL, NULL, &SelectTimeout) <= 0) { return;
-}
+  if (select(FD_SETSIZE, &rfds, NULL, NULL, &SelectTimeout) <= 0) {
+    return;
+  }
 
 #ifdef RS232
-  if (RS232C_Fd >= 0 && (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
+  if (RS232C_Fd >= 0 &&
+      (FD_ISSET(RS232C_Fd, &rfds) || (RS232C_remain_data && rs232c_lisp_is_ready())))
     rs232c_read();
 #endif /* RS232 */
 
 #if defined(MAIKO_HANDLE_CONSOLE_MESSAGES) && defined(LOGINT)
-  if (LogFileFd >= 0 && FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
-    flush_pty();          /* move the msg(s) to the log file */
+  if (LogFileFd >= 0 &&
+      FD_ISSET(LogFileFd, &rfds)) { /* There's info in the log file.  Tell Lisp to print it. */
+    flush_pty();                    /* move the msg(s) to the log file */
 
     ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->LogFileIO = 1;
 
@@ -275,9 +275,10 @@ void process_io_events(void)
 #endif
   iflags = 0;
   for (i = 0; i < 32; i++) {
-    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) { iflags |= 1 << i;
-}
-}
+    if (FD_ISSET(i, &rfds) && FD_ISSET(i, &LispIOFds)) {
+      iflags |= 1 << i;
+    }
+  }
   if (iflags) { /* There's activity on a Lisp-opened FD.  Tell Lisp. */
     u_int *flags;
     flags = (u_int *)NativeAligned4FromLAddr(*IOINTERRUPTFLAGS_word);
@@ -292,7 +293,6 @@ void process_io_events(void)
 #endif /* DOS */
 } /* end process_io_events */
 
-
 /************************************************************************/
 /*									*/
 /*			   k b _ t r a n s				*/
@@ -301,8 +301,7 @@ void process_io_events(void)
 /*									*/
 /************************************************************************/
 
-void kb_trans(u_short keycode, u_short upflg)
-{
+void kb_trans(u_short keycode, u_short upflg) {
   if (keycode < 64) /* DLKBDAD0 ~ 3	*/
   {
     PUTBASEBIT68K(EmKbdAd068K, keycode, upflg);
@@ -368,8 +367,9 @@ void taking_mouse_down(void) {
 #ifdef DOS
   (currentdsp->mouse_invisible)(currentdsp, IOPage);
 #else
-  if (!DisplayInitialized) { return;
-}
+  if (!DisplayInitialized) {
+    return;
+  }
 
   /* restore saved image */
   srcbase = MonoCursor_savebitmap;
@@ -397,7 +397,8 @@ void taking_mouse_down(void) {
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
 
-  if (!DisplayInitialized) return;
+  if (!DisplayInitialized)
+    return;
   /* restore saved image */
   sx = 0;
 
@@ -422,7 +423,8 @@ void taking_mouse_down(void) {
   op = 0;
   new_bitblt_code;
 #ifdef DISPLAYBUFFER
-  if (MonoOrColor == MONO_SCREEN) flush_display_region(dx, LastCursorY, w, h);
+  if (MonoOrColor == MONO_SCREEN)
+    flush_display_region(dx, LastCursorY, w, h);
 #endif
 }
 #endif /* COLOR */
@@ -431,8 +433,7 @@ void taking_mouse_down(void) {
  To avoid duplicate calculation */
 #ifndef COLOR
 /* FOR MONO ONLY */
-void copy_cursor(int newx, int newy)
-{
+void copy_cursor(int newx, int newy) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
@@ -455,8 +456,7 @@ void copy_cursor(int newx, int newy)
 }
 
 /* store bitmap image inside rect. which specified by x,y */
-void cursor_hidden_bitmap(int x, int y)
-{
+void cursor_hidden_bitmap(int x, int y) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;
@@ -476,8 +476,7 @@ void cursor_hidden_bitmap(int x, int y)
 #else
 /* For COLOR & MONO */
 #define IMIN(x, y) (((x) > (y)) ? (y) : (x))
-void copy_cursor(int newx, int newy)
-{
+void copy_cursor(int newx, int newy) {
   DLword *srcbase, *dstbase;
   int offsetx, offsety;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
@@ -512,17 +511,18 @@ void copy_cursor(int newx, int newy)
   op = 2; /* OR-in */
   new_bitblt_code;
 #ifdef DISPLAYBUFFER
-  if (MonoOrColor == MONO_SCREEN) flush_display_region(dx, newy, w, h);
+  if (MonoOrColor == MONO_SCREEN)
+    flush_display_region(dx, newy, w, h);
 #endif
 }
 
 /* I'll make it MACRO */
-void taking_mouse_up(int newx, int newy)
-{
+void taking_mouse_up(int newx, int newy) {
 #ifdef DOS
   (currentdsp->mouse_visible)(newx, newy);
 #else
-  if (!DisplayInitialized) return;
+  if (!DisplayInitialized)
+    return;
   /* save hidden bitmap */
   cursor_hidden_bitmap(newx, newy);
 /* Copy Cursor Image */
@@ -535,8 +535,7 @@ void taking_mouse_up(int newx, int newy)
 }
 
 /* store bitmap image inside rect. which specified by x,y */
-void cursor_hidden_bitmap(int x, int y)
-{
+void cursor_hidden_bitmap(int x, int y) {
   DLword *srcbase, *dstbase;
   static int sx, dx, w, h, srcbpl, dstbpl, backwardflg = 0;
   static int src_comp = 0, op = 0, gray = 0, num_gray = 0, curr_gray_line = 0;

@@ -10,16 +10,16 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for StackOffsetFromNative, NativeAligned4FromLAddr
-#include "cell.h"         // for definition_cell, GetDEFCELL68k
+#include "adr68k.h"  // for StackOffsetFromNative, NativeAligned4FromLAddr
+#include "cell.h"    // for definition_cell, GetDEFCELL68k
 #include "emlglob.h"
 #include "intcalldefs.h"  // for cause_interruptcall
 #include "llstkdefs.h"    // for do_stackoverflow
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETWORD
-#include "returndefs.h"   // for contextsw
-#include "stack.h"        // for state, CurrentStackPTR, DLword, FX, FuncObj
-#include "tosfns.h"       // for SWAPPED_FN_CHECK
+#include "lsptypes.h"    // for GETWORD
+#include "returndefs.h"  // for contextsw
+#include "stack.h"       // for state, CurrentStackPTR, DLword, FX, FuncObj
+#include "tosfns.h"      // for SWAPPED_FN_CHECK
 
 void cause_interruptcall(unsigned int atom_index)
 /* Atomindex for Function you want to invoke */

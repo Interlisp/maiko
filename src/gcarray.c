@@ -65,7 +65,7 @@
         #define FreeBlockChainN(n)	((POINTERMASK & *FreeBlockBuckets_word)+2*BucketIndex(n))
  ***/
 
-#define Rehash_factor(hash, tablelen) (((hash) % ((tablelen)-2)) + 1)
+#define Rehash_factor(hash, tablelen) (((hash) % ((tablelen) - 2)) + 1)
 #define Symbol_hash_reprobe(hash, rehashfactor, tablelen) (((hash) + (rehashfactor)) % (tablelen))
 #define Entry_hash(strlen, sxhash) \
   (((((((strlen) ^ (sxhash)) ^ ((sxhash) >> 8)) ^ ((sxhash) >> 16)) ^ ((sxhash) >> 19)) % 254) + 2)
@@ -116,18 +116,16 @@ LispPTR aref1(LispPTR array, int index) {
   index += array_np->offset;
   base = array_np->base;
   switch (array_np->typenumber) {
-  case 3: /* unsigned 8 bits */
-    retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
-    retval |= S_POSITIVE;
-    break;
-  case 4: /* unsigned 16 bits */
-    retval = (GETWORD((NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
-    retval |= S_POSITIVE;
-    break;
-  case 38: /* pointer 32 bits */
-    retval = (*((NativeAligned4FromLAddr(base)) + index));
-    break;
-  default: error("Not Implemented in gc's aref1 (other types)");
+    case 3: /* unsigned 8 bits */
+      retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
+      retval |= S_POSITIVE;
+      break;
+    case 4: /* unsigned 16 bits */
+      retval = (GETWORD((NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
+      retval |= S_POSITIVE;
+      break;
+    case 38: /* pointer 32 bits */ retval = (*((NativeAligned4FromLAddr(base)) + index)); break;
+    default: error("Not Implemented in gc's aref1 (other types)");
   }
   return (retval);
 }
@@ -140,8 +138,8 @@ LispPTR aref1(LispPTR array, int index) {
 /*									*/
 /************************************************************************/
 
-LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR hashtbl, DLword fatp,
-                    DLword lispp)
+LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR hashtbl,
+                    DLword fatp, DLword lispp)
 
 /* T => the "chars" coming in are 16-bit */
 /* T => the incoming chars are in LISP space */
@@ -157,14 +155,15 @@ LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR
   struct arrayheader *vec68k;
   int fatpnamep;
 
-  if (!hashtbl) { return (0xffffffff);
-}
+  if (!hashtbl) {
+    return (0xffffffff);
+  }
 
   if (lispp) {
     hashval = compute_lisp_hash(char_base, offset, length, fatp);
   } else {
     hashval = compute_hash(char_base, offset, length);
-}
+  }
 
   ehashval = Entry_hash(length, hashval);
   hashtbladdr = (struct hashtable *)NativeAligned4FromLAddr(hashtbl);
@@ -174,7 +173,7 @@ LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR
     char_base += (offset << 1);
   } else {
     char_base += offset;
-}
+  }
 
 #ifdef BIGATOMS
   vecs = hashtbladdr->table;
@@ -188,8 +187,9 @@ loop_thru_hashtables:
   hashes = cdr(hashes);
   vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
-  if (arraylen == 0) { return (0xffffffff); /*kludge TAKE*/
-}
+  if (arraylen == 0) {
+    return (0xffffffff); /*kludge TAKE*/
+  }
   h2 = Rehash_factor(hashval, arraylen);
   indexvar = (hashval % arraylen);
 #else
@@ -197,7 +197,8 @@ loop_thru_hashtables:
   hash = hashtbladdr->hash;
   vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
-  if (arraylen == 0) return (0xffffffff); /*kludge TAKE*/
+  if (arraylen == 0)
+    return (0xffffffff); /*kludge TAKE*/
   h2 = Rehash_factor(hashval, arraylen);
   indexvar = (hashval % arraylen);
 #endif /* BIGATOMS */
@@ -207,8 +208,9 @@ retry:
   while (ehashval != (ehash = 0xFF & aref1(hash, indexvar))) {
     if (ehash == NIL) { /* Ran out of entries in this table; try next or fail */
 #ifdef BIGATOMS
-      if (hashes == NIL) { return (0xffffffff); /* Last table.  Fail. */
-}
+      if (hashes == NIL) {
+        return (0xffffffff); /* Last table.  Fail. */
+      }
       goto loop_thru_hashtables;
 #else
       return (0xffffffff);
@@ -223,8 +225,9 @@ retry:
     char *pname_base;
 
     index = aref1(vec, indexvar);
-    if ((index & SEGMASK) == S_POSITIVE) { index &= 0xFFFF;
-}
+    if ((index & SEGMASK) == S_POSITIVE) {
+      index &= 0xFFFF;
+    }
 
     pnptr = (PNCell *)GetPnameCell(index);
     fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
@@ -234,9 +237,9 @@ retry:
                                             fatpnamep, fatp)
                        : compare_chars((pname_base + 1 + fatpnamep), char_base, length)))) {
       return (index);
-    }       indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
-      goto retry;
-
+    }
+    indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
+    goto retry;
   }
   /*   else return(0xffffffff); */ /* can't find */
 }
@@ -252,8 +255,8 @@ retry:
 /*									*/
 /************************************************************************/
 
-LispPTR get_package_atom(const char *char_base, DLword charlen, const char *packname, DLword packlen,
-                         int externalp) {
+LispPTR get_package_atom(const char *char_base, DLword charlen, const char *packname,
+                         DLword packlen, int externalp) {
   int packindex;
   PACKAGE *packaddr;
   /* LispPTR hashtbladdr; */
@@ -270,12 +273,12 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
   } else if (0 == strncmp(packname, "XCLC", packlen)) {
     packindex = find_package_from_name("COMPILER", 8);
 
-  /**** else if (0 == strncmp(packname, "KEYWORD", packlen))
-      packindex = 7;***/
+    /**** else if (0 == strncmp(packname, "KEYWORD", packlen))
+        packindex = 7;***/
 
   } else {
     packindex = find_package_from_name(packname, packlen);
-}
+  }
 
   if (packindex < 0) {
     printf("getting package index failed %s:%s\n", packname, char_base);
@@ -285,15 +288,16 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
   /* if (packindex != 7)  Not necessary (Take)*/
   packaddr = (PACKAGE *)NativeAligned4FromLAddr(aref1(*Package_from_Index_word, packindex));
   /* else packaddr = (PACKAGE *)NativeAligned4FromLAddr(
-                          *Keyword_Package_word);	*/
+   *Keyword_Package_word);	*/
   /* hashtbladdr =	((externalp == T)?(packaddr->EXTERNAL_SYMBOLS):
                            (packaddr->INTERNAL_SYMBOLS));
    return( find_symbol(char_base, 0, charlen, hashtbladdr, 0, 0) );*/
 
-  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) != 0xffffffff) {
+  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) !=
+      0xffffffff) {
     return (index);
-}
-      return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
+  }
+  return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
 }
 
 /************************************************************************/

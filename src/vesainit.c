@@ -72,9 +72,12 @@ extern void docopy(int newx, int newy);
 
 extern unsigned long VGA_not_color(DspInterface dsp);
 extern void VGA_exit(DspInterface dsp);
-extern unsigned long Dosbbt1(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
-extern unsigned long Dosbbt2(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
-extern unsigned long Dosbbt3(DspInterface dsp,  DLword *buf, DLword left, DLword top, DLword swidth, DLword height);
+extern unsigned long Dosbbt1(DspInterface dsp, DLword *buf, DLword left, DLword top, DLword swidth,
+                             DLword height);
+extern unsigned long Dosbbt2(DspInterface dsp, DLword *buf, DLword left, DLword top, DLword swidth,
+                             DLword height);
+extern unsigned long Dosbbt3(DspInterface dsp, DLword *buf, DLword left, DLword top, DLword swidth,
+                             DLword height);
 extern void Dosclearbanks(DspInterface dsp);
 extern long DOSCursorVisible(DspInterface dsp, IOPAGE *iop);
 extern long dos_cursor_invisible(DspInterface dsp, IOPAGE *iop);
@@ -91,8 +94,7 @@ extern int dosdisplaymode;
 /* General utility function for doing a BIOS call to the VESA */
 /* bios.                                                      */
 /**************************************************************/
-int VESA_call(int class, int subfunc)
-{
+int VESA_call(int class, int subfunc) {
   union REGS inregs, outregs;
 
   inregs.h.ah = VESA;
@@ -102,8 +104,7 @@ int VESA_call(int class, int subfunc)
   return ((outregs.h.al == VESA) && (outregs.h.ah == SUCESS));
 }
 
-unsigned long set_DAC_color(LispPTR args[])
-{
+unsigned long set_DAC_color(LispPTR args[]) {
   union REGS inregs, outregs;
 
   inregs.x.ax = 0x1010;
@@ -145,8 +146,7 @@ int VESA_currentmode(void) {
   }
 }
 
-int VESA_setmode(int mode, int clearscreen)
-{
+int VESA_setmode(int mode, int clearscreen) {
   union REGS inregs, outregs;
 
   inregs.h.ah = VESA;
@@ -161,8 +161,7 @@ char VESAmodevector[VESABUFLEN];
 char *VESAmodebytes = VESAmodevector;
 
 /* VESA_describemode */
-int VESA_describemode(int mode)
-{
+int VESA_describemode(int mode) {
   union REGS inregs, outregs;
   int i;
   unsigned buf;
@@ -171,7 +170,8 @@ int VESA_describemode(int mode)
   VESA_prev_hndlr = _dos_getvect(0x10);  /* get current 10 intercept, if any   */
   _dos_setvect(0x10, VESA_Intrpt_Hndlr); /* install our int 10 intercept       */
 
-  if (_dos_allocmem(VESABUFLEN, &buf) != 0) return (-1);
+  if (_dos_allocmem(VESABUFLEN, &buf) != 0)
+    return (-1);
 
   inregs.w.eax = 0x4f01;
   inregs.w.ebx = buf;
@@ -179,7 +179,9 @@ int VESA_describemode(int mode)
   int86(0x10, &inregs, &outregs);
 
   if (outregs.x.ax == VESA) {
-    for (i = 0; i < VESABUFLEN; i++) { VESAmodebytes[i] = ((char *)buf)[i]; }
+    for (i = 0; i < VESABUFLEN; i++) {
+      VESAmodebytes[i] = ((char *)buf)[i];
+    }
   } else {
     return (-1);
   }
@@ -211,23 +213,20 @@ void VESA_Intrpt_Hndlr(void) {
   }
 }
 
-void VESA_beforeraid(DspInterface dsp)
-{
+void VESA_beforeraid(DspInterface dsp) {
   TPRINT(("Enter VESA_beforeraid\n"));
   _setvideomode(_DEFAULTMODE);
   _clearscreen(_GCLEARSCREEN);
   TPRINT(("Exit VESA_beforeraid\n"));
 }
 
-void VESA_afterraid(DspInterface dsp)
-{
+void VESA_afterraid(DspInterface dsp) {
   TPRINT(("Enter VESA_afterraid\n"));
   VESA_setmode(dsp->graphicsmode, TRUE);
   TPRINT(("Exit VESA_afterraid\n"));
 }
 
-void VESA_enter(DspInterface dsp)
-{
+void VESA_enter(DspInterface dsp) {
   union REGS regs;
 
   TPRINT(("Enter VESA_enter\n"));
@@ -303,8 +302,7 @@ void VESA_enter(DspInterface dsp)
   TPRINT(("Exit VESA_enter\n"));
 }
 
-void VESA_exit(DspInterface dsp)
-{
+void VESA_exit(DspInterface dsp) {
   TPRINT(("Enter VESA_exit\n"));
   /* Unlock the following to avoid waste of mainmem. */
   _dpmi_unlockregion(&currentdsp, sizeof(currentdsp));
@@ -322,8 +320,7 @@ void VESA_exit(DspInterface dsp)
   TPRINT(("Exit VESA_exit\n"));
 }
 
-VESA_errorexit(char *s, int errno)
-{
+VESA_errorexit(char *s, int errno) {
   _setvideomode(_DEFAULTMODE);
   _clearscreen(_GCLEARSCREEN);
   (void)fprintf(stderr, s);
@@ -331,15 +328,14 @@ VESA_errorexit(char *s, int errno)
   exit(errno);
 }
 
-void tmpclearbanks(DspInterface dsp)
-{
+void tmpclearbanks(DspInterface dsp) {
   TPRINT(("Enter tmpclearbanks\n"));
   /*  Dosclearbanks(dsp); */
   TPRINT(("Exit tmpclearbanks\n"));
 }
 
-unsigned long tmpbbt(DspInterface dsp, char *buffer, long left, long top, long swidth, long height)
-{
+unsigned long tmpbbt(DspInterface dsp, char *buffer, long left, long top, long swidth,
+                     long height) {
   TPRINT(("Enter tmpbbt\n"));
   TPRINT(("Mode display is: %d\n", dsp->graphicsmode));
   TPRINT(("dsp->Display.width = %d\n", dsp->Display.width));
@@ -349,8 +345,8 @@ unsigned long tmpbbt(DspInterface dsp, char *buffer, long left, long top, long s
   TPRINT(("Exit tmpbbt\n"));
 }
 
-void VESA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint, int depth_hint)
-{
+void VESA_init(DspInterface dsp, char *lispbitmap, int width_hint, int height_hint,
+               int depth_hint) {
   TPRINT(("Enter VESA_init\n"));
   /* Kludge. going away soon. */
   dsp->graphicsmode = dosdisplaymode;

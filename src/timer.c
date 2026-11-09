@@ -32,17 +32,17 @@
 
 #ifdef DOS
 #include <dos.h>
-#include <i32.h>   /* "#pragma interrupt" & '_chain_intr'*/
+#include <i32.h> /* "#pragma interrupt" & '_chain_intr'*/
 /******************************************************************************
-*   Global variables
-******************************************************************************/
+ *   Global variables
+ ******************************************************************************/
 void (*prev_int_1c)(void); /* keeps address of previous 1c handlr*/
-                       /* used for chaining & restore at exit*/
+                           /* used for chaining & restore at exit*/
 #pragma interrupt(DOStimer)
 void DOStimer(void);
 
 unsigned long tick_count = 0; /* approx 18 ticks per sec            */
-#else /* DOS */
+#else                         /* DOS */
 #include <sys/resource.h>
 #include <sys/time.h>
 #endif /* DOS */
@@ -99,7 +99,6 @@ extern volatile sig_atomic_t IO_Signalled;
 volatile sig_atomic_t IO_Signalled = FALSE;
 extern volatile sig_atomic_t timer_Signalled;
 volatile sig_atomic_t timer_Signalled = FALSE;
-
 
 static int gettime(int casep);
 
@@ -183,14 +182,14 @@ void init_miscstats(void) {
 /*									*/
 /************************************************************************/
 
-LispPTR subr_gettime(LispPTR args[])
-{
+LispPTR subr_gettime(LispPTR args[]) {
   int result;
   result = gettime(args[0] & 0xffff);
   if (args[1]) {
     *((int *)NativeAligned4FromLAddr(args[1])) = result;
     return (args[1]);
-  }     N_ARITH_SWITCH(result);
+  }
+  N_ARITH_SWITCH(result);
 }
 
 /************************************************************************/
@@ -212,8 +211,7 @@ LispPTR subr_gettime(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-static int gettime(int casep)
-{
+static int gettime(int casep) {
 #ifdef DOS
   struct dostime_t dtm; /* for hundredths of secs */
 #else
@@ -253,11 +251,9 @@ static int gettime(int casep)
       return (timev.tv_sec + LISP_UNIX_TIME_DIFF);
 #endif
 
-    case 6:
-      return (98); /* this is wrong, only works in PST */
+    case 6: return (98); /* this is wrong, only works in PST */
 
-    case 7:
-      return (305); /* this is wrong, only works in PST */
+    case 7: return (305); /* this is wrong, only works in PST */
 
     case 8:
       /* other methods of determining timezone offset are unreliable and/or deprecated */
@@ -288,8 +284,7 @@ static int gettime(int casep)
 /*									*/
 /************************************************************************/
 
-void subr_settime(LispPTR args[])
-{
+void subr_settime(LispPTR args[]) {
 #ifdef DOS
   struct dostime_t dostime;
   struct dosdate_t dosday;
@@ -330,8 +325,7 @@ void subr_settime(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-void subr_copytimestats(LispPTR args[])
-{
+void subr_copytimestats(LispPTR args[]) {
   MISCSTATS *source;
   MISCSTATS *dest;
   source = (MISCSTATS *)NativeAligned4FromLAddr(args[0]);
@@ -350,8 +344,7 @@ void subr_copytimestats(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR N_OP_rclk(LispPTR tos)
-{
+LispPTR N_OP_rclk(LispPTR tos) {
   unsigned int usec;
 #ifdef DOS
   struct dostime_t dtm;
@@ -438,8 +431,7 @@ int TIMER_INTERVAL = 10000;
 /*									*/
 /************************************************************************/
 
-static void int_timer_service(int sig)
-{
+static void int_timer_service(int sig) {
   /* this may have to do more in the future, like check for nested interrupts,
           etc... */
   timer_Signalled = TRUE;
@@ -462,10 +454,10 @@ static void int_timer_init(void)
 {
 #ifdef DOS
   /******************************************************************************
-  *  All code and data touched during the processing of an interrupt should
-  *  locked prior to receiving any interrupts.  This prevents the Timer
-  *  function from being swapped out during an interrupt.
-  ******************************************************************************/
+   *  All code and data touched during the processing of an interrupt should
+   *  locked prior to receiving any interrupts.  This prevents the Timer
+   *  function from being swapped out during an interrupt.
+   ******************************************************************************/
   _dpmi_lockregion((void *)Irq_Stk_End, sizeof(Irq_Stk_End));
   _dpmi_lockregion((void *)Irq_Stk_Check, sizeof(Irq_Stk_Check));
   _dpmi_lockregion((void *)tick_count, sizeof(tick_count));
@@ -509,34 +501,38 @@ static void int_timer_init(void)
 /*									*/
 /************************************************************************/
 
-void int_io_open(int fd)
-{
+void int_io_open(int fd) {
   DBPRINT(("int_io_open %d\n", fd));
 #ifdef DOS
 /* would turn on DOS kbd signal handler here */
 #elif defined(O_ASYNC)
-  if (fcntl(fd, F_SETOWN, getpid()) == -1) { perror("fcntl F_SETOWN error");
-}
-  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_ASYNC) == -1) { perror("fcntl F_SETFL on error");
-}
+  if (fcntl(fd, F_SETOWN, getpid()) == -1) {
+    perror("fcntl F_SETOWN error");
+  }
+  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_ASYNC) == -1) {
+    perror("fcntl F_SETFL on error");
+  }
 #elif defined(FASYNC) && defined(FNDELAY)
-  if (fcntl(fd, F_SETOWN, getpid()) == -1) perror("fcntl F_SETOWN error");
-  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | FNDELAY | FASYNC) == -1) perror("fcntl F_SETFL on error");
+  if (fcntl(fd, F_SETOWN, getpid()) == -1)
+    perror("fcntl F_SETOWN error");
+  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | FNDELAY | FASYNC) == -1)
+    perror("fcntl F_SETFL on error");
 #else
 #warning "No async i/o can be enabled - investigate and remedy this"
 #endif
 }
 
-void int_io_close(int fd)
-{
+void int_io_close(int fd) {
   DBPRINT(("int_io_close %d\n", fd));
 #ifdef DOS
 /* Turn off signaller here */
 #elif defined(O_ASYNC)
-  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_ASYNC) == -1) { perror("fcntl_F_SETFL off error");
-}
+  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~O_ASYNC) == -1) {
+    perror("fcntl_F_SETFL off error");
+  }
 #elif defined(FASYNC) && defined(FNDELAY)
-  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~(FNDELAY | FASYNC)) == -1) perror("fcntl F_SETFL off error");
+  if (fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) & ~(FNDELAY | FASYNC)) == -1)
+    perror("fcntl F_SETFL off error");
 #endif
 }
 
@@ -549,8 +545,7 @@ void int_io_close(int fd)
 /*									*/
 /************************************************************************/
 
-static void int_io_service(int sig, siginfo_t *siginfo, void *v)
-{
+static void int_io_service(int sig, siginfo_t *siginfo, void *v) {
   IO_Signalled = TRUE;
   Irq_Stk_End = Irq_Stk_Check = 0;
 }
@@ -670,16 +665,12 @@ void int_unblock(void) {
 /* The global used to signal floating-point errors */
 volatile sig_atomic_t FP_error = 0;
 
-void int_fp_service(int sig, siginfo_t *info, void *context)
-{
+void int_fp_service(int sig, siginfo_t *info, void *context) {
   switch (info->si_code) {
     case FPE_FLTDIV:
     case FPE_FLTUND:
     case FPE_FLTOVF:
-    case FPE_FLTINV:
-
-      FP_error = info->si_code;
-      break;
+    case FPE_FLTINV: FP_error = info->si_code; break;
     default: {
 #ifdef DEBUG
       char stuff[100];
@@ -756,7 +747,7 @@ static void int_file_init(void) {
     timeout_time = (int)strtol(envtime, (char **)NULL, 10);
     if (errno == 0 && timeout_time > 0) {
       TIMEOUT_TIME = timeout_time;
-}
+    }
   }
   DBPRINT(("File timeout interrupts enabled\n"));
 }
@@ -771,8 +762,7 @@ static void int_file_init(void) {
 /*      about what killed you.                                          */
 /*                                                                      */
 /************************************************************************/
-static void panicuraid(int sig, siginfo_t *info, void *context)
-{
+static void panicuraid(int sig, siginfo_t *info, void *context) {
   static char errormsg[200];
   static char *stdmsg =
       "Please record the signal and code information\n\
@@ -782,20 +772,22 @@ and do a 'v' before trying anything else.";
     case SIGBUS:
     case SIGILL:
     case SIGSEGV:
-      snprintf(errormsg, sizeof(errormsg), "%s at address %p.\n%s", strsignal(sig), info->si_addr, stdmsg);
+      snprintf(errormsg, sizeof(errormsg), "%s at address %p.\n%s", strsignal(sig), info->si_addr,
+               stdmsg);
       break;
-    case SIGPIPE:
-      snprintf(errormsg, sizeof(errormsg), "Broken PIPE.\n%s", stdmsg);
-      break;
+    case SIGPIPE: snprintf(errormsg, sizeof(errormsg), "Broken PIPE.\n%s", stdmsg); break;
     case SIGHUP:
       snprintf(errormsg, sizeof(errormsg), "HANGUP signalled.\n%s", stdmsg);
       /* Assume that a user tried to exit UNIX shell */
       killpg(getpgrp(), SIGKILL);
       exit(0);
     case SIGFPE:
-      snprintf(errormsg, sizeof(errormsg), "%s (%d) at address %p.\n%s", strsignal(sig), info->si_code, info->si_addr, stdmsg);
+      snprintf(errormsg, sizeof(errormsg), "%s (%d) at address %p.\n%s", strsignal(sig),
+               info->si_code, info->si_addr, stdmsg);
       break;
-    default: snprintf(errormsg, sizeof(errormsg), "Uncaught SIGNAL %s (%d).\n%s", strsignal(sig), sig, stdmsg);
+    default:
+      snprintf(errormsg, sizeof(errormsg), "Uncaught SIGNAL %s (%d).\n%s", strsignal(sig), sig,
+               stdmsg);
   }
 
   error(errormsg);
@@ -864,22 +856,22 @@ void int_init(void) {
 
 #ifdef DOS
 /******************************************************************************
-*  DOStimer()
-*
-*  The interrupt 0x1c handler.  This routine must be declared using the
-*  '#pragma interrupt()' statement to ensure that all registers are preserved.
-*  It is also needed to ensure the proper functioning of '_chain_intr()'.
-*
-*  The timer interrupt (normally) occurs 18.2 times per second.  This routine
-*  waits one extra tick every 91 ticks (18.2*5).
-*
-*  Before this interrupt was installed, 'prev_int_1c' was set to the current
-*  0x1c interrupt. 'DOStimer()' chains to this interrupt using '_chain_intr()',
-*  rather than returning back to the caller.
-*
-*  Note that as little as possible should be done within a timer interrupt,
-*  since further clock ticks are disabled until the interrupt returns.
-******************************************************************************/
+ *  DOStimer()
+ *
+ *  The interrupt 0x1c handler.  This routine must be declared using the
+ *  '#pragma interrupt()' statement to ensure that all registers are preserved.
+ *  It is also needed to ensure the proper functioning of '_chain_intr()'.
+ *
+ *  The timer interrupt (normally) occurs 18.2 times per second.  This routine
+ *  waits one extra tick every 91 ticks (18.2*5).
+ *
+ *  Before this interrupt was installed, 'prev_int_1c' was set to the current
+ *  0x1c interrupt. 'DOStimer()' chains to this interrupt using '_chain_intr()',
+ *  rather than returning back to the caller.
+ *
+ *  Note that as little as possible should be done within a timer interrupt,
+ *  since further clock ticks are disabled until the interrupt returns.
+ ******************************************************************************/
 void DOStimer(void) {
   /* if (--tick_count == 0) { */
   Irq_Stk_Check = 0;
@@ -894,8 +886,7 @@ void DOStimer(void) {
   /* (pts to 'ret' if no prev installed)*/
 }
 
-void alarm(unsigned long sec)
-{
+void alarm(unsigned long sec) {
   /* tick_count = sec * 18;
   _dos_setvect(0x1c, DOStimer); */
 }

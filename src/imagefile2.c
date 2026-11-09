@@ -23,8 +23,7 @@ typedef struct {
   colormap_t colormap;
 } RASTERFILE_INFO;
 
-unsigned int open_rasterfile(char *filename)
-{
+unsigned int open_rasterfile(char *filename) {
   FILE *file;
   RASTERFILE_INFO *fileinfo;
   int status;
@@ -43,15 +42,14 @@ unsigned int open_rasterfile(char *filename)
       } /* end if( fileinfo->rh.ras_magic ) */
       fclose(fileinfo->file);
     } /* end if( status ) */
-  }   /* end if( file ) */
+  } /* end if( file ) */
 
   free(fileinfo);
   return (0); /* error return */
 
 } /* end open_rasterfile */
 
-unsigned int create_rasterfile(char *filename)
-{
+unsigned int create_rasterfile(char *filename) {
   RASTERFILE_INFO *fileinfo;
 
   if (!(fileinfo = (RASTERFILE_INFO *)malloc(sizeof(RASTERFILE_INFO)))) {
@@ -65,22 +63,19 @@ unsigned int create_rasterfile(char *filename)
 
 } /* end create_rasterfile */
 
-close_rasterfile(RASTERFILE_INFO *fileinfo)
-{
+close_rasterfile(RASTERFILE_INFO *fileinfo) {
   fclose(fileinfo->file);
   free((char *)fileinfo);
 } /* end close_rasterfile */
 
-unsigned int read_rasterfile(RASTERFILE_INFO *fileinfo)
-{
+unsigned int read_rasterfile(RASTERFILE_INFO *fileinfo) {
   Pixrect *pict;
   pict = pr_load_std_image(fileinfo->file, &(fileinfo->rh), &(fileinfo->colormap));
   return ((unsigned int)pict);
 
 } /* end read_rasterfile */
 
-int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix)
-{
+int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix) {
   int status;
 
   if (fileinfo->rh.ras_magic == RAS_MAGIC) {
@@ -92,7 +87,7 @@ int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix)
     if (!(status = init_rasterfile_header(fileinfo, pix))) {
       return (FALSE);
     } /* end if( !status ) */
-  }   /* end if( fileinfo->rh.ras_magic ) */
+  } /* end if( fileinfo->rh.ras_magic ) */
 
   if ((status = pr_dump_image(pix, fileinfo->file, &(fileinfo->rh))) == NULL) {
     return (TRUE); /* normal return */
@@ -100,8 +95,7 @@ int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix)
   return (FALSE);
 } /* end write_rasterfile */
 
-int init_rasterfile_header(RASTERFILE_INFO *fileinfo, Pixrect *pix)
-{
+int init_rasterfile_header(RASTERFILE_INFO *fileinfo, Pixrect *pix) {
   Pixrect *ret_pix;
   int status;
 
@@ -126,8 +120,7 @@ int init_rasterfile_header(RASTERFILE_INFO *fileinfo, Pixrect *pix)
   return (TRUE);
 } /* end init_rasterfile_header */
 
-int position_rasterfile(RASTERFILE_INFO *fileinfo, int n)
-{
+int position_rasterfile(RASTERFILE_INFO *fileinfo, int n) {
   long position;
   int status;
 
@@ -137,7 +130,7 @@ int position_rasterfile(RASTERFILE_INFO *fileinfo, int n)
       /* normal return */
       return (TRUE);
     } /* end if( status ) */
-  }   /* end if( n ) */
+  } /* end if( n ) */
 
   /* error return */
   return (FALSE);

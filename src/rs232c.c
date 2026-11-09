@@ -61,19 +61,23 @@ rs_install_hup_handler(void) {
   sigvec(SIGHUP, &rs_hup_sv, &prev_hup_sv);
 }
 
-rs_restore_hup_handler(void) { sigvec(SIGHUP, &prev_hup_sv, (struct sigvec *)NULL); }
+rs_restore_hup_handler(void) {
+  sigvec(SIGHUP, &prev_hup_sv, (struct sigvec *)NULL);
+}
 
 /*
  * Fatal Error, enter URAID
  */
-void rs_error(char *msg)
-{ error(msg); }
+void rs_error(char *msg) {
+  error(msg);
+}
 
 /*
  * Continuable Error
  */
-void rs_cerror(char *msg)
-{ printf(msg); }
+void rs_cerror(char *msg) {
+  printf(msg);
+}
 
 /*
  * Invoked at boot time
@@ -105,8 +109,7 @@ void rs232c_init(void) {
  * Default set up for the RS232C file descriptor
  * The value of the other parameters not listed below can be changed by user.
  */
-int rs232_fd_init(int fd)
-{
+int rs232_fd_init(int fd) {
   struct termios tio;
 
   if (ioctl(fd, TCGETS, &tio) < 0) {
@@ -210,7 +213,9 @@ RS232C_readinit(void) {
   }
 }
 
-rs232c_lisp_is_ready(void) { return (RS232CGetFlag->busy); }
+rs232c_lisp_is_ready(void) {
+  return (RS232CGetFlag->busy);
+}
 
 static struct timeval sel_tv = {0, 0};
 
@@ -221,13 +226,13 @@ rs232c_read(void) {
 
   if (RS232C_Fd >= 0) {
     if (RS232CGetFlag->busy) {
-      iocb =
-          (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CGetCSB + 1) & 0xff) << 16) + *RS232CGetCSB);
+      iocb = (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CGetCSB + 1) & 0xff) << 16) +
+                                                      *RS232CGetCSB);
 
-      if ((count =
-               read(RS232C_Fd, (char *)NativeAligned2FromLAddr(((iocb->block_pointer_hi & 0xff) << 16) +
-                                                          iocb->block_pointer_lo),
-                    iocb->byte_count)) < 0) {
+      if ((count = read(RS232C_Fd,
+                        (char *)NativeAligned2FromLAddr(((iocb->block_pointer_hi & 0xff) << 16) +
+                                                        iocb->block_pointer_lo),
+                        iocb->byte_count)) < 0) {
         ((DLRS232C_IOCB_TRANSFER_STATUS *)(&iocb->transfer_status))->success = 0;
         RS232CGetFlag->busy = 0;
         return;
@@ -270,18 +275,20 @@ RS232C_write(void) {
   char *buf;
   DLRS232C_IOCB *iocb;
 
-  iocb = (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CPutCSB + 1) & 0xff) << 16) + *RS232CPutCSB);
+  iocb = (DLRS232C_IOCB *)NativeAligned4FromLAddr(((*(RS232CPutCSB + 1) & 0xff) << 16) +
+                                                  *RS232CPutCSB);
 
   if (RS232CPutFlag->busy && RS232C_Fd >= 0) {
     if (iocb->put) {
       for (size = iocb->byte_count,
           buf = (char *)NativeAligned2FromLAddr(((iocb->block_pointer_hi & 0xff) << 16) +
-                                           iocb->block_pointer_lo);
+                                                iocb->block_pointer_lo);
            size > 0; size -= count, buf += count) {
         trynum = 0;
         while (trynum < MAX_WRITE_TRY) {
           count = write(RS232C_Fd, buf, size);
-          if (count >= 0) break;
+          if (count >= 0)
+            break;
           trynum++;
         }
 
@@ -326,13 +333,15 @@ RS232C_cmd(void) {
 
 rs232c_breakon(void) {
   if (RS232C_Fd >= 0) {
-    if (ioctl(RS232C_Fd, TIOCSBRK, 0) < 0) rs_cerror("RS232C: rs232c_breakon");
+    if (ioctl(RS232C_Fd, TIOCSBRK, 0) < 0)
+      rs_cerror("RS232C: rs232c_breakon");
   }
 }
 
 rs232c_breakoff(void) {
   if (RS232C_Fd >= 0) {
-    if (ioctl(RS232C_Fd, TIOCCBRK, 0) < 0) rs_cerror("RS232C: rs232c_breakoff");
+    if (ioctl(RS232C_Fd, TIOCCBRK, 0) < 0)
+      rs_cerror("RS232C: rs232c_breakoff");
   }
 }
 
@@ -347,7 +356,8 @@ rs232c_abortinput(void) {
 
 rs232c_abortoutput(void) {
   if (RS232C_Fd >= 0) {
-    if (ioctl(RS232C_Fd, TCFLSH, 1) < 0) rs_cerror("RS232C: rs232c_abortoutput");
+    if (ioctl(RS232C_Fd, TCFLSH, 1) < 0)
+      rs_cerror("RS232C: rs232c_abortoutput");
   }
 }
 
@@ -371,8 +381,7 @@ rs232c_getstatus(void) {
   }
 }
 
-void rs_baud(u_int baud)
-{
+void rs_baud(u_int baud) {
   switch (baud) {
     case 0: return B50;
     case 1: return B75;
@@ -393,8 +402,7 @@ void rs_baud(u_int baud)
   }
 }
 
-void rs_csize(u_int csize)
-{
+void rs_csize(u_int csize) {
   switch (csize) {
     case 0: return CS5;
     case 1: return CS6;
@@ -404,8 +412,7 @@ void rs_csize(u_int csize)
   }
 }
 
-void rs_sbit(u_int sbit)
-{
+void rs_sbit(u_int sbit) {
   switch (sbit) {
     case 0: return 0;
     case 1: return CSTOPB;
@@ -557,8 +564,7 @@ void rs232c_minorparam(void) {
  * Following functions named as check_XXX are used for debug.
  */
 
-void check_params(int fd)
-{
+void check_params(int fd) {
   struct termios tos;
 
   if (ioctl(fd, TCGETS, &tos) < 0) {
@@ -575,8 +581,7 @@ void check_params(int fd)
   check_canon(&tos);
 }
 
-void check_brate(u_long cf)
-{
+void check_brate(u_long cf) {
   int b;
   printf("Baud rate : ");
   switch (cf & CBAUD) {
@@ -600,8 +605,7 @@ void check_brate(u_long cf)
   printf("%d bps.\n", b);
 }
 
-void check_csize(u_long cf)
-{
+void check_csize(u_long cf) {
   int s;
   printf("Char size : ");
   switch (cf & CSIZE) {
@@ -614,8 +618,7 @@ void check_csize(u_long cf)
   printf("%d chars.\n", s);
 }
 
-void check_sbit(u_long cf)
-{
+void check_sbit(u_long cf) {
   int s;
   printf("Stop bit : ");
   if (cf & CSTOPB)
@@ -624,8 +627,7 @@ void check_sbit(u_long cf)
     printf("1 bit.\n");
 }
 
-void check_parity(u_long cf)
-{
+void check_parity(u_long cf) {
   if (cf & PARENB) {
     printf("Parity Enabled : ");
     if (cf & PARODD)
@@ -637,8 +639,7 @@ void check_parity(u_long cf)
   }
 }
 
-void check_canon(struct termios *tos)
-{
+void check_canon(struct termios *tos) {
   u_long lf;
 
   lf = tos->c_lflag;
@@ -651,8 +652,7 @@ void check_canon(struct termios *tos)
   }
 }
 
-void check_oflag(u_long of)
-{
+void check_oflag(u_long of) {
   if ((OPOST & of) == OPOST) {
     printf("OPOST : O\n");
   } else {
@@ -724,7 +724,8 @@ void check_oflag(u_long of)
  * In dbx, "call rsc()".
  */
 void rsc(void) {
-  if (RS232C_Fd >= 0) check_params(RS232C_Fd);
+  if (RS232C_Fd >= 0)
+    check_params(RS232C_Fd);
 }
 
 /* Old debug function: not updated.

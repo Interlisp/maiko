@@ -30,7 +30,9 @@
 /****************************************************************/
 void word_swap_page(void *page, unsigned longwordcount) {
   unsigned int *longpage = (unsigned int *)page;
-  for (unsigned int i = 0; i < longwordcount; i++) { *(longpage + i) = ntohl(*(longpage + i)); }
+  for (unsigned int i = 0; i < longwordcount; i++) {
+    *(longpage + i) = ntohl(*(longpage + i));
+  }
 }
 
 /****************************************************************/
@@ -81,7 +83,8 @@ const unsigned char reversedbits[256] = {
     return ((reversedbits[(word>>8) & 0xFF] <<8) | reversedbits[word & 0xff]);
   }
 ******/
-#define reverse_bits(word) (DLword)((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word)&0xff])
+#define reverse_bits(word) \
+  (DLword)((reversedbits[((word) >> 8) & 0xFF] << 8) | reversedbits[(word) & 0xff])
 
 void bit_reverse_region(unsigned short *top, int width, int height, int rasterwidth) {
   int i;
@@ -91,7 +94,9 @@ void bit_reverse_region(unsigned short *top, int width, int height, int rasterwi
 
   for (i = 0; i < height; i++) {
     word = top;
-    for (j = 0; j < wordwid; j++) { GETWORD(word + j) = reverse_bits(GETWORD(word + j)); }
+    for (j = 0; j < wordwid; j++) {
+      GETWORD(word + j) = reverse_bits(GETWORD(word + j));
+    }
     word_swap_page((unsigned short *)((UNSIGNED)word & 0xFFFFFFFE), (wordwid + 1) >> 1);
     top += rasterwidth;
   }

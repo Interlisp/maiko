@@ -65,16 +65,14 @@ extern const unsigned char reversedbits[];
 /* Xerrhandler.                                               */
 /* Utility function to make URaid the error handler for X.    */
 /**************************************************************/
-int Xerrhandler(Display *display, XErrorEvent *event)
-{
+int Xerrhandler(Display *display, XErrorEvent *event) {
   char msg[80];
 
   XGetErrorText(display, event->error_code, msg, 80);
   error(msg);
 }
 
-void intersectregions(MRegion *reg1, MRegion *reg2, MRegion *result)
-{
+void intersectregions(MRegion *reg1, MRegion *reg2, MRegion *result) {
   result->x = max(reg1->x, reg2->x);
   result->y = max(reg1->y, reg2->y);
   result->width = result->x - min(reg1->x + reg1->width, reg2->x + reg2->width);
@@ -86,8 +84,7 @@ void intersectregions(MRegion *reg1, MRegion *reg2, MRegion *result)
 /* Utility function to calculate the white border of a window.*/
 /* Takes a medley window as its argument.                     */
 /**************************************************************/
-int getwhiteborder(LispPTR medleywindow)
-{
+int getwhiteborder(LispPTR medleywindow) {
   int border;
 
   if (((MedleyWindow)Cptr(medleywindow))->WBORDER)
@@ -108,8 +105,7 @@ int getwhiteborder(LispPTR medleywindow)
 /* Utility function to calculate the black border of a window.*/
 /* Takes a medley window as its argument.                     */
 /**************************************************************/
-int getblackborder(LispPTR medleywindow)
-{
+int getblackborder(LispPTR medleywindow) {
   int border;
 
   if (((MedleyWindow)Cptr(medleywindow))->WBORDER)
@@ -133,8 +129,7 @@ int getblackborder(LispPTR medleywindow)
 /* Takes a medley window as its argument. Returns a pointer to*/
 /* a malloc'd c string or NULL if no string is present.       */
 /**************************************************************/
-char *gettitlestring(LispPTR medleywin)
-{
+char *gettitlestring(LispPTR medleywin) {
   char *titlestring;
   int strlen;
 
@@ -153,8 +148,7 @@ char *gettitlestring(LispPTR medleywin)
 /* Return the height of the title bar for this window.        */
 /* Pick the value from the TITLEDS of the screen.             */
 /**************************************************************/
-int gettitleheight(LispPTR medleywin)
-{
+int gettitleheight(LispPTR medleywin) {
   if (((MedleyWindow)Cptr(medleywin))->WTITLE == NIL)
     return (0);
   else {
@@ -170,8 +164,7 @@ int gettitleheight(LispPTR medleywin)
 /* Lisp and X.                                                */
 /**************************************************************/
 void setlineattributes(Display *display, DspInterface dspif, WindowInterface wif, DISPLAYDATA *dd,
-		       LispPTR mwidth, LispPTR mdash)
-{
+                       LispPTR mwidth, LispPTR mdash) {
   int l, lw, ls;
   unsigned char *dash_list;
 
@@ -217,8 +210,7 @@ void setlineattributes(Display *display, DspInterface dspif, WindowInterface wif
   }
 }
 
-void settileorigin(LispPTR medleywin, LispPTR x, LispPTR y)
-{
+void settileorigin(LispPTR medleywin, LispPTR x, LispPTR y) {
   WindowInterface wif;
   Display *display;
 
@@ -239,8 +231,8 @@ void settileorigin(LispPTR medleywin, LispPTR x, LispPTR y)
 
 /**************************************************************/
 /**************************************************************/
-void calculateshape(WindowInterface wif, LispPTR x, LispPTR y, LispPTR width, LispPTR height, int topwidoffset, int tophgtoffset)
-{
+void calculateshape(WindowInterface wif, LispPTR x, LispPTR y, LispPTR width, LispPTR height,
+                    int topwidoffset, int tophgtoffset) {
   wif->windowreg.width = LispIntToCInt(width);
   wif->windowreg.height = LispIntToCInt(height);
   wif->windowreg.x = LispIntToCInt(x);
@@ -253,8 +245,7 @@ void calculateshape(WindowInterface wif, LispPTR x, LispPTR y, LispPTR width, Li
 /* layout the regions. All calculations based on the outer    */
 /* region. The rest of the widget moves around this region.   */
 /**************************************************************/
-void calcwif(WindowInterface wif, int xoff, int yoff)
-{
+void calcwif(WindowInterface wif, int xoff, int yoff) {
   int whiteborder, blackborder, blackborder2, titleheight, border;
 
   blackborder = getblackborder(wif->MedleyWindow);
@@ -293,8 +284,7 @@ void calcwif(WindowInterface wif, int xoff, int yoff)
 
 /**************************************************************/
 /**************************************************************/
-void refreshwindow(LispPTR medleywin)
-{
+void refreshwindow(LispPTR medleywin) {
   WindowInterface wif;
   DISPLAYDATA *dd;
   float top, shown;
@@ -326,11 +316,13 @@ void refreshwindow(LispPTR medleywin)
 /*									*/
 /************************************************************************/
 
-int translate_x(WindowInterface wif, int xval)
-{ return (xval + (wif->xoffset - wif->windowreg.x - (wif->blackborder2 >> 1) - wif->whiteborder)); }
+int translate_x(WindowInterface wif, int xval) {
+  return (xval + (wif->xoffset - wif->windowreg.x - (wif->blackborder2 >> 1) - wif->whiteborder));
+}
 
-int translate_y(WindowInterface wif, int yval)
-{ return (yval + wif->yoffset - (wif->windowreg.y + (wif->blackborder2 >> 1) + wif->whiteborder)); }
+int translate_y(WindowInterface wif, int yval) {
+  return (yval + wif->yoffset - (wif->windowreg.y + (wif->blackborder2 >> 1) + wif->whiteborder));
+}
 
 extern void SignalVJmpScroll();
 extern void SignalVScroll();
@@ -654,15 +646,15 @@ int srcx, srcy, dstx, dsty, width, height, op;
 }
 
 MNXBBTToXWindow(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                     /* args[1] = LispPTR to src BITMAP */
-                                     /* args[2] = scr_x */
-                                     /* args[3] = scr_y */
-                                     /* args[4] = dst WINDOW */
-                                     /* args[5] = dst_x */
-                                     /* args[6] = dst_y */
-                                     /* args[7] = width */
-                                     /* args[8] = height */
-                                     /* args[9] = operation */
+                               /* args[1] = LispPTR to src BITMAP */
+                               /* args[2] = scr_x */
+                               /* args[3] = scr_y */
+                               /* args[4] = dst WINDOW */
+                               /* args[5] = dst_x */
+                               /* args[6] = dst_y */
+                               /* args[7] = width */
+                               /* args[8] = height */
+                               /* args[9] = operation */
 {
   WindowInterface wif;
   DspInterface dspif;
@@ -675,7 +667,8 @@ MNXBBTToXWindow(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   display = XDisplayFromMw(args[0]);
   bitmap = (BITMAP *)Cptr(args[1]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
   /* Transform the coordinates */
   width = LispIntToCInt(args[7]);
   height = LispIntToCInt(args[8]);
@@ -689,14 +682,14 @@ MNXBBTToXWindow(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 }
 
 MNXBBTFromXWindow(LispArgs args) /* args[0] = LispPTR to src WINDOW */
-                                       /* args[1] = scr_x */
-                                       /* args[2] = scr_y */
-                                       /* args[3] = LispPTR to dst BITMAP */
-                                       /* args[4] = dst_x */
-                                       /* args[5] = dst_y */
-                                       /* args[6] = width */
-                                       /* args[7] = height */
-                                       /* args[8] = operation */
+                                 /* args[1] = scr_x */
+                                 /* args[2] = scr_y */
+                                 /* args[3] = LispPTR to dst BITMAP */
+                                 /* args[4] = dst_x */
+                                 /* args[5] = dst_y */
+                                 /* args[6] = width */
+                                 /* args[7] = height */
+                                 /* args[8] = operation */
 /* Things to remember: This function does not handle integer-textures */
 /* The handling of the OPERATION argument is done in lisp */
 {
@@ -711,7 +704,8 @@ MNXBBTFromXWindow(LispArgs args) /* args[0] = LispPTR to src WINDOW */
   display = XDisplayFromMw(args[0]);
   bitmap = (BITMAP *)Cptr(args[3]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
 
   /* Transform the coordinates */
   srcx = max(0, translate_x(wif, LispIntToCInt(args[1])));
@@ -732,14 +726,14 @@ MNXBBTFromXWindow(LispArgs args) /* args[0] = LispPTR to src WINDOW */
 }
 
 MNXBBTWinWin(LispArgs args) /* args[0] = LispPTR to src WINDOW */
-                                  /* args[1] = scr_x */
-                                  /* args[2] = scr_y */
-                                  /* args[3] = LispPTR to dst WINDOW */
-                                  /* args[4] = dst_x */
-                                  /* args[5] = dst_y */
-                                  /* args[6] = width */
-                                  /* args[7] = height */
-                                  /* args[8] = operation */
+                            /* args[1] = scr_x */
+                            /* args[2] = scr_y */
+                            /* args[3] = LispPTR to dst WINDOW */
+                            /* args[4] = dst_x */
+                            /* args[5] = dst_y */
+                            /* args[6] = width */
+                            /* args[7] = height */
+                            /* args[8] = operation */
 /* Things to remember: This function does not handle integer-textures */
 {
   WindowInterface srcwif, dstwif;
@@ -758,8 +752,10 @@ MNXBBTWinWin(LispArgs args) /* args[0] = LispPTR to src WINDOW */
   swin = XtWindow(srcwif->windowwidget);
   dwin = XtWindow(dstwif->windowwidget);
 
-  if (!srcwif->open) return (NIL); /* If window not open, don't do anything. */
-  if (!dstwif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!srcwif->open)
+    return (NIL); /* If window not open, don't do anything. */
+  if (!dstwif->open)
+    return (NIL); /* If window not open, don't do anything. */
 
   /* Transform the coordinates */
   width = LispIntToCInt(args[6]);
@@ -808,8 +804,7 @@ MNXBBTWinWin(LispArgs args) /* args[0] = LispPTR to src WINDOW */
 /* contrary to Medleys own window system. If you do tricks with the     */
 /* SAVE field of the window, reconsider your evil ways.                 */
 /************************************************************************/
-MNXcloseW(LispArgs args)
-{
+MNXcloseW(LispArgs args) {
   Display *display;
   WindowInterface wif;
   DspInterface dspif;
@@ -819,8 +814,9 @@ MNXcloseW(LispArgs args)
   dspif = DspIfFromMw(args[0]);
   wif = WIfFromMw(args[0]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't close it. */
-  wif->open = 0;                /* If it is, tell others it's closed.  */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't close it. */
+  wif->open = 0;  /* If it is, tell others it's closed.  */
 
   bitmap = (BITMAP *)Cptr(((MedleyWindow)Cptr(args[0]))->SAVE);
   DrawableToMBM(bitmap, dspif, wif, wif->backing, wif->screen, 0, 0,
@@ -843,7 +839,8 @@ MNXcloseW(LispArgs args)
   return (ATOM_T);
 }
 
-WindowInterface removewif(chain, wif) WindowInterface chain, wif;
+WindowInterface removewif(chain, wif)
+WindowInterface chain, wif;
 {
   /* Recursive unlink off the wif from chain */
   if (chain == (WindowInterface)NULL)
@@ -863,19 +860,23 @@ WindowInterface removewif(chain, wif) WindowInterface chain, wif;
 /* Return wif if we find wif. Return NIL if we don't find wif.          */
 /*                                                                      */
 /************************************************************************/
-WindowInterface bubblewif(dspif, wif) DspInterface dspif;
+WindowInterface bubblewif(dspif, wif)
+DspInterface dspif;
 WindowInterface wif;
 {
   WindowInterface curr, prev;
 
-  if (dspif->CreatedWifs == (WindowInterface)NULL) return (NIL);
-  if (dspif->CreatedWifs == wif) return (wif);
+  if (dspif->CreatedWifs == (WindowInterface)NULL)
+    return (NIL);
+  if (dspif->CreatedWifs == wif)
+    return (wif);
 
   /* Find the wif we are interested in. */
   for (prev = dspif->CreatedWifs, curr = prev->next;
        ((curr != (WindowInterface)NULL) && (curr != wif)); curr = curr->next, prev = prev->next)
     ;
-  if (curr == (WindowInterface)NULL) return (NIL); /* wif not found */
+  if (curr == (WindowInterface)NULL)
+    return (NIL); /* wif not found */
 
   /* Bubble curr to the head of the list */
   prev->next = curr->next;
@@ -895,13 +896,20 @@ MedleyWindow medleyw;
 
 { /* Tell X to destroy its part. */
 
-  if (wif->topwidget) XtDestroyWidget(wif->topwidget);
-  if (wif->InvertGC) XFreeGC(dspif->handle, wif->InvertGC);
-  if (wif->EraseGC1) XFreeGC(dspif->handle, wif->EraseGC1);
-  if (wif->EraseGC2) XFreeGC(dspif->handle, wif->EraseGC2);
-  if (wif->PaintGC1) XFreeGC(dspif->handle, wif->PaintGC1);
-  if (wif->PaintGC2) XFreeGC(dspif->handle, wif->PaintGC2);
-  if (wif->ReplaceGC) XFreeGC(dspif->handle, wif->ReplaceGC);
+  if (wif->topwidget)
+    XtDestroyWidget(wif->topwidget);
+  if (wif->InvertGC)
+    XFreeGC(dspif->handle, wif->InvertGC);
+  if (wif->EraseGC1)
+    XFreeGC(dspif->handle, wif->EraseGC1);
+  if (wif->EraseGC2)
+    XFreeGC(dspif->handle, wif->EraseGC2);
+  if (wif->PaintGC1)
+    XFreeGC(dspif->handle, wif->PaintGC1);
+  if (wif->PaintGC2)
+    XFreeGC(dspif->handle, wif->PaintGC2);
+  if (wif->ReplaceGC)
+    XFreeGC(dspif->handle, wif->ReplaceGC);
 
   XFreePixmap(dspif->handle, wif->backing);
 
@@ -912,8 +920,7 @@ MedleyWindow medleyw;
   medleyw->NativeIf = 0;
 }
 
-MNXdestroyW(LispArgs args)
-{
+MNXdestroyW(LispArgs args) {
   /* Medley interface to destroyw */
   destroyw(DspIfFromMw(args[0]), WIfFromMw(args[0]), Cptr(args[0]));
   return (ATOM_T);
@@ -942,7 +949,8 @@ MNXdestroyDisplay(LispArgs args) /* args[0] = LispPTR to MedleyScreen */
   LispReadFds &= ~(1 << Xfd);
   MNWReadFds &= ~(1 << Xfd);
 
-  if (dspif->cursor) XFreeCursor(dspif->handle, dspif->cursor);
+  if (dspif->cursor)
+    XFreeCursor(dspif->handle, dspif->cursor);
   dspif->cursor = 0;
 
   /* Smash the handles of all the created wifs. */
@@ -950,16 +958,17 @@ MNXdestroyDisplay(LispArgs args) /* args[0] = LispPTR to MedleyScreen */
     for (i = dspif->CreatedWifs; i != NULL; i = dspif->CreatedWifs)
       destroyw(dspif, i, (MedleyWindow)Cptr(i->MedleyWindow));
 
-    if (dspif->legatewidget) XtDestroyWidget(dspif->legatewidget);
+    if (dspif->legatewidget)
+      XtDestroyWidget(dspif->legatewidget);
     XtCloseDisplay(dspif->handle);
     (void)free(dspif);
   }
 }
 
 MNXmoveW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                              /* args[1] = left */
-                              /* args[2] = bottom */
-                              /* args[3] = non-NIL => skip actually moving it */
+                        /* args[1] = left */
+                        /* args[2] = bottom */
+                        /* args[3] = non-NIL => skip actually moving it */
 {
   Display *dsp;
   WindowInterface wif;
@@ -967,8 +976,9 @@ MNXmoveW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   dsp = XDisplayFromMw(args[0]);
   wif = WIfFromMw(args[0]);
 
-  if (!wif) return (NIL); /* no real window, no action. */
-  wif->moving = 1;        /* tell event handler to expect an event */
+  if (!wif)
+    return (NIL);  /* no real window, no action. */
+  wif->moving = 1; /* tell event handler to expect an event */
 
   wif->windowreg.x = LispIntToCInt(args[1]);
   wif->windowreg.y = LispIntToCInt(args[2]);
@@ -989,18 +999,19 @@ MNXmoveW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 }
 
 MNXshapeW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                               /* args[1] = left */
-                               /* args[2] = bottom */
-                               /* args[3] = width */
-                               /* args[4] = height */
+                         /* args[1] = left */
+                         /* args[2] = bottom */
+                         /* args[3] = width */
+                         /* args[4] = height */
 {
   Display *dsp;
   WindowInterface wif;
   XtWidgetGeometry geom;
 
   wif = WIfFromMw(args[0]);
-  if (!wif) return (NIL); /* no real window, no action. */
-  wif->reshaping = 1;     /* tell event handler to expect an event */
+  if (!wif)
+    return (NIL);     /* no real window, no action. */
+  wif->reshaping = 1; /* tell event handler to expect an event */
 
   dsp = XDisplayFromMw(args[0]);
   calculateshape(wif, args[1], args[2], args[3], args[4],
@@ -1033,7 +1044,8 @@ MNXtotopW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   dsp = XDisplayFromMw(args[0]);
   wif = WIfFromMw(args[0]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
   XRaiseWindow(dsp, XtWindow(wif->topwidget));
   XFlush(dsp);
   return (ATOM_T);
@@ -1047,18 +1059,19 @@ MNXburyW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   dsp = XDisplayFromMw(args[0]);
   wif = WIfFromMw(args[0]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
   XLowerWindow(dsp, XtWindow(wif->topwidget));
   XFlush(dsp);
   return (ATOM_T);
 }
 
 MNXshrinkW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                /* args[1] = LispPTR to icon MedleyWindow. */
-                                /* args[2] = Iconwindow x */
-                                /* args[3] = Iconwindow y */
-                                /* args[4] = Iconwindow width */
-                                /* args[5] = Iconwindow height */
+                          /* args[1] = LispPTR to icon MedleyWindow. */
+                          /* args[2] = Iconwindow x */
+                          /* args[3] = Iconwindow y */
+                          /* args[4] = Iconwindow width */
+                          /* args[5] = Iconwindow height */
 {
   Screen *screen;
   Display *display;
@@ -1075,7 +1088,8 @@ MNXshrinkW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   bitmap = (BITMAP *)Cptr(((MedleyWindow)Cptr(args[0]))->SAVE);
   wif = WIfFromMw(args[0]);
 
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
   iconwif = WIfFromMw(args[1]);
 
   XtVaSetValues(wif->topwidget, XtNiconWindow, iconwif->blackframe, NULL);
@@ -1096,8 +1110,10 @@ MNXexpandW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dspif = DspIfFromMw(args[0]);
 
-  if (!args[0]) return (NIL);
-  if (!wif->open) return (NIL); /* If window not open, don't do anything. */
+  if (!args[0])
+    return (NIL);
+  if (!wif->open)
+    return (NIL); /* If window not open, don't do anything. */
   XMapWindow(XtDisplay(wif->topwidget), XtWindow(wif->topwidget));
   showtitle(args[0]);
   bitmap = (BITMAP *)Cptr(((MedleyWindow)Cptr(args[0]))->SAVE);
@@ -1108,10 +1124,10 @@ MNXexpandW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 }
 
 MNXcreateW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                /* args[1] = left */
-                                /* args[2] = bottom */
-                                /* args[3] = width */
-                                /* args[4] = height */
+                          /* args[1] = left */
+                          /* args[2] = bottom */
+                          /* args[3] = width */
+                          /* args[4] = height */
 {
   XGCValues gcv;
   XVisualInfo vinfo, *vinfo2;
@@ -1157,7 +1173,8 @@ MNXcreateW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif->xoffset = LispIntToCInt(dd->ddxoffset);
   wif->yoffset = LispIntToCInt(dd->ddyoffset);
   /* Special case for Icons and windows with no content and only a titlebar */
-  if (wif->innerregion.height == 0) whiteborder = 0;
+  if (wif->innerregion.height == 0)
+    whiteborder = 0;
 
   calculateshape(wif, args[1], args[2], args[3], args[4], 0, 0);
   /********************************/
@@ -1254,7 +1271,8 @@ showtitle(win) LispPTR win;
   dd = TitleDDFromMw(win);
   tmpstring = gettitlestring(win);
   titleheight = gettitleheight(win);
-  if (tmpstring == NULL) return (ATOM_T);
+  if (tmpstring == NULL)
+    return (ATOM_T);
   stringlen = strlen(tmpstring);
 
   bitmap = (BITMAP *)Cptr(dd->ddpilotbbt);
@@ -1281,7 +1299,7 @@ showtitle(win) LispPTR win;
                 xpos,                                             /* dst x */
                 dsty,                                             /* ??? dst y */
                 width, bitmap->bmheight                           /* height */
-                );
+      );
       xpos += width;
     }
   else {
@@ -1314,7 +1332,7 @@ showtitle(win) LispPTR win;
                 xpos,                                             /* dst x */
                 dsty,                                             /* ??? dst y */
                 width, bitmap->bmheight                           /* height */
-                );
+      );
       xpos += width;
     }
     free(dspif->image.data);
@@ -1329,8 +1347,7 @@ showtitle(win) LispPTR win;
 /* slot on the MedWindow                                                */
 /* NOTE! we don't get whiteframe, blackframe or the title. See MNXcloseW. */
 /************************************************************************/
-MNXopenW(LispArgs args)
-{
+MNXopenW(LispArgs args) {
   Display *display;
   WindowInterface wif;
   DspInterface dspif;
@@ -1402,8 +1419,7 @@ MNXopenW(LispArgs args)
   return (ATOM_T);
 }
 
-MNXresetW(LispArgs args)
-{
+MNXresetW(LispArgs args) {
   Display *display;
   WindowInterface wif;
   DISPLAYDATA *dd;
@@ -1412,7 +1428,8 @@ MNXresetW(LispArgs args)
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) return (NIL); /* if the window is closed, do nothing */
+  if (!wif->open)
+    return (NIL); /* if the window is closed, do nothing */
   if (XtIsRealized(wif->topwidget)) {
 #ifdef NEVER
     showtitle(args[0]);
@@ -1428,8 +1445,8 @@ MNXresetW(LispArgs args)
 }
 
 MNXSetOffsets(LispArgs args) /* args[0] = window XOFFSET/YOFFSET changed in */
-                                   /* args[1] = new XOFFSET */
-                                   /* args[2] = new YOFFSET */
+                             /* args[1] = new XOFFSET */
+                             /* args[2] = new YOFFSET */
 {
   Display *display;
   WindowInterface wif;
@@ -1444,9 +1461,9 @@ MNXSetOffsets(LispArgs args) /* args[0] = window XOFFSET/YOFFSET changed in */
 /*********************/
 
 MNXdrawpoint(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                  /* args[1] = x */
-                                  /* args[2] = y */
-                                  /* args[3] = brush */
+                            /* args[1] = x */
+                            /* args[2] = y */
+                            /* args[3] = brush */
 {
   Display *display;
   Window window;
@@ -1458,7 +1475,8 @@ MNXdrawpoint(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   dspif = DspIfFromMw(args[0]);
   wif = WIfFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   dd = ImDataFromMw(args[0]);
   display = dspif->handle;
@@ -1503,12 +1521,12 @@ MNXdrawpoint(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* Lisp so we have to fix that there.                         */
 /**************************************************************/
 MNXdrawline(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                 /* args[1] = x1 */
-                                 /* args[2] = y1 */
-                                 /* args[3] = x2 */
-                                 /* args[4] = y2 */
-                                 /* args[5] = width */
-                                 /* Args[6] = dashing */
+                           /* args[1] = x1 */
+                           /* args[2] = y1 */
+                           /* args[3] = x2 */
+                           /* args[4] = y2 */
+                           /* args[5] = width */
+                           /* Args[6] = dashing */
 {
   WindowInterface wif;
   Display *display;
@@ -1519,7 +1537,8 @@ MNXdrawline(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 
   dspif = DspIfFromMw(args[0]);
   wif = WIfFromMw(args[0]);
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
   dd = ImDataFromMw(args[0]);
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1559,11 +1578,11 @@ MNXdrawline(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* represents a ROUND brush.                                  */
 /**************************************************************/
 MNXdrawcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                   /* args[1] = centerX */
-                                   /* args[2] = centerY */
-                                   /* args[3] = radius */
-                                   /* args[4] = brush */
-                                   /* args[5] = dashing */
+                             /* args[1] = centerX */
+                             /* args[2] = centerY */
+                             /* args[3] = radius */
+                             /* args[4] = brush */
+                             /* args[5] = dashing */
 {
   int radius, d, x, y;
   WindowInterface wif;
@@ -1576,7 +1595,8 @@ MNXdrawcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1613,14 +1633,14 @@ MNXdrawcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* represents a ROUND brush.                                  */
 /**************************************************************/
 MNXdrawarc(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                /* args[1] = centerX */
-                                /* args[2] = centerY */
-                                /* args[3] = radius */
-                                /* args[4] = startangle in 64'ths degrees */
-                                /* args[5] = ndegrees in 64'ths degrees */
-                                /* args[6] = brush */
-                                /* args[7] = dashing */
-                                /* Brush and dashing args are ignored for the moment. */
+                          /* args[1] = centerX */
+                          /* args[2] = centerY */
+                          /* args[3] = radius */
+                          /* args[4] = startangle in 64'ths degrees */
+                          /* args[5] = ndegrees in 64'ths degrees */
+                          /* args[6] = brush */
+                          /* args[7] = dashing */
+                          /* Brush and dashing args are ignored for the moment. */
 {
   int radius, d, x, y, start, ndeg;
   WindowInterface wif;
@@ -1633,7 +1653,8 @@ MNXdrawarc(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1674,13 +1695,13 @@ MNXdrawarc(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* represents a ROUND brush.                                  */
 /**************************************************************/
 MNXdrawelipse(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                   /* args[1] = centerX */
-                                   /* args[2] = centerY */
-                                   /* args[3] = semiminorradius */
-                                   /* args[4] = semimajorradius */
-                                   /* args[5] = orientation */
-                                   /* args[6] = brush */
-                                   /* args[7] = dashing */
+                             /* args[1] = centerX */
+                             /* args[2] = centerY */
+                             /* args[3] = semiminorradius */
+                             /* args[4] = semimajorradius */
+                             /* args[5] = orientation */
+                             /* args[6] = brush */
+                             /* args[7] = dashing */
 
 {
   int radius, d1, d2, x, y;
@@ -1694,7 +1715,8 @@ MNXdrawelipse(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1731,10 +1753,10 @@ MNXdrawelipse(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* Note: 23040 is 360 * 64 sixtyfourth degrees                */
 /**************************************************************/
 MNXfillcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                   /* args[1] = centerX */
-                                   /* args[2] = centerY */
-                                   /* args[3] = radius */
-                                   /* Brush and dashing args are ignored for the moment. */
+                             /* args[1] = centerX */
+                             /* args[2] = centerY */
+                             /* args[3] = radius */
+                             /* Brush and dashing args are ignored for the moment. */
 {
   int radius, d, x, y;
   WindowInterface wif;
@@ -1747,7 +1769,8 @@ MNXfillcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1781,8 +1804,8 @@ MNXfillcircle(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* MNXwritepixel                                                */
 /**************************************************************/
 MNXwritepixel(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                   /* args[1] = x */
-                                   /* args[2] = y */
+                             /* args[1] = x */
+                             /* args[2] = y */
 {
   int x, y;
   WindowInterface wif;
@@ -1795,7 +1818,8 @@ MNXwritepixel(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1830,8 +1854,8 @@ MNXwritepixel(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* vector with the integer values converted to C integers.    */
 /**************************************************************/
 MNXdrawpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                    /* args[1] = LispPTR to Pointvector */
-                                    /* args[2] = Closedp */
+                              /* args[1] = LispPTR to Pointvector */
+                              /* args[2] = Closedp */
 {
   WindowInterface wif;
   Window window;
@@ -1847,7 +1871,8 @@ MNXdrawpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1858,7 +1883,8 @@ MNXdrawpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 
   /* XPoint is defined as shorts, base is defined as longs. */
   /* Pack the vector. */
-  for (i = 0; i < pv->length; i++) xpt[i] = (short)Mpt[i];
+  for (i = 0; i < pv->length; i++)
+    xpt[i] = (short)Mpt[i];
 
   /* Transmogrify the y coordinates */
   y = (short)wif->innerregion.height;
@@ -1893,8 +1919,8 @@ MNXdrawpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 }
 
 MNXfillpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                    /* args[1] = LispPTR to Pointvector */
-                                    /* args[2] = Closedp */
+                              /* args[1] = LispPTR to Pointvector */
+                              /* args[2] = Closedp */
 {
   WindowInterface wif;
   Window window;
@@ -1910,7 +1936,8 @@ MNXfillpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1921,7 +1948,8 @@ MNXfillpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 
   /* XPoint is defined as shorts, base is defined as longs. */
   /* Pack the vector. */
-  for (i = 0; i < pv->length; i++) xpt[i] = (short)Mpt[i];
+  for (i = 0; i < pv->length; i++)
+    xpt[i] = (short)Mpt[i];
 
   /* Transmogrify the y coordinates */
   y = (short)wif->innerregion.height;
@@ -1964,8 +1992,8 @@ MNXfillpolygon(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* vector with the integer values converted to C integers.    */
 /**************************************************************/
 MNXdrawcurve(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                  /* args[1] = LispPTR to Pointvector */
-                                  /* args[2] = Closedp */
+                            /* args[1] = LispPTR to Pointvector */
+                            /* args[2] = Closedp */
 {
   WindowInterface wif;
   Window window;
@@ -1981,7 +2009,8 @@ MNXdrawcurve(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   wif = WIfFromMw(args[0]);
   dd = ImDataFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
@@ -1992,7 +2021,8 @@ MNXdrawcurve(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 
   /* XPoint is defined as shorts, base is defined as longs. */
   /* Pack the vector. */
-  for (i = 0; i < pv->length; i++) xpt[i] = (short)Mpt[i];
+  for (i = 0; i < pv->length; i++)
+    xpt[i] = (short)Mpt[i];
 
   /* Transmogrify the y coordinates */
   y = (short)wif->innerregion.height;
@@ -2031,10 +2061,10 @@ MNXdrawcurve(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* MNXclippingregion                                          */
 /************************************************************/
 MNXclippingregion(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                       /* args[1] = left */
-                                       /* args[2] = bottom */
-                                       /* args[3] = width */
-                                       /* args[4] = height */
+                                 /* args[1] = left */
+                                 /* args[2] = bottom */
+                                 /* args[3] = width */
+                                 /* args[4] = height */
 
 {
   WindowInterface wif;
@@ -2058,7 +2088,7 @@ MNXclippingregion(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* set the new state and once to put the old state back.      */
 /**************************************************************/
 MNXoperation(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                  /* args[1] = Smallp for function. */
+                            /* args[1] = Smallp for function. */
 {
   WindowInterface wif;
   Window window;
@@ -2094,7 +2124,7 @@ MNXoperation(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /*                                                            */
 /**************************************************************/
 MNXdspcolor(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                 /* args[1] = LispPTR to FIXP or BITMAPP */
+                           /* args[1] = LispPTR to FIXP or BITMAPP */
 {
   WindowInterface wif;
   DspInterface dspif;
@@ -2171,22 +2201,26 @@ MNXdspcolor(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 MNXdspbackcolor(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
 /* args[1] = background type 0=fixp for color 1=bitmap for stiple. */
 /* args[2] = background, fixp or bitmap */
-{ settexture(args[0]); }
+{
+  settexture(args[0]);
+}
 
 /************************************************************/
 /* MNXBitblt - can only copy from bitmap to window. we need   */
 /* to make it do WINDOW -> BITMAP and WINDOW -> WINDOW      */
 /************************************************************/
-MNXBitBltBW() { error("Call to MNXBitBltBW. This function is not in use anymore."); }
+MNXBitBltBW() {
+  error("Call to MNXBitBltBW. This function is not in use anymore.");
+}
 
 MNXbltshadeBW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                   /* args[1] = LispPTR to TEXTURE */
-                                   /* args[2] = dst_x */
-                                   /* args[3] = dst_y */
-                                   /* args[4] = width */
-                                   /* args[5] = height */
-                                   /* args[6] = operation */
-                                   /* args[7] = background, fixp or bitmap */
+                             /* args[1] = LispPTR to TEXTURE */
+                             /* args[2] = dst_x */
+                             /* args[3] = dst_y */
+                             /* args[4] = width */
+                             /* args[5] = height */
+                             /* args[6] = operation */
+                             /* args[7] = background, fixp or bitmap */
 {
   WindowInterface wif;
   DspInterface dspif;
@@ -2200,7 +2234,8 @@ MNXbltshadeBW(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
   dspif = DspIfFromMw(args[0]);
   display = XDisplayFromMw(args[0]);
 
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   regheight = LispIntToCInt(args[5]);
   width = LispIntToCInt(args[4]);
@@ -2328,7 +2363,8 @@ XClearToEOL(LispArgs args) /* args[0] = MedleyWindow */
   display = XDisplayFromMw(args[0]);
   window = XWindowFromMw(args[0]);
   wif = WIfFromMw(args[0]);
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   height = abs(dd->ddlinefeed);
   dstx = translate_x(wif, LispIntToCInt(args[1]));
@@ -2336,7 +2372,7 @@ XClearToEOL(LispArgs args) /* args[0] = MedleyWindow */
   XClearArea(display, window, dstx, dsty, 0, /* Out to the end */
              height,                         /* The height */
              False                           /* Don't generate exposure events */
-             );
+  );
   XFlush(display);
 }
 
@@ -2357,10 +2393,10 @@ MNXNewPage(LispArgs args) /* args[0] = MedleyWindow */
 /* bump into the right margin.                              */
 /************************************************************/
 MNXOutchar(LispArgs args) /* args[0] = MedleyWindow */
-                                /* args[1] = Charcode */
-                                /* args[2] = Stream */
-                                /* args[3] = DD */
-                                /* DSPXOFFSET and DSPYOFFSET are ignored here. */
+                          /* args[1] = Charcode */
+                          /* args[2] = Stream */
+                          /* args[3] = DD */
+                          /* DSPXOFFSET and DSPYOFFSET are ignored here. */
 {
   /* Doesn't switch charsets. */
   Display *display;
@@ -2376,12 +2412,14 @@ MNXOutchar(LispArgs args) /* args[0] = MedleyWindow */
 
   dspif = DspIfFromMw(args[0]);
   wif = WIfFromMw(args[0]);
-  if (!wif->open) MNXopenW(args); /* if window is closed, open it. */
+  if (!wif->open)
+    MNXopenW(args); /* if window is closed, open it. */
 
   display = dspif->handle;
   window = XtWindow(wif->windowwidget);
 
-  if (!window) return (NIL); /* No window, pretend we succeeded. */
+  if (!window)
+    return (NIL); /* No window, pretend we succeeded. */
 
   s = ((Stream *)Cptr(args[2]));
   dd = ((DISPLAYDATA *)Cptr(args[3]));
@@ -2443,11 +2481,12 @@ MNXOutchar(LispArgs args) /* args[0] = MedleyWindow */
 /* The WINDOWPROP interface                                 */
 /************************************************************/
 MNXgetwindowprop(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-{}
+{
+}
 
 MNXputwindowprop(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-                                      /* args[1] = Lispint to dispatch on. */
-                                      /* args[n] = args for the method. */
+                                /* args[1] = Lispint to dispatch on. */
+                                /* args[n] = args for the method. */
 {
   int method;
   Window window;
@@ -2537,7 +2576,8 @@ MNXGrabPointer(LispArgs args)
 
   if (args[1]) {
     src = (unsigned char *)Cptr(args[1]);
-    for (i = 0; i < 32; i++) srcbits[i] = reversedbits[src[i]];
+    for (i = 0; i < 32; i++)
+      srcbits[i] = reversedbits[src[i]];
 
     bits = XCreatePixmapFromBitmapData(display, dspif->root, srcbits, 16, 16, 1, 0, 1);
     grab_cursor = XCreatePixmapCursor(display, bits, bits, &dspif->black, &dspif->white,
@@ -2550,15 +2590,16 @@ MNXGrabPointer(LispArgs args)
       XGrabPointer(display, promptw, False, PointerMotionMask | ButtonPressMask | ButtonReleaseMask,
                    GrabModeAsync, GrabModeAsync, None, grab_cursor, CurrentTime);
 
-  if (grab_cursor != None) { XFreePixmap(display, bits); }
+  if (grab_cursor != None) {
+    XFreePixmap(display, bits);
+  }
   if (res == GrabSuccess)
     return (ATOM_T);
   else
     return (NIL);
 }
 
-MNXUngrabPointer(LispArgs args)
-{
+MNXUngrabPointer(LispArgs args) {
   Display *display;
   WindowInterface wif;
   DspInterface dspif;
@@ -2576,7 +2617,8 @@ MNXUngrabPointer(LispArgs args)
 
   res = XUngrabPointer(display, CurrentTime);
 
-  if (grab_cursor != None) XFreeCursor(display, grab_cursor);
+  if (grab_cursor != None)
+    XFreeCursor(display, grab_cursor);
 
   grab_cursor = None;
 
@@ -2586,11 +2628,11 @@ MNXUngrabPointer(LispArgs args)
 static int box_drawn = 0; /* T if there's a box on already */
 
 MNXDrawBox(LispArgs args) /* args[0] = Medley SCREEN to draw box on */
-                                /* args[1] = Left of box */
-                                /* args[2] = bottom of box */
-                                /* args[3] = width of box */
-                                /* args[4] = height of box */
-                                /* args[5] = T to force turning box off iff it's on */
+                          /* args[1] = Left of box */
+                          /* args[2] = bottom of box */
+                          /* args[3] = width of box */
+                          /* args[4] = height of box */
+                          /* args[5] = T to force turning box off iff it's on */
 {
   Display *display;
   WindowInterface wif;
@@ -2626,7 +2668,8 @@ MNXDrawBox(LispArgs args) /* args[0] = Medley SCREEN to draw box on */
   b = HeightOfScreen(dspif->xscreen) - b - h; /* convert to X's Y-coord */
 
   if (args[5]) {
-    if (box_drawn) XDrawRectangle(display, root, gc, l, b, w, h);
+    if (box_drawn)
+      XDrawRectangle(display, root, gc, l, b, w, h);
     box_drawn = 0;
   } else {
     XDrawRectangle(display, root, gc, l, b, w, h);
@@ -2635,8 +2678,8 @@ MNXDrawBox(LispArgs args) /* args[0] = Medley SCREEN to draw box on */
 }
 
 MNXMovePointer(LispArgs args) /* args[0] = LispPTR to SCREEN */
-                                    /* args[1] = new pointer X */
-                                    /* args[2] = new pointer Y */
+                              /* args[1] = new pointer X */
+                              /* args[2] = new pointer Y */
 {
   Display *display;
   WindowInterface wif;
@@ -2657,10 +2700,11 @@ MNXMovePointer(LispArgs args) /* args[0] = LispPTR to SCREEN */
 }
 
 MNXmouseconfirm(LispArgs args) /* args[0] = LispPTR to MedleyWindow */
-{ /* Use a DIALOG WIDGET here. */ }
+{                              /* Use a DIALOG WIDGET here. */
+}
 
 MNXgarb(LispArgs args) /* args[0] = LispPTR to MedleyScreen */
-                             /* args[1] = NIL for GC off, non-NIL for GC on */
+                       /* args[1] = NIL for GC off, non-NIL for GC on */
 {
   DspInterface dspif;
 
@@ -2719,9 +2763,9 @@ MNXMakePromptWindow(LispArgs args) /* args[0] = Lisp window, the prompt window *
 static Cursor MNX_cursor = NULL; /* Cursor in active use */
 
 MNXSetCursor(LispArgs args) /* args[0] = Medley screen */
-                                  /* args[1] = bits for new cursor */
-                                  /* args[2] = hot-spot x */
-                                  /* args[3] = hot-spot y */
+                            /* args[1] = bits for new cursor */
+                            /* args[2] = hot-spot x */
+                            /* args[3] = hot-spot y */
 {
   Display *display;
   WindowInterface wif;
@@ -2742,18 +2786,22 @@ MNXSetCursor(LispArgs args) /* args[0] = Medley screen */
   display = dspif->handle;
 
   src = (unsigned char *)Cptr(args[1]);
-  for (i = 0; i < 32; i++) srcbits[i] = reversedbits[src[i]];
+  for (i = 0; i < 32; i++)
+    srcbits[i] = reversedbits[src[i]];
 
   bits = XCreatePixmapFromBitmapData(display, dspif->root, srcbits, 16, 16, 1, 0, 1);
   new_cursor = XCreatePixmapCursor(display, bits, bits, &dspif->black, &dspif->white,
                                    args[2] & 0xFFFF, args[3] & 0xFFFF);
 
   for (wif = dspif->CreatedWifs; wif; wif = wif->next)
-    if (win = XtWindow(wif->windowwidget)) XDefineCursor(display, win, new_cursor);
+    if (win = XtWindow(wif->windowwidget))
+      XDefineCursor(display, win, new_cursor);
 
   XFreePixmap(display, bits);
 
-  if (dspif->cursor) { XFreeCursor(display, dspif->cursor); }
+  if (dspif->cursor) {
+    XFreeCursor(display, dspif->cursor);
+  }
   dspif->cursor = new_cursor;
 
   return (NIL);
@@ -2802,7 +2850,8 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
         XtOpenDisplay(dspif->xtcontext, NULL, NULL, "window", NULL, 0, &save_argc, save_argv);
 
   /* Set up the native structure here */
-  if (dspif->handle == NULL) return (CIntToLispInt(2));
+  if (dspif->handle == NULL)
+    return (CIntToLispInt(2));
 
   XSetErrorHandler(Xerrhandler);
 
@@ -2942,13 +2991,15 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
 
   if (diff)
     for (mask = 1; mask; mask <<= 1) {
-      if (mask & diff) break;
+      if (mask & diff)
+        break;
     }
   else {
     mask = 1;
     inverted = 1;
     for (diff = white & (~black); mask; mask <<= 1) {
-      if (mask & diff) break;
+      if (mask & diff)
+        break;
     }
   }
 #ifdef NEVER
@@ -2987,7 +3038,8 @@ InitDsp(LispArgs args) /* arg[0] = LispPTR to MedleyScreen */
 
     dlist = XListDepths(display, XScreenNumberOfScreen(screen), &dcount);
     for (i = 0; i < dcount; i++)
-      if (dlist[i] == (SCREEN->SCDEPTH & 0xFFFF)) return (NIL);
+      if (dlist[i] == (SCREEN->SCDEPTH & 0xFFFF))
+        return (NIL);
     return (CIntToLispInt(1)); /* Can't find depth */
   } else {
     SCREEN->SCDEPTH = CIntToLispInt(PlanesOfScreen(screen));
@@ -3039,7 +3091,8 @@ dispatch_mnw_method(args) LispPTR *args;
   index = LispIntToCInt(args[0]);
   type = GetTypeNumber(args[1]);
 
-  if (args[1] == NULL) error("No object to dispatch from\n");
+  if (args[1] == NULL)
+    error("No object to dispatch from\n");
 
   if (type == MedleyWindowType) {
     WindowInterface wif;

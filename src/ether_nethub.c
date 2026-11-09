@@ -44,29 +44,29 @@
 **  --- ether implementation common data -------------------------------------------
 */
 
-extern int      ether_enabled; /* 0/1 should ethernet be turned on */
-extern int      ether_fd;      /* file descriptor for ether socket */
-extern u_char   ether_host[6]; /* 48 bit address of this node */
-extern const u_char   broadcast[6];
-extern int      ether_bsize;   /* if nonzero then a receive is pending */
-extern u_char  *ether_buf;     /* address of receive buffer */
+extern int ether_enabled;    /* 0/1 should ethernet be turned on */
+extern int ether_fd;         /* file descriptor for ether socket */
+extern u_char ether_host[6]; /* 48 bit address of this node */
+extern const u_char broadcast[6];
+extern int ether_bsize;   /* if nonzero then a receive is pending */
+extern u_char *ether_buf; /* address of receive buffer */
 extern LispPTR *PENDINGINTERRUPT68k;
-extern fd_set   LispReadFds;
+extern fd_set LispReadFds;
 
 /*
 **  --- nethub configuration data --------------------------------------------------
 */
 
-static char* nethubHost = NULL;
-static int   nethubPort = 3333;
-static int   mac0 = 0xCA;
-static int   mac1 = 0xFF;
-static int   mac2 = 0xEE;
-static int   mac3 = 0x12;
-static int   mac4 = 0x34;
-static int   mac5 = 0x56;
+static char *nethubHost = NULL;
+static int nethubPort = 3333;
+static int mac0 = 0xCA;
+static int mac1 = 0xFF;
+static int mac2 = 0xEE;
+static int mac3 = 0x12;
+static int mac4 = 0x34;
+static int mac5 = 0x56;
 
-void setNethubHost(char* host) {
+void setNethubHost(char *host) {
   if (host && *host) {
     nethubHost = host;
     DBPRINT(("nh :: host now: '%s'\n", nethubHost));
@@ -81,12 +81,8 @@ void setNethubPort(int port) {
 }
 
 void setNethubMac(int m0, int m1, int m2, int m3, int m4, int m5) {
-  if (   m0 >= 0 && m0 <= 255
-      && m1 >= 0 && m1 <= 255
-      && m2 >= 0 && m2 <= 255
-      && m3 >= 0 && m3 <= 255
-      && m4 >= 0 && m4 <= 255
-      && m5 >= 0 && m5 <= 255) {
+  if (m0 >= 0 && m0 <= 255 && m1 >= 0 && m1 <= 255 && m2 >= 0 && m2 <= 255 && m3 >= 0 &&
+      m3 <= 255 && m4 >= 0 && m4 <= 255 && m5 >= 0 && m5 <= 255) {
     mac0 = m0;
     mac1 = m1;
     mac2 = m2;
@@ -109,12 +105,27 @@ void setNethubLogLevel(int ll) {
   DBPRINT(("nh :: loglevel now: %d\n", loglevel));
 }
 
-#define log_info(line) { if (loglevel == 1) \
-	{ printf("nh-info[%d]: ", logcnt++); printf line; }}
-#define log_debug(line) { if (loglevel >= 2) \
-	{ printf("nh-debug[%d]: ", logcnt++); printf line; }}
-#define log_all(line) { if (loglevel < 1) \
-	{ printf("nh[%d]: ", logcnt++); printf line; }}
+#define log_info(line)                   \
+  {                                      \
+    if (loglevel == 1) {                 \
+      printf("nh-info[%d]: ", logcnt++); \
+      printf line;                       \
+    }                                    \
+  }
+#define log_debug(line)                   \
+  {                                       \
+    if (loglevel >= 2) {                  \
+      printf("nh-debug[%d]: ", logcnt++); \
+      printf line;                        \
+    }                                     \
+  }
+#define log_all(line)               \
+  {                                 \
+    if (loglevel < 1) {             \
+      printf("nh[%d]: ", logcnt++); \
+      printf line;                  \
+    }                               \
+  }
 
 /*
 **  --- utilities ------------------------------------------------------------------
@@ -122,11 +133,11 @@ void setNethubLogLevel(int ll) {
 
 #define LONG_PTR_MASK ((long)(~((long)3)))
 
-static void dblwordsSwap(u_char* basePtr, int forBytes) {
-  u_char* dblwordPtr = (u_char*)((long)basePtr & LONG_PTR_MASK);
+static void dblwordsSwap(u_char *basePtr, int forBytes) {
+  u_char *dblwordPtr = (u_char *)((long)basePtr & LONG_PTR_MASK);
   int neededBytes = forBytes + (basePtr - dblwordPtr);
   int dblwordCount = (neededBytes + 3) / 4;
-  word_swap_page((unsigned short*)dblwordPtr, dblwordCount);
+  word_swap_page((unsigned short *)dblwordPtr, dblwordCount);
 }
 
 /*
@@ -135,7 +146,8 @@ static void dblwordsSwap(u_char* basePtr, int forBytes) {
 
 void init_ether(void) {
   /* because the rest of the system expects it to be called init_ether() */
-  if (ether_enabled == 0) return;
+  if (ether_enabled == 0)
+    return;
   connectToHub();
 }
 
@@ -185,7 +197,7 @@ void connectToHub(void) {
     perror("connectToHub() - setsockopt(TCP_NODELAY) failed");
   }
 
-  if (connect(ether_fd, (struct sockaddr*)&hubaddr, sizeof(hubaddr)) < 0) {
+  if (connect(ether_fd, (struct sockaddr *)&hubaddr, sizeof(hubaddr)) < 0) {
     perror("connectToHub() - connect failed");
     close(ether_fd);
     ether_fd = -1;
@@ -211,8 +223,6 @@ static void disconnectFromHub(void) {
     log_all(("disconnectFromHub() - disconnected from nethub\n"));
   }
 }
-
-
 
 /* Input:
  *    ether_fd: fd to read Nethub format packets from
@@ -255,23 +265,30 @@ static int recvPacket(void) {
   }
 
   bLen = ntohs(bLen);
-  log_debug(("  recvPacket() :: received %d bytes, logical packet length = %d bytes\n", rcvLen, bLen));
+  log_debug(
+      ("  recvPacket() :: received %d bytes, logical packet length = %d bytes\n", rcvLen, bLen));
 
   if (bLen & 0x0001) {
-    log_debug(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
-    log_info(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
-    log_all(("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
+    log_debug(
+        ("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
+    log_info(
+        ("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
+    log_all(
+        ("recvPacket() ERROR :: odd byte length of logical packet -> disconnecting from nethub\n"));
     disconnectFromHub();
     return -1;
   }
   if (bLen > ether_bsize) {
-    log_debug(("  recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
-    log_info(("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
-    log_all(("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
+    log_debug(
+        ("  recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from "
+         "nethub\n"));
+    log_info(
+        ("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
+    log_all(
+        ("recvPacket() ERROR :: logical packet larger than buffer -> disconnecting from nethub\n"));
     disconnectFromHub();
     return -1;
   }
-
 
   /* continue reading the XIP packet of the just determined size
    */
@@ -302,8 +319,7 @@ static int recvPacket(void) {
     return 0;
   }
 
-  if (   memcmp(ether_buf, ether_host, 6) != 0
-      && memcmp(ether_buf, broadcast, 6) != 0) {
+  if (memcmp(ether_buf, ether_host, 6) != 0 && memcmp(ether_buf, broadcast, 6) != 0) {
     log_debug(("  recvPacket() :: packet is not for us and not a broadcast, ignoring packet\n"));
     return 0;
   }
@@ -317,10 +333,8 @@ static int recvPacket(void) {
   ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB = bLen;
   ether_bsize = 0;
 
-
   return bLen;
 }
-
 
 /* -1: failed/not connected; >= 0: packet bytes sent */
 static int sendPacket(u_char *source, int sourceLen) {
@@ -332,7 +346,7 @@ static int sendPacket(u_char *source, int sourceLen) {
     log_debug(("  sendPacket() :: not connected to hub !!!\n"));
     return -1;
   }
-  
+
   if (sourceLen < 14) {
     log_debug(("  sendPacket() :: invalid packet length: %d !!!\n", sourceLen));
     return -1;
@@ -367,8 +381,7 @@ static int sendPacket(u_char *source, int sourceLen) {
 /*	175/70/0							*/
 /*									*/
 /************************************************************************/
-LispPTR ether_suspend(LispPTR args[])
-{
+LispPTR ether_suspend(LispPTR args[]) {
   if (nethubHost == NULL) {
     return (ATOM_T);
   }
@@ -377,7 +390,6 @@ LispPTR ether_suspend(LispPTR args[])
   return (ATOM_T);
 }
 
-
 /************************************************************************/
 /*									*/
 /*			e t h e r _ r e s u m e				*/
@@ -385,8 +397,7 @@ LispPTR ether_suspend(LispPTR args[])
 /*	resume nit socket to receive all types of packets 175/71/0	*/
 /*									*/
 /************************************************************************/
-LispPTR ether_resume(LispPTR args[])
-{
+LispPTR ether_resume(LispPTR args[]) {
   if (nethubHost == NULL) {
     return (ATOM_T);
   }
@@ -397,7 +408,6 @@ LispPTR ether_resume(LispPTR args[])
   return (ATOM_T);
 }
 
-
 /************************************************************************/
 /*									*/
 /*			e t h e r _ c t r l r				*/
@@ -405,8 +415,7 @@ LispPTR ether_resume(LispPTR args[])
 /*	return T if ether controller is available 175/72/0		*/
 /*									*/
 /************************************************************************/
-LispPTR ether_ctrlr(LispPTR args[])
-{
+LispPTR ether_ctrlr(LispPTR args[]) {
   if (nethubHost == NULL) {
     return (NIL);
   }
@@ -426,18 +435,16 @@ LispPTR ether_ctrlr(LispPTR args[])
   }
 }
 
-
 /**********************************************************************
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-LispPTR ether_reset(LispPTR args[])
-{
+LispPTR ether_reset(LispPTR args[]) {
   if (nethubHost == NULL) {
     return (NIL);
   }
   log_debug(("ether_reset() - begin\n"));
-  
+
   if (ether_fd < 0) {
     log_debug(("ether_reset() - end -> NIL\n\n"));
     log_info(("ether_reset() -> NIL\n"));
@@ -448,7 +455,6 @@ LispPTR ether_reset(LispPTR args[])
   log_info(("ether_reset() -> ATOM_T\n"));
   return (ATOM_T);
 }
-
 
 /************************************************************************/
 /*									*/
@@ -468,8 +474,7 @@ LispPTR ether_reset(LispPTR args[])
 /*	it's OK to read packets from the network on interrupt.		*/
 /*									*/
 /************************************************************************/
-LispPTR ether_get(LispPTR args[])
-{
+LispPTR ether_get(LispPTR args[]) {
   int receivedBytes;
   u_char *target;
   int maxByteCount;
@@ -499,14 +504,11 @@ LispPTR ether_get(LispPTR args[])
   return (ATOM_T);
 }
 
-
-
 /**********************************************************************
  *	ether_send(args) 175/75/2 max_words,buffer_addr
  *	send a packet
  **********************************************************************/
-LispPTR ether_send(LispPTR args[])
-{
+LispPTR ether_send(LispPTR args[]) {
   if (nethubHost == NULL) {
     return (NIL);
   }
@@ -530,7 +532,7 @@ LispPTR ether_send(LispPTR args[])
     log_info(("ether_send(): FAILED to send packet, len = %d\n", byteCount));
     return (NIL);
   }
-  
+
   log_debug(("ether_send() - end -> ATOM_T\n\n"));
   log_info(("ether_send(): sent packet, len = %d\n", bytesSent));
   return (ATOM_T);
@@ -540,19 +542,16 @@ LispPTR ether_send(LispPTR args[])
  *	ether_setfilter(args) 175/76/1 filterbits
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
-LispPTR ether_setfilter(LispPTR args[])
-{
+LispPTR ether_setfilter(LispPTR args[]) {
   log_debug(("ether_setfilter() - ????\n\n"));
   return (NIL);
 }
-
 
 /**********************************************************************
  *	check_ether() 175/77/0
  *	checks an incoming packet
  **********************************************************************/
-LispPTR check_ether(void)
-{
+LispPTR check_ether(void) {
   int receivedBytes;
   struct pollfd pfds[1];
 
@@ -579,11 +578,10 @@ LispPTR check_ether(void)
   *PENDINGINTERRUPT68k = (ATOM_T);
   log_debug(("check_ether() :: raised LISP interrupt\n"));
   log_debug(("check_ether() :: INTERRUPTSTATE_word   = 0x%08X\n",
-             *((int*)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))));
+             *((int *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))));
   log_info(("check_ether(): received packet, len = %d bytes\n", receivedBytes));
   log_debug(("check_ether() - end -> ATOM_T\n\n"));
   return (ATOM_T);
 }
 
 #endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(USE_NETHUB) */
-

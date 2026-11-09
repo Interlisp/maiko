@@ -9,7 +9,8 @@
 
 #include "version.h"
 
-#if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT))
+#if defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && \
+    (defined(USE_DLPI) || defined(USE_NIT))
 #if defined(USE_DLPI)
 #define PKTFILTER 1
 #define NIOCSFLAGS SBIOCSFLAGS
@@ -76,16 +77,16 @@
 #define NIOCSETF PFIOCSETF
 #endif
 
-extern int      ether_enabled; /* 0/1 should ethernet be turned on */
-extern int      ether_fd;      /* file descriptor for ether socket */
-static int      ether_intf_type = 0;
-extern u_char   ether_host[6]; /* 48 bit address of this node */
-extern const u_char   broadcast[6];
-extern int      ether_bsize;   /* if nonzero then a receive is pending */
-extern u_char  *ether_buf;     /* address of receive buffer */
-static u_char   nit_buf[3000]; /* the current chunk read from NIT (one packet) */
+extern int ether_enabled; /* 0/1 should ethernet be turned on */
+extern int ether_fd;      /* file descriptor for ether socket */
+static int ether_intf_type = 0;
+extern u_char ether_host[6]; /* 48 bit address of this node */
+extern const u_char broadcast[6];
+extern int ether_bsize;      /* if nonzero then a receive is pending */
+extern u_char *ether_buf;    /* address of receive buffer */
+static u_char nit_buf[3000]; /* the current chunk read from NIT (one packet) */
 extern LispPTR *PENDINGINTERRUPT68k;
-extern fd_set   LispReadFds;
+extern fd_set LispReadFds;
 
 #define PacketTypeIP 0x0800
 #define PacketTypeARP 0x0806
@@ -164,8 +165,8 @@ extern fd_set   LispReadFds;
 */
 struct packetfilt goodpf = {0,
                             29,
-                            {ENF_PUSHWORD + 6,		/* Ethertype field */
-                             ENF_PUSHLIT + ENF_CNOR,	
+                            {ENF_PUSHWORD + 6, /* Ethertype field */
+                             ENF_PUSHLIT + ENF_CNOR,
                              PacketTypeIP, /* punt if PacketTypeIP = 0x0800 */
                              ENF_PUSHWORD + 6,
                              ENF_PUSHLIT + ENF_CNOR,
@@ -217,14 +218,14 @@ static struct nit_ioc nioc;
 /*									*/
 /************************************************************************/
 
-LispPTR ether_suspend(LispPTR args[])
-{
+LispPTR ether_suspend(LispPTR args[]) {
 #ifdef PKTFILTER
   static struct packetfilt pf = {0, 1, {ENF_PUSHZERO}};
   struct strioctl si;
 #endif /* PKTFILTER */
 
-  if (ether_fd == -1) return (NIL);
+  if (ether_fd == -1)
+    return (NIL);
 #ifndef PKTFILTER
   nioc.nioc_typetomatch = NT_NOTYPES;
   if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
@@ -265,10 +266,10 @@ LispPTR ether_suspend(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR ether_resume(LispPTR args[])
-{
+LispPTR ether_resume(LispPTR args[]) {
   struct strioctl si;
-  if (ether_fd == -1) return (NIL);
+  if (ether_fd == -1)
+    return (NIL);
 #ifndef PKTFILTER
   nioc.nioc_typetomatch = NT_ALLTYPES;
   if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
@@ -308,9 +309,9 @@ LispPTR ether_resume(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR ether_ctrlr(LispPTR args[])
-{
-  if (ether_fd < 0) return (NIL);
+LispPTR ether_ctrlr(LispPTR args[]) {
+  if (ether_fd < 0)
+    return (NIL);
   return (ATOM_T);
 }
 
@@ -318,9 +319,10 @@ LispPTR ether_ctrlr(LispPTR args[])
  *	ether_reset(args) 175/73/0
  *	reset ether controller and disable receipt of packets
  **********************************************************************/
-LispPTR ether_reset(LispPTR args[])
-{
-  if (ether_fd < 0) { return (NIL); }
+LispPTR ether_reset(LispPTR args[]) {
+  if (ether_fd < 0) {
+    return (NIL);
+  }
   /* JRB - host number check removed here; if ether_fd is open here,
               net is on... */
   ether_bsize = 0; /* deactivate receiver */
@@ -345,8 +347,7 @@ LispPTR ether_reset(LispPTR args[])
 /*	it's OK to read packets from the network on interrupt.		*/
 /*									*/
 /************************************************************************/
-LispPTR ether_get(LispPTR args[])
-{
+LispPTR ether_get(LispPTR args[]) {
   LispPTR result = NIL;
   LispPTR MaxByteCount;
   sigset_t signals;
@@ -379,8 +380,7 @@ LispPTR ether_get(LispPTR args[])
  **********************************************************************/
 #define OFFSET sizeof(sa.sa_data)
 
-LispPTR ether_send(LispPTR args[])
-{
+LispPTR ether_send(LispPTR args[]) {
   /*
    *	Send a packet.
    */
@@ -441,8 +441,9 @@ LispPTR ether_send(LispPTR args[])
  *	check whether a packet has come. if does, notify iocb
  **********************************************************************/
 
-LispPTR ether_setfilter(LispPTR args[])
-{ return (NIL); } /* ether_setfilter */
+LispPTR ether_setfilter(LispPTR args[]) {
+  return (NIL);
+} /* ether_setfilter */
 
 /**********************************************************************
  *	ether_debug()
@@ -453,7 +454,8 @@ int estat[3];
 
 int *ether_debug(void) {
   estat[0] = 0;
-  if (ether_fd < 0) return (NIL);
+  if (ether_fd < 0)
+    return (NIL);
   printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
          ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
   return (estat);
@@ -471,11 +473,11 @@ static int nitpos = 0, nitlen = 0; /* for NIT read buffer in OS3 */
 #endif
 
 LispPTR check_ether(void) {
-/*
- *	If receiver active then check if any packets are
- *	available from the ethernet.  If so, read the packet
- *	and signal the icb and return T.
- */
+  /*
+   *	If receiver active then check if any packets are
+   *	available from the ethernet.  If so, read the packet
+   *	and signal the icb and return T.
+   */
 
 #ifndef PKTFILTER
   fd_set rfds;
@@ -491,7 +493,8 @@ LispPTR check_ether(void) {
   struct strbuf ctl, data;
   char ctlbuf[2000];
 #endif /* PKTFILTER */
-  if (ether_fd < 0) return (NIL);
+  if (ether_fd < 0)
+    return (NIL);
   FD_ZERO(&rfds);
   FD_SET(ether_fd, &rfds);
 #ifndef PKTFILTER
@@ -560,7 +563,7 @@ LispPTR check_ether(void) {
         ((INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->ETHERInterrupt = 1;
         Irq_Stk_Check = Irq_Stk_End = 0;
         *PENDINGINTERRUPT68k = ATOM_T;
-        return(ATOM_T);
+        return (ATOM_T);
       }
     } else if (errno != EWOULDBLOCK) {
       perror("Check_ether read error:\n");
@@ -599,7 +602,8 @@ LispPTR get_packet(void) {
   while (1) {
     if (nitpos >= nitlen) { /* Used up last NIT buffer full; read another. */
       nitlen = read(ether_fd, nit_buf, sizeof(nit_buf));
-      if (nitlen < 0) return (NIL); /* No more packets to try. */
+      if (nitlen < 0)
+        return (NIL); /* No more packets to try. */
       nitpos = 0;
     }
 
@@ -643,7 +647,8 @@ LispPTR get_packet(void) {
   plen = 0;
   result = getmsg(ether_fd, &ctl, &data, &plen);
   if (result >= 0) {
-    if (ctl.len > 0) printf("ctl msg rcvd.\n");
+    if (ctl.len > 0)
+      printf("ctl msg rcvd.\n");
     if (data.len <= ether_bsize && data.len > 0) {
       memcpy(&ether_buf[0], nit_buf, data.len);
       ether_bsize = 0;
@@ -663,16 +668,17 @@ LispPTR get_packet(void) {
  *	This is believed obsolete with packet filtering enabled
  **********************************************************************/
 
-static int check_filter(u_char *buffer)
-{
+static int check_filter(u_char *buffer) {
   /* broadcast packets */
-  if (ether_addr_equal(buffer, broadcast)) switch (((short *)buffer)[6]) {
+  if (ether_addr_equal(buffer, broadcast))
+    switch (((short *)buffer)[6]) {
       case PacketTypeIP: return (0);
       case PacketTypeARP: return (0);
       default: return (1);
     }
   /* my address */
-  if (ether_addr_equal(buffer, ether_host)) switch (((short *)buffer)[6]) {
+  if (ether_addr_equal(buffer, ether_host))
+    switch (((short *)buffer)[6]) {
       case PacketTypeIP: return (0);
       case PacketTypeARP: return (0);
       default: return (1);
@@ -714,7 +720,8 @@ void init_ether(void) {
      ((INTSTAT2 *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word))->handledmask = 0;
  */
 
-  if (ether_enabled == 0) return;
+  if (ether_enabled == 0)
+    return;
   if (ether_fd < 0) {
 /* it's not open yet, try and open it;
    if it's already open here, it was opened by ldeether and
@@ -947,14 +954,17 @@ void init_ether(void) {
 #ifndef PKTFILTER
     if (fcntl(ether_fd, F_SETFL, fcntl(ether_fd, F_GETFL, 0) | O_ASYNC | O_NONBLOCK) < 0)
       perror("Ether setup SETFLAGS fcntl");
-    if (fcntl(ether_fd, F_SETOWN, getpid()) < 0) perror("Ether setup SETOWN");
+    if (fcntl(ether_fd, F_SETOWN, getpid()) < 0)
+      perror("Ether setup SETOWN");
 #else /* PKTFILTER */
 
 /* then throw away everything that's currently buffered there;
         this descriptor may have been open since ldeether ran, with
         no filtering; a busy net will have stuffed it full */
 #if defined(USE_DLPI)
-  if (ioctl(ether_fd, I_FLUSH, (char *)FLUSHR) < 0) { perror("init_ether I_FLUSH"); }
+  if (ioctl(ether_fd, I_FLUSH, (char *)FLUSHR) < 0) {
+    perror("init_ether I_FLUSH");
+  }
 #elif defined(USE_NIT)
         {
           FD_SET(ether_fd, &rfds);
@@ -1002,10 +1012,12 @@ void init_ether(void) {
 #endif /* USE_NIT */
 #endif /* PKTFILTER */
 
-    if (ether_fd < 0) error ("ether_fd is -1, but enet opened??");
+    if (ether_fd < 0)
+      error("ether_fd is -1, but enet opened??");
     FD_SET(ether_fd, &LispReadFds);
 
     DBPRINT(("init_ether: **** Ethernet starts ****\n"));
   }
 }
-#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || defined(USE_NIT)) */
+#endif /* defined(MAIKO_ENABLE_ETHERNET) && defined(MAIKO_OS_SOLARIS) && (defined(USE_DLPI) || \
+          defined(USE_NIT)) */

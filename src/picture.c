@@ -28,71 +28,75 @@
 #define min(x, y) (((x) > (y)) ? (y) : (x))
 #define max(x, y) (((x) > (y)) ? (x) : (y))
 
-#define LStringToCString(Lisp, C, MaxLen, Len)                                                     \
-  {                                                                                                \
-    OneDArray *arrayp;                                                                             \
-    char *base;                                                                                    \
-    short *sbase;                                                                                  \
-    int i;                                                                                         \
-                                                                                                   \
-    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
-    Len = min(MaxLen, arrayp->totalsize);                                                          \
-                                                                                                   \
-    switch (arrayp->typenumber) {                                                                  \
-      case THIN_CHAR_TYPENUMBER:                                                                   \
-        base =                                                                                     \
-            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
-        for (i = 0; i < Len; i++) C[i] = base[i];                                                  \
-        C[Len] = '\0';                                                                             \
-        break;                                                                                     \
-                                                                                                   \
-      case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase =                                                                                    \
-            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
-        base = (char *)sbase;                                                                      \
-        for (i = 0; i < Len * 2; i++) C[i] = base[i];                                              \
-        C[Len * 2] = '\0';                                                                         \
-        break;                                                                                     \
-                                                                                                   \
-      default: error("LStringToCString can not handle\n");                                         \
-    }                                                                                              \
+#define LStringToCString(Lisp, C, MaxLen, Len)                                     \
+  {                                                                                \
+    OneDArray *arrayp;                                                             \
+    char *base;                                                                    \
+    short *sbase;                                                                  \
+    int i;                                                                         \
+                                                                                   \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));           \
+    Len = min(MaxLen, arrayp->totalsize);                                          \
+                                                                                   \
+    switch (arrayp->typenumber) {                                                  \
+      case THIN_CHAR_TYPENUMBER:                                                   \
+        base = ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) +   \
+               ((int)(arrayp->offset));                                            \
+        for (i = 0; i < Len; i++)                                                  \
+          C[i] = base[i];                                                          \
+        C[Len] = '\0';                                                             \
+        break;                                                                     \
+                                                                                   \
+      case FAT_CHAR_TYPENUMBER:                                                    \
+        sbase = ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + \
+                ((int)(arrayp->offset));                                           \
+        base = (char *)sbase;                                                      \
+        for (i = 0; i < Len * 2; i++)                                              \
+          C[i] = base[i];                                                          \
+        C[Len * 2] = '\0';                                                         \
+        break;                                                                     \
+                                                                                   \
+      default: error("LStringToCString can not handle\n");                         \
+    }                                                                              \
   }
 
-#define CStringToLString(C, Lisp, Len)                                                             \
-  {                                                                                                \
-    OneDArray *arrayp;                                                                             \
-    char *base;                                                                                    \
-    short *sbase;                                                                                  \
-    int idx;                                                                                       \
-                                                                                                   \
-    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));                                \
-                                                                                                   \
-    switch (arrayp->typenumber) {                                                                  \
-      case THIN_CHAR_TYPENUMBER:                                                                   \
-        base =                                                                                     \
-            ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset));  \
-        for (idx = 0; idx < Len; idx++) base[idx] = C[idx];                                        \
-        arrayp->fillpointer = Len;                                                                 \
-        break;                                                                                     \
-                                                                                                   \
-      case FAT_CHAR_TYPENUMBER:                                                                    \
-        sbase =                                                                                    \
-            ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + ((int)(arrayp->offset)); \
-        base = (char *)sbase;                                                                      \
-        for (idx = 0; idx < Len * 2; idx++) base[idx] = C[idx];                                    \
-        arrayp->fillpointer = Len;                                                                 \
-        break;                                                                                     \
-                                                                                                   \
-      default: error("CStringToLString can not handle\n");                                         \
-    }                                                                                              \
+#define CStringToLString(C, Lisp, Len)                                             \
+  {                                                                                \
+    OneDArray *arrayp;                                                             \
+    char *base;                                                                    \
+    short *sbase;                                                                  \
+    int idx;                                                                       \
+                                                                                   \
+    arrayp = (OneDArray *)(NativeAligned4FromLAddr((unsigned int)Lisp));           \
+                                                                                   \
+    switch (arrayp->typenumber) {                                                  \
+      case THIN_CHAR_TYPENUMBER:                                                   \
+        base = ((char *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) +   \
+               ((int)(arrayp->offset));                                            \
+        for (idx = 0; idx < Len; idx++)                                            \
+          base[idx] = C[idx];                                                      \
+        arrayp->fillpointer = Len;                                                 \
+        break;                                                                     \
+                                                                                   \
+      case FAT_CHAR_TYPENUMBER:                                                    \
+        sbase = ((short *)(NativeAligned2FromLAddr((unsigned int)arrayp->base))) + \
+                ((int)(arrayp->offset));                                           \
+        base = (char *)sbase;                                                      \
+        for (idx = 0; idx < Len * 2; idx++)                                        \
+          base[idx] = C[idx];                                                      \
+        arrayp->fillpointer = Len;                                                 \
+        break;                                                                     \
+                                                                                   \
+      default: error("CStringToLString can not handle\n");                         \
+    }                                                                              \
   }
 
-#define IntToFixp(C, Lisp)                                \
-  {                                                       \
-    int *base;                                            \
-                                                          \
+#define IntToFixp(C, Lisp)                                     \
+  {                                                            \
+    int *base;                                                 \
+                                                               \
     base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
-    *base = C;                                            \
+    *base = C;                                                 \
   }
 
 #define PICT_CREATE 0
@@ -114,8 +118,7 @@
 extern int Video_OnOff_Flg;
 #endif /* VIDEO */
 
-LispPTR Picture_Create(LispPTR *args)
-{
+LispPTR Picture_Create(LispPTR *args) {
   int width, height, bitsperpixel;
   Pixrect *storage;
   unsigned int *cell;
@@ -128,7 +131,8 @@ LispPTR Picture_Create(LispPTR *args)
     return (NIL);
   } /* end if( bitsperpixel ) */
 
-  if (bitsperpixel == 24) bitsperpixel = 32;
+  if (bitsperpixel == 24)
+    bitsperpixel = 32;
 
   storage = mem_create(width, height, bitsperpixel);
   /* if storage is NULL, memory pixrect could not allocated. */
@@ -147,8 +151,7 @@ LispPTR Picture_Create(LispPTR *args)
 
 extern Pixrect *TrueColorFb;
 
-LispPTR Picture_Free(LispPTR *args)
-{
+LispPTR Picture_Free(LispPTR *args) {
   LispPicture *n_picture;
   Pixrect *pict;
 
@@ -164,8 +167,7 @@ LispPTR Picture_Free(LispPTR *args)
   return (ATOM_T);
 } /* end Picture_Free */
 
-LispPTR Picture_GetValue(LispPTR *args)
-{
+LispPTR Picture_GetValue(LispPTR *args) {
   LispPTR picture;
   int x, y, value;
   LispPicture *n_picture;
@@ -185,8 +187,7 @@ LispPTR Picture_GetValue(LispPTR *args)
 
 } /* end Picture_GetValue */
 
-LispPTR Picture_SetValue(LispPTR *args)
-{
+LispPTR Picture_SetValue(LispPTR *args) {
   int x, y, value;
   LispPicture *n_picture;
   struct pixrect *pict;
@@ -208,8 +209,7 @@ bad_arg:
 #define MAX_NAME_LEN 512
 static char file_name[MAX_NAME_LEN];
 
-LispPTR Picture_Get(LispPTR *args)
-{
+LispPTR Picture_Get(LispPTR *args) {
   LispPicture *n_picture;
   int length;
 
@@ -220,15 +220,15 @@ LispPTR Picture_Get(LispPTR *args)
     n_picture->width = (DLword)(((Pixrect *)n_picture->storage)->pr_width);
     n_picture->height = (DLword)(((Pixrect *)n_picture->storage)->pr_height);
     n_picture->bitsperpixel = (DLword)(((Pixrect *)n_picture->storage)->pr_depth);
-    if (n_picture->bitsperpixel == 32) n_picture->bitsperpixel = 24;
+    if (n_picture->bitsperpixel == 32)
+      n_picture->bitsperpixel = 24;
     return (ATOM_T);
   } else {
     return (NIL);
   } /* end if */
 } /* end Picture_Get */
 
-LispPTR Picture_Put(LispPTR *args)
-{
+LispPTR Picture_Put(LispPTR *args) {
   LispPicture *n_picture;
   char *name;
   int length;
@@ -241,8 +241,7 @@ LispPTR Picture_Put(LispPTR *args)
   return (ATOM_T);
 } /*end Picture_Put */
 
-LispPTR Picture_Bitblt(LispPTR *args)
-{
+LispPTR Picture_Bitblt(LispPTR *args) {
   LispPicture *src, *dst;
   int src_left, src_bottom, dst_left, dst_bottom, top, bottom, left, right, width, height, stodx,
       stody, src_top, dst_top;
@@ -327,7 +326,8 @@ LispPTR Picture_Bitblt(LispPTR *args)
     top = min(cl_src_bottom + tmp, min(top - stody, src_bottom + height));
   }
 
-  if ((right <= left) || (top <= bottom)) return (NIL);
+  if ((right <= left) || (top <= bottom))
+    return (NIL);
 
   height = top - bottom;
   width = right - left;
@@ -338,14 +338,16 @@ LispPTR Picture_Bitblt(LispPTR *args)
   slx = left;
 
 #ifdef VIDEO
-  if ((video_flg = Video_OnOff_Flg)) Video_OnOff(FALSE);
+  if ((video_flg = Video_OnOff_Flg))
+    Video_OnOff(FALSE);
 #endif /* VIDEO */
 
   pr_rop((Pixrect *)dst->storage, dlx, dty, width, height, operation, (Pixrect *)src->storage, slx,
          sty);
 
 #ifdef VIDEO
-  if (video_flg) Video_OnOff(TRUE);
+  if (video_flg)
+    Video_OnOff(TRUE);
 #endif /* VIDEO */
 
 bad_arg:
@@ -353,8 +355,7 @@ bad_arg:
 
 } /* end Picture_Bitblt */
 
-LispPTR Picture_Bltshade(LispPTR *args)
-{
+LispPTR Picture_Bltshade(LispPTR *args) {
   LispPicture *dst;
   unsigned int texture;
   LispPTR cl_region;
@@ -428,20 +429,23 @@ LispPTR Picture_Bltshade(LispPTR *args)
     top = min(top, dst_bottom + height);
   } /* end if( args[6] ) */
 
-  if ((right <= left) || (top <= bottom)) return (NIL);
+  if ((right <= left) || (top <= bottom))
+    return (NIL);
 
   height = top - bottom;
   width = right - left;
 
 #ifdef VIDEO
-  if ((video_flg = Video_OnOff_Flg)) Video_OnOff(FALSE);
+  if ((video_flg = Video_OnOff_Flg))
+    Video_OnOff(FALSE);
 #endif /* VIDEO */
 
   pr_rop((Pixrect *)dst->storage, left, (int)(dst->height) - top, width, height,
          operation | PIX_COLOR(texture), 0, 0, 0);
 
 #ifdef VIDEO
-  if (video_flg) Video_OnOff(TRUE);
+  if (video_flg)
+    Video_OnOff(TRUE);
 #endif /* VIDEO */
 
 bad_arg:
@@ -452,8 +456,7 @@ bad_arg:
 #define OPEN_FOR_READ 0
 #define OPEN_FOR_WRITE 1
 
-LispPTR VideoFile_Open(LispPTR *args)
-{
+LispPTR VideoFile_Open(LispPTR *args) {
   unsigned int *cell, videofile;
   int length, access;
 
@@ -471,8 +474,7 @@ LispPTR VideoFile_Open(LispPTR *args)
   return (LAddrFromNative(cell));
 } /* end VideoFile_Open */
 
-LispPTR VideoFile_Close(LispPTR *args)
-{
+LispPTR VideoFile_Close(LispPTR *args) {
   unsigned int videofile;
 
   N_GETNUMBER(args[1], videofile, bad_arg);
@@ -483,8 +485,7 @@ bad_arg:
   return (NIL);
 } /* end VideoFile_Close */
 
-LispPTR VideoFile_Read(LispPTR *args)
-{
+LispPTR VideoFile_Read(LispPTR *args) {
   LispPicture *n_picture;
   unsigned int *cell, pix, videofile;
 
@@ -495,17 +496,17 @@ LispPTR VideoFile_Read(LispPTR *args)
     n_picture->width = (DLword)(((Pixrect *)n_picture->storage)->pr_width);
     n_picture->height = (DLword)(((Pixrect *)n_picture->storage)->pr_height);
     n_picture->bitsperpixel = (DLword)(((Pixrect *)n_picture->storage)->pr_depth);
-    if (n_picture->bitsperpixel == 32) n_picture->bitsperpixel = 24;
+    if (n_picture->bitsperpixel == 32)
+      n_picture->bitsperpixel = 24;
 
     return (ATOM_T); /* normal return */
-  }             /* end if */
+  } /* end if */
 
 bad_arg:
   return (NIL);
 } /* end VideoFile_Read */
 
-LispPTR VideoFile_Write(LispPTR *args)
-{
+LispPTR VideoFile_Write(LispPTR *args) {
   unsigned int videofile;
   LispPicture *n_pict;
   int status;
@@ -520,22 +521,22 @@ bad_arg:
   return (NIL);
 } /* end VideoFile_Write */
 
-LispPTR VideoFile_Position(LispPTR *args)
-{
+LispPTR VideoFile_Position(LispPTR *args) {
   unsigned int videofile;
   int n, status;
 
   N_GETNUMBER(args[1], videofile, bad_arg);
   n = (DLword)args[2];
 
-  if ((status = position_rasterfile(videofile, n))) { return (T); } /* end if( status ) */
+  if ((status = position_rasterfile(videofile, n))) {
+    return (T);
+  } /* end if( status ) */
 bad_arg:
   return (NIL);
 
 } /* end VideoFile_Position */
 
-LispPTR Picture_Op(LispPTR *args)
-{
+LispPTR Picture_Op(LispPTR *args) {
   int op;
   LispPTR ret_value;
 
@@ -554,7 +555,9 @@ LispPTR Picture_Op(LispPTR *args)
     case VIDEOFILE_CLOSE: ret_value = VideoFile_Close(args); break;
     case VIDEOFILE_READ: ret_value = VideoFile_Read(args); break;
     case VIDEOFILE_WRITE: ret_value = VideoFile_Write(args); break;
-    case VIDEOFILE_POSITION: ret_value = VideoFile_Position(args); break;
+    case VIDEOFILE_POSITION:
+      ret_value = VideoFile_Position(args);
+      break;
     defaults:
       ret_value = NIL;
       break;

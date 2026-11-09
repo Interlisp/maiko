@@ -16,46 +16,46 @@
 
 /* this is the ansi version ... */
 
-void print_solution(FILE *stream, double *sol)
-{
+void print_solution(FILE *stream, double *sol) {
   int i;
 
   fprintf(stream, "Value of objective function: %16.5g\n", sol[0]);
 
   /* print normal variables */
   for (i = Rows + 1; i <= Sum; i++)
-    if (0 != sol[i]) fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
+    if (0 != sol[i])
+      fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
 
   /* print dual variables */
   if (Verbose || Print_duals) {
     fprintf(stream, "\nValues of the dual variables:\n");
     for (i = 1; i <= Rows; i++)
-      if (0 != sol[i]) fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
+      if (0 != sol[i])
+        fprintf(stream, "%-10s%16.5g\n", Names[i], sol[i]);
   }
 } /* print_solution */
 
-void print_indent(void)
-{
+void print_indent(void) {
   int i;
 
   fprintf(stderr, "%2d", Level);
-  for (i = Level; i > 0; i--) fprintf(stderr, "--");
+  for (i = Level; i > 0; i--)
+    fprintf(stderr, "--");
   fprintf(stderr, "> ");
 } /* print_indent */
 
-void debug_print_solution(double *sol)
-{
+void debug_print_solution(double *sol) {
   int i;
 
   if (Debug)
     for (i = 0; i <= Sum; i++) {
       print_indent();
-      if (sol[i] != 0) fprintf(stderr, "%-10s%16.5g\n", Names[i], sol[i]);
+      if (sol[i] != 0)
+        fprintf(stderr, "%-10s%16.5g\n", Names[i], sol[i]);
     }
 } /* debug_print_solution */
 
-void debug_print_bounds(double *upbo, double *lowbo)
-{
+void debug_print_bounds(double *upbo, double *lowbo) {
   int i;
 
   if (Debug)

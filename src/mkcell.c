@@ -36,8 +36,8 @@
 #include "lispemul.h"      // for LispPTR, DLword, NIL, POINTERMASK, state
 #include "lispmap.h"       // for S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"      // for dtd, GETWORD, GetDTD
-#include "mkcelldefs.h"    // for N_OP_createcell, createcell68k
+#include "lsptypes.h"    // for dtd, GETWORD, GetDTD
+#include "mkcelldefs.h"  // for N_OP_createcell, createcell68k
 #ifdef DTDDEBUG
 #include "testtooldefs.h"
 #endif
@@ -51,12 +51,14 @@ LispPTR N_OP_createcell(LispPTR tos) {
   LispPTR newcell;
   unsigned int type;
 
-  if ((tos & SEGMASK) != S_POSITIVE) { ERROR_EXIT(tos);
-}
+  if ((tos & SEGMASK) != S_POSITIVE) {
+    ERROR_EXIT(tos);
+  }
   type = tos & 0xffff;
 
 #ifdef DTDDEBUG
-  if (type == TYPE_LISTP) error("N_OP_createcell : Can't create Listp cell with CREATECELL");
+  if (type == TYPE_LISTP)
+    error("N_OP_createcell : Can't create Listp cell with CREATECELL");
   check_dtd_chain(type);
 #endif
 
@@ -65,32 +67,38 @@ LispPTR N_OP_createcell(LispPTR tos) {
   oldoldfree = oldfree;
   oldfree = dtd68k->dtd_free;
 
-  if (dtd68k->dtd_size == 0) { ERROR_EXIT(tos);
-}
-/* error("OP_createcell : Attempt to create a cell not declared yet"); */
+  if (dtd68k->dtd_size == 0) {
+    ERROR_EXIT(tos);
+  }
+  /* error("OP_createcell : Attempt to create a cell not declared yet"); */
 
 retry:
   if ((tos = newcell = ((dtd68k->dtd_free) & POINTERMASK)) != NIL) {
     ptr = NativeAligned2FromLAddr(newcell);
-    if (917505 == *(LispPTR *)ptr) { error("N_OP_createcell E0001 error");
-}
+    if (917505 == *(LispPTR *)ptr) {
+      error("N_OP_createcell E0001 error");
+    }
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
-    if (dtd68k->dtd_free & 0x8000001) { error("bad entry on free chain.");
-}
+    if (dtd68k->dtd_free & 0x8000001) {
+      error("bad entry on free chain.");
+    }
 
     dtd68k->dtd_oldcnt++;
 
     /* clear 0  */
-    for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) { GETWORD(ptr) = 0; }
+    for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) {
+      GETWORD(ptr) = 0;
+    }
 
     /*	 IncAllocCnt(1); */
     GCLOOKUP(tos, DELREF);
     return (tos);
   } else {
     dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) { error("bad entry on free chain.");
-}
+    if (dtd68k->dtd_free & 0x8000000) {
+      error("bad entry on free chain.");
+    }
     goto retry;
   }
 
@@ -101,8 +109,10 @@ void *createcell68k(unsigned int type) {
   DLword *ptr, *lastptr;
   LispPTR newcell;
 #ifdef DTDDEBUG
-  if (type == TYPE_LISTP) error("createcell : Can't create Listp cell with CREATECELL");
-  if (type == TYPE_STREAM) stab();
+  if (type == TYPE_LISTP)
+    error("createcell : Can't create Listp cell with CREATECELL");
+  if (type == TYPE_STREAM)
+    stab();
 
   check_dtd_chain(type);
 
@@ -110,25 +120,30 @@ void *createcell68k(unsigned int type) {
 
   dtd68k = (struct dtd *)GetDTD(type);
 
-  if (dtd68k->dtd_size == 0) { error("createcell : Attempt to create a cell not declared yet");
-}
+  if (dtd68k->dtd_size == 0) {
+    error("createcell : Attempt to create a cell not declared yet");
+  }
 
 retry:
   if ((newcell = (dtd68k->dtd_free & POINTERMASK)) != NIL) {
 #ifdef DTDDEBUG
-    if (type != GetTypeNumber(newcell)) error("createcell : BAD cell in dtdfree");
-    if (newcell > POINTERMASK) error("createcell : BAD Lisp address");
+    if (type != GetTypeNumber(newcell))
+      error("createcell : BAD cell in dtdfree");
+    if (newcell > POINTERMASK)
+      error("createcell : BAD Lisp address");
 #endif
 
     ptr = NativeAligned2FromLAddr(newcell);
 
-    if (917505 == *(LispPTR *)ptr) { error("N_OP_createcell E0001 error");
-}
+    if (917505 == *(LispPTR *)ptr) {
+      error("N_OP_createcell E0001 error");
+    }
 
     /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
-    if (dtd68k->dtd_free & 0x8000000) { error("bad entry on free chain.");
-}
+    if (dtd68k->dtd_free & 0x8000000) {
+      error("bad entry on free chain.");
+    }
 
 #ifdef DTDDEBUG
     if ((dtd68k->dtd_free != 0) && (type != GetTypeNumber(dtd68k->dtd_free)))
@@ -140,7 +155,9 @@ retry:
     dtd68k->dtd_oldcnt++;
 
     /* clear 0  */
-    for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) { GETWORD(ptr) = 0; }
+    for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) {
+      GETWORD(ptr) = 0;
+    }
 
     /*	IncAllocCnt(1); */
     GCLOOKUP(newcell, DELREF);
@@ -153,8 +170,9 @@ retry:
 
   } else {
     dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) { error("bad entry on free chain.");
-}
+    if (dtd68k->dtd_free & 0x8000000) {
+      error("bad entry on free chain.");
+    }
 
 #ifdef DTDDEBUG
     check_dtd_chain(type);

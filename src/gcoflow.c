@@ -29,25 +29,25 @@
 
 #include "version.h"
 
-#include "arith.h"        // for GetSmalldata
-#include "gcdata.h"       // for htoverflow, REC_GCLOOKUP
+#include "arith.h"         // for GetSmalldata
+#include "gcdata.h"        // for htoverflow, REC_GCLOOKUP
 #include "gchtfinddefs.h"  // for htfind, rec_htfind
-#include "gcoflowdefs.h"  // for gc_handleoverflow, gcmaptable
-#include "gcrdefs.h"      // for doreclaim
-#include "lispemul.h"     // for NIL, DLword, LispPTR
-#include "lspglob.h"      // for Reclaim_cnt_word, HToverflow, MaxTypeNumber_word
-#include "lsptypes.h"     // for dtd, GetDTD, TYPE_LISTP
+#include "gcoflowdefs.h"   // for gc_handleoverflow, gcmaptable
+#include "gcrdefs.h"       // for doreclaim
+#include "lispemul.h"      // for NIL, DLword, LispPTR
+#include "lspglob.h"       // for Reclaim_cnt_word, HToverflow, MaxTypeNumber_word
+#include "lsptypes.h"      // for dtd, GetDTD, TYPE_LISTP
 
 #define Increment_Allocation_Count(n) \
   do {                                \
-    if (*Reclaim_cnt_word != NIL) {     \
-      if (*Reclaim_cnt_word > (n))      \
-        (*Reclaim_cnt_word) -= (n);     \
-      else {                            \
-        *Reclaim_cnt_word = NIL;        \
-        doreclaim();                    \
-      }                                 \
-    }                                   \
+    if (*Reclaim_cnt_word != NIL) {   \
+      if (*Reclaim_cnt_word > (n))    \
+        (*Reclaim_cnt_word) -= (n);   \
+      else {                          \
+        *Reclaim_cnt_word = NIL;      \
+        doreclaim();                  \
+      }                               \
+    }                                 \
   } while (0)
 
 DLword gc_handleoverflow(DLword arg) {

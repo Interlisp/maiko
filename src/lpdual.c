@@ -18,8 +18,7 @@
 #pragma global assoc
 #endif
 
-void rowdual(int *rownr)
-{
+void rowdual(int *rownr) {
   int i;
   double f, g, minrhs;
   short artifs;
@@ -28,7 +27,8 @@ void rowdual(int *rownr)
 #pragma safe(Rhs, Upbo, Bas)
 #endif
 
-  if (Verbose) printf("rowdual\n");
+  if (Verbose)
+    printf("rowdual\n");
   (*rownr) = 0;
   minrhs = -EPSB;
   i = 0;
@@ -52,8 +52,7 @@ void rowdual(int *rownr)
   }
 } /* rowdual */
 
-short coldual(int *numeta, int *rownr, int *colnr, short *minit, double *prow, double *drow)
-{
+short coldual(int *numeta, int *rownr, int *colnr, short *minit, double *prow, double *drow) {
   int i, j, r, varnr;
   double theta, quot, pivot, d, f, g;
 
@@ -61,7 +60,8 @@ short coldual(int *numeta, int *rownr, int *colnr, short *minit, double *prow, d
 #pragma safe(Rhs, Upbo, Bas, Cend, Endetacol, prow, drow, Basis, Lower)
 #endif
 
-  if (Verbose) printf("coldual\n");
+  if (Verbose)
+    printf("coldual\n");
   if (!(*minit)) {
     for (i = 0; i <= Rows; i++) {
       prow[i] = 0;
@@ -106,8 +106,10 @@ short coldual(int *numeta, int *rownr, int *colnr, short *minit, double *prow, d
 #endif
 
     for (i = 0; i <= Sum; i++) {
-      if (abs(prow[i]) < EPSEL) prow[i] = 0;
-      if (abs(drow[i]) < EPSD) drow[i] = 0;
+      if (abs(prow[i]) < EPSEL)
+        prow[i] = 0;
+      if (abs(drow[i]) < EPSD)
+        drow[i] = 0;
     }
   }
   if (Rhs[(*rownr)] > Upbo[Bas[(*rownr)]])

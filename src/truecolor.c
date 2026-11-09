@@ -30,11 +30,11 @@
 #define COLOR_VIDEOREGION 2
 #define COLOR_VIDEOINIT 3
 
-#define IntToFixp(C, Lisp)                                \
-  {                                                       \
-    int *base;                                            \
+#define IntToFixp(C, Lisp)                                     \
+  {                                                            \
+    int *base;                                                 \
     base = (int *)NativeAligned4FromLAddr((unsigned int)Lisp); \
-    *base = C;                                            \
+    *base = C;                                                 \
   }
 
 extern int displaywidth, displayheight, DisplayRasterWidth;
@@ -46,8 +46,7 @@ extern int Inited_Video;
 
 int Inited_TrueColor = NIL;
 
-int TrueColor_Op(LispPTR *args)
-{
+int TrueColor_Op(LispPTR *args) {
   int op, ret_value = NIL;
   /*
           N_GETNUMBER( args[0], op, bad_arg );
@@ -83,7 +82,7 @@ int TrueColor_Op(LispPTR *args)
         } /* end if( args[2] ) */
         ret_value = T;
       } /* end if( arg[1] ) */
-    }   /* end case */
+    } /* end case */
     break;
     case COLOR_VIDEOREGION: {
       int left, top, bottom, width, height;
@@ -134,8 +133,7 @@ extern int DisplayType;
 Pixrect *OverlayCursor, *OverlaySave;
 DLword *OverlayRegion68k;
 
-int TrueColor_Initialize(LispPTR overlay_bmbase)
-{
+int TrueColor_Initialize(LispPTR overlay_bmbase) {
   unsigned int pict, *ret_value;
   Pixrect *source;
   int mmapstat, size;
@@ -194,8 +192,7 @@ int TrueColor_Initialize(LispPTR overlay_bmbase)
 
 DLword *VideoEnableRegion68k;
 
-int TrueColor_VideoInitialize(LispPTR videoenable_bmbase)
-{
+int TrueColor_VideoInitialize(LispPTR videoenable_bmbase) {
   Pixrect *source;
   int mmapstat, size;
 
@@ -229,8 +226,7 @@ int TrueColor_VideoInitialize(LispPTR videoenable_bmbase)
 
 } /* TrueColor_VideoInitialize */
 
-int Overlay_Region(int left, int top, int width, int height, int flg)
-{
+int Overlay_Region(int left, int top, int width, int height, int flg) {
   ScreenLocked = T;
   overlay_mouse_down();
 
@@ -256,8 +252,7 @@ int Overlay_Region(int left, int top, int width, int height, int flg)
 
 extern Pixrect *OverlaySave, *OverlayCursor;
 
-void overlay_mouse_up(int newx, int newy)
-{
+void overlay_mouse_up(int newx, int newy) {
   pr_set_plane_group(TrueColorFb, PIXPG_OVERLAY_ENABLE);
   pr_rop(TrueColorFb, newx, newy, 16, 16, PIX_SRC, OverlaySave, 0, 0);
   pr_rop(TrueColorFb, 0, 0, 16, 16, PIX_SRC | PIX_DST, OverlayCursor, newx, newy);
@@ -281,8 +276,10 @@ void truecolor_before_exit(void) {
       unsigned short *ptr;
       ptr = (unsigned short *)OverlayRegion68k;
       for (h = displayheight; (h--);) {
-        for (w = DisplayRasterWidth; (w--);) { *(ptr++) = ~0; } /* end for( w ) */
-      }                                                         /* end for( h ) */
+        for (w = DisplayRasterWidth; (w--);) {
+          *(ptr++) = ~0;
+        } /* end for( w ) */
+      } /* end for( h ) */
     }
 
     pr_set_plane_group(TrueColorFb, PIXPG_24BIT_COLOR);
@@ -295,13 +292,15 @@ void truecolor_before_exit(void) {
         unsigned short *ptr;
         ptr = (unsigned short *)VideoEnableRegion68k;
         for (h = displayheight; (h--);) {
-          for (w = DisplayRasterWidth; (w--);) { *(ptr++) = 0xffff; } /* end for( w ) */
-        }                                                             /* end for( h ) */
+          for (w = DisplayRasterWidth; (w--);) {
+            *(ptr++) = 0xffff;
+          } /* end for( w ) */
+        } /* end for( h ) */
       }
 
       Video_Close();
 
-    }  /* end if( Inited_Video ) */
+    } /* end if( Inited_Video ) */
 #endif /* VIDEO */
 
     pr_close(TrueColorFb);
@@ -335,14 +334,17 @@ void truecolor_before_raid(void) {
       unsigned short *ptr;
       ptr = (unsigned short *)OverlayRegion68k;
       for (h = displayheight; (h--);) {
-        for (w = DisplayRasterWidth; (w--);) { *(ptr++) = 0xffff; } /* end for( w ) */
-      }                                                             /* end for( h ) */
+        for (w = DisplayRasterWidth; (w--);) {
+          *(ptr++) = 0xffff;
+        } /* end for( w ) */
+      } /* end for( h ) */
     }
   } /* end if( Inited_TrueColor ) */
 
 #ifdef VIDEO
   if (Inited_Video) {
-    if ((video_onoff = Video_OnOff_Flg)) Video_OnOff(FALSE);
+    if ((video_onoff = Video_OnOff_Flg))
+      Video_OnOff(FALSE);
     if (posix_memalign((void *)&HideVideoEnableRegion, getpagesize(), size) != 0) {
       printf("can't allocate hide space\n");
       return (-1);
@@ -355,10 +357,12 @@ void truecolor_before_raid(void) {
       unsigned short *ptr;
       ptr = (unsigned short *)VideoEnableRegion68k;
       for (h = displayheight; (h--);) {
-        for (w = DisplayRasterWidth; (w--);) { *(ptr++) = 0xffff; } /* end for( w ) */
-      }                                                             /* end for( h ) */
+        for (w = DisplayRasterWidth; (w--);) {
+          *(ptr++) = 0xffff;
+        } /* end for( w ) */
+      } /* end for( h ) */
     }
-  }    /* end if( Inited_Video ) */
+  } /* end if( Inited_Video ) */
 #endif /* VIDEO */
 
 } /* end truecolor_before_raid */
@@ -401,9 +405,10 @@ void truecolor_after_raid(void) {
 
     copy_region(HideVideoEnableRegion, VideoEnableRegion68k, DisplayRasterWidth, displayheight);
     free(HideVideoEnableRegion);
-    if (video_onoff) Video_OnOff(TRUE);
+    if (video_onoff)
+      Video_OnOff(TRUE);
 
-  }    /* end if( Inited_Video ) */
+  } /* end if( Inited_Video ) */
 #endif /* VIDEO */
 
 } /* end truecolor_after_raid */

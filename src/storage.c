@@ -64,14 +64,17 @@ void checkfor_storagefull(unsigned int npages) {
 #endif
 
   if ((pagesleft < GUARDSTORAGEFULL) || (npages != 0)) {
-    if (*STORAGEFULLSTATE_word == NIL) { set_storage_state();
-}
+    if (*STORAGEFULLSTATE_word == NIL) {
+      set_storage_state();
+    }
 
     switch (*STORAGEFULLSTATE_word & 0xffff) {
       case SFS_NOTSWITCHABLE:
       case SFS_FULLYSWITCHED:
         if (pagesleft < 0) {
-          while (T) { error("MP9320:Storage completely full"); }
+          while (T) {
+            error("MP9320:Storage completely full");
+          }
         } else if ((pagesleft <= GUARD1STORAGEFULL) && (*STORAGEFULL_word != NIL)) {
           *STORAGEFULL_word = S_POSITIVE;
           error(
@@ -125,10 +128,10 @@ void checkfor_storagefull(unsigned int npages) {
               ((*SecondMDSPage_word & 0xffff) - (*Next_Array_word & 0xffff)))
 #endif
             return; /*  (NIL); */
-}
-}
-        return;     /* (T); */
-      /* break; */
+          }
+        }
+        return; /* (T); */
+        /* break; */
 
       default:
         error("checkfor_storagefull: Shouldn't"); /* (*STORAGEFULLSTATE_word) & 0xffff) */
@@ -136,7 +139,7 @@ void checkfor_storagefull(unsigned int npages) {
     }
   } else {
     return; /*(NIL); */
-}
+  }
 } /* checkfor_storagefull end */
 
 /*****************************************************************/
@@ -154,9 +157,9 @@ static void advance_array_seg(unsigned int nxtpage)
 {
   unsigned int ncellsleft;
 
-/* Called when 8Mb are exhausted,and we want to switch array space
- into the extended area(Secondary space),starting with nextpage.
- We MUST clean up old area first.   */
+  /* Called when 8Mb are exhausted,and we want to switch array space
+   into the extended area(Secondary space),starting with nextpage.
+   We MUST clean up old area first.   */
 
 #ifdef BIGVM
   nxtpage &= 0xFFFFF; /* new VM, limit is 20 bits of page */
@@ -225,7 +228,7 @@ static void set_storage_state(void) {
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_SWITCHABLE;
     } else {
       *STORAGEFULLSTATE_word = S_POSITIVE | SFS_NOTSWITCHABLE;
-}
+    }
 
     *SYSTEMCACHEVARS_word = cons(STORAGEFULLSTATE_index, *SYSTEMCACHEVARS_word);
 
@@ -245,15 +248,15 @@ static LispPTR dremove(LispPTR x, LispPTR l) {
 
   if (Listp(l) == NIL) {
     return (NIL);
-}
+  }
   if (x == car(l)) {
     if (cdr(l) != NIL) {
       rplaca(l, car(cdr(l)));
       rplacd(l, cdr(cdr(l)));
       return (dremove(x, l));
     } else {
-        return (NIL);
-}
+      return (NIL);
+    }
   } else {
     z = l;
   lp:
@@ -263,7 +266,7 @@ static LispPTR dremove(LispPTR x, LispPTR l) {
       rplacd(l, cdr(cdr(l)));
     } else {
       l = cdr(l);
-}
+    }
     goto lp;
   }
 }
@@ -289,7 +292,7 @@ LispPTR newpage(LispPTR base) {
 #ifdef BIGVM
   unsigned int vp; /* Virtual Page we're creating */
 #else
-  DLword vp;        /* (built from base)           */
+  DLword vp; /* (built from base)           */
 #endif /* BIGVM */
 
   INTSTAT *int_state;
@@ -299,7 +302,8 @@ LispPTR newpage(LispPTR base) {
 
 #ifdef DEBUG
   /************************/
-  if (vp == 0) error("newpage: vp=0");
+  if (vp == 0)
+    error("newpage: vp=0");
   printf("***newpage modify vmemsize %d ", InterfacePage->nactivepages);
 /*************************/
 #endif
@@ -374,7 +378,7 @@ LispPTR newpage(LispPTR base) {
       *VMEM_FULL_STATE_word = ATOM_T;
     } else {
       *VMEM_FULL_STATE_word = MAKEATOM("DIRTY");
-}
+    }
   }
 
   return (base);

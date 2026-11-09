@@ -16,15 +16,15 @@
 #include "cell.h"         // for PLCell, PNCell, GetPnameCell, GetPropCell
 #include "commondefs.h"   // for error
 #include "emlglob.h"
-#include "lispemul.h"     // for LispPTR, DLword, POINTERMASK, SEGMASK
-#include "lispmap.h"      // for S_POSITIVE, S_NEGATIVE
+#include "lispemul.h"  // for LispPTR, DLword, POINTERMASK, SEGMASK
+#include "lispmap.h"   // for S_POSITIVE, S_NEGATIVE
 #include "lspglob.h"
-#include "lsptypes.h"     // for OneDArray, PATHNAME, GETBYTE, GETWORD, COMPLEX
-#include "sxhashdefs.h"   // for STRING_EQUAL_HASHBITS, STRING_HASHBITS, SX_...
+#include "lsptypes.h"    // for OneDArray, PATHNAME, GETBYTE, GETWORD, COMPLEX
+#include "sxhashdefs.h"  // for STRING_EQUAL_HASHBITS, STRING_HASHBITS, SX_...
 
 /** Follows definition in LLARRAYELT: **/
 #define EQHASHINGBITS(item) \
-  ((((item) >> 16) & 0xFFFF) ^ ((((item)&0x1FFF) << 3) ^ (((item) >> 9) & 0x7f)))
+  ((((item) >> 16) & 0xFFFF) ^ ((((item) & 0x1FFF) << 3) ^ (((item) >> 9) & 0x7f)))
 
 static unsigned short sxhash(LispPTR obj);
 static unsigned short sxhash_rotate(short unsigned int value);
@@ -44,7 +44,7 @@ static unsigned short stringhash(LispPTR obj);
 /****************************************************************/
 
 LispPTR SX_hash(LispPTR object) {
-    return (S_POSITIVE | (0xFFFF & (sxhash(object))));
+  return (S_POSITIVE | (0xFFFF & (sxhash(object))));
   /* Smash the top of the stack to a 0xe, offset */
 }
 
@@ -79,10 +79,12 @@ static unsigned short sxhash(LispPTR obj) {
         case TYPE_ONED_ARRAY:
         case TYPE_GENERAL_ARRAY:
           str = (OneDArray *)NativeAligned4FromLAddr(obj);
-          if (str->stringp) { return (sxhash_string(str));
-}
-          if (str->bitp) { return (sxhash_bitvec(str));
-}
+          if (str->stringp) {
+            return (sxhash_string(str));
+          }
+          if (str->bitp) {
+            return (sxhash_bitvec(str));
+          }
           return (EQHASHINGBITS(obj));
         case TYPE_BIGNUM: {
           LispPTR contents;
@@ -115,23 +117,26 @@ static unsigned short sxhash_string(OneDArray *obj) {
   unsigned len, offset;
   unsigned short hash = 0;
   len = (unsigned)obj->fillpointer;
-  if (len > 13) { len = 13;
-}
+  if (len > 13) {
+    len = 13;
+  }
   offset = (unsigned)obj->offset;
   switch (obj->typenumber) {
     case THIN_CHAR_TYPENUMBER: {
       char *thin;
       unsigned i;
       thin = ((char *)(NativeAligned2FromLAddr(obj->base))) + offset;
-      for (i = 0; i < len; i++) { hash = sxhash_rotate(hash ^ GETBYTE(thin++));
-}
+      for (i = 0; i < len; i++) {
+        hash = sxhash_rotate(hash ^ GETBYTE(thin++));
+      }
     } break;
     case FAT_CHAR_TYPENUMBER: {
       unsigned short *fat;
       unsigned i;
       fat = ((unsigned short *)(NativeAligned2FromLAddr(obj->base))) + offset;
-      for (i = 0; i < len; i++) { hash = sxhash_rotate(hash ^ GETWORD(fat++));
-}
+      for (i = 0; i < len; i++) {
+        hash = sxhash_rotate(hash ^ GETWORD(fat++));
+      }
     } break;
     default: error("SXHASH of a string not made of chars!\n");
   }
@@ -147,14 +152,16 @@ static unsigned short sxhash_bitvec(OneDArray *obj) {
   base = ((unsigned short *)(NativeAligned2FromLAddr(obj->base))) + (offset >> 4);
   if (offset == 0) {
     hash = (*base);
-    if (len < 16) { hash = hash >> (16 - len);
-}
+    if (len < 16) {
+      hash = hash >> (16 - len);
+    }
   } else {
     bitoffset = offset & 15;
     hash = (GETWORD(base++) << (bitoffset));
     hash |= (GETWORD(base) >> (16 - bitoffset));
-    if ((len - offset) < 16) { hash = hash >> (16 - (len - offset));
-}
+    if ((len - offset) < 16) {
+      hash = hash >> (16 - (len - offset));
+    }
   }
   return (hash);
 }
@@ -225,7 +232,7 @@ static unsigned short stringequalhash(LispPTR obj) {
         len = str->fillpointer;
       } else {
         return (EQHASHINGBITS(obj));
-}
+      }
       break;
     default: return (EQHASHINGBITS(obj));
   }
@@ -294,7 +301,7 @@ static unsigned short stringhash(LispPTR obj) {
         len = str->fillpointer;
       } else {
         return (EQHASHINGBITS(obj));
-}
+      }
       break;
     default: return (EQHASHINGBITS(obj));
   } /* switch */

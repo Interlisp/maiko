@@ -13,15 +13,15 @@
 
 #include "version.h"
 
-#include <fcntl.h>           // for open
-#include <stdio.h>           // for printf, perror, fprintf, sprintf, SEEK_SET
-#include <stdlib.h>          // for exit
-#include <string.h>          // for strncmp
-#include <fcntl.h>           // for O_RDONLY
-#include <unistd.h>          // for close, lseek, read
+#include <fcntl.h>   // for open
+#include <stdio.h>   // for printf, perror, fprintf, sprintf, SEEK_SET
+#include <stdlib.h>  // for exit
+#include <string.h>  // for strncmp
+#include <fcntl.h>   // for O_RDONLY
+#include <unistd.h>  // for close, lseek, read
 
-#include "byteswapdefs.h"    // for word_swap_page
-#include "ifpage.h"          // for IFPAGE
+#include "byteswapdefs.h"  // for word_swap_page
+#include "ifpage.h"        // for IFPAGE
 
 #define IFPAGE_ADDRESS 512
 #define MBYTE 0x100000 /* 1 Mbyte */
@@ -63,34 +63,31 @@ void check_sysout(char *sysout_file_name, int verbose) {
 #endif
   close(sysout);
   if (verbose) {
-      printf("ifpage.minbversion %d\n", ifpage.minbversion);
-      printf("ifpage.process_size %d\n", ifpage.process_size);
-      printf("ifpage.storagefullstate %d\n", ifpage.storagefullstate);
-      printf("ifpage.nactivepages %d\n", ifpage.nactivepages);
+    printf("ifpage.minbversion %d\n", ifpage.minbversion);
+    printf("ifpage.process_size %d\n", ifpage.process_size);
+    printf("ifpage.storagefullstate %d\n", ifpage.storagefullstate);
+    printf("ifpage.nactivepages %d\n", ifpage.nactivepages);
   } else {
-      printf("%d", ifpage.minbversion);
+    printf("%d", ifpage.minbversion);
   }
 }
 
 void usage(char *prog) {
-    (void)fprintf(stderr, "Usage: %s [-v] sysout-filename\n", prog);
-    exit(-1);
+  (void)fprintf(stderr, "Usage: %s [-v] sysout-filename\n", prog);
+  exit(-1);
 }
 
 int main(int argc, char **argv) {
-    switch (argc) {
-    case 2:
-        check_sysout(argv[1], 0);
-        break;
+  switch (argc) {
+    case 2: check_sysout(argv[1], 0); break;
     case 3:
-        if (0 == strncmp(argv[1], "-v", 2)) {
-            check_sysout(argv[2], 1);
-        } else {
-            usage(argv[0]);
-        }
-        break;
-    default:
+      if (0 == strncmp(argv[1], "-v", 2)) {
+        check_sysout(argv[2], 1);
+      } else {
         usage(argv[0]);
-    }
+      }
+      break;
+    default: usage(argv[0]);
+  }
   exit(0);
 }

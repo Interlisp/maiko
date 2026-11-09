@@ -25,15 +25,15 @@
 */
 /**********************************************************************/
 
-#include "address.h"       // for LOLOC                                                                                                                                     
-#include "adr68k.h"        // for LAddrFromNative, LPageFromNative, Addr68k_fr...                                                                                             
-#include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage                                                                                                                
-#include "commondefs.h"    // for error                                                                                                                                     
-#include "lispemul.h"      // for DLword, LispPTR, DLWORDSPER_PAGE, MDSINCRE...                                                                                             
-#include "lispmap.h"       // for S_POSITIVE                                                                                                                                
-#include "lspglob.h"       // for MDStypetbl                                                                                                                                
-#include "lsptypes.h"      // for GETWORD, GetTypeNumber, TYPE_SMALLP                                                                                                       
-#include "storagedefs.h"   // for newpage, checkfor_storagefull                                                                                                             
+#include "address.h"       // for LOLOC
+#include "adr68k.h"        // for LAddrFromNative, LPageFromNative, Addr68k_fr...
+#include "allocmdsdefs.h"  // for alloc_mdspage, initmdspage
+#include "commondefs.h"    // for error
+#include "lispemul.h"      // for DLword, LispPTR, DLWORDSPER_PAGE, MDSINCRE...
+#include "lispmap.h"       // for S_POSITIVE
+#include "lspglob.h"       // for MDStypetbl
+#include "lsptypes.h"      // for GETWORD, GetTypeNumber, TYPE_SMALLP
+#include "storagedefs.h"   // for newpage, checkfor_storagefull
 
 /************************************************************************/
 /*									*/
@@ -90,7 +90,7 @@ LispPTR initmdspage(LispPTR *base, DLword size, LispPTR prev)
   for (int i = 0; i < num_pages; i++) {
     used = 0;
     while ((used += size) <= limit) {
-      *base = prev;                /* write prev MDS address to the top of MDS page */
+      *base = prev;                 /* write prev MDS address to the top of MDS page */
       prev = LAddrFromNative(base); /* exchanging pointers */
       base = (LispPTR *)((DLword *)base + size);
     } /* while end */

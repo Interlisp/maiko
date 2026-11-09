@@ -26,8 +26,7 @@
 /*	dummy is the placeholder for the bitmap to be blitted		*/
 /*									*/
 /************************************************************************/
-unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, int w, int h)
-{
+unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, int w, int h) {
   int temp_x, temp_y, LowerRightX, LowerRightY;
 
   LowerRightX = dsp->Visible.x + (int)dsp->Visible.width - 1;
@@ -41,7 +40,7 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
   if ((temp_x < dsp->Visible.x) || (x > LowerRightX) || (temp_y < dsp->Visible.y) ||
       (y > LowerRightY)) {
     return (0);
-}
+  }
 
   /* if the display region of interest is completely within the visible window */
   if ((x >= dsp->Visible.x) && (temp_x <= LowerRightX) && (y >= dsp->Visible.y) &&
@@ -61,8 +60,9 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
   }
 
   /* clip right to visible window */
-  if (temp_x > LowerRightX) { w -= temp_x - LowerRightX;
-}
+  if (temp_x > LowerRightX) {
+    w -= temp_x - LowerRightX;
+  }
 
   /* clip top to visible window */
   if (y < dsp->Visible.y) {
@@ -71,8 +71,9 @@ unsigned long clipping_Xbitblt(DspInterface dsp, DLword *dummy, int x, int y, in
   }
 
   /* clip bottom to visible window */
-  if (temp_y > LowerRightY) { h -= temp_y - LowerRightY;
-}
+  if (temp_y > LowerRightY) {
+    h -= temp_y - LowerRightY;
+  }
 
   if ((w > 0) && (h > 0)) {
     XLOCK;

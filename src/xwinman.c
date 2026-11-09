@@ -42,7 +42,7 @@ extern u_char *SUNLispKeyMap;
 /* bits within the EmRealUtilin word */
 #define KEYSET_LEFT 8
 #define KEYSET_LEFTMIDDLE 9
-#define KEYSET_MIDDLE  10
+#define KEYSET_MIDDLE 10
 #define KEYSET_RIGHTMIDDLE 11
 #define KEYSET_RIGHT 12
 /* Mouse buttons */
@@ -51,8 +51,7 @@ extern u_char *SUNLispKeyMap;
 #define MOUSE_MIDDLE 15
 
 /* ubound: return (unsigned) value if it is between lower and upper otherwise lower or upper */
-static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
-{
+static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper) {
   if (value <= lower) {
     return lower;
   }
@@ -62,8 +61,7 @@ static inline unsigned ubound(unsigned lower, unsigned value, unsigned upper)
   return value;
 }
 
-void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav)
-{
+void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int grav) {
   Window OldWindow = 0;
 
   /* Change Background Pixmap of Gravity Window */
@@ -85,8 +83,8 @@ void Set_BitGravity(XButtonEvent *event, DspInterface dsp, Window window, int gr
   XUNLOCK(dsp);
 } /* end Set_BitGravity */
 
-static void lisp_Xconfigure(DspInterface dsp, int x, int y, unsigned lspWinWidth, unsigned lspWinHeight)
-{
+static void lisp_Xconfigure(DspInterface dsp, int x, int y, unsigned lspWinWidth,
+                            unsigned lspWinHeight) {
   int Col2, Row2, Col3, Row3;
   unsigned int GravSize;
 
@@ -111,25 +109,27 @@ static void lisp_Xconfigure(DspInterface dsp, int x, int y, unsigned lspWinWidth
                     dsp->Visible.height);
   if (noscroll == 0) {
     /* Scroll bars */
-    XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2, 0 - (int)dsp->InternalBorderWidth, /* y */
-                      dsp->ScrollBarWidth,   /* width */
-                      dsp->Visible.height); /* height */
-    XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - (int)dsp->InternalBorderWidth, Row2, /* y */
-                      dsp->Visible.width,  /* width */
+    XMoveResizeWindow(dsp->display_id, dsp->VerScrollBar, Col2,
+                      0 - (int)dsp->InternalBorderWidth, /* y */
+                      dsp->ScrollBarWidth,               /* width */
+                      dsp->Visible.height);              /* height */
+    XMoveResizeWindow(dsp->display_id, dsp->HorScrollBar, 0 - (int)dsp->InternalBorderWidth,
+                      Row2,                 /* y */
+                      dsp->Visible.width,   /* width */
                       dsp->ScrollBarWidth); /* height */
 
     /* Scroll buttons */
     XMoveResizeWindow(
-                      dsp->display_id, dsp->HorScrollButton,
-                      (dsp->Visible.x * (int)dsp->Visible.width) / (int)dsp->Display.width,         /* x */
-                      0 - (int)dsp->InternalBorderWidth,                                                /* y */
-                      ((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
-                      dsp->ScrollBarWidth);                                                        /* height */
+        dsp->display_id, dsp->HorScrollButton,
+        (dsp->Visible.x * (int)dsp->Visible.width) / (int)dsp->Display.width, /* x */
+        0 - (int)dsp->InternalBorderWidth,                                    /* y */
+        ((dsp->Visible.width * dsp->Visible.width) / dsp->Display.width) + 1, /* width */
+        dsp->ScrollBarWidth);                                                 /* height */
     XMoveResizeWindow(
-                      dsp->display_id, dsp->VerScrollButton, 0 - (int)dsp->InternalBorderWidth,             /* x */
-                      (dsp->Visible.y * (int)dsp->Visible.height) / (int)dsp->Display.height,           /* y */
-                      dsp->ScrollBarWidth,                                                             /* width */
-                      ((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
+        dsp->display_id, dsp->VerScrollButton, 0 - (int)dsp->InternalBorderWidth, /* x */
+        (dsp->Visible.y * (int)dsp->Visible.height) / (int)dsp->Display.height,   /* y */
+        dsp->ScrollBarWidth,                                                      /* width */
+        ((dsp->Visible.height * dsp->Visible.height) / dsp->Display.height) + 1); /* height */
 
     /* Gravity windows */
     XMoveResizeWindow(dsp->display_id, dsp->NWGrav, Col2, Row2, GravSize, GravSize);
@@ -142,24 +142,21 @@ static void lisp_Xconfigure(DspInterface dsp, int x, int y, unsigned lspWinWidth
   XUNLOCK(dsp);
 } /* end lisp_Xconfigure */
 
-void enable_Xkeyboard(DspInterface dsp)
-{
+void enable_Xkeyboard(DspInterface dsp) {
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->EnableEventMask);
   XFlush(dsp->display_id);
   XUNLOCK(dsp);
 }
 
-void disable_Xkeyboard(DspInterface dsp)
-{
+void disable_Xkeyboard(DspInterface dsp) {
   XLOCK;
   XSelectInput(dsp->display_id, dsp->DisplayWindow, dsp->DisableEventMask);
   XFlush(dsp->display_id);
   XUNLOCK(dsp);
 }
 
-void beep_Xkeyboard(DspInterface dsp)
-{
+void beep_Xkeyboard(DspInterface dsp) {
 #ifdef TRACE
   printf("TRACE: beep_Xkeyboard()\n");
 #endif
@@ -181,8 +178,7 @@ void beep_Xkeyboard(DspInterface dsp)
 
 extern int Current_Hot_X, Current_Hot_Y; /* Cursor hotspot */
 
-void process_Display_events(DspInterface dsp)
-{
+void process_Display_events(DspInterface dsp) {
   XEvent report;
 
   while (XPending(dsp->display_id)) {
@@ -200,14 +196,16 @@ void process_Display_events(DspInterface dsp)
         case KeyPress:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
           DoRing();
-          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+          if ((KBDEventFlg += 1) > 0) {
+            Irq_Stk_End = Irq_Stk_Check = 0;
+          }
           break;
         case KeyRelease:
           kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], TRUE);
           DoRing();
-          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+          if ((KBDEventFlg += 1) > 0) {
+            Irq_Stk_End = Irq_Stk_Check = 0;
+          }
           break;
         case ButtonPress:
           switch (report.xbutton.button) {
@@ -221,8 +219,9 @@ void process_Display_events(DspInterface dsp)
             default: break;
           }
           DoRing();
-          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+          if ((KBDEventFlg += 1) > 0) {
+            Irq_Stk_End = Irq_Stk_Check = 0;
+          }
           break;
         case ButtonRelease:
           switch (report.xbutton.button) {
@@ -236,8 +235,9 @@ void process_Display_events(DspInterface dsp)
             default: break;
           }
           DoRing();
-          if ((KBDEventFlg += 1) > 0) { Irq_Stk_End = Irq_Stk_Check = 0;
-}
+          if ((KBDEventFlg += 1) > 0) {
+            Irq_Stk_End = Irq_Stk_Check = 0;
+          }
           break;
         case EnterNotify: Mouse_Included = TRUE; break;
         case LeaveNotify: Mouse_Included = FALSE; break;
@@ -252,8 +252,8 @@ void process_Display_events(DspInterface dsp)
     } else if (report.xany.window == dsp->LispWindow) {
       switch (report.xany.type) {
         case ConfigureNotify:
-          lisp_Xconfigure(dsp, report.xconfigure.x, report.xconfigure.y, (unsigned)report.xconfigure.width,
-                          (unsigned)report.xconfigure.height);
+          lisp_Xconfigure(dsp, report.xconfigure.x, report.xconfigure.y,
+                          (unsigned)report.xconfigure.width, (unsigned)report.xconfigure.height);
           break;
         case EnterNotify: enable_Xkeyboard(currentdsp); break;
         case LeaveNotify: break;
@@ -265,7 +265,8 @@ void process_Display_events(DspInterface dsp)
           break;
         default: break;
       }
-    } else if (noscroll) { continue;
+    } else if (noscroll) {
+      continue;
     } else if (report.xany.window == dsp->HorScrollBar) {
       switch (report.type) {
         case ButtonPress:
@@ -274,9 +275,7 @@ void process_Display_events(DspInterface dsp)
               DefineCursor(dsp, dsp->HorScrollBar, &ScrollLeftCursor);
               ScrollLeft(dsp);
               break;
-            case Button2:
-              DefineCursor(dsp, dsp->HorScrollBar, &HorizThumbCursor);
-              break;
+            case Button2: DefineCursor(dsp, dsp->HorScrollBar, &HorizThumbCursor); break;
             case Button3:
               DefineCursor(dsp, dsp->HorScrollBar, &ScrollRightCursor);
               ScrollRight(dsp);
@@ -286,19 +285,15 @@ void process_Display_events(DspInterface dsp)
           break;
         case ButtonRelease:
           switch (report.xbutton.button) {
-            case Button1:
-              DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
-              break;
+            case Button1: DefineCursor(dsp, report.xany.window, &HorizScrollCursor); break;
             case Button2:
               JumpScrollHor(dsp, report.xbutton.x);
               DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
               break;
-            case Button3:
-              DefineCursor(dsp, report.xany.window, &HorizScrollCursor);
-              break;
+            case Button3: DefineCursor(dsp, report.xany.window, &HorizScrollCursor); break;
             default: break;
           } /* end switch */
-	  break;
+          break;
         default: break;
       }
     } else if (report.xany.window == dsp->VerScrollBar) {
@@ -309,9 +304,7 @@ void process_Display_events(DspInterface dsp)
               DefineCursor(dsp, report.xany.window, &ScrollUpCursor);
               ScrollUp(dsp);
               break;
-            case Button2:
-              DefineCursor(dsp, report.xany.window, &VertThumbCursor);
-              break;
+            case Button2: DefineCursor(dsp, report.xany.window, &VertThumbCursor); break;
             case Button3:
               DefineCursor(dsp, report.xany.window, &ScrollDownCursor);
               ScrollDown(dsp);
@@ -321,12 +314,8 @@ void process_Display_events(DspInterface dsp)
           break;
         case ButtonRelease:
           switch (report.xbutton.button) {
-            case Button1:
-              DefineCursor(dsp, report.xany.window, &VertScrollCursor);
-              break;
-            case Button3:
-              DefineCursor(dsp, report.xany.window, &VertScrollCursor);
-              break;
+            case Button1: DefineCursor(dsp, report.xany.window, &VertScrollCursor); break;
+            case Button3: DefineCursor(dsp, report.xany.window, &VertScrollCursor); break;
             case Button2:
               JumpScrollVer(dsp, report.xbutton.y);
               DefineCursor(dsp, report.xany.window, &VertScrollCursor);
@@ -337,18 +326,18 @@ void process_Display_events(DspInterface dsp)
         default: break;
       }
     } else if ((report.xany.window == dsp->NEGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1)) {
+               ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->NEGrav, NorthEastGravity);
     } else if ((report.xany.window == dsp->SEGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1)) {
+               ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->SEGrav, SouthEastGravity);
     } else if ((report.xany.window == dsp->SWGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1)) {
+               ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->SWGrav, SouthWestGravity);
     } else if ((report.xany.window == dsp->NWGrav) && (report.xany.type == ButtonPress) &&
-             ((report.xbutton.button & 0xFF) == Button1)) {
+               ((report.xbutton.button & 0xFF) == Button1)) {
       Set_BitGravity(&report.xbutton, dsp, dsp->NWGrav, NorthWestGravity);
-}
+    }
     XFlush(dsp->display_id);
   } /* end while */
 } /* end process_Xevents */

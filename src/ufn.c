@@ -53,8 +53,7 @@
 */
 /******************************************************************/
 
-void ufn(DLword bytecode)
-{
+void ufn(DLword bytecode) {
   DefCell *defcell68k; /* Definition Cell PTR */
   int pv_num;          /* scratch for pv */
   UFN *entry68k;

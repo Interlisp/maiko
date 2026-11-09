@@ -56,18 +56,20 @@ LispPTR *MNWBUFFERING68k = 0;
 /* at the head of the chain. (This is bubblesort)                       */
 /*                                                                      */
 /************************************************************************/
-WindowInterface Find_window(DspInterface dspif, Window Xwindow)
-{
+WindowInterface Find_window(DspInterface dspif, Window Xwindow) {
   WindowInterface curr, prev;
 
-  if (dspif->CreatedWifs == (WindowInterface)NULL) return (NIL);
-  if (dspif->CreatedWifs->blackframe == Xwindow) return (dspif->CreatedWifs);
+  if (dspif->CreatedWifs == (WindowInterface)NULL)
+    return (NIL);
+  if (dspif->CreatedWifs->blackframe == Xwindow)
+    return (dspif->CreatedWifs);
 
   /* Find the wif we are interested in. */
   for (prev = dspif->CreatedWifs, curr = prev->next;
        ((curr != (WindowInterface)NULL) && (curr->blackframe != Xwindow));
        curr = curr->next, prev = prev->next) {}
-  if (curr == (WindowInterface)NULL) return (NIL); /* wif not found */
+  if (curr == (WindowInterface)NULL)
+    return (NIL); /* wif not found */
 
   /* Bubble curr to the head of the list */
   prev->next = curr->next;
@@ -102,7 +104,8 @@ MNWEvent *NewEvent() {
     r = RING_READ(CTopMNWEvent);
     w = RING_WRITE(CTopMNWEvent);
 
-    if (r != w) return ((MNWEvent *)(CTopMNWEvent + w));
+    if (r != w)
+      return ((MNWEvent *)(CTopMNWEvent + w));
   }
   return (NULL);
 }
@@ -124,13 +127,15 @@ SignalMNWEvent() {
     else
       ((RING *)CTopMNWEvent)->write = w + MNWEVENTSIZE;
 
-    if (*MNWBUFFERING68k == NIL) *MNWBUFFERING68k = ATOM_T;
-    if (MNWEventFlg++ > 0) Irq_Stk_End = Irq_Stk_Check = 0; /* Ask for interrupt */
+    if (*MNWBUFFERING68k == NIL)
+      *MNWBUFFERING68k = ATOM_T;
+    if (MNWEventFlg++ > 0)
+      Irq_Stk_End = Irq_Stk_Check = 0; /* Ask for interrupt */
   }
 }
 
-void HandleMotion(Widget widget, WindowInterface wif, XMotionEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleMotion(Widget widget, WindowInterface wif, XMotionEvent *xevent,
+                  Boolean *continue_to_dispatch) {
   MNWPointerMotionEvent *mevent;
 
   {
@@ -146,15 +151,15 @@ void HandleMotion(Widget widget, WindowInterface wif, XMotionEvent *xevent, Bool
   }
 }
 
-void HandleButton(Widget widget, WindowInterface wif, XButtonEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleButton(Widget widget, WindowInterface wif, XButtonEvent *xevent,
+                  Boolean *continue_to_dispatch) {
   MNWButtonEvent *mevent;
 
   lisp_Xbutton(xevent, 0);
 }
 
-void HandleKey(Widget widget, WindowInterface wif, XKeyEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleKey(Widget widget, WindowInterface wif, XKeyEvent *xevent,
+               Boolean *continue_to_dispatch) {
   lisp_Xkeyboard(xevent, 0);
 
 #ifdef NEVER
@@ -172,8 +177,8 @@ void HandleKey(Widget widget, WindowInterface wif, XKeyEvent *xevent, Boolean *c
 #endif /* NEVER */
 }
 
-void HandleCrossing(Widget widget, WindowInterface wif, XCrossingEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleCrossing(Widget widget, WindowInterface wif, XCrossingEvent *xevent,
+                    Boolean *continue_to_dispatch) {
   switch (xevent->type) {
     case EnterNotify:
       DoMNWRing(MNWMouseIn, wif->MedleyScreen, wif->MedleyWindow, 0, 0, 0, 0);
@@ -186,19 +191,20 @@ void HandleCrossing(Widget widget, WindowInterface wif, XCrossingEvent *xevent, 
   }
 }
 
-void HandleBackgroundCrossing(Widget widget, DspInterface dspif, XCrossingEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleBackgroundCrossing(Widget widget, DspInterface dspif, XCrossingEvent *xevent,
+                              Boolean *continue_to_dispatch) {
   switch (xevent->type) {
     case EnterNotify: DoMNWRing(MNWMouseIn, dspif->screen, 0, 0, 0, 0, 0); break;
 
     case LeaveNotify:
-      if (NotifyInferior != xevent->detail) DoMNWRing(MNWMouseOut, dspif->screen, 0, 0, 0, 0, 0);
+      if (NotifyInferior != xevent->detail)
+        DoMNWRing(MNWMouseOut, dspif->screen, 0, 0, 0, 0, 0);
       break;
   }
 }
 
-void HandleFocus(Widget widget, WindowInterface wif, XFocusChangeEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleFocus(Widget widget, WindowInterface wif, XFocusChangeEvent *xevent,
+                 Boolean *continue_to_dispatch) {
   MNWFocusEvent *mevent;
   /*
     if((mevent = (MNWFocusEvent *)NewEvent()) != NULL){
@@ -211,8 +217,8 @@ void HandleFocus(Widget widget, WindowInterface wif, XFocusChangeEvent *xevent, 
   */
 }
 
-void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent,
+                     Boolean *continue_to_dispatch) {
   LispPTR screen, MWindow;
   Window window;
   Display *display;
@@ -230,7 +236,8 @@ void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Bool
     case MapNotify: break;
 
     case ConfigureNotify:
-      if (!wif) break; /* don't change inner windows */
+      if (!wif)
+        break; /* don't change inner windows */
       /* if (wif->moving || wif->reshaping)
          {
          wif->moving = wif->reshaping = 0;
@@ -247,8 +254,7 @@ void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Bool
         l = ev->x;
         b = ev->y;
 
-        if ((!xevent->send_event))
-        {
+        if ((!xevent->send_event)) {
           Window parent, root, *children;
           int nch;
 
@@ -281,13 +287,14 @@ void HandleStructure(Widget widget, WindowInterface wif, XAnyEvent *xevent, Bool
       break;
 
     case ReparentNotify:
-      if (wif) wif->parent = ((XReparentEvent *)xevent)->parent;
+      if (wif)
+        wif->parent = ((XReparentEvent *)xevent)->parent;
       break;
   }
 }
 
-void HandleBackgroundButton(Widget widget, LispPTR wif, XButtonEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleBackgroundButton(Widget widget, LispPTR wif, XButtonEvent *xevent,
+                            Boolean *continue_to_dispatch) {
   MNWButtonEvent *mevent;
 
   { /* Copied from HandleMotion -- tell Lisp of mouse move */
@@ -318,21 +325,21 @@ void HandleBackgroundButton(Widget widget, LispPTR wif, XButtonEvent *xevent, Bo
 }
 
 /* Handle expose events on the frame widget -- print the title */
-void HandleTitle(Widget widget, WindowInterface wif, XExposeEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleTitle(Widget widget, WindowInterface wif, XExposeEvent *xevent,
+                 Boolean *continue_to_dispatch) {
   if (xevent->y <= 12)
     showtitle(wif->MedleyWindow, ((MedleyWindow)Cptr(wif->MedleyWindow))->WTITLE);
 }
 
 /* Handle expose events on the frame widget -- print the title */
-void HandleExpose(Widget widget, WindowInterface wif, XExposeEvent *xevent, Boolean *continue_to_dispatch)
-{
+void HandleExpose(Widget widget, WindowInterface wif, XExposeEvent *xevent,
+                  Boolean *continue_to_dispatch) {
   XCopyPlane(wif->dspif->handle, wif->backing, XtWindow(wif->windowwidget), wif->ReplaceGC,
              xevent->x, xevent->y, xevent->width, xevent->height, xevent->x, xevent->y, 1);
 }
 
-void SignalVJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr /* This is a *float */)
-{
+void SignalVJmpScroll(Widget widget, WindowInterface wif,
+                      XtPointer percent_ptr /* This is a *float */) {
   MNWJumpScrollReqEvent *event;
 
   if ((event = (MNWJumpScrollReqEvent *)NewEvent()) != NULL) {
@@ -345,8 +352,7 @@ void SignalVJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr 
   }
 }
 
-void SignalHJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr)
-{
+void SignalHJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr) {
   MNWJumpScrollReqEvent *event;
 
   if ((event = (MNWJumpScrollReqEvent *)NewEvent()) != NULL) {
@@ -359,8 +365,7 @@ void SignalHJmpScroll(Widget widget, WindowInterface wif, XtPointer percent_ptr)
   }
 }
 
-void SignalVScroll(Widget widget, WindowInterface wif, int position)
-{
+void SignalVScroll(Widget widget, WindowInterface wif, int position) {
   MNWScrollReqEvent *event;
 
   if ((event = (MNWScrollReqEvent *)NewEvent()) != NULL) {
@@ -373,8 +378,7 @@ void SignalVScroll(Widget widget, WindowInterface wif, int position)
   }
 }
 
-void SignalHScroll(Widget widget, WindowInterface wif, int position)
-{
+void SignalHScroll(Widget widget, WindowInterface wif, int position) {
   MNWScrollReqEvent *event;
 
   if ((event = (MNWScrollReqEvent *)NewEvent()) != NULL) {
@@ -394,8 +398,7 @@ void SignalHScroll(Widget widget, WindowInterface wif, int position)
 /*									*/
 /*									*/
 /************************************************************************/
-void getMNWsignaldata(int fd)
-{
+void getMNWsignaldata(int fd) {
   Display *display;
   DspInterfaceRec *dspif;
   XEvent report;
@@ -441,7 +444,8 @@ void getMNWsignaldata(int fd)
         } break;
 
         case EnterNotify:
-          if (MWindow) DoMNWRing(MNWMouseIn, screen, MWindow, 0, 0, 0, 0);
+          if (MWindow)
+            DoMNWRing(MNWMouseIn, screen, MWindow, 0, 0, 0, 0);
           break;
 
         case LeaveNotify:
@@ -510,8 +514,7 @@ void getMNWsignaldata(int fd)
 /*									*/
 /************************************************************************/
 
-void DoMNWRing(int type, LispPTR screen, LispPTR window, int l, int b, int wid, int h)
-{
+void DoMNWRing(int type, LispPTR screen, LispPTR window, int l, int b, int wid, int h) {
   DLword w, r;
   MNWEvent *event;
   int foo = MNWEVENTSIZE; /* so we can examine the value */
@@ -531,7 +534,8 @@ do_ring:
     r = RING_READ(CTopMNWEvent);
     w = RING_WRITE(CTopMNWEvent);
 
-    if (r == w) return;
+    if (r == w)
+      return;
 
     event = (MNWEvent *)(CTopMNWEvent + w);
 
@@ -549,7 +553,9 @@ do_ring:
     else
       ((RING *)CTopMNWEvent)->write = w + MNWEVENTSIZE;
 
-    if (*MNWBUFFERING68k == NIL) *MNWBUFFERING68k = ATOM_T;
-    if (MNWEventFlg++ > 0) Irq_Stk_End = Irq_Stk_Check = 0; /* Ask for interrupt */
+    if (*MNWBUFFERING68k == NIL)
+      *MNWBUFFERING68k = ATOM_T;
+    if (MNWEventFlg++ > 0)
+      Irq_Stk_End = Irq_Stk_Check = 0; /* Ask for interrupt */
   }
 }

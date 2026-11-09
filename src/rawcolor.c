@@ -55,7 +55,7 @@ typedef struct {
   LispPTR bigbmlist;
 } BIGBM;
 
-#define GetNewFragment(list, frag, type)      \
+#define GetNewFragment(list, frag, type)           \
   frag = (type)NativeAligned4FromLAddr(car(list)); \
   list = cdr(list);
 
@@ -74,14 +74,12 @@ LispPTR SLOWBLTCHAR_index;
     return;                                                                                \
   }
 
-static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset,
-                          BITMAP *dBM, DLword dXOffset, DLword dYOffset,
-                          DLword width, DLword height, u_char col0, u_char col1,
-                          LispPTR sourcetype, LispPTR operation);
-static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset,
-                                BIGBM *dBM, DLword dXOffset, DLword dYOffset,
-                                DLword width, DLword height, u_char col0, u_char col1,
-                                LispPTR sourcetype, LispPTR operation);
+static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM,
+                          DLword dXOffset, DLword dYOffset, DLword width, DLword height,
+                          u_char col0, u_char col1, LispPTR sourcetype, LispPTR operation);
+static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM,
+                                DLword dXOffset, DLword dYOffset, DLword width, DLword height,
+                                u_char col0, u_char col1, LispPTR sourcetype, LispPTR operation);
 
 /***********************************************************/
 /*
@@ -93,35 +91,35 @@ static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset,
 /***********************************************************/
 
 /* I'll merge this macro with  FGetNum later */
-#define SFGetNum(ptr, place)                    \
-  {                                             \
-    if (((ptr)&SEGMASK) == S_POSITIVE) {        \
-      (place) = ((ptr)&0xffff);                 \
-    } else if (((ptr)&SEGMASK) == S_NEGATIVE) { \
-      (place) = (int)((ptr) | 0xffff0000);      \
-    } else {                                    \
-      PUNT_TO_SLOWBLTCHAR;                      \
-    }                                           \
+#define SFGetNum(ptr, place)                      \
+  {                                               \
+    if (((ptr) & SEGMASK) == S_POSITIVE) {        \
+      (place) = ((ptr) & 0xffff);                 \
+    } else if (((ptr) & SEGMASK) == S_NEGATIVE) { \
+      (place) = (int)((ptr) | 0xffff0000);        \
+    } else {                                      \
+      PUNT_TO_SLOWBLTCHAR;                        \
+    }                                             \
   }
 
 /* place:		native pointer
    val:		native value(should be smallp)
    puntcase:	punt descriptions */
-#define FReplaceSmallp(place, val, puntcase)                       \
-  {                                                                \
-    if ((0 <= (val)) && ((val) <= MAX_SMALL))                      \
+#define FReplaceSmallp(place, val, puntcase)              \
+  {                                                       \
+    if ((0 <= (val)) && ((val) <= MAX_SMALL))             \
       (place) = (LispPTR)(S_POSITIVE | (val));            \
-    else if (MIN_SMALL <= val)                                     \
+    else if (MIN_SMALL <= val)                            \
       (place) = (LispPTR)(S_NEGATIVE | (0xffff & (val))); \
-    else {                                                         \
-      puntcase;                                                    \
-    }                                                              \
+    else {                                                \
+      puntcase;                                           \
+    }                                                     \
   }
 
 /* charcode should be pos. smallp */
 #define charcode (args[0] & 0xffff)
 #define displaystream args[1]
-#define Char8Code(x) ((u_char)((x)&0xff))
+#define Char8Code(x) ((u_char)((x) & 0xff))
 #define CharSet(x) ((x) >> 8)
 
 #define PSEUDO_BLACK 255
@@ -141,8 +139,7 @@ LispPTR COLORSCREEN_index; /* if it's 0xffffffff, not yet initialized */
 /*									*/
 /************************************************************************/
 
-void C_slowbltchar(LispPTR *args)
-{
+void C_slowbltchar(LispPTR *args) {
   Stream *n_dstream;
   DISPLAYDATA *n_dd;
   FONTDESC *n_fontd;
@@ -165,8 +162,8 @@ void C_slowbltchar(LispPTR *args)
   n_destbitmap = (BITMAP *)NativeAligned4FromLAddr(n_dd->dddestination);
 
   if ((n_fontd->ROTATION & 0xffff) == 0) {
-    if ((csinfo = *((NativeAligned4FromLAddr(n_fontd->FONTCHARSETVECTOR)) +
-                    CharSet(charcode))) == NIL)
+    if ((csinfo = *((NativeAligned4FromLAddr(n_fontd->FONTCHARSETVECTOR)) + CharSet(charcode))) ==
+        NIL)
       PUNT_TO_SLOWBLTCHAR; /* CSINFO is not cached */
 
     n_csinfo = (CHARSETINFO *)NativeAligned4FromLAddr(csinfo);
@@ -184,7 +181,8 @@ void C_slowbltchar(LispPTR *args)
 
     newx = curx + *NativeAligned2FromLAddr(n_dd->ddwidthscache + Char8Code(charcode));
 
-    if (newx > rmargin) PUNT_TO_SLOWBLTCHAR; /* do \DSPPRINTCR/LF */
+    if (newx > rmargin)
+      PUNT_TO_SLOWBLTCHAR; /* do \DSPPRINTCR/LF */
 
     /* If we care about TOPW then it's too slow to create Menu etc.
        But,if we don't,it causes some error  **/
@@ -243,7 +241,8 @@ void C_slowbltchar(LispPTR *args)
         bottom = IMAX((short)src_y, IMAX(bottom - stody, 0));
         right = IMIN((short)src_w, IMIN((short)(src_x + w), right - stodx));
         top = IMIN((short)src_h, IMIN((short)(src_y + h), top - stody));
-        if ((right <= left) || (top <= bottom)) return;
+        if ((right <= left) || (top <= bottom))
+          return;
         w = (DLword)(right - left);
         h = (DLword)(top - bottom);
         dst_x = (DLword)(left + stodx);
@@ -271,12 +270,14 @@ void C_slowbltchar(LispPTR *args)
         displayflg = n_new_cursorin(NativeAligned2FromLAddr(n_destBM->bmbase), dst_x << 3,
                                     /* Kludge:YCoordination upside down*/
                                     displayheight - cury, w, h);
-        if (displayflg) HideCursor;
+        if (displayflg)
+          HideCursor;
 
         ColorizeFont8(n_srcBM, src_x, src_y, n_destBM, dst_x, dst_y, w, h, backcolor, forecolor,
                       n_dd->ddsourcetype, n_dd->ddoperation);
 
-        if (displayflg) ShowCursor;
+        if (displayflg)
+          ShowCursor;
         ScreenLocked = NIL;
 
       } else { /* BIGBM */
@@ -313,9 +314,9 @@ void C_slowbltchar(LispPTR *args)
 
 u_int ColorizedFont8CACHE[MAXFONTHEIGHT / BITSPERNIBBLE * MAXFONTWIDTH / BITSPERNIBBLE];
 
-static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
-              LispPTR sourcetype, LispPTR operation)
-{
+static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP *dBM,
+                          DLword dXOffset, DLword dYOffset, DLword width, DLword height,
+                          u_char col0, u_char col1, LispPTR sourcetype, LispPTR operation) {
   DLword *nbase;
   u_char *dbase;
   int i;
@@ -326,7 +327,8 @@ static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP 
   nbase = NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
   dbase = (u_char *)NativeAligned2FromLAddr(dBM->bmbase) + (dBM->bmrasterwidth * dYOffset);
   for (i = 0, dbase += dXOffset; /* 8bpp */
-       i < height; i++, nbase += sBM->bmrasterwidth, dbase += dBM->bmrasterwidth * BYTESPER_DLWORD) {
+       i < height;
+       i++, nbase += sBM->bmrasterwidth, dbase += dBM->bmrasterwidth * BYTESPER_DLWORD) {
     lineBlt8(nbase, (int)sXOffset, dbase, (int)width, col0, col1, sourcetype, operation);
   } /* for end */
 
@@ -343,9 +345,9 @@ static void ColorizeFont8(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BITMAP 
 /*									*/
 /************************************************************************/
 
-static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM, DLword dXOffset, DLword dYOffset, DLword width, DLword height, u_char col0, u_char col1,
-              LispPTR sourcetype, LispPTR operation)
-{
+static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, BIGBM *dBM,
+                                DLword dXOffset, DLword dYOffset, DLword width, DLword height,
+                                u_char col0, u_char col1, LispPTR sourcetype, LispPTR operation) {
   DLword *nbase;
   u_char *dbase;
   int i;
@@ -368,7 +370,8 @@ static void ColorizeFont8_BIGBM(BITMAP *sBM, DLword sXOffset, DLword sYOffset, B
   /* search fragment of bitmaps including the destination top. */
   while (dest_fragbottom <= dYOffset) {
     GetNewFragment(dest_bmlist, dest_frag, BITMAP *);
-    if (dest_frag == (BITMAP *)NativeAligned4FromLAddr(NIL_PTR)) return;
+    if (dest_frag == (BITMAP *)NativeAligned4FromLAddr(NIL_PTR))
+      return;
     dest_fragtop = dest_fragbottom;
     dest_fragbottom += dest_frag->bmheight;
   } /* end while */
@@ -386,7 +389,8 @@ loop:
     dest_h = dest_fragbottom - (dest_fragtop + dest_yoffset);
   } /* end if */
 
-  dbase = (u_char *)NativeAligned2FromLAddr(dest_frag->bmbase) + (dest_frag->bmrasterwidth * dest_yoffset);
+  dbase = (u_char *)NativeAligned2FromLAddr(dest_frag->bmbase) +
+          (dest_frag->bmrasterwidth * dest_yoffset);
   nbase = NativeAligned2FromLAddr(sBM->bmbase) + (sBM->bmrasterwidth * sYOffset);
 
   sYOffset += (DLword)dest_h; /* next src yoffset */
@@ -407,7 +411,7 @@ loop:
       nbase += sBM->bmrasterwidth;
       goto loop;
     } /* end if(dest_frag) */
-  }   /* end if(height) */
+  } /* end if(height) */
 
 } /* end ColorizeFont8_BIGBM() */
 
@@ -419,8 +423,8 @@ loop:
 /*									*/
 /************************************************************************/
 
-static void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype, LispPTR ope)
-{
+static void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, LispPTR srctype,
+                             LispPTR ope) {
   DLword *nbase;
   u_char *dbase;
   int i;
@@ -442,8 +446,7 @@ static void newColorizeFont8(PILOTBBT *pbt, u_char backcolor, u_char forecolor, 
 /*									*/
 /************************************************************************/
 
-void Uncolorize_Bitmap(LispPTR args[])
-{
+void Uncolorize_Bitmap(LispPTR args[]) {
   BITMAP *s_bitmap, *d_bitmap;
   DLword *OnOff;
 
@@ -460,7 +463,8 @@ void Uncolorize_Bitmap(LispPTR args[])
   s_width = s_bitmap->bmwidth;
   s_bitsperpixel = s_bitmap->bmbitperpixel;
 
-  if (s_bitsperpixel != 8) return;
+  if (s_bitsperpixel != 8)
+    return;
 
   s_base = (u_char *)NativeAligned2FromLAddr(s_bitmap->bmbase);
   d_base = NativeAligned2FromLAddr(d_bitmap->bmbase);
@@ -495,16 +499,19 @@ void Uncolorize_Bitmap(LispPTR args[])
           defaults:
             break;
         } /* end switch( x ) */
-      }   /* end if( ) */
+      } /* end if( ) */
       if ((x & 0xF) == 0xF) {
         *(d_base++) = word;
         word = 0;
       } /* end if( x ) */
-    }   /* end for( x ) */
+    } /* end for( x ) */
 
-    if ((x & 0xF) != 0) *(d_base++) = word;
+    if ((x & 0xF) != 0)
+      *(d_base++) = word;
 
-    if (y != (s_height - 1)) { s_base += s_rasterwidth * BYTESPER_DLWORD; } /* end if( y ) */
+    if (y != (s_height - 1)) {
+      s_base += s_rasterwidth * BYTESPER_DLWORD;
+    } /* end if( y ) */
 
   } /* end for( y ) */
 
@@ -518,8 +525,7 @@ void Uncolorize_Bitmap(LispPTR args[])
 /*									*/
 /************************************************************************/
 
-LispPTR Colorize_Bitmap(LispPTR args[])
-{
+LispPTR Colorize_Bitmap(LispPTR args[]) {
   BITMAP *s_bitmap, *d_bitmap;
   int s_left, s_bottom, d_left, d_bottom, width, height, color0, color1, d_nbits;
   DLword *s_base;
@@ -527,7 +533,8 @@ LispPTR Colorize_Bitmap(LispPTR args[])
   int i;
 
   N_GETNUMBER(args[10], d_nbits, bad_arg);
-  if (d_nbits != 8) return (NIL); /* do nothing. */
+  if (d_nbits != 8)
+    return (NIL); /* do nothing. */
 
   s_bitmap = (BITMAP *)NativeAligned4FromLAddr(args[0]);
   N_GETNUMBER(args[1], s_left, bad_arg);
@@ -543,10 +550,10 @@ LispPTR Colorize_Bitmap(LispPTR args[])
   s_base = NativeAligned2FromLAddr(s_bitmap->bmbase) +
            s_bitmap->bmrasterwidth * (s_bitmap->bmheight - (s_bottom + height));
   d_base = (u_char *)NativeAligned2FromLAddr(d_bitmap->bmbase) +
-                     d_bitmap->bmrasterwidth * (d_bitmap->bmheight - (d_bottom + height));
+           d_bitmap->bmrasterwidth * (d_bitmap->bmheight - (d_bottom + height));
 
-  for (i = 0, d_base += d_left; i < height;
-       i++, s_base += s_bitmap->bmrasterwidth, d_base += d_bitmap->bmrasterwidth * BYTESPER_DLWORD) {
+  for (i = 0, d_base += d_left; i < height; i++, s_base += s_bitmap->bmrasterwidth,
+      d_base += d_bitmap->bmrasterwidth * BYTESPER_DLWORD) {
     lineBlt8(s_base, s_left, d_base, width, (u_char)color0, (u_char)color1, INPUT_atom,
              REPLACE_atom);
 
@@ -595,8 +602,7 @@ bad_arg:
     }                                        \
   }
 
-void Draw_8BppColorLine(LispPTR *args)
-{
+void Draw_8BppColorLine(LispPTR *args) {
   extern int ScreenLocked;
 
   u_char color;

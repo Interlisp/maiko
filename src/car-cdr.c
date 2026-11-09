@@ -102,12 +102,12 @@ LispPTR cdr(LispPTR datum)
   if (cdr_code == CDR_NIL) {
     return NIL_PTR; /* cdr is nil */
   }
-  if ((cdr_code & CDR_ONPAGE) != 0) {/* cdr-samepage */
+  if ((cdr_code & CDR_ONPAGE) != 0) { /* cdr-samepage */
 #ifdef NEWCDRCODING
     return datum + ((cdr_code & 7) << 1);
 #else
     return POINTER_PAGEBASE(datum) + ((cdr_code & 127) << 1);
-#endif                                 /* NEWCDRCODING */
+#endif /* NEWCDRCODING */
   }
   if (cdr_code == CDR_INDIRECT) { /* cdr_code > CDR_ONPAGE cdr-indirect */
     return cdr((LispPTR)(datum68k->car_field));
@@ -138,8 +138,7 @@ LispPTR cdr(LispPTR datum)
  * @param y [in] LispPTR to object that will become new car of x.
  * @return x, modified, or NIL if x is not a list.
  */
-LispPTR rplaca(LispPTR x, LispPTR y)
-{
+LispPTR rplaca(LispPTR x, LispPTR y) {
   ConsCell *x_68k;
   ConsCell *temp;
 
@@ -196,8 +195,7 @@ static ConsCell *find_close_cell(struct conspage *page, LispPTR oldcell);
  * @return x, modified, or errors if x is not a list.
  */
 
-LispPTR rplacd(LispPTR x, LispPTR y)
-{
+LispPTR rplacd(LispPTR x, LispPTR y) {
   ConsCell *x_68k;
   ConsCell *temp68k;
   ConsCell *cdr_cell68k;
@@ -215,8 +213,8 @@ LispPTR rplacd(LispPTR x, LispPTR y)
     return NIL_PTR;
   }
   if (!Listp(x)) {
-      error("ARG not List");
-      return NIL_PTR; 
+    error("ARG not List");
+    return NIL_PTR;
   }
 
   x_68k = (ConsCell *)NativeAligned4FromLAddr(x);
@@ -253,13 +251,14 @@ LispPTR rplacd(LispPTR x, LispPTR y)
     /* cdr-samepage & y is nil */
     x_68k->cdr_code = CDR_NIL;
 #ifdef NEWCDRCODING
-  } else if (((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y)) && (y > x) && (y <= (x + 14))) {
+  } else if (((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y)) && (y > x) &&
+             (y <= (x + 14))) {
     /* cdr-samepage & x and y are on same page */
     x_68k->cdr_code = CDR_ONPAGE + ((y - x) >> 1);
 #else
-  else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y))
-    /* cdr-samepage & x and y are on same page */
-    x_68k->cdr_code = CDR_ONPAGE + ((y & 0xff) >> 1);
+    else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y))
+        /* cdr-samepage & x and y are on same page */
+        x_68k->cdr_code = CDR_ONPAGE + ((y & 0xff) >> 1);
 #endif /* NEWCDRCODING */
   } else {
     /* cdr-samepage & x and y are on different page */
@@ -362,10 +361,11 @@ LispPTR N_OP_cdr(LispPTR tos) {
   ConsCell *datum68k;
   DLword cdr_code;
 
-  if (tos == NIL_PTR) { return (tos);
-}
+  if (tos == NIL_PTR) {
+    return (tos);
+  }
   if (!Listp(tos)) {
-      ERROR_EXIT(tos);
+    ERROR_EXIT(tos);
   }
 
   datum68k = (ConsCell *)NativeAligned4FromLAddr(tos);
@@ -379,7 +379,7 @@ LispPTR N_OP_cdr(LispPTR tos) {
     return tos + ((cdr_code & 7) << 1);
 #else
     return POINTER_PAGEBASE(tos) + ((cdr_code & 127) << 1);
-#endif                                 /*NEWCDRCODING */
+#endif /*NEWCDRCODING */
   }
   if (cdr_code == CDR_INDIRECT) { /* cdr-indirect */
     return cdr((LispPTR)(datum68k->car_field));
@@ -388,7 +388,8 @@ LispPTR N_OP_cdr(LispPTR tos) {
 #ifdef NEWCDRCODING
   return (LispPTR)((ConsCell *)(NativeAligned4FromLAddr(tos + (cdr_code << 1))))->car_field;
 #else
-  return (LispPTR)((ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(tos) + (cdr_code << 1))))->car_field;
+  return (LispPTR)((ConsCell *)(NativeAligned4FromLAddr(POINTER_PAGEBASE(tos) + (cdr_code << 1))))
+      ->car_field;
 #endif /*NEWCDRCODING */
 } /* end of N_OP_cdr */
 
@@ -446,7 +447,6 @@ LispPTR N_OP_rplaca(LispPTR tosm1, LispPTR tos) {
 /**********************************************************************/
 
 LispPTR N_OP_rplacd(LispPTR tosm1, LispPTR tos) {
-
   if (tosm1 == NIL_PTR) {
     if (tos == NIL_PTR) {
       return NIL_PTR;
@@ -454,7 +454,7 @@ LispPTR N_OP_rplacd(LispPTR tosm1, LispPTR tos) {
     ERROR_EXIT(tos);
   }
   if (!Listp(tosm1)) {
-      ERROR_EXIT(tos);
+    ERROR_EXIT(tos);
   }
   rplacd(tosm1, tos);
   return tosm1;
@@ -497,8 +497,9 @@ ConsCell *find_close_prior_cell(struct conspage *page, LispPTR oldcell) {
       }
       page->count -= 1;
       cell->cdr_code = CDR_ONPAGE | ((oldoffset - offset) >> 1);
-      if (254 < (offset + ((cell->cdr_code & 7) << 1))) { error("in fcpc, page overflow.");
-}
+      if (254 < (offset + ((cell->cdr_code & 7) << 1))) {
+        error("in fcpc, page overflow.");
+      }
       return (cell);
     }
 

@@ -50,7 +50,6 @@
 #include "commondefs.h"
 #include "perrnodefs.h"
 
-
 extern int *Lisp_errno;
 extern int Dummy_errno;
 
@@ -168,8 +167,7 @@ LispPTR CHAR_closefile(LispPTR *args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_ioctl(LispPTR *args)
-{
+LispPTR CHAR_ioctl(LispPTR *args) {
 #ifndef DOS
   int fd, request;
   void *data;
@@ -200,8 +198,7 @@ LispPTR CHAR_ioctl(LispPTR *args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bin(int fd, LispPTR errn)
-{
+LispPTR CHAR_bin(int fd, LispPTR errn) {
 #ifndef DOS
   ssize_t rval;
   unsigned char ch[4];
@@ -232,8 +229,7 @@ LispPTR CHAR_bin(int fd, LispPTR errn)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
-{
+LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn) {
 #ifndef DOS
   ssize_t rval;
   char buf[4];
@@ -277,8 +273,7 @@ LispPTR CHAR_bout(int fd, LispPTR ch, LispPTR errn)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bins(LispPTR *args)
-{
+LispPTR CHAR_bins(LispPTR *args) {
 #ifndef DOS
   int fd;
   ssize_t rval;
@@ -329,8 +324,7 @@ LispPTR CHAR_bins(LispPTR *args)
 /*                                                                      */
 /************************************************************************/
 
-LispPTR CHAR_bouts(LispPTR *args)
-{
+LispPTR CHAR_bouts(LispPTR *args) {
 #ifndef DOS
   int fd;
   ssize_t rval;

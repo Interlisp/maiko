@@ -20,7 +20,7 @@
 */
 /******************************************************************/
 #include <stdio.h>        // for printf, putchar
-#include <string.h>	  // for memset
+#include <string.h>       // for memset
 #include "address.h"      // for LOLOC
 #include "adr68k.h"       // for NativeAligned2FromStackOffset, StackOffsetFromNative
 #include "commondefs.h"   // for error, warn
@@ -33,7 +33,7 @@
 #include "llstkdefs.h"    // for blt, check_BF, check_FX, check_stack_rooms
 #include "lspglob.h"      // for InterfacePage, Stackspace, STACKOVERFLOW_word
 #include "lsptypes.h"     // for GETWORD
-#include "retmacro.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW
+#include "retmacro.h"     // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW
 #include "stack.h"        // for StackWord, Bframe, FX, frameex1, STKWORD
 #include "storagedefs.h"  // for newpage
 // #include "testtooldefs.h" // for print_atomname
@@ -69,7 +69,8 @@ static DLword *extendstack(void) {
     SETUPGUARDBLOCK(NativeAligned2FromStackOffset(InterfacePage->endofstack), 2);
     MAKEFREEBLOCK(NativeAligned2FromStackOffset(easp), 2);
     return ((DLword *)NativeAligned4FromStackOffset(scanptr));
-  }     return (NIL);
+  }
+  return (NIL);
 } /* end extendstack */
 
 /******************************************************************/
@@ -102,7 +103,7 @@ tryfsb:
     if (FSBP(new68k)) {
       for (; FSBP(new68k); new68k = new68k + FSB_size(new68k)) {
         FSB_size(next68k) += FSB_size(new68k);
-}
+      }
       new68k = (DLword *)oldfx68k;
       goto out;
     } else if (StackOffsetFromNative(new68k) == InterfacePage->endofstack) {
@@ -151,18 +152,21 @@ tryfsb:
                             (LAddrFromNative(oldfx68k) - DLWORDSPER_CELL) % DLWORDSPER_QUAD);
   } else {
     new68k = freestackblock(size, (StackWord *)oldfx68k, -1); /* Not needed to align */
-}
+  }
 
-  if (new68k == 0) { return (0xFFFF); /* exhausted */
-}
-  if (new68k < Stackspace) { error("freestackblock returned gunk.");
-}
+  if (new68k == 0) {
+    return (0xFFFF); /* exhausted */
+  }
+  if (new68k < Stackspace) {
+    error("freestackblock returned gunk.");
+  }
 
   if (at_eos && ((UNSIGNED)new68k > (UNSIGNED)oldfx68k)) {
     /* extendstack already done in freestackblock */
     ((STKBLK *)new68k)->flagword = STK_FSB_WORD;
-    if (((STKBLK *)new68k)->size == 0) { error("0-long stack freeblock.");
-}
+    if (((STKBLK *)new68k)->size == 0) {
+      error("0-long stack freeblock.");
+    }
     goto tryfsb;
   }
 
@@ -231,8 +235,12 @@ int do_stackoverflow(int incallp) {
        became residual, and it is pointed to by copied FX's BLINK */
   oldPVar = PVar;
 
-  if (*NeedHardreturnCleanup_word) { warn("HardreturnCleanup in do_stackoverflow"); }
-  if (incallp) { savenext = CURRENTFX->nextblock; /* save old nextblock */ }
+  if (*NeedHardreturnCleanup_word) {
+    warn("HardreturnCleanup in do_stackoverflow");
+  }
+  if (incallp) {
+    savenext = CURRENTFX->nextblock; /* save old nextblock */
+  }
 
   BEFORE_CONTEXTSW; /* Don't Use MIDPUNT and Don't care IFPAGE */
 
@@ -260,7 +268,7 @@ int do_stackoverflow(int incallp) {
             "in call, but stack frame doesn't match FN being executed.");
 #else
     S_CHECK(FuncObj == (struct fnhead *)NativeAligned4FromLAddr((CURRENTFX->hi2fnheader << 16) |
-                                                           CURRENTFX->lofnheader),
+                                                                CURRENTFX->lofnheader),
             "in call, but stack frame doesn't match FN being executed.");
 #endif /* BIGVM */
     CHECK_FX(CURRENTFX);
@@ -299,8 +307,9 @@ DLword *freestackblock(DLword n, StackWord *start68k, int align)
 
   DLword *extendstack(void);
 
-  if (n % 2) { error("asking for odd-length stack block");
-}
+  if (n % 2) {
+    error("asking for odd-length stack block");
+  }
 
   /* compute actually size you needed */
   wantedsize = n + STACKAREA_SIZE + MINEXTRASTACKWORDS;
@@ -318,20 +327,21 @@ STARTOVER:
     scanptr68k = start68k;
   } else {
     scanptr68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->stackbase);
-}
+  }
 
 SCAN:
   switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
     case STK_FSB: goto FREESCAN;
     case STK_GUARD:
-      if ((UNSIGNED)scanptr68k < (UNSIGNED)easp68k) { goto FREESCAN;
-}
+      if ((UNSIGNED)scanptr68k < (UNSIGNED)easp68k) {
+        goto FREESCAN;
+      }
       if (start68k) {
         scanptr68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->stackbase);
         goto SCAN;
       } else {
         goto NEWPAGE;
-}
+      }
     case STK_FX:
       scanptr68k = (StackWord *)NativeAligned2FromStackOffset(((FX *)scanptr68k)->nextblock);
       break;
@@ -382,8 +392,9 @@ FREESCAN:
   freesize = FSB_size(freeptr68k);
 FREE:
   scanptr68k = (StackWord *)(((DLword *)freeptr68k) + freesize);
-  if (freesize == 0) { error("FREESIZE = 0");
-}
+  if (freesize == 0) {
+    error("FREESIZE = 0");
+  }
 
   switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
     case STK_FSB: freesize = freesize + FSB_size(scanptr68k); goto FREE;
@@ -404,7 +415,7 @@ FREE:
       wantedsize = MINEXTRASTACKWORDS;
     } else {
       wantedsize = MINEXTRASTACKWORDS + DLWORDSPER_CELL;
-}
+    }
 
     scanptr68k = (StackWord *)(((DLword *)freeptr68k) + wantedsize);
 
@@ -412,7 +423,8 @@ FREE:
     MAKEFREEBLOCK(freeptr68k, wantedsize);
     MAKEFREEBLOCK(((DLword *)scanptr68k) + n, freesize - wantedsize - n);
     return ((DLword *)scanptr68k);
-  }     MAKEFREEBLOCK(freeptr68k, freesize);
+  }
+  MAKEFREEBLOCK(freeptr68k, freesize);
 
   goto NEXT;
 } /* freestackblock end */
@@ -435,39 +447,42 @@ void decusecount68k(FX *frame68k) {
   /*** DLword *ivar68k; */
   int size;
 
-  if (FX_INVALIDP(frame68k)) { return;
-}
+  if (FX_INVALIDP(frame68k)) {
+    return;
+  }
   CHECK_FX(frame68k);
   /* I don't check if \INTERRUPTABLE is NIL */
   while (StackOffsetFromNative(frame68k)) {
     if (frame68k->usecount != 0) {
       frame68k->usecount--;
       return;
-    }       alink68k = NativeAligned2FromStackOffset(GETALINK(frame68k));
-      blink68k = (Bframe *)NativeAligned4FromStackOffset(GETBLINK(frame68k));
-      clink68k = NativeAligned2FromStackOffset(GETCLINK(frame68k));
+    }
+    alink68k = NativeAligned2FromStackOffset(GETALINK(frame68k));
+    blink68k = (Bframe *)NativeAligned4FromStackOffset(GETBLINK(frame68k));
+    clink68k = NativeAligned2FromStackOffset(GETCLINK(frame68k));
 
-      size = FX_size(frame68k);
+    size = FX_size(frame68k);
 
-      if (((Bframe *)DUMMYBF(frame68k))->residual) { /* this frame has dummy BF */
-        MAKEFREEBLOCK(((DLword *)frame68k) - DLWORDSPER_CELL, size + DLWORDSPER_CELL);
-      } else {
-        MAKEFREEBLOCK(frame68k, size);
-      }
+    if (((Bframe *)DUMMYBF(frame68k))->residual) { /* this frame has dummy BF */
+      MAKEFREEBLOCK(((DLword *)frame68k) - DLWORDSPER_CELL, size + DLWORDSPER_CELL);
+    } else {
+      MAKEFREEBLOCK(frame68k, size);
+    }
 
-      if (blink68k->usecnt != 0) {
-        blink68k->usecnt--;
-      } else {
-        /***    ivar68k=NativeAligned2FromStackOffset(blink68k->ivar);
-            GETWORD(ivar68k)=STK_FSB_WORD;
-            GETWORD(ivar68k+1)=ivar68k -(DLword *)blink68k +2; **/
+    if (blink68k->usecnt != 0) {
+      blink68k->usecnt--;
+    } else {
+      /***    ivar68k=NativeAligned2FromStackOffset(blink68k->ivar);
+          GETWORD(ivar68k)=STK_FSB_WORD;
+          GETWORD(ivar68k+1)=ivar68k -(DLword *)blink68k +2; **/
 
-        MAKEFREEBLOCK(NativeAligned2FromStackOffset(blink68k->ivar), BF_size(blink68k));
-      }
-      if (alink68k != clink68k) { decusecount68k((FX *)alink68k);
-}
+      MAKEFREEBLOCK(NativeAligned2FromStackOffset(blink68k->ivar), BF_size(blink68k));
+    }
+    if (alink68k != clink68k) {
+      decusecount68k((FX *)alink68k);
+    }
 
-      frame68k = (FX *)clink68k;
+    frame68k = (FX *)clink68k;
 
     /* else end */
 
@@ -482,8 +497,7 @@ extern int Current_Hot_X, Current_Hot_Y;
 #endif /* XWINDOW */
 
 extern struct cursor CurrentCursor;
-void flip_cursorbar(int n)
-{
+void flip_cursorbar(int n) {
   GETWORD(EmCursorBitMap68K + n) = ~(GETWORD(EmCursorBitMap68K + n));
 
 #ifdef XWINDOW
@@ -520,7 +534,9 @@ void blt(DLword *dest68k, DLword *source68k, int nw) {
   **** OLD def ****/
   source68k = source68k + nw - 1;
   dest68k = dest68k + nw - 1;
-  while (nw--) { GETWORD(dest68k--) = GETWORD(source68k--); }
+  while (nw--) {
+    GETWORD(dest68k--) = GETWORD(source68k--);
+  }
 }
 
 /**************************************************************/
@@ -530,11 +546,11 @@ void blt(DLword *dest68k, DLword *source68k, int nw) {
 */
 /**************************************************************/
 #ifdef FSBCHECK
-  struct big_fsbs {
-    DLword offset;
-    DLword size;
-  } bigFSB[100];
-  int bigFSBindex;
+struct big_fsbs {
+  DLword offset;
+  DLword size;
+} bigFSB[100];
+int bigFSBindex;
 #endif
 
 void stack_check(StackWord *start68k) {
@@ -551,7 +567,8 @@ void stack_check(StackWord *start68k) {
   memset((char *)bigFSB, 0, sizeof(bigFSB));
 #endif
 
-  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) ||
+      (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
            printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
@@ -571,17 +588,20 @@ void stack_check(StackWord *start68k) {
     scanptr68k = start68k;
   } else {
     scanptr68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->stackbase);
-}
+  }
   endstack68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->endofstack);
 
-  if (STKWORD(endstack68k)->flags != STK_GUARD) { printf("?? endstack is not GUARD BLK\n");
-}
+  if (STKWORD(endstack68k)->flags != STK_GUARD) {
+    printf("?? endstack is not GUARD BLK\n");
+  }
 
   while (scanptr68k < endstack68k) {
     switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
       case STK_FSB:
         freesize = FSB_size(scanptr68k);
-        if (freesize == 0) { warn("FSB freesize = 0!"); }
+        if (freesize == 0) {
+          warn("FSB freesize = 0!");
+        }
 #ifdef FSBCHECK
         if (freesize > STACKAREA_SIZE + MINEXTRASTACKWORDS) {
           if (bigFSBindex < 100) {
@@ -597,7 +617,9 @@ void stack_check(StackWord *start68k) {
 
       case STK_GUARD:
         freesize = FSB_size(scanptr68k);
-        if (freesize == 0) { warn("Guard block freesize = 0!"); }
+        if (freesize == 0) {
+          warn("Guard block freesize = 0!");
+        }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
         putchar('G');
         break;
@@ -612,7 +634,8 @@ void stack_check(StackWord *start68k) {
         top_ivar = (DLword *)scanptr68k;
         while (STKWORD(scanptr68k)->flags != STK_BF) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
-            WARN("StackCheck:!=STK_NOTFLG", printf("content:0x%x\n", GETWORD((DLword *)scanptr68k)));
+            WARN("StackCheck:!=STK_NOTFLG",
+                 printf("content:0x%x\n", GETWORD((DLword *)scanptr68k)));
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */
@@ -620,11 +643,11 @@ void stack_check(StackWord *start68k) {
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar) {
             printf("Residual has real IVAR:0x%x\n", LAddrFromNative(scanptr68k));
-}
+          }
         } else {
           if (((Bframe *)scanptr68k)->ivar != StackOffsetFromNative(top_ivar)) {
             printf("BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(scanptr68k));
-}
+          }
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         putchar('B');
@@ -680,7 +703,8 @@ void walk_stack(StackWord *start68k) {
   DLword setflg = NIL;
   DLword freesize;
 
-  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) ||
+      (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
            printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
@@ -714,7 +738,7 @@ void walk_stack(StackWord *start68k) {
   if (STKWORD(endstack68k)->flags != STK_GUARD) {
     printf("?? endstack is not GUARD BLK\nendstack = %p, flags = %d\n\n", (void *)endstack68k,
            STKWORD(endstack68k)->flags);
-}
+  }
 
   while (scanptr68k < endstack68k) {
     switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
@@ -724,7 +748,9 @@ void walk_stack(StackWord *start68k) {
         printf("%04tx:  Free block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
                freesize);
 
-        if (freesize == 0) { freesize = 2; }
+        if (freesize == 0) {
+          freesize = 2;
+        }
 
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
 
@@ -734,7 +760,9 @@ void walk_stack(StackWord *start68k) {
         freesize = FSB_size(scanptr68k);
         printf("%04tx:  Guard block (len %d/0x%x)\n", (DLword *)scanptr68k - Stackspace, freesize,
                freesize);
-        if (freesize == 0) { freesize = 2; }
+        if (freesize == 0) {
+          freesize = 2;
+        }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
 
         break;
@@ -750,8 +778,8 @@ void walk_stack(StackWord *start68k) {
 #ifdef BIGVM
           fnobj = (struct fnhead *)NativeAligned4FromLAddr(fx->fnheader);
 #else
-          fnobj =
-              (struct fnhead *)NativeAligned4FromLAddr(((int)fx->hi2fnheader << 16) | fx->lofnheader);
+          fnobj = (struct fnhead *)NativeAligned4FromLAddr(((int)fx->hi2fnheader << 16) |
+                                                           fx->lofnheader);
 #endif /* BIGVM */
           print(fnobj->framename);
           printf("\talink: 0x%04x, clink: 0x%04x, next: 0x%04x\n", fx->alink, fx->clink,
@@ -773,7 +801,7 @@ void walk_stack(StackWord *start68k) {
             mtmp = (Bframe *)NativeAligned4FromStackOffset(mblink);
             if ((dummybf->residual == NIL) || (dummybf->ivar != mtmp->ivar)) {
               printf("       [Bad residual]\n");
-}
+            }
           }
         }
 
@@ -798,7 +826,7 @@ void walk_stack(StackWord *start68k) {
 
           if (((Bframe *)scanptr68k)->ivar != StackOffsetFromNative(top_ivar)) {
             printf("       [but top_ivar = 0x%04tx]\n", top_ivar - Stackspace);
-}
+          }
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         break;
@@ -854,12 +882,13 @@ int quick_stack_check(void) {
   memset((char *)bigFSB, 0, sizeof(bigFSB));
 #endif
 
-  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) || (!FSBP(CurrentStackPTR))) {
+  if ((CURRENTFX->nextblock != StackOffsetFromNative(CurrentStackPTR)) ||
+      (!FSBP(CurrentStackPTR))) {
     if ((DLword *)CURRENTFX >= CurrentStackPTR) {
       WARN("CURRENTFX >= CurrentStackPTR??\n",
            printf("CURRENTFX=0x%x,CurrentStackPTR=0x%x\n", LAddrFromNative(CURRENTFX),
                   LAddrFromNative(CurrentStackPTR)));
-      return(1);
+      return (1);
     }
     setflg = T;
     save_nextblock = CURRENTFX->nextblock;
@@ -873,8 +902,9 @@ int quick_stack_check(void) {
   scanptr68k = start68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->stackbase);
   endstack68k = (StackWord *)NativeAligned2FromStackOffset(InterfacePage->endofstack);
 
-  if (STKWORD(endstack68k)->flags != STK_GUARD) { printf("?? endstack is not GUARD BLK\n");
-}
+  if (STKWORD(endstack68k)->flags != STK_GUARD) {
+    printf("?? endstack is not GUARD BLK\n");
+  }
 
   while (scanptr68k < endstack68k) {
     switch ((unsigned)(STKWORD(scanptr68k)->flags)) {
@@ -882,7 +912,7 @@ int quick_stack_check(void) {
         freesize = FSB_size(scanptr68k);
         if (freesize == 0) {
           warn("FSB freesize = 0!");
-          return(1);
+          return (1);
         }
 #ifdef FSBCHECK
         if (freesize > STACKAREA_SIZE + MINEXTRASTACKWORDS) {
@@ -899,7 +929,7 @@ int quick_stack_check(void) {
         freesize = FSB_size(scanptr68k);
         if (freesize == 0) {
           warn("Guard block freesize = 0!");
-          return(1);
+          return (1);
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + freesize);
         break;
@@ -913,7 +943,7 @@ int quick_stack_check(void) {
           if (STKWORD(scanptr68k)->flags != STK_NOTFLG) {
             warn("StackCheck:!=STK_NOTFLG");
             printf("content:0x%x\n", GETWORD((DLword *)scanptr68k));
-            return(1);
+            return (1);
           }
           scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         } /* while end */
@@ -921,11 +951,11 @@ int quick_stack_check(void) {
         if (((Bframe *)scanptr68k)->residual) {
           if ((DLword *)scanptr68k != top_ivar) {
             printf("Residual has real IVAR:0x%x\n", LAddrFromNative(scanptr68k));
-}
+          }
         } else {
           if (((Bframe *)scanptr68k)->ivar != StackOffsetFromNative(top_ivar)) {
             printf("BF doesn't point TopIVAR:0x%x\n", LAddrFromNative(scanptr68k));
-}
+          }
         }
         scanptr68k = (StackWord *)((DLword *)scanptr68k + DLWORDSPER_CELL);
         break;
@@ -954,7 +984,7 @@ int quick_stack_check(void) {
     GETWORD(CurrentStackPTR + 2) = savestack1;
     GETWORD(CurrentStackPTR + 3) = savestack2;
   }
-  return(0);
+  return (0);
 
 } /* quick_stack_check end */
 
@@ -976,8 +1006,9 @@ void check_FX(FX *fx68k) {
 
   /* The FX better really be an FX */
 
-  if (((FX *)(fx68k))->flags != STK_FX) { error("CheckFX:NOT FX");
-}
+  if (((FX *)(fx68k))->flags != STK_FX) {
+    error("CheckFX:NOT FX");
+  }
 
   /* Make sure the NEXTBLOCK field of the FX */
   /* Points BEYOND the start of the FX; some */
@@ -994,15 +1025,16 @@ void check_FX(FX *fx68k) {
   dummybf = (Bframe *)DUMMYBF(fx68k);
 
   /* Check for connection via BLINK field: */
-  if (StackOffsetFromNative(dummybf) == GETBLINK(fx68k)) { return;
-}
+  if (StackOffsetFromNative(dummybf) == GETBLINK(fx68k)) {
+    return;
+  }
 
   mblink = GETBLINK(fx68k);
   mtmp = (Bframe *)NativeAligned4FromStackOffset(mblink);
   if ((dummybf->residual != NIL) && (dummybf->ivar == mtmp->ivar)) {
     return;
-}
-      error("CheckFX:bad residual case");
+  }
+  error("CheckFX:bad residual case");
 
 } /* END check_FX */
 
@@ -1019,26 +1051,27 @@ void check_BF(Bframe *bf68k) {
   Bframe *iptr68k;
 
   /* For starterd, it must BE a BF */
-  if (bf68k->flags != STK_BF) { error("checkBF:not BF1");
-}
+  if (bf68k->flags != STK_BF) {
+    error("checkBF:not BF1");
+  }
 
   /* If the frame is residual (whatever that means), it's OK */
   if (bf68k->residual == T) {
     return;
-}
-      if (bf68k->ivar & 1) {
-      error("IVAR is ODD in a BF");
-    } else {
-      for (iptr68k = (Bframe *)NativeAligned4FromStackOffset(bf68k->ivar);
-           iptr68k <= (Bframe *)(((DLword *)bf68k) - 2); iptr68k++) /* inc 2DLword */
-      {
-        /* Make sure none of the "ivar" slots have stack-type */
-        /* bits set. */
-        if (iptr68k->flags != STK_NOTFLG) { warn("CheckBF:Stack-bits set in IVAR");
-}
+  }
+  if (bf68k->ivar & 1) {
+    error("IVAR is ODD in a BF");
+  } else {
+    for (iptr68k = (Bframe *)NativeAligned4FromStackOffset(bf68k->ivar);
+         iptr68k <= (Bframe *)(((DLword *)bf68k) - 2); iptr68k++) /* inc 2DLword */
+    {
+      /* Make sure none of the "ivar" slots have stack-type */
+      /* bits set. */
+      if (iptr68k->flags != STK_NOTFLG) {
+        warn("CheckBF:Stack-bits set in IVAR");
       }
-}
-
+    }
+  }
 
 } /* end check_BF */
 
@@ -1055,8 +1088,9 @@ int check_stack_rooms(FX *fx68k) {
 
   CHECK_FX(fx68k);
   freeptr68k = NativeAligned2FromStackOffset(fx68k->nextblock);
-  if (!FSBP(freeptr68k)) { error("check_stack_rooms:  nextblock doesn't point to an FSB");
-}
+  if (!FSBP(freeptr68k)) {
+    error("check_stack_rooms:  nextblock doesn't point to an FSB");
+  }
   return (FSB_size(freeptr68k));
 
 } /* end check_stack_rooms */

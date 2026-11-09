@@ -37,7 +37,7 @@
 #endif /* DOS */
 
 #ifdef XWINDOW
-#include <X11/Xlib.h>      // for ConnectionNumber
+#include <X11/Xlib.h>  // for ConnectionNumber
 #endif
 
 #ifdef OS5
@@ -49,32 +49,32 @@
 #define vfork fork
 #endif
 
-#include "version.h"             // for BIGVM
+#include "version.h"  // for BIGVM
 
-#include "adr68k.h"              // for NativeAligned4FromStackOffset, LAddr...
-#include "cell.h"                // for DefCell, GetDEFCELL68k, GetVALCELL68k
-#include "dbgtooldefs.h"         // for bt1, bt, sf
-#include "devif.h"               // for DspInterfaceRec, DevRec, DspInterface
-#include "display.h"             // for DISPLAYBUFFER
-#include "gcarraydefs.h"         // for get_package_atom
-#include "gcfinaldefs.h"         // for printarrayblock
-#include "ifpage.h"              // for IFPAGE
-#include "initdspdefs.h"         // for clear_display, flush_display_buffer
-#include "initkbddefs.h"         // for init_keyboard
-#include "kprintdefs.h"          // for print
-#include "lispemul.h"            // for T, DLword, LispPTR, POINTERMASK, NIL
-#include "lispmap.h"             // for DISPLAY_HI, ATOM_HI, DEFS_HI, DISPLA...
-#include "llstkdefs.h"           // for stack_check
-#include "lspglob.h"             // for InterfacePage, Plistspace
-#include "lsptypes.h"            // for GETWORD, GetDTD, GetTypeNumber, dtd
-#include "mkatomdefs.h"          // for make_atom
-#include "returndefs.h"          // for contextsw
-#include "stack.h"               // for FX, ResetFXP
-#include "testtooldefs.h"        // for all_stack_dump, doko, printPC, print...
-#include "timerdefs.h"           // for int_block, int_init, int_unblock
-#include "uraiddefs.h"           // for copy_region, device_after_raid, devi...
-#include "uraidextdefs.h"        // for URMAXCOMM, URMAXFXNUM, URSCAN_ALINK
-#include "vmemsavedefs.h"        // for vmem_save
+#include "adr68k.h"        // for NativeAligned4FromStackOffset, LAddr...
+#include "cell.h"          // for DefCell, GetDEFCELL68k, GetVALCELL68k
+#include "dbgtooldefs.h"   // for bt1, bt, sf
+#include "devif.h"         // for DspInterfaceRec, DevRec, DspInterface
+#include "display.h"       // for DISPLAYBUFFER
+#include "gcarraydefs.h"   // for get_package_atom
+#include "gcfinaldefs.h"   // for printarrayblock
+#include "ifpage.h"        // for IFPAGE
+#include "initdspdefs.h"   // for clear_display, flush_display_buffer
+#include "initkbddefs.h"   // for init_keyboard
+#include "kprintdefs.h"    // for print
+#include "lispemul.h"      // for T, DLword, LispPTR, POINTERMASK, NIL
+#include "lispmap.h"       // for DISPLAY_HI, ATOM_HI, DEFS_HI, DISPLA...
+#include "llstkdefs.h"     // for stack_check
+#include "lspglob.h"       // for InterfacePage, Plistspace
+#include "lsptypes.h"      // for GETWORD, GetDTD, GetTypeNumber, dtd
+#include "mkatomdefs.h"    // for make_atom
+#include "returndefs.h"    // for contextsw
+#include "stack.h"         // for FX, ResetFXP
+#include "testtooldefs.h"  // for all_stack_dump, doko, printPC, print...
+#include "timerdefs.h"     // for int_block, int_init, int_unblock
+#include "uraiddefs.h"     // for copy_region, device_after_raid, devi...
+#include "uraidextdefs.h"  // for URMAXCOMM, URMAXFXNUM, URSCAN_ALINK
+#include "vmemsavedefs.h"  // for vmem_save
 
 #ifdef MAIKO_ENABLE_ETHERNET
 #include "etherdefs.h"
@@ -261,8 +261,7 @@ extern int PrintMaxLevel; /* for print level */
 */
 /***********************************************************************/
 
-LispPTR parse_atomstring(char *string)
-{
+LispPTR parse_atomstring(char *string) {
   char *start, *packageptr = NULL, *nameptr = NULL;
   DLword packagelen = 0;
   DLword namelen = 0;
@@ -283,7 +282,7 @@ LispPTR parse_atomstring(char *string)
     namelen = cnt;
   } else {
     namelen = cnt - 1;
-}
+  }
 
   if ((packagelen == 0) || (strncmp(packageptr, "IL", packagelen) == 0)) { /* default IL: */
     aindex = make_atom(nameptr, 0, namelen);
@@ -293,10 +292,11 @@ LispPTR parse_atomstring(char *string)
     }
   } else {
     aindex = get_package_atom(nameptr, namelen, packageptr, packagelen, 0);
-}
+  }
 
-  if (aindex == 0xffffffff) { return (0xffffffff);
-}
+  if (aindex == 0xffffffff) {
+    return (0xffffffff);
+  }
   printf("INDEX : %d\n", aindex & 0xffff);
   return (aindex & 0xffff);
 }
@@ -321,21 +321,22 @@ void uraid_commclear(void) {
   URaid_argnum = 0;
 }
 
-void copy_region(const DLword *src, DLword *dst, int width, int h)
-{
+void copy_region(const DLword *src, DLword *dst, int width, int h) {
   int w;
 
   while (h--) {
-    for (w = width; (w--);) { GETWORD(dst++) = GETWORD(src++); }
+    for (w = width; (w--);) {
+      GETWORD(dst++) = GETWORD(src++);
+    }
   }
 }
 
-struct dtd * uGetDTD(unsigned int typenum) {
-    return (struct dtd *)GetDTD(typenum);
+struct dtd *uGetDTD(unsigned int typenum) {
+  return (struct dtd *)GetDTD(typenum);
 }
 
 unsigned int uGetTN(unsigned int address) {
-    return GetTypeNumber(address);
+  return GetTypeNumber(address);
 }
 
 /***********************************************************************/
@@ -365,9 +366,9 @@ LispPTR uraid_commands(void) {
     if (URaid_currentFX > URaid_ArrMAXIndex) {
       printf("There is no more stack.\n");
       return (T);
-    }       sf(URaid_FXarray[URaid_currentFX++]);
-      return (T);
-
+    }
+    sf(URaid_FXarray[URaid_currentFX++]);
+    return (T);
   }
   switch (URaid_comm[0]) {
 /*** Displaying STACK stuff */
@@ -407,7 +408,7 @@ LispPTR uraid_commands(void) {
         URaid_scanlink = URSCAN_CLINK;
       } else {
         printf("Link type should be A or C\n");
-}
+      }
       break;
     case 'l':
       if (URaid_argnum == 1) {
@@ -451,7 +452,8 @@ LispPTR uraid_commands(void) {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
-      } 	printf("Atom: %s index %d\n", URaid_arg1, index);
+      }
+      printf("Atom: %s index %d\n", URaid_arg1, index);
 
       print(*((LispPTR *)GetVALCELL68k(index)));
       break;
@@ -468,8 +470,7 @@ LispPTR uraid_commands(void) {
         return (T);
       }
       printarrayblock(objaddr);
-    }
-    break;
+    } break;
 
     case 'F': { /* print array block free list head(s) */
       long size;
@@ -488,8 +489,7 @@ LispPTR uraid_commands(void) {
         }
       }
       printfreeblockchainn(size);
-    }
-    break;
+    } break;
 
     case 'd': /* DEFCELL */
       if (URaid_argnum != 2) {
@@ -499,15 +499,16 @@ LispPTR uraid_commands(void) {
       if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
-      } 	printf("Atom: %s index %d\n", URaid_arg1, index);
+      }
+      printf("Atom: %s index %d\n", URaid_arg1, index);
 
       defcell68k = (DefCell *)GetDEFCELL68k(index);
       if (defcell68k->ccodep) {
         printf("{CCODEP}0x%x\n", defcell68k->defpointer);
         return (T);
-      }         print(defcell68k->defpointer);
-        return (T);
-
+      }
+      print(defcell68k->defpointer);
+      return (T);
 
     case 'M': /* Machine States */
       printf("TOS   : 0x%x\n", TopOfStack);
@@ -607,8 +608,8 @@ LispPTR uraid_commands(void) {
           printf("{DISPLAY}");
           printf("0x%x\n", address);
           break;
-      default: {
-          struct dtd *dtd = (struct dtd*)GetDTD(GetTypeNumber(address));
+        default: {
+          struct dtd *dtd = (struct dtd *)GetDTD(GetTypeNumber(address));
 #ifdef BIGVM
           index = dtd->dtd_name;
 #else
@@ -616,13 +617,13 @@ LispPTR uraid_commands(void) {
 #endif
           putchar('{');
           if (index != 0) {
-              print_atomname(index);
+            print_atomname(index);
           } else {
-              printf("unknown");
+            printf("unknown");
           }
           printf("}\n");
           break;
-      }
+        }
       } /* switch end */
 
       break;
@@ -685,7 +686,9 @@ LispPTR uraid_commands(void) {
         while (ptr < endptr) {
           printf("0x%x : ", LAddrFromNative(ptr));
 
-          for (i = 0; ((ptr < endptr) && (i < XDUMPW)); ptr++, i++) { printf("%4x ", *ptr); }
+          for (i = 0; ((ptr < endptr) && (i < XDUMPW)); ptr++, i++) {
+            printf("%4x ", *ptr);
+          }
           putchar('\n');
         }
       }
@@ -709,17 +712,17 @@ LispPTR uraid_commands(void) {
         if (errno != 0 || *endpointer != '\0') {
           printf(" Bad value\n");
           return (T);
-        }           if ((val < -65536) || (65535 < val)) {
-            printf("Bad Val range\n");
-            return (T);
-          }
-          if (val >= 0) {
-            val |= S_POSITIVE;
-          } else {
-            val = val & 0xffff;
-            val |= S_NEGATIVE;
-          }
-
+        }
+        if ((val < -65536) || (65535 < val)) {
+          printf("Bad Val range\n");
+          return (T);
+        }
+        if (val >= 0) {
+          val |= S_POSITIVE;
+        } else {
+          val = val & 0xffff;
+          val |= S_NEGATIVE;
+        }
       }
       printf("Old value is ");
       print(*((LispPTR *)GetVALCELL68k(index)));
@@ -805,8 +808,9 @@ LispPTR uraid_commands(void) {
       {
         int c;
         c = getchar();
-        if ((c == 'Y') || (c == 'y')) { exit(0);
-}
+        if ((c == 'Y') || (c == 'y')) {
+          exit(0);
+        }
       }
       (void)fflush(stdin);
       URaid_currentFX = URMAXFXNUM + 1;
@@ -890,7 +894,6 @@ LispPTR uraid_commands(void) {
 extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
 #endif
 
-
 int device_before_raid(void) {
 #ifdef XWINDOW
   sigset_t signals;
@@ -907,7 +910,6 @@ int device_before_raid(void) {
   sigprocmask(SIG_UNBLOCK, &signals, NULL);
 #endif
 
-
 #ifdef MAIKO_ENABLE_ETHERNET
 #ifdef ETHERINT
   if (ether_fd > 0) /* check ether is used or not */
@@ -918,7 +920,6 @@ int device_before_raid(void) {
 #ifdef RS232INT
   int_io_close(RS232C_Fd);
 #endif
-
 
 #if defined(XWINDOW) || defined(DOS)
   (currentdsp->cleardisplay)(currentdsp);
@@ -999,8 +1000,9 @@ int device_after_raid(void) {
   extern DLword *EmMouseX68K, *EmMouseY68K, *EmKbdAd068K, *EmRealUtilin68K;
   extern DLword *EmKbdAd168K, *EmKbdAd268K, *EmKbdAd368K, *EmKbdAd468K, *EmKbdAd568K;
   FD_ZERO(&LispReadFds);
-  if (re_init_display(DISPLAY_OFFSET, 65536 * 16 * 2) == -1) { return (-1);
-}
+  if (re_init_display(DISPLAY_OFFSET, 65536 * 16 * 2) == -1) {
+    return (-1);
+  }
   set_cursor();
   init_keyboard(1);
 
@@ -1030,9 +1032,9 @@ int device_after_raid(void) {
 
   int_init();
 
-
 #ifdef MAIKO_ENABLE_ETHERNET
-  if (ether_fd > 0) FD_SET(ether_fd, &LispReadFds);
+  if (ether_fd > 0)
+    FD_SET(ether_fd, &LispReadFds);
 #endif /* MAIKO_ENABLE_ETHERNET */
 
 #ifdef XWINDOW
@@ -1067,17 +1069,13 @@ int device_after_raid(void) {
 /***********************************************************************/
 #ifndef COLOR
 
-static int re_init_display(int lisp_display_addr, int display_max)
-{
-
+static int re_init_display(int lisp_display_addr, int display_max) {
   return (0);
 }
 
 #else /* COLOR */
 
-static int re_init_display(int lisp_display_addr, int display_max)
-{
-
+static int re_init_display(int lisp_display_addr, int display_max) {
   return (0);
 }
 

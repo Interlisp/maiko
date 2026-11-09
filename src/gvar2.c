@@ -14,11 +14,11 @@
 #include "commondefs.h"  // for error
 #include "dbprint.h"     // for DEBUGGER
 #include "emlglob.h"
-#include "gcdata.h"      // for FRPLPTR
+#include "gcdata.h"        // for FRPLPTR
 #include "gchtfinddefs.h"  // for htfind, rec_htfind
-#include "gvar2defs.h"   // for N_OP_gvar_, N_OP_rplptr
-#include "lispemul.h"    // for LispPTR, DLword, NEWATOM_VALUE_OFFSET, NEWAT...
-#include "lspglob.h"     // for AtomSpace
+#include "gvar2defs.h"     // for N_OP_gvar_, N_OP_rplptr
+#include "lispemul.h"      // for LispPTR, DLword, NEWATOM_VALUE_OFFSET, NEWAT...
+#include "lspglob.h"       // for AtomSpace
 #include "lsptypes.h"
 
 /************************************************************************/
@@ -48,9 +48,9 @@ LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
 
 #ifdef BIGVM
     pslot = ((LispPTR *)AtomSpace) + (5 * atom_index) + NEWATOM_VALUE_PTROFF;
-}
+  }
 #else
-    pslot = (LispPTR *)Valspace + atom_index;
+  pslot = (LispPTR *)Valspace + atom_index;
 #endif /* BIGVM */
   DEBUGGER(if (tos & 0xF0000000) error("Setting GVAR with high bits on"));
   FRPLPTR(((struct xpointer *)pslot)->addr, tos);

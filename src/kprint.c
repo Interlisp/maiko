@@ -10,14 +10,14 @@
 
 #include "version.h"
 
-#include <stdio.h>         // for printf
-#include "address.h"       // for LOLOC
-#include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
-#include "car-cdrdefs.h"   // for cdr, car
+#include <stdio.h>        // for printf
+#include "address.h"      // for LOLOC
+#include "adr68k.h"       // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
+#include "car-cdrdefs.h"  // for cdr, car
 #include "emlglob.h"
-#include "kprintdefs.h"    // for prindatum, print, print_NEWstring, print_fixp
-#include "lispemul.h"      // for LispPTR, DLbyte, DLword, POINTERMASK, NIL
-#include "lispmap.h"       // for S_POSITIVE
+#include "kprintdefs.h"  // for prindatum, print, print_NEWstring, print_fixp
+#include "lispemul.h"    // for LispPTR, DLbyte, DLword, POINTERMASK, NIL
+#include "lispmap.h"     // for S_POSITIVE
 #include "lspglob.h"
 #include "lsptypes.h"      // for NEWSTRINGP, GETBYTE, GetTypeNumber, TYPE_L...
 #include "print.h"         // for DOUBLEQUOTE, RIGHT_PAREN, LEFT_PAREN, SPACE
@@ -46,7 +46,7 @@ void prindatum(LispPTR x) {
         printf("(-)");
       } else {
         printf("*");
-}
+      }
     }
     return;
   }
@@ -89,7 +89,7 @@ void prindatum(LispPTR x) {
         printf("%d", LOLOC(x)); /* print positive smallp */
       } else {
         printf("%d", (LOLOC(x) | 0xffff0000)); /* print negative smallp */
-}
+      }
       break;
     case TYPE_FIXP:
       print_fixp(x); /* print fixp  */
@@ -116,7 +116,7 @@ void prindatum(LispPTR x) {
         print_atomname(typename);
       } else {
         printf("unknown");
-}
+      }
       printf("}0x");
       printf("%x", x); /* print lisp address in hex */
   }

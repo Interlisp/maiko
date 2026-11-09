@@ -25,10 +25,10 @@
 #include "car-cdrdefs.h"   // for N_OP_rplacd
 #include "conspagedefs.h"  // for cons
 #include "emlglob.h"
-#include "lispemul.h"      // for LispPTR, state, ERROR_EXIT, NIL_PTR
+#include "lispemul.h"  // for LispPTR, state, ERROR_EXIT, NIL_PTR
 #include "lspglob.h"
-#include "lsptypes.h"      // for Listp
-#include "rplconsdefs.h"   // for N_OP_rplcons
+#include "lsptypes.h"     // for Listp
+#include "rplconsdefs.h"  // for N_OP_rplcons
 #ifndef NEWCDRCODING
 #include "gcdata.h"
 #include "gchtfinddefs.h"  // for htfind, rec_htfind
@@ -45,8 +45,9 @@ LispPTR N_OP_rplcons(LispPTR list, LispPTR item) {
   LispPTR page;
 #endif
 
-  if (!Listp(list)) { ERROR_EXIT(item);
-}
+  if (!Listp(list)) {
+    ERROR_EXIT(item);
+  }
 
 /* There are some rest Cell and "list" must be ONPAGE cdr_coded */
 #ifndef NEWCDRCODING

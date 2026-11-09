@@ -42,20 +42,20 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
-#include <stdio.h>        // for printf
-#include "address.h"      // for HILOC
-#include "adr68k.h"       // for NativeAligned4FromLAddr, LAddrFromNative
-#include "array.h"        // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
-#include "commondefs.h"   // for error
-#include "gccodedefs.h"   // for reclaimcodeblock
-#include "gcdata.h"       // for DELREF, REC_GCLOOKUP
-#include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "gcfinaldefs.h"  // for checkarrayblock
-#include "lispemul.h"     // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
-#include "llstkdefs.h"    // for decusecount68k
-#include "lspglob.h"      // for FreeBlockBuckets_word, ArrayMerging_word
-#include "lsptypes.h"     // for WORDPTR
-#include "stack.h"        // for STACKP, FX
+#include <stdio.h>         // for printf
+#include "address.h"       // for HILOC
+#include "adr68k.h"        // for NativeAligned4FromLAddr, LAddrFromNative
+#include "array.h"         // for arrayblock, ARRAYBLOCKTRAILERCELLS, MAXBUCK...
+#include "commondefs.h"    // for error
+#include "gccodedefs.h"    // for reclaimcodeblock
+#include "gcdata.h"        // for DELREF, REC_GCLOOKUP
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
+#include "gcfinaldefs.h"   // for checkarrayblock
+#include "lispemul.h"      // for LispPTR, NIL, T, POINTERMASK, DLword, ATOM_T
+#include "llstkdefs.h"     // for decusecount68k
+#include "lspglob.h"       // for FreeBlockBuckets_word, ArrayMerging_word
+#include "lsptypes.h"      // for WORDPTR
+#include "stack.h"         // for STACKP, FX
 
 #ifdef NEVER
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1) /* segnum field */
@@ -69,7 +69,8 @@
 #endif /* NEVER */
 
 #define min(a, b) (((a) > (b)) ? (b) : (a))
-#define Trailer(ldatum, datum68) ((ldatum) + DLWORDSPER_CELL * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
+#define Trailer(ldatum, datum68) \
+  ((ldatum) + DLWORDSPER_CELL * ((datum68)->arlen - ARRAYBLOCKTRAILERCELLS))
 #define BucketIndex(n) min(integerlength(n), MAXBUCKETINDEX)
 #define FreeBlockChainN(n) ((POINTERMASK & *FreeBlockBuckets_word) + 2 * BucketIndex(n))
 
@@ -129,8 +130,9 @@ struct buffer {
 static int integerlength(unsigned int n) {
   int p = 0;
 
-  if (n <= 2) { return (n); /* easy case */
-}
+  if (n <= 2) {
+    return (n); /* easy case */
+  }
   if (n >= 65536) {
     n >>= 16;
     p += 16;
@@ -192,8 +194,9 @@ LispPTR releasingvmempage(LispPTR ptr) {
   LispPTR buffer = findptrsbuffer(ptr);
   struct buffer *buffer_np;
 
-  if (buffer == NIL) { return (NIL); /* Not in use, OK to reclaim it */
-}
+  if (buffer == NIL) {
+    return (NIL); /* Not in use, OK to reclaim it */
+  }
 
   buffer_np = (struct buffer *)NativeAligned4FromLAddr(buffer);
   buffer_np->noreference = T; /* Mark the buffer free to use ?? */
@@ -227,50 +230,52 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
     if (base_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
-      return(T);
-    } if (base_np->inuse == free) {
+      return (T);
+    }
+    if (base_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
-      return(T);
+      return (T);
     } else if (trailer_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK trailer password wrong\n");
-      return(T);
+      return (T);
     } else if (base_np->arlen != trailer_np->arlen) {
       printarrayblock(base);
       error("ARRAYBLOCK Header and Trailer length don't match\n");
-      return(T);
+      return (T);
     } else if (trailer_np->inuse == free)
     /* This is not original source.(in original,
        trailer_np -> base_np) maybe, this is correction. */
     {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
-      return(T);
+      return (T);
     } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE)) {
       return (NIL);
-}
+    }
     /* Remaining tests only for free list. */
     fwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->fwd);
     bkwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->bkwd);
     if ((bkwd_np->fwd != base) || (fwd_np->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
-      return(T);
-    }       fbl = FreeBlockChainN(base_np->arlen);
-      rover = tmprover = NativeAligned4FromLAddr(fbl);
-      /* GETBASEPTR */
-      if ((*rover & POINTERMASK) == NIL) {
-        error("Free Block's bucket empty\n");
-        return(T);
+      return (T);
+    }
+    fbl = FreeBlockChainN(base_np->arlen);
+    rover = tmprover = NativeAligned4FromLAddr(fbl);
+    /* GETBASEPTR */
+    if ((*rover & POINTERMASK) == NIL) {
+      error("Free Block's bucket empty\n");
+      return (T);
+    }
+    do {
+      if ((*rover & POINTERMASK) == base) {
+        return (NIL);
       }
-      do {
-        if ((*rover & POINTERMASK) == base) { return (NIL);
-}
-        checkarrayblock((*rover & POINTERMASK), T, NIL);
-        rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
-      } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
-      return (NIL);
-
+      checkarrayblock((*rover & POINTERMASK), T, NIL);
+      rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
+    } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
+    return (NIL);
   }
   return (NIL);
 }
@@ -308,11 +313,12 @@ static void deleteblock(LispPTR base) {
         *fbl_np = NIL;
       } else {
         error("GC error:deleting last list # FREEBLOCKLIST\n");
-}
+      }
       return;
-    } if (base == freeblock) {
+    }
+    if (base == freeblock) {
       *fbl_np = f;
-}
+    }
     f_np->bkwd = b;
     b_np->fwd = f;
   }
@@ -339,7 +345,7 @@ static LispPTR linkblock(LispPTR base) {
 
   if (*FreeBlockBuckets_word == NIL) {
     return (base);
-}
+  }
 
   base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
   if (base_np->arlen < MINARRAYBLOCKSIZE) {
@@ -477,14 +483,14 @@ LispPTR mergebackward(LispPTR base) {
 
   if (base == NIL) {
     return (NIL);
-}
+  }
   /* back up to get the trailer of the previous block */
   ptrailer_np = (struct arrayblock *)NativeAligned4FromLAddr(base - ARRAYBLOCKTRAILERWORDS);
   /* check that there are no disqualifying conditions for merging with previous block */
   if ((*ArrayMerging_word == NIL) ||
-           ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T)))) {
+      ((base == *ArraySpace_word) || ((base == *ArraySpace2_word) || (ptrailer_np->inuse == T)))) {
     return (linkblock(base));
-}
+  }
   /* back up to the header of the previous block */
   pbase = base - DLWORDSPER_CELL * ptrailer_np->arlen;
   /* check that it is free, but skip free list checks */
@@ -505,24 +511,30 @@ LispPTR mergebackward(LispPTR base) {
 LispPTR mergeforward(LispPTR base) {
   LispPTR nbase, nbinuse;
   struct arrayblock *base_np, *nbase_np;
-  if (*ArrayMerging_word == NIL) { return NIL;
-}
-  if (base == NIL) { return NIL;
-}
-  if (checkarrayblock(base, T, T)) { return NIL;
-}
+  if (*ArrayMerging_word == NIL) {
+    return NIL;
+  }
+  if (base == NIL) {
+    return NIL;
+  }
+  if (checkarrayblock(base, T, T)) {
+    return NIL;
+  }
 
   base_np = (struct arrayblock *)NativeAligned4FromLAddr(base);
   nbase = base + DLWORDSPER_CELL * (base_np->arlen);
-  if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) { return NIL;
-}
+  if (nbase == *ArrayFrLst_word || nbase == *ArrayFrLst2_word) {
+    return NIL;
+  }
 
   nbase_np = (struct arrayblock *)NativeAligned4FromLAddr(nbase);
   nbinuse = nbase_np->inuse;
-  if (checkarrayblock(nbase, !nbinuse, NIL)) { return NIL;
-}
-  if (nbinuse) { return (NIL);
-}
+  if (checkarrayblock(nbase, !nbinuse, NIL)) {
+    return NIL;
+  }
+  if (nbinuse) {
+    return (NIL);
+  }
   deleteblock(nbase);
   deleteblock(base);
   return (arrayblockmerger(base, nbase));
@@ -597,7 +609,7 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
   }
   if (reclaim_p == T) {
     mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base_np->arlen)));
-}
+  }
   return (T);
 }
 
@@ -645,30 +657,33 @@ void printarrayblock(LispPTR base) {
          base_np->gctype, base_np->inuse);
   if (!base_np->inuse) {
     printf("      Free list: fwd 0x%x bkwd 0x%x\n", base_np->fwd, base_np->bkwd);
-}
+  }
   printf("  Header  Length: %d cells.\n\n", base_np->arlen);
   printf(" Trailer  Length: %d cells.\n\n", trailer_np->arlen);
 
   addr = ((LispPTR *)base_np) - 20;
-  for (; addr < (LispPTR *)base_np; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
-}
+  for (; addr < (LispPTR *)base_np; addr++) {
+    printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  }
   printf("%16p (0x%8x) %8x <- array header\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)base_np + 20; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
-}
+  for (; addr < (LispPTR *)base_np + 20; addr++) {
+    printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  }
   printf(". . .\n");
 
   addr = ((LispPTR *)trailer_np) - 20;
-  for (; addr < (LispPTR *)trailer_np; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
-}
+  for (; addr < (LispPTR *)trailer_np; addr++) {
+    printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  }
   printf("%16p (0x%8x) %8x <- array trailer\n", (void *)addr, LAddrFromNative(addr), *addr);
   addr++;
-  for (; addr < (LispPTR *)trailer_np + 20; addr++) { printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
-}
+  for (; addr < (LispPTR *)trailer_np + 20; addr++) {
+    printf("%16p (0x%8x) %8x\n", (void *)addr, LAddrFromNative(addr), *addr);
+  }
 }
 
-static void printfreeblockchainhead(int index)
-{
+static void printfreeblockchainhead(int index) {
   LispPTR fbl, freeblock;
   LispPTR *fbl_np;
 
@@ -683,12 +698,12 @@ static void printfreeblockchainhead(int index)
   }
 }
 
-void printfreeblockchainn(int arlen)
-{
+void printfreeblockchainn(int arlen) {
   if (arlen >= 0) {
     printfreeblockchainhead(BucketIndex(arlen));
     return;
-  }     for (int i = 0; i <= MAXBUCKETINDEX; i++) {
-      printfreeblockchainhead(i);
-    }
+  }
+  for (int i = 0; i <= MAXBUCKETINDEX; i++) {
+    printfreeblockchainhead(i);
+  }
 }

@@ -22,21 +22,21 @@
  * global variables exported to ether_*.c and possibly others
  */
 
-extern int     ether_enabled;
-extern int     ether_fd;
-extern u_char  ether_host[6];
-extern char  ether_ifname[32];
-extern const u_char  broadcast[6];
-extern int     ether_bsize;
+extern int ether_enabled;
+extern int ether_fd;
+extern u_char ether_host[6];
+extern char ether_ifname[32];
+extern const u_char broadcast[6];
+extern int ether_bsize;
 extern u_char *ether_buf;
 
-int     ether_enabled  = 0;     /* ethernet disabled unless we ask for it */
-int     ether_fd      = -1;    /* file descriptor for ether socket */
-u_char  ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
-char  ether_ifname[32] = "\0"; /* interface name (pcap, perhaps others) */
-const u_char  broadcast[6]  = {255, 255, 255, 255, 255, 255};
-int     ether_bsize   = 0;     /* if nonzero then a receive is pending */
-u_char *ether_buf     = NULL;  /* address of receive buffer */
+int ether_enabled = 0;                     /* ethernet disabled unless we ask for it */
+int ether_fd = -1;                         /* file descriptor for ether socket */
+u_char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address of this node */
+char ether_ifname[32] = "\0";              /* interface name (pcap, perhaps others) */
+const u_char broadcast[6] = {255, 255, 255, 255, 255, 255};
+int ether_bsize = 0;      /* if nonzero then a receive is pending */
+u_char *ether_buf = NULL; /* address of receive buffer */
 
 /*
  * public procedures
@@ -72,8 +72,7 @@ void init_ifpage_ether(void) {
 /*									*/
 /************************************************************************/
 
-LispPTR check_sum(LispPTR *args)
-{
+LispPTR check_sum(LispPTR *args) {
   LispPTR checksum;
   DLword *address;
   int nwords;
@@ -85,24 +84,25 @@ LispPTR check_sum(LispPTR *args)
     checksum = (*args) & MASKWORD1;
   } else {
     checksum = 0;
-}
+  }
 
   for (; nwords > (S_POSITIVE); address++, nwords--) {
     checksum = checksum + GETWORD(address);
-    if (checksum > 0xffff) { checksum = (checksum & 0xffff) + 1; /* add carry */
-}
+    if (checksum > 0xffff) {
+      checksum = (checksum & 0xffff) + 1; /* add carry */
+    }
 
     if (checksum > 0x7fff) { /* ROTATE LEFT 1 */
       checksum = ((checksum & 0x7fff) << 1) | 1;
     } else {
       checksum = checksum << 1;
-}
+    }
   }
 
   if (checksum == MASKWORD1) {
     return (S_POSITIVE); /* ret 0 */
-}
-      return (S_POSITIVE | checksum);
+  }
+  return (S_POSITIVE | checksum);
 
 } /*check_sum */
 
@@ -111,19 +111,15 @@ LispPTR check_sum(LispPTR *args)
  *	checks ethernet addresses equality
  **********************************************************************/
 
-int ether_addr_equal(const u_char addr1[6], const u_char addr2[6])
-{
+int ether_addr_equal(const u_char addr1[6], const u_char addr2[6]) {
   return (0 == memcmp(addr1, addr2, 6));
 }
-
 
 /*
  * dummy implementation of SUBRs if none of the networking options is compiled in
  */
 
-
 #if !defined(MAIKO_ENABLE_ETHERNET)
-
 
 /************************************************************************/
 /*                                                                      */
@@ -144,11 +140,9 @@ void init_ether(void) {
 /*      175/70/0                                                        */
 /*                                                                      */
 /************************************************************************/
-LispPTR ether_suspend(LispPTR args[])
-{
+LispPTR ether_suspend(LispPTR args[]) {
   return (ATOM_T);
 }
-
 
 /************************************************************************/
 /*                                                                      */
@@ -157,8 +151,7 @@ LispPTR ether_suspend(LispPTR args[])
 /*      resume nit socket to receive all types of packets 175/71/0      */
 /*                                                                      */
 /************************************************************************/
-LispPTR ether_resume(LispPTR args[])
-{
+LispPTR ether_resume(LispPTR args[]) {
   return (ATOM_T);
 }
 
@@ -169,16 +162,14 @@ LispPTR ether_resume(LispPTR args[])
 /*      return T if ether controller is available 175/72/0              */
 /*                                                                      */
 /************************************************************************/
-LispPTR ether_ctrlr(LispPTR args[])
-{
+LispPTR ether_ctrlr(LispPTR args[]) {
   return (NIL);
 }
 /**********************************************************************
  *      ether_reset(args) 175/73/0
  *      reset ether controller and disable receipt of packets
  **********************************************************************/
-LispPTR ether_reset(LispPTR args[])
-{
+LispPTR ether_reset(LispPTR args[]) {
   return (NIL);
 }
 /************************************************************************/
@@ -199,8 +190,7 @@ LispPTR ether_reset(LispPTR args[])
 /*      it's OK to read packets from the network on interrupt.          */
 /*                                                                      */
 /************************************************************************/
-LispPTR ether_get(LispPTR args[])
-{
+LispPTR ether_get(LispPTR args[]) {
   return (NIL);
 }
 
@@ -208,8 +198,7 @@ LispPTR ether_get(LispPTR args[])
  *      ether_send(args) 175/75/2 max_words,buffer_addr
  *      send a packet
  **********************************************************************/
-LispPTR ether_send(LispPTR args[])
-{
+LispPTR ether_send(LispPTR args[]) {
   return (NIL);
 }
 
@@ -217,18 +206,15 @@ LispPTR ether_send(LispPTR args[])
  *      ether_setfilter(args) 175/76/1 filterbits
  *      check whether a packet has come. if does, notify iocb
  **********************************************************************/
-LispPTR ether_setfilter(LispPTR args[])
-{
+LispPTR ether_setfilter(LispPTR args[]) {
   return (NIL);
 }
-
 
 /**********************************************************************
  *      check_ether() 175/77/0
  *      checks an incoming packet
  **********************************************************************/
-LispPTR check_ether(void)
-{
+LispPTR check_ether(void) {
   return (NIL);
 }
 

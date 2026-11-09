@@ -47,8 +47,9 @@ LispPTR N_OP_blt(LispPTR destptr, LispPTR sourceptr, LispPTR wordcount) {
   DLword *dest68k;
   int nw;
 
-  if ((wordcount & SEGMASK) != S_POSITIVE) { ERROR_EXIT(wordcount);
-}
+  if ((wordcount & SEGMASK) != S_POSITIVE) {
+    ERROR_EXIT(wordcount);
+  }
   nw = wordcount & 0xffff;
 
   source68k = NativeAligned2FromLAddr(sourceptr) + nw;

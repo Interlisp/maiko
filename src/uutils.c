@@ -19,17 +19,17 @@
 /************************************************************************/
 
 #ifndef DOS
-#include <pwd.h>         // for getpwuid, passwd
+#include <pwd.h>  // for getpwuid, passwd
 #endif
-#include <signal.h>      // for killpg, SIGTSTP
-#include <stddef.h>      // for size_t
-#include <stdio.h>       // for printf, NULL, snprintf, size_t
-#include <stdlib.h>      // for getenv
-#include <string.h>      // for strcmp, strlen, memcpy
-#include <unistd.h>      // for getuid, gethostid, gethostname, getpgrp
-#include "adr68k.h"      // for NativeAligned4FromLAddr
-#include "keyboard.h"    // for KBEVENT, KB_ALLUP, RING, KEYEVENTSIZE, MAXKE...
-#include "lispemul.h"    // for LispPTR, DLword, NIL, ATOM_T
+#include <signal.h>    // for killpg, SIGTSTP
+#include <stddef.h>    // for size_t
+#include <stdio.h>     // for printf, NULL, snprintf, size_t
+#include <stdlib.h>    // for getenv
+#include <string.h>    // for strcmp, strlen, memcpy
+#include <unistd.h>    // for getuid, gethostid, gethostname, getpgrp
+#include "adr68k.h"    // for NativeAligned4FromLAddr
+#include "keyboard.h"  // for KBEVENT, KB_ALLUP, RING, KEYEVENTSIZE, MAXKE...
+#include "lispemul.h"  // for LispPTR, DLword, NIL, ATOM_T
 #include "lspglob.h"
 #include "lsptypes.h"    // for GETWORD, OneDArray, GetTypeNumber, THIN_CHAR...
 #include "osmsgprint.h"  // for OSMESSAGE_PRINT
@@ -50,10 +50,14 @@ static int lisp_string_to_c_string(LispPTR Lisp, char *C, size_t length) {
   OneDArray *arrayp;
   char *base;
 
-  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
+  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) {
+    return (-1);
+  }
 
   arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
-  if (arrayp->fillpointer >= length) { return (-1); } /* too long */
+  if (arrayp->fillpointer >= length) {
+    return (-1);
+  } /* too long */
 
   switch (arrayp->typenumber) {
     case THIN_CHAR_TYPENUMBER:
@@ -94,10 +98,14 @@ static int c_string_to_lisp_string(char *C, LispPTR Lisp) {
   size_t length;
 
   length = strlen(C);
-  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) { return (-1); }
+  if (GetTypeNumber(Lisp) != TYPE_ONED_ARRAY) {
+    return (-1);
+  }
 
   arrayp = (OneDArray *)NativeAligned4FromLAddr(Lisp);
-  if (arrayp->totalsize < length + 1) { return (-1); }
+  if (arrayp->totalsize < length + 1) {
+    return (-1);
+  }
   /* too short for C string */
 
   switch (arrayp->typenumber) {
@@ -111,7 +119,8 @@ static int c_string_to_lisp_string(char *C, LispPTR Lisp) {
         for (size_t i = 0; i < length + 1; i++) {
           char ch = *dp++;
 #ifdef DOS
-          if (ch == '\\') dp++; /* skip 2nd \ in \\ in C strings */
+          if (ch == '\\')
+            dp++; /* skip 2nd \ in \\ in C strings */
 #endif /* DOS */
           GETBYTE(base++) = ch;
         }
@@ -147,10 +156,12 @@ LispPTR unix_username(LispPTR *args) {
 #ifndef DOS
   struct passwd *pwd;
 
-  if ((pwd = getpwuid(getuid())) == NULL) { return NIL;
-}
-  if (c_string_to_lisp_string(pwd->pw_name, args[0])) { return NIL;
-}
+  if ((pwd = getpwuid(getuid())) == NULL) {
+    return NIL;
+  }
+  if (c_string_to_lisp_string(pwd->pw_name, args[0])) {
+    return NIL;
+  }
 #endif /* DOS */
   return ATOM_T;
 }
@@ -194,8 +205,9 @@ LispPTR unix_username(LispPTR *args) {
  */
 LispPTR unix_getparm(LispPTR *args) {
   char envname[20], result[128], *envvalue;
-  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) { return NIL;
-}
+  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) {
+    return NIL;
+  }
 
   if (strcmp(envname, "MACH") == 0) {
 #if defined(sparc)
@@ -224,20 +236,23 @@ LispPTR unix_getparm(LispPTR *args) {
   }
 #ifndef DOS
   else if (strcmp(envname, "HOSTNAME") == 0) {
-    if (gethostname(result, sizeof result)) { return NIL;
-}
+    if (gethostname(result, sizeof result)) {
+      return NIL;
+    }
     envvalue = result;
   } else if (strcmp(envname, "LOGNAME") == 0) {
     struct passwd *pwd;
-    if ((pwd = getpwuid(getuid())) == NULL) { return NIL;
-}
+    if ((pwd = getpwuid(getuid())) == NULL) {
+      return NIL;
+    }
     envvalue = pwd->pw_name;
   } else if (strcmp(envname, "FULLUSERNAME") == 0) {
     struct passwd *pwd;
-    if ((pwd = getpwuid(getuid())) == NULL) { return NIL;
-}
+    if ((pwd = getpwuid(getuid())) == NULL) {
+      return NIL;
+    }
     envvalue = pwd->pw_gecos;
-  } 
+  }
 #ifndef MAIKO_OS_HAIKU
   else if (strcmp(envname, "HOSTID") == 0) {
     snprintf(result, sizeof(result), "%lx", gethostid());
@@ -247,10 +262,11 @@ LispPTR unix_getparm(LispPTR *args) {
 #endif /* DOS */
   else {
     return NIL;
-}
+  }
 
-  if (c_string_to_lisp_string(envvalue, args[1])) { return NIL;
-}
+  if (c_string_to_lisp_string(envvalue, args[1])) {
+    return NIL;
+  }
   return ATOM_T;
 }
 
@@ -264,13 +280,16 @@ LispPTR unix_getparm(LispPTR *args) {
 
 LispPTR unix_getenv(LispPTR *args) {
   char envname[20], *envvalue;
-  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) { return NIL;
-}
+  if (lisp_string_to_c_string(args[0], envname, sizeof envname)) {
+    return NIL;
+  }
   envvalue = getenv(envname);
-  if (!envvalue) { return NIL;
-}
-  if (c_string_to_lisp_string(envvalue, args[1])) { return NIL;
-}
+  if (!envvalue) {
+    return NIL;
+  }
+  if (c_string_to_lisp_string(envvalue, args[1])) {
+    return NIL;
+  }
   return ATOM_T;
 }
 
@@ -286,10 +305,12 @@ LispPTR unix_fullname(LispPTR *args) {
 #ifndef DOS
   struct passwd *pwd;
 
-  if ((pwd = getpwuid(getuid())) == NULL) { return NIL;
-}
-  if (c_string_to_lisp_string(pwd->pw_gecos, args[0])) { return NIL;
-}
+  if ((pwd = getpwuid(getuid())) == NULL) {
+    return NIL;
+  }
+  if (c_string_to_lisp_string(pwd->pw_gecos, args[0])) {
+    return NIL;
+  }
 #endif /* DOS */
   return ATOM_T;
 }
@@ -320,9 +341,9 @@ LispPTR suspend_lisp(void) {
 
   OSMESSAGE_PRINT(printf("suspending...\n"));
 
-/* Send a terminal-stop signal to the whole process-group, not
-   just this process, so that if we are running as part of a
-   C-shell file the shell will be suspended too. */
+  /* Send a terminal-stop signal to the whole process-group, not
+     just this process, so that if we are running as part of a
+     C-shell file the shell will be suspended too. */
   killpg(getpgrp(), SIGTSTP);
 
   OSMESSAGE_PRINT(printf("resuming\n"));
@@ -355,13 +376,13 @@ LispPTR suspend_lisp(void) {
 
   if (r == 0) { /* Queue was empty */
     ((RING *)CTopKeyevent)->read = w;
-}
+  }
 
   if (w >= MAXKEYEVENT) {
     ((RING *)CTopKeyevent)->write = MINKEYEVENT;
   } else {
     ((RING *)CTopKeyevent)->write = w + KEYEVENTSIZE;
-}
+  }
 #endif /* DOS, which doesn't support suspend-lisp */
   return ATOM_T;
 }

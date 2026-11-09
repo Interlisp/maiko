@@ -18,10 +18,10 @@
 
 #include "version.h"
 
-#include "car-cdrdefs.h"   // for car, cdr
-#include "cell.h"          // for cadr_cell
+#include "car-cdrdefs.h"  // for car, cdr
+#include "cell.h"         // for cadr_cell
 #include "emlglob.h"
-#include "lispemul.h"      // for state, LispPTR, ERROR_EXIT, NIL_PTR, Scrat...
+#include "lispemul.h"  // for state, LispPTR, ERROR_EXIT, NIL_PTR, Scrat...
 #include "lspglob.h"
 #include "lsptypes.h"      // for Listp, GetTypeNumber, TYPE_LISTP
 #include "lsthandldefs.h"  // for N_OP_fmemb, N_OP_listget, fmemb
@@ -34,14 +34,18 @@
 LispPTR N_OP_fmemb(LispPTR item, LispPTR tos) { /* OP 34Q */
 
   while (Listp(tos)) {
-    if (item == car(tos)) { return tos;
-}
+    if (item == car(tos)) {
+      return tos;
+    }
     tos = cdr(tos);
     /* if we get an interrupt, punt so we can handle it safely */
-    if (!Irq_Stk_End) { TIMER_EXIT(tos); }
+    if (!Irq_Stk_End) {
+      TIMER_EXIT(tos);
+    }
   }
-  if (tos) { ERROR_EXIT(tos);
-}
+  if (tos) {
+    ERROR_EXIT(tos);
+  }
   return tos;
 
 } /* N_OP_fmemb end */
@@ -58,13 +62,15 @@ LispPTR N_OP_fmemb(LispPTR item, LispPTR tos) { /* OP 34Q */
 
 LispPTR fmemb(LispPTR item, LispPTR list) {
   while (Listp(list)) {
-    if (item == car(list)) { return (list);
-}
+    if (item == car(list)) {
+      return (list);
+    }
     list = cdr(list);
   }
 
-  if (list) { return (list);
-}
+  if (list) {
+    return (list);
+  }
   return (list);
 
 } /* fmemb end */
@@ -77,14 +83,14 @@ LispPTR fmemb(LispPTR item, LispPTR list) {
 /**********************************************************************/
 
 #define SAVE_ERROR_EXIT2(topcstk, tos) \
-  do {                                  \
+  do {                                 \
     Scratch_CSTK = topcstk;            \
     ERROR_EXIT(tos);                   \
   } while (0)
 
 #define S_N_CHECKANDCADR2(sour, dest, tos, tcstk) \
   do {                                            \
-    LispPTR parm = sour;                 \
+    LispPTR parm = sour;                          \
     if (GetTypeNumber(parm) != TYPE_LISTP) {      \
       SAVE_ERROR_EXIT2(tcstk, tos);               \
     } else                                        \
@@ -98,14 +104,15 @@ LispPTR N_OP_listget(LispPTR plist, LispPTR tos) {
     S_N_CHECKANDCADR2(plist, cadrobj, tos, plist);
 
     if (cadrobj.car_cell == tos) {
-      if (cadrobj.cdr_cell == NIL_PTR) { return NIL_PTR;
-}
+      if (cadrobj.cdr_cell == NIL_PTR) {
+        return NIL_PTR;
+      }
 
       if (Listp(cadrobj.cdr_cell)) {
         return (car(cadrobj.cdr_cell));
-}
+      }
       /* must punt in case car/cdrerr */
-        SAVE_ERROR_EXIT2(plist, tos);
+      SAVE_ERROR_EXIT2(plist, tos);
     }
 
     if (!Listp(cadrobj.cdr_cell)) { /* this list ended before we found prop */

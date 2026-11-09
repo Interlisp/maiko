@@ -7,12 +7,12 @@
 
 #include "version.h"
 
-#include "adr68k.h"      // for NativeAligned4FromLAddr
-#include "arith.h"       // for N_IGETNUMBER, N_ARITH_SWITCH, N_GETNUMBER
+#include "adr68k.h"        // for NativeAligned4FromLAddr
+#include "arith.h"         // for N_IGETNUMBER, N_ARITH_SWITCH, N_GETNUMBER
 #include "arithopsdefs.h"  // for N_OP_difference, N_OP_greaterp, N_OP_idiffer...
-#include "fpdefs.h"      // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
-#include "lispemul.h"    // for state, ERROR_EXIT, LispPTR, ATOM_T, NIL_PTR
-#include "lispmap.h"     // for S_POSITIVE
+#include "fpdefs.h"        // for N_OP_fdifference, N_OP_fgreaterp, N_OP_fplus2
+#include "lispemul.h"      // for state, ERROR_EXIT, LispPTR, ATOM_T, NIL_PTR
+#include "lispmap.h"       // for S_POSITIVE
 #include "lspglob.h"
 #include "lsptypes.h"
 
@@ -40,7 +40,9 @@ LispPTR N_OP_plus2(LispPTR tosm1, LispPTR tos) {
 #else
   /* UB: signed integer overflow: 2147483647 + 2147483647 cannot be represented in type 'int' */
   result = arg1 + arg2;
-  if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
+  if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -76,7 +78,9 @@ LispPTR N_OP_iplus2(LispPTR tosm1, LispPTR tos) {
 
   /* UB: signed integer overflow: 2147483647 + 2147483647 cannot be represented in type 'int' */
   result = arg1 + arg2;
-  if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
+  if (((arg1 >= 0) == (arg2 >= 0)) && ((result >= 0) != (arg1 >= 0))) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -110,7 +114,9 @@ LispPTR N_OP_difference(LispPTR tosm1, LispPTR tos) {
 
   /* UB: signed integer overflow: -2147483647 - 320 cannot be represented in type 'int' */
   result = arg1 - arg2;
-  if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
+  if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -136,7 +142,9 @@ LispPTR N_OP_idifference(LispPTR tosm1, LispPTR tos) {
 #else
   /* UB: signed integer overflow: -2147483647 - 100 cannot be represented in type 'int' */
   result = arg1 - arg2;
-  if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) { ERROR_EXIT(tos); }
+  if (((arg1 >= 0) == (arg2 < 0)) && ((result >= 0) != (arg1 >= 0))) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -151,17 +159,17 @@ N_OP_logxor
 ************************************************************/
 
 LispPTR N_OP_logxor(LispPTR tosm1, LispPTR tos) {
-    int arg1, arg2;
+  int arg1, arg2;
 
-    N_IGETNUMBER(tosm1, arg1, do_ufn);
-    N_IGETNUMBER(tos, arg2, do_ufn);
+  N_IGETNUMBER(tosm1, arg1, do_ufn);
+  N_IGETNUMBER(tos, arg2, do_ufn);
 
-    arg1 = arg1 ^ arg2;
+  arg1 = arg1 ^ arg2;
 
-    N_ARITH_SWITCH(arg1);
+  N_ARITH_SWITCH(arg1);
 
-  do_ufn:
-    ERROR_EXIT(tos);
+do_ufn:
+  ERROR_EXIT(tos);
 }
 
 /************************************************************
@@ -170,17 +178,17 @@ N_OP_logand
         return(tosm1 & tos)
 ************************************************************/
 LispPTR N_OP_logand(LispPTR tosm1, LispPTR tos) {
-    int arg1, arg2;
+  int arg1, arg2;
 
-    N_IGETNUMBER(tosm1, arg1, do_ufn);
-    N_IGETNUMBER(tos, arg2, do_ufn);
+  N_IGETNUMBER(tosm1, arg1, do_ufn);
+  N_IGETNUMBER(tos, arg2, do_ufn);
 
-    arg1 = arg1 & arg2;
+  arg1 = arg1 & arg2;
 
-    N_ARITH_SWITCH(arg1);
+  N_ARITH_SWITCH(arg1);
 
-  do_ufn:
-    ERROR_EXIT(tos);
+do_ufn:
+  ERROR_EXIT(tos);
 }
 
 /************************************************************
@@ -189,17 +197,17 @@ N_OP_logor
         return(tosm1 | tos)
 ************************************************************/
 LispPTR N_OP_logor(LispPTR tosm1, LispPTR tos) {
-      int arg1, arg2;
+  int arg1, arg2;
 
-    N_IGETNUMBER(tosm1, arg1, do_ufn);
-    N_IGETNUMBER(tos, arg2, do_ufn);
+  N_IGETNUMBER(tosm1, arg1, do_ufn);
+  N_IGETNUMBER(tos, arg2, do_ufn);
 
-    arg1 = arg1 | arg2;
+  arg1 = arg1 | arg2;
 
-    N_ARITH_SWITCH(arg1);
+  N_ARITH_SWITCH(arg1);
 
-  do_ufn:
-    ERROR_EXIT(tos);
+do_ufn:
+  ERROR_EXIT(tos);
 }
 
 /************************************************************
@@ -229,7 +237,7 @@ LispPTR N_OP_igreaterp(LispPTR tosm1, LispPTR tos) {
 
   return (arg1 > arg2) ? ATOM_T : NIL_PTR;
 
- do_ufn:
+do_ufn:
   ERROR_EXIT(tos);
 }
 
@@ -254,7 +262,9 @@ LispPTR N_OP_iplusn(LispPTR tos, int n) {
 #else
 
   result = arg1 + n;
-  if ((result < 0) && (arg1 >= 0)) { ERROR_EXIT(tos); }
+  if ((result < 0) && (arg1 >= 0)) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -284,7 +294,9 @@ LispPTR N_OP_idifferencen(LispPTR tos, int n) {
 #else
 
   result = arg1 - n;
-  if ((result >= 0) && (arg1 < 0)) { ERROR_EXIT(tos); }
+  if ((result >= 0) && (arg1 < 0)) {
+    ERROR_EXIT(tos);
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -305,8 +317,9 @@ do_ufn:
 LispPTR N_OP_makenumber(LispPTR tosm1, LispPTR tos) {
   int result;
 
-  if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) { ERROR_EXIT(tos);
-}
+  if (((tosm1 & 0xFFFF0000) != S_POSITIVE) || ((tos & 0xFFFF0000) != S_POSITIVE)) {
+    ERROR_EXIT(tos);
+  }
   /* UB: left shift of 49152 by 16 places cannot be represented in type 'int' */
   result = (int)(((tosm1 & 0xffff) << 16) | (tos & 0xffff));
   N_ARITH_SWITCH(result);
@@ -381,7 +394,8 @@ LispPTR N_OP_times2(LispPTR tosm1, LispPTR tos) {
 #else
 
   result = arg1 * arg2;
-  if ((arg2 != 0) && ((result / arg2) != arg1)) goto doufn2;
+  if ((arg2 != 0) && ((result / arg2) != arg1))
+    goto doufn2;
   N_ARITH_SWITCH(result);
 
 #endif
@@ -411,7 +425,9 @@ LispPTR N_OP_itimes2(LispPTR tosm1, LispPTR tos) {
 
   /* UB: signed integer overflow: 1073741824 * 32768 cannot be represented in type 'int' */
   result = arg1 * arg2;
-  if ((arg2 != 0) && ((result / arg2) != arg1)) { goto doufn; }
+  if ((arg2 != 0) && ((result / arg2) != arg1)) {
+    goto doufn;
+  }
   N_ARITH_SWITCH(result);
 
 #endif
@@ -434,8 +450,9 @@ LispPTR N_OP_quot(LispPTR tosm1, LispPTR tos) {
 
   N_GETNUMBER(tosm1, arg1, doufn);
   N_GETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) { goto doufn2;
-}
+  if (arg2 == 0) {
+    goto doufn2;
+  }
 
   result = arg1 / arg2; /* lmm: note: no error case!! */
   N_ARITH_SWITCH(result);
@@ -453,8 +470,9 @@ LispPTR N_OP_iquot(LispPTR tosm1, LispPTR tos) {
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) { goto doufn;
-}
+  if (arg2 == 0) {
+    goto doufn;
+  }
 
   result = arg1 / arg2;
   N_ARITH_SWITCH(result);
@@ -478,8 +496,9 @@ LispPTR N_OP_iremainder(LispPTR tosm1, LispPTR tos) {
 
   N_IGETNUMBER(tosm1, arg1, doufn);
   N_IGETNUMBER(tos, arg2, doufn);
-  if (arg2 == 0) { goto doufn;
-}
+  if (arg2 == 0) {
+    goto doufn;
+  }
 
   result = arg1 % arg2;
   N_ARITH_SWITCH(result);

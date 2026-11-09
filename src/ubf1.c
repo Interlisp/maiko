@@ -9,9 +9,9 @@
 
 #include "version.h"
 
-#include "adr68k.h"      // for LAddrFromNative
-#include "arith.h"       // for N_ARITH_SWITCH
-#include "lispemul.h"    // for state, ERROR_EXIT, DLword, LispPTR
+#include "adr68k.h"    // for LAddrFromNative
+#include "arith.h"     // for N_ARITH_SWITCH
+#include "lispemul.h"  // for state, ERROR_EXIT, DLword, LispPTR
 #include "lspglob.h"
 #include "lsptypes.h"    // for TYPE_FLOATP
 #include "mkcelldefs.h"  // for createcell68k
@@ -51,8 +51,9 @@ LispPTR N_OP_ubfloat1(LispPTR arg, int alpha) {
       float temp;
       int val;
       temp = *(float *)&arg;
-      if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) { ERROR_EXIT(arg);
-}
+      if ((temp > ((float)0x7fffffff)) || (temp < ((float)0x80000000))) {
+        ERROR_EXIT(arg);
+      }
       val = (int)temp;
       N_ARITH_SWITCH(val);
     }

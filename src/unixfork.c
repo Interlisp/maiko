@@ -306,14 +306,17 @@ int fork_Unix(void) {
           break;
         }
 
-        if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) { perror("Slave reading slave pty len");
-}
-        if (SAFEREAD(LispPipeIn, slavepty, tmp) < 0) { perror("Slave reading slave pty id");
-}
+        if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) {
+          perror("Slave reading slave pty len");
+        }
+        if (SAFEREAD(LispPipeIn, slavepty, tmp) < 0) {
+          perror("Slave reading slave pty id");
+        }
 
         if (IOBuf[0] == 'P') { /* The new style, which takes term type & command to csh */
-          if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) { perror("Slave reading cmd length");
-}
+          if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) {
+            perror("Slave reading cmd length");
+          }
           if (tmp > 63) {
             perror("Slave termtype length too long");
             /* XXX: needs recovery strategy */
@@ -330,8 +333,9 @@ int fork_Unix(void) {
           } else {
             cmdstring = shcom;
           }
-          if (SAFEREAD(LispPipeIn, cmdstring, tmp) < 0) { perror("Slave reading shcom");
-}
+          if (SAFEREAD(LispPipeIn, cmdstring, tmp) < 0) {
+            perror("Slave reading shcom");
+          }
         } else { /* old style, no args */
           termtype[0] = 0;
           cmdstring = shcom;
@@ -361,15 +365,17 @@ int fork_Unix(void) {
           break;
         }
         /* Read in the length of the shell command, and then the command */
-        if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) { perror("Slave reading cmd length");
-}
+        if (SAFEREAD(LispPipeIn, (char *)&tmp, 2) < 0) {
+          perror("Slave reading cmd length");
+        }
         if (tmp > 510) {
           cmdstring = (char *)malloc(tmp + 5);
         } else {
           cmdstring = shcom;
-}
-        if (SAFEREAD(LispPipeIn, cmdstring, tmp) < 0) { perror("Slave reading cmd");
-}
+        }
+        if (SAFEREAD(LispPipeIn, cmdstring, tmp) < 0) {
+          perror("Slave reading cmd");
+        }
         DBPRINT(("Cmd len = %d.\n", tmp));
         DBPRINT(("Rev'd cmd string: %s\n", cmdstring));
         pid = fork(); /* Fork */
@@ -404,13 +410,15 @@ int fork_Unix(void) {
 #endif
 
           /* Make sure everything else is closed. */
-          for (int i = 3; i < sysconf(_SC_OPEN_MAX); i++) { close(i);
-}
+          for (int i = 3; i < sysconf(_SC_OPEN_MAX); i++) {
+            close(i);
+          }
 
           /* Run the shell command and get the result */
           status = system(cmdstring);
-          if (cmdstring != shcom) { free(cmdstring);
-}
+          if (cmdstring != shcom) {
+            free(cmdstring);
+          }
           /* Comment out to fix USAR 11302 (FXAR 320)
           unlink(PipeName);
           */
@@ -443,8 +451,9 @@ int fork_Unix(void) {
         if (pid > 0) {
           /* Ignore processes which are suspended but haven't exited
              (this shouldn't happen) */
-          if (WIFSTOPPED(status)) { break;
-}
+          if (WIFSTOPPED(status)) {
+            break;
+          }
           IOBuf[5] = (pid >> 24) & 0xFF;
           IOBuf[4] = (pid >> 16) & 0xFF;
           IOBuf[3] = status >> 8;

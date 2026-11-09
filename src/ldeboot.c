@@ -12,7 +12,7 @@
 
 #include <ctype.h>
 #include <fcntl.h>
-#include <limits.h>      // for PATH_MAX
+#include <limits.h>  // for PATH_MAX
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -110,8 +110,9 @@ int main(int argc, char *argv[]) {
       break;
     }
   }
-  if (doFork) { fork_Unix();
-}
+  if (doFork) {
+    fork_Unix();
+  }
 
 #ifdef SDL
 #ifdef XWINDOW
@@ -140,7 +141,7 @@ int main(int argc, char *argv[]) {
       goto run;
     } else {
       (void)fprintf(stderr, "Unable to open X11 display %s\n",
-              displayName ? displayName : "from DISPLAY");
+                    displayName ? displayName : "from DISPLAY");
       exit(1);
     }
   }
@@ -166,17 +167,15 @@ int main(int argc, char *argv[]) {
         }
       }
       break;
-    case FBTYPE_SUN2BW: /* bw2, cg4 or cg9  */
-      filetorun = LDEMONO;
-      break;
+    case FBTYPE_SUN2BW: /* bw2, cg4 or cg9  */ filetorun = LDEMONO; break;
     case FBTYPE_SUN3COLOR: /* cg8 */
       if (ioctl(FrameBufferFd, FBIOGATTR, &FBattr) >= 0) {
-        if (FBattr.real_type == FBTYPE_MEMCOLOR) { filetorun = LDETRUECOLOR; }
+        if (FBattr.real_type == FBTYPE_MEMCOLOR) {
+          filetorun = LDETRUECOLOR;
+        }
       }
       break;
-    case FBTYPE_SUN2COLOR: /* cg2  */
-      filetorun = LDEMONO;
-      break;
+    case FBTYPE_SUN2COLOR: /* cg2  */ filetorun = LDEMONO; break;
     default: break;
   }
   if (filetorun == (char *)NULL) {
@@ -186,7 +185,7 @@ int main(int argc, char *argv[]) {
   close(FrameBufferFd);
 #endif /* USESUNSCREEN */
 
-  run:
+run:
   if (filetorun == NULL) {
     (void)fprintf(stderr, "Unable to determine what display program to run.\n");
     exit(1);
@@ -201,12 +200,10 @@ int main(int argc, char *argv[]) {
     argv[0] = filetorun;
   } else {
     /* copy directory prefix (up to and including the final "/") then filename */
-    snprintf(filetorunpath, PATH_MAX, "%.*s%s",
-             (int)(dirsepp + 1 - argv[0]), argv[0], filetorun);
+    snprintf(filetorunpath, PATH_MAX, "%.*s%s", (int)(dirsepp + 1 - argv[0]), argv[0], filetorun);
     argv[0] = filetorunpath;
   }
   execvp(argv[0], argv);
   perror(argv[0]);
   exit(1);
-
 }

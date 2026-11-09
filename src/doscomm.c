@@ -11,4 +11,5 @@
 
 #include "version.h"
 
-DOS_handlecomm(int args) {}
+DOS_handlecomm(int args) {
+}

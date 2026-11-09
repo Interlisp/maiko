@@ -19,8 +19,8 @@
 #include "lispmap.h"       // for S_POSITIVE
 #include "lsptypes.h"      // for GETWORD
 #if defined(XWINDOW)
-#include "xcursordefs.h"   // for Set_XCursor
-#include "xlspwindefs.h"   // for lisp_Xvideocolor, set_Xmouseposition
+#include "xcursordefs.h"  // for Set_XCursor
+#include "xlspwindefs.h"  // for lisp_Xvideocolor, set_Xmouseposition
 #elif defined(SDL)
 #include "sdldefs.h"
 #endif
@@ -56,10 +56,9 @@ void DSP_dspbout(LispPTR *args) /* args[0] :	charcode	*/
 
 extern int DisplayInitialized;
 
-void DSP_showdisplay(LispPTR *args)
-{
-  LispPTR base = args[0];   /* pointer to the display bitmap */
-  LispPTR rasterwidth = args[1];  /* should be a smallp */
+void DSP_showdisplay(LispPTR *args) {
+  LispPTR base = args[0];        /* pointer to the display bitmap */
+  LispPTR rasterwidth = args[1]; /* should be a smallp */
 
   if (base == NIL) {
     DisplayInitialized = 0;
@@ -78,20 +77,20 @@ void DSP_showdisplay(LispPTR *args)
 LispPTR DSP_VideoColor(LispPTR *args) /* args[0] :	black flag	*/
 {
   int invert;
-#if   defined(XWINDOW)
+#if defined(XWINDOW)
   invert = args[0] & 0xFFFF;
   lisp_Xvideocolor(invert);
   if (invert) {
     return ATOM_T;
-}
-      return NIL;
+  }
+  return NIL;
 #elif defined(SDL)
   invert = args[0] & 0xFFFF;
   sdl_set_invert(invert);
   if (invert) {
     return ATOM_T;
-}
-      return NIL;
+  }
+  return NIL;
 #else
   return NIL;
 #endif
@@ -114,7 +113,6 @@ void DSP_Cursor(LispPTR *args, int argnum)
   extern DLword *EmCursorX68K, *EmCursorY68K;
   extern int LastCursorX, LastCursorY;
 
-
 #if defined(XWINDOW)
   /* For X-Windows, set the cursor to the given location. */
   Set_XCursor((int)(args[0] & 0xFFFF), (int)(args[1] & 0xFFFF));
@@ -129,16 +127,14 @@ void DSP_Cursor(LispPTR *args, int argnum)
  *			called from macro "\SETMOUSEXY" etc.
  *
  ****************************************************/
- /* args[0] :	X pos
-  * args[1] :	Y pos
-  */
-void DSP_SetMousePos(LispPTR *args)
-{
-
+/* args[0] :	X pos
+ * args[1] :	Y pos
+ */
+void DSP_SetMousePos(LispPTR *args) {
 #ifdef XWINDOW
   if (Mouse_Included) {
     set_Xmouseposition((int)(GetSmalldata(args[0])), (int)(GetSmalldata(args[1])));
-}
+  }
 #endif /* XWINDOW */
 #ifdef SDL
   int x = (int)(GetSmalldata(args[0]));
@@ -153,8 +149,9 @@ void DSP_SetMousePos(LispPTR *args)
  *		called from  UPDATESCREENDIMENSIONS
  *
  ****************************************************/
-LispPTR DSP_ScreenWidth(LispPTR *args)
-{ return (S_POSITIVE | (0xFFFF & displaywidth)); }
+LispPTR DSP_ScreenWidth(LispPTR *args) {
+  return (S_POSITIVE | (0xFFFF & displaywidth));
+}
 
 /****************************************************
  *
@@ -162,8 +159,9 @@ LispPTR DSP_ScreenWidth(LispPTR *args)
  *		called from UPDATESCREENDIMENSIONS
  *
  ****************************************************/
-LispPTR DSP_ScreenHight(LispPTR *args)
-{ return (S_POSITIVE | (0xFFFF & displayheight)); }
+LispPTR DSP_ScreenHight(LispPTR *args) {
+  return (S_POSITIVE | (0xFFFF & displayheight));
+}
 
 /****************************************************
  *
@@ -195,20 +193,23 @@ void flip_cursor(void) {
      except those who want to try building loadups.  */
 
   if (!for_makeinit) {
-    for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; }
+    for (cnt = CURSORHEIGHT; (cnt--);) {
+      GETWORD(word++) ^= 0xFFFF;
+    }
   }
 
 #else
 
-  for (cnt = CURSORHEIGHT; (cnt--);) { GETWORD(word++) ^= 0xFFFF; }
+  for (cnt = CURSORHEIGHT; (cnt--);) {
+    GETWORD(word++) ^= 0xFFFF;
+  }
 
 #endif
-
 
 #if defined(XWINDOW)
   /* JDS 011213: 15- cur y, as function does same! */
   Set_XCursor(Current_Hot_X, 15 - Current_Hot_Y);
 #elif defined(SDL)
-  sdl_setCursor(0, 0); // TODO: keep track of the current hot_x and hot_y
+  sdl_setCursor(0, 0);  // TODO: keep track of the current hot_x and hot_y
 #endif /* XWINDOW */
 }

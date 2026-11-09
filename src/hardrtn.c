@@ -22,25 +22,27 @@
 
 */
 /********************************************************************/
-#include <stdio.h>        // for printf
-#include "adr68k.h"       // for NativeAligned2FromStackOffset, StackOffsetFromNative
-#include "commondefs.h"   // for error
+#include <stdio.h>       // for printf
+#include "adr68k.h"      // for NativeAligned2FromStackOffset, StackOffsetFromNative
+#include "commondefs.h"  // for error
 #include "emlglob.h"
 #include "hardrtndefs.h"  // for incusecount68k, slowreturn
 #include "lispemul.h"     // for state, DLword, CURRENTFX, DLWORDSPER_CELL
 #include "lispmap.h"      // for STK_HI
 #include "llstkdefs.h"    // for decusecount68k, freestackblock, blt, stack_...
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETWORD
-#include "retmacro.h"       // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
-#include "stack.h"        // for FX, frameex1, Bframe, CHECK_FX, StackWord
+#include "lsptypes.h"  // for GETWORD
+#include "retmacro.h"  // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
+#include "stack.h"     // for FX, frameex1, Bframe, CHECK_FX, StackWord
 
-#define MAKE_FXCOPY(fx68k)                                                                   \
-  do {                                                                                          \
-    BEFORE_CONTEXTSW;                                                                        \
-    if (((fx68k) = (FX *)make_FXcopy(fx68k)) == 0) { return (1); /* Whole space exhausted */ } \
-    AFTER_CONTEXTSW;                                                                         \
-    CHECK_FX(fx68k);                                                                         \
+#define MAKE_FXCOPY(fx68k)                           \
+  do {                                               \
+    BEFORE_CONTEXTSW;                                \
+    if (((fx68k) = (FX *)make_FXcopy(fx68k)) == 0) { \
+      return (1); /* Whole space exhausted */        \
+    }                                                \
+    AFTER_CONTEXTSW;                                 \
+    CHECK_FX(fx68k);                                 \
   } while (0)
 static FX *make_FXcopy(FX *fx68k) {
   int size;
@@ -81,10 +83,11 @@ static FX *make_FXcopy(FX *fx68k) {
   } /*if end */
   else {
     new68k = freestackblock(size, (StackWord *)CURRENTFX, -1); /* No align */
-}
+  }
 
-  if (new68k == 0) { return (0); /* No more space for STACK */
-}
+  if (new68k == 0) {
+    return (0); /* No more space for STACK */
+  }
 
   /* blt(dest,source,size) */
   blt(new68k, (((DLword *)fx68k) - DLWORDSPER_CELL), size);
@@ -99,10 +102,12 @@ static FX *make_FXcopy(FX *fx68k) {
   CHECK_BF(retbf68k);
 
 #ifdef BIGVM
-  if (nametbl_on_stk) { ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
-}
+  if (nametbl_on_stk) {
+    ((FX *)new68k)->nametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+  }
 #else
-  if (nametbl_on_stk) ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
+  if (nametbl_on_stk)
+    ((FX *)new68k)->lonametable += (((UNSIGNED)new68k - (UNSIGNED)fx68k) >> 1);
 #endif
   /* increment use count of basic frame of returnee because
   we made another FX which points to it */
@@ -184,20 +189,22 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
         /* make FREEBLOCK for real BF */
         GETWORD(IVar) = STK_FSB_WORD;
         GETWORD(IVar + 1) = (((UNSIGNED)currentBF - (UNSIGNED)IVar) >> 1) + 2;
-        if (0 == GETWORD(IVar + 1)) { error("creating 0-len block");
-}
+        if (0 == GETWORD(IVar + 1)) {
+          error("creating 0-len block");
+        }
       } else {
         BFRAMEPTR(currentBF)->usecnt--;
-}
+      }
     } else {
       freeptr = IVar; /* reset free ptr: not residual case */
-}
+    }
 
     /* free FX + BF(dummy or real) */
     GETWORD(freeptr) = STK_FSB_WORD;
     GETWORD(freeptr + 1) = ((UNSIGNED)EndSTKP - (UNSIGNED)freeptr) >> 1;
-    if (0 == GETWORD(freeptr + 1)) { error("creating 0-len block");
-}
+    if (0 == GETWORD(freeptr + 1)) {
+      error("creating 0-len block");
+    }
     S_CHECK(EndSTKP >= freeptr, "EndSTKP < freeptr!");
     S_CHECK(FSB_size(freeptr) >= MINEXTRASTACKWORDS,
             "free block < min size, after deciding it fits.");
@@ -205,12 +212,14 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
     PVar = ((DLword *)returnFX) + FRAMESIZE;
     /*  Now right CURRENTFX(PVar) is set */
 
-    if (GETWORD(next68k) != STK_FSB_WORD) { error("OP_return: MP9316");
-}
+    if (GETWORD(next68k) != STK_FSB_WORD) {
+      error("OP_return: MP9316");
+    }
 
     freeptr = next68k;
-    while (GETWORD(freeptr) == STK_FSB_WORD) { EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
-}
+    while (GETWORD(freeptr) == STK_FSB_WORD) {
+      EndSTKP = freeptr = freeptr + GETWORD(freeptr + 1);
+    }
 
     if (CURRENTFX->incall) { /* this frame is  Interrupted */
       error("Stack error: INCALL bit found in returnee frame");
@@ -223,7 +232,7 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
 
       } else {
         CurrentStackPTR = next68k - 2;
-}
+      }
 
       S_CHECK(EndSTKP >= freeptr, "EndSTKP < freeptr");
 
@@ -256,7 +265,7 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
       goto another;
     } else {
       error("Shouldn't");
-}
+    }
   }
   error("Control reached end of slowreturn()!");
   return (NIL); /* NOT REACHED */
@@ -267,21 +276,22 @@ retry: /* this is retry entry after MAKE_FXCOPY etc */
 void incusecount68k(FX *fx68k) {
   StackWord *scanptr68k;
 
-  if (FX_INVALIDP(fx68k)) { return;
-}
+  if (FX_INVALIDP(fx68k)) {
+    return;
+  }
 
   CHECK_FX(fx68k);
 
   if ((++(fx68k->usecount)) > MAXSAFEUSECOUNT) {
     error("MP9324:Stack frame use count maximum exceeded");
-}
+  }
 
   scanptr68k = (StackWord *)NativeAligned2FromStackOffset(fx68k->nextblock);
   switch (STKWORD(scanptr68k)->flags) {
     case STK_NOTFLG:
       while (STKWORD(scanptr68k)->flags != STK_BF) {
         scanptr68k = (StackWord *)(((DLword *)scanptr68k) + DLWORDSPER_CELL);
-}
+      }
       break;
 
     case STK_BF: break;

@@ -22,7 +22,6 @@
 #include <sys/select.h>
 #endif /* DOS */
 
-
 #include "lispemul.h"
 
 #include "kbdsubrsdefs.h"
@@ -49,7 +48,6 @@ extern DspInterface currentdsp;
  *
  ****************************************************/
 
-
 #ifdef XWINDOW
 #include <X11/Xlib.h>
 #endif /* XWINDOW */
@@ -57,18 +55,18 @@ extern DspInterface currentdsp;
 extern fd_set LispReadFds;
 
 void KB_enable(LispPTR *args) /* args[0] :	ON/OFF flag
-                                     *		T -- ON
-                                     *		NIL -- OFF
-                                     */
+                               *		T -- ON
+                               *		NIL -- OFF
+                               */
 {
   if (args[0] == ATOM_T) {
-#if   XWINDOW
+#if XWINDOW
     enable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.enter)(currentkbd);
 #endif /* DOS */
   } else if (args[0] == NIL) {
-#if   XWINDOW
+#if XWINDOW
     disable_Xkeyboard(currentdsp);
 #elif DOS
     (currentkbd->device.exit)(currentkbd);
@@ -97,14 +95,15 @@ int bell_status_word;
 #endif /* DOS */
 
 void KB_beep(LispPTR *args) /* args[0] :	ON/OFF flag
-                                   *		T -- ON
-                                   *		NIL -- OFF
-                                   * args[1] :	frequency
-                                   */
+                             *		T -- ON
+                             *		NIL -- OFF
+                             * args[1] :	frequency
+                             */
 {
-#if   XWINDOW
-  if (args[0] == ATOM_T) { beep_Xkeyboard(currentdsp);
-}
+#if XWINDOW
+  if (args[0] == ATOM_T) {
+    beep_Xkeyboard(currentdsp);
+  }
 #elif DOS
   if (args[0] == ATOM_T) {
     bell_status_word = inp(0x61);
@@ -148,8 +147,7 @@ void KB_setmp(LispPTR *args) /* args[0] :	MPCODE	*/
  *
  ****************************************************/
 
-void KB_setled(LispPTR *args)
-{
+void KB_setled(LispPTR *args) {
 #ifdef DOS
   outp(PORT_A, (unsigned char)0xED);
   outp(PORT_A,

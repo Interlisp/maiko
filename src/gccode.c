@@ -29,16 +29,16 @@
 /* \Tomtom								*/
 /************************************************************************/
 
-#include <stdio.h>       // for sprintf
-#include "address.h"     // for LOLOC, HILOC
-#include "adr68k.h"      // for NativeAligned4FromLAddr
-#include "commondefs.h"  // for error
-#include "gccodedefs.h"  // for code_block_size, reclaimcodeblock
-#include "gcdata.h"      // for REC_GCLOOKUP, DELREF, ADDREF
-#include "gchtfinddefs.h" // for htfind, rec_htfind
-#include "lspglob.h"     // for Deleted_Implicit_Hash_Slot_word, UFNTable
-#include "lsptypes.h"    // for LispPTR, NIL, UFN, Get_code_BYTE, POINTERMASK
-#include "stack.h"       // for fnhead
+#include <stdio.h>         // for sprintf
+#include "address.h"       // for LOLOC, HILOC
+#include "adr68k.h"        // for NativeAligned4FromLAddr
+#include "commondefs.h"    // for error
+#include "gccodedefs.h"    // for code_block_size, reclaimcodeblock
+#include "gcdata.h"        // for REC_GCLOOKUP, DELREF, ADDREF
+#include "gchtfinddefs.h"  // for htfind, rec_htfind
+#include "lspglob.h"       // for Deleted_Implicit_Hash_Slot_word, UFNTable
+#include "lsptypes.h"      // for LispPTR, NIL, UFN, Get_code_BYTE, POINTERMASK
+#include "stack.h"         // for fnhead
 
 #define min(a, b) (((a) > (b)) ? (b) : (a))
 
@@ -131,7 +131,8 @@ static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
   codeptr = ((InstPtr)fnbase) + fnbase->startpc;
 
 #ifdef RESWAPPEDCODESTREAM
-  if (!fnbase->byteswapped) byte_swap_code_block(fnbase);
+  if (!fnbase->byteswapped)
+    byte_swap_code_block(fnbase);
 #endif
 
   while (T) {
@@ -192,10 +193,12 @@ static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   value = Getikvalue(base, index);
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
-      if (item == getikkey(value)) { goto found; }
+      if (item == getikkey(value)) {
+        goto found;
+      }
     } else {
       return (NIL);
-}
+    }
   }
   reprobe = Reprobefn(bits, limits);
 lp:
@@ -203,10 +206,12 @@ lp:
   value = Getikvalue(base, index);
   if (value != *Deleted_Implicit_Hash_Slot_word) {
     if (value != NIL) {
-      if (item == getikkey(value)) { goto found; }
+      if (item == getikkey(value)) {
+        goto found;
+      }
     } else {
       return (NIL);
-}
+    }
   }
   goto lp;
 found:
@@ -242,8 +247,9 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
   }
   fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
   REC_GCLOOKUP((POINTERMASK & fnbase->framename), DELREF);
-  if (fnbase->startpc != 0) { map_code_pointers(codebase, DELREF);
-}
+  if (fnbase->startpc != 0) {
+    map_code_pointers(codebase, DELREF);
+  }
   return (NIL);
 }
 
@@ -272,7 +278,8 @@ int code_block_size(long unsigned int codeblock68k) {
       sprintf(errtext,
               "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
               "UFN length",
-              opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF), (int)(codeblock68k & 0xFFFF));
+              opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF),
+              (int)(codeblock68k & 0xFFFF));
       error(errtext);
       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
     }

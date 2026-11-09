@@ -21,10 +21,10 @@
 #define BITSPERDLWORD 16
 
 static const DLword BitMaskArray[] = {32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
-                         128,   64,    32,   16,   8,    4,    2,   1};
-static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0xffff,     0xff0000,   0xff00ff,
-                             0xffff00,   0xffffff,   0xff000000, 0xff0000ff, 0xff00ff00, 0xff00ffff,
-                             0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
+                                      128,   64,    32,   16,   8,    4,    2,   1};
+static const unsigned int ConvBM_tbl[] = {
+    0,          0xff,       0xff00,     0xffff,     0xff0000,   0xff00ff,   0xffff00,   0xffffff,
+    0xff000000, 0xff0000ff, 0xff00ff00, 0xff00ffff, 0xffff0000, 0xffff00ff, 0xffffff00, 0xffffffff};
 
 #define noop 1
 
@@ -33,8 +33,8 @@ static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0x
 **************************************************************/
 #define WriteLongW(srcpattern, destptr, op1, op2)                                      \
   {                                                                                    \
-    int cnt;                                                                  \
-    u_char *des, *src;                                                        \
+    int cnt;                                                                           \
+    u_char *des, *src;                                                                 \
     for (cnt = 0, des = (u_char *)(destptr), src = (u_char *)(&(srcpattern)); cnt < 4; \
          cnt++, des++, src++)                                                          \
       (*des) op1(*src);                                                                \
@@ -57,9 +57,9 @@ static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0x
 
 #define LineBLT8(srcWptr, offset, width, dstLptr, op1, op2)                                \
   do {                                                                                     \
-    DLword *srcw;                                                                 \
-    u_int temp1;                                                                  \
-    for (srcw = (srcWptr) + (offset) / BITSPERDLWORD; ((width)-BITSPERNIBBLE) >= 0;        \
+    DLword *srcw;                                                                          \
+    u_int temp1;                                                                           \
+    for (srcw = (srcWptr) + (offset) / BITSPERDLWORD; ((width) - BITSPERNIBBLE) >= 0;      \
          (width) -= BITSPERNIBBLE, (dstLptr) = (u_char *)((u_int *)(dstLptr) + 1),         \
         (offset) += BITSPERNIBBLE) {                                                       \
       switch ((offset) % 16) {                                                             \
@@ -95,11 +95,11 @@ static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0x
           WriteLongW(color_array[temp1], dstLptr, op1, op2);                               \
           break;                                                                           \
       } /* switch end */                                                                   \
-    }   /* for end */                                                                      \
+    } /* for end */                                                                        \
     /* process for the rest bits (0~3)*/                                                   \
     switch (width) {                                                                       \
-      u_char *destc;                                                              \
-      int mod;                                                                    \
+      u_char *destc;                                                                       \
+      int mod;                                                                             \
       case 0: /* already finished */ break;                                                \
       case 1:                                                                              \
       case 2:                                                                              \
@@ -110,13 +110,14 @@ static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0x
             (*destc++) op1(color1);                                                        \
           else                                                                             \
             (*destc++) op1(color0);                                                        \
-          if (mod == 15) srcw++;                                                           \
+          if (mod == 15)                                                                   \
+            srcw++;                                                                        \
           (offset)++;                                                                      \
         } /* WHILE END */                                                                  \
         break;                                                                             \
       default:; /* error */                                                                \
-    }           /* switch end */                                                           \
-  } while (0)   /* MACRO END */
+    } /* switch end */                                                                     \
+  } while (0) /* MACRO END */
 
 /************************************************************************/
 /*									*/
@@ -130,8 +131,8 @@ static const unsigned int ConvBM_tbl[] = {0,          0xff,       0xff00,     0x
 
 /* I don't care sourcetype & operation NOW */
 
-void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width,
-              u_char color0, u_char color1, LispPTR sourcetype, LispPTR operation)
+void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width, u_char color0, u_char color1,
+              LispPTR sourcetype, LispPTR operation)
 
 /* u_int *destl;*/
 /* for SPARC */
@@ -178,6 +179,6 @@ void lineBlt8(DLword *srcbase, int offset, u_char *destl, int width,
     LineBLT8(srcbase, offset, width, destl, &= ~, noop);
   } else {
     error("lineBlt8:Illegal operation specified");
-}
+  }
 }
 /* lineBlt8 end */

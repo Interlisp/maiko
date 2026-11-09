@@ -12,7 +12,6 @@
 
 #include <stdio.h>
 
-
 #ifdef XWINDOW
 #define DISPLAYBUFFER
 #endif /* XWINDOW */
@@ -56,8 +55,7 @@ extern int MonoOrColor;
 /**                                                                         **/
 /*****************************************************************************/
 
-LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
-{
+LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos) {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
 #if defined(SUNDISPLAY) || defined(DOS)
@@ -87,8 +85,9 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 
   w = pbt->pbtwidth;
   h = pbt->pbtheight;
-  if ((h <= 0) || (w <= 0)) { return (pilot_bt_tbl);
-}
+  if ((h <= 0) || (w <= 0)) {
+    return (pilot_bt_tbl);
+  }
   dx = pbt->pbtdestbit;
   sx = pbt->pbtsourcebit;
   backwardflg = pbt->pbtbackward;
@@ -116,15 +115,17 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
   curr_gray_line = ((TEXTUREBBT *)pbt)->pbtgrayoffset;
 
 #ifdef DOS
-  if (displayflg) (currentdsp->mouse_invisible)(currentdsp, IOPage);
+  if (displayflg)
+    (currentdsp->mouse_invisible)(currentdsp, IOPage);
   ;
 #endif /* SUNDISPLAY / DOS */
 
   new_bitblt_code;
 
 #ifdef DOS
-      flush_display_lineregion(dx, dstbase, w, h);
-  if (displayflg) (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
+  flush_display_lineregion(dx, dstbase, w, h);
+  if (displayflg)
+    (currentdsp->mouse_visible)(IOPage->dlmousex, IOPage->dlmousey);
 #endif /* SUNDISPLAY / DOS */
 
 #if defined(XWINDOW) || defined(SDL)
@@ -151,8 +152,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos)
 
 #ifndef COLOR
 /* for MONO only */
-int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
-{
+int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
   int x, y;
   if (addrhi == DISPLAY_HI) {
     y = addrlo / DisplayRasterWidth;
@@ -162,10 +162,11 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     x = ((addrlo + DLWORDSPER_SEGMENT) - y * DisplayRasterWidth) << 4;
   } else {
     return (NIL);
-}
+  }
 
-  if (backward) { y -= h;
-}
+  if (backward) {
+    y -= h;
+  }
 
   if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL)) {
     return (T);
@@ -175,8 +176,7 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
 #else
 
 /* for COLOR & MONO */
-int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
-{
+int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
   int x, y;
   DLword *base68k;
   extern int MonoOrColor;
@@ -193,7 +193,8 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     } else
       return (NIL);
 
-    if (backward) y -= h;
+    if (backward)
+      y -= h;
 
     if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL))
       return (T);
@@ -209,7 +210,8 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward)
     } else
       return (NIL);
 
-    if (backward) y -= h;
+    if (backward)
+      y -= h;
 
     if ((x < MOUSEXR) && ((x + (w >> 3)) > MOUSEXL) && (y < MOUSEYH) &&
         (y + h > MOUSEYL)) { /* printf("cursorin T\n"); */

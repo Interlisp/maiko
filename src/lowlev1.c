@@ -10,18 +10,16 @@
 
 #include "version.h"
 
-#include "adr68k.h"       // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
+#include "adr68k.h"  // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "emlglob.h"
 #include "lispemul.h"     // for LispPTR, state, DLword, POINTERMASK, ERROR_...
 #include "lispmap.h"      // for S_POSITIVE
 #include "lowlev1defs.h"  // for N_OP_getbitsnfd, N_OP_putbasen, N_OP_putbas...
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETWORD
+#include "lsptypes.h"  // for GETWORD
 
-static const int mask_array[16] = {
-    1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,
-    0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff
-};
+static const int mask_array[16] = {1,     3,     7,     0xf,   0x1f,   0x3f,   0x7f,   0xff,
+                                   0x1ff, 0x3ff, 0x7ff, 0xfff, 0x1fff, 0x3fff, 0x7fff, 0xffff};
 
 /************************************************************
  N_OP_putbitsnfd
@@ -40,17 +38,22 @@ static const int mask_array[16] = {
                 return:	??
 
 ***********************************************************/
-LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset,
-                        int beta) {
+LispPTR N_OP_putbitsnfd(LispPTR base, LispPTR data, int word_offset, int beta) {
   DLword *pword;
   int shift_size, field_size, fmask;
 
 #ifdef CHECK
-  if (base > POINTERMASK) { error("getbits: base out of range"); }
-  if (beta > 0xFF) { error("bad beta argument to PUTBITS"); }
+  if (base > POINTERMASK) {
+    error("getbits: base out of range");
+  }
+  if (beta > 0xFF) {
+    error("bad beta argument to PUTBITS");
+  }
 #endif
 
-  if ((SEGMASK & data) != S_POSITIVE) { ERROR_EXIT(data); }
+  if ((SEGMASK & data) != S_POSITIVE) {
+    ERROR_EXIT(data);
+  }
 
   pword = NativeAligned2FromLAddr(base + word_offset);
   field_size = 0xF & beta;
@@ -87,8 +90,12 @@ LispPTR N_OP_getbitsnfd(int base_addr, int word_offset, int beta) {
   first = beta >> 4;
 
 #ifdef CHECK
-  if (base_addr > POINTERMASK) { error("getbits: base out of range"); }
-  if (first + size > 15) { error("getbits beta too big"); }
+  if (base_addr > POINTERMASK) {
+    error("getbits: base out of range");
+  }
+  if (first + size > 15) {
+    error("getbits beta too big");
+  }
 #endif
 
   return (S_POSITIVE | ((GETWORD(pword) >> (16 - (first + size + 1))) & mask_array[size]));

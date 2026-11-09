@@ -46,8 +46,7 @@
 #define MAX_HOSTNAME_LENGTH 100
 #define UDP_DATA_BLOCK_SIZE 1000
 
-LispPTR rpc(LispPTR *args)
-{
+LispPTR rpc(LispPTR *args) {
 #ifndef DOS
   /* Arguments are:
      args[0]:Destination Address; hostname or internet address are both supported.
@@ -109,8 +108,9 @@ LispPTR rpc(LispPTR *args)
   /* SET UP THE SOCKET */
 
   /* Open the socket; Might want to make this non-blocking */
-  if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) { goto handle_error;
-}
+  if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    goto handle_error;
+  }
 
   /* The sockets that rpc controls don't block */
   fcntl(s, F_SETFL, fcntl(s, F_GETFL, 0) | O_NONBLOCK);
@@ -125,7 +125,7 @@ LispPTR rpc(LispPTR *args)
     memcpy(&sin1.sin_addr, hp->h_addr, hp->h_length);
   } else {
     goto handle_error;
-}
+  }
 
   /* Convert to network byte order */
   sin1.sin_port = htons((u_short)port);
@@ -133,7 +133,7 @@ LispPTR rpc(LispPTR *args)
   /* Send buffer out on the socket */
   if (sendto(s, outbuf, out_length, 0, (struct sockaddr *)&sin1, sizeof(sin1)) != out_length) {
     goto handle_error;
-}
+  }
 
   /* Set up the timers */
   time_waited.tv_sec = 0;
@@ -145,8 +145,7 @@ receive:
   /* Set the select mask */
   FD_SET(s, &read_descriptors);
 
-  switch (
-      select(32, &read_descriptors, NULL, NULL, &pertry_timeout)) {
+  switch (select(32, &read_descriptors, NULL, NULL, &pertry_timeout)) {
     /* Per try timeout expired, Check the total timeout */
     case 0:
       time_waited.tv_sec += pertry_timeout.tv_sec;
@@ -164,7 +163,7 @@ receive:
         goto handle_error;
       } else {
         break;
-}
+      }
 
     /* An error was generated, Unless it was a system error stop */
     case -1:
@@ -172,23 +171,25 @@ receive:
         goto receive;
       } else {
         goto handle_error;
-}
+      }
   }
   /* Nothing arrived for this socket, try again */
-  if (!FD_ISSET(s, &read_descriptors)) { goto receive;
-}
+  if (!FD_ISSET(s, &read_descriptors)) {
+    goto receive;
+  }
 
-/* Something arrived; try to get it */
+  /* Something arrived; try to get it */
 
 getbuf:
   fromlen = sizeof(struct sockaddr);
   received = recvfrom(s, inbuf, UDP_DATA_BLOCK_SIZE, 0, (struct sockaddr *)&from, &fromlen);
-  if (received < 0) { switch (errno) {
+  if (received < 0) {
+    switch (errno) {
       case EINTR: goto getbuf;
       case EWOULDBLOCK: goto receive;
       default: goto handle_error;
     }
-}
+  }
 
   /* close the socket */
   close(s);

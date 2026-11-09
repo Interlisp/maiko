@@ -20,9 +20,8 @@
 #include "lispemul.h"     // for LispPTR, DLword, state, BITSPER_DLWORD, ERR...
 #include "lispmap.h"      // for S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETWORDBASEWORD
-#include "misc7defs.h"    // for N_OP_misc7
-
+#include "lsptypes.h"   // for GETWORDBASEWORD
+#include "misc7defs.h"  // for N_OP_misc7
 
 /*************************************************/
 /*  Possible operation fields for FBITMAPBIT     */
@@ -36,8 +35,8 @@
 extern int ScreenLocked;
 
 /***	N_OP_misc7  -- pseudocolor or fbitmapbit   ***/
-LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispPTR arg5, LispPTR arg6, LispPTR arg7, int alpha)
-{
+LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispPTR arg5,
+                   LispPTR arg6, LispPTR arg7, int alpha) {
   DLword *base;
   int x, y, operation, heightminus1, rasterwidth, oldbit;
   int offset;
@@ -49,8 +48,9 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
 
   DBPRINT(("MISC7 op with alpha byte %d.\n", alpha));
 
-  if (alpha != 1) { ERROR_EXIT(arg7);
-}
+  if (alpha != 1) {
+    ERROR_EXIT(arg7);
+  }
 
   base = NativeAligned2FromLAddr(arg1);
   N_GETNUMBER(arg2, x, doufn);
@@ -67,10 +67,10 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
     HideCursor();
 #endif
 
-/* Bitmaps use a positive integer coordinate system with the lower left
-   corner pixel at coordinate (0, 0). Storage is allocated in 16-bit words
-   from the upper left corner (0, h-1), with rasterwidth 16-bit words per row.
-*/
+  /* Bitmaps use a positive integer coordinate system with the lower left
+     corner pixel at coordinate (0, 0). Storage is allocated in 16-bit words
+     from the upper left corner (0, h-1), with rasterwidth 16-bit words per row.
+  */
   offset = (rasterwidth * (heightminus1 - y)) + (x / BITSPER_DLWORD);
   bmmask = (1 << (BITSPER_DLWORD - 1)) >> (x & (BITSPER_DLWORD - 1));
   bmdata = GETWORDBASEWORD(base, offset);
@@ -79,12 +79,11 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   ScreenLocked = T;
 
   switch (operation) {
-  case OP_INVERT: GETWORDBASEWORD(base, offset) = bmdata ^ bmmask; break;
-  case OP_ERASE: GETWORDBASEWORD(base, offset) = bmdata & ~bmmask; break;
-  case OP_READ: break;
-  default: GETWORDBASEWORD(base, offset) = bmdata | bmmask;
+    case OP_INVERT: GETWORDBASEWORD(base, offset) = bmdata ^ bmmask; break;
+    case OP_ERASE: GETWORDBASEWORD(base, offset) = bmdata & ~bmmask; break;
+    case OP_READ: break;
+    default: GETWORDBASEWORD(base, offset) = bmdata | bmmask;
   }
-
 
 #if defined(XWINDOW) || defined(SDL)
   if (in_display_segment(base)) {

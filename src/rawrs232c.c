@@ -49,14 +49,14 @@
 */
 /************************************************************/
 
-LispPTR raw_rs232c_open(LispPTR portname)
-{
+LispPTR raw_rs232c_open(LispPTR portname) {
   ONED_ARRAY *head;
 
   char *lispname;
   int fd;
 
-  if (GetTypeNumber(portname) != TYPE_ONED_ARRAY) error("PORTNAME is not string");
+  if (GetTypeNumber(portname) != TYPE_ONED_ARRAY)
+    error("PORTNAME is not string");
   head = (ONED_ARRAY *)NativeAligned4FromLAddr(portname);
   lispname = (char *)NativeAligned2FromLAddr(head->BASE);
 
@@ -69,8 +69,7 @@ LispPTR raw_rs232c_open(LispPTR portname)
 
 } /* raw_rs232c_open */
 
-LispPTR raw_rs232c_setparams(LispPTR fd, LispPTR data)
-{
+LispPTR raw_rs232c_setparams(LispPTR fd, LispPTR data) {
   RawRSParam *ndata;
   struct termios termdata;
 
@@ -232,8 +231,7 @@ LispPTR raw_rs232c_setparams(LispPTR fd, LispPTR data)
 
 } /* raw_rs232c_setparams */
 
-LispPTR raw_rs232c_close(LispPTR fd)
-{
+LispPTR raw_rs232c_close(LispPTR fd) {
   if (close(0xffff & fd) < 0) {
     perror("RS close : ");
     return (NIL);
@@ -241,8 +239,7 @@ LispPTR raw_rs232c_close(LispPTR fd)
     return (ATOM_T);
 }
 
-LispPTR raw_rs232c_write(LispPTR fd, LispPTR baseptr, LispPTR len)
-{
+LispPTR raw_rs232c_write(LispPTR fd, LispPTR baseptr, LispPTR len) {
   unsigned char *ptr;
 
   ptr = (unsigned char *)NativeAligned2FromLAddr(baseptr);
@@ -256,8 +253,7 @@ LispPTR raw_rs232c_write(LispPTR fd, LispPTR baseptr, LispPTR len)
 
 /* Assume numbers are SMALLPOSP */
 struct timeval RS_TimeOut = {0, 0};
-LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
-{
+LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes) {
   unsigned char *buffptr;
   int length;
   u_int real_fd;
@@ -283,8 +279,7 @@ LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes)
 
 } /* raw_rs232c_read  */
 
-LispPTR raw_rs232c_setint(LispPTR fd, LispPTR onoff)
-{
+LispPTR raw_rs232c_setint(LispPTR fd, LispPTR onoff) {
   extern fd_set LispReadFds;
   extern fd_set LispIOFds;
   u_int real_fd;

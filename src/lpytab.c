@@ -168,8 +168,8 @@ char *yyreds[] = {
 #define YYACCEPT return (0)
 #define YYABORT return (1)
 #define YYBACKUP(newtoken, newvalue)              \
-  \
-{                                            \
+                                                  \
+  {                                               \
     if (yychar >= 0 || (yyr2[yytmp] >> 1) != 1) { \
       yyerror("syntax error - cannot backup");    \
       goto yyerrlab;                              \
@@ -178,8 +178,7 @@ char *yyreds[] = {
     yystate = *yyps;                              \
     yylval = newvalue;                            \
     goto yynewstate;                              \
-  \
-}
+  }
 #define YYRECOVERING() (!!yyerrflag)
 #ifndef YYDEBUG
 #define YYDEBUG 1 /* make debugging available */
@@ -278,7 +277,8 @@ int yyparse(void) {
         printf("-none-\n");
       else {
         for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-          if (yytoks[yy_i].t_val == yychar) break;
+          if (yytoks[yy_i].t_val == yychar)
+            break;
         }
         printf("%s\n", yytoks[yy_i].t_name);
       }
@@ -296,14 +296,16 @@ int yyparse(void) {
   ** we have a new state - find out what to do
   */
   yy_newstate:
-    if ((yy_n = yypact[yy_state]) <= YYFLAG) goto yydefault; /* simple state */
+    if ((yy_n = yypact[yy_state]) <= YYFLAG)
+      goto yydefault; /* simple state */
 #if YYDEBUG
     /*
     ** if debugging, need to mark whether new token grabbed
     */
     yytmp = yychar < 0;
 #endif
-    if ((yychar < 0) && ((yychar = yylex()) < 0)) yychar = 0; /* reached EOF */
+    if ((yychar < 0) && ((yychar = yylex()) < 0))
+      yychar = 0; /* reached EOF */
 #if YYDEBUG
     if (yydebug && yytmp) {
       int yy_i;
@@ -315,19 +317,22 @@ int yyparse(void) {
         printf("-none-\n");
       else {
         for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-          if (yytoks[yy_i].t_val == yychar) break;
+          if (yytoks[yy_i].t_val == yychar)
+            break;
         }
         printf("%s\n", yytoks[yy_i].t_name);
       }
     }
 #endif /* YYDEBUG */
-    if (((yy_n += yychar) < 0) || (yy_n >= YYLAST)) goto yydefault;
+    if (((yy_n += yychar) < 0) || (yy_n >= YYLAST))
+      goto yydefault;
     if (yychk[yy_n = yyact[yy_n]] == yychar) /*valid shift*/
     {
       yychar = -1;
       yyval = yylval;
       yy_state = yy_n;
-      if (yyerrflag > 0) yyerrflag--;
+      if (yyerrflag > 0)
+        yyerrflag--;
       goto yy_stack;
     }
 
@@ -336,7 +341,8 @@ int yyparse(void) {
 #if YYDEBUG
       yytmp = yychar < 0;
 #endif
-      if ((yychar < 0) && ((yychar = yylex()) < 0)) yychar = 0; /* reached EOF */
+      if ((yychar < 0) && ((yychar = yylex()) < 0))
+        yychar = 0; /* reached EOF */
 #if YYDEBUG
       if (yydebug && yytmp) {
         int yy_i;
@@ -348,7 +354,9 @@ int yyparse(void) {
           printf("-none-\n");
         else {
           for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-            if (yytoks[yy_i].t_val == yychar) { break; }
+            if (yytoks[yy_i].t_val == yychar) {
+              break;
+            }
           }
           printf("%s\n", yytoks[yy_i].t_name);
         }
@@ -360,10 +368,13 @@ int yyparse(void) {
       {
         int *yyxi = yyexca;
 
-        while ((*yyxi != -1) || (yyxi[1] != yy_state)) { yyxi += 2; }
+        while ((*yyxi != -1) || (yyxi[1] != yy_state)) {
+          yyxi += 2;
+        }
         while ((*(yyxi += 2) >= 0) && (*yyxi != yychar))
           ;
-        if ((yy_n = yyxi[1]) < 0) YYACCEPT;
+        if ((yy_n = yyxi[1]) < 0)
+          YYACCEPT;
       }
     }
 
@@ -410,7 +421,8 @@ int yyparse(void) {
 */
 #if YYDEBUG
 #define _POP_ "Error recovery pops state %d, uncovers state %d\n"
-            if (yydebug) printf(_POP_, *yy_ps, yy_ps[-1]);
+            if (yydebug)
+              printf(_POP_, *yy_ps, yy_ps[-1]);
 #undef _POP_
 #endif
             yy_ps--;
@@ -440,7 +452,9 @@ int yyparse(void) {
               printf("token -none-\n");
             else {
               for (yy_i = 0; yytoks[yy_i].t_val >= 0; yy_i++) {
-                if (yytoks[yy_i].t_val == yychar) { break; }
+                if (yytoks[yy_i].t_val == yychar) {
+                  break;
+                }
               }
               printf("token %s\n", yytoks[yy_i].t_name);
             }
@@ -462,7 +476,8 @@ int yyparse(void) {
     ** specification of the reduction which is just about
     ** to be done.
     */
-    if (yydebug) printf("Reduce by (%d) \"%s\"\n", yy_n, yyreds[yy_n]);
+    if (yydebug)
+      printf("Reduce by (%d) \"%s\"\n", yy_n, yyreds[yy_n]);
 #endif
     yytmp = yy_n;  /* value to switch over */
     yypvt = yy_pv; /* $vars top of value stack */
@@ -533,9 +548,11 @@ int yyparse(void) {
         null_tmp_store();
       }
 
-      if (Lin_term_count > 1) Rows++;
+      if (Lin_term_count > 1)
+        Rows++;
 
-      if (Lin_term_count == 1) store_bounds();
+      if (Lin_term_count == 1)
+        store_bounds();
 
       Lin_term_count = 0;
       isign = 0;

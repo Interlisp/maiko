@@ -354,8 +354,9 @@ LispPTR COM_openfile(const LispPTR *args) {
           if (make_directory(dir, sizeof(dir)) == 0) {
             return (NIL);
           }
-          if (dskp) { link_check_flg = 1;
-}
+          if (dskp) {
+            link_check_flg = 1;
+          }
           break;
 
         default: error("unrecognized access mode"); break;
@@ -604,7 +605,8 @@ LispPTR COM_closefile(const LispPTR *args) {
    */
   rval = dskp ? rval + 4 + 1 : rval + 2 + 1;
   /* Add five for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) FileNameTooLong(NIL);
+  if (rval > MAXPATHLEN + 5)
+    FileNameTooLong(NIL);
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
@@ -654,14 +656,16 @@ LispPTR COM_closefile(const LispPTR *args) {
     }
   }
 
-  if (!unpack_filename(file, dir, name, ver, 1)) return (NIL);
+  if (!unpack_filename(file, dir, name, ver, 1))
+    return (NIL);
 
   if (dskp) {
     /*
      * On {DSK}, we have to make sure dir is case sensitively existing
      * directory.
      */
-    if (true_name(dir, sizeof(dir)) != -1) return (NIL);
+    if (true_name(dir, sizeof(dir)) != -1)
+      return (NIL);
 
     /*
      * There is a very troublesome problem here.  The file name Lisp
@@ -863,8 +867,9 @@ LispPTR DSK_getfilename(const LispPTR *args) {
    * terminating character.
    */
   len = fatp ? len + 4 + 1 : len + 2 + 1;
-  if (len > MAXPATHLEN) { FileNameTooLong(NIL);
-}
+  if (len > MAXPATHLEN) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
@@ -878,7 +883,8 @@ LispPTR DSK_getfilename(const LispPTR *args) {
  * unixpathname specifies it.
  */
 #ifdef DOS
-  if (unixpathname(lfname, file, sizeof(file), 1, 0, drive, &extlen, rawname) == 0) return (NIL);
+  if (unixpathname(lfname, file, sizeof(file), 1, 0, drive, &extlen, rawname) == 0)
+    return (NIL);
 #else
   if (unixpathname(lfname, file, sizeof(file), 1, 0) == 0) {
     return (NIL);
@@ -918,15 +924,18 @@ LispPTR DSK_getfilename(const LispPTR *args) {
          * Recognizing a file on DSK device needs the version information.
          * We gather version information in a version array first.
          */
-        if (get_version_array(dir, name) == 0) { return (NIL);
-}
+        if (get_version_array(dir, name) == 0) {
+          return (NIL);
+        }
 
         conc_name_and_version(name, ver, aname, sizeof(aname));
-        if (get_old(dir, VA.files, aname, vname) == 0) { return (NIL);
-}
+        if (get_old(dir, VA.files, aname, vname) == 0) {
+          return (NIL);
+        }
 
-        if ((rval = true_name(aname, sizeof(aname))) == 0) { return (NIL);
-}
+        if ((rval = true_name(aname, sizeof(aname))) == 0) {
+          return (NIL);
+        }
         if (rval == -1) {
           /*
            * The specified file is a directory file.
@@ -961,15 +970,18 @@ LispPTR DSK_getfilename(const LispPTR *args) {
         strlcpy(vname, dir, sizeof(vname));
         dirp = 1;
       } else {
-        if (get_version_array(dir, name) == 0) { return (NIL);
-}
+        if (get_version_array(dir, name) == 0) {
+          return (NIL);
+        }
 
         conc_name_and_version(name, ver, aname, sizeof(aname));
-        if (get_oldest(dir, VA.files, aname, vname) == 0) { return (NIL);
-}
+        if (get_oldest(dir, VA.files, aname, vname) == 0) {
+          return (NIL);
+        }
 
-        if ((rval = true_name(aname, sizeof(aname))) == 0) { return (NIL);
-}
+        if ((rval = true_name(aname, sizeof(aname))) == 0) {
+          return (NIL);
+        }
         if (rval == -1) {
           /*
            * The specified file is a directory file.
@@ -1013,12 +1025,14 @@ LispPTR DSK_getfilename(const LispPTR *args) {
            * Here, dir is an existing directory.  We have to perform
            * "new" recognition with the version information.
            */
-          if (get_version_array(dir, name) == 0) { return (NIL);
-}
+          if (get_version_array(dir, name) == 0) {
+            return (NIL);
+          }
 
           conc_name_and_version(name, ver, aname, sizeof(aname));
-          if (get_new(dir, VA.files, aname, vname) == 0) { return (NIL);
-}
+          if (get_new(dir, VA.files, aname, vname) == 0) {
+            return (NIL);
+          }
           dirp = 0;
         }
       }
@@ -1041,12 +1055,14 @@ LispPTR DSK_getfilename(const LispPTR *args) {
           strlcpy(vname, aname, sizeof(vname));
           dirp = 1;
         } else {
-          if (get_version_array(dir, name) == 0) { return (NIL);
-}
+          if (get_version_array(dir, name) == 0) {
+            return (NIL);
+          }
 
           conc_name_and_version(name, ver, aname, sizeof(aname));
-          if (get_old_new(dir, VA.files, aname, vname) == 0) { return (NIL);
-}
+          if (get_old_new(dir, VA.files, aname, vname) == 0) {
+            return (NIL);
+          }
           dirp = 0;
         }
       }
@@ -1060,8 +1076,9 @@ LispPTR DSK_getfilename(const LispPTR *args) {
        * sure the path to reach to the specified file is an existing
        * directories.  The file name itself is recognized as is.
        */
-      if (true_name(dir, sizeof(dir)) != -1) { return (NIL);
-}
+      if (true_name(dir, sizeof(dir)) != -1) {
+        return (NIL);
+      }
       conc_dir_and_name(dir, name, vname, sizeof(vname));
       strlcpy(aname, vname, sizeof(aname));
       if (true_name(aname, sizeof(aname)) == -1) {
@@ -1070,8 +1087,9 @@ LispPTR DSK_getfilename(const LispPTR *args) {
       } else {
         dirp = 0;
       }
-      if (lisppathname(vname, lfname, sizeof(lfname), dirp, 0) == 0) { return (NIL);
-}
+      if (lisppathname(vname, lfname, sizeof(lfname), dirp, 0) == 0) {
+        return (NIL);
+      }
       STRING_BASE(args[2], base);
       len = strlen(lfname);
 
@@ -1088,8 +1106,9 @@ LispPTR DSK_getfilename(const LispPTR *args) {
    * DSK device does not recognize a directory file as a file.  Thus we should
    * return NIL when the recognized file is a directory.
    */
-  if (dirp) { return (NIL);
-}
+  if (dirp) {
+    return (NIL);
+  }
 
 /*
  * Now, vname holds the "versioned" full name of the recognized file in UNIX
@@ -1107,8 +1126,9 @@ LispPTR DSK_getfilename(const LispPTR *args) {
   }
 #endif /* DOS */
 
-  if (lisppathname(vname, lfname, sizeof(lfname), dirp, (dirp ? 0 : 1)) == 0) { return (NIL);
-}
+  if (lisppathname(vname, lfname, sizeof(lfname), dirp, (dirp ? 0 : 1)) == 0) {
+    return (NIL);
+  }
 
   STRING_BASE(args[2], base);
   len = strlen(lfname);
@@ -1161,8 +1181,9 @@ LispPTR DSK_deletefile(const LispPTR *args) {
    * terminating character.
    */
   rval = fatp ? rval + 4 + 1 : rval + 2 + 1;
-  if (rval > MAXPATHLEN) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
@@ -1172,19 +1193,21 @@ LispPTR DSK_deletefile(const LispPTR *args) {
   unixpathname(fbuf, file, sizeof(file), 1, 0);
 #endif
 
-  if (unpack_filename(file, dir, fbuf, ver, 1) == 0) { return (NIL);
-}
-  if (get_version_array(dir, fbuf) == 0) { return (NIL);
-}
+  if (unpack_filename(file, dir, fbuf, ver, 1) == 0) {
+    return (NIL);
+  }
+  if (get_version_array(dir, fbuf) == 0) {
+    return (NIL);
+  }
 
   if (NoFileP(VA.files)) {
-    return (NIL); 
-}/*
-                   * If the specified file is deleted from
-                   * outside of Lisp during the last time
-                   * Lisp recognize it and now, this case
-                   * will occur.
-                   */
+    return (NIL);
+  } /*
+     * If the specified file is deleted from
+     * outside of Lisp during the last time
+     * Lisp recognize it and now, this case
+     * will occur.
+     */
 
   /*
    * Although the file should have been recognized with "oldest" mode in Lisp
@@ -1193,8 +1216,9 @@ LispPTR DSK_deletefile(const LispPTR *args) {
    */
 
   conc_name_and_version(fbuf, ver, file, sizeof(file));
-  if (get_oldest(dir, VA.files, file, fbuf) == 0) { return (NIL);
-}
+  if (get_oldest(dir, VA.files, file, fbuf) == 0) {
+    return (NIL);
+  }
 
   if (get_versionless(VA.files, vless, dir) == 0) {
     /*
@@ -1215,8 +1239,9 @@ LispPTR DSK_deletefile(const LispPTR *args) {
    * file is linked will destroy the consistency of the version status.
    */
 
-  if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) { return (NIL);
-}
+  if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) {
+    return (NIL);
+  }
 
   if (strcmp(file, vless) == 0 || strcmp(file, fbuf) == 0) {
     if (*fbuf != '\0') {
@@ -1237,8 +1262,9 @@ LispPTR DSK_deletefile(const LispPTR *args) {
       /*
        * Finally, we have to maintain the version status.
        */
-      if (maintain_version(vless, 0) == 0) { return (NIL);
-}
+      if (maintain_version(vless, 0) == 0) {
+        return (NIL);
+      }
       return (ATOM_T);
     }
     /*
@@ -1312,13 +1338,15 @@ LispPTR DSK_renamefile(const LispPTR *args) {
    * terminating character.
    */
   rval = fatp ? rval + 4 + 1 : rval + 2 + 1;
-  if (rval > MAXPATHLEN) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringLength(args[1], rval, fatp);
   rval = fatp ? rval + 4 + 1 : rval + 2 + 1;
-  if (rval > MAXPATHLEN) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], fbuf, MAXPATHLEN);
 #ifdef DOS
@@ -1336,24 +1364,28 @@ LispPTR DSK_renamefile(const LispPTR *args) {
   unixpathname(fbuf, dst, sizeof(dst), 1, 0);
 #endif /* DOS */
 
-  if (unpack_filename(dst, dir, fbuf, ver, 1) == 0) { return (NIL);
-}
+  if (unpack_filename(dst, dir, fbuf, ver, 1) == 0) {
+    return (NIL);
+  }
   /*
    * The destination file has been recognized as new file.  Thus we have
    * to make sure that the directory exists.
    */
-  if (make_directory(dir, sizeof(dir)) == 0) { return (NIL);
-}
+  if (make_directory(dir, sizeof(dir)) == 0) {
+    return (NIL);
+  }
 
   /*
    * We maintain the destination to handle the link damaged case correctly.
    */
   conc_dir_and_name(dir, fbuf, dst, sizeof(dst));
-  if (maintain_version(dst, 0) == 0) { return (NIL);
-}
+  if (maintain_version(dst, 0) == 0) {
+    return (NIL);
+  }
 
-  if (get_version_array(dir, fbuf) == 0) { return (NIL);
-}
+  if (get_version_array(dir, fbuf) == 0) {
+    return (NIL);
+  }
 
   /*
    * Although the file should have been recognized with "new" mode in Lisp
@@ -1362,8 +1394,9 @@ LispPTR DSK_renamefile(const LispPTR *args) {
    */
 
   conc_name_and_version(fbuf, ver, dst, sizeof(dst));
-  if (get_new(dir, VA.files, dst, fbuf) == 0) { return (NIL);
-}
+  if (get_new(dir, VA.files, dst, fbuf) == 0) {
+    return (NIL);
+  }
 
   /*
    * At this point, there are three cases for the destination.  If there is
@@ -1403,19 +1436,21 @@ LispPTR DSK_renamefile(const LispPTR *args) {
     }
   }
 
-  if (unpack_filename(src, dir, fbuf, ver, 1) == 0) { return (NIL);
-}
-  if (get_version_array(dir, fbuf) == 0) { return (NIL);
-}
+  if (unpack_filename(src, dir, fbuf, ver, 1) == 0) {
+    return (NIL);
+  }
+  if (get_version_array(dir, fbuf) == 0) {
+    return (NIL);
+  }
 
   if (NoFileP(VA.files)) {
-    return (NIL); 
-}/*
-                   * If the specified file is deleted from
-                   * outside of Lisp during the last time
-                   * Lisp recognize it and now, this case
-                   * will occur.
-                   */
+    return (NIL);
+  } /*
+     * If the specified file is deleted from
+     * outside of Lisp during the last time
+     * Lisp recognize it and now, this case
+     * will occur.
+     */
 
   /*
    * Although the file should have been recognized with "old" mode in Lisp
@@ -1423,8 +1458,9 @@ LispPTR DSK_renamefile(const LispPTR *args) {
    * of it.
    */
   conc_name_and_version(fbuf, ver, src, sizeof(src));
-  if (get_old(dir, VA.files, src, fbuf) == 0) { return (NIL);
-}
+  if (get_old(dir, VA.files, src, fbuf) == 0) {
+    return (NIL);
+  }
 
   if (get_versionless(VA.files, vless, dir) == 0) {
     /*
@@ -1439,8 +1475,9 @@ LispPTR DSK_renamefile(const LispPTR *args) {
      * versionless file is linked will destroy the consistency of the
      * version status.
      */
-    if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) { return (NIL);
-}
+    if (check_vless_link(vless, VA.files, fbuf, &rval) == 0) {
+      return (NIL);
+    }
 
     if (strcmp(src, vless) == 0 && *fbuf != '\0') {
       /*
@@ -1485,11 +1522,13 @@ LispPTR DSK_renamefile(const LispPTR *args) {
    * is on.
    */
 
-  if (maintain_version(dst, 0) == 0) { return (NIL);
-}
+  if (maintain_version(dst, 0) == 0) {
+    return (NIL);
+  }
   if (need_maintain_flg) {
-    if (maintain_version(src, 0) == 0) { return (NIL);
-}
+    if (maintain_version(src, 0) == 0) {
+      return (NIL);
+    }
   }
 
   return (ATOM_T);
@@ -1550,25 +1589,30 @@ LispPTR DSK_directorynamep(const LispPTR *args) {
    */
   len = fatp ? len + 4 + 1 : len + 2 + 1;
   /* -2 for the initial and trail directory delimiter. */
-  if (len > MAXPATHLEN - 2) { FileNameTooLong(NIL);
-}
+  if (len > MAXPATHLEN - 2) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], dirname, MAXPATHLEN);
 /* Convert Xerox Lisp file naming convention to Unix one. */
 #ifdef DOS
   separate_drive(dirname, drive);
-  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0, drive, 0, 0) == 0) return (NIL);
+  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0, drive, 0, 0) == 0)
+    return (NIL);
 #else  /* DOS*/
-  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0) == 0) { return (NIL);
-}
+  if (unixpathname(dirname, fullname, sizeof(fullname), 1, 0) == 0) {
+    return (NIL);
+  }
 #endif /* DOS */
 
-  if (true_name(fullname, sizeof(fullname)) != -1) { return (NIL);
-}
+  if (true_name(fullname, sizeof(fullname)) != -1) {
+    return (NIL);
+  }
 
   /* Convert Unix file naming convention to Xerox Lisp one. */
-  if (lisppathname(fullname, dirname, sizeof(dirname), 1, 0) == 0) { return (NIL);
-}
+  if (lisppathname(fullname, dirname, sizeof(dirname), 1, 0) == 0) {
+    return (NIL);
+  }
 
   len = strlen(dirname);
   STRING_BASE(args[1], base);
@@ -1645,8 +1689,9 @@ LispPTR COM_getfileinfo(const LispPTR *args) {
    */
   rval = dskp ? rval + 4 + 1 : rval + 2 + 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN + 5) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 #ifdef DOS
@@ -1662,7 +1707,7 @@ LispPTR COM_getfileinfo(const LispPTR *args) {
     dskp = 0;
   } else {
     return (NIL);
-}
+  }
 
 /*
  * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
@@ -1683,21 +1728,25 @@ LispPTR COM_getfileinfo(const LispPTR *args) {
    * the file.
    */
   if (dskp) {
-    if (unpack_filename(file, dir, name, ver, 1) == 0) { return (NIL);
-}
-    if (true_name(dir, sizeof(dir)) != -1) { return (0);
-}
+    if (unpack_filename(file, dir, name, ver, 1) == 0) {
+      return (NIL);
+    }
+    if (true_name(dir, sizeof(dir)) != -1) {
+      return (0);
+    }
     if (strcmp(name, "") == 0) {
       /*
        * The directory is specified.
        */
       strlcpy(file, dir, sizeof(file));
     } else {
-      if (get_version_array(dir, name) == 0) { return (NIL);
-}
+      if (get_version_array(dir, name) == 0) {
+        return (NIL);
+      }
       conc_name_and_version(name, ver, file, sizeof(file));
-      if (get_old(dir, VA.files, file, name) == 0) { return (NIL);
-}
+      if (get_old(dir, VA.files, file, name) == 0) {
+        return (NIL);
+      }
     }
   }
 
@@ -1855,8 +1904,9 @@ LispPTR COM_setfileinfo(const LispPTR *args) {
    */
   rval = dskp ? rval + 4 + 1 : rval + 2 + 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN + 5) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 
@@ -1872,7 +1922,7 @@ LispPTR COM_setfileinfo(const LispPTR *args) {
     dskp = 0;
   } else {
     return (NIL);
-}
+  }
 
 /*
  * Convert a Lisp file name to UNIX one.  If host is DSK, we also have to
@@ -1893,15 +1943,19 @@ LispPTR COM_setfileinfo(const LispPTR *args) {
    * the file.
    */
   if (dskp) {
-    if (unpack_filename(file, dir, name, ver, 1) == 0) { return (NIL);
-}
-    if (true_name(dir, sizeof(dir)) != -1) { return (0);
-}
-    if (get_version_array(dir, name) == 0) { return (NIL);
-}
+    if (unpack_filename(file, dir, name, ver, 1) == 0) {
+      return (NIL);
+    }
+    if (true_name(dir, sizeof(dir)) != -1) {
+      return (0);
+    }
+    if (get_version_array(dir, name) == 0) {
+      return (NIL);
+    }
     conc_name_and_version(name, ver, file, sizeof(file));
-    if (get_old(dir, VA.files, file, name) == 0) { return (NIL);
-}
+    if (get_old(dir, VA.files, file, name) == 0) {
+      return (NIL);
+    }
   }
 
   switch (args[1]) {
@@ -1996,8 +2050,9 @@ LispPTR COM_readpage(const LispPTR *args) {
   sklp:
     TIMEOUT(offval = lseek(fd, (npage * FDEV_PAGE_SIZE), SEEK_SET));
     if (offval == -1) {
-      if (errno == EINTR) { goto sklp; /* interrupted, retry */
-}
+      if (errno == EINTR) {
+        goto sklp; /* interrupted, retry */
+      }
       *Lisp_errno = errno;
       return (NIL);
     }
@@ -2006,8 +2061,9 @@ LispPTR COM_readpage(const LispPTR *args) {
 rdlp:
   TIMEOUT(count = read(fd, bufp, FDEV_PAGE_SIZE));
   if (count == -1) {
-    if (errno == EINTR) { goto rdlp; /* interrupted; retry */
-}
+    if (errno == EINTR) {
+      goto rdlp; /* interrupted; retry */
+    }
     *Lisp_errno = errno;
     return (NIL);
   }
@@ -2071,8 +2127,9 @@ LispPTR COM_writepage(const LispPTR *args) {
 sklp2:
   TIMEOUT(offval = lseek(fd, (npage * FDEV_PAGE_SIZE), SEEK_SET));
   if (offval == -1) {
-    if (errno == EINTR) { goto sklp2; /* interrupted; retry */
-}
+    if (errno == EINTR) {
+      goto sklp2; /* interrupted; retry */
+    }
     *Lisp_errno = errno;
     return (NIL);
   }
@@ -2086,8 +2143,9 @@ sklp2:
 wlp:
   TIMEOUT(rval = write(fd, bufp, count));
   if (rval == -1) {
-    if (errno == EINTR) { goto wlp; /* interrupted; retry */
-}
+    if (errno == EINTR) {
+      goto wlp; /* interrupted; retry */
+    }
     *Lisp_errno = errno;
 #ifdef BYTESWAP
     word_swap_page((DLword *)bufp, (count + 3) >> 2);
@@ -2213,8 +2271,9 @@ LispPTR COM_changedir(const LispPTR *args) {
    */
   rval = dskp ? rval + 4 + 1 : rval + 2 + 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN + 5) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
 #ifdef DOS
@@ -2229,13 +2288,15 @@ LispPTR COM_changedir(const LispPTR *args) {
     dskp = 0;
   } else {
     return (NIL);
-}
+  }
 
 #ifdef DOS
-  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0, drive, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0, drive, 0, 0))
+    return (NIL);
 #else  /* DOS */
-  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0)) { return (NIL);
-}
+  if (!unixpathname(lfname, dir, sizeof(dir), 0, 0)) {
+    return (NIL);
+  }
 #endif /* DOS */
 
   if (dskp) {
@@ -2243,20 +2304,23 @@ LispPTR COM_changedir(const LispPTR *args) {
      * If {DSK} device, the directory name can be specified in a case
      * insensitive manner.  We have to convert it into a right case.
      */
-    if (true_name(dir, sizeof(dir)) != -1) { return (NIL);
-}
+    if (true_name(dir, sizeof(dir)) != -1) {
+      return (NIL);
+    }
   }
 
   TIMEOUT(rval = chdir(dir));
-  if (rval != 0) { return (NIL);
-}
+  if (rval != 0) {
+    return (NIL);
+  }
 #ifdef DOS
   if (*drive) {
     if (*drive <= 'Z')
       rval = _chdrive(*drive - ('A' - 1));
     else
       rval = _chdrive(*drive - ('a' - 1));
-    if (rval != 0) return (NIL);
+    if (rval != 0)
+      return (NIL);
   }
 #endif /* DOS */
   return (ATOM_T);
@@ -2316,8 +2380,9 @@ LispPTR COM_getfreeblock(const LispPTR *args) {
    */
   rval += 1;
   /* Add 5 for the host name field in Lisp format. */
-  if (rval > MAXPATHLEN + 5) { FileNameTooLong(NIL);
-}
+  if (rval > MAXPATHLEN + 5) {
+    FileNameTooLong(NIL);
+  }
 
   LispStringToCString(args[0], lfname, MAXPATHLEN);
   buf = (int *)NativeAligned4FromLAddr(args[1]);
@@ -2333,25 +2398,29 @@ LispPTR COM_getfreeblock(const LispPTR *args) {
     dskp = 0;
   } else {
     return (NIL);
-}
+  }
 
 #ifdef DOS
-  if (!unixpathname(lfname, file, sizeof(file), 0, 0, drive, 0, 0)) return (NIL);
+  if (!unixpathname(lfname, file, sizeof(file), 0, 0, drive, 0, 0))
+    return (NIL);
 #else  /* DOS */
-  if (!unixpathname(lfname, file, sizeof(file), 0, 0)) { return (NIL);
-}
+  if (!unixpathname(lfname, file, sizeof(file), 0, 0)) {
+    return (NIL);
+  }
 #endif /* DOS */
 
-  if (!unpack_filename(file, dir, name, ver, 0)) { return (NIL);
-}
+  if (!unpack_filename(file, dir, name, ver, 0)) {
+    return (NIL);
+  }
 
   if (dskp) {
     /*
      * Although Lisp code guarantees the directory is an existing one,
      * by calling DSK_getfilename, we check it again for safety.
      */
-    if (true_name(dir, sizeof(dir)) != -1) { return (NIL);
-}
+    if (true_name(dir, sizeof(dir)) != -1) {
+      return (NIL);
+    }
   }
 
 /*
@@ -2371,7 +2440,8 @@ LispPTR COM_getfreeblock(const LispPTR *args) {
 
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   } else {
-    if (_dos_getdiskfree(0, &sfsbuf)) return (NIL); /* call failed, so name is invalid */
+    if (_dos_getdiskfree(0, &sfsbuf))
+      return (NIL); /* call failed, so name is invalid */
 
     *buf = sfsbuf.avail_clusters * sfsbuf.sectors_per_cluster * sfsbuf.bytes_per_sector;
   }
@@ -2524,8 +2594,9 @@ int unpack_filename(const char *file, char *dir, char *name, char *ver, int chec
   }
 #else  /* DOS */
   cp = strrchr(file, UNIXDIRSEP);
-  if (cp == NULL) { return (0);
-}
+  if (cp == NULL) {
+    return (0);
+  }
 #endif /* DOS */
 
   if (cp == file) {
@@ -2578,8 +2649,9 @@ int true_name(char *path, size_t pathsize) {
   char *cp = NULL;
   int type;
 
-  if (strcmp(path, "/") == 0) { return (-1);
-}
+  if (strcmp(path, "/") == 0) {
+    return (-1);
+  }
 
 #ifdef DOS
   if (*(path + 1) == DRIVESEP) {
@@ -2806,7 +2878,7 @@ static int locate_file(char *dir, size_t dirsize, const char *name) {
         }
       }
     }
-}
+  }
   TIMEOUT(closedir(dirp));  // cancels alarm from S_TOUT
   return (0);
 #endif /* DOS */
@@ -2891,8 +2963,9 @@ static int make_directory(char *dir, size_t dirsize) {
                 return (1);
               }
               dp = dir_buf;
-              while (*dp) { dp++;
-}
+              while (*dp) {
+                dp++;
+              }
               *dp++ = DIRSEP;
               cp++;
             } break;
@@ -2917,8 +2990,9 @@ static int make_directory(char *dir, size_t dirsize) {
                 *Lisp_errno = errno;
                 return (0);
               }
-              if (*cp == '\0') { return (1);
-}
+              if (*cp == '\0') {
+                return (1);
+              }
               *dp++ = DIRSEP;
               cp++;
               maked = 1;
@@ -3064,10 +3138,12 @@ static int compare_file_versions(const void *filea, const void *fileb) {
   unsigned a_ver = ((FileName *)filea)->version_no;
   unsigned b_ver = ((FileName *)fileb)->version_no;
 
-  if (a_ver > b_ver) { return (-1);
-}
-  if (a_ver < b_ver) { return (1);
-}
+  if (a_ver > b_ver) {
+    return (-1);
+  }
+  if (a_ver < b_ver) {
+    return (1);
+  }
   return (0);
 }
 
@@ -3109,7 +3185,8 @@ static int get_version_array(const char *dir, const char *file) {
    * First of all, prepare a lower cased file name for the case insensitive
    * search.  Also we have to separate file name from its version field.
    */
-  if (dir[1] == DRIVESEP) drive = dir[0];
+  if (dir[1] == DRIVESEP)
+    drive = dir[0];
 
   if (strcmp(dir, "\\") == 0)
     isslash = 1;
@@ -3293,7 +3370,7 @@ static int get_version_array(const char *dir, const char *file) {
         }
       }
     }
-}
+  }
   TIMEOUT(closedir(dirp));  // cancels alarm from S_TOUT
 
   /*
@@ -3356,15 +3433,18 @@ static int maintain_version(const char *file, int forcep) {
   int rval, max_no;
   const FileName *entry;
 
-  if (unpack_filename(file, dir, fname, ver, 1) == 0) { return (0);
-}
+  if (unpack_filename(file, dir, fname, ver, 1) == 0) {
+    return (0);
+  }
   /*
    * We have to make sure that dir is the existing directory.
    */
-  if (true_name(dir, sizeof(dir)) != -1) { return (0);
-}
-  if (get_version_array(dir, fname) == 0) { return (0);
-}
+  if (true_name(dir, sizeof(dir)) != -1) {
+    return (0);
+  }
+  if (get_version_array(dir, fname) == 0) {
+    return (0);
+  }
 
   if (NoFileP(VA.files)) {
     /*
@@ -3423,8 +3503,9 @@ static int maintain_version(const char *file, int forcep) {
     return (1);
   }
 
-  if (check_vless_link(vless, VA.files, old_file, &highest_p) == 0) { return (0);
-}
+  if (check_vless_link(vless, VA.files, old_file, &highest_p) == 0) {
+    return (0);
+  }
 
   if (*old_file == '\0') {
     /*
@@ -3513,8 +3594,9 @@ static int get_versionless(const FileName *varray, char *file, const char *dir) 
 #ifdef DOS
   return (0);
 #endif /* DOS */
-  if (NoFileP(varray)) { return (0);
-}
+  if (NoFileP(varray)) {
+    return (0);
+  }
 
   while (varray->version_no != LASTVERSIONARRAY) {
     if (varray->version_no == 0) {
@@ -3584,8 +3666,9 @@ static int check_vless_link(const char *vless, const FileName *varray, char *to_
   }
   vless_ino = sbuf.st_ino;
 
-  if (unpack_filename(vless, dir, name, ver, 1) == 0) { return (0);
-}
+  if (unpack_filename(vless, dir, name, ver, 1) == 0) {
+    return (0);
+  }
 
   max_no = 0;
   found = 0;
@@ -3673,8 +3756,9 @@ static int get_old(const char *dir, const FileName *varray, char *afile, char *v
   const FileName *entry;
 
   /* "Old" file have to be existing, thus varray should not be empty. */
-  if (NoFileP(varray)) { return (0);
-}
+  if (NoFileP(varray)) {
+    return (0);
+  }
 
   strlcpy(name, afile, sizeof(name));
   separate_version(name, sizeof(name), ver, sizeof(ver), 1);
@@ -3740,8 +3824,9 @@ static int get_old(const char *dir, const FileName *varray, char *afile, char *v
      */
     return (0);
   }
-  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) { return (0);
-}
+  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) {
+    return (0);
+  }
   if (*to_file == '\0') {
     /*
      * There is a versionless file in varray and at least one
@@ -3866,8 +3951,9 @@ static int get_oldest(const char *dir, const FileName *varray, char *afile, char
   const FileName *entry;
 
   /* "Oldest" file have to be existing, thus varray should not be empty. */
-  if (NoFileP(varray)) { return (0);
-}
+  if (NoFileP(varray)) {
+    return (0);
+  }
 
   strlcpy(name, afile, sizeof(name));
   separate_version(name, sizeof(name), ver, sizeof(ver), 1);
@@ -3933,8 +4019,9 @@ static int get_oldest(const char *dir, const FileName *varray, char *afile, char
      */
     return (0);
   }
-  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) { return (0);
-}
+  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) {
+    return (0);
+  }
   if (*to_file == '\0') {
     /*
      * There is a versionless file in varray and at least one
@@ -4134,8 +4221,9 @@ static int get_new(const char *dir, const FileName *varray, char *afile, char *v
      * We will use it, although we cannot say all of the gathered
      * files has the name in same case.
      */
-    while (varray->version_no != LASTVERSIONARRAY) { varray++;
-}
+    while (varray->version_no != LASTVERSIONARRAY) {
+      varray++;
+    }
     conc_name_and_version(varray->name, ver, afile, MAXPATHLEN);
     conc_dir_and_name(dir, afile, vfile, MAXPATHLEN);
     strlcpy(afile, vfile, MAXPATHLEN);
@@ -4174,8 +4262,9 @@ static int get_new(const char *dir, const FileName *varray, char *afile, char *v
     strlcpy(afile, vfile, MAXPATHLEN);
     return (1);
   }
-  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) { return (0);
-}
+  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) {
+    return (0);
+  }
   if (*to_file == '\0') {
     /*
      * There is a versionless file in varray and at least one
@@ -4234,8 +4323,9 @@ static int get_new(const char *dir, const FileName *varray, char *afile, char *v
      * of the gathered files has the name in same
      * case.
      */
-    while (varray->version_no != LASTVERSIONARRAY) { varray++;
-}
+    while (varray->version_no != LASTVERSIONARRAY) {
+      varray++;
+    }
     conc_name_and_version(varray->name, ver, afile, MAXPATHLEN);
     conc_dir_and_name(dir, afile, vfile, MAXPATHLEN);
     strlcpy(afile, vfile, MAXPATHLEN);
@@ -4408,8 +4498,9 @@ static int get_old_new(const char *dir, const FileName *varray, char *afile, cha
      * We will use it, although we cannot say all of the gathered
      * files has the name in same case.
      */
-    while (varray->version_no != LASTVERSIONARRAY) { varray++;
-}
+    while (varray->version_no != LASTVERSIONARRAY) {
+      varray++;
+    }
     conc_name_and_version(varray->name, ver, afile, MAXPATHLEN);
     conc_dir_and_name(dir, afile, vfile, MAXPATHLEN);
     strlcpy(afile, vfile, MAXPATHLEN);
@@ -4448,8 +4539,9 @@ static int get_old_new(const char *dir, const FileName *varray, char *afile, cha
     strlcpy(afile, vfile, MAXPATHLEN);
     return (1);
   }
-  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) { return (0);
-}
+  if (check_vless_link(vless, varray, to_file, &highest_p) == 0) {
+    return (0);
+  }
   if (*to_file == '\0') {
     /*
      * There is a versionless file in varray and at least one
@@ -4507,8 +4599,9 @@ static int get_old_new(const char *dir, const FileName *varray, char *afile, cha
      * of the gathered files has the name in same
      * case.
      */
-    while (varray->version_no != LASTVERSIONARRAY) { varray++;
-}
+    while (varray->version_no != LASTVERSIONARRAY) {
+      varray++;
+    }
     conc_name_and_version(varray->name, ver, afile, MAXPATHLEN);
     conc_dir_and_name(dir, afile, vfile, MAXPATHLEN);
     strlcpy(afile, vfile, MAXPATHLEN);

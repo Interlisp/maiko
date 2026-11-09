@@ -35,8 +35,7 @@ Pixrect *PPM_to_Pixrect(FILE *f), *PBM_to_Pixrect(FILE *f), *SunRaster_to_Pixrec
 #define MAX_BUFF_SIZE 1024
 static char buff[MAX_BUFF_SIZE];
 
-int Pixrect_to_File(Pixrect *pix, char *name)
-{
+int Pixrect_to_File(Pixrect *pix, char *name) {
   FILE *file;
   int err = 0;
 
@@ -60,8 +59,7 @@ int Pixrect_to_File(Pixrect *pix, char *name)
   return (err);
 } /* end Pixrect_to_File */
 
-Pixrect *File_to_Pixrect(char *name)
-{
+Pixrect *File_to_Pixrect(char *name) {
   FILE *file;
   Pixrect *pix;
   int type;
@@ -89,8 +87,7 @@ Pixrect *File_to_Pixrect(char *name)
 #define magic_number_PBM "P4"
 #define magic_number_PPM "P6"
 
-void Pixrect_to_PPM(FILE *file, Pixrect *pix)
-{
+void Pixrect_to_PPM(FILE *file, Pixrect *pix) {
   struct image_info info;
 
   info.width = pix->pr_width;
@@ -102,8 +99,7 @@ void Pixrect_to_PPM(FILE *file, Pixrect *pix)
 
 } /* end Pixrect_to_PPM */
 
-Pixrect *PPM_to_Pixrect(FILE *file)
-{
+Pixrect *PPM_to_Pixrect(FILE *file) {
   Pixrect *pix;
   struct image_info info;
 
@@ -114,8 +110,7 @@ Pixrect *PPM_to_Pixrect(FILE *file)
   return (pix);
 } /* PPM_to_Pixrect */
 
-void Pixrect_to_PBM(FILE *file, Pixrect *pix)
-{
+void Pixrect_to_PBM(FILE *file, Pixrect *pix) {
   struct image_info info;
 
   info.width = pix->pr_width;
@@ -127,8 +122,7 @@ void Pixrect_to_PBM(FILE *file, Pixrect *pix)
 
 } /* end Pixrect_to_PBM */
 
-Pixrect *PBM_to_Pixrect(FILE *file)
-{
+Pixrect *PBM_to_Pixrect(FILE *file) {
   Pixrect *pix;
   struct image_info info;
 
@@ -140,8 +134,7 @@ Pixrect *PBM_to_Pixrect(FILE *file)
 
 } /* end PBM_to_Pixrect */
 
-Pixrect *SunRaster_to_Pixrect(FILE *file)
-{
+Pixrect *SunRaster_to_Pixrect(FILE *file) {
   Pixrect *pix;
   colormap_t cmap;
 
@@ -152,8 +145,7 @@ Pixrect *SunRaster_to_Pixrect(FILE *file)
   return (pix);
 } /* end SunRaster_to_Pixrect */
 
-void write_raw_PBM(FILE *file, unsigned char *data, int width, int height)
-{
+void write_raw_PBM(FILE *file, unsigned char *data, int width, int height) {
   int i, n, flg, len;
 
   n = ((width + 15) / 16) * 2; /* bytes per line */
@@ -163,8 +155,7 @@ void write_raw_PBM(FILE *file, unsigned char *data, int width, int height)
   } /* end for( i ) */
 } /* end write_PBM_data */
 
-void read_raw_PBM(FILE *file, char *data, int width, int height)
-{
+void read_raw_PBM(FILE *file, char *data, int width, int height) {
   int n, i, flg, len;
 
   n = ((width + 15) / 16) * 2; /* bytes per line */
@@ -174,8 +165,7 @@ void read_raw_PBM(FILE *file, char *data, int width, int height)
   } /* end for( i ) */
 } /* end read_raw_PBM */
 
-void write_raw_PPM(FILE file, unsigned char *data, int width, int height)
-{
+void write_raw_PPM(FILE file, unsigned char *data, int width, int height) {
   struct rgb color24;
   int i, j, len;
 
@@ -186,11 +176,10 @@ void write_raw_PPM(FILE file, unsigned char *data, int width, int height)
       color24.b = ((union fbunit *)data)->channel.B;
       len = fwrite(&color24, sizeof(color24), 1, file);
     } /* end for( j ) */
-  }   /* end for( i ) */
+  } /* end for( i ) */
 } /* end write_raw_PPM */
 
-void read_raw_PPM(FILE *file, unsigned char *data, int width, int height)
-{
+void read_raw_PPM(FILE *file, unsigned char *data, int width, int height) {
   struct rgb color24;
   int i, j, len;
 
@@ -201,19 +190,20 @@ void read_raw_PPM(FILE *file, unsigned char *data, int width, int height)
       ((union fbunit *)data)->channel.G = color24.g;
       ((union fbunit *)data)->channel.B = color24.b;
     } /* end for( j ) */
-  }   /* end for( i ) */
+  } /* end for( i ) */
 } /* endi read_raw_PPM */
 
-int image_file_type(FILE *file)
-{
+int image_file_type(FILE *file) {
   int c, file_type;
 
-  if ((c = getc(file)) == -1) return (NOT_IMAGEFILE);
+  if ((c = getc(file)) == -1)
+    return (NOT_IMAGEFILE);
 
   switch (c) {
     case 'Y': /* may be Sun Raster format */ file_type = TYPE_SUNRASTER; break;
     case 'P': {
-      if ((c = getc(file)) == -1) return (NOT_IMAGEFILE);
+      if ((c = getc(file)) == -1)
+        return (NOT_IMAGEFILE);
       if (c == '4')
         file_type = TYPE_PBM;
       else if (c == '6')
@@ -232,39 +222,42 @@ int image_file_type(FILE *file)
   return (file_type);
 } /* end image_file_type */
 
-int read_PBM_header(FILE *file, struct image_info *info)
-{
+int read_PBM_header(FILE *file, struct image_info *info) {
   int err;
 
   err = skip_line(file);
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
 
   err = read_available_line(file, buff);
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
   err = sscanf(buff, "%d %d", &(info->width), &(info->height));
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
 
   return (err);
 
 } /* end read_PBM_header */
 
-void write_PBM_header(FILE *file, struct image_info *info)
-{
+void write_PBM_header(FILE *file, struct image_info *info) {
   fprintf(file, "P4\n");
   fprintf(file, "%d %d\n", info->width, info->height);
 } /* write_PBM_header */
 
-int read_PPM_header(FILE *file, struct image_info *info)
-{
+int read_PPM_header(FILE *file, struct image_info *info) {
   int err;
 
   err = skip_line(file);
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
 
   err = read_available_line(file, buff);
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
   err = sscanf(buff, "%d %d", &(info->width), &(info->height));
-  if (err == 0) return (err);
+  if (err == 0)
+    return (err);
 
   err = skip_line(file);
 
@@ -272,15 +265,13 @@ int read_PPM_header(FILE *file, struct image_info *info)
 
 } /* read_PPM_header */
 
-void write_PPM_header(FILE *file, struct image_info *info)
-{
+void write_PPM_header(FILE *file, struct image_info *info) {
   fprintf(file, "P6\n");
   fprintf(file, "%d %d\n", info->width, info->height);
   fprintf(file, "255\n");
 } /* end write_PPM_header */
 
-int skip_line(FILE *file)
-{
+int skip_line(FILE *file) {
   char *err;
   char buff[MAX_BUFF_SIZE];
 
@@ -288,10 +279,11 @@ int skip_line(FILE *file)
   return ((int)err);
 } /* end skip_line */
 
-int read_available_line(FILE *file, char *buff)
-{
+int read_available_line(FILE *file, char *buff) {
   char *err;
   err = fgets(buff, MAX_BUFF_SIZE, file);
-  while ((err != 0) && (buff[0] == '#')) { err = fgets(buff, MAX_BUFF_SIZE, file); } /* end while */
+  while ((err != 0) && (buff[0] == '#')) {
+    err = fgets(buff, MAX_BUFF_SIZE, file);
+  } /* end while */
   return ((int)err);
 } /* end read_available_line */

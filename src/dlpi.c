@@ -78,7 +78,8 @@
 
 #include "nfswatch.h"
 
-static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt, u_long xidtest);
+static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt,
+                      u_long xidtest);
 static void dlinforeq(int fd);
 static void dlattachreq(int fd, u_long ppa);
 static void dlpromisconreq(int fd, u_long level);
@@ -98,8 +99,7 @@ int truncation = 1500;
 /*
  * setup_dlpi_dev - set up the data link provider interface.
  */
-int setup_dlpi_dev(char *device)
-{
+int setup_dlpi_dev(char *device) {
   char *p;
   u_int chunksz;
   char cbuf[BUFSIZ];
@@ -143,7 +143,8 @@ int setup_dlpi_dev(char *device)
       /*
        * Skip the loopback interface.
        */
-      if (strcmp(ifrp->ifr_name, "lo0") == 0) continue;
+      if (strcmp(ifrp->ifr_name, "lo0") == 0)
+        continue;
 
       device = savestr(ifrp->ifr_name);
       break;
@@ -155,17 +156,18 @@ int setup_dlpi_dev(char *device)
   /*
    * Split the device name into type and unit number.
    */
-  if ((p = strpbrk(device, "0123456789")) == NULL) return (-1);
+  if ((p = strpbrk(device, "0123456789")) == NULL)
+    return (-1);
 
-  snprintf(devname, sizeof(devname), "%s%.*s",
-           DLPI_DEVDIR, (int)(p - device), device);
+  snprintf(devname, sizeof(devname), "%s%.*s", DLPI_DEVDIR, (int)(p - device), device);
   devppa = atoi(p);
 
   /*
    * Open the device.
    */
   if ((fd = open(devname, O_RDWR)) < 0) {
-    if (errno == ENOENT || errno == ENXIO) return (-1);
+    if (errno == ENOENT || errno == ENXIO)
+      return (-1);
 
     /*perror(devname);*/
     return (-1);
@@ -298,8 +300,7 @@ int setup_dlpi_dev(char *device)
 /*
  * flush_dlpi - flush data from the dlpi.
  */
-void flush_dlpi(int fd)
-{
+void flush_dlpi(int fd) {
   if (ioctl(fd, I_FLUSH, (char *)FLUSHR) < 0) {
     perror("ioctl: I_FLUSH");
     return;
@@ -309,8 +310,7 @@ void flush_dlpi(int fd)
 /*
  * dlpi_devtype - determine the type of device we're looking at.
  */
-int dlpi_devtype(int fd)
-{
+int dlpi_devtype(int fd) {
   char buf[DLPI_CHUNKSIZE];
   union DL_primitives *dlp;
 
@@ -318,7 +318,8 @@ int dlpi_devtype(int fd)
 
   dlinforeq(fd);
 
-  if (dlinfoack(fd, buf) < 0) return (DLT_EN10MB);
+  if (dlinfoack(fd, buf) < 0)
+    return (DLT_EN10MB);
 
   bcopy((char *)dlp + dlp->info_ack.dl_addr_offset, ether_host, 6);
 
@@ -329,7 +330,8 @@ int dlpi_devtype(int fd)
     case DL_FDDI: return (DLT_FDDI);
 #endif
     default:
-      (void)fprintf(stderr, "%s: DLPI MACtype %ld unknown, ", pname, (long)dlp->info_ack.dl_mac_type);
+      (void)fprintf(stderr, "%s: DLPI MACtype %ld unknown, ", pname,
+                    (long)dlp->info_ack.dl_mac_type);
       (void)fprintf(stderr, "assuming ethernet.\n");
       return (DLT_EN10MB);
   }
@@ -338,8 +340,7 @@ int dlpi_devtype(int fd)
 /*
  * dlinforeq - request information about the data link provider.
  */
-static void dlinforeq(int fd)
-{
+static void dlinforeq(int fd) {
   dl_info_req_t info_req;
   struct strbuf ctl;
   int flags;
@@ -361,8 +362,7 @@ static void dlinforeq(int fd)
 /*
  * dlattachreq - send a request to attach.
  */
-static void dlattachreq(int fd, u_long ppa)
-{
+static void dlattachreq(int fd, u_long ppa) {
   dl_attach_req_t attach_req;
   struct strbuf ctl;
   int flags;
@@ -386,8 +386,7 @@ static void dlattachreq(int fd, u_long ppa)
 /*
  * dlpromisconreq - send a request to turn promiscuous mode on.
  */
-static void dlpromisconreq(int fd, u_long level)
-{
+static void dlpromisconreq(int fd, u_long level) {
   dl_promiscon_req_t promiscon_req;
   struct strbuf ctl;
   int flags;
@@ -411,8 +410,8 @@ static void dlpromisconreq(int fd, u_long level)
 /*
  * dlbindreq - send a request to bind.
  */
-static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt, u_long xidtest)
-{
+static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode, u_long conn_mgmt,
+                      u_long xidtest) {
   dl_bind_req_t bind_req;
   struct strbuf ctl;
   int flags;
@@ -444,8 +443,7 @@ static void dlbindreq(int fd, u_long sap, u_long max_conind, u_long service_mode
 /*
  * dlokack - general acknowledgement reception.
  */
-static int dlokack(int fd, char *bufp)
-{
+static int dlokack(int fd, char *bufp) {
   union DL_primitives *dlp;
   struct strbuf ctl;
   int flags;
@@ -454,17 +452,22 @@ static int dlokack(int fd, char *bufp)
   ctl.len = 0;
   ctl.buf = bufp;
 
-  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlokack") < 0) return (-1);
+  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlokack") < 0)
+    return (-1);
 
   dlp = (union DL_primitives *)ctl.buf;
 
-  if (expecting(DL_OK_ACK, dlp) < 0) return (-1);
+  if (expecting(DL_OK_ACK, dlp) < 0)
+    return (-1);
 
-  if (ctl.len < sizeof(dl_ok_ack_t)) return (-1);
+  if (ctl.len < sizeof(dl_ok_ack_t))
+    return (-1);
 
-  if (flags != RS_HIPRI) return (-1);
+  if (flags != RS_HIPRI)
+    return (-1);
 
-  if (ctl.len < sizeof(dl_ok_ack_t)) return (-1);
+  if (ctl.len < sizeof(dl_ok_ack_t))
+    return (-1);
 
   return (0);
 }
@@ -472,8 +475,7 @@ static int dlokack(int fd, char *bufp)
 /*
  * dlinfoack - receive an ack to a dlinforeq.
  */
-static int dlinfoack(int fd, char *bufp)
-{
+static int dlinfoack(int fd, char *bufp) {
   union DL_primitives *dlp;
   struct strbuf ctl;
   int flags;
@@ -482,17 +484,22 @@ static int dlinfoack(int fd, char *bufp)
   ctl.len = 0;
   ctl.buf = bufp;
 
-  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlinfoack") < 0) return (-1);
+  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlinfoack") < 0)
+    return (-1);
 
   dlp = (union DL_primitives *)ctl.buf;
 
-  if (expecting(DL_INFO_ACK, dlp) < 0) return (-1);
+  if (expecting(DL_INFO_ACK, dlp) < 0)
+    return (-1);
 
-  if (ctl.len < sizeof(dl_info_ack_t)) return (-1);
+  if (ctl.len < sizeof(dl_info_ack_t))
+    return (-1);
 
-  if (flags != RS_HIPRI) return (-1);
+  if (flags != RS_HIPRI)
+    return (-1);
 
-  if (ctl.len < sizeof(dl_info_ack_t)) return (-1);
+  if (ctl.len < sizeof(dl_info_ack_t))
+    return (-1);
 
   return (0);
 }
@@ -500,8 +507,7 @@ static int dlinfoack(int fd, char *bufp)
 /*
  * dlbindack - receive an ack to a dlbindreq.
  */
-static int dlbindack(int fd, char *bufp)
-{
+static int dlbindack(int fd, char *bufp) {
   union DL_primitives *dlp;
   struct strbuf ctl;
   int flags;
@@ -510,15 +516,19 @@ static int dlbindack(int fd, char *bufp)
   ctl.len = 0;
   ctl.buf = bufp;
 
-  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlbindack") < 0) return (-1);
+  if (strgetmsg(fd, &ctl, (struct strbuf *)NULL, &flags, "dlbindack") < 0)
+    return (-1);
 
   dlp = (union DL_primitives *)ctl.buf;
 
-  if (expecting(DL_BIND_ACK, dlp) < 0) return (-1);
+  if (expecting(DL_BIND_ACK, dlp) < 0)
+    return (-1);
 
-  if (flags != RS_HIPRI) return (-1);
+  if (flags != RS_HIPRI)
+    return (-1);
 
-  if (ctl.len < sizeof(dl_bind_ack_t)) return (-1);
+  if (ctl.len < sizeof(dl_bind_ack_t))
+    return (-1);
 
   return (0);
 }
@@ -526,9 +536,9 @@ static int dlbindack(int fd, char *bufp)
 /*
  * expecting - see if we got what we wanted.
  */
-static int expecting(int prim, union DL_primitives *dlp)
-{
-  if (dlp->dl_primitive != (u_long)prim) return (-1);
+static int expecting(int prim, union DL_primitives *dlp) {
+  if (dlp->dl_primitive != (u_long)prim)
+    return (-1);
 
   return (0);
 }
@@ -536,8 +546,7 @@ static int expecting(int prim, union DL_primitives *dlp)
 /*
  * strgetmsg - get a message from a stream, with timeout.
  */
-static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller)
-{
+static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *flagsp, char *caller) {
   int rc;
 
   /*
@@ -570,14 +579,18 @@ static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *fla
   /*
    * Check for MOREDATA and/or MORECTL.
    */
-  if ((rc & (MORECTL | MOREDATA)) == (MORECTL | MOREDATA)) return (-1);
-  if (rc & MORECTL) return (-1);
-  if (rc & MOREDATA) return (-1);
+  if ((rc & (MORECTL | MOREDATA)) == (MORECTL | MOREDATA))
+    return (-1);
+  if (rc & MORECTL)
+    return (-1);
+  if (rc & MOREDATA)
+    return (-1);
 
   /*
    * Check for at least sizeof (long) control data portion.
    */
-  if (ctlp->len < sizeof(long)) return (-1);
+  if (ctlp->len < sizeof(long))
+    return (-1);
 
   return (0);
 }
@@ -585,13 +598,14 @@ static int strgetmsg(int fd, struct strbuf *ctlp, struct strbuf *datap, int *fla
 /*
  * sigalrm - handle alarms.
  */
-static void sigalrm(int sig) { (void)(void)fprintf(stderr, "dlpi: timeout\n"); }
+static void sigalrm(int sig) {
+  (void)(void)fprintf(stderr, "dlpi: timeout\n");
+}
 
 /*
  * savestr - save string in dynamic memory.
  */
-static char *savestr(char *s)
-{
+static char *savestr(char *s) {
   char *t;
 
   if ((t = malloc(strlen(s) + 1)) == NULL) {
@@ -604,8 +618,8 @@ static char *savestr(char *s)
   return (t);
 }
 
-int dlunitdatareq(int fd, u_char *addrp, int addrlen, u_long minpri, u_long maxpri, u_char *datap, int datalen)
-{
+int dlunitdatareq(int fd, u_char *addrp, int addrlen, u_long minpri, u_long maxpri, u_char *datap,
+                  int datalen) {
   char buf[DLPI_CHUNKSIZE];
   union DL_primitives *dlp;
   struct strbuf data, ctl;

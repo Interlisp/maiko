@@ -17,18 +17,18 @@
 
 #include "version.h"
 
-#include <stddef.h>       // for ptrdiff_t
-#include <stdlib.h>       // for abs
-#include "adr68k.h"       // for NativeAligned2FromLAddr
-#include "bbtmacro.h"       // for MOUSEXR, MOUSEYH
-#include "display.h"      // for DISPLAYBUFFER, DisplayRegion68k, in_display...
-#include "drawdefs.h"     // for N_OP_drawline
+#include <stddef.h>    // for ptrdiff_t
+#include <stdlib.h>    // for abs
+#include "adr68k.h"    // for NativeAligned2FromLAddr
+#include "bbtmacro.h"  // for MOUSEXR, MOUSEYH
+#include "display.h"   // for DISPLAYBUFFER, DisplayRegion68k, in_display...
+#include "drawdefs.h"  // for N_OP_drawline
 #include "emlglob.h"
 #include "initdspdefs.h"  // for flush_display_region
 #include "lispemul.h"     // for DLword, BITSPER_DLWORD, SEGMASK, state, ERR...
 #include "lispmap.h"      // for S_NEGATIVE, S_POSITIVE
 #include "lspglob.h"
-#include "lsptypes.h"     // for GETWORD
+#include "lsptypes.h"  // for GETWORD
 
 #ifdef DISPLAYBUFFER
 extern struct pixrect *ColorDisplayPixrect, *DisplayRegionPixrect;
@@ -45,12 +45,11 @@ extern int MonoOrColor;
 #endif /* COLOR */
 
 #ifdef DISPLAYBUFFER
-LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h)
-{
+LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h) {
   if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL)) {
     return (T);
-}
-      return (NIL);
+  }
+  return (NIL);
 }
 #endif
 
@@ -114,8 +113,8 @@ plot:
 #define DISPLAYBUFFER
 #endif /* XWINDOW */
 
-int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int op, int delta, int numx, int numy)
-{
+int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int op, int delta,
+                  int numx, int numy) {
   DLword *dataptr;
   ScreenLocked = T;
 
@@ -123,8 +122,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
   if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
 
-
-  delta &= 0xFFFF;
+    delta &= 0xFFFF;
   op &= 3;
 
   if ((SEGMASK & width) == S_POSITIVE) {
@@ -133,7 +131,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
     width |= 0xFFFF0000;
   } else {
     ERROR_EXIT(numy);
-}
+  }
 
   curbit = 0x8000 >> (curbit & 0xFFFF);
   dataptr = NativeAligned2FromLAddr(ptr);
@@ -159,7 +157,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
             delta += xsize;
             dataptr += width;
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
       case 1:
         while (numx && numy) {
@@ -176,7 +174,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
             delta += xsize;
             dataptr += width;
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
       case 2:
         while (numx && numy) {
@@ -193,10 +191,10 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
             delta += xsize;
             dataptr += width;
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
-    }    /* end switch */
-  }      /* end if */
+    } /* end switch */
+  } /* end if */
   else { /* yfirst */
     delta = ysize - delta - 1;
     switch (op) {
@@ -215,7 +213,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
               dataptr++;
             }
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
       case 1:
         while (numx && numy) {
@@ -232,7 +230,7 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
               dataptr++;
             }
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
       case 2:
         while (numx && numy) {
@@ -249,50 +247,51 @@ int N_OP_drawline(LispPTR ptr, int curbit, int xsize, int width, int ysize, int 
               dataptr++;
             }
           } /* end if delta */
-        }   /* end while */
+        } /* end while */
         break;
     } /* end switch */
-  }   /* end else */
+  } /* end else */
 #ifdef COLOR
   if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
-
 
 #ifdef DISPLAYBUFFER
 #ifdef COLOR
-  if (MonoOrColor == MONO_SCREEN)
+    if (MonoOrColor == MONO_SCREEN)
 #endif /* COLOR */
 
-  {
-    DLword *start_addr;
-    start_addr = NativeAligned2FromLAddr(ptr);
+    {
+      DLword *start_addr;
+      start_addr = NativeAligned2FromLAddr(ptr);
 
-    if (in_display_segment(start_addr) && in_display_segment(dataptr)) {
-      int start_x, start_y, end_x, end_y, w, h;
-      ptrdiff_t temp_s, temp_e;
+      if (in_display_segment(start_addr) && in_display_segment(dataptr)) {
+        int start_x, start_y, end_x, end_y, w, h;
+        ptrdiff_t temp_s, temp_e;
 
-      temp_s = start_addr - DisplayRegion68k;
-      temp_e = dataptr - DisplayRegion68k;
+        temp_s = start_addr - DisplayRegion68k;
+        temp_e = dataptr - DisplayRegion68k;
 
-      start_y = temp_s / DisplayRasterWidth;
-      start_x = (temp_s % DisplayRasterWidth) * BITSPER_DLWORD;
+        start_y = temp_s / DisplayRasterWidth;
+        start_x = (temp_s % DisplayRasterWidth) * BITSPER_DLWORD;
 
-      end_y = temp_e / DisplayRasterWidth;
-      end_x = (temp_e % DisplayRasterWidth) * BITSPER_DLWORD + (BITSPER_DLWORD - 1);
+        end_y = temp_e / DisplayRasterWidth;
+        end_x = (temp_e % DisplayRasterWidth) * BITSPER_DLWORD + (BITSPER_DLWORD - 1);
 
-      w = abs(start_x - end_x) + 1;
-      h = abs(start_y - end_y) + 1;
+        w = abs(start_x - end_x) + 1;
+        h = abs(start_y - end_y) + 1;
 
-      if (start_x > end_x) { start_x = end_x;
-}
-      if (start_y > end_y) { start_y = end_y;
-}
+        if (start_x > end_x) {
+          start_x = end_x;
+        }
+        if (start_y > end_y) {
+          start_y = end_y;
+        }
 
 #if defined(XWINDOW) || defined(BYTESWAP)
-      flush_display_region(start_x, start_y, w, h);
+        flush_display_region(start_x, start_y, w, h);
 #endif /* XWINDOW */
+      }
     }
-  }
 #endif /* DISPLAYBUFFER */
 
   ScreenLocked = NIL;

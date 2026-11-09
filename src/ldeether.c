@@ -10,10 +10,12 @@
 
 #include "version.h"
 
-#if !defined( MAIKO_ENABLE_ETHERNET) || ! (defined(USE_DLPI) || defined(USE_NIT))
+#if !defined(MAIKO_ENABLE_ETHERNET) || !(defined(USE_DLPI) || defined(USE_NIT))
 /* No ethernet, so have a dummy here. */
 unsigned char ether_host[6] = {0, 0, 0, 0, 0, 0}; /* 48 bit address */
-int main(int argc, char *argv[]) { return (0); }
+int main(int argc, char *argv[]) {
+  return (0);
+}
 #else
 /* THERE -IS- AN ETHERNET */
 
@@ -34,10 +36,9 @@ char *devices[] = {"emd0", "emd1", "emd2", "emd3", "emd4", 0};
 #ifdef OS5
 #include <sys/bufmod.h>
 
-char *devices[] = {"le0",   "le1",   "le2",   "le3",   "le4",   "ie0", "ie1", "ie2", "ie3",
-                   "ie4",   "qe0",   "qe1",   "qe2",   "qe3",   "qe4", "qe5", "qe6", "qe7",
-                   "fddi0", "fddi1", "fddi2", "fddi3", "fddi4", "bf0", "bf1", "net0", "net1",
-                   0};
+char *devices[] = {"le0",   "le1",   "le2",   "le3", "le4", "ie0",  "ie1",  "ie2", "ie3",   "ie4",
+                   "qe0",   "qe1",   "qe2",   "qe3", "qe4", "qe5",  "qe6",  "qe7", "fddi0", "fddi1",
+                   "fddi2", "fddi3", "fddi4", "bf0", "bf1", "net0", "net1", 0};
 #endif
 #endif /* USE_DLPI */
 
@@ -129,29 +130,29 @@ int main(int argc, char *argv[]) {
 
 #elif defined(USE_NIT)
 #ifndef OS4
-      ether_fd = socket(AF_NIT, SOCK_RAW, NITPROTO_RAW);
+    ether_fd = socket(AF_NIT, SOCK_RAW, NITPROTO_RAW);
 #else  /* OS4 */
-      ether_fd = open("/dev/nit", O_RDWR);
+    ether_fd = open("/dev/nit", O_RDWR);
 #endif /* OS4 */
-      if (ether_fd >= 0) {
-        /* it's open, now query it and find out its name and address */
-        /* JRB - must document that LDE uses the first net board as found
-           by SIOCGIFCONF (see if(4)).  Maybe we need an option to specify
-           which net board (suspect more than one net board on an LDE machine
-           will be rare, abut...).
-        */
-        struct ifconf if_data;
-        struct ifreq ifbuf[20];
+    if (ether_fd >= 0) {
+      /* it's open, now query it and find out its name and address */
+      /* JRB - must document that LDE uses the first net board as found
+         by SIOCGIFCONF (see if(4)).  Maybe we need an option to specify
+         which net board (suspect more than one net board on an LDE machine
+         will be rare, abut...).
+      */
+      struct ifconf if_data;
+      struct ifreq ifbuf[20];
 
 #ifdef OS4
-        /* first and foremost, get the packet filter module attached
-           (used for ether_suspend and ether_resume) */
+      /* first and foremost, get the packet filter module attached
+         (used for ether_suspend and ether_resume) */
 
-        if (ioctl(ether_fd, I_PUSH, "pf") < 0) {
-          perror("IOCTL push of pf lost");
-          close(ether_fd);
-          goto I_Give_Up;
-        }
+      if (ioctl(ether_fd, I_PUSH, "pf") < 0) {
+        perror("IOCTL push of pf lost");
+        close(ether_fd);
+        goto I_Give_Up;
+      }
 #endif /* OS4 */
 
       if_data.ifc_len = sizeof(ifbuf);
@@ -222,7 +223,8 @@ int main(int argc, char *argv[]) {
 
   newargv = (char **)malloc((argc + 1 + (ether_fd > 0) * 2) * sizeof(char **));
   newargv[0] = filetorun; /* or whatever... */
-  for (i = 1; i < argc; i++) newargv[i] = argv[i];
+  for (i = 1; i < argc; i++)
+    newargv[i] = argv[i];
 
   /* then if the net is active, spit out the ether info */
   if (ether_fd > 0) {
