@@ -135,29 +135,28 @@ static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
     byte_swap_code_block(fnbase);
 #endif
 
-  while (T) {
-    switch (opnum = Get_code_BYTE(codeptr)) {
-      case ENDOFX: /* -X- */ return (NIL);
-      case GCONST: /* GCONST */
+  do {
+    opnum = Get_code_BYTE(codeptr);
+    if (opnum == ENDOFX) {
+      /* -X- */
+      return NIL;
+    }
+    if (opnum == GCONST) {
 #ifdef BIGVM
-      {
-        LispPTR reclaimed = (Get_code_BYTE(codeptr + 1) << 24) |
-                            (Get_code_BYTE(codeptr + 2) << 16) | (Get_code_BYTE(codeptr + 3) << 8) |
-                            Get_code_BYTE(codeptr + 4);
+      LispPTR reclaimed = (Get_code_BYTE(codeptr + 1) << 24) |
+        (Get_code_BYTE(codeptr + 2) << 16) | (Get_code_BYTE(codeptr + 3) << 8) |
+        Get_code_BYTE(codeptr + 4);
 #else
-      {
-        LispPTR reclaimed = (Get_code_BYTE(codeptr + 1) << 16) | (Get_code_BYTE(codeptr + 2) << 8) |
-                            Get_code_BYTE(codeptr + 3);
+      LispPTR reclaimed = (Get_code_BYTE(codeptr + 1) << 16) | (Get_code_BYTE(codeptr + 2) << 8) |
+        Get_code_BYTE(codeptr + 3);
 #endif /* BIGVM */
-        if (reclaimed != codeblock)
-        /*			      {htfind(reclaimed, casep);} */
-        {
-          REC_GCLOOKUP(reclaimed, casep);
-        }
+      if (reclaimed != codeblock) {
+        /* was: htfind(reclaimed, casep); */
+        REC_GCLOOKUP(reclaimed, casep);
       }
     }
-    if ((len = oplength[opnum]) >
-        LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
+    len = oplength[opnum];
+    if (len > LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
       char errtext[200];
       sprintf(errtext,
               "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
@@ -167,7 +166,7 @@ static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
     }
     codeptr += len + 1;
-  }
+  } while (1);
 }
 
 /************************************************************************/
@@ -261,28 +260,29 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
 /*									*/
 /************************************************************************/
 
-int code_block_size(long unsigned int codeblock68k) {
-  InstPtr codeptr, initcodeptr;
-  unsigned int opnum;
-  unsigned int len;
-  struct fnhead *fnbase;
-  fnbase = (struct fnhead *)codeblock68k;
-  initcodeptr = codeptr = ((InstPtr)fnbase) + fnbase->startpc;
-  while (T) {
-    switch (opnum = Get_BYTE(codeptr)) {
-      case ENDOFX: /* -X- */ return (codeptr - initcodeptr);
-    }
-    if ((len = oplength[opnum]) >
-        LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
-      char errtext[200];
-      sprintf(errtext,
-              "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
-              "UFN length",
-              opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF),
-              (int)(codeblock68k & 0xFFFF));
-      error(errtext);
-      oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
-    }
-    codeptr += len + 1;
-  }
-}
+ int code_block_size(long unsigned int codeblock68k) {
+   InstPtr codeptr, initcodeptr;
+   unsigned int opnum;
+   unsigned int len;
+   struct fnhead *fnbase;
+   fnbase = (struct fnhead *)codeblock68k;
+   initcodeptr = codeptr = ((InstPtr)fnbase) + fnbase->startpc;
+   do {
+     opnum = Get_BYTE(codeptr);
+     if (opnum == ENDOFX) {
+       return (codeptr - initcodeptr);
+     }
+     if ((len = oplength[opnum]) >
+         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
+       char errtext[200];
+       sprintf(errtext,
+               "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "
+               "UFN length",
+               opnum, codeptr - (InstPtr)fnbase, (int)((codeblock68k >> 16) & 0xFF),
+               (int)(codeblock68k & 0xFFFF));
+       error(errtext);
+       oplength[opnum] = len = (((UFN *)UFNTable) + (opnum))->byte_num;
+     }
+     codeptr += len + 1;
+   } while (1);
+ }
