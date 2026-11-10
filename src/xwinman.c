@@ -194,51 +194,36 @@ void process_Display_events(DspInterface dsp) {
               (short)((report.xmotion.y + dsp->Visible.y) & 0xFFFF) - Current_Hot_Y;
           break;
         case KeyPress:
-          kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], FALSE);
+        case KeyRelease: {
+          short upflg = report.type == KeyRelease;
+          kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], upflg);
           DoRing();
-          if ((KBDEventFlg += 1) > 0) {
+          KBDEventFlg += 1;
+          if (KBDEventFlg > 0) {
             Irq_Stk_End = Irq_Stk_Check = 0;
           }
           break;
-        case KeyRelease:
-          kb_trans(SUNLispKeyMap[(report.xkey.keycode) - KEYCODE_OFFSET], TRUE);
-          DoRing();
-          if ((KBDEventFlg += 1) > 0) {
-            Irq_Stk_End = Irq_Stk_Check = 0;
-          }
-          break;
+        }
         case ButtonPress:
+        case ButtonRelease: {
+          short upflg = report.type == ButtonRelease;
           switch (report.xbutton.button) {
-            case Button1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, FALSE); break;
-            case Button2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, FALSE); break;
-            case Button3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
-            case Button4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, FALSE); break;
-            case Button5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, FALSE); break;
-            case Button5 + 1: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, FALSE); break;
-            case Button5 + 2: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, FALSE); break;
+            case Button1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, upflg); break;
+            case Button2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, upflg); break;
+            case Button3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, upflg); break;
+            case Button4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, upflg); break;
+            case Button5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, upflg); break;
+            case Button5 + 1: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, upflg); break;
+            case Button5 + 2: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, upflg); break;
             default: break;
           }
           DoRing();
-          if ((KBDEventFlg += 1) > 0) {
+          KBDEventFlg += 1;
+          if (KBDEventFlg > 0) {
             Irq_Stk_End = Irq_Stk_Check = 0;
           }
           break;
-        case ButtonRelease:
-          switch (report.xbutton.button) {
-            case Button1: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_LEFT, TRUE); break;
-            case Button2: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_MIDDLE, TRUE); break;
-            case Button3: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
-            case Button4: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFT, TRUE); break;
-            case Button5: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_LEFTMIDDLE, TRUE); break;
-            case Button5 + 1: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHT, TRUE); break;
-            case Button5 + 2: PUTBASEBIT68K(EmRealUtilin68K, KEYSET_RIGHTMIDDLE, TRUE); break;
-            default: break;
-          }
-          DoRing();
-          if ((KBDEventFlg += 1) > 0) {
-            Irq_Stk_End = Irq_Stk_Check = 0;
-          }
-          break;
+        }
         case EnterNotify: Mouse_Included = TRUE; break;
         case LeaveNotify: Mouse_Included = FALSE; break;
 #endif
