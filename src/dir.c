@@ -74,14 +74,16 @@ extern int Dummy_errno;
                                                                    \
     separate_version(tname, sizeof(tname), tver, sizeof(tver), 0); \
                                                                    \
-    if ((pp = (char *)strrchr(tname, '.')) == NULL) {              \
+    pp = (char *)strrchr(tname, '.');                              \
+    if (pp == NULL) {                                              \
       *(text) = '\0';                                              \
     } else {                                                       \
       *pp = '\0';                                                  \
       strlcpy(text, pp + 1, sizeof(text));                         \
     }                                                              \
                                                                    \
-    if ((pp = (char *)strrchr(pname, '.')) == NULL) {              \
+    pp = (char *)strrchr(pname, '.');                              \
+    if (pp == NULL) {                                              \
       *(pext) = '\0';                                              \
     } else {                                                       \
       *pp = '\0';                                                  \
@@ -425,7 +427,7 @@ static int quote_fname_ufs(char *file, size_t filesize) {
  * Value:	If succeed, returns 1, otherwise 0.
  *
  * Side Effect:	If succeed, dir is replaced with the directory name in Xerox Lisp
- * 		format in which special characters are quoted.
+ *              format in which special characters are quoted.
  *
  * Description:
  *
@@ -482,26 +484,44 @@ static int MAXFINFO;
 
 #define FINFOARRAYRSIZE 16
 
-#define AllocFinfo(fp)                                                     \
-  do {                                                                     \
-    if (FreeFinfoList != (FINFO *)NULL) {                                  \
-      (fp) = FreeFinfoList;                                                \
-      FreeFinfoList = (fp)->next;                                          \
-    } else if (((fp) = (FINFO *)calloc(1, sizeof(FINFO))) == NULL) {       \
-      (fp) = (FINFO *)NULL;                                                \
-    } else if (((fp)->prop = (FPROP *)calloc(1, sizeof(FPROP))) == NULL) { \
-      free(fp);                                                            \
-      (fp) = (FINFO *)NULL;                                                \
-    }                                                                      \
-  } while (0)
+/*
+ * Allocate a new FINFO object, either from the free list,
+ * or by a call to calloc(), in which case a new prop object
+ * must also be allocated.
+ *
+ * Returns the new FINFO object, or NULL if there was an error.
+ */
+static FINFO *AllocFinfo(void) {
+  FINFO *fp;
+  if (FreeFinfoList != (FINFO *)NULL) {
+      fp = FreeFinfoList;
+      FreeFinfoList = fp->next;
+      return fp;
+  }
+  /* there was nothing on the freelist, attempt to allocate a new one */
+  fp = (FINFO *)calloc(1, sizeof(FINFO));
+  if (fp == NULL) {
+    return NULL;
+  }
+  /* we allocated a new one, now must allocate the property storage */
+  fp->prop = (FPROP *)calloc(1, sizeof(FPROP));
+  if (fp->prop == NULL) {
+      free(fp);
+      return NULL;
+  }
+  return fp;
+}
 
-#define FreeFinfo(fp)                                                      \
-  do {                                                                     \
-    FINFO *lastp;                                                          \
-    for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {} \
-    lastp->next = FreeFinfoList;                                           \
-    FreeFinfoList = fp;                                                    \
-  } while (0)
+/*
+ * Return a linked list of FINFO objects to the head of the free list
+ */
+static void FreeFinfo(FINFO *fp) {
+  FINFO *lastp;
+  for (lastp = fp; lastp->next != (FINFO *)NULL; lastp = lastp->next) {
+  }
+  lastp->next = FreeFinfoList;
+  FreeFinfoList = fp;
+}
 
 /*
  * For debug aid.
@@ -686,7 +706,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf) {
   unmatch:
     continue;
   match:
-    AllocFinfo(nextp);
+    nextp = AllocFinfo();
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
@@ -770,7 +790,7 @@ static int enum_dsk_prop(char *dir, char *name, char *ver, FINFO **finfo_buf) {
     if (rval == -1)
       continue;
 
-    AllocFinfo(newp);
+    newp = AllocFinfo();
     newp->next = prevp;
     /* All other types than directory. */
     newp->dirp = 0;
@@ -824,7 +844,7 @@ static int enum_dsk_prop(const char *dir, const char *name, const char *ver, FIN
     unmatch:
       continue;
     match:
-      AllocFinfo(nextp);
+      nextp = AllocFinfo();
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
         *Lisp_errno = errno;
@@ -955,7 +975,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf) {
   unmatch:
     continue;
   match:
-    AllocFinfo(nextp);
+    nextp = AllocFinfo();
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
@@ -1028,7 +1048,7 @@ static int enum_dsk(char *dir, char *name, char *ver, FINFO **finfo_buf) {
     if (rval == -1)
       continue;
 
-    AllocFinfo(newp);
+    newp = AllocFinfo();
     newp->next = prevp;
     /* All other types than directory. */
     newp->dirp = 0;
@@ -1081,7 +1101,7 @@ static int enum_dsk(const char *dir, const char *name, const char *ver, FINFO **
     unmatch:
       continue;
     match:
-      AllocFinfo(nextp);
+      nextp = AllocFinfo();
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
         *Lisp_errno = errno;
@@ -1181,7 +1201,7 @@ static int enum_ufs_prop(char *dir, char *name, char *ver, FINFO **finfo_buf) {
   unmatch:
     continue;
   match:
-    AllocFinfo(nextp);
+    nextp = AllocFinfo();
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
@@ -1254,7 +1274,7 @@ static int enum_ufs_prop(const char *dir, const char *name, const char *ver, FIN
     unmatch:
       continue;
     match:
-      AllocFinfo(nextp);
+      nextp = AllocFinfo();
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
         *Lisp_errno = errno;
@@ -1345,7 +1365,7 @@ static int enum_ufs(char *dir, char *name, char *ver, FINFO **finfo_buf) {
   unmatch:
     continue;
   match:
-    AllocFinfo(nextp);
+    nextp = AllocFinfo();
     if (nextp == (FINFO *)NULL) {
       FreeFinfo(prevp);
       *Lisp_errno = errno;
@@ -1416,7 +1436,7 @@ static int enum_ufs(const char *dir, const char *name, const char *ver, FINFO **
     unmatch:
       continue;
     match:
-      AllocFinfo(nextp);
+      nextp = AllocFinfo();
       if (nextp == (FINFO *)NULL) {
         FreeFinfo(prevp);
         *Lisp_errno = errno;
