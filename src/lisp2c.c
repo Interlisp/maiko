@@ -77,7 +77,7 @@ int LispIntToCInt(LispPTR lispint) {
     case S_NEGATIVE: return (lispint | 0xFFFF0000);
     default:
       if (GetTypeNumber(lispint) == TYPE_FIXP) {
-        return (*((int *)NativeAligned4FromLAddr(lispint)));
+        return *((int *)NativeAligned4FromLAddr(lispint));
       } else {
         char msg[200];
         sprintf(msg, "Arg 0x%x isn't a lisp integer.", lispint);
@@ -95,9 +95,5 @@ LispPTR CIntToLispInt(int cint) {
     *((int *)wordp) = cint;
     return (LAddrFromNative(wordp));
   }
-  if (cint >= 0) { /* its a positive smallp! */
-    return (S_POSITIVE | cint);
-  } else { /* its a negative smallp! */
-    return (S_NEGATIVE | (0xFFFF & cint));
-  }
+  return (cint >= 0) ? S_POSITIVE | cint : S_NEGATIVE | (0xFFFF & cint);
 }
