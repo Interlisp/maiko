@@ -256,7 +256,7 @@ LispPTR rplacd(LispPTR x, LispPTR y) {
     /* cdr-samepage & x and y are on same page */
     x_68k->cdr_code = CDR_ONPAGE + ((y - x) >> 1);
 #else
-    else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y))
+  } else if ((rp_page = POINTER_PAGEBASE(x)) == POINTER_PAGEBASE(y)) {
         /* cdr-samepage & x and y are on same page */
         x_68k->cdr_code = CDR_ONPAGE + ((y & 0xff) >> 1);
 #endif /* NEWCDRCODING */

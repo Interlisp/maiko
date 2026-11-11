@@ -45,13 +45,14 @@ LispPTR N_OP_gvar_(LispPTR tos, unsigned int atom_index) {
     pslot = NativeAligned4FromLAddr(atom_index + NEWATOM_VALUE_OFFSET);
   } else {
 #endif /* BIGATOMS */
-
 #ifdef BIGVM
     pslot = ((LispPTR *)AtomSpace) + (5 * atom_index) + NEWATOM_VALUE_PTROFF;
-  }
 #else
-  pslot = (LispPTR *)Valspace + atom_index;
+    pslot = (LispPTR *)Valspace + atom_index;
 #endif /* BIGVM */
+#ifdef BIGATOMS
+  }
+#endif
   DEBUGGER(if (tos & 0xF0000000) error("Setting GVAR with high bits on"));
   FRPLPTR(((struct xpointer *)pslot)->addr, tos);
   return (tos);

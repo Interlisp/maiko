@@ -128,8 +128,10 @@ newframe:
 #else
       newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
           ((newpfra2->hi2nametable) << 16 | newpfra2->lonametable));
-      else newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
+    } else {
+      newpfn2 = (struct fnhead *)NativeAligned4FromLAddr(
           ((newpfra2->hi2fnheader) << 16 | newpfra2->lofnheader));
+    }
 #endif /* BIGVM */
     pindex = (NAMETABLE *)((DLword *)newpfn2 + FNHEADSIZE);
 /* now pindex points 1st word of Nametable. */
