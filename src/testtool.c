@@ -157,33 +157,24 @@ void print_package_name(int index) {
 
   if (compare_chars(pname, "INTERLISP", len) == T) {
     printf("IL:");
-    return;
-  }
-  if (compare_chars(pname, "LISP", len) == T) {
+  } else if (compare_chars(pname, "LISP", len) == T) {
     printf("CL:");
-    return;
   } else if (compare_chars(pname, "XEROX-COMMON-LISP", len) == T) {
     printf("XCL:");
-    return;
   } else if (compare_chars(pname, "SYSTEM", len) == T) {
     printf("SI:");
-    return;
   } else if (compare_chars(pname, "KEYWORD", len) == T) {
     printf(":");
-    return;
   } else if (compare_chars(pname, "COMPILER", len) == T) {
     printf("XCLC:");
-    return;
   } else {
     while (len > 0) {
       putchar(GETBYTE(pname++));
       len--;
     }
     putchar(':');
-    return;
   }
-
-} /*print_package_name */
+} /* print_package_name */
 
 /************************************************************************/
 /*									*/
