@@ -215,7 +215,7 @@ LispPTR get_pvar_name(struct frameex1 *fx_addr68k, DLword offset) {
   if (i < (fnobj->ntsize >> 1)) {
     return ((LispPTR) * (first_table));
 #else
-  if (i < fnobj->ntsize)
+  if (i < fnobj->ntsize) {
     return ((LispPTR)GETWORD(first_table));
 #endif
   } else {

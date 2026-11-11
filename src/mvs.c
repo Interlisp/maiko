@@ -92,7 +92,7 @@ newpc:
         }
 #ifndef BIGATOMS
         /* would add 3 to  PC, but miscn return code does.*/
-        if (caller == immediate_caller)
+        if (caller == immediate_caller) {
           PC = pc;
 #else
         /* BUT 3's not enough for big atoms, so add diff between FN op size & MISCN op size */
@@ -200,7 +200,7 @@ newpc:
         }
 /* would add 3 to PC, but miscn ret code does. */
 #ifndef BIGATOMS
-        if (caller == immediate_caller)
+        if (caller == immediate_caller) {
           PC = pc;
 #else
         /* BUT 3's not enough for big atoms, so add 1 */
