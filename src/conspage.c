@@ -324,7 +324,8 @@ LispPTR N_OP_cons(LispPTR cons_car, LispPTR cons_cdr) {
 #endif
   LispPTR new_page; /* hold the return  val of nextconspage */
 
-  GCLOOKUP(cons_cdr &= POINTERMASK, ADDREF);
+  cons_cdr &= POINTERMASK;
+  GCLOOKUP(cons_cdr, ADDREF);
   GCLOOKUP(cons_car, ADDREF);
 
   if (cons_cdr == NIL_PTR) {

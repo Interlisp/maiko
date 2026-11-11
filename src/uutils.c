@@ -154,9 +154,8 @@ LispPTR check_unix_password(LispPTR *args) {
 
 LispPTR unix_username(LispPTR *args) {
 #ifndef DOS
-  struct passwd *pwd;
-
-  if ((pwd = getpwuid(getuid())) == NULL) {
+  struct passwd *pwd = getpwuid(getuid());
+  if (pwd == NULL) {
     return NIL;
   }
   if (c_string_to_lisp_string(pwd->pw_name, args[0])) {
@@ -241,14 +240,14 @@ LispPTR unix_getparm(LispPTR *args) {
     }
     envvalue = result;
   } else if (strcmp(envname, "LOGNAME") == 0) {
-    struct passwd *pwd;
-    if ((pwd = getpwuid(getuid())) == NULL) {
+    struct passwd *pwd = getpwuid(getuid());
+    if (pwd == NULL) {
       return NIL;
     }
     envvalue = pwd->pw_name;
   } else if (strcmp(envname, "FULLUSERNAME") == 0) {
-    struct passwd *pwd;
-    if ((pwd = getpwuid(getuid())) == NULL) {
+    struct passwd *pwd = getpwuid(getuid());
+    if (pwd == NULL) {
       return NIL;
     }
     envvalue = pwd->pw_gecos;
@@ -303,9 +302,8 @@ LispPTR unix_getenv(LispPTR *args) {
 
 LispPTR unix_fullname(LispPTR *args) {
 #ifndef DOS
-  struct passwd *pwd;
-
-  if ((pwd = getpwuid(getuid())) == NULL) {
+  struct passwd *pwd = getpwuid(getuid());
+  if (pwd == NULL) {
     return NIL;
   }
   if (c_string_to_lisp_string(pwd->pw_gecos, args[0])) {

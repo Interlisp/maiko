@@ -272,8 +272,9 @@ LispPTR reclaimcodeblock(LispPTR codebase) {
      if (opnum == ENDOFX) {
        return (codeptr - initcodeptr);
      }
-     if ((len = oplength[opnum]) >
-         LONGEST_OPCODE) { /* len > biggest possible marks an unknown opcode */
+     len = oplength[opnum];
+     if (len > LONGEST_OPCODE) {
+       /* len > biggest possible marks an unknown opcode */
        char errtext[200];
        sprintf(errtext,
                "Unrecognized bytecode (0%o) at offset 0%to in code block x%x,x%x; continue to use "

@@ -121,14 +121,16 @@ nextentry:
           goto retry;
         }
       }
-      if ((offset = ((struct htcoll *)link)->next_free)) {
+      offset = ((struct htcoll *)link)->next_free;
+      if (offset) {
         prev = link;
         link = (GCENTRY *)(HTcoll + offset);
         goto linkloop;
       }
       goto nextentry;
     }
-    if (StkCntIsZero(dbgcontents = HTLPTR->contents)) {
+    dbgcontents = HTLPTR->contents;
+    if (StkCntIsZero(HTLPTR->contents)) {
       ptr = VAG2(HENTRY->segnum, (probe << 1));
       HTLPTR->contents = 0;
       GcreclaimLp(ptr);

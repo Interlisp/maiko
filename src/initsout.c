@@ -157,7 +157,8 @@ void init_ifpage(unsigned sysout_size) {
     /* Get username from getpwuid */
     /* The page/offset we are using is hardcoded in LLFAULT in functions */
     /*  \MAIKO.NEWFAULTINIT and \MAIKO.ASSIGNBUFFERS */
-    if ((pwd = getpwuid(getuid())) != NULL) {
+    pwd = getpwuid(getuid());
+    if (pwd != NULL) {
       InterfacePage->usernameaddr = 0155001;
       s = (char *)NativeAligned2FromLAddr(InterfacePage->usernameaddr);
       len = (int)strlen(pwd->pw_name);

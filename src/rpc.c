@@ -58,7 +58,7 @@ LispPTR rpc(LispPTR *args) {
      args[6]:Argument block length
      */
   char hostname[MAX_HOSTNAME_LENGTH];
-  struct hostent *hp;
+  struct hostent *hp = NULL;
   struct sockaddr_in sin, sin1, from;
   char *outbuf, *inbuf, *destaddr;
   int s, msec_until_timeout, msec_between_tries, out_length;
@@ -82,7 +82,9 @@ LispPTR rpc(LispPTR *args) {
     LispStringToCString(args[0], hostname, MAX_HOSTNAME_LENGTH);
     hp = gethostbyname(hostname);
   }
-
+  if (!hp) {
+    goto handle_error;
+  }
   N_GETNUMBER(args[1], port, handle_error);
 
   /* Translate the buffer pointer into C pointers */
@@ -90,9 +92,7 @@ LispPTR rpc(LispPTR *args) {
   inbuf = (char *)(NativeAligned2FromLAddr(args[3]));
 
   N_GETNUMBER(args[4], msec_until_timeout, handle_error);
-
   N_GETNUMBER(args[5], msec_between_tries, handle_error);
-
   N_GETNUMBER(args[6], out_length, handle_error);
 
   /* Convert to micro seconds */
@@ -108,7 +108,8 @@ LispPTR rpc(LispPTR *args) {
   /* SET UP THE SOCKET */
 
   /* Open the socket; Might want to make this non-blocking */
-  if ((s = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+  s = socket(AF_INET, SOCK_DGRAM, 0);
+  if (s < 0) {
     goto handle_error;
   }
 
@@ -119,13 +120,9 @@ LispPTR rpc(LispPTR *args) {
   sin.sin_family = AF_INET;
   bind(s, (struct sockaddr *)&sin, sizeof(sin));
 
-  /* Resolve the host address. */
-  if (hp) {
-    sin1.sin_family = hp->h_addrtype;
-    memcpy(&sin1.sin_addr, hp->h_addr, hp->h_length);
-  } else {
-    goto handle_error;
-  }
+  /* Set up the host address. */
+  sin1.sin_family = hp->h_addrtype;
+  memcpy(&sin1.sin_addr, hp->h_addr, hp->h_length);
 
   /* Convert to network byte order */
   sin1.sin_port = htons((u_short)port);

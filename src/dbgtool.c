@@ -456,7 +456,8 @@ int sf(struct frameex1 *fx_addr68k) {
       ptrhi = ptr;
       ptrlo = ptr + 1;
       printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
-      if ((pvarindex = get_pvar_name(fx_addr68k, i++)) == LOCAL_PVAR) {
+      pvarindex = get_pvar_name(fx_addr68k, i++);
+      if (pvarindex == LOCAL_PVAR) {
         printf("*local* [pvar%d] ", (i - 1));
       } else {
         print_atomname(pvarindex);
@@ -528,7 +529,8 @@ int sf(struct frameex1 *fx_addr68k) {
     ptrhi = ptr;
     ptrlo = ptr + 1;
     printf(" %6x : 0x%4x  0x%4x  ", LAddrFromNative(ptr), GETWORD(ptrhi), GETWORD(ptrlo));
-    if ((pvarindex = get_pvar_name(fx_addr68k, i++)) == LOCAL_PVAR) {
+    pvarindex = get_pvar_name(fx_addr68k, i++);
+    if (pvarindex == LOCAL_PVAR) {
       printf("*local* [pvar%d] ", (i - 1));
     } else {
       print_atomname(pvarindex);

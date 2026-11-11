@@ -160,8 +160,8 @@ lp:
 #endif
   switch (typ) {
     case TYPE_LISTP: {
-      if ((code = ptr->cdr_code) == CDR_INDIRECT) /* indirect */
-      {
+      code = ptr->cdr_code;
+      if (code == CDR_INDIRECT) { /* indirect */
         tmpcell = ptr->car_field; /* Monitor */
         freelistcell(tmpptr);
         ptr = (ConsCell *)NativeAligned4FromLAddr(tmpcell);
@@ -255,7 +255,8 @@ normal:
 #else
     if (val != NIL) {
       if (ptrfield != NIL) {
-        if ((carfield = car(ptrfield) & 0x0ffff) >> 1 < 15) {
+        carfield = car(ptrfield) & 0x0ffff;
+        if (carfield >> 1 < 15) {
           ptr = (ConsCell *)NativeAligned4FromLAddr(tmpptr);
           ptr->car_field = donext;
           ptr->cdr_code = ((car(ptrfield) & 0x0ffff) >> 1);

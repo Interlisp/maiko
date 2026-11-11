@@ -60,7 +60,8 @@ LispPTR raw_rs232c_open(LispPTR portname) {
   head = (ONED_ARRAY *)NativeAligned4FromLAddr(portname);
   lispname = (char *)NativeAligned2FromLAddr(head->BASE);
 
-  if ((fd = open(lispname, O_RDWR)) < 0) {
+  fd = open(lispname, O_RDWR);
+  if (fd < 0) {
     perror("RS open fail: ");
     return (NIL);
   }
@@ -266,7 +267,8 @@ LispPTR raw_rs232c_read(LispPTR fd, LispPTR buff, LispPTR nbytes) {
   if (FD_ISSET(real_fd, &readfds)) {
     buffptr = (unsigned char *)NativeAligned2FromLAddr(buff);
 
-    if ((length = read(real_fd, buffptr, (nbytes & 0xffff))) < 0) {
+    length = read(real_fd, buffptr, (nbytes & 0xffff));
+    if (length < 0) {
       perror("RS read :");
       return (NIL);
     } else {

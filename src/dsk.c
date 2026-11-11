@@ -933,7 +933,8 @@ LispPTR DSK_getfilename(const LispPTR *args) {
           return (NIL);
         }
 
-        if ((rval = true_name(aname, sizeof(aname))) == 0) {
+        rval = true_name(aname, sizeof(aname));
+        if (rval == 0) {
           return (NIL);
         }
         if (rval == -1) {
@@ -979,7 +980,8 @@ LispPTR DSK_getfilename(const LispPTR *args) {
           return (NIL);
         }
 
-        if ((rval = true_name(aname, sizeof(aname))) == 0) {
+        rval = true_name(aname, sizeof(aname));
+        if (rval == 0) {
           return (NIL);
         }
         if (rval == -1) {

@@ -166,7 +166,8 @@ LispPTR N_OP_aref2(LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 
   /*  test and setup index  */
   N_GetPos(inx1, temp, inx1);
-  if (temp >= (j = arrayblk->Dim1)) {
+  j = arrayblk->Dim1;
+  if (temp >= j) {
     ERROR_EXIT(inx1);
   }
   N_GetPos(inx0, arindex, inx1);
@@ -197,7 +198,8 @@ LispPTR N_OP_aset2(LispPTR data, LispPTR arrayarg, LispPTR inx0, LispPTR inx1) {
 
   /*  test and setup index  */
   N_GetPos(inx1, temp, inx1);
-  if (temp >= (j = arrayblk->Dim1)) {
+  j = arrayblk->Dim1;
+  if (temp >= j) {
     ERROR_EXIT(inx1);
   }
   N_GetPos(inx0, index, inx1);

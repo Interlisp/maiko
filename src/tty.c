@@ -98,7 +98,8 @@ void tty_open(void) {
   struct termios options;
 
   if (TTY_Fd < 0) {
-    if ((TTY_Fd = open(TTY_Dev, O_RDWR)) >= 0) {
+    TTY_Fd = open(TTY_Dev, O_RDWR);
+    if (TTY_Fd >= 0) {
       tcgetattr(TTY_Fd, &options);
 #ifndef MAIKO_OS_HAIKU
       options.c_iflag &= ~(IMAXBEL | IXOFF | INPCK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR |
@@ -213,7 +214,8 @@ void tty_setbaudrate(void) {
   speed_t baudrate;
 
   if (TTY_Fd >= 0) {
-    if ((baudrate = tty_baudtosymbol(DLTTYOut->line_speed)) != -1) {
+    baudrate = tty_baudtosymbol(DLTTYOut->line_speed);
+    if (baudrate != -1) {
       struct termios options;
       tcgetattr(TTY_Fd, &options);
       cfsetispeed(&options, baudrate);

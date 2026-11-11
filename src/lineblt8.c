@@ -106,7 +106,8 @@ static const unsigned int ConvBM_tbl[] = {
       case 3:                                                                              \
         destc = (u_char *)(dstLptr);                                                       \
         while ((width)--) {                                                                \
-          if (BitMaskArray[mod = ((offset) % 16)] & *srcw)                                 \
+          mod = ((offset) % 16);                                                           \
+          if (BitMaskArray[mod] & *srcw)                                                   \
             (*destc++) op1(color1);                                                        \
           else                                                                             \
             (*destc++) op1(color0);                                                        \

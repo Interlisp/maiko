@@ -293,8 +293,8 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
                            (packaddr->INTERNAL_SYMBOLS));
    return( find_symbol(char_base, 0, charlen, hashtbladdr, 0, 0) );*/
 
-  if ((index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0)) !=
-      0xffffffff) {
+  index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0);
+  if (index != 0xffffffff) {
     return (index);
   }
   return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));

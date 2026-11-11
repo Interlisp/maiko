@@ -689,7 +689,8 @@ int main(int argc, char *argv[]) {
 #ifdef DOS
     snprintf(sysout_name, MAXPATHLEN, "%s", "lisp.vm");
 #else
-    if ((envname = getenv("HOME")) != NULL) {
+    envname = getenv("HOME");
+    if (envname != NULL) {
       snprintf(sysout_name, MAXPATHLEN, "%s/lisp.virtualmem", envname);
     }
 #endif /* DOS */

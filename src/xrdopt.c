@@ -227,7 +227,8 @@ void read_Xoption(int *argc, char *argv[]) {
     envname = getenv("DISPLAY");
     (void)strlcpy(Display_Name, envname, sizeof(Display_Name));
   }
-  if ((xdisplay = XOpenDisplay(Display_Name)) != NULL) {
+  xdisplay = XOpenDisplay(Display_Name);
+  if (xdisplay != NULL) {
     /* read the other databases */
     /* Start with app-defaults/medley */
     (void)strlcpy(tmp, "/usr/lib/X11/app-defaults/medley", sizeof(tmp));

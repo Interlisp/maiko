@@ -834,8 +834,9 @@
 #elif defined(BIGVM)
 #define ATOMCELL_N(n)                                                                             \
   do {                                                                                            \
-    int nn = n;                                                                          \
-    if (0 == ((unsigned int)(TOPOFSTACK &= POINTERMASK) & SEGMASK)) {                             \
+    int nn = n;                                                                                   \
+    TOPOFSTACK &= POINTERMASK;                                                                    \
+    if (0 == ((unsigned int)TOPOFSTACK & SEGMASK)) {                                              \
       /* old-symbol case; just add cell-number arg */                                             \
       switch (nn) {                                                                               \
         case PLIS_HI: /* PLIST entry for symbol */                                                \
@@ -953,11 +954,12 @@
 #define DRAWLINE N_OP_CALL_9(N_OP_drawline)
 #define N_OP_ADDBASE N_OP_CALL_2(N_OP_addbase)
 
-#define UNWIND(n, m)                                                                           \
-  do {                                                                                         \
-    if ((CSTKPTRL = N_OP_unwind(CSTKPTR, TOPOFSTACK, n, m)) == (LispPTR *)-1) goto unwind_err; \
-    POP;                                                                                       \
-    nextop3;                                                                                   \
+#define UNWIND(n, m)                                   \
+  do {                                                 \
+    CSTKPTRL = N_OP_unwind(CSTKPTR, TOPOFSTACK, n, m); \
+    if (CSTKPTRL == (LispPTR *)-1) goto unwind_err;    \
+    POP;                                               \
+    nextop3;                                           \
   } while (0)
 
 #define STKSCAN                            \
@@ -1058,128 +1060,166 @@
   Error_Exit = 0;                        \
   goto op_ufn;
 
-#define N_OP_CALL_1(op_name)                                                    \
-  do {                                                                          \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK)) < 0) goto fix_tos_ufn; \
-    nextop1;                                                                    \
+#define N_OP_CALL_1(op_name)                     \
+  do {                                           \
+    TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK);   \
+    if ((int)(TOPOFSTACK) < 0) {                 \
+      goto fix_tos_ufn;                          \
+    }                                            \
+    nextop1;                                     \
   } while (0)
 
-#define N_OP_CALL_1d(op_name, n)                                                   \
-  do {                                                                             \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK, n)) < 0) goto fix_tos_ufn; \
-    nextop2;                                                                       \
+#define N_OP_CALL_1d(op_name, n)                  \
+  do {                                            \
+    TOPOFSTACK = (LispPTR)op_name(TOPOFSTACK, n); \
+    if ((int)(TOPOFSTACK) < 0) {                  \
+      goto fix_tos_ufn;                           \
+    }                                             \
+    nextop2;                                      \
   } while (0)
 
 #define N_OP_UNBOXED_CALL_1d(op_name, n) \
   do {                                   \
     TOPOFSTACK = op_name(TOPOFSTACK, n); \
-    if (Error_Exit) goto fix_tos_ufn;    \
+    if (Error_Exit) {                    \
+      goto fix_tos_ufn;                  \
+    }                                    \
     nextop2;                             \
   } while (0)
 
-#define N_OP_CALL_2(op_name)                                                         \
-  do {                                                                               \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto ufn_2; \
-    nextop1;                                                                         \
+#define N_OP_CALL_2(op_name)                              \
+  do {                                                    \
+    TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                          \
+      goto ufn_2;                                         \
+    }                                                     \
+    nextop1;                                              \
   } while (0)
 
-#define N_OP_POPPED_CALL_2(op_name, popped_arg)                                       \
-  do {                                                                                \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(popped_arg, TOPOFSTACK)) < 0) goto ufn_2; \
-    nextop1;                                                                          \
+#define N_OP_POPPED_CALL_2(op_name, popped_arg)            \
+  do {                                                     \
+    TOPOFSTACK = (LispPTR)op_name(popped_arg, TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                           \
+      goto ufn_2;                                          \
+    }                                                      \
+    nextop1;                                               \
   } while (0)
 
-#define N_OP_CALL_2d(op_name, n)                                                         \
-  do {                                                                                   \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, n)) < 0) goto ufn_2d; \
-    nextop2;                                                                             \
+#define N_OP_CALL_2d(op_name, n)                             \
+  do {                                                       \
+    TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, n); \
+    if ((int)(TOPOFSTACK) < 0) {                             \
+      goto ufn_2d;                                           \
+    }                                                        \
+    nextop2;                                                 \
   } while (0)
 
 #define N_OP_UNBOXED_CALL_2d(op_name, n)            \
   do {                                              \
     TOPOFSTACK = op_name(POP_TOS_1, TOPOFSTACK, n); \
-    if (Error_Exit) goto ufn_2d;                    \
+    if (Error_Exit) {                               \
+      goto ufn_2d;                                  \
+    }                                               \
     nextop2;                                        \
   } while (0)
 
-#define N_OP_CALL_2d2(op_name, a, b)                                                         \
-  do {                                                                                       \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, a, b)) < 0) goto ufn_2d2; \
-    nextop3;                                                                                 \
+#define N_OP_CALL_2d2(op_name, a, b)                            \
+  do {                                                          \
+    TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK, a, b); \
+    if ((int)(TOPOFSTACK) < 0) {                                \
+      goto ufn_2d2;                                             \
+    }                                                           \
+    nextop3;                                                    \
   } while (0)
 
-#define N_OP_CALL_exception_2(op_name)                                                     \
-  do {                                                                                     \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2; \
-    nextop1;                                                                               \
+#define N_OP_CALL_exception_2(op_name)                    \
+  do {                                                    \
+    TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                          \
+      goto exception_2;                                   \
+    }                                                     \
+    nextop1;                                              \
   } while (0)
 
-#define N_OP_CALL_exception_2C(op_name)                                                     \
-  do {                                                                                      \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK)) < 0) goto exception_2C; \
-    nextop1;                                                                                \
+#define N_OP_CALL_exception_2C(op_name)                   \
+  do {                                                    \
+    TOPOFSTACK = (LispPTR)op_name(POP_TOS_1, TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                          \
+      goto exception_2C;                                  \
+    }                                                     \
+    nextop1;                                              \
   } while (0)
 
-#define N_OP_CALL_3(op_name)                                                                  \
-  do {                                                                                        \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK)) < 0) \
-      goto fix_tos_ufn;                                                                       \
-    CSTKPTRL -= 2;                                                                            \
-    nextop1;                                                                                  \
+#define N_OP_CALL_3(op_name)                                                   \
+  do {                                                                         \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                                               \
+      goto fix_tos_ufn;                                                        \
+    }                                                                          \
+    CSTKPTRL -= 2;                                                             \
+    nextop1;                                                                   \
   } while (0)
 
-#define N_OP_CALL_3d(op_name, n)                                                                 \
-  do {                                                                                           \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0) \
-      goto fix_tos_ufn;                                                                          \
-    CSTKPTRL -= 2;                                                                               \
-    nextop2;                                                                                     \
+#define N_OP_CALL_3d(op_name, n)                                                  \
+  do {                                                                            \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n); \
+    if ((int)(TOPOFSTACK) < 0) {                                                  \
+      goto fix_tos_ufn;                                                           \
+    }                                                                             \
+    CSTKPTRL -= 2;                                                                \
+    nextop2;                                                                      \
   } while (0)
 
 #define N_OP_UNBOXED_CALL_3d(op_name, n)                                 \
   do {                                                                   \
     TOPOFSTACK = op_name(*(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n); \
-    if (Error_Exit) goto fix_tos_ufn;                                    \
+    if (Error_Exit) {                                                    \
+      goto fix_tos_ufn;                                                  \
+    }                                                                    \
     CSTKPTRL -= 2;                                                       \
     nextop2;                                                             \
   } while (0)
-#define N_OP_CALL_4(op_name)                                                                \
-  do {                                                                                      \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
-                                            TOPOFSTACK)) < 0)                               \
-      goto fix_tos_ufn;                                                                     \
-    CSTKPTRL -= 3;                                                                          \
-    nextop1;                                                                                \
+#define N_OP_CALL_4(op_name)                                                                   \
+  do {                                                                                         \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK); \
+    if ((int)(TOPOFSTACK) < 0) {                                                               \
+      goto fix_tos_ufn;                                                                        \
+    }                                                                                          \
+    CSTKPTRL -= 3;                                                                             \
+    nextop1;                                                                                   \
   } while (0)
 
-#define N_OP_CALL_4d(op_name, n)                                                            \
-  do {                                                                                      \
-    if ((int)(TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
-                                            TOPOFSTACK, n)) < 0)                            \
-      goto fix_tos_ufn;                                                                     \
-    CSTKPTRL -= 3;                                                                          \
-    nextop2;                                                                                \
+#define N_OP_CALL_4d(op_name, n)                                                                  \
+  do {                                                                                            \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n); \
+    if ((int)(TOPOFSTACK) < 0) {                                                                  \
+      goto fix_tos_ufn;                                                                           \
+    }                                                                                             \
+    CSTKPTRL -= 3;                                                                                \
+    nextop2;                                                                                      \
   } while (0)
 
-#define N_OP_CALL_7d(op_name, n)                                                                   \
-  do {                                                                                             \
-    if ((int)(TOPOFSTACK =                                                                         \
-                  (LispPTR)op_name(*(CSTKPTR - 6), *(CSTKPTR - 5), *(CSTKPTR - 4), *(CSTKPTR - 3), \
-                                   *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n)) < 0)            \
-      goto fix_tos_ufn;                                                                            \
-    CSTKPTRL -= 6;                                                                                 \
-    nextop2;                                                                                       \
+#define N_OP_CALL_7d(op_name, n)                                                                  \
+  do {                                                                                            \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 6), *(CSTKPTR - 5), *(CSTKPTR - 4), *(CSTKPTR - 3), \
+                                  *(CSTKPTR - 2), *(CSTKPTR - 1), TOPOFSTACK, n);                 \
+    if ((int)(TOPOFSTACK) < 0) {                                                                  \
+      goto fix_tos_ufn;                                                                           \
+    }                                                                                             \
+    CSTKPTRL -= 6;                                                                                \
+    nextop2;                                                                                      \
   } while (0)
 
-#define N_OP_CALL_9(op_name)                                                                       \
-  do {                                                                                             \
-    if ((int)(TOPOFSTACK =                                                                         \
-                  (LispPTR)op_name(*(CSTKPTR - 8), *(CSTKPTR - 7), *(CSTKPTR - 6), *(CSTKPTR - 5), \
-                                   *(CSTKPTR - 4), *(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
-                                   TOPOFSTACK /*, fix_tos_ufn*/)) < 0)                             \
-      goto fix_tos_ufn;                                                                            \
-    CSTKPTRL -= 8;                                                                                 \
-    nextop1;                                                                                       \
+#define N_OP_CALL_9(op_name)                                                                      \
+  do {                                                                                            \
+    TOPOFSTACK = (LispPTR)op_name(*(CSTKPTR - 8), *(CSTKPTR - 7), *(CSTKPTR - 6), *(CSTKPTR - 5), \
+                                  *(CSTKPTR - 4), *(CSTKPTR - 3), *(CSTKPTR - 2), *(CSTKPTR - 1), \
+                                  TOPOFSTACK /*, fix_tos_ufn*/);                                  \
+    if ((int)TOPOFSTACK < 0) {                                                                    \
+      goto fix_tos_ufn;                                                                           \
+    }                                                                                             \
+    CSTKPTRL -= 8;                                                                                \
+    nextop1;                                                                                      \
   } while (0)
 
 #endif

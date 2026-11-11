@@ -336,11 +336,11 @@ LispPTR subr_TCP_ops(int op, LispPTR nameConn, LispPTR proto, LispPTR length, Li
       buffer = NativeAligned2FromLAddr(proto);
       buflen = LispNumToCInt(length);
       ures = sizeof farend;
-      if ((result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &ures)) < 0) {
+      result = recvfrom(sock, buffer, buflen, 0, (struct sockaddr *)&farend, &ures);
+      if (result < 0) {
         perror("UDP Recv");
         return (NIL);
       }
-
       DBPRINT(("UDP recv:  socket = %d, len = %d.\n", sock, result));
       DBPRINT(("           remote-addr = 0x%x, remote-port = %d.\n", ntohl(farend.sin_addr.s_addr),
                ntohs(farend.sin_port)));

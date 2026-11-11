@@ -108,7 +108,8 @@ LispPTR N_OP_clequal(LispPTR arg1, LispPTR arg2) {
 
   /* now we know both are numbers */
 
-  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) {
+  type = GetTypeNumber(arg1);
+  if (type != GetTypeNumber(arg2)) {
     return (NIL);
   }
 
@@ -153,7 +154,8 @@ LispPTR N_OP_eqlop(LispPTR arg1, LispPTR arg2) {
 
   /* can return NIL if one is a number and the other isn't */
 
-  if ((type = GetTypeNumber(arg1)) != (GetTypeNumber(arg2))) {
+  type = GetTypeNumber(arg1);
+  if (type != GetTypeNumber(arg2)) {
     return (NIL);
   }
 
@@ -268,13 +270,15 @@ LispPTR N_OP_eqq(LispPTR arg1, LispPTR arg2) /* CL:=    opcode 0377 */
   int type1, type2;
   float f1, f2;
 
-  if (!((type1 = GetTypeEntry(arg1)) & TT_NUMBERP)) {
+  type1 = GetTypeEntry(arg1);
+  if (!(type1 & TT_NUMBERP)) {
     ERROR_EXIT(arg2);
   }
   if (arg2 == arg1) {
     return (ATOM_T);
   }
-  if (!((type2 = GetTypeEntry(arg2)) & TT_NUMBERP)) {
+  type2 = GetTypeEntry(arg2);
+  if (!(type2 & TT_NUMBERP)) {
     ERROR_EXIT(arg2);
   }
   type1 &= 0x7ff;

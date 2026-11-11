@@ -245,7 +245,8 @@ int do_stackoverflow(int incallp) {
   BEFORE_CONTEXTSW; /* Don't Use MIDPUNT and Don't care IFPAGE */
 
   /* Call MOVEFRAME directly */
-  if ((newfx = (DLword)moveframe(CURRENTFX)) == 0xFFFF) {
+  newfx = (DLword)moveframe(CURRENTFX);
+  if (newfx == 0xFFFFU) {
     /* To make immediately call HARDRESET */
     Irq_Stk_Check = 0;
     Irq_Stk_End = 0;

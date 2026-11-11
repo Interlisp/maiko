@@ -36,7 +36,8 @@
     GCENTRY linkoff;                                               \
     linkoff = GETGC(HTcoll);                                       \
     if (linkoff == 0) {                                            \
-      if ((linkoff = GETGC((GCENTRY *)HTcoll + 1)) >= HTCOLLMAX) { \
+      linkoff = GETGC((GCENTRY *)HTcoll + 1);                      \
+      if (linkoff >= HTCOLLMAX) {                                  \
         disablegc1(NIL);                                           \
         return (NIL);                                              \
       }                                                            \

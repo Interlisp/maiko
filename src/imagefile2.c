@@ -28,12 +28,15 @@ unsigned int open_rasterfile(char *filename) {
   RASTERFILE_INFO *fileinfo;
   int status;
 
-  if ((fileinfo = (RASTERFILE_INFO *)malloc(sizeof(RASTERFILE_INFO))) == 0) {
+  fileinfo = (RASTERFILE_INFO *)malloc(sizeof(RASTERFILE_INFO));
+  if (fileinfo == 0) {
     return (0);
   } /* end if( fileinfo ) */
 
-  if ((fileinfo->file = fopen(filename, "r")) != 0) {
-    if ((status = pr_load_header(fileinfo->file, &(fileinfo->rh))) == 0) {
+  fileinfo->file = fopen(filename, "r");
+  if (fileinfo->file != 0) {
+    status = pr_load_header(fileinfo->file, &(fileinfo->rh));
+    if (status == 0) {
       if (fileinfo->rh.ras_magic == RAS_MAGIC) {
         /* RasterFile */
         pr_load_colormap(fileinfo->file, &(fileinfo->rh), &(fileinfo->colormap));
@@ -52,7 +55,8 @@ unsigned int open_rasterfile(char *filename) {
 unsigned int create_rasterfile(char *filename) {
   RASTERFILE_INFO *fileinfo;
 
-  if (!(fileinfo = (RASTERFILE_INFO *)malloc(sizeof(RASTERFILE_INFO)))) {
+  fileinfo = (RASTERFILE_INFO *)malloc(sizeof(RASTERFILE_INFO));
+  if (!fileinfo) {
     return (0);
   } /* end if( fileinfo ) */
   fileinfo->file = fopen(filename, "w");
@@ -84,12 +88,14 @@ int write_rasterfile(RASTERFILE_INFO *fileinfo, Pixrect *pix) {
       return (FALSE);
     } /* end if( .. ) */
   } else {
-    if (!(status = init_rasterfile_header(fileinfo, pix))) {
+    status = init_rasterfile_header(fileinfo, pix);
+    if (!status) {
       return (FALSE);
     } /* end if( !status ) */
   } /* end if( fileinfo->rh.ras_magic ) */
 
-  if ((status = pr_dump_image(pix, fileinfo->file, &(fileinfo->rh))) == NULL) {
+  status = pr_dump_image(pix, fileinfo->file, &(fileinfo->rh));
+  if (status == NULL) {
     return (TRUE); /* normal return */
   }
   return (FALSE);
@@ -101,14 +107,16 @@ int init_rasterfile_header(RASTERFILE_INFO *fileinfo, Pixrect *pix) {
 
   switch (pix->pr_depth) {
     case 32:
-      if (!(ret_pix = pr_dump_init(pix, &(fileinfo->rh), NULL, 0))) {
+      ret_pix = pr_dump_init(pix, &(fileinfo->rh), NULL, 0);
+      if (!ret_pix) {
         return (FALSE);
       } /* end if( ret_pix ) */
 
       fileinfo->rh.ras_length = fileinfo->rh.ras_width * fileinfo->rh.ras_height * 4;
       fileinfo->rh.ras_type = RT_STANDARD;
 
-      if ((status = pr_dump_header(fileinfo->file, &(fileinfo->rh), NULL))) {
+      status = pr_dump_header(fileinfo->file, &(fileinfo->rh), NULL);
+      if (status) {
         return (FALSE);
       } /* end if( status ) */
       break;
@@ -126,7 +134,8 @@ int position_rasterfile(RASTERFILE_INFO *fileinfo, int n) {
 
   if (n > 0) {
     position = sizeof(struct rasterfile) + (n - 1) * fileinfo->rh.ras_length;
-    if ((status = fseek(fileinfo->file, position, SEEK_SET)) == 0) {
+    status = fseek(fileinfo->file, position, SEEK_SET);
+    if (status == 0) {
       /* normal return */
       return (TRUE);
     } /* end if( status ) */

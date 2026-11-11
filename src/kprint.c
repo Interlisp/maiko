@@ -71,7 +71,8 @@ void prindatum(LispPTR x) {
       }
       prindatum(car(x));
       if (Listp(cdr(x)) == 0) { /* print dotted pair */
-        if ((x = cdr(x)) != NIL) {
+        x = cdr(x);
+        if (x != NIL) {
           printf(" . ");
           prindatum(x);
         }
@@ -109,10 +110,11 @@ void prindatum(LispPTR x) {
       break;
     default: dtd_base = (struct dtd *)GetDTD(typen); printf("{");
 #ifdef BIGVM
-      if ((typename = dtd_base->dtd_name) != 0) {
+      typename = dtd_base->dtd_name;
 #else
-      if ((typename = dtd_base->dtd_namelo + (dtd_base->dtd_namehi << 16)) != 0)
+      typename = dtd_base->dtd_namelo + (dtd_base->dtd_namehi << 16);
 #endif
+      if (typename != 0) {
         print_atomname(typename);
       } else {
         printf("unknown");

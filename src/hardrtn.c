@@ -35,15 +35,17 @@
 #include "retmacro.h"  // for AFTER_CONTEXTSW, BEFORE_CONTEXTSW, FastRetCALL
 #include "stack.h"     // for FX, frameex1, Bframe, CHECK_FX, StackWord
 
-#define MAKE_FXCOPY(fx68k)                           \
-  do {                                               \
-    BEFORE_CONTEXTSW;                                \
-    if (((fx68k) = (FX *)make_FXcopy(fx68k)) == 0) { \
-      return (1); /* Whole space exhausted */        \
-    }                                                \
-    AFTER_CONTEXTSW;                                 \
-    CHECK_FX(fx68k);                                 \
+#define MAKE_FXCOPY(fx68k)                     \
+  do {                                         \
+    BEFORE_CONTEXTSW;                          \
+    fx68k = (FX *)make_FXcopy(fx68k);          \
+    if ((fx68k) == 0) {                        \
+      return (1); /* Whole space exhausted */  \
+    }                                          \
+    AFTER_CONTEXTSW;                           \
+    CHECK_FX(fx68k);                           \
   } while (0)
+
 static FX *make_FXcopy(FX *fx68k) {
   int size;
   int nametbl_on_stk = NIL;

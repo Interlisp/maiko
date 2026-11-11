@@ -257,28 +257,32 @@ int FindUnixPipes(void) {
 
   DBPRINT(("Entering FindUnixPipes\n"));
   UnixPipeIn = UnixPipeOut = StartTime = UnixPID = -1;
-  if ((envtmp = getenv("LDEPIPEIN"))) {
+  envtmp = getenv("LDEPIPEIN");
+  if (envtmp) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       UnixPipeIn = inttmp;
     }
   }
-  if ((envtmp = getenv("LDEPIPEOUT"))) {
+  envtmp = getenv("LDEPIPEOUT");
+  if (envtmp) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       UnixPipeOut = inttmp;
     }
   }
-  if ((envtmp = getenv("LDESTARTTIME"))) {
+  envtmp = getenv("LDESTARTTIME");
+  if (envtmp) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
       StartTime = inttmp;
     }
   }
-  if ((envtmp = getenv("LDEUNIXPID"))) {
+  envtmp = getenv("LDEUNIXPID");
+  if (envtmp) {
     errno = 0;
     inttmp = (int)strtol(envtmp, (char **)NULL, 10);
     if (errno == 0) {
@@ -787,10 +791,12 @@ LispPTR Unix_handlecomm(LispPTR *args) {
         w.ws_xpixel = 0; /* not used */
         w.ws_ypixel = 0;
         pty = slot;
-        /* Change window size, then
-           notify process group of the change */
-        if ((ioctl(pty, TIOCSWINSZ, &w) >= 0) && ((pgrp = tcgetpgrp(pty)) >= 0) &&
-            (killpg(pgrp, SIGWINCH) >= 0)) {
+        /* Change window size, then notify process group of the change */
+        if (ioctl(pty, TIOCSWINSZ, &w) < 0) {
+          return GetSmallp(errno);
+        }
+        pgrp = tcgetpgrp(pty);
+        if (pgrp >= 0 && killpg(pgrp, SIGWINCH) >= 0) {
           return (ATOM_T);
         }
         return (GetSmallp(errno));

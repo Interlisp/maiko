@@ -48,7 +48,6 @@ static LispPTR oldfree;
 LispPTR N_OP_createcell(LispPTR tos) {
   struct dtd *dtd68k;
   DLword *ptr, *lastptr;
-  LispPTR newcell;
   unsigned int type;
 
   if ((tos & SEGMASK) != S_POSITIVE) {
@@ -57,8 +56,9 @@ LispPTR N_OP_createcell(LispPTR tos) {
   type = tos & 0xffff;
 
 #ifdef DTDDEBUG
-  if (type == TYPE_LISTP)
+  if (type == TYPE_LISTP) {
     error("N_OP_createcell : Can't create Listp cell with CREATECELL");
+  }
   check_dtd_chain(type);
 #endif
 
@@ -73,12 +73,13 @@ LispPTR N_OP_createcell(LispPTR tos) {
   /* error("OP_createcell : Attempt to create a cell not declared yet"); */
 
 retry:
-  if ((tos = newcell = ((dtd68k->dtd_free) & POINTERMASK)) != NIL) {
-    ptr = NativeAligned2FromLAddr(newcell);
+  tos =  dtd68k->dtd_free & POINTERMASK;
+  if (tos != NIL) {
+    ptr = NativeAligned2FromLAddr(tos);
     if (917505 == *(LispPTR *)ptr) {
       error("N_OP_createcell E0001 error");
     }
-    /* replace dtd_free with newcell's top DLword (it may keep next chain)*/
+    /* replace dtd_free with new cell's top DLword (it may keep next chain)*/
     dtd68k->dtd_free = (*((LispPTR *)ptr)) & POINTERMASK;
     if (dtd68k->dtd_free & 0x8000001) {
       error("bad entry on free chain.");
@@ -86,7 +87,7 @@ retry:
 
     dtd68k->dtd_oldcnt++;
 
-    /* clear 0  */
+    /* clear to 0  */
     for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) {
       GETWORD(ptr) = 0;
     }
@@ -94,14 +95,12 @@ retry:
     /*	 IncAllocCnt(1); */
     GCLOOKUP(tos, DELREF);
     return (tos);
-  } else {
-    dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) {
-      error("bad entry on free chain.");
-    }
-    goto retry;
   }
-
+  dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
+  if (dtd68k->dtd_free & 0x8000000) {
+    error("bad entry on free chain.");
+  }
+  goto retry;
 } /* N_OP_createcell end */
 
 void *createcell68k(unsigned int type) {
@@ -125,7 +124,8 @@ void *createcell68k(unsigned int type) {
   }
 
 retry:
-  if ((newcell = (dtd68k->dtd_free & POINTERMASK)) != NIL) {
+  newcell = dtd68k->dtd_free & POINTERMASK;
+  if (newcell != NIL) {
 #ifdef DTDDEBUG
     if (type != GetTypeNumber(newcell))
       error("createcell : BAD cell in dtdfree");

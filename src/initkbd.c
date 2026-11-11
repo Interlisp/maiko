@@ -456,7 +456,8 @@ void keyboardtype(int fd) {
   *************************************************************/
 
   /* Get keytype from LDEKBDTYPE  */
-  if ((key = getenv("LDEKBDTYPE")) == 0) {
+  key = getenv("LDEKBDTYPE");
+  if (key == 0) {
 #ifdef XWINDOW
     type = KB_X;
 #elif DOS

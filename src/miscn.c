@@ -66,7 +66,8 @@ int OP_miscn(int misc_index, int arg_count) {
     case miscn_USER_SUBR: {
       int user_subr;
       N_GETNUMBER(args[0], user_subr, do_ufn);
-      if ((result = UserSubr(user_subr, arg_count - 1, &args[1])) < 0) {
+      result = UserSubr(user_subr, arg_count - 1, &args[1]);
+      if (result < 0) {
         goto do_ufn;
       }
     } break;

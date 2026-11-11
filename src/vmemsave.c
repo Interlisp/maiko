@@ -164,7 +164,8 @@ LispPTR vmem_save0(LispPTR *args) {
 #endif /* DOS */
     return vmem_save(sysout);
   }
-  if ((def = getenv("LDEDESTSYSOUT")) == 0) {
+  def = getenv("LDEDESTSYSOUT");
+  if (def == NULL) {
 #ifdef DOS
     if (getcwd(pwd, MAXNAMLEN) == NULL) {
       return FILETIMEOUT;

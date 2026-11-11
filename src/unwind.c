@@ -73,10 +73,9 @@ LispPTR *N_OP_unwind(LispPTR *cstkptr, LispPTR tos, int n, int keep) {
 
   while (cstkptr > endptr) {
     /* Look for the Next BIND marker */
-
-    if ((num = (int)*--cstkptr) < 0) {
+    num = (int)*--cstkptr;
+    if (num < 0) {
       /* Now UNBIND the PVARS indicated by the BIND marker */
-
       lastpvar = (LispPTR *)(2 + PVar + (unsigned short)num);
       num = ~(num >> 16) + 1;
       while (--num > 0) {

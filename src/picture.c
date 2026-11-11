@@ -528,7 +528,8 @@ LispPTR VideoFile_Position(LispPTR *args) {
   N_GETNUMBER(args[1], videofile, bad_arg);
   n = (DLword)args[2];
 
-  if ((status = position_rasterfile(videofile, n))) {
+  status = position_rasterfile(videofile, n);
+  if (status) {
     return (T);
   } /* end if( status ) */
 bad_arg:

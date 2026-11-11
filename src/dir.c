@@ -566,8 +566,8 @@ int init_finfo(void) {
   FINFO *cp;
   int n;
 
-  if ((FreeFinfoList = (FINFO *)calloc(sizeof(FINFO) + sizeof(FPROP), INITFINFONUM)) ==
-      (FINFO *)NULL) {
+  FreeFinfoList = (FINFO *)calloc(sizeof(FINFO) + sizeof(FPROP), INITFINFONUM);
+  if (FreeFinfoList == (FINFO *)NULL) {
     *Lisp_errno = errno;
     return (0);
   }
@@ -579,7 +579,8 @@ int init_finfo(void) {
   cp->prop = (FPROP *)(cp + 1);
   cp->next = (FINFO *)NULL;
 
-  if ((FinfoArray = (DFINFO *)calloc(sizeof(DFINFO), INITFINFOARRAY)) == (DFINFO *)NULL) {
+  FinfoArray = (DFINFO *)calloc(sizeof(DFINFO), INITFINFOARRAY);
+  if (FinfoArray == (DFINFO *)NULL) {
     *Lisp_errno = errno;
     return (0);
   }
@@ -620,7 +621,8 @@ static int get_finfo_id(void) {
     }
   }
 
-  if ((dfap = (DFINFO *)calloc(sizeof(DFINFO), MAXFINFO + FINFOARRAYRSIZE)) == (DFINFO *)NULL) {
+  dfap = (DFINFO *)calloc(sizeof(DFINFO), MAXFINFO + FINFOARRAYRSIZE);
+  if (dfap == (DFINFO *)NULL) {
     *Lisp_errno = errno;
     return (-1);
   }
@@ -1962,14 +1964,14 @@ static FINFO **prepare_sort_buf(FINFO *fp, size_t n) {
   FINFO **bp;
   FINFO **bufp;
 
-  if ((bufp = (FINFO **)malloc(sizeof(FINFO *) * n)) == NULL) {
+  bufp = (FINFO **)malloc(sizeof(FINFO *) * n);
+  if (bufp == NULL) {
     *Lisp_errno = errno;
     return ((FINFO **)NULL);
   }
   for (bp = bufp; fp != (FINFO *)NULL; fp = fp->next, bp++) {
     *bp = fp;
   }
-
   return (bufp);
 }
 
@@ -1998,18 +2000,21 @@ static int dsk_filecmp(const void *p1, const void *p2) {
   int res;
   unsigned v1, v2;
 
-  if ((res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name)) != 0) {
+  res = strcmp((*fp1)->no_ver_name, (*fp2)->no_ver_name);
+  if (res != 0) {
     return (res);
   }
 
-  if ((*fp1)->version == (*fp2)->version) {
+  v1 = (*fp1)->version;
+  v2 = (*fp2)->version;
+  if (v1 == v2) {
     return (0);
   }
 #ifndef DOS
-  if ((v1 = (*fp1)->version) == 0) {
+  if (v1 == 0) {
     return (-1);
   }
-  if ((v2 = (*fp2)->version) == 0) {
+  if (v2 == 0) {
     return (1);
   }
 #endif /* DOS */
@@ -2060,7 +2065,8 @@ static int file_sort(FINFO **fpp, size_t n, int (*sortfn)(const void *, const vo
   FINFO **fp;
   FINFO **sort_bufp;
 
-  if ((sort_bufp = prepare_sort_buf(*fpp, n)) == (FINFO **)NULL) {
+  sort_bufp = prepare_sort_buf(*fpp, n);
+  if (sort_bufp == (FINFO **)NULL) {
     return (0);
   }
 
@@ -2341,7 +2347,8 @@ LispPTR COM_gen_files(const LispPTR *args) {
         }
       }
 
-      if ((fid = get_finfo_id()) < 0) {
+      fid = get_finfo_id();
+      if (fid < 0) {
         return (SMALLP_MINUSONE);
       }
       *(int *)(NativeAligned4FromLAddr(args[2])) = fid;
@@ -2463,7 +2470,8 @@ LispPTR COM_finish_finfo(const LispPTR *args) {
   }
 
   dfp = &FinfoArray[finfoid];
-  if ((fp = dfp->head) == (FINFO *)0) {
+  fp = dfp->head;
+  if (fp == (FINFO *)0) {
     dfp->next = (FINFO *)0;
     return (NIL);
   }

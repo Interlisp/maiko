@@ -448,7 +448,8 @@ LispPTR uraid_commands(void) {
         printf("GETTOPVAL: a litatom\n");
         return (T);
       }
-      if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
+      index = parse_atomstring(URaid_arg1);
+      if (index == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
       }
@@ -495,7 +496,8 @@ LispPTR uraid_commands(void) {
         printf("GETD: d litatom\n");
         return (T);
       }
-      if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
+      index = parse_atomstring(URaid_arg1);
+      if (index == 0xffffffff) {
         printf("No such atom.\n");
         return (T);
       }
@@ -525,11 +527,13 @@ LispPTR uraid_commands(void) {
       {
         DefCell *fromfunc, *tofunc;
         LispPTR fromindex, toindex;
-        if ((fromindex = parse_atomstring(URaid_arg1)) == 0xffffffff) {
+        fromindex = parse_atomstring(URaid_arg1);
+        if (fromindex == 0xffffffff) {
           printf("No such function (from)\n");
           return (T);
         }
-        if ((toindex = parse_atomstring(URaid_arg2)) == 0xffffffff) {
+        toindex = parse_atomstring(URaid_arg2);
+        if (toindex == 0xffffffff) {
           printf("No such function (to)\n");
           return (T);
         }
@@ -633,7 +637,8 @@ LispPTR uraid_commands(void) {
         printf("GETPROPLIST : p litatom\n");
         return (T);
       }
-      if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
+      index = parse_atomstring(URaid_arg1);
+      if (index == 0xffffffff) {
         printf("No such atom\n");
         return (T);
       }
@@ -697,7 +702,8 @@ LispPTR uraid_commands(void) {
         printf("SETTOPVAL: @ litatom Decimal-val\n");
         return (T);
       }
-      if ((index = parse_atomstring(URaid_arg1)) == 0xffffffff) {
+      index = parse_atomstring(URaid_arg1);
+      if (index == 0xffffffff) {
         printf("No such atom\n");
         return (T);
       }

@@ -26,10 +26,16 @@
 /* the test; if Irq_Stk_Chk == 0, can't just do the subtraction now */
 /* or we get a HUGE unsigned, and the test doesn't work right.      */
 
-#define FN_STACK_CHECK                                                            \
-  if ((Irq_Stk_End == 0) ||                                                       \
-      ((UNSIGNED)CSTKPTR > (Irq_Stk_Check = (Irq_Stk_End - STK_MIN(LOCFNCELL))))) \
-    goto check_interrupt
+#define FN_STACK_CHECK                                 \
+  do {                                                 \
+    if (Irq_Stk_End == 0 ) {                           \
+      goto check_interrupt;                            \
+    }                                                  \
+    Irq_Stk_Check = Irq_Stk_End - STK_MIN(LOCFNCELL);  \
+    if ((UNSIGNED)CSTKPTR > Irq_Stk_Check) {           \
+      goto check_interrupt;                            \
+    }                                                  \
+  } while (0);
 #endif /* 0 */
 
 /****************************************************************/

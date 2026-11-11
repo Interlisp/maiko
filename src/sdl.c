@@ -1321,7 +1321,8 @@ static void handle_keydown(SDL_Keycode k, unsigned short mod) {
     // printf("dn %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, FALSE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) {
+    KBDEventFlg += 1;
+    if (KBDEventFlg > 0) {
       Irq_Stk_End = Irq_Stk_Check = 0;
     }
   }
@@ -1334,7 +1335,8 @@ static void handle_keyup(SDL_Keycode k, unsigned short mod) {
     // printf("up %s -> lisp keycode %d (0x%x)\n", SDL_GetKeyName(k), lk, mod);
     kb_trans(lk - KEYCODE_OFFSET, TRUE);
     DoRing();
-    if ((KBDEventFlg += 1) > 0) {
+    KBDEventFlg += 1;
+    if (KBDEventFlg > 0) {
       Irq_Stk_End = Irq_Stk_Check = 0;
     }
   }
@@ -1520,7 +1522,8 @@ void process_Display_events(void *dsp) {
         *EmCursorY68K = (*((DLword *)EmMouseY68K)) = (short)(iy & 0xFFFF);
 #endif
         DoRing();
-        if ((KBDEventFlg += 1) > 0) {
+        KBDEventFlg += 1;
+        if (KBDEventFlg > 0) {
           Irq_Stk_End = Irq_Stk_Check = 0;
         }
         break;
@@ -1536,7 +1539,8 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, FALSE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) {
+        KBDEventFlg += 1;
+        if (KBDEventFlg > 0) {
           Irq_Stk_End = Irq_Stk_Check = 0;
         }
         break;
@@ -1552,7 +1556,8 @@ void process_Display_events(void *dsp) {
           case SDL_BUTTON_RIGHT: PUTBASEBIT68K(EmRealUtilin68K, MOUSE_RIGHT, TRUE); break;
         }
         DoRing();
-        if ((KBDEventFlg += 1) > 0) {
+        KBDEventFlg += 1;
+        if (KBDEventFlg > 0) {
           Irq_Stk_End = Irq_Stk_Check = 0;
         }
         break;

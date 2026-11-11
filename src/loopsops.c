@@ -104,7 +104,8 @@ static const char il_string[] = "INTERLISP";
             break;                                   \
           } else {                                   \
             i++;                                     \
-            if ((iNames = cdr(iNames)) == NIL_PTR) { \
+            iNames = cdr(iNames);                    \
+            if (iNames == NIL_PTR) {                 \
               otherwise;                             \
             }                                        \
           }                                          \
@@ -218,7 +219,8 @@ LispPTR LCFetchMethodOrHelp(LispPTR object, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) {
+      cur_class = car(supers);
+      if (cur_class == NIL_PTR) {
         break;
       }
       supers = cdr(supers);
@@ -274,7 +276,8 @@ LispPTR LCFetchMethod(LispPTR class, LispPTR selector) {
       }
 
     next_class:
-      if ((cur_class = car(supers)) == NIL_PTR) {
+      cur_class = car(supers);
+      if (cur_class == NIL_PTR) {
         break;
       }
       supers = cdr(supers);

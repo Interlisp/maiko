@@ -47,12 +47,14 @@
 
    /* IncAllocCnt is called only when *Reclaim_cnt_word != NIL */
 
-#define IncAllocCnt(n) do { \
-	if ((*Reclaim_cnt_word -= (n)) <= S_POSITIVE) { \
-		/* time for GC */ \
-		Irq_Stk_Check = Irq_Stk_End = 0; \
-		*Reclaim_cnt_word = S_POSITIVE; \
-	} \
+#define IncAllocCnt(n) \
+  do {                                                  \
+    *Reclaim_cnt_word -= (n);                           \
+    if (*Reclaim_cnt_word <= S_POSITIVE) {              \
+      /* time for GC */                                 \
+      Irq_Stk_Check = Irq_Stk_End = 0;                  \
+      *Reclaim_cnt_word = S_POSITIVE;                   \
+    }                                                   \
   } while (0)
 
    /* DecAllocCnt only called when *Reclaim_cnt_word != NIL */

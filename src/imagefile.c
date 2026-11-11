@@ -196,13 +196,15 @@ void read_raw_PPM(FILE *file, unsigned char *data, int width, int height) {
 int image_file_type(FILE *file) {
   int c, file_type;
 
-  if ((c = getc(file)) == -1)
+  c = getc(file);
+  if (c == -1)
     return (NOT_IMAGEFILE);
 
   switch (c) {
     case 'Y': /* may be Sun Raster format */ file_type = TYPE_SUNRASTER; break;
     case 'P': {
-      if ((c = getc(file)) == -1)
+      c = getc(file);
+      if (c == -1)
         return (NOT_IMAGEFILE);
       if (c == '4')
         file_type = TYPE_PBM;

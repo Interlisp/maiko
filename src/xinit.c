@@ -248,9 +248,9 @@ DspInterface X_init(DspInterface dsp, LispPTR lispbitmap, unsigned width_hint, u
                                   /* has to dealt with in a more */
                                   /* graceful way. */
 
-  /* Try to open the X display. If this isn't possible, we just */
-  /* return FALSE. */
-  if ((dsp->display_id = XOpenDisplay(dsp->identifier)) == NULL) {
+  /* Try to open the X display. If this isn't possible, we just return NULL */
+  dsp->display_id = XOpenDisplay(dsp->identifier);
+  if (dsp->display_id == NULL) {
     return (NULL);
   }
 

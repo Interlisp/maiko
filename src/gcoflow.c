@@ -65,7 +65,8 @@ DLword gc_handleoverflow(DLword arg) {
   }
   ptr = (struct dtd *)GetDTD(TYPE_LISTP);
   /* same as "extern struct dtd *ListpDTD" */
-  if ((cellcnt = ptr->dtd_cnt0) > 1024) {
+  cellcnt = ptr->dtd_cnt0;
+  if (cellcnt > 1024) {
     Increment_Allocation_Count(cellcnt);
     ptr->dtd_oldcnt += cellcnt;
     ptr->dtd_cnt0 = 0;
@@ -93,7 +94,8 @@ DLword gcmaptable(DLword arg) {
   /* applied alltype */
   {
     ptr = (struct dtd *)GetDTD(typnum);
-    if ((cellcnt = ptr->dtd_cnt0) != 0) {
+    cellcnt = ptr->dtd_cnt0;
+    if (cellcnt != 0) {
       ptr->dtd_oldcnt += cellcnt;
       ptr->dtd_cnt0 = 0;
       Increment_Allocation_Count(cellcnt);
