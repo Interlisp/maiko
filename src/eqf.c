@@ -225,7 +225,7 @@ arg2_small:
   type2 = GetTypeNumber(arg2);
 
   if (type == type2) {
-    switch (GetTypeNumber(arg1)) {
+    switch (type) {
       case TYPE_SMALLP: return (NIL);
       case TYPE_FIXP:
         if (FIXP_VALUE(arg1) == FIXP_VALUE(arg2)) {
@@ -248,11 +248,8 @@ arg2_small:
     if ((f1 + 0.0f) == (f2 + 0.0f)) {
       return (ATOM_T);
     }
-    return (NIL);
-  } else {
-    return (NIL); /* neither is float, types are different */
   }
-
+  return (NIL); /* neither is float, types are different */
 } /* end N_OP_equal */
 
 /************************************************************************/
