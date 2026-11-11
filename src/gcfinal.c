@@ -236,22 +236,25 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
       return (T);
-    } else if (trailer_np->password != ARRAYBLOCKPASSWORD) {
+    }
+    if (trailer_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK trailer password wrong\n");
       return (T);
-    } else if (base_np->arlen != trailer_np->arlen) {
+    }
+    if (base_np->arlen != trailer_np->arlen) {
       printarrayblock(base);
       error("ARRAYBLOCK Header and Trailer length don't match\n");
       return (T);
-    } else if (trailer_np->inuse == free)
+    }
     /* This is not original source.(in original,
        trailer_np -> base_np) maybe, this is correction. */
-    {
+    if (trailer_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
       return (T);
-    } else if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE)) {
+    }
+    if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE)) {
       return (NIL);
     }
     /* Remaining tests only for free list. */

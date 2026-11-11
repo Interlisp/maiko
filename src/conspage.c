@@ -296,10 +296,10 @@ static ConsCell *find_free_cons_cell(void) {
       cell = (ConsCell *)(((DLword *)pg) + (pg->next_cell));
       pg->next_cell = ((freecons *)cell)->next_free;
       return cell;
-    } else { /* remove the empty page from the free chain */
-      pgno = ListpDTD->dtd_nextpage = pg->next_page;
-      pg->next_page = CONSPAGE_LAST;
     }
+    /* remove the empty page from the free chain */
+    pgno = ListpDTD->dtd_nextpage = pg->next_page;
+    pg->next_page = CONSPAGE_LAST;
   }
 
   return (ConsCell *)0;

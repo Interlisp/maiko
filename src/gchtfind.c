@@ -271,9 +271,8 @@ void modify_big_reference_count(GCENTRY *entry, DLword casep, LispPTR ptr) {
     if (tmp == NIL) {
       error("refcnt previously overflowed, but not found in table.\n");
       return;
-    } else {
-      ++oventry; /* increment by size of oventry structure */
     }
+    ++oventry; /* increment by size of oventry structure */
   }
 
   switch (casep) {
