@@ -28,7 +28,7 @@
 #include "emlglob.h"
 
 #ifndef BIGATOMS
-N_OP_atomcellN(int tos, int n) {
+LispPTR N_OP_atomcellN(int tos, int n) {
   if ((tos & 0xffff0000) != 0)
     ERROR_EXIT(tos);
 
@@ -44,7 +44,7 @@ N_OP_atomcellN(int tos, int n) {
 }
 
 #else
-N_OP_atomcellN(int tos, int n) {
+LispPTR N_OP_atomcellN(int tos, int n) {
   if ((tos & 0xffff0000) == 0) { /* XeroxLisp traditional symbol */
     tos = (tos << 1);
     switch (n) {
