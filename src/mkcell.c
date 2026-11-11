@@ -108,13 +108,13 @@ void *createcell68k(unsigned int type) {
   DLword *ptr, *lastptr;
   LispPTR newcell;
 #ifdef DTDDEBUG
-  if (type == TYPE_LISTP)
+  if (type == TYPE_LISTP) {
     error("createcell : Can't create Listp cell with CREATECELL");
-  if (type == TYPE_STREAM)
+  }
+  if (type == TYPE_STREAM) {
     stab();
-
+  }
   check_dtd_chain(type);
-
 #endif
 
   dtd68k = (struct dtd *)GetDTD(type);
@@ -146,39 +146,33 @@ retry:
     }
 
 #ifdef DTDDEBUG
-    if ((dtd68k->dtd_free != 0) && (type != GetTypeNumber(dtd68k->dtd_free)))
+    if ((dtd68k->dtd_free != 0) && (type != GetTypeNumber(dtd68k->dtd_free))) {
       error("createcell : BAD cell in next dtdfree");
+    }
     check_dtd_chain(type);
-
 #endif
 
     dtd68k->dtd_oldcnt++;
 
-    /* clear 0  */
+    /* clear to 0  */
     for (lastptr = ptr + dtd68k->dtd_size; ptr != lastptr; ptr++) {
       GETWORD(ptr) = 0;
     }
-
     /*	IncAllocCnt(1); */
     GCLOOKUP(newcell, DELREF);
 
 #ifdef DTDDEBUG
     check_dtd_chain(type);
 #endif
-
-    return (NativeAligned2FromLAddr(newcell)); /* XXX: is it really only aligned(2)? */
-
-  } else {
-    dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
-    if (dtd68k->dtd_free & 0x8000000) {
-      error("bad entry on free chain.");
-    }
-
-#ifdef DTDDEBUG
-    check_dtd_chain(type);
-#endif
-
-    goto retry;
+    return NativeAligned2FromLAddr(newcell); /* XXX: is it really only aligned(2)? */
+  }
+  dtd68k->dtd_free = initmdspage(alloc_mdspage(dtd68k->dtd_typeentry), dtd68k->dtd_size, NIL);
+  if (dtd68k->dtd_free & 0x8000000) {
+    error("bad entry on free chain.");
   }
 
+#ifdef DTDDEBUG
+  check_dtd_chain(type);
+#endif
+  goto retry;
 } /* createcell68k end */
