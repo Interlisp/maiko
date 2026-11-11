@@ -63,82 +63,86 @@ void checkfor_storagefull(unsigned int npages) {
   pagesleft = (*Next_MDSpage_word & 0xffff) - (*Next_Array_word & 0xffff) - PAGESPER_MDSUNIT;
 #endif
 
-  if ((pagesleft < GUARDSTORAGEFULL) || (npages != 0)) {
-    if (*STORAGEFULLSTATE_word == NIL) {
-      set_storage_state();
-    }
+  if ((pagesleft >= GUARDSTORAGEFULL) && (npages == 0)) {
+    return; /* nothing to see here */
+  }
 
-    switch (*STORAGEFULLSTATE_word & 0xffff) {
-      case SFS_NOTSWITCHABLE:
-      case SFS_FULLYSWITCHED:
-        if (pagesleft < 0) {
-          while (T) {
-            error("MP9320:Storage completely full");
-          }
-        } else if ((pagesleft <= GUARD1STORAGEFULL) && (*STORAGEFULL_word != NIL)) {
-          *STORAGEFULL_word = S_POSITIVE;
-          error(
-              "MP9325:Space getting VERY full.\
+  if (*STORAGEFULLSTATE_word == NIL) {
+    set_storage_state();
+  }
+
+  switch (*STORAGEFULLSTATE_word & 0xffff) {
+  case SFS_NOTSWITCHABLE:
+  case SFS_FULLYSWITCHED:
+    if (pagesleft < 0) {
+      while (T) {
+        error("MP9320:Storage completely full");
+      }
+    } else if ((pagesleft <= GUARD1STORAGEFULL) && (*STORAGEFULL_word != NIL)) {
+      *STORAGEFULL_word = S_POSITIVE;
+      error(
+            "MP9325:Space getting VERY full.\
 		Please save and reload a.s.a.p.");
-        } else if (*STORAGEFULL_word == NIL) {
-          *STORAGEFULL_word = ATOM_T;
-          int_state = (INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
-          int_state->storagefull = T;
-          *PENDINGINTERRUPT_word = ATOM_T;
-        }
-#ifdef DEBUG
-        printf("\n checkfor_storagefull:DORECLAIM.....\n");
-#endif
-        return; /*(NIL); */
-
-      case SFS_SWITCHABLE:
-        if (npages == NIL) {
-          if (pagesleft <= 0) {
-            *LeastMDSPage_word = *Next_Array_word;
-            *Next_MDSpage_word = *SecondMDSPage_word;
-            advance_storagestate(SFS_FULLYSWITCHED);
-            advance_array_seg(*SecondArrayPage_word);
-            return;
-          }
-        } else if (npages > pagesleft) {
-          /* Have to switch array space over,
-            but leave MDS to fill the rest of the low pages   */
-          *LeastMDSPage_word = *Next_Array_word;
-          advance_storagestate(SFS_ARRAYSWITCHED);
-          advance_array_seg(*SecondArrayPage_word);
-          return;
-        }
-        break;
-#ifdef BIGVM
-      case SFS_ARRAYSWITCHED:
-        if ((*Next_MDSpage_word) < (*LeastMDSPage_word))
-#else
-      case SFS_ARRAYSWITCHED:
-        if ((*Next_MDSpage_word & 0xffff) < (*LeastMDSPage_word & 0xffff))
-#endif
-        {
-          *Next_MDSpage_word = *SecondMDSPage_word;
-          advance_storagestate(SFS_FULLYSWITCHED);
-          return;
-        } else if (npages != NIL) {
-          if ((npages + GUARDSTORAGEFULL) >=
-#ifdef BIGVM
-              ((*SecondMDSPage_word) - (*Next_Array_word))) {
-#else
-              ((*SecondMDSPage_word & 0xffff) - (*Next_Array_word & 0xffff)))
-#endif
-            return; /*  (NIL); */
-          }
-        }
-        return; /* (T); */
-        /* break; */
-
-      default:
-        error("checkfor_storagefull: Shouldn't"); /* (*STORAGEFULLSTATE_word) & 0xffff) */
-        break;
+    } else if (*STORAGEFULL_word == NIL) {
+      *STORAGEFULL_word = ATOM_T;
+      int_state = (INTSTAT *)NativeAligned4FromLAddr(*INTERRUPTSTATE_word);
+      int_state->storagefull = T;
+      *PENDINGINTERRUPT_word = ATOM_T;
     }
-  } else {
+#ifdef DEBUG
+    printf("\n checkfor_storagefull:DORECLAIM.....\n");
+#endif
     return; /*(NIL); */
+
+  case SFS_SWITCHABLE:
+    if (npages == NIL) {
+      if (pagesleft <= 0) {
+        *LeastMDSPage_word = *Next_Array_word;
+        *Next_MDSpage_word = *SecondMDSPage_word;
+        advance_storagestate(SFS_FULLYSWITCHED);
+        advance_array_seg(*SecondArrayPage_word);
+        return;
+      }
+    } else if (npages > pagesleft) {
+      /* Have to switch array space over,
+         but leave MDS to fill the rest of the low pages   */
+      *LeastMDSPage_word = *Next_Array_word;
+      advance_storagestate(SFS_ARRAYSWITCHED);
+      advance_array_seg(*SecondArrayPage_word);
+      return;
+    }
+    break;
+  case SFS_ARRAYSWITCHED:
+#ifdef BIGVM
+    if ((*Next_MDSpage_word) < (*LeastMDSPage_word))
+#else
+    if ((*Next_MDSpage_word & 0xffff) < (*LeastMDSPage_word & 0xffff))
+#endif
+    {
+      *Next_MDSpage_word = *SecondMDSPage_word;
+      advance_storagestate(SFS_FULLYSWITCHED);
+      return;
+    }
+    /* XXX: What is the point of this code? It can't affect the storage state and this code does
+     * not return a value
+     */
+    if (npages != NIL) {
+#ifdef BIGVM
+      if ((npages + GUARDSTORAGEFULL) >=
+          ((*SecondMDSPage_word) - (*Next_Array_word)))
+#else
+      if ((npages + GUARDSTORAGEFULL) >=
+          ((*SecondMDSPage_word & 0xffff) - (*Next_Array_word & 0xffff)))
+#endif
+      {
+        return; /*  (NIL); */
+      }
+    }
+    return; /* (T); */
+
+  default:
+    error("checkfor_storagefull: Shouldn't"); /* (*STORAGEFULLSTATE_word) & 0xffff) */
+    break;
   }
 } /* checkfor_storagefull end */
 
@@ -254,21 +258,19 @@ static LispPTR dremove(LispPTR x, LispPTR l) {
       rplaca(l, car(cdr(l)));
       rplacd(l, cdr(cdr(l)));
       return (dremove(x, l));
-    } else {
-      return (NIL);
     }
-  } else {
-    z = l;
-  lp:
-    if (Listp(cdr(l)) == NIL) {
-      return (z);
-    } else if (x == car(cdr(l))) {
-      rplacd(l, cdr(cdr(l)));
-    } else {
-      l = cdr(l);
-    }
-    goto lp;
+    return (NIL);
   }
+  z = l;
+ lp:
+  if (Listp(cdr(l)) == NIL) {
+    return (z);
+  } else if (x == car(cdr(l))) {
+    rplacd(l, cdr(cdr(l)));
+  } else {
+    l = cdr(l);
+  }
+  goto lp;
 }
 
 /*****************************************************************/
