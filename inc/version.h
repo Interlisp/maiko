@@ -64,8 +64,8 @@
 #define LVERSION 15000
 #define MINBVERSION 15000
 #undef BIGATOMS
-#define NOEUROKBD
-#define NOVERSION
+#define NOEUROKBD 1
+#define NOVERSION 1
 
 #elif (RELEASE == 200)
 
@@ -75,9 +75,9 @@
 #define LVERSION 20000
 #define MINBVERSION 20000
 
-#define BIGATOMS
-#define NOEUROKBD
-#define NOVERSION
+#define BIGATOMS 1
+#define NOEUROKBD 1
+#define NOVERSION 1
 
 #elif (RELEASE == 201 )
 
@@ -88,9 +88,9 @@
 #define LVERSION 20100
 #define MINBVERSION 20100
 
-#define BIGATOMS
+#define BIGATOMS 1
 #undef NOEUROKBD
-#define NOVERSION
+#define NOVERSION 1
 
 #elif (RELEASE == 210)
 
@@ -100,9 +100,9 @@
 #define LVERSION 21000
 #define MINBVERSION 21000
 
-#define BIGATOMS
+#define BIGATOMS 1
 #define BIGVM 1
-#define NEWCDRCODING
+#define NEWCDRCODING 1
 
 
 #	elif (RELEASE == 300 )
@@ -113,9 +113,9 @@
 #define LVERSION 30000
 #define MINBVERSION 30000
 
-#define BIGATOMS
-#define BIGVM
-#define NEWCDRCODING
+#define BIGATOMS 1
+#define BIGVM 1
+#define NEWCDRCODING 1
 
 
 #elif (RELEASE == 350)
@@ -127,10 +127,10 @@
 #define LVERSION 35000
 #define MINBVERSION 35000
 
-#define BIGATOMS
-#define BIGVM
-#define BIGBIGVM
-#define NEWCDRCODING
+#define BIGATOMS 1
+#define BIGVM 1
+#define BIGBIGVM 1
+#define NEWCDRCODING 1
 
 
 #elif (RELEASE == 351)
@@ -142,11 +142,11 @@
 #define LVERSION 35010
 #define MINBVERSION 35010
 
-#define BIGATOMS
-#define BIGVM
-#define BIGBIGVM
-#define NEWCDRCODING
-#define NEWXCURSOR
+#define BIGATOMS 1
+#define BIGVM 1
+#define BIGBIGVM 1
+#define NEWCDRCODING 1
+#define NEWXCURSOR 1
 
 
 #else
