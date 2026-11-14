@@ -229,7 +229,7 @@ LispPTR ether_suspend(LispPTR args[]) {
 #ifndef PKTFILTER
   nioc.nioc_typetomatch = NT_NOTYPES;
   if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
-    printf("ether_suspend: ioctl failed\n");
+    (void)fprintf(stderr, "ether_suspend: ioctl failed\n");
     return (NIL);
   }
 #else /* PKTFILTER */
@@ -273,7 +273,7 @@ LispPTR ether_resume(LispPTR args[]) {
 #ifndef PKTFILTER
   nioc.nioc_typetomatch = NT_ALLTYPES;
   if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
-    printf("ether_resume: ioctl failed\n");
+    (void)fprintf(stderr, "ether_resume: ioctl failed\n");
     return (NIL);
   }
 #else /* PKTFILTER */
@@ -456,8 +456,8 @@ int *ether_debug(void) {
   estat[0] = 0;
   if (ether_fd < 0)
     return (NIL);
-  printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
-         ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
+  (void)printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
+     ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
   return (estat);
 } /* end ether_debug */
 
@@ -648,7 +648,7 @@ LispPTR get_packet(void) {
   result = getmsg(ether_fd, &ctl, &data, &plen);
   if (result >= 0) {
     if (ctl.len > 0)
-      printf("ctl msg rcvd.\n");
+      (void)fprintf(stderr, "ctl msg rcvd.\n");
     if (data.len <= ether_bsize && data.len > 0) {
       memcpy(&ether_buf[0], nit_buf, data.len);
       ether_bsize = 0;
@@ -918,7 +918,7 @@ void init_ether(void) {
     nioc.nioc_snaplen = 32767;
     nioc.nioc_flags = 0;
     if (ioctl(ether_fd, SIOCSNIT, &nioc) != 0) {
-      printf("init_ether: ioctl failed\n");
+      (void)fprintf(stderr, "init_ether: ioctl failed\n");
       close(ether_fd);
       ether_fd = -1;
       return;

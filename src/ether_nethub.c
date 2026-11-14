@@ -105,26 +105,26 @@ void setNethubLogLevel(int ll) {
   DBPRINT(("nh :: loglevel now: %d\n", loglevel));
 }
 
-#define log_info(line)                   \
-  {                                      \
-    if (loglevel == 1) {                 \
-      printf("nh-info[%d]: ", logcnt++); \
-      printf line;                       \
-    }                                    \
+#define log_info(line)                          \
+  {                                             \
+    if (loglevel == 1) {                        \
+      (void)printf("nh-info[%d]: ", logcnt++);  \
+      (void)printf line;                        \
+    }                                           \
   }
-#define log_debug(line)                   \
-  {                                       \
-    if (loglevel >= 2) {                  \
-      printf("nh-debug[%d]: ", logcnt++); \
-      printf line;                        \
-    }                                     \
+#define log_debug(line)                         \
+  {                                             \
+    if (loglevel >= 2) {                        \
+      (void)printf("nh-debug[%d]: ", logcnt++); \
+      (void)printf line;                        \
+    }                                           \
   }
-#define log_all(line)               \
-  {                                 \
-    if (loglevel < 1) {             \
-      printf("nh[%d]: ", logcnt++); \
-      printf line;                  \
-    }                               \
+#define log_all(line)                           \
+  {                                             \
+    if (loglevel < 1) {                         \
+      (void)printf("nh[%d]: ", logcnt++);       \
+      (void)printf line;                        \
+    }                                           \
   }
 
 /*

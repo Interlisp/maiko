@@ -305,7 +305,7 @@ int *ether_debug() {
   estat[0] = 0;
   if (ether_fd < 0)
     return (NIL);
-  printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
+  (void)printf("fd %d bsize %d buf %p icb %X in %d out %d\n ", ether_fd, ether_bsize, (void *)ether_buf,
          ((DLETHERCSB *)IOPage->dlethernet)->DLFIRSTICB, ether_in, ether_out);
   return (estat);
 } /* end ether_debug */
@@ -351,6 +351,7 @@ void init_ether() {
 
   static const u_char ether_zero[6] = {0};
   int pcap_rval = 0;
+  int length = 0;
   char errbuf[PCAP_ERRBUF_SIZE] = {0};
   char filter_exp[256];
   int find_ifname;
@@ -374,7 +375,7 @@ void init_ether() {
     pcap_if_t *dev = NULL;
     pcap_rval = pcap_findalldevs(&alldevs, errbuf);
     if (pcap_rval == PCAP_ERROR) {
-      fprintf(stderr, "%s\n", errbuf);
+      (void)fprintf(stderr, "%s\n", errbuf);
       return;
     }
     for (pcap_if_t *d = alldevs; d; d = d->next) {
@@ -424,16 +425,16 @@ void init_ether() {
     pcap_freealldevs(alldevs);
   }
   if (strlen(ether_ifname) == 0) {
-    fprintf(stderr, "No suitable network interface found\n");
+    (void)fprintf(stderr, "No suitable network interface found\n");
     return;
   }
   pcap_handle = pcap_create(ether_ifname, errbuf);
   if (pcap_handle == NULL) {
-    fprintf(stderr, "pcap_create failed: %s\n", errbuf);
+    (void)fprintf(stderr, "pcap_create failed: %s\n", errbuf);
     return;
   }
   if (strlen(errbuf) > 0) {
-    fprintf(stderr, "pcap_create warning: %s\n", errbuf);
+    (void)fprintf(stderr, "pcap_create warning: %s\n", errbuf);
   }
   /* set up properties on the pcap_handle and then activate it */
   pcap_rval = pcap_set_immediate_mode(pcap_handle, 1);
@@ -452,33 +453,38 @@ void init_ether() {
     pcap_perror(pcap_handle, "pcap_setfilter");
   }
   /* filter for XNS - may want to do PUP later */
-  snprintf(filter_exp, sizeof(filter_exp),
+  length = snprintf(filter_exp, sizeof(filter_exp),
            "ether proto 0x600 and (ether multicast or ether dst %02x:%02x:%02x:%02x:%02x:%02x)",
            ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4],
            ether_host[5]);
+  if (length >= sizeof(filter_exp)) {
+    (void)fprintf(stderr, "Couldn't construct ether filter of length %d\n", length);
+    pcap_close(pcap_handle);
+    return;
+  }
   pcap_rval = pcap_compile(pcap_handle, &filter_match_xns, filter_exp, 0, PCAP_NETMASK_UNKNOWN);
   if (pcap_rval == PCAP_ERROR) {
-    fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
+    (void)fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
     pcap_close(pcap_handle);
     return;
   }
   pcap_rval = pcap_setfilter(pcap_handle, &filter_match_xns);
   if (pcap_rval == PCAP_ERROR) {
-    fprintf(stderr, "Couldn't set filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
+    (void)fprintf(stderr, "Couldn't set filter %s: %s\n", filter_exp, pcap_geterr(pcap_handle));
     pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
     return;
   }
   pcap_rval = pcap_setnonblock(pcap_handle, 1, errbuf);
   if (pcap_rval == PCAP_ERROR) {
-    fprintf(stderr, "%s\n", errbuf);
+    (void)fprintf(stderr, "%s\n", errbuf);
     pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
     return;
   }
   ether_fd = pcap_get_selectable_fd(pcap_handle);
   if (ether_fd == -1 || ether_fd >= FD_SETSIZE) {
-    fprintf(stderr, "Couldn't get valid selectable fd for pcap\n");
+    (void)fprintf(stderr, "Couldn't get valid selectable fd for pcap\n");
     ether_fd = -1;
     pcap_freecode(&filter_match_xns);
     pcap_close(pcap_handle);
@@ -486,7 +492,7 @@ void init_ether() {
   }
   FD_SET(ether_fd, &LispReadFds);
 
-  printf("Ethernet starts on interface %s at %02x:%02x:%02x:%02x:%02x:%02x\n", ether_ifname,
+  (void)printf("Ethernet starts on interface %s at %02x:%02x:%02x:%02x:%02x:%02x\n", ether_ifname,
          ether_host[0], ether_host[1], ether_host[2], ether_host[3], ether_host[4], ether_host[5]);
   DBPRINT(("init_ether: **** Ethernet starts ****\n"));
 }
