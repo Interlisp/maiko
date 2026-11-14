@@ -143,8 +143,9 @@ lp:
  # endif
 */
 #ifdef DEBUG
-  if (tmpptr & 1)
+  if (tmpptr & 1) {
     error("Reclaiming cell pointer with low bit 1.");
+  }
 #else
   tmpptr &= -2; /* turn off low bit of pointer, so we never reclaim odd'ns */
 #endif
@@ -155,8 +156,9 @@ lp:
 
   typ = GetTypeNumber(tmpptr);
 #ifdef DEBUG
-  if (typ == 6)
+  if (typ == 6) {
     printf("Reclaiming array ptr 0x%x.\n", tmpptr);
+  }
 #endif
   switch (typ) {
     case TYPE_LISTP: {
@@ -194,9 +196,8 @@ lp:
     case TYPE_ARRAYBLOCK:
       if ((index == -1) && reclaimarrayblock(tmpptr)) {
         goto trynext;
-      } else {
-        break;
       }
+      break;
     case TYPE_STACKP:
       if ((index == -1) && reclaimstackp(tmpptr)) {
         goto trynext;
@@ -205,9 +206,8 @@ lp:
     case TYPE_VMEMPAGEP:
       if ((index == -1) && releasingvmempage(tmpptr)) {
         goto trynext;
-      } else {
-        break;
       }
+      break;
     case TYPE_CODEHUNK1:
     case TYPE_CODEHUNK2:
     case TYPE_CODEHUNK3:
@@ -220,9 +220,8 @@ lp:
     case TYPE_CODEHUNK10:
       if ((index == -1) && reclaimcodeblock(tmpptr)) {
         goto trynext;
-      } else {
-        break;
       }
+      break;
     default:;
   }
 normal:
@@ -249,8 +248,8 @@ normal:
         ptr->cdr_code = ((car(ptrfield) & 0x0ffff) >> 1);
         donext = tmpptr;
         goto doval;
-      } else
-        goto addtofreelist;
+      }
+      goto addtofreelist;
     }
 #else
     if (val != NIL) {
@@ -262,13 +261,11 @@ normal:
           ptr->cdr_code = ((car(ptrfield) & 0x0ffff) >> 1);
           donext = tmpptr;
           goto doval;
-        } else {
-          ADD_TO_DO(tmpptr, (car(ptrfield) & 0xffff) >> 1);
-          goto doval;
         }
-      } else {
-        goto addtofreelist;
+        ADD_TO_DO(tmpptr, (car(ptrfield) & 0xffff) >> 1);
+        goto doval;
       }
+      goto addtofreelist;
     }
 #endif /* NEWCDRCODING */
   }
