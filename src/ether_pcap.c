@@ -244,7 +244,7 @@ LispPTR ether_get(LispPTR args[]) {
   length = recvPacket();
   if (length == 0)
     return (NIL);
-  return (T);
+  return (ATOM_T);
 } /* ether_get */
 
 /**********************************************************************
