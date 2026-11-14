@@ -6,10 +6,11 @@
 /*      Don Charnley's bitblt code                      */
 /*                                                      */
 /********************************************************/
+#include <stdbool.h>  /* for bool */
 #include "lispemul.h" /* for LispPTR, DLword */
 
 void bitbltsub(LispPTR *argv);
-LispPTR n_new_cursorin(const DLword *baseaddr, int dx, int dy, int w, int h);
+bool n_new_cursorin(const DLword *baseaddr, int dx, int dy, int w, int h);
 LispPTR bitblt_bitmap(LispPTR *args);
 LispPTR bltshade_bitmap(LispPTR *args);
 void bltchar(LispPTR *args);

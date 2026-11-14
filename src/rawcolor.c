@@ -18,6 +18,7 @@
 
 #include "version.h"
 
+#include <stdbool.h>   // for bool
 #include <sys/types.h>
 #include "lispemul.h"
 #include "lspglob.h"
@@ -152,7 +153,7 @@ void C_slowbltchar(LispPTR *args) {
   DLword src_w, src_h, src_x, src_y, dst_x, dst_y, w, h;
 
   u_char forecolor, backcolor;
-  int displayflg;
+  bool displayflg;
 
   extern LispPTR *TOPWDS68k;
 
@@ -608,7 +609,8 @@ void Draw_8BppColorLine(LispPTR *args) {
   u_char color;
   u_char *base;
   short x0, y0, xlimit, ylimit, dx, dy, cdl, yinc, raster_width;
-  int mode, displayflg;
+  int mode;
+  bool displayflg;
   u_char *n_bmbase;
 
   x0 = (short)(args[0] & 0xffff);

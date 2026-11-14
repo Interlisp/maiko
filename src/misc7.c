@@ -11,6 +11,7 @@
 
 /*	misc7.c
  */
+#include <stdbool.h>      // for bool
 #include "adr68k.h"       // for NativeAligned2FromLAddr
 #include "arith.h"        // for N_GETNUMBER
 #include "bbtsubdefs.h"   // for n_new_cursorin
@@ -43,7 +44,7 @@ LispPTR N_OP_misc7(LispPTR arg1, LispPTR arg2, LispPTR arg3, LispPTR arg4, LispP
   DLword bmdata;
   DLword bmmask;
 #ifdef REALCURSOR
-  int displayflg;
+  bool displayflg;
 #endif
 
   DBPRINT(("MISC7 op with alpha byte %d.\n", alpha));

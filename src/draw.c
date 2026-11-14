@@ -17,6 +17,7 @@
 
 #include "version.h"
 
+#include <stdbool.h>   // for bool, true, false
 #include <stddef.h>    // for ptrdiff_t
 #include <stdlib.h>    // for abs
 #include "adr68k.h"    // for NativeAligned2FromLAddr
@@ -45,11 +46,11 @@ extern int MonoOrColor;
 #endif /* COLOR */
 
 #ifdef DISPLAYBUFFER
-LispPTR n_new_cursorin_CG6(int dx, int dy, int w, int h) {
+bool n_new_cursorin_CG6(int dx, int dy, int w, int h) {
   if ((dx < MOUSEXR) && (dx + w > MOUSEXL) && (dy < MOUSEYH) && (dy + h > MOUSEYL)) {
-    return (T);
+    return true;
   }
-  return (NIL);
+  return false;
 }
 #endif
 

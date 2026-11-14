@@ -228,7 +228,7 @@ v filename\t\tSaves the virtual memory on the filename (Not Bootable)\n\
   do {                                                  \
     if (((address) < 0) || (POINTERMASK < (address))) { \
       printf("Address out of range.\n");                \
-      return (T);                                       \
+      return true;                                       \
     }                                                   \
   } while (0)
 
@@ -345,12 +345,12 @@ unsigned int uGetTN(unsigned int address) {
         Date:   6-May-1988
 
                 Execute URaid commands
-                To continue, return T
-                To exit, return NIL
+                To continue, return true
+                To exit, return false
 */
 /***********************************************************************/
 
-LispPTR uraid_commands(void) {
+bool uraid_commands(void) {
   int num, val;
   LispPTR address;
   char *endpointer;
@@ -364,10 +364,10 @@ LispPTR uraid_commands(void) {
     /* disp next FX */
     if (URaid_currentFX > URaid_ArrMAXIndex) {
       printf("There is no more stack.\n");
-      return (T);
+      return true;
     }
     sf(URaid_FXarray[URaid_currentFX++]);
-    return (T);
+    return true;
   }
   switch (URaid_comm[0]) {
 /*** Displaying STACK stuff */
@@ -380,22 +380,22 @@ LispPTR uraid_commands(void) {
     case 'C': all_stack_dump(0, 0, T); break;
     case 'f':                /**if((URaid_arg1[0] < '0') || (URaid_arg1[0] > '9')){
                                 printf("Illegal argument, not a number\n");
-                                 return(T);
+                                 return true;
                              }**/
       if (URaid_argnum == 1) /* f comm only */
       {
         printf("DUMP-STACK: f decimal-FXnumber\n");
-        return (T);
+        return true;
       }
       errno = 0;
       num = (int)strtoul(URaid_arg1, &endpointer, 10);
       if (errno != 0 || *endpointer != '\0') { /* com read fails */
         printf("Illegal argument, not decimal number\n");
-        return (T);
+        return true;
       }
       if ((num > URaid_ArrMAXIndex) || (num < 0)) {
         printf("Frame number doesn't exist.\n");
-        return (T);
+        return true;
       }
       sf(URaid_FXarray[num]);
       URaid_currentFX = num + 1;
@@ -412,7 +412,7 @@ LispPTR uraid_commands(void) {
     case 'l':
       if (URaid_argnum == 1) {
         bt(); /* default case CURRENTFX */
-        return (T);
+        return true;
       }
       switch (URaid_arg1[0]) {
         case 'k':
@@ -446,12 +446,12 @@ LispPTR uraid_commands(void) {
     case 'a': /* GETTOPVAL */
       if (URaid_argnum != 2) {
         printf("GETTOPVAL: a litatom\n");
-        return (T);
+        return true;
       }
       index = parse_atomstring(URaid_arg1);
       if (index == 0xffffffff) {
         printf("No such atom.\n");
-        return (T);
+        return true;
       }
       printf("Atom: %s index %d\n", URaid_arg1, index);
 
@@ -461,13 +461,13 @@ LispPTR uraid_commands(void) {
       LispPTR objaddr;
       if (URaid_argnum == 1) {
         printf("PRINT-ARRAY-BLOCK: B HEX-LispAddress\n");
-        return (T);
+        return true;
       }
       errno = 0;
       objaddr = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
-        return (T);
+        return true;
       }
       printarrayblock(objaddr);
     } break;
@@ -476,7 +476,7 @@ LispPTR uraid_commands(void) {
       long size;
       if (URaid_argnum != 1 && URaid_argnum != 2) {
         printf("FREE-BLOCK-CHAIN: F [block-size (cells)]\n");
-        return (T);
+        return true;
       }
       if (URaid_argnum == 1) {
         size = -1;
@@ -485,7 +485,7 @@ LispPTR uraid_commands(void) {
         size = (LispPTR)strtol(URaid_arg1, &endpointer, 0);
         if (errno != 0 || *endpointer != '\0') {
           printf("Arg not number\n");
-          return (T);
+          return true;
         }
       }
       printfreeblockchainn(size);
@@ -494,22 +494,22 @@ LispPTR uraid_commands(void) {
     case 'd': /* DEFCELL */
       if (URaid_argnum != 2) {
         printf("GETD: d litatom\n");
-        return (T);
+        return true;
       }
       index = parse_atomstring(URaid_arg1);
       if (index == 0xffffffff) {
         printf("No such atom.\n");
-        return (T);
+        return true;
       }
       printf("Atom: %s index %d\n", URaid_arg1, index);
 
       defcell68k = (DefCell *)GetDEFCELL68k(index);
       if (defcell68k->ccodep) {
         printf("{CCODEP}0x%x\n", defcell68k->defpointer);
-        return (T);
+        return true;
       }
       print(defcell68k->defpointer);
-      return (T);
+      return true;
 
     case 'M': /* Machine States */
       printf("TOS   : 0x%x\n", TopOfStack);
@@ -522,7 +522,7 @@ LispPTR uraid_commands(void) {
     case 'm': /* MOVD */
       if (URaid_argnum != 3) {
         printf("MOVD: m <from funcname> <to funcname>\n");
-        return (T);
+        return true;
       }
       {
         DefCell *fromfunc, *tofunc;
@@ -530,12 +530,12 @@ LispPTR uraid_commands(void) {
         fromindex = parse_atomstring(URaid_arg1);
         if (fromindex == 0xffffffff) {
           printf("No such function (from)\n");
-          return (T);
+          return true;
         }
         toindex = parse_atomstring(URaid_arg2);
         if (toindex == 0xffffffff) {
           printf("No such function (to)\n");
-          return (T);
+          return true;
         }
 
         fromfunc = (DefCell *)GetDEFCELL68k(fromindex);
@@ -552,20 +552,20 @@ LispPTR uraid_commands(void) {
       LispPTR objaddr;
       if (URaid_argnum == 1) {
         printf("PRINT-INSTANCE: O HEX-LispAddress\n");
-        return (T);
+        return true;
       }
       errno = 0;
       objaddr = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
-        return (T);
+        return true;
       }
       print(objaddr);
     } break;
     case 't': /* Object TYPE */
       if (URaid_argnum != 2) {
         printf("PRINTTYPENAME: t Xaddress\n");
-        return (T);
+        return true;
       }
 
       /**HEXNUMP(URaid_arg1,"Not Address");**/
@@ -573,7 +573,7 @@ LispPTR uraid_commands(void) {
       address = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg not HEX number\n");
-        return (T);
+        return true;
       }
       ADD_RANGEP(address);
 
@@ -635,12 +635,12 @@ LispPTR uraid_commands(void) {
     case 'p': /* property list */
       if (URaid_argnum != 2) {
         printf("GETPROPLIST : p litatom\n");
-        return (T);
+        return true;
       }
       index = parse_atomstring(URaid_arg1);
       if (index == 0xffffffff) {
         printf("No such atom\n");
-        return (T);
+        return true;
       }
       print(*(GetPROPCELL68k(index)) & POINTERMASK);
       break;
@@ -655,13 +655,13 @@ LispPTR uraid_commands(void) {
       ***/
       if (URaid_argnum == 1) { /* for help */
         printf("HEX-DUMP: x Xaddress [Xnum]\n");
-        return (T);
+        return true;
       }
       errno = 0;
       address = (LispPTR)strtoul(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
-        return (T);
+        return true;
       }
       if (URaid_arg2[0] == '\0') {
         num = XDUMPW;
@@ -670,12 +670,12 @@ LispPTR uraid_commands(void) {
         num = strtol(URaid_arg2, &endpointer, 16);
         if (errno != 0 || *endpointer != '\0') {
           printf("Arg(Xnum) not Xnum\n");
-          return (T);
+          return true;
         }
       }
       if (num < 0) {
         printf("Dump words num should be positive\n");
-        return (T);
+        return true;
       }
       /* Address range check */
       ADD_RANGEP(address);
@@ -700,12 +700,12 @@ LispPTR uraid_commands(void) {
     case '@': /* SETTOPVAL */
       if (URaid_argnum != 3) {
         printf("SETTOPVAL: @ litatom Decimal-val\n");
-        return (T);
+        return true;
       }
       index = parse_atomstring(URaid_arg1);
       if (index == 0xffffffff) {
         printf("No such atom\n");
-        return (T);
+        return true;
       }
       if (strncmp(URaid_arg2, "NIL", 3) == 0) {
         val = NIL;
@@ -716,11 +716,11 @@ LispPTR uraid_commands(void) {
         val = strtol(URaid_arg2, &endpointer, 10);
         if (errno != 0 || *endpointer != '\0') {
           printf(" Bad value\n");
-          return (T);
+          return true;
         }
         if ((val < -65536) || (65535 < val)) {
           printf("Bad Val range\n");
-          return (T);
+          return true;
         }
         if (val >= 0) {
           val |= S_POSITIVE;
@@ -739,7 +739,7 @@ LispPTR uraid_commands(void) {
     case '<':
       if (URaid_argnum != 3) {
         printf("Mem modify: < Xaddre Xval\n");
-        return (T);
+        return true;
       }
       /* Assignment */
       /* OBSOLETE
@@ -751,19 +751,19 @@ LispPTR uraid_commands(void) {
       address = (LispPTR)strtol(URaid_arg1, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xaddress) not Xaddress\n");
-        return (T);
+        return true;
       }
       errno = 0;
       val = strtol(URaid_arg2, &endpointer, 16);
       if (errno != 0 || *endpointer != '\0') {
         printf("Arg(Xval) not Xaddress\n");
-        return (T);
+        return true;
       }
 
       ADD_RANGEP(address);
       if (val < 0 || val > 0xffff) {
         printf("Xval invalid (16 bit range exceeded).\n");
-        return (T);
+        return true;
       }
 
       {
@@ -782,12 +782,12 @@ LispPTR uraid_commands(void) {
         c = getchar();
         if ((c == 'Y') || (c == 'y')) {
           /*TopOfStack = NIL;*/
-          return (NIL);
+          return false;
         }
       }
       (void)fflush(stdin);
       URaid_currentFX = URMAXFXNUM + 1;
-      return (T);
+      return true;
     /* break; */
     case 'h': /* HARDRESET */
       printf("HARDRESET?[confirm](Y or N)<");
@@ -799,7 +799,7 @@ LispPTR uraid_commands(void) {
           contextsw(ResetFXP, 2, 0);
           /*PC -= 3;  in subr.c it increments by 3 */
           (void)fflush(stdin);
-          return (NIL); /* return to dispatch */
+          return false; /* return to dispatch */
         }
       }
       (void)fflush(stdin);
@@ -832,12 +832,12 @@ LispPTR uraid_commands(void) {
       (void)wait(&status);
 /* system("/bin/sh -i"); */
 #endif /* DOS */
-      return (T);
+      return true;
     /* break; */
     case 'v':
       if (URaid_argnum != 2) {
         printf("VMEMSAVE: v filename (it's NOT bootable)\n");
-        return (T);
+        return true;
       }
       if (vmem_save(URaid_arg1) != NIL) {
 #ifndef DISPLAYBUFFER
@@ -858,7 +858,7 @@ LispPTR uraid_commands(void) {
         num = strtoul(URaid_arg1, &endpointer, 10);
         if (errno != 0 || *endpointer != '\0') {
           printf("Illegal argument, not number\n");
-          return (T);
+          return true;
         }
       }
       PrintMaxLevel = num;
@@ -878,7 +878,7 @@ LispPTR uraid_commands(void) {
     default: printf("Unsupported command.\n"); break;
 
   } /* switch end */
-  return (T);
+  return true;
 }
 
 /************************************************************************/

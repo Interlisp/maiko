@@ -24,6 +24,7 @@
 
 #include "version.h"
 
+#include <stdbool.h> // for bool, false, true
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -311,7 +312,7 @@ void bitbltsub(LispPTR *argv) {
   int sty, dty, texture, wxoffset, wyoffset;
   int h, w;
 #ifdef REALCURSOR
-  LispPTR displayflg = NIL;
+  bool displayflg = false;
 #endif
   int backwardflg = 0, sx, dx, srcbpl = 2147483647, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;
@@ -509,18 +510,18 @@ do_it_now:
 /*                                                      */
 /********************************************************/
 
-LispPTR n_new_cursorin(const DLword *baseaddr, int dx, int dy, int w, int h) {
+bool n_new_cursorin(const DLword *baseaddr, int dx, int dy, int w, int h) {
 #ifdef INIT
   init_kbd_startup; /* MUST START KBD FOR INIT BEFORE FIRST BITBLT */
 #endif
 
   if (!(in_display_segment(baseaddr))) {
-    return NIL;
+    return false;
   }
   if (dx < MOUSEXR && dx + w > MOUSEXL && dy < MOUSEYH && dy + h > MOUSEYL) {
-    return T;
+    return true;
   }
-  return NIL;
+  return false;
 }
 #else
 /********************************************************/
@@ -531,29 +532,29 @@ LispPTR n_new_cursorin(const DLword *baseaddr, int dx, int dy, int w, int h) {
 extern DLword *DisplayRegion68k, *ColorDisplayRegion68k;
 extern int MonoOrColor;
 
-LispPTR n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
+bool n_new_cursorin(DLword *baseaddr, int dx, int dy, int w, int h) {
 #ifdef INIT
   init_kbd_startup; /* MUST START KBD FOR INIT BEFORE FIRST BITBLT */
 #endif
 
   if (MonoOrColor == MONO_SCREEN) { /* in MONO screen */
     if (!(in_display_segment(baseaddr))) {
-      return (NIL);
+      return false;
     }
     if (dx < MOUSEXR && dx + w > MOUSEXL && dy < MOUSEYH && dy + h > MOUSEYL) {
-      return (T);
+      return true;
     }
-    return (NIL);
+    return false;
   } /* if for MONO end */
   else { /* in COLOR screen */
     if ((ColorDisplayRegion68k <= baseaddr) && (baseaddr <= COLOR_MAX_Address)) {
       dx = dx >> 3;
       if (dx < MOUSEXR && dx + w > MOUSEXL && dy < MOUSEYH && dy + h > MOUSEYL) {
-        return (T);
+        return true;
       }
-      return (NIL);
+      return false;
     } else
-      return (NIL);
+      return false;
   }
 }
 #endif /* COLOR */
@@ -614,7 +615,7 @@ LispPTR bitblt_bitmap(LispPTR *args) {
   LispPTR sourcetype, operation, texture;
   DLword *srcbase, *dstbase;
   int dlx, dty, slx, sty, srcbpl, dstbpl, op, src_comp, backwardflg = 0;
-  LispPTR displayflg = NIL;
+  bool displayflg = false;
 
 #ifdef INIT
   init_kbd_startup;
@@ -887,7 +888,7 @@ LispPTR bltshade_bitmap(LispPTR *args) {
   DLword *srcbase = NULL, *dstbase = NULL, *base = NULL;
   int dty, slx, dstbpl, op, src_comp;
 #ifdef REALCURSOR
-  LispPTR displayflg = NIL;
+  bool displayflg = false;
 #endif
   int rasterwidth;
   int num_gray = 0, curr_gray_line = 0;
@@ -1132,7 +1133,7 @@ void bltchar(LispPTR *args)
   DISPLAYDATA *dspdata;
   int base;
 #ifdef REALCURSOR
-  LispPTR displayflg = NIL;
+  bool displayflg = false;
 #endif
   int w, h;
   int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
@@ -1313,7 +1314,7 @@ void newbltchar(LispPTR *args) {
   int base;
   int h, w;
 #ifdef REALCURSOR
-  LispPTR displayflg = NIL;
+  bool displayflg = false;
 #endif
   int backwardflg = 0, sx, dx, srcbpl, dstbpl, src_comp, op;
   DLword *srcbase, *dstbase;

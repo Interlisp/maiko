@@ -10,6 +10,7 @@
 
 #include "version.h"
 
+#include <stdbool.h> // for bool, true, false
 #include <stdio.h>
 
 #ifdef XWINDOW
@@ -59,7 +60,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos) {
   PILOTBBT *pbt;
   DLword *srcbase, *dstbase;
 #if defined(SUNDISPLAY) || defined(DOS)
-  int displayflg;
+  bool displayflg;
 #endif
   int sx, dx, w, h, srcbpl, dstbpl, backwardflg;
   int src_comp, op, gray, num_gray, curr_gray_line;
@@ -91,7 +92,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos) {
   dx = pbt->pbtdestbit;
   sx = pbt->pbtsourcebit;
   backwardflg = pbt->pbtbackward;
-/* if displayflg != 0 then source or destination is DisplayBitMap */
+/* if displayflg then source or destination is DisplayBitMap */
 #ifdef DOS
   currentdsp->device.locked++;
 #else
@@ -152,7 +153,7 @@ LispPTR N_OP_pilotbitblt(LispPTR pilot_bt_tbl, LispPTR tos) {
 
 #ifndef COLOR
 /* for MONO only */
-int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
+bool cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
   int x, y;
   if (addrhi == DISPLAY_HI) {
     y = addrlo / DisplayRasterWidth;
@@ -161,7 +162,7 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
     y = (addrlo + DLWORDSPER_SEGMENT) / DisplayRasterWidth;
     x = ((addrlo + DLWORDSPER_SEGMENT) - y * DisplayRasterWidth) << 4;
   } else {
-    return (NIL);
+    return false;
   }
 
   if (backward) {
@@ -169,14 +170,14 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
   }
 
   if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL)) {
-    return (T);
+    return true;
   }
-  return (NIL);
+  return false;
 }
 #else
 
 /* for COLOR & MONO */
-int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
+bool cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
   int x, y;
   DLword *base68k;
   extern int MonoOrColor;
@@ -191,15 +192,15 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
       y = (addrlo + DLWORDSPER_SEGMENT) / DisplayRasterWidth;
       x = ((addrlo + DLWORDSPER_SEGMENT) - y * DisplayRasterWidth) << 4;
     } else
-      return (NIL);
+      return false;
 
     if (backward)
       y -= h;
 
     if ((x < MOUSEXR) && (x + w > MOUSEXL) && (y < MOUSEYH) && (y + h > MOUSEYL))
-      return (T);
+      return true;
     else
-      return (NIL);
+      return false;
   } else {
     base68k = NativeAligned2FromLAddr(addrhi << 16 | addrlo);
     if ((ColorDisplayRegion68k <= base68k) && (base68k <= COLOR_MAX_Address)) {
@@ -208,16 +209,16 @@ int cursorin(DLword addrhi, DLword addrlo, int w, int h, int backward) {
       /* printf("cursorin: IN COLOR mx=%d my=%d x=%d y%d w=%d h=%d\n"
       ,*EmMouseX68K,*EmMouseY68K,x,y,w,h); */
     } else
-      return (NIL);
+      return false;
 
     if (backward)
       y -= h;
 
     if ((x < MOUSEXR) && ((x + (w >> 3)) > MOUSEXL) && (y < MOUSEYH) &&
         (y + h > MOUSEYL)) { /* printf("cursorin T\n"); */
-      return (T);
+      return true;
     }
-    return (NIL);
+    return false;
   } /* on COLOR screen */
 }
 #endif /* COLOR */
