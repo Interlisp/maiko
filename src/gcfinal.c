@@ -42,6 +42,7 @@
 /*                                                               \Tomtom */
 /*************************************************************************/
 
+#include <stdbool.h>       // for bool, true, false
 #include <stdio.h>         // for printf
 #include "address.h"       // for HILOC
 #include "adr68k.h"        // for NativeAligned4FromLAddr, LAddrFromNative
@@ -56,7 +57,6 @@
 #include "lspglob.h"       // for FreeBlockBuckets_word, ArrayMerging_word
 #include "lsptypes.h"      // for WORDPTR
 #include "stack.h"         // for STACKP, FX
-
 #ifdef NEVER
 #define GetSegnuminColl(entry1) ((entry1 & 0x01fe) >> 1) /* segnum field */
 #define GetLinkptr(entry) (entry & 0x0fffe)
@@ -210,13 +210,13 @@ LispPTR releasingvmempage(LispPTR ptr) {
 /*	Given an array block, do consistency checks on it.		*/
 /*									*/
 /************************************************************************/
-LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
+static bool checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
   struct arrayblock *base_np, *trailer_np;
   struct arrayblock *fwd_np, *bkwd_np, *rbase;
   LispPTR fbl;
   LispPTR *rover, *tmprover;
 #ifdef ARRAYCHECK
-  if (T)
+  if (true)
 #else
   if (*Array_Block_Checking_word != NIL)
 #endif
@@ -230,57 +230,57 @@ LispPTR checkarrayblock(LispPTR base, LispPTR free, LispPTR onfreelist) {
     if (base_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK password wrong\n");
-      return (T);
+      return true;
     }
     if (base_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK INUSE bit set wrong\n");
-      return (T);
+      return true;
     }
     if (trailer_np->password != ARRAYBLOCKPASSWORD) {
       printarrayblock(base);
       error("ARRAYBLOCK trailer password wrong\n");
-      return (T);
+      return true;
     }
     if (base_np->arlen != trailer_np->arlen) {
       printarrayblock(base);
       error("ARRAYBLOCK Header and Trailer length don't match\n");
-      return (T);
+      return true;
     }
     /* This is not original source.(in original,
        trailer_np -> base_np) maybe, this is correction. */
     if (trailer_np->inuse == free) {
       printarrayblock(base);
       error("ARRAYBLOCK Trailer INUSE bit set wrong\n");
-      return (T);
+      return true;
     }
     if (!onfreelist || (base_np->arlen < MINARRAYBLOCKSIZE)) {
-      return (NIL);
+      return false;
     }
     /* Remaining tests only for free list. */
     fwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->fwd);
     bkwd_np = (struct arrayblock *)NativeAligned4FromLAddr(base_np->bkwd);
     if ((bkwd_np->fwd != base) || (fwd_np->bkwd != base)) {
       error("ARRAYBLOCK links fouled\n");
-      return (T);
+      return true;
     }
     fbl = FreeBlockChainN(base_np->arlen);
     rover = tmprover = NativeAligned4FromLAddr(fbl);
     /* GETBASEPTR */
     if ((*rover & POINTERMASK) == NIL) {
       error("Free Block's bucket empty\n");
-      return (T);
+      return true;
     }
     do {
       if ((*rover & POINTERMASK) == base) {
-        return (NIL);
+        return false;
       }
       checkarrayblock((*rover & POINTERMASK), T, NIL);
       rbase = (struct arrayblock *)NativeAligned4FromLAddr(*rover & POINTERMASK);
     } while (((*rover = rbase->fwd) & POINTERMASK) != (*tmprover & POINTERMASK));
-    return (NIL);
+    return false;
   }
-  return (NIL);
+  return false;
 }
 
 /************************************************************************/
@@ -554,13 +554,12 @@ LispPTR mergeforward(LispPTR base) {
  * The pointer passed is to the data of the block, not the array block
  * header.
  */
-LispPTR reclaimarrayblock(LispPTR ptr) {
+bool reclaimarrayblock(LispPTR ptr) {
   LispPTR tmpptr, btrailer;
   struct arrayblock *base_np;
   LispPTR *tmpp;
-  int reclaim_p;
+  bool reclaim_p = true;
 
-  reclaim_p = T;
 #ifdef ARRAYCHECK
   checkarrayblock(ptr - ARRAYBLOCKHEADERWORDS, NIL, NIL);
 #endif /* ARRAYCHECK */
@@ -572,23 +571,25 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
     error(
         "Bad array block reclaimed [not in array space].\nContinue with 'q' but save state ASAP. "
         "\n");
-    return (T);
-  } else if (ARRAYBLOCKPASSWORD != base_np->password) {
+    return true;
+  }
+  if (ARRAYBLOCKPASSWORD != base_np->password) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error("Bad array block reclaimed [password wrong].\nContinue with 'q' but save state ASAP. \n");
-    return (T);
-  } else if (base_np->inuse == NIL) {
+    return true;
+  }
+  if (base_np->inuse == NIL) {
     printarrayblock(ptr - ARRAYBLOCKHEADERWORDS);
     error(
         "Bad array block reclaimed [block not in use].\nContinue with 'q' but save state ASAP. \n");
-    return (T);
+    return true;
   }
 #else
   /* Normal case, just tell the guy something's wrong: */
   if ((HILOC(ptr) < FIRSTARRAYSEGMENT) ||
       ((ARRAYBLOCKPASSWORD != base_np->password) || (base_np->inuse == NIL))) {
     error("Bad array block reclaimed--continue with 'q' but save state ASAP. \n");
-    return (T);
+    return true;
   }
 #endif /* ARRAYCHECK */
 
@@ -606,14 +607,14 @@ LispPTR reclaimarrayblock(LispPTR ptr) {
       break;
     }
     case CODEBLOCK_GCT:
-      reclaim_p = ((reclaimcodeblock(ptr) == NIL) ? T : NIL);
-
-      /* default:   No Action */
+      reclaim_p = reclaimcodeblock(ptr) == false;
+      break;
   }
-  if (reclaim_p == T) {
+
+  if (reclaim_p) {
     mergeforward(mergebackward(makefreearrayblock(ptr - ARRAYBLOCKHEADERWORDS, base_np->arlen)));
   }
-  return (T);
+  return true;
 }
 
 /************************************************************************/

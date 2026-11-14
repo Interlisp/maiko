@@ -29,6 +29,7 @@
 /* \Tomtom								*/
 /************************************************************************/
 
+#include <stdbool.h>       // for bool, true, false
 #include <stdio.h>         // for sprintf
 #include "address.h"       // for LOLOC, HILOC
 #include "adr68k.h"        // for NativeAligned4FromLAddr
@@ -226,30 +227,34 @@ found:
 }
 
 /************************************************************************/
-/*									*/
-/*		    r e c l a i m c o d e b l o c k			*/
-/*									*/
-/*	Reclaim an array block that contains compiled code.  When	*/
-/*	this happens, we need to decrement the reference counts for	*/
-/*									*/
-/*		* The frame name, which may be a string, list, etc.	*/
-/*		* Any GCONSTs in the code (constants, internal fns,	*/
-/*		  etc.), since they're no longer needed.		*/
-/*									*/
+/*                                                                      */
+/*                  r e c l a i m c o d e b l o c k                     */
+/*                                                                      */
+/*      Reclaim an array block that contains compiled code.  When       */
+/*      this happens, we need to decrement the reference counts for     */
+/*                                                                      */
+/*        * The frame name, which may be a string, list, etc.           */
+/*        * Any GCONSTs in the code (constants, internal fns,           */
+/*          etc.), since they're no longer needed.                      */
+/*                                                                      */
+/*      Return: true if the block SHOULD NOT be reclaimed in this round */
+/*              false if the block SHOULD be reclaimed by the caller    */
+/*      While this may seem counterintuitive, it matches the Lisp       */
+/*      implementation of \RECLAIMCODEBLOCK                             */
 /************************************************************************/
 
-LispPTR reclaimcodeblock(LispPTR codebase) {
+bool reclaimcodeblock(LispPTR codebase) {
   struct fnhead *fnbase;
   if ((*Closure_Cache_Enabled_word != NIL) &&
       (remimplicitkeyhash(codebase, *Closure_Cache_word) != NIL)) {
-    return (T);
+    return true;
   }
   fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
   REC_GCLOOKUP((POINTERMASK & fnbase->framename), DELREF);
   if (fnbase->startpc != 0) {
     map_code_pointers(codebase, DELREF);
   }
-  return (NIL);
+  return false;
 }
 
 /************************************************************************/
