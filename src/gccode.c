@@ -182,7 +182,7 @@ static LispPTR map_code_pointers(LispPTR codeblock, short int casep) {
         shouldn't be looked at */
 #define getikkey(value) ((*NativeAligned4FromLAddr(value)) & POINTERMASK)
 
-static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
+static bool remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
   Ikhashtbl *ik_htable;
   LispPTR reprobe, bits, limits, index, base, value;
   ik_htable = (Ikhashtbl *)NativeAligned4FromLAddr(ik_hash_table);
@@ -196,12 +196,11 @@ static LispPTR remimplicitkeyhash(LispPTR item, LispPTR ik_hash_table) {
       if (item == getikkey(value)) {
         goto found;
       }
-    } else {
-      return (NIL);
     }
+    return false;
   }
   reprobe = Reprobefn(bits, limits);
-lp:
+ lp:
   index = Fn16bits(index, reprobe) & limits;
   value = Getikvalue(base, index);
   if (value != *Deleted_Implicit_Hash_Slot_word) {
@@ -209,21 +208,20 @@ lp:
       if (item == getikkey(value)) {
         goto found;
       }
-    } else {
-      return (NIL);
     }
+    return false;
   }
   goto lp;
-found:
+ found:
   /*
-      htfind(*Deleted_Implicit_Hash_Slot_word, ADDREF);
-      htfind(Getikvalue(base, index), DELREF);
+    htfind(*Deleted_Implicit_Hash_Slot_word, ADDREF);
+    htfind(Getikvalue(base, index), DELREF);
   */
   REC_GCLOOKUP(*Deleted_Implicit_Hash_Slot_word, ADDREF);
   REC_GCLOOKUP(Getikvalue(base, index), DELREF);
   Getikvalue(base, index) = *Deleted_Implicit_Hash_Slot_word;
   (ik_htable->num_keys)--;
-  return (T);
+  return true;
 }
 
 /************************************************************************/
@@ -246,7 +244,7 @@ found:
 bool reclaimcodeblock(LispPTR codebase) {
   struct fnhead *fnbase;
   if ((*Closure_Cache_Enabled_word != NIL) &&
-      (remimplicitkeyhash(codebase, *Closure_Cache_word) != NIL)) {
+      remimplicitkeyhash(codebase, *Closure_Cache_word)) {
     return true;
   }
   fnbase = (struct fnhead *)NativeAligned4FromLAddr(codebase);
