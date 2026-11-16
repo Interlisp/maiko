@@ -238,7 +238,7 @@ LispPTR cgfour_set_colormap(LispPTR args[]) {
   if (pr_putcolormap(ColorFb, index, 1, &RED_colormap, &GRN_colormap, &BLU_colormap) == -1)
     perror("putcolormap:");
   pr_close(ColorFb);
-  return (T);
+  return (ATOM_T);
 }
 #else  /* COLOR */
 
