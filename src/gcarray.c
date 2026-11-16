@@ -44,6 +44,7 @@
 
 #include <stdio.h>         // for printf
 #include <string.h>        // for strncmp
+
 #include "adr68k.h"        // for NativeAligned2FromLAddr, NativeAligned4FromLAddr
 #include "array.h"         // for arrayheader
 #include "car-cdrdefs.h"   // for car, cdr
@@ -117,17 +118,19 @@ LispPTR aref1(LispPTR array, int index) {
   base = array_np->base;
   switch (array_np->typenumber) {
     case 3: /* unsigned 8 bits */
-      retval = (GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index)) & 0x0ff;
+      retval = GETBYTE(((char *)NativeAligned2FromLAddr(base)) + index) & 0xffU;
       retval |= S_POSITIVE;
       break;
     case 4: /* unsigned 16 bits */
-      retval = (GETWORD((NativeAligned2FromLAddr(base)) + index)) & 0x0ffff;
+      retval = GETWORD((NativeAligned2FromLAddr(base)) + index) & 0xffffU;
       retval |= S_POSITIVE;
       break;
-    case 38: /* pointer 32 bits */ retval = (*((NativeAligned4FromLAddr(base)) + index)); break;
+    case 38: /* pointer 32 bits */
+      retval = *(NativeAligned4FromLAddr(base) + index);
+      break;
     default: error("Not Implemented in gc's aref1 (other types)");
   }
-  return (retval);
+  return retval;
 }
 
 /************************************************************************/
@@ -141,8 +144,8 @@ LispPTR aref1(LispPTR array, int index) {
 LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR hashtbl,
                     DLword fatp, DLword lispp)
 
-/* T => the "chars" coming in are 16-bit */
-/* T => the incoming chars are in LISP space */
+/* fatp: T => the "chars" coming in are 16-bit */
+/* lispp: T => the incoming chars are in LISP space */
 {
   DLword hashval, ehashval, h2, ehash, indexvar;
   int arraylen;
@@ -156,7 +159,7 @@ LispPTR find_symbol(const char *char_base, DLword offset, DLword length, LispPTR
   int fatpnamep;
 
   if (!hashtbl) {
-    return (0xffffffff);
+    return 0xffffffff;
   }
 
   if (lispp) {
@@ -188,7 +191,7 @@ loop_thru_hashtables:
   vec68k = (struct arrayheader *)NativeAligned4FromLAddr(vec);
   arraylen = vec68k->totalsize;
   if (arraylen == 0) {
-    return (0xffffffff); /*kludge TAKE*/
+    return 0xffffffff; /*kludge TAKE*/
   }
   h2 = Rehash_factor(hashval, arraylen);
   indexvar = (hashval % arraylen);
@@ -209,11 +212,11 @@ retry:
     if (ehash == NIL) { /* Ran out of entries in this table; try next or fail */
 #ifdef BIGATOMS
       if (hashes == NIL) {
-        return (0xffffffff); /* Last table.  Fail. */
+        return 0xffffffff; /* Last table.  Fail. */
       }
       goto loop_thru_hashtables;
 #else
-      return (0xffffffff);
+      return 0xffffffff;
 #endif /* BIGATOMS */
     }
     indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
@@ -226,17 +229,17 @@ retry:
 
     index = aref1(vec, indexvar);
     if ((index & SEGMASK) == S_POSITIVE) {
-      index &= 0xFFFF;
+      index &= 0xFFFFU;
     }
 
     pnptr = (PNCell *)GetPnameCell(index);
     fatpnamep = ((PLCell *)GetPropCell(index))->fatpnamep;
     pname_base = (char *)NativeAligned2FromLAddr(pnptr->pnamebase);
     if ((length == GETBYTE(pname_base)) &&
-        (T == ((lispp) ? compare_lisp_chars((pname_base + 1 + fatpnamep), char_base, length,
-                                            fatpnamep, fatp)
-                       : compare_chars((pname_base + 1 + fatpnamep), char_base, length)))) {
-      return (index);
+        (lispp ? compare_lisp_chars((pname_base + 1 + fatpnamep), char_base, length,
+                                           fatpnamep, fatp)
+                      : compare_chars((pname_base + 1 + fatpnamep), char_base, length))) {
+      return index;
     }
     indexvar = Symbol_hash_reprobe(indexvar, h2, arraylen);
     goto retry;
@@ -282,7 +285,7 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 
   if (packindex < 0) {
     printf("getting package index failed %s:%s\n", packname, char_base);
-    return (0xffffffff);
+    return 0xffffffff;
   }
 
   /* if (packindex != 7)  Not necessary (Take)*/
@@ -295,9 +298,9 @@ LispPTR get_package_atom(const char *char_base, DLword charlen, const char *pack
 
   index = find_symbol(char_base, 0, charlen, packaddr->EXTERNAL_SYMBOLS, 0, 0);
   if (index != 0xffffffff) {
-    return (index);
+    return index;
   }
-  return (find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0));
+  return find_symbol(char_base, 0, charlen, packaddr->INTERNAL_SYMBOLS, 0, 0);
 }
 
 /************************************************************************/
@@ -320,10 +323,10 @@ LispPTR with_symbol(LispPTR char_base, LispPTR offset, LispPTR charlen, LispPTR 
 
   if (symbol == -1) { /* Not found.  Signal that with -1 in result fixp */
     *resultptr = -1;
-    return (NIL);
+    return NIL;
   }
 
   *resultptr = 3;
-  return (symbol);
+  return symbol;
 
 } /* End of with_symbol */

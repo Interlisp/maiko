@@ -41,6 +41,7 @@
 #include "lispmap.h"     // for S_POSITIVE
 #include "lsptypes.h"    // for GETBYTE, GETWORD
 #include "mkatomdefs.h"  // for compare_chars, compare_lisp_chars, compute_hash
+#include <stdbool.h>     // for bool
 
 #define ATOMoffset 2         /* NIL NOBIND  */
 #define MAX_ATOMINDEX 0xffff /* max number of atoms */
@@ -128,18 +129,6 @@ DLword compute_lisp_hash(const char *char_base, DLword offset, DLword length, DL
 
 } /* end compute_lisp_hash */
 
-#ifdef BYTESWAP
-static int bytecmp(const char *char1, const char *char2, int len) {
-  int index;
-  for (index = 0; index < len; index++) {
-    if (GETBYTE(char1++) != *(const uint8_t *)(char2++)) {
-      return (0);
-    }
-  }
-  return (1);
-}
-#endif /* BYTESWAP */
-
 /**********************************************************************/
 /*
         Func name :	compare_chars
@@ -155,31 +144,32 @@ static int bytecmp(const char *char1, const char *char2, int len) {
         (why not call strncmp directly??)
         Because we need to account for byte ordering!! --JDS
         AND we need to compare NS chars (which have 0s in the string) correctly!
+
+        NOTE that this will not correctly compare a fat Lisp string
+        to a native text string.
 */
 /**********************************************************************/
 
-LispPTR compare_chars(const char *char1, const char *char2, DLword length) {
-#ifndef BYTESWAP
-  if (memcmp(char1, char2, length) == 0)
-#else
-  if (bytecmp(char1, char2, length))
-#endif /* BYTESWAP */
-
-  {
-    return (T);
-  }
-  return (NIL);
-
-} /* end compare_chars */
-
-static int lispcmp(const DLword *char1, const char *char2, int len) {
-  int index;
-  for (index = 0; index < len; index++) {
-    if (GETWORD(char1++) != GETBYTE(char2++)) {
-      return (0);
+bool compare_chars(const char *lisp_string, const char *native_string, DLword length) {
+#ifdef BYTESWAP
+  for (int index = 0; index < length; index++) {
+    if (GETBYTE(lisp_string++) != *(const uint8_t *)native_string++) {
+      return false;
     }
   }
-  return (1);
+  return true;
+#else
+  return memcmp(lisp_string, native_string, length) == 0 ? true : false;
+#endif
+} /* end compare_chars */
+
+static bool lispcmp(const DLword *fat_lisp_string, const char *thin_lisp_string, int len) {
+  for (int index = 0; index < len; index++) {
+    if (GETWORD(fat_lisp_string++) != GETBYTE(thin_lisp_string++)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 /**********************************************************************/
@@ -199,54 +189,40 @@ static int lispcmp(const DLword *char1, const char *char2, int len) {
 */
 /**********************************************************************/
 
-LispPTR compare_lisp_chars(const char *char1, const char *char2, DLword length, DLword fat1,
+bool compare_lisp_chars(const char *char1, const char *char2, DLword length, DLword fat1,
                            DLword fat2) {
-  if ((!fat1) == (!fat2)) { /* both fat or both non-fat. */
+  if ((!fat1) == (!fat2)) {
+    /* both fat or both non-fat. */
 #ifdef BYTESWAP
-    if (fat1) { /* both fat, so compare 'em a word at a time */
-      int i;
-      for (i = 0; i < length; i++) {
+    if (fat1) { /* byte swapped, both fat, so compare 'em a word at a time */
+      for (int i = 0; i < length; i++) {
         if (GETWORD(char1) != GETWORD(char2)) {
-          return (NIL);
+          return false;
         }
         /* increment by size of fat character, i.e., DLword, 2 bytes */
         char1 += sizeof(DLword);
         char2 += sizeof(DLword);
       }
-      return (T);
-    } /* both thin, so compare 'em a byte at a time */
-    /* (it's this way in case we're byte-swapped.)*/
-    int i;
-    for (i = 0; i < length; i++) {
+      return true;
+    } /* byte swapped, both thin, so compare 'em a byte at a time */
+    for (int i = 0; i < length; i++) {
       if (GETBYTE(char1++) != GETBYTE(char2++)) {
-        return (NIL);
+        return false;
       }
     }
-    return (T);
+    return true;
 
 #else
-    /* This one fails for byte-swapped machines */
-    if (fat1)
+    /* Here we are not byte-swapped */
+    if (fat1) {
       length = length + length;
-    if (memcmp(char1, char2, length) == 0)
-      return (T);
-    else {
-      return (NIL);
     }
+    return memcmp(char1, char2, length) == 0 ? true : false;
 #endif /* BYTESWAP */
 
-  } else if (fat1) { /* char1 is fat, char2 isn't */
-    if (lispcmp((const DLword *)char1, char2, length)) {
-      return (T);
-    }
-    return (NIL);
-  } else { /* char2 is fat, char1 isn't */
-    if (lispcmp((const DLword *)char2, char1, length)) {
-      return (T);
-    }
-    return (NIL);
   }
-
+  return fat1 ? lispcmp((const DLword *)char1, char2, length)
+              : lispcmp((const DLword *)char2, char1, length);
 } /* end compare_lisp_chars */
 
 /**********************************************************************/
@@ -316,10 +292,10 @@ LispPTR make_atom(const char *char_base, DLword offset, DLword length) {
     pnptr = (PNCell *)GetPnameCell(atom_index);
     pname_base = (char *)NativeAligned2FromLAddr(POINTERMASK & pnptr->pnamebase);
 
-    if ((length == GETBYTE(pname_base)) &&
-        (compare_chars(++pname_base, char_base + offset, length) == T)) {
+    if (length == GETBYTE(pname_base) &&
+        compare_chars(++pname_base, char_base + offset, length)) {
       DBPRINT(("FOUND the atom. \n"));
-      return (atom_index); /* found existing atom */
+      return atom_index; /* found existing atom */
     }
     DBPRINT(("HASH doesn't hit. reprobe!\n"));
 

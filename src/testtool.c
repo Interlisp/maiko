@@ -120,14 +120,14 @@ int find_package_from_name(const char *packname, int len) {
       pname += namestring->offset;
     }
 
-    len2 = (DLword)(namestring->fillpointer);
+    len2 = (DLword)namestring->fillpointer;
     if (len == len2) {
-      if (compare_chars(pname, packname, len) == T) {
-        return (index);
+      if (compare_chars(pname, packname, len)) {
+        return index;
       }
     }
   } /* for end */
-  return (-1);
+  return -1;
 }
 
 /************************************************************************/
@@ -153,19 +153,19 @@ void print_package_name(int index) {
     pname += namestring->offset;
     printf("OFFSET:\n");
   }
-  len = (DLword)(namestring->fillpointer);
+  len = (DLword)namestring->fillpointer;
 
-  if (compare_chars(pname, "INTERLISP", len) == T) {
+  if (compare_chars(pname, "INTERLISP", len)) {
     printf("IL:");
-  } else if (compare_chars(pname, "LISP", len) == T) {
+  } else if (compare_chars(pname, "LISP", len)) {
     printf("CL:");
-  } else if (compare_chars(pname, "XEROX-COMMON-LISP", len) == T) {
+  } else if (compare_chars(pname, "XEROX-COMMON-LISP", len)) {
     printf("XCL:");
-  } else if (compare_chars(pname, "SYSTEM", len) == T) {
+  } else if (compare_chars(pname, "SYSTEM", len)) {
     printf("SI:");
-  } else if (compare_chars(pname, "KEYWORD", len) == T) {
+  } else if (compare_chars(pname, "KEYWORD", len)) {
     printf(":");
-  } else if (compare_chars(pname, "COMPILER", len) == T) {
+  } else if (compare_chars(pname, "COMPILER", len)) {
     printf("XCLC:");
   } else {
     while (len > 0) {
