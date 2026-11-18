@@ -29,6 +29,9 @@
 #include <sys/types.h>
 #include <time.h>
 #include <unistd.h>
+#if defined(USE_DLPI)
+#include <stropts.h>  /* for I_SETSIG, S_INPUT */
+#endif
 
 #ifdef DOS
 #include <dos.h>

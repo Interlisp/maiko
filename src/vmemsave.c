@@ -27,6 +27,7 @@
 #include <dirent.h>
 #include <string.h>
 #include <sys/param.h>
+#include <sys/types.h>
 #include <pwd.h>
 #include <unistd.h>
 #else
